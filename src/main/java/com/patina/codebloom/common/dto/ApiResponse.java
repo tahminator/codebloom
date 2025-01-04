@@ -14,6 +14,15 @@ public class ApiResponse<T> {
         this.message = message;
     };
 
+    /**
+     * This should only be used when success is false.
+     */
+    public ApiResponse(boolean success, String message) {
+        this.success = success;
+        this.data = null;
+        this.message = message;
+    };
+
     public boolean isSuccess() {
         return success;
     }

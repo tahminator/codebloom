@@ -1,0 +1,3 @@
+Run Flyway Migrations (for now)
+
+dotenvx run -- mvn flyway:migrate

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS "User" (
+    id UUID PRIMARY KEY,
+    "discordId" VARCHAR(32) UNIQUE NOT NULL,
+    "discordName" VARCHAR(255) NOT NULL
+);
