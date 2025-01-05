@@ -33,10 +33,10 @@ Include the following in your `.env` file for OAuth configuration:
 
 - [Protector.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/common/security/Protector.java) is used to validate whether the user is logged in or not. It automatically handles unauthorized requests via GlobalExceptionHandler.java
 
-- [GlobalExceptionHandler.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/GlobalExceptionHandler.java) manages exception handling for unauthorized requests
+  - [AuthController.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/api/auth/AuthController.java) contains examples of using Protector.java to protect endpoints.
 
-- [AuthController.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/api/auth/AuthController.java) contains examples of using Protector.java to protect endpoints.
+- [GlobalExceptionHandler.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/GlobalExceptionHandler.java) manages exception handling for unauthorized requests
 
 - [SecurityConfig.java](https://github.com/0pengu/codebloom/tree/main/src/main/com/patina/codebloom/api/auth/security/SecurityConfig.java) holds the OAuth provider
 
-- [CustomAuthenticationSuccessHandler.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/api/auth/security/CustomAuthenticationSuccessHandler.java) actually handles the process of authenticating the user once they have been successfully redirected from the OAuth provider back to our server
+  - [CustomAuthenticationSuccessHandler.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/api/auth/security/CustomAuthenticationSuccessHandler.java) actually handles the process of authenticating the user once they have been successfully redirected from the OAuth provider back to our server
