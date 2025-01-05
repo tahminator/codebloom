@@ -1,4 +1,4 @@
-package com.patina.codebloom.api.auth.infra.user;
+package com.patina.codebloom.common.db.repos.user;
 
 import com.patina.codebloom.common.db.models.User;
 

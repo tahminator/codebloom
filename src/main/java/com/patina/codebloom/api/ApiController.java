@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.patina.codebloom.common.dto.ApiResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api")
 public class ApiController {
 
     @GetMapping()
-    public ResponseEntity<ApiResponse<Void>> apiIndex() {
-        return ResponseEntity.ok().body(new ApiResponse<>(true, "Hello World!", null));
+    public ResponseEntity<ApiResponse<Void>> apiIndex(HttpServletRequest request) {
+        return ResponseEntity.ok().body(ApiResponse.success("Hello World!", null));
     }
 
 }

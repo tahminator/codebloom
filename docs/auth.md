@@ -1,25 +1,42 @@
 # Authentication Routes and Flow
 
-## Base Endpoint  
-All authentication routes are prefixed with: `/api/auth/*`  
+## Base Endpoint
 
-## Custom Routes  
-- **`/api/auth/validate`** - Verifies whether the user is authenticated based on cookies stored in the browser.  
-- **`/api/auth/logout`** - Logs out the user by invalidating the session and removing cookies from the browser.  
+All authentication routes are prefixed with: `/api/auth/*`
 
-## Spring OAuth Routes  
-- **OAuth Initiation:** `/api/auth/flow/{provider}` - Begins the OAuth authentication process for a specific provider. (Example: `/api/auth/flow/discord` starts the Discord OAuth flow.)  
-- **OAuth Callback:** `/api/auth/flow/callback/{provider}` - Handles the callback process after the OAuth provider returns data to authenticate the user. (Example: `/api/auth/flow/callback/discord` processes the callback from Discord OAuth.)  
+## Custom Routes
 
-## Security Details  
-- **CSRF Protection** - Automatically managed by Spring Security, so no additional configuration is required.  
-- **Auth Validator / Session Token Cookie Setter** - Managed by the `CustomAuthenticationSuccessHandler`.  
-  - Cookie Settings:  
-    - Name: `session_token`  
-    - Max Age: **30 days** (configurable via a private variable).  
+- **`/api/auth/validate`** - Verifies whether the user is authenticated based on cookies stored in the browser.
+- **`/api/auth/logout`** - Logs out the user by invalidating the session and removing cookies from the browser.
 
-## Environment Variables  
+## Spring OAuth Routes
+
+- **OAuth Initiation:** `/api/auth/flow/{provider}` - Begins the OAuth authentication process for a specific provider. (Example: `/api/auth/flow/discord` starts the Discord OAuth flow.)
+- **OAuth Callback:** `/api/auth/flow/callback/{provider}` - Handles the callback process after the OAuth provider returns data to authenticate the user. (Example: `/api/auth/flow/callback/discord` processes the callback from Discord OAuth.)
+
+## Security Details
+
+- **CSRF Protection** - Automatically managed by Spring Security, so no additional configuration is required.
+- **Auth Validator / Session Token Cookie Setter** - Managed by the `CustomAuthenticationSuccessHandler`.
+  - Cookie Settings:
+    - Name: `session_token`
+    - Max Age: **30 days** (configurable via a private variable).
+
+## Environment Variables
+
 Include the following in your `.env` file for OAuth configuration:
-    - DISCORD_CLIENT_ID=your-client-id
-    - DISCORD_CLIENT_SECRET=your-client-secret
 
+- DISCORD_CLIENT_ID=your-client-id
+- DISCORD_CLIENT_SECRET=your-client-secret
+
+## Backend Objects
+
+- [Protector.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/common/security/Protector.java) is used to validate whether the user is logged in or not. It automatically handles unauthorized requests via GlobalExceptionHandler.java
+
+- [GlobalExceptionHandler.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/GlobalExceptionHandler.java) manages exception handling for unauthorized requests
+
+- [AuthController.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/api/auth/AuthController.java) contains examples of using Protector.java to protect endpoints.
+
+- [SecurityConfig.java](https://github.com/0pengu/codebloom/tree/main/src/main/com/patina/codebloom/api/auth/security/SecurityConfig.java) holds the OAuth provider
+
+- [CustomAuthenticationSuccessHandler.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/api/auth/security/CustomAuthenticationSuccessHandler.java) actually handles the process of authenticating the user once they have been successfully redirected from the OAuth provider back to our server

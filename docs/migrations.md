@@ -2,19 +2,24 @@
 
 We use Flyway to handle our database migrations. However, we perform migrations manually, so it's crucial to exercise extreme caution when dealing with data.
 
+View the current migrations folder [here](https://github.com/0pengu/codebloom/tree/main/src/main/resources/db/migration)
+
 ## Migration File Naming
 
 Migration files must follow this naming pattern:
+
 ```
 V{version}__{description}.sql
 ```
 
 Examples:
+
 - `V1__create_users_table.sql`
 - `V2__add_email_column_to_users.sql`
 - `V3__create_posts_table.sql`
 
 ### Naming Requirements
+
 - Version numbers must be sequential and unique
 - Double underscores (`__`) separate the version from the description
 - Use underscores (`_`) instead of spaces in descriptions
@@ -23,13 +28,16 @@ Examples:
 ## Types of Migrations
 
 ### Version Migrations (V)
+
 - Standard version migration
 - Runs exactly once
 
 ### Repeatable Migrations (R)
+
 - TODO(Tahmid)
 
 ### Undo Migrations (U)
+
 - Revert from the standard version migrations if needed
 
 ## Best Practices
@@ -43,6 +51,7 @@ Do not feel pressured to squeeze multiple changes into a single .sql file. It's 
 ### Using Maven
 
 You can run Flyway commands through Maven (mvn) like this:
+
 ```bash
 # Runs any pending migrations
 mvn flyway:migrate
@@ -51,36 +60,43 @@ mvn flyway:migrate
 ### Using Environment Variables
 
 Always pipe in the .env file when running migrations using dotenx:
+
 ```bash
 # dotenvx will automatically find the .env file as long as you are typing commands in the root directory
 dotenvx run -- mvn flyway:migrate -X
 # -X shows debug information
 ```
+
 If you are missing dotenvx, please check `local.md` to make sure all of your tools are up to date.
 
 ## Common Commands
 
 ### Check Migration Status
+
 ```bash
 mvn flyway:info
 ```
 
 ### Apply All Pending Migrations
+
 ```bash
 mvn flyway:migrate
 ```
 
 ### Revert Last Migration
+
 ```bash
 mvn flyway:undo
 ```
 
 ### Clean Database (Use with Caution!)
+
 ```bash
 mvn flyway:clean
 ```
 
 ### Validate Migrations
+
 ```bash
 mvn flyway:validate
 ```

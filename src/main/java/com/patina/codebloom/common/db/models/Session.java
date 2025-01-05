@@ -2,11 +2,6 @@ package com.patina.codebloom.common.db.models;
 
 import java.time.LocalDateTime;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class Session {
     private String id;
     private String userId;
@@ -19,19 +14,32 @@ public class Session {
         this.expiresAt = expiresAt;
     }
 
-    public Session(String id, String userId, String expiresAt) {
-        this.id = id;
-        this.userId = userId;
-        this.expiresAt = LocalDateTime.parse(expiresAt);
-    }
-
     public Session(String userId, LocalDateTime expiresAt) {
         this.userId = userId;
         this.expiresAt = expiresAt;
     }
 
-    public Session(String userId, String expiresAt) {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
         this.userId = userId;
-        this.expiresAt = LocalDateTime.parse(expiresAt);
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
     }
 }

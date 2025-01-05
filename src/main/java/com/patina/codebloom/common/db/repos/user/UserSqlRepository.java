@@ -1,4 +1,4 @@
-package com.patina.codebloom.api.auth.infra.user;
+package com.patina.codebloom.common.db.repos.user;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.User;
 
-@Component(value = "UserSqlRepository")
+@Component
 public class UserSqlRepository implements UserRepository {
     DbConnection dbConnection;
     Connection conn;

@@ -1,4 +1,4 @@
-package com.patina.codebloom.api.auth.infra.session;
+package com.patina.codebloom.common.db.repos.session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.Session;
 
-@Component(value = "SessionSqlRepository")
+@Component
 public class SessionSqlRepository implements SessionRepository {
     DbConnection dbConnection;
     Connection conn;
@@ -93,7 +93,7 @@ public class SessionSqlRepository implements SessionRepository {
     }
 
     @Override
-    public Boolean deleteSessionById(String id) {
+    public boolean deleteSessionById(String id) {
         String sql = "DELETE FROM \"Session\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

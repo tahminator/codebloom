@@ -1,10 +1,5 @@
 package com.patina.codebloom.common.db.models;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class User {
     private String id;
 
@@ -21,6 +16,30 @@ public class User {
 
     public User(String discordId, String discordName) {
         this.discordId = discordId;
+        this.discordName = discordName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDiscordId() {
+        return discordId;
+    }
+
+    public void setDiscordId(String discordId) {
+        this.discordId = discordId;
+    }
+
+    public String getDiscordName() {
+        return discordName;
+    }
+
+    public void setDiscordName(String discordName) {
         this.discordName = discordName;
     }
 }

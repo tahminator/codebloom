@@ -1,4 +1,4 @@
-package com.patina.codebloom.api.auth.infra.session;
+package com.patina.codebloom.common.db.repos.session;
 
 import java.util.ArrayList;
 
@@ -11,5 +11,5 @@ public interface SessionRepository {
 
     ArrayList<Session> getSessionsByUserId(String userId);
 
-    Boolean deleteSessionById(String id);
+    boolean deleteSessionById(String id);
 }

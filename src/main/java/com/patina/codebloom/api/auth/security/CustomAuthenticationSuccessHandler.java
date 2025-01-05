@@ -10,10 +10,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.patina.codebloom.api.auth.infra.session.SessionRepository;
-import com.patina.codebloom.api.auth.infra.user.UserRepository;
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.models.User;
+import com.patina.codebloom.common.db.repos.session.SessionRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,8 +21,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Handles successful OAuth2 login by creating user accounts,
- * assigning roles, and redirecting users based on their role.
+ * Handles successful OAuth2 login by either creating a new user or referencing
+ * an old user and generating a cookie storing the session ID.
+ * 
+ * @see <a href=
+ *      "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication
+ *      Documentation</a>
  */
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
