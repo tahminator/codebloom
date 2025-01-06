@@ -33,7 +33,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen">
       <Link to="/api/auth/flow/discord" reloadDocument>
-        <Button>Login</Button>
+        <Button>Login to Discord</Button>
       </Link>
     </div>
   );
