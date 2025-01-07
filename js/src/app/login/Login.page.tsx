@@ -1,12 +1,29 @@
-import { useAuthQuery } from "@/app/login/hooks";
+import { useAuthCallbackInfo, useAuthQuery } from "@/app/login/hooks";
 import { Button, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
 export default function LoginPage() {
+  // This hook is used to handle if the API failed to authenticate for any reason.
+  const { success, message } = useAuthCallbackInfo();
   const navigate = useNavigate();
   const { data, status } = useAuthQuery();
+
+  useEffect(() => {
+    console.log(success, message);
+    if (success && message) {
+      notifications.show({
+        message,
+        color: success ? "green" : "red",
+      });
+    }
+  }, [success, message]);
+
+  notifications.show({
+    message: "poo",
+  });
 
   if (status === "pending") {
     return (
