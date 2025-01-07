@@ -7,12 +7,18 @@ All authentication routes are prefixed with: `/api/auth/*`
 ## Custom Routes
 
 - **GET: `/api/auth/validate`** - Verifies whether the user is authenticated based on cookies stored in the browser.
-- **GET: `/api/auth/logout`** - Logs out the user by invalidating the session and removing cookies from the browser.
+- **GET: `/api/auth/logout`** - Logs out the user by invalidating the session and removing cookies from the browser. It automatically returns back to the frontend with either:
+  - `/login?success=false&message=This is the failure message`.
+  - `/login?success=true&message=This is the success message!`
+  - These should be handled on the frontend route.
 
 ## Spring OAuth Routes
 
 - **OAuth Initiation:** `GET: /api/auth/flow/{provider}` - Begins the OAuth authentication process for a specific provider. (Example: `/api/auth/flow/discord` starts the Discord OAuth flow.)
 - **OAuth Callback:**`GET: /api/auth/flow/callback/{provider}` - Handles the callback process after the OAuth provider returns data to authenticate the user. (Example: `/api/auth/flow/callback/discord` processes the callback from Discord OAuth.)
+  - If successful, the user is automatically redirected to `/dashboard`.
+  - If failed, the user is automatically redirected to `/login?success=false&message=This is the failure message`.
+    - This should be handled on the frontend route.
 
 ## Security Details
 

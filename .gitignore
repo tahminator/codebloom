@@ -55,3 +55,6 @@ node_modules
 /.kotlin/
 
 .env
+
+# Ignore the static folder, it will be generated in the build process for production use.
+**/static/*

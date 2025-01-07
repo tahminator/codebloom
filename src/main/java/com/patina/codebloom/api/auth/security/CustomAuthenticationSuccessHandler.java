@@ -70,6 +70,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             session = sessionRepository.createSession(session);
 
             if (session == null) {
+                response.sendRedirect("/login?success=false&message=Failed to log in.");
                 throw new RuntimeException("Failed to create new session.");
             }
 
@@ -83,6 +84,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             response.addCookie(cookie);
             response.sendRedirect("/dashboard");
         } else {
+            response.sendRedirect("/login?success=false&message=Failed to log in.");
             throw new UsernameNotFoundException("User not found");
         }
     }

@@ -9,7 +9,8 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://localhost:8080",
-        changeOrigin: true,
+        // This is not traditional, but it allows the authenticated redirect to go back to the SPA.
+        changeOrigin: false,
       },
     },
   },
