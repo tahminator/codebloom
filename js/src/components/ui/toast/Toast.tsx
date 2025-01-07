@@ -3,7 +3,7 @@ import { notifications } from "@mantine/notifications";
 import { ReactNode, useEffect } from "react";
 
 /**
- * A custom React function that shows a notification and handles the redirect in a React way.
+ * A custom React function that shows a notification in a React way.
  * The alternative would be to pollute the codebase with useEffects and repetitive checks, which are
  * unfavorable and hard to maintain.
  */
