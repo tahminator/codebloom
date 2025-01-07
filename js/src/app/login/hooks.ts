@@ -32,8 +32,25 @@ async function validateAuthentication() {
 export function useAuthCallbackInfo() {
   const [searchParams] = useSearchParams();
 
+  const success = (() => {
+    const val = searchParams.get("success");
+    console.log(val);
+
+    if (val === "true") {
+      return true;
+    }
+
+    if (val === "false") {
+      return false;
+    }
+
+    return null;
+  })();
+
+  const message = searchParams.get("message");
+
   return {
-    success: searchParams.get("success"),
-    message: searchParams.get("message"),
+    success: success,
+    message: message,
   };
 }
