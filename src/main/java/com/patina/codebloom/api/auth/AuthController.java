@@ -1,10 +1,12 @@
 package com.patina.codebloom.api.auth;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
@@ -13,6 +15,7 @@ import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,24 +35,30 @@ public class AuthController {
         return ResponseEntity.ok().body(ApiResponse.success("You are authenticated!", authenticationObject));
     }
 
-    // TODO - Decide how we are actually going to do auth, and logout specifically
+    // Decided to make this redirect to routes, with a message query if needed,
+    // keeping it inline with the logic of the authentication handler.
     @GetMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
-        AuthenticationObject authenticationObject = protector.validateSession(request);
+    public RedirectView logout(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            AuthenticationObject authenticationObject = protector.validateSession(request);
 
-        Session session = authenticationObject.getSession();
+            Session session = authenticationObject.getSession();
 
-        boolean sessionDeleted = sessionRepository.deleteSessionById(session.getId());
+            boolean sessionDeleted = sessionRepository.deleteSessionById(session.getId());
 
-        if (sessionDeleted == false) {
-            return ResponseEntity.status(500).body(ApiResponse.failure("You are not logged in."));
+            if (sessionDeleted == false) {
+                return new RedirectView("/login?success=false&message=You are not logged in.");
+
+            }
+
+            ResponseCookie strippedCookie = ResponseCookie.from("session_token", "").path("/").httpOnly(true).maxAge(0)
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, strippedCookie.toString());
+
+            return new RedirectView("/login?success=true&message=You have been logged out!");
+        } catch (Exception e) {
+            return new RedirectView("/login?success=false&message=You are not logged in.");
         }
-
-        ResponseCookie strippedCookie = ResponseCookie.from("session_token", "").path("/").httpOnly(true).maxAge(0)
-                .build();
-
-        return ResponseEntity.ok().header("Set-Cookie", strippedCookie.toString())
-                .body(ApiResponse.success("You have been successfully logged out!", null));
 
     }
 

@@ -2,6 +2,7 @@ import { ApiResponse } from "@/lib/types/apiResponse";
 import { Session } from "@/lib/types/db/session";
 import { User } from "@/lib/types/db/user";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 
 export const useAuthQuery = () => {
   return useQuery({
@@ -26,4 +27,13 @@ async function validateAuthentication() {
   }
 
   return { session: undefined, user: undefined };
+}
+
+export function useAuthCallbackInfo() {
+  const [searchParams] = useSearchParams();
+
+  return {
+    success: searchParams.get("success"),
+    message: searchParams.get("message"),
+  };
 }
