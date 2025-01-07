@@ -13,7 +13,7 @@ import "./index.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReactQueryProvider>
-      <MantineProvider theme={themeOverride}>
+      <MantineProvider theme={themeOverride} forceColorScheme="dark">
         <RouterProvider router={router} />
         <Notifications />
       </MantineProvider>
