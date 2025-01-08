@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -25,10 +27,10 @@ public class PointsSqlRepository implements PointsRepository {
     public Points createPoints(Points points) {
         String sql = "INSERT INTO \"Points\" (id, \"userId\", \"totalScore\", \"createdAt\") VALUES (?, ?, ?, ?)";
 
-        points.setId(UUID.randomUUID().toString().replace("-", ""));
+        points.setId(UUID.randomUUID().toString());
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, points.getId());
+            stmt.setObject(1, UUID.fromString(points.getId()));
             stmt.setString(2, points.getUserId());
             stmt.setInt(3, points.getTotalScore());
             stmt.setObject(4, points.getCreatedAt());
@@ -71,4 +73,32 @@ public class PointsSqlRepository implements PointsRepository {
         }
         return points;
     }
+
+    @Override
+    public ArrayList<Points> getAllPointsById(String userId) {
+        ArrayList<Points> pointsList = new ArrayList<>();
+        String sql = "SELECT id, \"userId\", \"totalScore\", \"createdAt\" FROM \"Points\" WHERE \"userId\" = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var pointsId = rs.getString("id");
+                    var totalScore = rs.getInt("totalScore");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+
+                    Points points = new Points(pointsId, userId, createdAt);
+                    points.setTotalScore(totalScore);
+                    pointsList.add(points);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving points for user.", e);
+        }
+
+        return pointsList;
+    }
+
 }

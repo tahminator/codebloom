@@ -1,12 +1,10 @@
 package com.patina.codebloom.common.db.models;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Points {
     private String id;
     private String userId;
-    private List<Integer> points;
     private int totalScore;
 
     private LocalDateTime createdAt;
@@ -43,14 +41,6 @@ public class Points {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public List<Integer> getPoints() {
-        return points;
-    }
-
-    public void setPoints(List<Integer> points) {
-        this.points = points;
     }
 
     public int getTotalScore() {
