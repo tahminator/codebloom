@@ -1,7 +1,7 @@
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Loader } from "@mantine/core";
-import LogoutButton from "@/components/ui/LogoutButton";
+import LogoutButton from "@/components/ui/auth/LogoutButton";
 import { useAuthQuery } from "@/app/login/hooks";
 
 export default function DashboardPage() {
