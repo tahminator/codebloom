@@ -58,7 +58,7 @@ export default function LoginPage() {
         <LoginButton />
         <Space h="sm" />
         <Link to="/" reloadDocument>
-          <Button size="xs" style={{ fontSize: "12px" }}>
+          <Button size="xs" variant="subtle" style={{ fontSize: "12px" }}>
             Go Back
           </Button>
         </Link>
