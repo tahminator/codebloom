@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -38,7 +38,7 @@ public class PointsSqlRepository implements PointsRepository {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                return getPointsById(points.getId());
+                return getMostRecentPointsById(points.getId());
             } else {
                 throw new RuntimeException("Something went wrong.");
             }
@@ -50,9 +50,15 @@ public class PointsSqlRepository implements PointsRepository {
     }
 
     @Override
-    public Points getPointsById(String id) {
+    public Points getMostRecentPointsById(String id) {
         Points points = null;
-        String sql = "SELECT id, \"userId\", \"totalScore\", \"createdAt\" FROM \"Points\" WHERE id = ?";
+        String sql = """
+                    SELECT id, "userId", "totalScore", "createdAt"
+                    FROM "Points"
+                    WHERE "userId" = ? AND "deletedAt" IS NULL
+                    ORDER BY "createdAt" DESC
+                    LIMIT 1
+                """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
@@ -64,12 +70,11 @@ public class PointsSqlRepository implements PointsRepository {
                     var totalScore = rs.getInt("totalScore");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     points = new Points(pointsId, userId, totalScore, createdAt);
-                    return points;
                 }
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving points.", e);
+            throw new RuntimeException("Error retrieving most recent points.", e);
         }
         return points;
     }
@@ -95,7 +100,7 @@ public class PointsSqlRepository implements PointsRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving points for user.", e);
+            throw new RuntimeException("Error retrieving all the points for user.", e);
         }
 
         return pointsList;

@@ -8,6 +8,7 @@ public class Points {
     private int totalScore;
 
     private LocalDateTime createdAt;
+    private LocalDateTime deletedAt;
 
     public Points(String id, String userId, int totalScore, LocalDateTime createdAt) {
         this.id = id;
@@ -57,5 +58,13 @@ public class Points {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }
