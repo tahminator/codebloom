@@ -1,10 +1,10 @@
 import { useAuthCallbackInfo, useAuthQuery } from "@/app/login/hooks";
+import LoginButton from "@/components/ui/auth/LoginButton";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
-import { Button, Loader } from "@mantine/core";
+import { Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
 
 export default function LoginPage() {
   // This handles any sort of callback info we get from the backend.
@@ -45,9 +45,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen">
-      <Link to="/api/auth/flow/discord" reloadDocument>
-        <Button>Login to Discord</Button>
-      </Link>
+      <LoginButton />
     </div>
   );
 }
