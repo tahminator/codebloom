@@ -2,7 +2,7 @@ import { useAuthCallbackInfo, useAuthQuery } from "@/app/login/hooks";
 import LoginButton from "@/components/ui/auth/LoginButton";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
-import { Button, Card, Center, Loader, Stack, Text } from "@mantine/core";
+import { Button, Card, Center, Loader, Space, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -46,35 +46,23 @@ export default function LoginPage() {
 
   return (
     <Center style={{ height: "100vh" }}>
-      <Stack align="center" gap={8}>
-        <Card
-          style={{
-            width: 400,
-            textAlign: "center",
-          }}
-        >
-          <Text fw={400} size="xl">
-            Welcome to CodeBloom!
-          </Text>
-          <LoginButton />
-        </Card>
-
-        <Card
-          style={{
-            width: 200,
-            textAlign: "center",
-          }}
-        >
-          <Text fw={200} size="sm" mb="md">
-            Redirect to HomePage
-          </Text>
-          <Link to="/" reloadDocument>
-            <Button fullWidth size="xs" style={{ fontSize: "12px" }}>
-              Redirect
-            </Button>
-          </Link>
-        </Card>
-      </Stack>
+      <Card
+        style={{
+          width: 500,
+          textAlign: "center",
+        }}
+      >
+        <Text fw={400} size="xl">
+          Welcome to CodeBloom!
+        </Text>
+        <LoginButton />
+        <Space h="sm" />
+        <Link to="/" reloadDocument>
+          <Button size="xs" style={{ fontSize: "12px" }}>
+            Go Back
+          </Button>
+        </Link>
+      </Card>
     </Center>
   );
 }
