@@ -13,7 +13,7 @@ RUN corepack enable pnpm && pnpm i --frozen-lockfile
 COPY js/ ./
 
 # Build the frontend
-RUN npm run build
+RUN pnpm run build
 
 # ==== Backend Build Stage ====
 FROM openjdk:21-jdk AS backend-build
@@ -34,7 +34,7 @@ COPY src ./src
 COPY --from=frontend-build /js/dist/ src/main/resources/static/
 
 # Package the application
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package
 
 
 # ==== Runtime Stage ====
