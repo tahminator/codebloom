@@ -1,45 +1,38 @@
-package com.patina.codebloom.common.db.models;
+package com.patina.codebloom.common.db.models.question;
+
+import java.util.OptionalInt;
 
 public class Question {
     private String id;
     private String userId;
 
     private String questionSlug;
-    private String questionDifficulty;
-    private String questionId;
+    private QuestionDifficulty questionDifficulty;
+    private int questionNumber;
     private String questionLink;
 
-    private int pointsAwarded;
+    private OptionalInt pointsAwarded;
 
     /*
      * No ID generated yet; brand new Question.
      */
-    public Question(String userId, String questionSlug, String questionDifficulty, String questionId,
+    public Question(String userId, String questionSlug, QuestionDifficulty questionDifficulty, int questionNumber,
             String questionLink) {
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
-        this.questionId = questionId;
+        this.questionNumber = questionNumber;
         this.questionLink = questionLink;
     }
 
-    public Question(String id, String userId, String questionSlug, String questionDifficulty, String questionId,
-            String questionLink) {
+    public Question(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
+            int questionNumber,
+            String questionLink, OptionalInt pointsAwarded) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
-        this.questionId = questionId;
-        this.questionLink = questionLink;
-    }
-
-    public Question(String id, String userId, String questionSlug, String questionDifficulty, String questionId,
-            String questionLink, int pointsAwarded) {
-        this.id = id;
-        this.userId = userId;
-        this.questionSlug = questionSlug;
-        this.questionDifficulty = questionDifficulty;
-        this.questionId = questionId;
+        this.questionNumber = questionNumber;
         this.questionLink = questionLink;
         this.pointsAwarded = pointsAwarded;
     }
@@ -68,20 +61,20 @@ public class Question {
         this.questionSlug = questionSlug;
     }
 
-    public String getQuestionDifficulty() {
+    public QuestionDifficulty getQuestionDifficulty() {
         return questionDifficulty;
     }
 
-    public void setQuestionDifficulty(String questionDifficulty) {
+    public void setQuestionDifficulty(QuestionDifficulty questionDifficulty) {
         this.questionDifficulty = questionDifficulty;
     }
 
-    public String getQuestionId() {
-        return questionId;
+    public int getQuestionNumber() {
+        return questionNumber;
     }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
+    public void setQuestionNumber(int questionNumber) {
+        this.questionNumber = questionNumber;
     }
 
     public String getQuestionLink() {
@@ -92,11 +85,11 @@ public class Question {
         this.questionLink = questionLink;
     }
 
-    public int getPointsAwarded() {
+    public OptionalInt getPointsAwarded() {
         return pointsAwarded;
     }
 
-    public void setPointsAwarded(int pointsAwarded) {
+    public void setPointsAwarded(OptionalInt pointsAwarded) {
         this.pointsAwarded = pointsAwarded;
     }
 }
