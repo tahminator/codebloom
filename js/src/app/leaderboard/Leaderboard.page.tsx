@@ -4,7 +4,7 @@ import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Loader } from "@mantine/core";
 
-export default function DashboardPage() {
+export default function LeaderboardPage() {
   const { data, status } = useAuthQuery();
   if (status === "pending") {
     return (
@@ -29,7 +29,7 @@ export default function DashboardPage() {
   return (
     <>
       <Header />
-      <div>hi</div>
+      <div>leaderboard</div>
     </>
   );
 }
