@@ -12,7 +12,6 @@ export const useAuthQuery = () => {
 };
 
 async function validateAuthentication() {
-  await new Promise((r) => setTimeout(() => r(0), 1000));
   const response = await fetch("/api/auth/validate", {
     method: "GET",
   });
