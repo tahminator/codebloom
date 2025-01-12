@@ -13,6 +13,11 @@ public class Question {
     private int questionNumber;
     private String questionLink;
 
+    /**
+     * Optional for the case of future proofing. We might end up using AI to award
+     * some points, so there might be a case where we create the DB entry and then
+     * pass it to a message queue to use AI and calculate a score.
+     */
     private OptionalInt pointsAwarded;
 
     /*
