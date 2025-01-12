@@ -93,6 +93,7 @@
 					<schemas>
 						<schema>public</schema>
 					</schemas>
+					<validateMigrationNaming>true</validateMigrationNaming>
 				</configuration>
 				<dependencies>
 				</dependencies>
