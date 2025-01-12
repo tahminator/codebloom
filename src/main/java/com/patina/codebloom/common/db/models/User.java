@@ -7,16 +7,19 @@ public class User {
     // String instead.
     private String discordId;
     private String discordName;
+    private String leetcodeUsername;
 
-    public User(String id, String discordId, String discordName) {
+    public User(String id, String discordId, String discordName, String leetcodeUsername) {
         this.id = id;
         this.discordId = discordId;
         this.discordName = discordName;
+        this.leetcodeUsername = leetcodeUsername;
     }
 
-    public User(String discordId, String discordName) {
+    public User(String discordId, String discordName, String leetcodeUsername) {
         this.discordId = discordId;
         this.discordName = discordName;
+        this.leetcodeUsername = leetcodeUsername;
     }
 
     public String getId() {
@@ -41,5 +44,13 @@ public class User {
 
     public void setDiscordName(String discordName) {
         this.discordName = discordName;
+    }
+
+    public String getLeetcodeUsername() {
+        return leetcodeUsername;
+    }
+
+    public void setLeetcodeUsername(String leetcodeUsername) {
+        this.leetcodeUsername = leetcodeUsername;
     }
 }
