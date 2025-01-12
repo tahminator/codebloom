@@ -16,10 +16,9 @@ public class User {
         this.leetcodeUsername = leetcodeUsername;
     }
 
-    public User(String discordId, String discordName, String leetcodeUsername) {
+    public User(String discordId, String discordName) {
         this.discordId = discordId;
         this.discordName = discordName;
-        this.leetcodeUsername = leetcodeUsername;
     }
 
     public String getId() {
