@@ -23,12 +23,15 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User createNewUser(User user) {
-        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\") VALUES (?, ?, ?)";
+        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\") VALUES (?, ?, ?, ?)";
         user.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(user.getId()));
             stmt.setString(2, user.getDiscordName());
             stmt.setString(3, user.getDiscordId());
+            // User cannot be instantiated with a leetcodeUsername, it gets collected after
+            // user authentication.
+            stmt.setNull(4, java.sql.Types.VARCHAR);
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
@@ -45,7 +48,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserById(String inputId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\" FROM \"User\" WHERE id=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\" FROM \"User\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputId));
@@ -54,7 +57,8 @@ public class UserSqlRepository implements UserRepository {
                     var id = rs.getString("id");
                     var discordId = rs.getString("discordId");
                     var discordName = rs.getString("discordName");
-                    user = new User(id, discordId, discordName);
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    user = new User(id, discordId, discordName, leetcodeUsername);
                     return user;
                 }
             }
@@ -68,7 +72,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserByDiscordId(String inputDiscordId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\" FROM \"User\" WHERE \"discordId\"=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\" FROM \"User\" WHERE \"discordId\"=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputDiscordId);
@@ -77,7 +81,8 @@ public class UserSqlRepository implements UserRepository {
                     var id = rs.getString("id");
                     var discordId = rs.getString("discordId");
                     var discordName = rs.getString("discordName");
-                    user = new User(id, discordId, discordName);
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    user = new User(id, discordId, discordName, leetcodeUsername);
                     return user;
                 }
             }
@@ -106,12 +111,13 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User updateUserById(User inputUser) {
-        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=? WHERE id=?";
+        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputUser.getDiscordName());
             stmt.setString(2, inputUser.getDiscordId());
             stmt.setObject(3, UUID.fromString(inputUser.getId()));
+            stmt.setString(4, inputUser.getLeetcodeUsername());
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do

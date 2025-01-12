@@ -23,7 +23,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question createQuestion(Question question) {
-        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\") VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         question.setId(UUID.randomUUID().toString());
 
