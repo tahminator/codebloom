@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS "Question"
+ADD COLUMN "questionTitle" TEXT NOT NULL;
