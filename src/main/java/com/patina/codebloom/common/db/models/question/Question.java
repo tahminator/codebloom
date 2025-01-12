@@ -7,6 +7,8 @@ public class Question {
     private String userId;
 
     private String questionSlug;
+    private String questionTitle;
+
     private QuestionDifficulty questionDifficulty;
     private int questionNumber;
     private String questionLink;
@@ -17,17 +19,18 @@ public class Question {
      * No ID generated yet; brand new Question.
      */
     public Question(String userId, String questionSlug, QuestionDifficulty questionDifficulty, int questionNumber,
-            String questionLink) {
+            String questionLink, String questionTitle) {
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
         this.questionNumber = questionNumber;
         this.questionLink = questionLink;
+        this.questionTitle = questionTitle;
     }
 
     public Question(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
             int questionNumber,
-            String questionLink, OptionalInt pointsAwarded) {
+            String questionLink, OptionalInt pointsAwarded, String questionTitle) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -35,6 +38,7 @@ public class Question {
         this.questionNumber = questionNumber;
         this.questionLink = questionLink;
         this.pointsAwarded = pointsAwarded;
+        this.questionTitle = questionTitle;
     }
 
     public String getId() {
@@ -91,5 +95,13 @@ public class Question {
 
     public void setPointsAwarded(OptionalInt pointsAwarded) {
         this.pointsAwarded = pointsAwarded;
+    }
+
+    public String getQuestionTitle() {
+        return questionTitle;
+    }
+
+    public void setQuestionTitle(String questionTitle) {
+        this.questionTitle = questionTitle;
     }
 }
