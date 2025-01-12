@@ -13,24 +13,32 @@ public class Question {
     private int questionNumber;
     private String questionLink;
 
+    private String description;
+
+    /**
+     * Optional for the case of future proofing. We might end up using AI to award
+     * some points, so there might be a case where we create the DB entry and then
+     * pass it to a message queue to use AI and calculate a score.
+     */
     private OptionalInt pointsAwarded;
 
     /*
      * No ID generated yet; brand new Question.
      */
     public Question(String userId, String questionSlug, QuestionDifficulty questionDifficulty, int questionNumber,
-            String questionLink, String questionTitle) {
+            String questionLink, String questionTitle, String description) {
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
         this.questionNumber = questionNumber;
         this.questionLink = questionLink;
         this.questionTitle = questionTitle;
+        this.description = description;
     }
 
     public Question(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
             int questionNumber,
-            String questionLink, OptionalInt pointsAwarded, String questionTitle) {
+            String questionLink, OptionalInt pointsAwarded, String questionTitle, String description) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -39,6 +47,7 @@ public class Question {
         this.questionLink = questionLink;
         this.pointsAwarded = pointsAwarded;
         this.questionTitle = questionTitle;
+        this.description = description;
     }
 
     public String getId() {
@@ -103,5 +112,13 @@ public class Question {
 
     public void setQuestionTitle(String questionTitle) {
         this.questionTitle = questionTitle;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
