@@ -23,7 +23,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question createQuestion(Question question) {
-        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         question.setId(UUID.randomUUID().toString());
 
@@ -42,6 +42,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             }
 
             stmt.setString(8, question.getQuestionTitle());
+            stmt.setString(9, question.getDescription());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -58,7 +59,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public Question getQuestionById(String id) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\" FROM \"Question\" WHERE id = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description FROM \"Question\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
@@ -78,8 +79,9 @@ public class QuestionSqlRepository implements QuestionRepository {
                         pointsAwarded = OptionalInt.of(points);
                     }
                     var questionTitle = rs.getString("questionTitle");
+                    var description = rs.getString("description");
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
-                            questionLink, pointsAwarded, questionTitle);
+                            questionLink, pointsAwarded, questionTitle, description);
                     return question;
                 }
             }
@@ -92,7 +94,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public ArrayList<Question> getQuestionsByUserId(String userId) {
         ArrayList<Question> questions = new ArrayList<>();
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\" FROM \"Question\" WHERE \"userId\" = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description FROM \"Question\" WHERE \"userId\" = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
@@ -113,9 +115,10 @@ public class QuestionSqlRepository implements QuestionRepository {
                         pointsAwarded = OptionalInt.of(points);
                     }
                     var questionTitle = rs.getString("questionTitle");
+                    var description = rs.getString("description");
                     Question question = new Question(questionId, userIdResult, questionSlug, questionDifficulty,
                             questionNumber,
-                            questionLink, pointsAwarded, questionTitle);
+                            questionLink, pointsAwarded, questionTitle, description);
                     questions.add(question);
                 }
             }
@@ -127,7 +130,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question updateQuestion(Question inputQuestion) {
-        String sql = "UPDATE \"Question\" SET \"userId\" = ?, \"questionSlug\" = ?, \"questionDifficulty\" = ?, \"questionNumber\" = ?, \"questionLink\" = ?, \"pointsAwarded\" = ?, \"questionTitle\" = ? WHERE id = ?";
+        String sql = "UPDATE \"Question\" SET \"userId\" = ?, \"questionSlug\" = ?, \"questionDifficulty\" = ?, \"questionNumber\" = ?, \"questionLink\" = ?, \"pointsAwarded\" = ?, \"questionTitle\" = ?, description = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputQuestion.getUserId()));
@@ -142,7 +145,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                 stmt.setNull(6, java.sql.Types.INTEGER);
             }
             stmt.setString(7, inputQuestion.getQuestionTitle());
-            stmt.setObject(8, UUID.fromString(inputQuestion.getId()));
+            stmt.setString(8, inputQuestion.getDescription());
+            stmt.setObject(9, UUID.fromString(inputQuestion.getId()));
 
             stmt.executeUpdate();
 
