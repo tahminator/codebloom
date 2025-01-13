@@ -1,2 +1,2 @@
-ALTER TABLE IF EXISTS "Question"
+ALTER TABLE IF EXISTS "User"
 DROP COLUMN IF EXISTS "leetcodeUsername";
