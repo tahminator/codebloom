@@ -11,7 +11,21 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.springframework.stereotype.Component;
+
+import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
+import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -72,6 +86,8 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
                 String timestampString = jsonPath.getString("submission[" + i + "].timestamp");
                 long epochSeconds = Long.parseLong(timestampString);
                 Instant instant = Instant.ofEpochSecond(epochSeconds);
+
+                System.out.println("Timestamp string = " + timestampString);
 
                 LocalDateTime timestamp = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
                 String statusDisplay = jsonPath.getString("submission[" + i + "].statusDisplay");
