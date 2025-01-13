@@ -111,13 +111,13 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User updateUserById(User inputUser) {
-        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\" WHERE id=?";
+        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=? WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputUser.getDiscordName());
             stmt.setString(2, inputUser.getDiscordId());
-            stmt.setObject(3, UUID.fromString(inputUser.getId()));
-            stmt.setString(4, inputUser.getLeetcodeUsername());
+            stmt.setString(3, inputUser.getLeetcodeUsername());
+            stmt.setObject(4, UUID.fromString(inputUser.getId()));
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
