@@ -1,9 +1,9 @@
 import Toast from "@/components/ui/toast/Toast";
-import { useLeaderboardEntryQuery } from "@/app/leaderboard/hooks";
+import { useFullLeaderboardEntriesQuery } from "@/app/leaderboard/hooks";
 import { Loader } from "@mantine/core";
 
 export default function LeaderboardIndex() {
-  const { data, status } = useLeaderboardEntryQuery();
+  const { data, status } = useFullLeaderboardEntriesQuery();
 
   if (status === "pending") {
     return (
