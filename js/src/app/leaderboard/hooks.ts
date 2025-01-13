@@ -1,10 +1,10 @@
 import { ApiResponse } from "@/lib/types/apiResponse";
 import { useQuery } from "@tanstack/react-query";
-import { LeaderboardEntry } from "./types";
+import { LeaderboardEntry } from "./LeaderboardEntry";
 
-export const useLeaderboardEntryQuery = () => {
+export const useFullLeaderboardEntriesQuery = () => {
     return useQuery({
-      queryKey: ["leaderboard"],
+      queryKey: ["dashboard, full"],
       queryFn: fetchLeaderboard,
     });
   };
