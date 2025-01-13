@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.patina.codebloom.common.dto.ApiResponse;
+import com.patina.codebloom.common.dto.ApiResponder;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
         if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure("You are not authorized"));
+                    .body(ApiResponder.failure("You are not authorized"));
         }
 
         return ResponseEntity
