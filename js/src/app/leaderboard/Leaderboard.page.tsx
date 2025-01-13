@@ -3,9 +3,11 @@ import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Loader } from "@mantine/core";
+import LeaderboardIndex from "@/app/leaderboard/components/LeaderboardIndex";
 
 export default function LeaderboardPage() {
   const { data, status } = useAuthQuery();
+
   if (status === "pending") {
     return (
       <div className="flex flex-col items-center justify-center w-screen h-screen">
@@ -29,7 +31,7 @@ export default function LeaderboardPage() {
   return (
     <>
       <Header />
-      <div>leaderboard</div>
+      <LeaderboardIndex />
     </>
   );
 }
