@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.patina.codebloom.common.dto.ApiResponse;
+import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.test.TestLeaderboardList;
 import com.patina.codebloom.common.test.models.UserAndMetadata;
@@ -27,7 +27,7 @@ public class LeaderboardController {
     public ResponseEntity<?> getShallowLeaderboard() {
         ArrayList<UserAndMetadata> leaderboard = TestLeaderboardList.getTestDataShallowList();
 
-        return ResponseEntity.ok().body(ApiResponse.success("Leaderboard found!", leaderboard));
+        return ResponseEntity.ok().body(ApiResponder.success("Leaderboard found!", leaderboard));
     }
 
     @GetMapping("/all")
@@ -36,6 +36,6 @@ public class LeaderboardController {
 
         ArrayList<UserAndMetadata> leaderboard = TestLeaderboardList.getTestDataLongList();
 
-        return ResponseEntity.ok().body(ApiResponse.success("Leaderboard found!", leaderboard));
+        return ResponseEntity.ok().body(ApiResponder.success("Leaderboard found!", leaderboard));
     }
 }
