@@ -4,6 +4,7 @@ import LoginPage from "@/app/login/Login.page";
 import RootPage from "@/app/Root.page";
 import SwaggerUIParent from "@/lib/swagger/swagger-ui";
 import { createBrowserRouter } from "react-router-dom";
+import SwaggerUI from "swagger-ui-react";
 
 export const router = createBrowserRouter([
   {

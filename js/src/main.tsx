@@ -9,11 +9,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 import "./index.css";
+import "./swagger.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReactQueryProvider>
-      <MantineProvider theme={themeOverride} forceColorScheme="dark">
+      <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
         <RouterProvider router={router} />
         <Notifications />
       </MantineProvider>
