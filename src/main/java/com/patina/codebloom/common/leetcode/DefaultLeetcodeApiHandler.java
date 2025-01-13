@@ -87,8 +87,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
                 long epochSeconds = Long.parseLong(timestampString);
                 Instant instant = Instant.ofEpochSecond(epochSeconds);
 
-                System.out.println("Timestamp string = " + timestampString);
-
                 LocalDateTime timestamp = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
                 String statusDisplay = jsonPath.getString("submission[" + i + "].statusDisplay");
                 submissions.add(new LeetcodeSubmission(title, titleSlug, timestamp, statusDisplay));
