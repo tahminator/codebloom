@@ -105,7 +105,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             String titleSlug = jsonPath.getString("data.question.titleSlug");
             String link = "https://leetcode.com/problems/" + titleSlug;
             String difficulty = jsonPath.getString("data.question.difficulty");
-            String question = jsonPath.getString("data.question.question");
+            String question = jsonPath.getString("data.question.content");
 
             return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question);
         } catch (Exception e) {

@@ -27,8 +27,7 @@ public class ApiController {
     @Operation(summary = "Basic metadata about the server")
     @GetMapping()
     public ResponseEntity<ApiResponder<ServerMetadataObject>> apiIndex(HttpServletRequest request) {
-        var hi = leetcodeApiHandler.findSubmissionsByUsername("0pengu");
+        leetcodeApiHandler.findQuestionBySlug("trapping-rain-water");
         return ResponseEntity.ok().body(ApiResponder.success("Hello from Codebloom!", new ServerMetadataObject()));
     }
-
 }
