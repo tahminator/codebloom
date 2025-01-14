@@ -1,5 +1,5 @@
-import { Button } from "@mantine/core";
+import Header from "@/components/ui/header/Header";
 
 export default function RootPage() {
-  return <Button>hi</Button>;
+  return <Header />;
 }
