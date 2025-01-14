@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
+import com.patina.codebloom.common.leetcode.queries.SelectSubmisisonsQuery;
 
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -41,6 +42,23 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("titleSlug", slug);
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+        requestBodyMap.put("variables", variables);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
+    }
+
+    public static String buildRecentSubmissionsRequestBody(String query, String username) throws Exception {
+        // API doesn't let you get more than this amount.
+        int limit = 20;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("username", username);
+        variables.put("limit", limit);
 
         Map<String, Object> requestBodyMap = new HashMap<>();
         requestBodyMap.put("query", query);
@@ -94,36 +112,46 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
     @Override
     public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(String username) {
-        String endpoint = "https://alfa-leetcode-api.onrender.com/" + username + "/submission";
+        ArrayList<LeetcodeSubmission> submissions = new ArrayList<>();
+
+        String endpoint = "https://leetcode.com/graphql";
+        String query = SelectSubmisisonsQuery.query;
+
+        String requestBody;
         try {
-            RequestSpecification reqSpec = RestAssured.given();
-            Response response = reqSpec.get(endpoint);
+            requestBody = buildRecentSubmissionsRequestBody(query, username);
+        } catch (Exception e) {
+            throw new RuntimeException("Error building the request body");
+        }
 
-            int statusCode = response.getStatusCode();
-            String body = response.getBody().asString();
-
-            if (statusCode != 200) {
-                throw new RuntimeException("API Returned stauts " + statusCode + ": " + body);
+        try {
+            RequestSpecification reqSpec = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .header("Referer", "https://leetcode.com")
+                    .body(requestBody);
+            Response response = reqSpec.post(endpoint);
+            try {
+                System.out.println(response.getBody().asPrettyString());
+            } catch (Exception e) {
+                System.out.println("Error printing response body");
             }
 
             JsonPath jsonPath = response.jsonPath();
 
-            List<Map<String, Object>> submissionsList = jsonPath.getList("submission");
+            List<Map<String, Object>> submissionsList = jsonPath.getList("data.recentSubmissionList");
             if (submissionsList == null || submissionsList.isEmpty()) {
-                System.out.println("No submissions found.");
-                return new ArrayList<>();
+                return submissions;
             }
 
-            ArrayList<LeetcodeSubmission> submissions = new ArrayList<>();
             for (int i = 0; i < submissionsList.size(); i++) {
-                String title = jsonPath.getString("submission[" + i + "].title");
-                String titleSlug = jsonPath.getString("submission[" + i + "].titleSlug");
-                String timestampString = jsonPath.getString("submission[" + i + "].timestamp");
+                String title = jsonPath.getString("data.recentSubmissionList[" + i + "].title");
+                String titleSlug = jsonPath.getString("data.recentSubmissionList[" + i + "].titleSlug");
+                String timestampString = jsonPath.getString("data.recentSubmissionList[" + i + "].timestamp");
                 long epochSeconds = Long.parseLong(timestampString);
                 Instant instant = Instant.ofEpochSecond(epochSeconds);
 
                 LocalDateTime timestamp = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-                String statusDisplay = jsonPath.getString("submission[" + i + "].statusDisplay");
+                String statusDisplay = jsonPath.getString("data.recentSubmissionList[" + i + "].statusDisplay");
                 submissions.add(new LeetcodeSubmission(title, titleSlug, timestamp, statusDisplay));
             }
 
