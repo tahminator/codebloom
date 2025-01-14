@@ -8,21 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,8 +16,10 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectSubmisisonsQuery;
 
-import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
