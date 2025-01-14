@@ -36,6 +36,37 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
+
+    public static String buildQuestionRequestBody(String query, String slug) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("titleSlug", slug);
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+        requestBodyMap.put("variables", variables);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
+    }
+
+    public static String buildRecentSubmissionsRequestBody(String query, String username) throws Exception {
+        // API doesn't let you get more than this amount.
+        int limit = 20;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("username", username);
+        variables.put("limit", limit);
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+        requestBodyMap.put("variables", variables);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
+    }
+
     @Override
     public LeetcodeQuestion findQuestionBySlug(String slug) {
         String endpoint = "https://leetcode.com/graphql";
@@ -47,6 +78,8 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }
+
+        System.out.println(requestBody);
 
         try {
             RequestSpecification reqSpec = RestAssured.given()
@@ -63,6 +96,8 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
+            System.out.println(response.getBody().asPrettyString());
+
             JsonPath jsonPath = response.jsonPath();
 
             int questionId = jsonPath.getInt("data.question.questionId");
@@ -70,9 +105,9 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             String titleSlug = jsonPath.getString("data.question.titleSlug");
             String link = "https://leetcode.com/problems/" + titleSlug;
             String difficulty = jsonPath.getString("data.question.difficulty");
-            String content = jsonPath.getString("data.question.content");
+            String question = jsonPath.getString("data.question.content");
 
-            return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, content);
+            return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question);
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
@@ -127,37 +162,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
-
-    }
-
-    public static String buildQuestionRequestBody(String query, String slug) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("titleSlug", slug);
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-        requestBodyMap.put("variables", variables);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
-    }
-
-    public static String buildRecentSubmissionsRequestBody(String query, String username) throws Exception {
-        // API doesn't let you get more than this amount.
-        int limit = 20;
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("username", username);
-        variables.put("limit", limit);
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-        requestBodyMap.put("variables", variables);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
     }
 
 }
