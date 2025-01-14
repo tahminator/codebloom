@@ -1,6 +1,6 @@
 import { useFullLeaderboardEntriesQuery } from "@/app/leaderboard/hooks";
 import Toast from "@/components/ui/toast/Toast";
-import { Card, Grid, Loader, Table, Text } from "@mantine/core";
+import { Card, Loader, Table, Text } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
@@ -20,10 +20,8 @@ export default function LeaderboardIndex() {
   }
 
   if (!data?.leaderboard || data.leaderboard.length === 0) {
-    return <p>Sorry, there is no data available.</p>;
+    return <p>Sorry, there are no users to display.</p>;
   }
-
-  // TODO - Handle case where there are less than 3 entries.
 
   const [first, second, third] = data.leaderboard;
 
@@ -39,104 +37,86 @@ export default function LeaderboardIndex() {
       >
         Leetcode Leaderboard
       </h1>
-      <Grid className="p-4">
-        <Grid.Col span={4}>
+      <div
+        className="flex items-end justify-center gap-4"
+        style={{ marginBottom: "2rem" }}
+      >
+        {second && (
           <Card
             withBorder
             shadow="sm"
             radius="md"
-            className="border-2 border-gray-400"
+            className="border-2 border-gray-400 flex flex-col items-center justify-center"
+            style={{
+              height: "180px",
+              width: "200px",
+            }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                justifyContent: "center",
-              }}
-            >
-              <div>
-                <Text ta="center" size="xl">
-                  Second
-                </Text>
-                <Text ta="center" fw={700} size="xl">
-                  <FaDiscord className="inline" /> {second.discordName}
-                </Text>
-                <Text ta="center">
-                  <SiLeetcode className="inline" /> {second.leetcodeUsername}
-                </Text>
-                <Text ta="center" fw={500} size="lg">
-                  {second.totalScore} Points
-                </Text>
-              </div>
-            </div>
+            <Text ta="center" size="xl">
+              Second
+            </Text>
+            <Text ta="center" fw={700} size="lg">
+              <FaDiscord className="inline" /> {second.discordName}
+            </Text>
+            <Text ta="center">
+              <SiLeetcode className="inline" /> {second.leetcodeUsername}
+            </Text>
+            <Text ta="center" fw={500} size="md">
+              {second.totalScore} Points
+            </Text>
           </Card>
-        </Grid.Col>
-        <Grid.Col span={4}>
+        )}
+        {first && (
           <Card
             withBorder
             shadow="sm"
             radius="md"
-            className="border-2 border-yellow-300"
+            className="border-2 border-yellow-300 flex flex-col items-center justify-center"
+            style={{
+              height: "220px",
+              width: "200px",
+            }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "1rem",
-              }}
-            >
-              <div>
-                <Text ta="center" size="xl">
-                  First
-                </Text>
-                <Text ta="center" fw={700} size="xl">
-                  <FaDiscord className="inline" /> {first.discordName}
-                </Text>
-                <Text ta="center">
-                  <SiLeetcode className="inline" /> {first.leetcodeUsername}
-                </Text>
-                <Text ta="center" fw={500} size="lg">
-                  {first.totalScore} Points
-                </Text>
-              </div>
-            </div>
+            <Text ta="center" size="xl">
+              First
+            </Text>
+            <Text ta="center" fw={700} size="lg">
+              <FaDiscord className="inline" /> {first.discordName}
+            </Text>
+            <Text ta="center">
+              <SiLeetcode className="inline" /> {first.leetcodeUsername}
+            </Text>
+            <Text ta="center" fw={500} size="md">
+              {first.totalScore} Points
+            </Text>
           </Card>
-        </Grid.Col>
-        <Grid.Col span={4}>
+        )}
+        {third && (
           <Card
             withBorder
             shadow="sm"
             radius="md"
-            className="border-2 border-yellow-800"
+            className="border-2 border-yellow-800 flex flex-col items-center justify-center"
+            style={{
+              height: "155px",
+              width: "200px",
+            }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "1rem",
-              }}
-            >
-              <div>
-                <Text ta="center" size="xl">
-                  Third
-                </Text>
-                <Text ta="center" fw={700} size="xl">
-                  <FaDiscord className="inline" /> {third.discordName}
-                </Text>
-                <Text ta="center">
-                  <SiLeetcode className="inline" /> {third.leetcodeUsername}
-                </Text>
-                <Text ta="center" fw={500} size="lg">
-                  {third.totalScore} Points
-                </Text>
-              </div>
-            </div>
+            <Text ta="center" size="xl">
+              Third
+            </Text>
+            <Text ta="center" fw={700} size="lg">
+              <FaDiscord className="inline" /> {third.discordName}
+            </Text>
+            <Text ta="center">
+              <SiLeetcode className="inline" /> {third.leetcodeUsername}
+            </Text>
+            <Text ta="center" fw={500} size="md">
+              {third.totalScore} Points
+            </Text>
           </Card>
-        </Grid.Col>
-      </Grid>
+        )}
+      </div>
 
       <Table>
         <Table.Thead>
