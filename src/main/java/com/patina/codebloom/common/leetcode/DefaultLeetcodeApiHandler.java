@@ -74,7 +74,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
         String requestBody;
         try {
-
             requestBody = buildQuestionRequestBody(query, slug);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
@@ -87,26 +86,30 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
                     .header("Content-Type", "application/json")
                     .header("Referer", "https://leetcode.com")
                     .body(requestBody);
-            Response response = reqSpec.post(endpoint);
-            try {
 
-                System.out.println(response.getBody().asPrettyString());
-            } catch (Exception e) {
-                System.out.println("Error printing response body");
+            Response response = reqSpec.post(endpoint);
+
+            int statusCode = response.getStatusCode();
+            String body = response.getBody().asString();
+
+            if (statusCode != 200) {
+                throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
+
+            System.out.println(response.getBody().asPrettyString());
 
             JsonPath jsonPath = response.jsonPath();
 
-            String link = jsonPath.getString("link");
-            int questionId = jsonPath.getInt("questionId");
-            String questionTitle = jsonPath.getString("questionTitle");
-            String titleSlug = jsonPath.getString("titleSlug");
-            String difficulty = jsonPath.getString("difficulty");
-            String question = jsonPath.getString("question");
+            int questionId = jsonPath.getInt("data.question.questionId");
+            String questionTitle = jsonPath.getString("data.question.questionTitle");
+            String titleSlug = jsonPath.getString("data.question.titleSlug");
+            String link = "https://leetcode.com/problems/" + titleSlug;
+            String difficulty = jsonPath.getString("data.question.difficulty");
+            String question = jsonPath.getString("data.question.question");
 
             return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question);
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching the API");
+            throw new RuntimeException("Error fetching the API", e);
         }
     }
 
