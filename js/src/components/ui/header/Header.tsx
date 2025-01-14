@@ -1,5 +1,5 @@
 import LogoutButton from "@/components/ui/auth/LogoutButton";
-import Logo from "@/logo.png";
+import Logo from "/logo.png";
 import {
   Box,
   Burger,
