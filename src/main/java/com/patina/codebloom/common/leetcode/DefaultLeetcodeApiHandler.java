@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,8 +25,10 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
 
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -33,12 +36,46 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
+    public static String buildRequestBody(String query, String slug) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("titleSlug", slug);
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+        requestBodyMap.put("variables", variables);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
+    }
+
     @Override
     public LeetcodeQuestion findQuestionBySlug(String slug) {
-        String endpoint = "https://alfa-leetcode-api.onrender.com/select?titleSlug=" + slug;
+        String endpoint = "https://leetcode.com/graphql";
+        String query = SelectProblemQuery.query;
+
+        String requestBody;
         try {
-            RequestSpecification reqSpec = RestAssured.given();
-            Response response = reqSpec.get(endpoint);
+
+            requestBody = buildRequestBody(query, slug);
+        } catch (Exception e) {
+            throw new RuntimeException("Error building the request body");
+        }
+
+        System.out.println(requestBody);
+
+        try {
+            RequestSpecification reqSpec = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .header("Referer", "https://leetcode.com")
+                    .body(requestBody);
+            Response response = reqSpec.post(endpoint);
+            try {
+
+                System.out.println(response.getBody().asPrettyString());
+            } catch (Exception e) {
+                System.out.println("Error printing response body");
+            }
 
             JsonPath jsonPath = response.jsonPath();
 
@@ -64,8 +101,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
             int statusCode = response.getStatusCode();
             String body = response.getBody().asString();
-            System.out.println("Response status code: " + statusCode);
-            System.out.println("Response body: " + body);
 
             if (statusCode != 200) {
                 throw new RuntimeException("API Returned stauts " + statusCode + ": " + body);
