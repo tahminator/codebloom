@@ -36,7 +36,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
-    public static String buildRequestBody(String query, String slug) throws Exception {
+    public static String buildQuestionRequestBody(String query, String slug) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> variables = new HashMap<>();
@@ -57,7 +57,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         String requestBody;
         try {
 
-            requestBody = buildRequestBody(query, slug);
+            requestBody = buildQuestionRequestBody(query, slug);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }
