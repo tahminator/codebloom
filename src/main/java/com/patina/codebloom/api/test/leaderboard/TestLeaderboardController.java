@@ -13,14 +13,16 @@ import com.patina.codebloom.common.test.TestLeaderboardList;
 import com.patina.codebloom.common.test.models.UserAndMetadata;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/test/leaderboard")
-public class LeaderboardController {
+@Tag(name = "Test data routes")
+public class TestLeaderboardController {
     private final Protector protector;
 
-    public LeaderboardController(Protector protector) {
+    public TestLeaderboardController(Protector protector) {
         this.protector = protector;
     }
 
