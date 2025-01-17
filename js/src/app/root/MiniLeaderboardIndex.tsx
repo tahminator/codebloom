@@ -121,16 +121,20 @@ export default function LeaderboardIndex() {
       <Table horizontalSpacing="xl">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Rank</Table.Th>
-            <Table.Th>Discord Name</Table.Th>
-            <Table.Th>LeetCode Username</Table.Th>
+            <Table.Th></Table.Th>
+            <Table.Th>
+              <FaDiscord />
+            </Table.Th>
+            <Table.Th>
+              <SiLeetcode />
+            </Table.Th>
             <Table.Th>Total Points</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {data.leaderboard.map((entry, index) => {
             if ([0, 1, 2].includes(index)) return null;
-            while (index < 5) {
+            if (index < 5) {
               return (
                 <Table.Tr key={entry.discordName}>
                   <Table.Td>{index + 1}</Table.Td>

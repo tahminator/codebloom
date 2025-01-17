@@ -12,6 +12,7 @@ import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.test.TestLeaderboardList;
 import com.patina.codebloom.common.test.models.UserAndMetadata;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -24,6 +25,7 @@ public class LeaderboardController {
     }
 
     @GetMapping("/shallow")
+    @Operation(summary = "Returns the top 5 leaderboard positions in order.")
     public ResponseEntity<?> getShallowLeaderboard() {
         ArrayList<UserAndMetadata> leaderboard = TestLeaderboardList.getTestDataShallowList();
 

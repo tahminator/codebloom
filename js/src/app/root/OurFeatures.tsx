@@ -1,11 +1,13 @@
-import { Card, Title, Text } from "@mantine/core";
+import { Card, Title, Text, Center } from "@mantine/core";
 
 export default function OurFeatures() {
   return (
     <>
-      <Title order={3} align="center" style={{ marginBottom: "2rem" }}>
-        Explore Our Features
-      </Title>
+      <Center>
+        <Title order={3} style={{ marginBottom: "2rem" }}>
+          Explore Our Features
+        </Title>
+      </Center>
       <div
         style={{
           display: "flex",
@@ -27,8 +29,26 @@ export default function OurFeatures() {
             Code Submission
           </Title>
           <Text>
-            Submit your LeetCode solutions and earn points based on your
-            corectness, which is determined by question difficulty and topic.
+            Earn points based on the specific LeetCode question you answer
+            correctly. An easy question earns 60 points. A medium question earns
+            80 points. A hard questions earns 110 points.
+          </Text>
+        </Card>
+        <Card
+          shadow="sm"
+          padding="lg"
+          style={{
+            maxWidth: "300px",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+          }}
+        >
+          <Title order={4} align="center">
+            Daily Challenge
+          </Title>
+          <Text>
+            Answer the daily LeetCode challenge question that resets at 12:00 AM
+            to gain 1.3x points.
           </Text>
         </Card>
         <Card
