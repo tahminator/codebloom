@@ -1,4 +1,5 @@
 import { useAuthQuery } from "@/app/login/hooks";
+import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
@@ -29,7 +30,7 @@ export default function DashboardPage() {
   return (
     <>
       <Header />
-      <div>hi</div>
+      <Footer />
     </>
   );
 }
