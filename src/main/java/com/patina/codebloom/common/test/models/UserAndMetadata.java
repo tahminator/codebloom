@@ -1,37 +1,62 @@
 package com.patina.codebloom.common.test.models;
 
+import java.util.ArrayList;
+
+import com.patina.codebloom.common.db.models.user.User;
+
 public class UserAndMetadata {
-    private String discordName;
-    private String leetcodeUsername;
-    private int totalScore;
+    private String id;
+    private String name;
+    private String createdAt;
+    private String deletedAt;
+    private ArrayList<User> users;
 
-    public UserAndMetadata(String discordName, String leetcodeUsername, int totalScore) {
-        this.discordName = discordName;
-        this.leetcodeUsername = leetcodeUsername;
-        this.totalScore = totalScore;
+    public UserAndMetadata(String id, String name, String createdAt, String deletedAt, ArrayList<User> users) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
+        this.users = users;
     }
 
-    public String getDiscordName() {
-        return discordName;
+    public String getId() {
+        return id;
     }
 
-    public void setDiscordName(String discordName) {
-        this.discordName = discordName;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getLeetcodeUsername() {
-        return leetcodeUsername;
+    public String getName() {
+        return name;
     }
 
-    public void setLeetcodeUsername(String leetcodeUsername) {
-        this.leetcodeUsername = leetcodeUsername;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getTotalScore() {
-        return totalScore;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
+
+    public String getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(String deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
+    }
+
 }
