@@ -11,7 +11,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.Session;
-import com.patina.codebloom.common.db.models.User;
+import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
+import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 
@@ -35,10 +37,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
+    private final LeaderboardRepository leaderboardRepository;
 
-    public CustomAuthenticationSuccessHandler(UserRepository userRepository, SessionRepository sessionRepository) {
+    public CustomAuthenticationSuccessHandler(UserRepository userRepository, SessionRepository sessionRepository,
+            LeaderboardRepository leaderboardRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
+        this.leaderboardRepository = leaderboardRepository;
     }
 
     @Override
@@ -62,6 +67,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             } else {
                 User newUser = new User(discordId, discordName);
                 existingUser = userRepository.createNewUser(newUser);
+                Leaderboard leaderboard = leaderboardRepository.getRecentLeaderboardShallow();
+                leaderboardRepository.addUserToLeaderboard(existingUser.getId(), leaderboard.getId());
             }
 
             LocalDateTime expirationTime = LocalDateTime.now().plusSeconds(maxAgeSeconds);

@@ -1,7 +1,7 @@
 package com.patina.codebloom.common.security;
 
 import com.patina.codebloom.common.db.models.Session;
-import com.patina.codebloom.common.db.models.User;
+import com.patina.codebloom.common.db.models.user.User;
 
 public class AuthenticationObject {
     private User user;

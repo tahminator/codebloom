@@ -1,6 +1,6 @@
 package com.patina.codebloom.common.db.repos.user;
 
-import com.patina.codebloom.common.db.models.User;
+import com.patina.codebloom.common.db.models.user.User;
 
 public interface UserRepository {
     User createNewUser(User user);
