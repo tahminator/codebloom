@@ -4,6 +4,7 @@ import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Loader } from "@mantine/core";
 import LeaderboardIndex from "@/app/leaderboard/components/LeaderboardIndex";
+import { Footer } from "@/components/ui/footer/Footer";
 
 export default function LeaderboardPage() {
   const { data, status } = useAuthQuery();
@@ -32,6 +33,7 @@ export default function LeaderboardPage() {
     <>
       <Header />
       <LeaderboardIndex />
+      <Footer />
     </>
   );
 }
