@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.test.TestLeaderboardList;
@@ -29,17 +30,17 @@ public class TestLeaderboardController {
     @GetMapping("/shallow")
     @Operation(summary = "Returns the top 5 leaderboard positions in order.")
     public ResponseEntity<?> getShallowLeaderboard() {
-        ArrayList<UserAndMetadata> leaderboard = TestLeaderboardList.getTestDataShallowList();
+        LeaderboardWithUsers leaderboard = TestLeaderboardList.getTestDataShallowList();
 
-        return ResponseEntity.ok().body(ApiResponder.success("Leaderboard found!", leaderboard));
+        return ResponseEntity.ok().body(ApiResponder.success("Here is some of the leaderboard!", leaderboard));
     }
 
     @GetMapping("/all")
     public ResponseEntity<?> getFullLeaderboard(HttpServletRequest request) {
         protector.validateSession(request);
 
-        ArrayList<UserAndMetadata> leaderboard = TestLeaderboardList.getTestDataLongList();
+        LeaderboardWithUsers leaderboard = TestLeaderboardList.getTestDataLongList();
 
-        return ResponseEntity.ok().body(ApiResponder.success("Leaderboard found!", leaderboard));
+        return ResponseEntity.ok().body(ApiResponder.success("Giving you the full leaderboard!", leaderboard));
     }
 }
