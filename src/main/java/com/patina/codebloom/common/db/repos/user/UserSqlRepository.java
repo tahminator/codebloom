@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
-import com.patina.codebloom.common.db.models.User;
+import com.patina.codebloom.common.db.models.user.User;
 
 @Component
 public class UserSqlRepository implements UserRepository {
