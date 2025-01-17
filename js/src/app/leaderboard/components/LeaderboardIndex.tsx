@@ -19,11 +19,14 @@ export default function LeaderboardIndex() {
     return <Toast message="Sorry, something went wrong." />;
   }
 
-  if (!data?.leaderboard || data.leaderboard.length === 0) {
+  if (!data.json || data.json.users.length === 0) {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const [first, second, third] = data.leaderboard;
+  const { json } = data;
+  const first = json.users[0];
+  const second = json.users[1];
+  const third = json.users[2];
 
   return (
     <div style={{ padding: "1rem" }}>
@@ -35,7 +38,7 @@ export default function LeaderboardIndex() {
         }}
         className="text-center"
       >
-        Leetcode Leaderboard
+        {json.name}
       </h1>
       <div
         className="flex items-end justify-center gap-4"
@@ -128,7 +131,7 @@ export default function LeaderboardIndex() {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {data.leaderboard.map((entry, index) => {
+          {json.users.map((entry, index) => {
             if ([0, 1, 2].includes(index)) return null;
 
             return (
