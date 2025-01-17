@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.db.models;
+package com.patina.codebloom.common.db.models.leaderboard;
 
 import java.time.LocalDateTime;
 

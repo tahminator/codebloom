@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS "Metadata"
+ALTER COLUMN "totalScore" SET DEFAULT 0;
