@@ -1,7 +1,5 @@
 package com.patina.codebloom.api.test.leaderboard;
 
-import java.util.ArrayList;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +9,6 @@ import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.test.TestLeaderboardList;
-import com.patina.codebloom.common.test.models.UserAndMetadata;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
