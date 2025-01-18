@@ -20,9 +20,9 @@ export default function LeaderboardCard({
   })();
 
   const height = (() => {
-    if (placeString === "First") return "180px";
-    if (placeString === "Second") return "160px";
-    if (placeString === "Third") return "140px";
+    if (placeString === "First") return "210px";
+    if (placeString === "Second") return "185px";
+    if (placeString === "Third") return "170px";
   })();
 
   return (
@@ -33,13 +33,23 @@ export default function LeaderboardCard({
       className={`border-2 flex flex-col items-center justify-center ${borderColor}`}
       style={{
         height,
-        width: "210px",
+        width: "300px",
       }}
     >
       <Text ta="center" size="xl">
         {placeString}
       </Text>
-      <Text ta="center" fw={700} size="lg" style={{ whiteSpace: "nowrap" }}>
+      <Text
+        ta="center"
+        fw={700}
+        style={{
+          width: "100%",
+          fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
         <FaDiscord className="inline" /> {discordName}
       </Text>
       <Text ta="center" style={{ whiteSpace: "nowrap" }}>
