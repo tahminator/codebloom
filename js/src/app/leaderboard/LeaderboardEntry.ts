@@ -1,5 +1,13 @@
 export type LeaderboardEntry = {
-    discordName: string;
-    leetcodeUsername: string;
-    totalScore: number;
+    id: string;
+    name: string;
+    createdAt: string;
+    deletedAt: string | null;
+    users: {
+        id: string;
+        discordId: string;
+        discordName: string;
+        leetcodeUsername: string;
+        totalScore: number;
+    } [];
 };
