@@ -73,12 +73,7 @@ export default function MiniLeaderboardMobile() {
         <Table.Thead>
           <Table.Tr>
             <Table.Th></Table.Th>
-            <Table.Th>
-              <FaDiscord />
-            </Table.Th>
-            <Table.Th>
-              <SiLeetcode />
-            </Table.Th>
+            <Table.Th>Name</Table.Th>
             <Table.Th>Total Points</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -88,8 +83,18 @@ export default function MiniLeaderboardMobile() {
             return (
               <Table.Tr key={entry.discordName}>
                 <Table.Td>{index + 1}</Table.Td>
-                <Table.Td>{entry.discordName}</Table.Td>
-                <Table.Td>{entry.leetcodeUsername}</Table.Td>
+                <Table.Td>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontSize: "18px", lineHeight: "28px" }}>
+                      <FaDiscord style={{ display: "inline" }} />{" "}
+                      {entry.discordName}
+                    </span>
+                    <span>
+                      <SiLeetcode style={{ display: "inline" }} />{" "}
+                      {entry.leetcodeUsername}
+                    </span>
+                  </div>
+                </Table.Td>
                 <Table.Td>{entry.totalScore}</Table.Td>
               </Table.Tr>
             );
