@@ -1,11 +1,13 @@
-import { Card, Title, Text } from "@mantine/core";
+import { Card, Title, Text, Center } from "@mantine/core";
 
 export default function OurFeatures() {
   return (
     <>
-      <Title order={3} align="center" style={{ marginBottom: "2rem" }}>
-        Explore Our Features
-      </Title>
+      <Center>
+        <Title order={3} style={{ marginBottom: "2rem" }}>
+          Explore Our Features
+        </Title>
+      </Center>
       <div
         style={{
           display: "flex",
