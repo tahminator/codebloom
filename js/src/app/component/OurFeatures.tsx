@@ -23,12 +23,13 @@ export default function OurFeatures() {
             borderRadius: "8px",
           }}
         >
-          <Title order={4} align="center">
-            Code Submission
-          </Title>
+          <Center>
+            <Title order={4}>Code Submission</Title>
+          </Center>
           <Text>
-            Submit your LeetCode solutions and earn points based on your
-            corectness, which is determined by question difficulty and topic.
+            Earn points based on the specific LeetCode question you answer
+            correctly. An easy question earns 60 points. A medium question earns
+            80 points. A hard questions earns 110 points.
           </Text>
         </Card>
         <Card
@@ -40,9 +41,26 @@ export default function OurFeatures() {
             borderRadius: "8px",
           }}
         >
-          <Title order={4} align="center">
-            LeetCode Leaderboard
-          </Title>
+          <Center>
+            <Title order={4}>Daily Challenge</Title>
+          </Center>
+          <Text>
+            Answer the daily LeetCode challenge question that resets at 12:00 AM
+            to gain 1.3x points.
+          </Text>
+        </Card>
+        <Card
+          shadow="sm"
+          padding="lg"
+          style={{
+            maxWidth: "300px",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+          }}
+        >
+          <Center>
+            <Title order={4}>LeetCode Leaderboard</Title>
+          </Center>
           <Text>
             Track your LeetCode progress and improvement by viewing yourself on
             a leaderboard amongst fellow Patina Network members. The top five
