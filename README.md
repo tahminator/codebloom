@@ -1,6 +1,6 @@
 # CodeBloom
 
-### {json.name} for Patina Network members to track progress and motivate each other.
+### LeetCode Leaderboard for Patina Network members to track progress and motivate each other.
 
 ---
 
