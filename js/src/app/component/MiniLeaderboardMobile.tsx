@@ -29,7 +29,7 @@ export default function MiniLeaderboardMobile() {
   const [first, second, third] = json.users;
 
   return (
-    <Container hiddenFrom={"sm"}>
+    <Container hiddenFrom={"lg"}>
       <h1
         style={{
           fontSize: "1rem",
@@ -44,20 +44,20 @@ export default function MiniLeaderboardMobile() {
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
       >
-        {second && (
-          <LeaderboardCard
-            placeString={"Second"}
-            discordName={second.discordName}
-            leetcodeUsername={second.leetcodeUsername}
-            totalScore={second.totalScore}
-          />
-        )}
         {first && (
           <LeaderboardCard
             placeString={"First"}
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
+          />
+        )}
+        {second && (
+          <LeaderboardCard
+            placeString={"Second"}
+            discordName={second.discordName}
+            leetcodeUsername={second.leetcodeUsername}
+            totalScore={second.totalScore}
           />
         )}
         {third && (
