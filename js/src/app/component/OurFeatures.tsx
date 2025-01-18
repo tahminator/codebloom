@@ -61,7 +61,7 @@ export default function OurFeatures() {
           }}
         >
           <Center>
-            <Title order={4}>LeetCode Leaderboard</Title>
+            <Title order={4}>Leaderboard System</Title>
           </Center>
           <Text>
             Track your LeetCode progress and improvement by viewing yourself on

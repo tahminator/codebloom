@@ -14,11 +14,11 @@ export const useShallowLeaderboardEntriesQuery = () => {
       method: "GET",
     });
   
-    const json = (await response.json()) as ApiResponse<LeaderboardEntry[]>;
+    const json = (await response.json()) as ApiResponse<LeaderboardEntry>;
 
     if (json.success) {
-      return { leaderboard: json.data };
+      return { json: json.data };
     }
   
-    return { leaderboard: [] };
+    return { json: undefined };
   }

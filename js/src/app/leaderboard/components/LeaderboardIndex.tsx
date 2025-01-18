@@ -1,12 +1,12 @@
-import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { Loader, Table, Title } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
+import { useFullLeaderboardEntriesQuery } from "../hooks";
 
-export default function MiniLeaderboardDesktop() {
-  const { data, status } = useShallowLeaderboardEntriesQuery();
+export default function LeaderboardIndex() {
+  const { data, status } = useFullLeaderboardEntriesQuery();
 
   if (status === "pending") {
     return (
@@ -20,11 +20,12 @@ export default function MiniLeaderboardDesktop() {
     return <Toast message="Sorry, something went wrong." />;
   }
 
-  if (!data?.leaderboard || data.leaderboard.length === 0) {
+  if (!data.json) {
     return <p>Sorry, there are no users to display.</p>;
   }
+  const json = data.json;
 
-  const [first, second, third] = data.leaderboard;
+  const [first, second, third] = json.users;
 
   return (
     <div style={{ padding: "1rem" }}>
@@ -37,7 +38,7 @@ export default function MiniLeaderboardDesktop() {
         }}
         className="text-center sm:text-lg"
       >
-        Leetcode Leaderboard
+        {json.name}
       </Title>
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
@@ -82,7 +83,7 @@ export default function MiniLeaderboardDesktop() {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {data.leaderboard.map((entry, index) => {
+          {json.users.map((entry, index) => {
             if ([0, 1, 2].includes(index)) return null;
             return (
               <Table.Tr key={entry.discordName}>
