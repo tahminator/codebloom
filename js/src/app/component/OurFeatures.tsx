@@ -25,9 +25,9 @@ export default function OurFeatures() {
             borderRadius: "8px",
           }}
         >
-          <Title order={4} align="center">
-            Code Submission
-          </Title>
+          <Center>
+            <Title order={4}>Code Submission</Title>
+          </Center>
           <Text>
             Earn points based on the specific LeetCode question you answer
             correctly. An easy question earns 60 points. A medium question earns
@@ -43,9 +43,9 @@ export default function OurFeatures() {
             borderRadius: "8px",
           }}
         >
-          <Title order={4} align="center">
-            Daily Challenge
-          </Title>
+          <Center>
+            <Title order={4}>Daily Challenge</Title>
+          </Center>
           <Text>
             Answer the daily LeetCode challenge question that resets at 12:00 AM
             to gain 1.3x points.
@@ -60,9 +60,9 @@ export default function OurFeatures() {
             borderRadius: "8px",
           }}
         >
-          <Title order={4} align="center">
-            LeetCode Leaderboard
-          </Title>
+          <Center>
+            <Title order={4}>LeetCode Leaderboard</Title>
+          </Center>
           <Text>
             Track your LeetCode progress and improvement by viewing yourself on
             a leaderboard amongst fellow Patina Network members. The top five
