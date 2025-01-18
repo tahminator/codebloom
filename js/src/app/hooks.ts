@@ -1,16 +1,16 @@
-import { LeaderboardEntry } from "@/app/leaderboard/LeaderboardEntry";
 import { ApiResponse } from "@/lib/types/apiResponse";
 import { useQuery } from "@tanstack/react-query";
+import { LeaderboardEntry } from "@/app/leaderboard/LeaderboardEntry";
 
-export const useFullLeaderboardEntriesQuery = () => {
+export const useShallowLeaderboardEntriesQuery = () => {
     return useQuery({
-      queryKey: ["dashboard, full"],
+      queryKey: ["dashboard", "shallow"],
       queryFn: fetchLeaderboard,
     });
   };
 
   async function fetchLeaderboard() {
-    const response = await fetch("/api/test/leaderboard/all", {
+    const response = await fetch("/api/test/leaderboard/shallow", {
       method: "GET",
     });
   

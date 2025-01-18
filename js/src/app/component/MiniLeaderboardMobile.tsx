@@ -1,11 +1,11 @@
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Loader, Table, Title } from "@mantine/core";
+import { Container, Loader, Table } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
-export default function MiniLeaderboardDesktop() {
+export default function MiniLeaderboardMobile() {
   const { data, status } = useShallowLeaderboardEntriesQuery();
 
   if (status === "pending") {
@@ -27,9 +27,8 @@ export default function MiniLeaderboardDesktop() {
   const [first, second, third] = data.leaderboard;
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <Title
-        order={3}
+    <Container hiddenFrom={"sm"}>
+      <h1
         style={{
           fontSize: "1rem",
           fontWeight: "bold",
@@ -38,7 +37,7 @@ export default function MiniLeaderboardDesktop() {
         className="text-center sm:text-lg"
       >
         Leetcode Leaderboard
-      </Title>
+      </h1>
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
@@ -68,7 +67,7 @@ export default function MiniLeaderboardDesktop() {
           />
         )}
       </div>
-      <Table horizontalSpacing="xl">
+      <Table>
         <Table.Thead>
           <Table.Tr>
             <Table.Th></Table.Th>
@@ -95,6 +94,6 @@ export default function MiniLeaderboardDesktop() {
           })}
         </Table.Tbody>
       </Table>
-    </div>
+    </Container>
   );
 }
