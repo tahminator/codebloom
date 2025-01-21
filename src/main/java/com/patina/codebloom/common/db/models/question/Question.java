@@ -22,11 +22,14 @@ public class Question {
      */
     private OptionalInt pointsAwarded;
 
+    private float acceptanceRate;
+
     /*
      * No ID generated yet; brand new Question.
      */
     public Question(String userId, String questionSlug, QuestionDifficulty questionDifficulty, int questionNumber,
-            String questionLink, String questionTitle, String description) {
+            String questionLink, String questionTitle, String description, OptionalInt pointsAwarded,
+            float acceptanceRate) {
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
@@ -34,11 +37,14 @@ public class Question {
         this.questionLink = questionLink;
         this.questionTitle = questionTitle;
         this.description = description;
+        this.pointsAwarded = pointsAwarded;
+        this.acceptanceRate = acceptanceRate;
     }
 
     public Question(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
             int questionNumber,
-            String questionLink, OptionalInt pointsAwarded, String questionTitle, String description) {
+            String questionLink, OptionalInt pointsAwarded, String questionTitle, String description,
+            float acceptanceRate) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -48,6 +54,7 @@ public class Question {
         this.pointsAwarded = pointsAwarded;
         this.questionTitle = questionTitle;
         this.description = description;
+        this.acceptanceRate = acceptanceRate;
     }
 
     public String getId() {
@@ -120,5 +127,13 @@ public class Question {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public float getAcceptanceRate() {
+        return acceptanceRate;
+    }
+
+    public void setAcceptanceRate(float acceptanceRate) {
+        this.acceptanceRate = acceptanceRate;
     }
 }

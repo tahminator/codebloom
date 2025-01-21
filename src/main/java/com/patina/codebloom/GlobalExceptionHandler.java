@@ -19,6 +19,14 @@ public class GlobalExceptionHandler {
                     .body(ApiResponder.failure("You are not authorized"));
         }
 
+        if (ex.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ApiResponder.failure(ex.getReason()));
+        }
+
+        if (ex.getStatusCode() == HttpStatus.PRECONDITION_FAILED) {
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(ApiResponder.failure(ex.getReason()));
+        }
+
         return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(ex.getReason());

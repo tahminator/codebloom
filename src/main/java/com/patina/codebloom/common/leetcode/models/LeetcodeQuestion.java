@@ -7,15 +7,17 @@ public class LeetcodeQuestion {
     public String titleSlug;
     public String difficulty;
     public String question;
+    public float acceptanceRate;
 
     public LeetcodeQuestion(String link, int questionId, String questionTitle, String titleSlug, String difficulty,
-            String question) {
+            String question, float acceptanceRate) {
         this.link = link;
         this.questionId = questionId;
         this.questionTitle = questionTitle;
         this.titleSlug = titleSlug;
         this.difficulty = difficulty;
         this.question = question;
+        this.acceptanceRate = acceptanceRate;
     }
 
     public String getLink() {
@@ -64,5 +66,13 @@ public class LeetcodeQuestion {
 
     public void setQuestion(String question) {
         this.question = question;
+    }
+
+    public float getAcceptanceRate() {
+        return acceptanceRate;
+    }
+
+    public void setAcceptanceRate(float acceptanceRate) {
+        this.acceptanceRate = acceptanceRate;
     }
 }

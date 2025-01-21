@@ -14,4 +14,6 @@ public interface QuestionRepository {
     Question updateQuestion(Question question);
 
     boolean deleteQuestionById(String id);
+
+    Question getQuestionBySlug(String slug);
 }
