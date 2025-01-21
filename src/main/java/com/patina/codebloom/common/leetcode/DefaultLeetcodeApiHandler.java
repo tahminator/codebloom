@@ -11,6 +11,8 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
@@ -66,8 +68,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             throw new RuntimeException("Error building the request body");
         }
 
-        System.out.println(requestBody);
-
         try {
             RequestSpecification reqSpec = RestAssured.given()
                     .header("Content-Type", "application/json")
@@ -83,18 +83,21 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            System.out.println(response.getBody().asPrettyString());
-
             JsonPath jsonPath = response.jsonPath();
 
             int questionId = jsonPath.getInt("data.question.questionId");
-            String questionTitle = jsonPath.getString("data.question.questionTitle");
+            String questionTitle = jsonPath.getString("data.question.title");
             String titleSlug = jsonPath.getString("data.question.titleSlug");
             String link = "https://leetcode.com/problems/" + titleSlug;
             String difficulty = jsonPath.getString("data.question.difficulty");
             String question = jsonPath.getString("data.question.content");
 
-            return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question);
+            String statsJson = jsonPath.getString("data.question.stats");
+            JsonObject stats = JsonParser.parseString(statsJson).getAsJsonObject();
+            String acRateString = stats.get("acRate").getAsString();
+            float acRate = Float.parseFloat(acRateString.replace("%", "")) / 100f;
+
+            return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question, acRate);
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
@@ -120,11 +123,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
                     .header("Referer", "https://leetcode.com")
                     .body(requestBody);
             Response response = reqSpec.post(endpoint);
-            try {
-                System.out.println(response.getBody().asPrettyString());
-            } catch (Exception e) {
-                System.out.println("Error printing response body");
-            }
 
             JsonPath jsonPath = response.jsonPath();
 

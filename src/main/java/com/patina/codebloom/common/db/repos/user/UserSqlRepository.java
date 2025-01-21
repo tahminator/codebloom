@@ -110,7 +110,7 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public User updateUserById(User inputUser) {
+    public User updateUser(User inputUser) {
         String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=? WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
