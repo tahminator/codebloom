@@ -71,7 +71,7 @@ public class SubmissionController {
 
         }
 
-        @GetMapping("/check")
+        @PostMapping("/check")
         public ResponseEntity<ApiResponder<AcceptedSubmissions>> checkLatestSubmissions(HttpServletRequest request) {
                 AuthenticationObject authenticationObject = protector.validateSession(request);
                 User user = authenticationObject.getUser();
