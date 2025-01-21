@@ -63,7 +63,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
             if (existingUser != null) {
                 existingUser.setDiscordName(discordName);
-                userRepository.updateUserById(existingUser);
+                userRepository.updateUser(existingUser);
             } else {
                 User newUser = new User(discordId, discordName);
                 existingUser = userRepository.createNewUser(newUser);

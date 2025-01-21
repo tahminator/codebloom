@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.OptionalInt;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 
+@Component
 public class QuestionSqlRepository implements QuestionRepository {
 
     DbConnection dbConnection;
@@ -23,7 +26,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question createQuestion(Question question) {
-        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         question.setId(UUID.randomUUID().toString());
 
@@ -31,7 +34,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(question.getId()));
             stmt.setObject(2, UUID.fromString(question.getUserId()));
             stmt.setString(3, question.getQuestionSlug());
-            stmt.setObject(4, question.getQuestionDifficulty());
+            stmt.setObject(4, question.getQuestionDifficulty().name(), java.sql.Types.OTHER);
             stmt.setInt(5, question.getQuestionNumber());
             stmt.setString(6, question.getQuestionLink());
 
@@ -43,6 +46,8 @@ public class QuestionSqlRepository implements QuestionRepository {
 
             stmt.setString(8, question.getQuestionTitle());
             stmt.setString(9, question.getDescription());
+
+            stmt.setFloat(10, question.getAcceptanceRate());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -59,7 +64,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public Question getQuestionById(String id) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description FROM \"Question\" WHERE id = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\" FROM \"Question\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
@@ -80,8 +85,9 @@ public class QuestionSqlRepository implements QuestionRepository {
                     }
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
+                    var acceptanceRate = rs.getFloat("acceptanceRate");
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description);
+                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate);
                     return question;
                 }
             }
@@ -94,7 +100,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public ArrayList<Question> getQuestionsByUserId(String userId) {
         ArrayList<Question> questions = new ArrayList<>();
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description FROM \"Question\" WHERE \"userId\" = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\" FROM \"Question\" WHERE \"userId\" = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
@@ -116,9 +122,10 @@ public class QuestionSqlRepository implements QuestionRepository {
                     }
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
+                    var acceptanceRate = rs.getFloat("acceptanceRate");
                     Question question = new Question(questionId, userIdResult, questionSlug, questionDifficulty,
                             questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description);
+                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate);
                     questions.add(question);
                 }
             }
@@ -130,7 +137,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question updateQuestion(Question inputQuestion) {
-        String sql = "UPDATE \"Question\" SET \"userId\" = ?, \"questionSlug\" = ?, \"questionDifficulty\" = ?, \"questionNumber\" = ?, \"questionLink\" = ?, \"pointsAwarded\" = ?, \"questionTitle\" = ?, description = ? WHERE id = ?";
+        String sql = "UPDATE \"Question\" SET \"userId\" = ?, \"questionSlug\" = ?, \"questionDifficulty\" = ?, \"questionNumber\" = ?, \"questionLink\" = ?, \"pointsAwarded\" = ?, \"questionTitle\" = ?, description = ?, \"acceptanceRate\" = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputQuestion.getUserId()));
@@ -146,7 +153,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             }
             stmt.setString(7, inputQuestion.getQuestionTitle());
             stmt.setString(8, inputQuestion.getDescription());
-            stmt.setObject(9, UUID.fromString(inputQuestion.getId()));
+            stmt.setFloat(9, inputQuestion.getAcceptanceRate());
+            stmt.setObject(10, UUID.fromString(inputQuestion.getId()));
 
             stmt.executeUpdate();
 
@@ -169,5 +177,42 @@ public class QuestionSqlRepository implements QuestionRepository {
             throw new RuntimeException("Error while deleting session", e);
         }
 
+    }
+
+    @Override
+    public Question getQuestionBySlug(String slug) {
+        Question question = null;
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\" FROM \"Question\" WHERE \"questionSlug\" = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, slug);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    var questionId = rs.getString("id");
+                    var userId = rs.getString("userId");
+                    var questionSlug = rs.getString("questionSlug");
+                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
+                    var questionNumber = rs.getInt("questionNumber");
+                    var questionLink = rs.getString("questionLink");
+                    int points = rs.getInt("pointsAwarded");
+                    OptionalInt pointsAwarded;
+                    if (rs.wasNull()) {
+                        pointsAwarded = null;
+                    } else {
+                        pointsAwarded = OptionalInt.of(points);
+                    }
+                    var questionTitle = rs.getString("questionTitle");
+                    var description = rs.getString("description");
+                    var acceptanceRate = rs.getFloat("acceptanceRate");
+                    question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
+                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate);
+                    return question;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve question", e);
+        }
+
+        return question;
     }
 }
