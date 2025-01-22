@@ -9,7 +9,7 @@ public interface QuestionRepository {
 
     Question getQuestionById(String id);
 
-    ArrayList<Question> getQuestionsByUserId(String userId);
+    ArrayList<Question> getQuestionsByUserId(String userId, int start, int end);
 
     Question updateQuestion(Question question);
 

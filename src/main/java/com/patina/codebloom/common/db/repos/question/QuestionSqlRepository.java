@@ -26,7 +26,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question createQuestion(Question question) {
-        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"submittedAt\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         question.setId(UUID.randomUUID().toString());
 
@@ -48,6 +48,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(9, question.getDescription());
 
             stmt.setFloat(10, question.getAcceptanceRate());
+            stmt.setObject(11, question.getSubmittedAt());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -64,7 +65,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public Question getQuestionById(String id) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\" FROM \"Question\" WHERE id = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
@@ -86,8 +87,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
                     var acceptanceRate = rs.getFloat("acceptanceRate");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate);
+                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
+                            submittedAt);
                     return question;
                 }
             }
@@ -98,12 +102,15 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    public ArrayList<Question> getQuestionsByUserId(String userId) {
+    public ArrayList<Question> getQuestionsByUserId(String userId, int start, int end) {
         ArrayList<Question> questions = new ArrayList<>();
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\" FROM \"Question\" WHERE \"userId\" = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE \"userId\" = ? ORDER BY \"submittedAt\" DESC LIMIT ? OFFSET ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
+
+            stmt.setInt(2, end - start);
+            stmt.setInt(3, start);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
@@ -123,9 +130,12 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
                     var acceptanceRate = rs.getFloat("acceptanceRate");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
                     Question question = new Question(questionId, userIdResult, questionSlug, questionDifficulty,
                             questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate);
+                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
+                            submittedAt);
                     questions.add(question);
                 }
             }
@@ -137,7 +147,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question updateQuestion(Question inputQuestion) {
-        String sql = "UPDATE \"Question\" SET \"userId\" = ?, \"questionSlug\" = ?, \"questionDifficulty\" = ?, \"questionNumber\" = ?, \"questionLink\" = ?, \"pointsAwarded\" = ?, \"questionTitle\" = ?, description = ?, \"acceptanceRate\" = ? WHERE id = ?";
+        String sql = "UPDATE \"Question\" SET \"userId\" = ?, \"questionSlug\" = ?, \"questionDifficulty\" = ?, \"questionNumber\" = ?, \"questionLink\" = ?, \"pointsAwarded\" = ?, \"questionTitle\" = ?, description = ?, \"acceptanceRate\" = ?, \"submittedAt\" = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputQuestion.getUserId()));
@@ -154,7 +164,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(7, inputQuestion.getQuestionTitle());
             stmt.setString(8, inputQuestion.getDescription());
             stmt.setFloat(9, inputQuestion.getAcceptanceRate());
-            stmt.setObject(10, UUID.fromString(inputQuestion.getId()));
+            stmt.setObject(10, inputQuestion.getSubmittedAt());
+            stmt.setObject(11, UUID.fromString(inputQuestion.getId()));
 
             stmt.executeUpdate();
 
@@ -182,7 +193,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     @Override
     public Question getQuestionBySlug(String slug) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\" FROM \"Question\" WHERE \"questionSlug\" = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE \"questionSlug\" = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, slug);
@@ -204,8 +215,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
                     var acceptanceRate = rs.getFloat("acceptanceRate");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate);
+                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
+                            submittedAt);
                     return question;
                 }
             }

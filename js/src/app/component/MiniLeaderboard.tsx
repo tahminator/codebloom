@@ -85,7 +85,7 @@ export default function MiniLeaderboardDesktop() {
           {json.users.map((entry, index) => {
             if ([0, 1, 2].includes(index)) return null;
             return (
-              <Table.Tr key={entry.discordName}>
+              <Table.Tr key={index}>
                 <Table.Td>{index + 1}</Table.Td>
                 <Table.Td>
                   <div style={{ display: "flex", flexDirection: "column" }}>

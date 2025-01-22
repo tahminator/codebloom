@@ -1,5 +1,5 @@
 import { useUsersTotalPoints } from "@/app/dashboard/hooks";
-import { Button } from "@mantine/core";
+import { Button, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
@@ -45,31 +45,33 @@ export default function RefreshSubmissions() {
   };
 
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+    <form onSubmit={form.onSubmit(onSubmit)}>
+      <Button
+        fullWidth
+        radius="md"
+        mt="md"
+        mb="md"
+        size="md"
+        onClick={onSubmit}
+        loading={isPending}
+        disabled={isDisabled}
+        ta={"center"}
       >
-        <form onSubmit={form.onSubmit(onSubmit)}>
-          <Button
-            radius="md"
-            mt="md"
-            mb="md"
-            size="md"
-            onClick={onSubmit}
-            loading={isPending}
-            disabled={isDisabled}
-          >
-            {isDisabled
-              ? `Please wait ${countdown} seconds to refresh again.`
-              : "Click here to refresh your latest submissions!"}
-          </Button>
-        </form>
-      </div>
-    </>
+        {isDisabled
+          ? `Please wait ${countdown} seconds to refresh again.`
+          : "Click here to refresh your latest submissions!"}
+      </Button>
+      <Text
+        c={"dimmed"}
+        style={{
+          maxWidth: "640px",
+        }}
+        ta={"center"}
+      >
+        Please note that we automatically query Leetcode's APIs behind the
+        scenes to make sure you can stay on that LeetCode grind without having
+        to press this button everytime!
+      </Text>
+    </form>
   );
 }

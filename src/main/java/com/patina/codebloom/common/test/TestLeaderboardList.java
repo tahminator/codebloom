@@ -24,7 +24,7 @@ public class TestLeaderboardList {
 
         for (int i = 0; i < 5; i++) {
             users.add(new UserWithScore(faker.internet().uuid(), faker.number().digits(20), faker.name().username(),
-                    faker.name().username(), faker.number().numberBetween(0, 8000)));
+                    faker.name().username(), faker.number().numberBetween(0, 12000)));
         }
 
         users.sort(Comparator.comparingInt(UserWithScore::getTotalScore).reversed());
@@ -47,7 +47,7 @@ public class TestLeaderboardList {
 
         for (int i = 0; i < 200; i++) {
             users.add(new UserWithScore(faker.internet().uuid(), faker.number().digits(20), faker.name().username(),
-                    faker.name().username(), faker.number().numberBetween(0, 8000)));
+                    faker.name().username(), faker.number().numberBetween(0, 12000)));
         }
 
         users.sort(Comparator.comparingInt(UserWithScore::getTotalScore).reversed());

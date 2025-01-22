@@ -1,17 +1,22 @@
 package com.patina.codebloom.api.submission;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.api.submission.body.LeetcodeUsernameObject;
+import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EMPTY_SUCCESS_RESPONSE;
@@ -27,6 +32,7 @@ import com.patina.codebloom.common.submissions.SubmissionsHandler;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,16 +53,18 @@ public class SubmissionController {
         private final KeyValueStore keyValueStore;
         private final LeetcodeApiHandler leetcodeApiHandler;
         private final SubmissionsHandler submissionsHandler;
+        private final QuestionRepository questionRepository;
 
         public SubmissionController(UserRepository userRepository,
                         Protector protector,
                         KeyValueStore keyValueStore, LeetcodeApiHandler leetcodeApiHandler,
-                        SubmissionsHandler submissionsHandler) {
+                        SubmissionsHandler submissionsHandler, QuestionRepository questionRepository) {
                 this.userRepository = userRepository;
                 this.protector = protector;
                 this.keyValueStore = keyValueStore;
                 this.leetcodeApiHandler = leetcodeApiHandler;
                 this.submissionsHandler = submissionsHandler;
+                this.questionRepository = questionRepository;
         }
 
         @Operation(summary = "Set a Leetcode username for the current user", description = "Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add. Cannot re-use this endpoint once a name is set.", responses = {
@@ -126,5 +134,18 @@ public class SubmissionController {
 
                 return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!",
                                 submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
+        }
+
+        @Operation()
+        @GetMapping("/all")
+        public ResponseEntity<ApiResponder<ArrayList<Question>>> getAllQuestionsForUser(HttpServletRequest request,
+                        @Parameter(description = "Pagination start index", example = "0") @RequestParam(required = false, defaultValue = "0") int start,
+                        @Parameter(description = "Pagination end index", example = "5") @RequestParam(required = false, defaultValue = "5") int end) {
+                AuthenticationObject authenticationObject = protector.validateSession(request);
+                User user = authenticationObject.getUser();
+
+                ArrayList<Question> questions = questionRepository.getQuestionsByUserId(user.getId(), start, end);
+
+                return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", questions));
         }
 }

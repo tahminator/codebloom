@@ -54,7 +54,7 @@ export default function Header() {
         <Group visibleFrom="sm">
           {status === "pending" && <Loader />}
           {status === "error" && (
-            <Text color="red">Sorry, something went wrong.</Text>
+            <Text c="red">Sorry, something went wrong.</Text>
           )}
           {data?.user && data?.session ? (
             <LogoutButton />
