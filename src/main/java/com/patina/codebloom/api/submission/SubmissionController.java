@@ -15,6 +15,7 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EMPTY_SUCCESS_RESPONSE;
+import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_CHECK_SUCCESS_RESPONSE;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE;
 import com.patina.codebloom.common.kv.KeyValueStore;
@@ -23,7 +24,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
-import com.patina.codebloom.common.submissions.object.AcceptedSubmissions;
+import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -90,12 +91,14 @@ public class SubmissionController {
         }
 
         @Operation(summary = "Check the current user's LeetCode submissions and update leaderboard", description = "Protected endpoint that handles the logic of checking the most recent submissions as well as updating the current leaderboard with any new points the user has accumulated. There is a rate limit on the route to prevent abuse (currently: 5 minutes).", responses = {
+                        @ApiResponse(responseCode = "200", description = "The check was completed successfuly", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_CHECK_SUCCESS_RESPONSE.class))),
                         @ApiResponse(responseCode = "412", description = "Leetcode username hasn't been set", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "429", description = "Rate limited", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class)))
         })
         @PostMapping("/check")
-        public ResponseEntity<ApiResponder<AcceptedSubmissions>> checkLatestSubmissions(HttpServletRequest request) {
+        public ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> checkLatestSubmissions(
+                        HttpServletRequest request) {
                 AuthenticationObject authenticationObject = protector.validateSession(request);
                 User user = authenticationObject.getUser();
 
