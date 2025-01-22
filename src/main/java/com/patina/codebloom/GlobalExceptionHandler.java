@@ -28,7 +28,6 @@ public class GlobalExceptionHandler {
         }
 
         if (ex.getStatusCode() == HttpStatus.CONFLICT) {
-            ApiResponder specialErrorResponse = new ApiResponder<int>();
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder.failure(ex.getReason()));
         }
 
