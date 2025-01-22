@@ -9,6 +9,8 @@ public interface POTDRepository {
 
     POTD getPOTDById(String id);
 
+    POTD getCurrentPOTD();
+
     ArrayList<POTD> getAllPOTDS();
 
     void updatePOTD(POTD potd);
