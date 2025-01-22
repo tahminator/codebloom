@@ -16,7 +16,7 @@ import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
-import com.patina.codebloom.common.submissions.object.AcceptedSubmissions;
+import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 /**
  * The submission logic is abstracted because it gets reused in two different
@@ -35,8 +35,9 @@ public class SubmissionsHandler {
         this.leaderboardRepository = leaderboardRepository;
     }
 
-    public AcceptedSubmissions handleSubmissions(ArrayList<LeetcodeSubmission> leetcodeSubmissions, User user) {
-        AcceptedSubmissions acceptedSubmissions = new AcceptedSubmissions();
+    public ArrayList<AcceptedSubmission> handleSubmissions(ArrayList<LeetcodeSubmission> leetcodeSubmissions,
+            User user) {
+        ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
             if (leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
@@ -68,7 +69,7 @@ public class SubmissionsHandler {
 
             questionRepository.createQuestion(newQuestion);
 
-            acceptedSubmissions.addAcceptedSubmission(leetcodeQuestion.getQuestionTitle());
+            acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
             // TODO - Update the points given on the current leaderboard.
             Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardShallow();
