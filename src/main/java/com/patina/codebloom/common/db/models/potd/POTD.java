@@ -6,10 +6,10 @@ public class POTD {
     private String id;
     private String title;
     private String slug;
-    private int multiplier;
+    private float multiplier;
     private LocalDateTime createdAt;
 
-    public POTD(String id, String title, String slug, int multiplier, LocalDateTime createdAt) {
+    public POTD(String id, String title, String slug, float multiplier, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.slug = slug;
@@ -41,11 +41,11 @@ public class POTD {
         this.slug = slug;
     }
 
-    public int getMultiplier() {
+    public float getMultiplier() {
         return multiplier;
     }
 
-    public void setMultiplier(int multiplier) {
+    public void setMultiplier(float multiplier) {
         this.multiplier = multiplier;
     }
 
