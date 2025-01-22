@@ -25,14 +25,14 @@ public class POTDSqlRepository implements POTDRepository {
         String id = rs.getString("id");
         String title = rs.getString("title");
         String slug = rs.getString("slug");
-        int multiplier = rs.getInt("multiplier");
+        float multiplier = rs.getFloat("multiplier");
         LocalDateTime createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
         return new POTD(id, title, slug, multiplier, createdAt);
     }
 
     @Override
     public POTD createPOTD(POTD potd) {
-        String sql = "INSERT INTO potd (id, title, slug, multiplier, createdAt) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO potd (\"id\", \"title\", \"slug\", \"multiplier\", \"createdAt\") VALUES (?, ?, ?, ?, ?)";
 
         potd.setId(UUID.randomUUID().toString());
 
@@ -40,7 +40,7 @@ public class POTDSqlRepository implements POTDRepository {
             stmt.setObject(1, potd.getId());
             stmt.setString(2, potd.getTitle());
             stmt.setString(3, potd.getSlug());
-            stmt.setInt(4, potd.getMultiplier());
+            stmt.setFloat(4, potd.getMultiplier());
             stmt.setObject(5, potd.getCreatedAt());
 
             stmt.executeUpdate();
@@ -90,7 +90,7 @@ public class POTDSqlRepository implements POTDRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, potd.getTitle());
             stmt.setString(2, potd.getSlug());
-            stmt.setInt(3, potd.getMultiplier());
+            stmt.setFloat(3, potd.getMultiplier());
             stmt.setString(4, potd.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
