@@ -32,7 +32,7 @@ public class POTDSqlRepository implements POTDRepository {
 
     @Override
     public POTD createPOTD(POTD potd) {
-        String sql = "INSERT INTO potd (id, title, slug, multiplier, created_at) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO potd (id, title, slug, multiplier, createdAt) VALUES (?, ?, ?, ?, ?)";
 
         potd.setId(UUID.randomUUID().toString());
 
@@ -113,7 +113,7 @@ public class POTDSqlRepository implements POTDRepository {
     public POTD getCurrentPOTD() {
         String sql = "SELECT \"id\", \"title\", \"slug\", \"multiplier\", \"createdAt\" " +
                 "FROM potd " +
-                "ORDER BY created_at DESC " +
+                "ORDER BY createdAt DESC " +
                 "LIMIT 1";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
