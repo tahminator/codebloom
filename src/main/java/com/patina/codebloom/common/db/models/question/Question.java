@@ -1,5 +1,6 @@
 package com.patina.codebloom.common.db.models.question;
 
+import java.time.LocalDateTime;
 import java.util.OptionalInt;
 
 public class Question {
@@ -24,12 +25,15 @@ public class Question {
 
     private float acceptanceRate;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime submittedAt;
+
     /*
      * No ID generated yet; brand new Question.
      */
     public Question(String userId, String questionSlug, QuestionDifficulty questionDifficulty, int questionNumber,
             String questionLink, String questionTitle, String description, OptionalInt pointsAwarded,
-            float acceptanceRate) {
+            float acceptanceRate, LocalDateTime submittedAt) {
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
@@ -39,12 +43,14 @@ public class Question {
         this.description = description;
         this.pointsAwarded = pointsAwarded;
         this.acceptanceRate = acceptanceRate;
+        this.createdAt = null;
+        this.submittedAt = submittedAt;
     }
 
     public Question(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
             int questionNumber,
             String questionLink, OptionalInt pointsAwarded, String questionTitle, String description,
-            float acceptanceRate) {
+            float acceptanceRate, LocalDateTime createdAt, LocalDateTime submittedAt) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -55,6 +61,8 @@ public class Question {
         this.questionTitle = questionTitle;
         this.description = description;
         this.acceptanceRate = acceptanceRate;
+        this.createdAt = createdAt;
+        this.submittedAt = submittedAt;
     }
 
     public String getId() {
@@ -135,5 +143,21 @@ public class Question {
 
     public void setAcceptanceRate(float acceptanceRate) {
         this.acceptanceRate = acceptanceRate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
     }
 }

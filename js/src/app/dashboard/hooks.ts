@@ -7,7 +7,8 @@ export const useUsersTotalPoints = () => {
   return useMutation({
     mutationFn: updateTotalPoints,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      queryClient.invalidateQueries({ queryKey: ["submission"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
     },
   });
 };
