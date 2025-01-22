@@ -26,7 +26,7 @@ public class POTDSqlRepository implements POTDRepository {
         String title = rs.getString("title");
         String slug = rs.getString("slug");
         int multiplier = rs.getInt("multiplier");
-        LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
+        LocalDateTime createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
         return new POTD(id, title, slug, multiplier, createdAt);
     }
 
@@ -52,8 +52,7 @@ public class POTDSqlRepository implements POTDRepository {
 
     @Override
     public POTD getPOTDById(String id) {
-        POTD potd = null;
-        String sql = "SELECT * FROM potd WHERE id = ?";
+        String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM potd WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, id);
@@ -67,12 +66,12 @@ public class POTDSqlRepository implements POTDRepository {
             throw new RuntimeException("Failed to get POTD by id");
         }
 
-        return potd;
+        return null;
     }
 
     @Override
     public ArrayList<POTD> getAllPOTDS() {
-        String sql = "SELECT * FROM potd";
+        String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM potd";
         ArrayList<POTD> potdList = new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery(sql)) {
@@ -108,6 +107,25 @@ public class POTDSqlRepository implements POTDRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public POTD getCurrentPOTD() {
+        String sql = "SELECT \"id\", \"title\", \"slug\", \"multiplier\", \"createdAt\" " +
+                "FROM potd " +
+                "ORDER BY created_at DESC " +
+                "LIMIT 1";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                return mapRowToPOTD(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
