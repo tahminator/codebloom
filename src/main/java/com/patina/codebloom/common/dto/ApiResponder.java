@@ -11,13 +11,13 @@ public class ApiResponder<T> {
     private T data;
     private String message;
 
-    private ApiResponder(boolean success, String message, T data) {
+    public ApiResponder(boolean success, String message, T data) {
         this.success = success;
         this.data = success ? data : null;
         this.message = message;
     };
 
-    private ApiResponder(boolean success, String message) {
+    public ApiResponder(boolean success, String message) {
         this.success = success;
         this.data = null;
         this.message = message;
