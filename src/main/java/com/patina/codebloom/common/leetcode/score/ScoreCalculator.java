@@ -14,13 +14,13 @@ public class ScoreCalculator {
         int baseScore;
         switch (questionDifficulty) {
             case Easy:
-                baseScore = (int) Math.floor(EASY_MULTIPLIER * acceptanceRate);
+                baseScore = (int) Math.floor(EASY_MULTIPLIER * (1.0 - acceptanceRate));
                 break;
             case Medium:
-                baseScore = (int) Math.floor(MEDIUM_MULTIPLIER * acceptanceRate);
+                baseScore = (int) Math.floor(MEDIUM_MULTIPLIER * (1.0 - acceptanceRate));
                 break;
             case Hard:
-                baseScore = (int) Math.floor(HARD_MULTIPLIER * acceptanceRate);
+                baseScore = (int) Math.floor(HARD_MULTIPLIER * (1.0 - acceptanceRate));
                 break;
             default:
                 return 0;
