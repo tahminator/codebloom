@@ -1,9 +1,6 @@
 package com.patina.codebloom.api.test.leaderboard;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,9 +63,6 @@ public class TestLeaderboardController {
         combinedUsers.addAll(leaderboard.getUsers());
 
         combinedUsers.sort((user1, user2) -> Integer.compare(user2.getTotalScore(), user1.getTotalScore()));
-
-        ArrayList<UserWithScore> topUsers = new ArrayList<>(
-                combinedUsers.subList(0, Math.min(200, combinedUsers.size())));
 
         LeaderboardWithUsers newLeaderboard = new LeaderboardWithUsers(leaderboard.getId(), leaderboard.getName(),
                 leaderboard.getCreatedAt(), leaderboard.getDeletedAt(), combinedUsers);

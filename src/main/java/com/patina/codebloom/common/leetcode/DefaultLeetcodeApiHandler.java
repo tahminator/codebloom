@@ -126,8 +126,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
             JsonPath jsonPath = response.jsonPath();
 
-            System.out.println(response.asPrettyString());
-
             List<Map<String, Object>> submissionsList = jsonPath.getList("data.recentSubmissionList");
             if (submissionsList == null || submissionsList.isEmpty()) {
                 return submissions;

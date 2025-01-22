@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -128,5 +129,27 @@ public class UserSqlRepository implements UserRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Error while updating user", e);
         }
+    }
+
+    @Override
+    public ArrayList<User> getAllUsers() {
+        ArrayList<User> users = new ArrayList<>();
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\" FROM \"User\"";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var id = rs.getString("id");
+                    var discordId = rs.getString("discordId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    users.add(new User(id, discordId, discordName, leetcodeUsername));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving user", e);
+        }
+
+        return users;
     }
 }
