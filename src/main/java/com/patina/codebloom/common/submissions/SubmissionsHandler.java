@@ -40,7 +40,7 @@ public class SubmissionsHandler {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
-            if (leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
+            if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
                 continue;
             }
 
@@ -61,11 +61,12 @@ public class SubmissionsHandler {
                     leetcodeQuestion.getTitleSlug(),
                     QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()),
                     leetcodeQuestion.getQuestionId(),
-                    "https://leetcode.com/problems" + leetcodeQuestion.getTitleSlug(),
+                    "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(),
                     leetcodeQuestion.getQuestionTitle(),
                     leetcodeQuestion.getQuestion(),
                     OptionalInt.of(points),
-                    leetcodeQuestion.getAcceptanceRate());
+                    leetcodeQuestion.getAcceptanceRate(),
+                    leetcodeSubmission.getTimestamp());
 
             questionRepository.createQuestion(newQuestion);
 

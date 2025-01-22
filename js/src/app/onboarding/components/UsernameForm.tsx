@@ -1,7 +1,16 @@
 import { useSetLeetcodeUsername } from "@/app/onboarding/hooks";
-import { Button, Card, Center, Group, Text, TextInput } from "@mantine/core";
+import {
+  Button,
+  Card,
+  Center,
+  Flex,
+  Group,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { Link } from "react-router-dom";
 
 export default function UsernameForm() {
   const { mutate, isPending } = useSetLeetcodeUsername();
@@ -27,14 +36,7 @@ export default function UsernameForm() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-      }}
-    >
+    <Flex justify={"center"} align={"center"} h={"100vh"} gap={"lg"}>
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Card
           radius="md"
@@ -73,8 +75,11 @@ export default function UsernameForm() {
             You can't change your LeetCode Username, so choose wisely. Any
             impersonation of an account that's not yours will be deleted.
           </Text>
+          <Button variant={"subtle"} component={Link} to={"/dashboard"}>
+            Go back
+          </Button>
         </Card>
       </form>
-    </div>
+    </Flex>
   );
 }
