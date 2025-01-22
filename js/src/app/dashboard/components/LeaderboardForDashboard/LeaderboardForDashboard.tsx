@@ -44,7 +44,7 @@ export default function LeaderboardForDashboard({
   return (
     <Card withBorder padding={"md"} radius={"md"}>
       <Flex direction={"row"} justify={"space-between"}>
-        <Title order={4}>Leaderboard</Title>
+        <Title order={4}>{json.name}</Title>
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all
         </Button>
