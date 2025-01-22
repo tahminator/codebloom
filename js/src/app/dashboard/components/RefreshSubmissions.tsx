@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 export default function RefreshSubmissions() {
   const { mutate, isPending } = useUsersTotalPoints();
   const [isDisabled, setIsDisabled] = useState(false);
-  const [message, setMessage] = useState(0);
+  const [countdown, setCountdown] = useState(0);
 
   const form = useForm({
     initialValues: {
@@ -16,31 +16,30 @@ export default function RefreshSubmissions() {
   });
 
   useEffect(() => {
-    let timer: number | undefined;
-    if (message > 0) {
-      timer = setInterval(() => {
-        setMessage((prev: number) => prev - 1);
+    if (countdown > 0) {
+      setTimeout(() => {
+        setCountdown((prev) => prev - 1);
       }, 1000);
-    } else if (message === 0 && isDisabled) {
-      setIsDisabled(false);
-    }
-    return () => clearInterval(timer);
-  }, [message, isDisabled]);
-
-  const onSubmit = () => {
-    if (isDisabled) {
       return;
     }
+
+    setIsDisabled(false);
+  }, [countdown, isDisabled]);
+
+  const onSubmit = () => {
     mutate(undefined, {
       onSuccess: ({ success, message: responseMessage }) => {
+        // Hack to avoid breaking the standard ApiResponse flow.
+        if (typeof responseMessage === "number") {
+          setIsDisabled(true);
+          setCountdown(responseMessage);
+          return;
+        }
+
         notifications.show({
           message: responseMessage,
           color: success ? undefined : "red",
         });
-        if (typeof responseMessage === "number") {
-          setIsDisabled(true);
-          setMessage(responseMessage);
-        }
       },
     });
   };
@@ -66,7 +65,7 @@ export default function RefreshSubmissions() {
             disabled={isDisabled}
           >
             {isDisabled
-              ? `Please wait ${message} seconds to refresh again.`
+              ? `Please wait ${countdown} seconds to refresh again.`
               : "Click here to refresh your latest submissions!"}
           </Button>
         </form>
