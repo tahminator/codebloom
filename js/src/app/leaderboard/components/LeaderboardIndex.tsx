@@ -50,6 +50,7 @@ export default function LeaderboardIndex() {
             discordName={second.discordName}
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
+            width={"300px"}
           />
         )}
         {first && (
@@ -58,6 +59,7 @@ export default function LeaderboardIndex() {
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
+            width={"300px"}
           />
         )}
         {third && (
@@ -66,6 +68,7 @@ export default function LeaderboardIndex() {
             discordName={third.discordName}
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
+            width={"300px"}
           />
         )}
       </div>

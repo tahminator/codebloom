@@ -1,4 +1,5 @@
 import { Card, Text } from "@mantine/core";
+import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
@@ -7,11 +8,13 @@ export default function LeaderboardCard({
   discordName,
   leetcodeUsername,
   totalScore,
+  width,
 }: {
   placeString: "First" | "Second" | "Third";
   discordName: string;
   leetcodeUsername: string;
   totalScore: number;
+  width: CSSProperties["width"];
 }) {
   const borderColor = (() => {
     if (placeString === "First") return "border-yellow-300";
@@ -33,7 +36,7 @@ export default function LeaderboardCard({
       className={`border-2 flex flex-col items-center justify-center ${borderColor}`}
       style={{
         height,
-        width: "300px",
+        width,
       }}
     >
       <Text ta="center" size="xl">
