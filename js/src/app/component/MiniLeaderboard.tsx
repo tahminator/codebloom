@@ -51,6 +51,7 @@ export default function MiniLeaderboardDesktop() {
             discordName={second.discordName}
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
+            width={"200px"}
           />
         )}
         {first && (
@@ -59,6 +60,7 @@ export default function MiniLeaderboardDesktop() {
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
+            width={"200px"}
           />
         )}
         {third && (
@@ -67,6 +69,7 @@ export default function MiniLeaderboardDesktop() {
             discordName={third.discordName}
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
+            width={"200px"}
           />
         )}
       </div>
