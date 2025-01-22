@@ -1,0 +1,7 @@
+CREATE TABLE potd (
+    id UUID NOT NULL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL,
+    multiplier INT NOT NULL CHECK (multiplier BETWEEN 1 AND 5),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
