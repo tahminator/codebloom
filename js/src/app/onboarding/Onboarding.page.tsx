@@ -1,13 +1,12 @@
-import OnboardingLeetcodeUser from "@/app/dashboard/components/OnboardingLeetcodeUser";
-import RefreshSubmissions from "@/app/dashboard/components/RefreshSubmissions";
 import { useAuthQuery } from "@/app/login/hooks";
+import UsernameForm from "@/app/onboarding/components/UsernameForm";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Loader } from "@mantine/core";
 
-export default function DashboardPage() {
+export default function Onboarding() {
   const { data, status } = useAuthQuery();
 
   if (status === "pending") {
@@ -30,11 +29,19 @@ export default function DashboardPage() {
     );
   }
 
+  if (data?.user?.leetcodeUsername) {
+    return (
+      <ToastWithRedirect
+        to="/dashboard"
+        message="You have already onboarded your Leetcode Username!"
+      />
+    );
+  }
+
   return (
     <>
       <Header />
-      {!data.user.leetcodeUsername && <OnboardingLeetcodeUser />}
-      {data.user.leetcodeUsername && <RefreshSubmissions />}
+      <UsernameForm />
       <Footer />
     </>
   );

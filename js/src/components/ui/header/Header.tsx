@@ -1,5 +1,5 @@
+import { useAuthQuery } from "@/app/login/hooks";
 import LogoutButton from "@/components/ui/auth/LogoutButton";
-import Logo from "/logo.png";
 import {
   Box,
   Burger,
@@ -7,14 +7,17 @@ import {
   Drawer,
   Flex,
   Group,
+  Loader,
   Text,
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 import classes from "./Header.module.css";
+import Logo from "/logo.png";
 
 export default function Header() {
+  const { data, status } = useAuthQuery();
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
@@ -49,7 +52,17 @@ export default function Header() {
           </Link>
         </Group>
         <Group visibleFrom="sm">
-          <LogoutButton />
+          {status === "pending" && <Loader />}
+          {status === "error" && (
+            <Text color="red">Sorry, something went wrong.</Text>
+          )}
+          {data?.user && data?.session ? (
+            <LogoutButton />
+          ) : (
+            <Link to="/login">
+              <Button>Login</Button>
+            </Link>
+          )}
         </Group>
         <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
       </header>
@@ -64,7 +77,17 @@ export default function Header() {
           <Link to="/leaderboard" className="w-full">
             Leaderboard
           </Link>
-          <LogoutButton className="w-full" />
+          {status === "pending" && <Loader />}
+          {status === "error" && (
+            <Text color="red">Sorry, something went wrong.</Text>
+          )}
+          {data?.user && data?.session ? (
+            <LogoutButton className="w-full" />
+          ) : (
+            <Link to="/login" className="w-full">
+              <Button className="w-full">Login</Button>
+            </Link>
+          )}
         </Flex>
       </Drawer>
     </Box>
