@@ -1,5 +1,7 @@
 package com.patina.codebloom.common.db.repos.user;
 
+import java.util.ArrayList;
+
 import com.patina.codebloom.common.db.models.user.User;
 
 public interface UserRepository {
@@ -12,4 +14,6 @@ public interface UserRepository {
     int getUserCount();
 
     User updateUser(User user);
+
+    ArrayList<User> getAllUsers();
 }

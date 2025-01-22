@@ -1,7 +1,6 @@
 package com.patina.codebloom.api.submission;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
