@@ -1,6 +1,7 @@
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
 import LoginPage from "@/app/login/Login.page";
+import Onboarding from "@/app/onboarding/Onboarding.page";
 import RootPage from "@/app/Root.page";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -20,5 +21,9 @@ export const router = createBrowserRouter([
   {
     path: "/leaderboard",
     element: <LeaderboardPage />,
+  },
+  {
+    path: "/onboarding",
+    element: <Onboarding />,
   },
 ]);

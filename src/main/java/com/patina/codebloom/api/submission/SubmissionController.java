@@ -115,8 +115,7 @@ public class SubmissionController {
                         if (difference < SECONDS_TO_WAIT) {
                                 long remainingTime = (long) SECONDS_TO_WAIT - difference;
                                 throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
-                                                "You have already scanned your submissions recently. You may try again in "
-                                                                + remainingTime + " seconds.");
+                                                Long.toString(remainingTime));
                         }
                 }
 
