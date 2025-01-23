@@ -4,8 +4,8 @@ import {
   Box,
   Button,
   Card,
-  Center,
   Flex,
+  Loader,
   Text,
   Title,
 } from "@mantine/core";
@@ -17,44 +17,78 @@ export default function RecentSubmissions() {
 
   if (status === "pending") {
     return (
-      <Card withBorder padding={"md"} radius={"md"}>
-        <Center>
-          <Title order={4}>Loading...</Title>
-        </Center>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Loader />
+        </Flex>
       </Card>
     );
   }
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"}>
-        <Center>
-          <Title order={4}>Error</Title>
-        </Center>
-        <Center>
-          <Text>Sorry, something went wrong.</Text>
-        </Center>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Title order={6} ta={"center"}>
+            Sorry, something went wrong. Please try again.
+          </Title>
+        </Flex>
       </Card>
     );
   }
 
   if (!data.success) {
     return (
-      <Card withBorder padding={"md"} radius={"md"}>
-        <Center>
-          <Title order={4}>Error</Title>
-        </Center>
-        <Center>
-          <Text>{data.message}</Text>
-        </Center>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Title order={6} ta={"center"}>
+            {data.message}
+          </Title>
+        </Flex>
       </Card>
     );
   }
 
   const questions = data.data;
 
+  if (!questions.length) {
+    return (
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Title order={6} ta={"center"}>
+            Oops! No problems solved yet—tackle one to start racking up points!
+          </Title>
+        </Flex>
+      </Card>
+    );
+  }
+
   return (
-    <Card withBorder padding={"md"} radius={"md"}>
+    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
       <Flex direction={"row"} justify={"space-between"}>
         <Title order={4}>Submissions</Title>
         <Button variant={"light"} component={Link} to={"/submissions"}>

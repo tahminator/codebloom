@@ -21,6 +21,26 @@ export default function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
+  const renderButton = (className?: string) => {
+    if (status === "pending") {
+      return <Loader />;
+    }
+
+    if (status === "error") {
+      return <Text c="red">Sorry, something went wrong.</Text>;
+    }
+
+    if (data?.user && data?.session) {
+      return <LogoutButton className={className} />;
+    }
+
+    return (
+      <Link to="/login" className={className}>
+        <Button className={className}>Login</Button>
+      </Link>
+    );
+  };
+
   return (
     <Box
       style={{
@@ -51,19 +71,7 @@ export default function Header() {
             <Button variant="transparent">Leaderboard</Button>
           </Link>
         </Group>
-        <Group visibleFrom="sm">
-          {status === "pending" && <Loader />}
-          {status === "error" && (
-            <Text c="red">Sorry, something went wrong.</Text>
-          )}
-          {data?.user && data?.session ? (
-            <LogoutButton />
-          ) : (
-            <Link to="/login">
-              <Button>Login</Button>
-            </Link>
-          )}
-        </Group>
+        <Group visibleFrom="sm">{renderButton()}</Group>
         <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
       </header>
       <Drawer opened={drawerOpened} onClose={closeDrawer} title="Navigation">
@@ -77,17 +85,7 @@ export default function Header() {
           <Link to="/leaderboard" className="w-full">
             Leaderboard
           </Link>
-          {status === "pending" && <Loader />}
-          {status === "error" && (
-            <Text color="red">Sorry, something went wrong.</Text>
-          )}
-          {data?.user && data?.session ? (
-            <LogoutButton className="w-full" />
-          ) : (
-            <Link to="/login" className="w-full">
-              <Button className="w-full">Login</Button>
-            </Link>
-          )}
+          {renderButton("w-full")}
         </Flex>
       </Drawer>
     </Box>

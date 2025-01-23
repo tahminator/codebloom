@@ -10,7 +10,7 @@ public class ScoreCalculator {
     private final static int MEDIUM_MULTIPLIER = 300;
     private final static int HARD_MULTIPLIER = 600;
 
-    public static int calculateScore(QuestionDifficulty questionDifficulty, float acceptanceRate) {
+    public static int calculateScore(QuestionDifficulty questionDifficulty, float acceptanceRate, float multiplier) {
         int baseScore;
         switch (questionDifficulty) {
             case Easy:
@@ -28,6 +28,6 @@ public class ScoreCalculator {
 
         // Apply a 5% deviation
         double deviation = ThreadLocalRandom.current().nextDouble(0.95, 1.05);
-        return (int) Math.floor(baseScore * deviation);
+        return (int) Math.floor(baseScore * deviation * multiplier);
     }
 }
