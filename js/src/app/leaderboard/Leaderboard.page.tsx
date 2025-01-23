@@ -30,10 +30,12 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <Leaderboard />
+      <div className="flex-grow">
+        <Leaderboard />
+      </div>
       <Footer />
-    </>
+    </div>
   );
 }
