@@ -1,4 +1,12 @@
-import { Button, Center, Flex, Group, Stack, Title } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Container,
+  Flex,
+  Group,
+  Stack,
+  Title,
+} from "@mantine/core";
 import { Link } from "react-router-dom";
 import { useRef } from "react";
 import MiniLeaderboardMobile from "@/app/component/MiniLeaderboardMobile";
@@ -82,7 +90,9 @@ export default function AboutUs() {
           </div>
         </Stack>
       </Flex>
-      <MiniLeaderboardMobile />
+      <Container hiddenFrom={"lg"}>
+        <MiniLeaderboardMobile />
+      </Container>
       <div ref={targetSectionRef} style={{ padding: "2rem" }}>
         <OurFeatures />
       </div>

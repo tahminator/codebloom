@@ -1,7 +1,7 @@
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Container, Loader, Table } from "@mantine/core";
+import { Loader, Table } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
@@ -29,7 +29,7 @@ export default function MiniLeaderboardMobile() {
   const [first, second, third] = json.users;
 
   return (
-    <Container hiddenFrom={"lg"}>
+    <>
       <h1
         style={{
           fontSize: "1rem",
@@ -104,6 +104,6 @@ export default function MiniLeaderboardMobile() {
           })}
         </Table.Tbody>
       </Table>
-    </Container>
+    </>
   );
 }

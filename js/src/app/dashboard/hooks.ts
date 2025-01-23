@@ -9,6 +9,7 @@ export const useUsersTotalPoints = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["submission"] });
       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+      queryClient.invalidateQueries({ queryKey: ["potd"] });
     },
   });
 };

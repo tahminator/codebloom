@@ -59,7 +59,7 @@ export default function RefreshSubmissions() {
       >
         {isDisabled
           ? `Please wait ${countdown} seconds to refresh again.`
-          : "Click here to refresh your latest submissions!"}
+          : "Refresh your latest submissions!"}
       </Button>
       <Text
         c={"dimmed"}

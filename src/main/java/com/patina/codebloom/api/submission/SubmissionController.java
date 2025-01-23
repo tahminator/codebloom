@@ -1,5 +1,7 @@
 package com.patina.codebloom.api.submission;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.api.submission.body.LeetcodeUsernameObject;
+import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
@@ -53,20 +57,31 @@ public class SubmissionController {
         private final LeetcodeApiHandler leetcodeApiHandler;
         private final SubmissionsHandler submissionsHandler;
         private final QuestionRepository questionRepository;
+        private final POTDRepository potdRepository;
+
+        private boolean isSameDay(LocalDateTime createdAt) {
+                LocalDate createdAtDate = createdAt.toLocalDate();
+                LocalDate today = LocalDate.now();
+
+                return createdAtDate.equals(today);
+        }
 
         public SubmissionController(UserRepository userRepository,
                         Protector protector,
                         KeyValueStore keyValueStore, LeetcodeApiHandler leetcodeApiHandler,
-                        SubmissionsHandler submissionsHandler, QuestionRepository questionRepository) {
+                        SubmissionsHandler submissionsHandler, QuestionRepository questionRepository,
+                        POTDRepository potdRepository) {
                 this.userRepository = userRepository;
                 this.protector = protector;
                 this.keyValueStore = keyValueStore;
                 this.leetcodeApiHandler = leetcodeApiHandler;
                 this.submissionsHandler = submissionsHandler;
                 this.questionRepository = questionRepository;
+                this.potdRepository = potdRepository;
         }
 
         @Operation(summary = "Set a Leetcode username for the current user", description = "Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add. Cannot re-use this endpoint once a name is set.", responses = {
+                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "200", description = "Name has been set successfully", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EMPTY_SUCCESS_RESPONSE.class))),
                         @ApiResponse(responseCode = "409", description = "Attempt to set name that has already been set", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class)))
@@ -98,6 +113,7 @@ public class SubmissionController {
         }
 
         @Operation(summary = "Check the current user's LeetCode submissions and update leaderboard", description = "Protected endpoint that handles the logic of checking the most recent submissions as well as updating the current leaderboard with any new points the user has accumulated. There is a rate limit on the route to prevent abuse (currently: 5 minutes).", responses = {
+                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "200", description = "The check was completed successfuly", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_CHECK_SUCCESS_RESPONSE.class))),
                         @ApiResponse(responseCode = "412", description = "Leetcode username hasn't been set", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "429", description = "Rate limited", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE.class))),
@@ -135,7 +151,9 @@ public class SubmissionController {
                                 submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
         }
 
-        @Operation()
+        @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = "Protected endpoint that returns the list of questions completed by the user. These questions are guaranteed to be completed by the user.", responses = {
+                        @ApiResponse(responseCode = "200", description = "Successful"),
+                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
         @GetMapping("/all")
         public ResponseEntity<ApiResponder<ArrayList<Question>>> getAllQuestionsForUser(HttpServletRequest request,
                         @Parameter(description = "Pagination start index", example = "0") @RequestParam(required = false, defaultValue = "0") int start,
@@ -146,5 +164,33 @@ public class SubmissionController {
                 ArrayList<Question> questions = questionRepository.getQuestionsByUserId(user.getId(), start, end);
 
                 return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", questions));
+        }
+
+        @Operation(summary = "Returns current problem of the day.", description = "Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.", responses = {
+                        @ApiResponse(responseCode = "200", description = "POTD found"),
+                        @ApiResponse(responseCode = "404", description = "POTD not found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
+                        @ApiResponse(responseCode = "401", description = "POTD already completed", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
+                        @ApiResponse(responseCode = "409", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
+        @GetMapping("/potd")
+        public ResponseEntity<ApiResponder<POTD>> getCurrentPotd(HttpServletRequest request) {
+                AuthenticationObject authenticationObject = protector.validateSession(request);
+                User user = authenticationObject.getUser();
+
+                POTD potd = potdRepository.getCurrentPOTD();
+
+                if (potd == null || !isSameDay(potd.getCreatedAt())) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(ApiResponder.failure("Sorry, no problem of the day today!"));
+                }
+
+                Question completedQuestion = questionRepository.getQuestionBySlugAndUserId(potd.getSlug(),
+                                user.getId());
+
+                if (completedQuestion != null) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder.failure(
+                                        "Nice, you have already completed the problem of the day! Come back tomorrow for a new one!"));
+                }
+
+                return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", potd));
         }
 }
