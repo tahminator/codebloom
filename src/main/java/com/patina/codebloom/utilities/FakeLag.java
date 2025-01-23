@@ -1,4 +1,4 @@
-package com.patina.codebloom;
+package com.patina.codebloom.utilities;
 
 import java.io.IOException;
 
