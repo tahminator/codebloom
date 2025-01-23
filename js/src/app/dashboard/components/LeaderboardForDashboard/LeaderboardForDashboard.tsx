@@ -1,6 +1,5 @@
 import MyCurrentPoints from "@/app/dashboard/components/LeaderboardForDashboard/MyCurrentPoints";
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
-import Toast from "@/components/ui/toast/Toast";
 import {
   Button,
   Card,
@@ -23,18 +22,55 @@ export default function LeaderboardForDashboard({
 
   if (status === "pending") {
     return (
-      <div className="flex flex-col items-center justify-center w-screen h-screen">
-        <Loader />
-      </div>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Loader />
+        </Flex>
+      </Card>
     );
   }
 
   if (status === "error") {
-    return <Toast message="Sorry, something went wrong." />;
+    return (
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Title order={6} ta={"center"}>
+            Sorry, something went wrong. Please try again later.
+          </Title>
+        </Flex>
+      </Card>
+    );
   }
 
-  if (!data.json) {
-    return <p>Sorry, there are no users to display.</p>;
+  if (!data.json || !data.json.users.length) {
+    return (
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Title order={6} ta={"center"}>
+            Oops! No users here yet. Crack your first problem and claim this
+            space like a champ!
+          </Title>
+        </Flex>
+      </Card>
+    );
   }
 
   const json = data.json;
@@ -42,8 +78,8 @@ export default function LeaderboardForDashboard({
   const inTop5 = !!json.users.find((u) => u.id === userId);
 
   return (
-    <Card withBorder padding={"md"} radius={"md"}>
-      <Flex direction={"row"} justify={"space-between"}>
+    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Flex direction={"row"} justify={"space-between"} w={"100%"}>
         <Title order={4}>{json.name}</Title>
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all

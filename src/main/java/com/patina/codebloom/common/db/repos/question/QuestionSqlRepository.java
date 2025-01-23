@@ -191,12 +191,13 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public Question getQuestionBySlug(String slug) {
+    public Question getQuestionBySlugAndUserId(String slug, String inputtedUserId) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE \"questionSlug\" = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE \"questionSlug\" = ? AND \"userId\" = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, slug);
+            stmt.setObject(2, UUID.fromString(inputtedUserId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     var questionId = rs.getString("id");

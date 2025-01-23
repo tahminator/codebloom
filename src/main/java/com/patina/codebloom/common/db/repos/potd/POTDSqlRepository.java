@@ -8,9 +8,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.potd.POTD;
 
+@Component
 public class POTDSqlRepository implements POTDRepository {
 
     DbConnection dbConnection;
@@ -46,7 +49,7 @@ public class POTDSqlRepository implements POTDRepository {
             stmt.executeUpdate();
             return potd;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create POTD");
+            throw new RuntimeException("Failed to create POTD", e);
         }
     }
 
@@ -63,7 +66,7 @@ public class POTDSqlRepository implements POTDRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get POTD by id");
+            throw new RuntimeException("Failed to get POTD by id", e);
         }
 
         return null;
@@ -79,7 +82,7 @@ public class POTDSqlRepository implements POTDRepository {
                 potdList.add(mapRowToPOTD(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to get all POTDs", e);
         }
         return potdList;
     }
@@ -94,7 +97,7 @@ public class POTDSqlRepository implements POTDRepository {
             stmt.setString(4, potd.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to update POTD", e);
         }
     }
 
@@ -105,7 +108,7 @@ public class POTDSqlRepository implements POTDRepository {
             stmt.setString(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to delete POTD", e);
         }
     }
 
@@ -113,17 +116,17 @@ public class POTDSqlRepository implements POTDRepository {
     public POTD getCurrentPOTD() {
         String sql = "SELECT \"id\", \"title\", \"slug\", \"multiplier\", \"createdAt\" " +
                 "FROM \"POTD\" " +
-                "ORDER BY createdAt DESC " +
+                "ORDER BY \"createdAt\" DESC " +
                 "LIMIT 1";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 return mapRowToPOTD(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to get current POTD", e);
         }
         return null;
     }

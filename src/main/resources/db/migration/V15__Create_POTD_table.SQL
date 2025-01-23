@@ -3,5 +3,5 @@ CREATE TABLE "POTD" (
     title VARCHAR(255) NOT NULL,
     slug VARCHAR(255) NOT NULL,
     multiplier FLOAT NOT NULL CHECK (multiplier BETWEEN 1 AND 5),
-    createdAt TIMESTAMP NOT NULL DEFAULT NOW()
+    "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );

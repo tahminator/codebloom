@@ -11,13 +11,13 @@ public class ApiResponder<T> {
     private T data;
     private String message;
 
-    public ApiResponder(boolean success, String message, T data) {
+    private ApiResponder(boolean success, String message, T data) {
         this.success = success;
-        this.data = success ? data : null;
+        this.data = data;
         this.message = message;
     };
 
-    public ApiResponder(boolean success, String message) {
+    private ApiResponder(boolean success, String message) {
         this.success = success;
         this.data = null;
         this.message = message;
@@ -29,6 +29,10 @@ public class ApiResponder<T> {
 
     public static <T> ApiResponder<T> failure(String message) {
         return new ApiResponder<>(false, message, null);
+    }
+
+    public static <T> ApiResponder<T> custom(boolean success, String message, T data) {
+        return new ApiResponder<>(success, message, data);
     }
 
     public boolean isSuccess() {
