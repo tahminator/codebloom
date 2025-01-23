@@ -20,8 +20,8 @@ export default function LeaderboardIndex() {
   if (!data.json) {
     return <p>Sorry, there are no users to display.</p>;
   }
-  const json = data.json;
 
+  const json = data.json;
   const [first, second, third] = json.users;
 
   return (
@@ -69,38 +69,40 @@ export default function LeaderboardIndex() {
           />
         )}
       </div>
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>#</Table.Th>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Pts</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {json.users.map((entry, index) => {
-            if ([0, 1, 2].includes(index)) return null;
-            return (
-              <Table.Tr key={index}>
-                <Table.Td>{index + 1}</Table.Td>
-                <Table.Td>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontSize: "18px", lineHeight: "28px" }}>
-                      <FaDiscord style={{ display: "inline" }} />{" "}
-                      {entry.discordName}
-                    </span>
-                    <span>
-                      <SiLeetcode style={{ display: "inline" }} />{" "}
-                      {entry.leetcodeUsername}
-                    </span>
-                  </div>
-                </Table.Td>
-                <Table.Td>{entry.totalScore}</Table.Td>
-              </Table.Tr>
-            );
-          })}
-        </Table.Tbody>
-      </Table>
+      {json.users.length > 3 && (
+        <Table>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>#</Table.Th>
+              <Table.Th>Name</Table.Th>
+              <Table.Th>Pts</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {json.users.map((entry, index) => {
+              if ([0, 1, 2].includes(index)) return null;
+              return (
+                <Table.Tr key={index}>
+                  <Table.Td>{index + 1}</Table.Td>
+                  <Table.Td>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <span style={{ fontSize: "18px", lineHeight: "28px" }}>
+                        <FaDiscord style={{ display: "inline" }} />{" "}
+                        {entry.discordName}
+                      </span>
+                      <span>
+                        <SiLeetcode style={{ display: "inline" }} />{" "}
+                        {entry.leetcodeUsername}
+                      </span>
+                    </div>
+                  </Table.Td>
+                  <Table.Td>{entry.totalScore}</Table.Td>
+                </Table.Tr>
+              );
+            })}
+          </Table.Tbody>
+        </Table>
+      )}
     </div>
   );
 }
