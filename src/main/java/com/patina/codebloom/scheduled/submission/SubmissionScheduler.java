@@ -30,7 +30,7 @@ public class SubmissionScheduler {
 
     // Cron runs every 30 minutes
     // TODO - Discuss this value
-    @Scheduled(cron = "* */30 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     public void handleAllUserSubmissions() {
         log.info("Beginning the scheduled task to handle all user submissions now:");
         ArrayList<User> users = userRepository.getAllUsers();

@@ -1,4 +1,4 @@
-package com.patina.codebloom;
+package com.patina.codebloom.utilities;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.patina.codebloom;
+package com.patina.codebloom.utilities;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
