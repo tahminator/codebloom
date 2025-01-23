@@ -53,7 +53,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                return getQuestionByIdAndUserId(question.getId(), question.getUserId());
+                return getQuestionById(question.getId());
             } else {
                 throw new RuntimeException("Failed to create question.");
             }
@@ -63,13 +63,12 @@ public class QuestionSqlRepository implements QuestionRepository {
         }
     }
 
-    public Question getQuestionByIdAndUserId(String id, String inputtedUserId) {
+    public Question getQuestionById(String id) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE id = ? AND \"userId\" = ?";
+        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
-            stmt.setObject(2, UUID.fromString(inputtedUserId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     var questionId = rs.getString("id");
@@ -170,7 +169,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
             stmt.executeUpdate();
 
-            return getQuestionByIdAndUserId(inputQuestion.getId(), inputQuestion.getUserId());
+            return getQuestionById(inputQuestion.getId());
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update question", e);
         }
