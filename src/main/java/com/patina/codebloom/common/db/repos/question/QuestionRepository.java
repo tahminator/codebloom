@@ -7,7 +7,7 @@ import com.patina.codebloom.common.db.models.question.Question;
 public interface QuestionRepository {
     Question createQuestion(Question question);
 
-    Question getQuestionById(String id);
+    Question getQuestionByIdAndUserId(String id, String userId);
 
     ArrayList<Question> getQuestionsByUserId(String userId, int start, int end);
 

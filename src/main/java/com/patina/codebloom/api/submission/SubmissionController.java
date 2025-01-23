@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -176,8 +177,7 @@ public class SubmissionController {
         @Operation(summary = "Returns current problem of the day.", description = "Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.", responses = {
                         @ApiResponse(responseCode = "200", description = "POTD found"),
                         @ApiResponse(responseCode = "404", description = "POTD not found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "401", description = "POTD already completed", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "409", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
+                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
         @GetMapping("/potd")
         public ResponseEntity<ApiResponder<POTD>> getCurrentPotd(HttpServletRequest request) {
                 FakeLag.sleep(750);
@@ -201,5 +201,27 @@ public class SubmissionController {
                 }
 
                 return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", potd));
+        }
+
+        @Operation(summary = "Returns submission data for authenticated user.", description = "Returns the submission data for the authenticated user if exists. This includes the scraped LeetCode description, which is HTML that has been sanitized by the server, so it is safe to use on the frontend.", responses = {
+                        @ApiResponse(responseCode = "200", description = "Question found"),
+                        @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
+                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
+        @GetMapping("/submission/{submissionId}")
+        public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(HttpServletRequest request,
+                        @PathVariable String submissionId) {
+                FakeLag.sleep(750);
+
+                AuthenticationObject authenticationObject = protector.validateSession(request);
+                User user = authenticationObject.getUser();
+
+                Question question = questionRepository.getQuestionByIdAndUserId(submissionId, user.getId());
+
+                if (question == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(ApiResponder.failure("Sorry, submission could not be found."));
+                }
+
+                return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", question));
         }
 }
