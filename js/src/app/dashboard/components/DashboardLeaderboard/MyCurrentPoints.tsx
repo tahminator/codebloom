@@ -1,4 +1,4 @@
-import { useMyRecentLeaderboardData } from "@/app/dashboard/components/LeaderboardForDashboard/hooks";
+import { useMyRecentLeaderboardData } from "@/app/dashboard/components/DashboardLeaderboard/hooks";
 import { Flex, Loader, Text } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";

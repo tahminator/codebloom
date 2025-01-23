@@ -1,5 +1,6 @@
 import { useAuthQuery } from "@/app/login/hooks";
 import LogoutButton from "@/components/ui/auth/LogoutButton";
+import SkeletonButton from "@/components/ui/auth/SkeletonButton";
 import {
   Box,
   Burger,
@@ -7,7 +8,6 @@ import {
   Drawer,
   Flex,
   Group,
-  Loader,
   Text,
   Title,
 } from "@mantine/core";
@@ -23,7 +23,7 @@ export default function Header() {
 
   const renderButton = (className?: string) => {
     if (status === "pending") {
-      return <Loader />;
+      return <SkeletonButton />;
     }
 
     if (status === "error") {

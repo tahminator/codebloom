@@ -11,6 +11,7 @@ import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.test.TestLeaderboardList;
 
@@ -33,6 +34,8 @@ public class TestLeaderboardController {
     @GetMapping("/shallow")
     @Operation(summary = "Returns the top 5 leaderboard positions in order.")
     public ResponseEntity<?> getShallowLeaderboard() {
+        FakeLag.sleep(600);
+
         LeaderboardWithUsers realLeaderboard = leaderboardRepository.getRecentLeaderboardShallow();
         LeaderboardWithUsers leaderboard = TestLeaderboardList.getTestDataShallowList();
 
@@ -53,6 +56,8 @@ public class TestLeaderboardController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getFullLeaderboard(HttpServletRequest request) {
+        FakeLag.sleep(900);
+
         protector.validateSession(request);
 
         LeaderboardWithUsers realLeaderboard = leaderboardRepository.getRecentLeaderboardFull();

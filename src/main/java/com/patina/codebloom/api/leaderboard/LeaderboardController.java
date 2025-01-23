@@ -15,6 +15,7 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
+import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.security.Protector;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +44,7 @@ public class LeaderboardController {
         })
         public ResponseEntity<ApiResponder<ArrayList<LeaderboardWithUsers>>> getAllLeaderboardsFull(
                         HttpServletRequest request) {
+                FakeLag.sleep(1200);
                 protector.validateSession(request);
 
                 ArrayList<LeaderboardWithUsers> leaderboards = leaderboardRepository.getAllLeaderboardsFull();
@@ -70,6 +72,8 @@ public class LeaderboardController {
         })
         public ResponseEntity<ApiResponder<LeaderboardWithUsers>> getCurrentLeaderboardFull(
                         HttpServletRequest request) {
+                FakeLag.sleep(800);
+
                 protector.validateSession(request);
 
                 LeaderboardWithUsers leaderboardData = leaderboardRepository.getRecentLeaderboardFull();
@@ -85,6 +89,8 @@ public class LeaderboardController {
 
         public ResponseEntity<ApiResponder<LeaderboardWithUsers>> getCurrentLeaderboardShallow(
                         HttpServletRequest request) {
+                FakeLag.sleep(650);
+
                 LeaderboardWithUsers leaderboardData = leaderboardRepository.getRecentLeaderboardShallow();
 
                 return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", leaderboardData));
@@ -97,6 +103,8 @@ public class LeaderboardController {
         })
         public ResponseEntity<ApiResponder<UserWithScore>> getUserCurrentLeaderboardFull(
                         HttpServletRequest request, @PathVariable String userId) {
+                FakeLag.sleep(650);
+
                 protector.validateSession(request);
 
                 LeaderboardWithUsers leaderboardData = leaderboardRepository.getRecentLeaderboardShallow();
@@ -119,6 +127,8 @@ public class LeaderboardController {
         })
         public ResponseEntity<ApiResponder<LeaderboardWithUsers>> getLeaderboardByIdFull(HttpServletRequest request,
                         @PathVariable String leaderboardId) {
+                FakeLag.sleep(800);
+
                 protector.validateSession(request);
 
                 LeaderboardWithUsers leaderboardData = leaderboardRepository.getLeaderboardByIdFull(leaderboardId);
@@ -139,6 +149,8 @@ public class LeaderboardController {
         })
         public ResponseEntity<ApiResponder<UserWithScore>> getUserByLeaderboardById(HttpServletRequest request,
                         @PathVariable String leaderboardId, @PathVariable String userId) {
+                FakeLag.sleep(650);
+
                 protector.validateSession(request);
 
                 UserWithScore user = leaderboardRepository.getUserFromLeaderboard(leaderboardId, userId);

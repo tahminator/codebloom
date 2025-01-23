@@ -1,14 +1,6 @@
 import { useRecentSubmissionsQuery } from "@/app/dashboard/components/RecentSubmissions/hooks";
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Flex,
-  Loader,
-  Text,
-  Title,
-} from "@mantine/core";
+import RecentSubmissionsSkeleton from "@/app/dashboard/components/RecentSubmissions/RecentSubmissionsSkeleton";
+import { Badge, Box, Button, Card, Flex, Text, Title } from "@mantine/core";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
@@ -16,19 +8,7 @@ export default function RecentSubmissions() {
   const { data, status } = useRecentSubmissionsQuery({ start: 0, end: 5 });
 
   if (status === "pending") {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Loader />
-        </Flex>
-      </Card>
-    );
+    return <RecentSubmissionsSkeleton />;
   }
 
   if (status === "error") {

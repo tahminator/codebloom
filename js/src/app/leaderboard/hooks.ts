@@ -1,4 +1,4 @@
-import { LeaderboardEntry } from "@/app/leaderboard/LeaderboardEntry";
+import { LeaderboardEntry } from "@/app/leaderboard/types";
 import { ApiResponse } from "@/lib/types/apiResponse";
 import { useQuery } from "@tanstack/react-query";
 
@@ -10,9 +10,14 @@ export const useFullLeaderboardEntriesQuery = () => {
 };
 
 async function fetchLeaderboard() {
-  const response = await fetch("/api/test/leaderboard/all", {
-    method: "GET",
-  });
+  const response = await fetch(
+    import.meta.env.DEV
+      ? "/api/test/leaderboard/all"
+      : "/api/leaderboard/current",
+    {
+      method: "GET",
+    }
+  );
 
   const json = (await response.json()) as ApiResponse<LeaderboardEntry>;
 

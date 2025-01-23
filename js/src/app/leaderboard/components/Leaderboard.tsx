@@ -1,6 +1,7 @@
+import LeaderboardSkeleton from "@/app/leaderboard/components/LeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Loader, Table, Title } from "@mantine/core";
+import { Table, Title } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { useFullLeaderboardEntriesQuery } from "../hooks";
@@ -9,11 +10,7 @@ export default function LeaderboardIndex() {
   const { data, status } = useFullLeaderboardEntriesQuery();
 
   if (status === "pending") {
-    return (
-      <div className="flex flex-col items-center justify-center w-screen h-screen">
-        <Loader />
-      </div>
-    );
+    return <LeaderboardSkeleton />;
   }
 
   if (status === "error") {

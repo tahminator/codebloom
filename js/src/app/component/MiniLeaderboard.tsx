@@ -1,7 +1,8 @@
+import MiniLeaderboardSkeleton from "@/app/component/skeletons/MiniLeaderboardSkeleton";
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Loader, Table, Title } from "@mantine/core";
+import { Table, Title } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
@@ -9,11 +10,7 @@ export default function MiniLeaderboardDesktop() {
   const { data, status } = useShallowLeaderboardEntriesQuery();
 
   if (status === "pending") {
-    return (
-      <div className="flex flex-col items-center justify-center w-screen h-screen">
-        <Loader />
-      </div>
-    );
+    return <MiniLeaderboardSkeleton />;
   }
 
   if (status === "error") {

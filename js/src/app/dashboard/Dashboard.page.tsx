@@ -1,4 +1,4 @@
-import LeaderboardForDashboard from "@/app/dashboard/components/LeaderboardForDashboard/LeaderboardForDashboard";
+import DashboardLeaderboard from "@/app/dashboard/components/DashboardLeaderboard/DashboardLeaderboard";
 import OnboardingLeetcodeUser from "@/app/dashboard/components/OnboardingLeetcodeUser";
 import ProblemOfTheDay from "@/app/dashboard/components/ProblemOfTheDay/ProblemOfTheDay";
 import RecentSubmissions from "@/app/dashboard/components/RecentSubmissions/RecentSubmissions";
@@ -62,7 +62,7 @@ export default function DashboardPage() {
             <ProblemOfTheDay />
           </Flex>
           <Flex direction={"column"} flex={1}>
-            <LeaderboardForDashboard userId={data.user.id} />
+            <DashboardLeaderboard userId={data.user.id} />
           </Flex>
           <Flex direction={"column"} flex={1}>
             <RecentSubmissions />

@@ -27,6 +27,7 @@ import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE;
 import com.patina.codebloom.common.kv.KeyValueStore;
+import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.security.AuthenticationObject;
@@ -89,6 +90,8 @@ public class SubmissionController {
         @PostMapping("/set")
         public ResponseEntity<ApiResponder<Void>> setLeetcodeUsername(HttpServletRequest request,
                         @Valid @RequestBody LeetcodeUsernameObject leetcodeUsernameObject) {
+                FakeLag.sleep(350);
+
                 AuthenticationObject authenticationObject = protector.validateSession(request);
                 User user = authenticationObject.getUser();
 
@@ -122,6 +125,8 @@ public class SubmissionController {
         @PostMapping("/check")
         public ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> checkLatestSubmissions(
                         HttpServletRequest request) {
+                FakeLag.sleep(350);
+
                 AuthenticationObject authenticationObject = protector.validateSession(request);
                 User user = authenticationObject.getUser();
 
@@ -158,6 +163,8 @@ public class SubmissionController {
         public ResponseEntity<ApiResponder<ArrayList<Question>>> getAllQuestionsForUser(HttpServletRequest request,
                         @Parameter(description = "Pagination start index", example = "0") @RequestParam(required = false, defaultValue = "0") int start,
                         @Parameter(description = "Pagination end index", example = "5") @RequestParam(required = false, defaultValue = "5") int end) {
+                FakeLag.sleep(1000);
+
                 AuthenticationObject authenticationObject = protector.validateSession(request);
                 User user = authenticationObject.getUser();
 
@@ -173,6 +180,8 @@ public class SubmissionController {
                         @ApiResponse(responseCode = "409", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
         @GetMapping("/potd")
         public ResponseEntity<ApiResponder<POTD>> getCurrentPotd(HttpServletRequest request) {
+                FakeLag.sleep(750);
+
                 AuthenticationObject authenticationObject = protector.validateSession(request);
                 User user = authenticationObject.getUser();
 
