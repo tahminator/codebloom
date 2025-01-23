@@ -5,8 +5,9 @@
     width: 100%;
     justify-content: center;
     background-color: var(--mantine-color-dark-6);
+    margin-top: auto;
   }
-  
+
   .footerContents {
     max-width: 1200px;
     display: flex;
