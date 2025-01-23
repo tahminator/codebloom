@@ -12,6 +12,7 @@ import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
+import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 
@@ -41,6 +42,8 @@ public class AuthController {
     })
     @GetMapping("/validate")
     public ResponseEntity<ApiResponder<AuthenticationObject>> validateAuth(HttpServletRequest request) {
+        FakeLag.sleep(350);
+
         AuthenticationObject authenticationObject = protector.validateSession(request);
 
         return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!", authenticationObject));

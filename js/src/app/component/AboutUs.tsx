@@ -27,7 +27,7 @@ export default function AboutUs() {
 
   return (
     <>
-      <Flex direction={"row"} h={"92vh"} w={"100vw"} visibleFrom="lg">
+      <Flex direction={"row"} h={"92vh"} w={"98vw"} visibleFrom="lg">
         <Flex
           align={"center"}
           justify={"center"}

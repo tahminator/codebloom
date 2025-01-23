@@ -1,14 +1,7 @@
-import MyCurrentPoints from "@/app/dashboard/components/LeaderboardForDashboard/MyCurrentPoints";
+import DashboardLeaderboardSkeleton from "@/app/dashboard/components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
+import MyCurrentPoints from "@/app/dashboard/components/DashboardLeaderboard/MyCurrentPoints";
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
-import {
-  Button,
-  Card,
-  Divider,
-  Flex,
-  Loader,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Button, Card, Divider, Flex, Text, Title } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -21,19 +14,7 @@ export default function LeaderboardForDashboard({
   const { data, status } = useShallowLeaderboardEntriesQuery();
 
   if (status === "pending") {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Loader />
-        </Flex>
-      </Card>
-    );
+    return <DashboardLeaderboardSkeleton />;
   }
 
   if (status === "error") {
