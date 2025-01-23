@@ -27,6 +27,7 @@ import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_CHECK_SUCCESS_RESPONSE;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE;
+import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_SUBMISSION_SUCCESS_RESPONSE;
 import com.patina.codebloom.common.kv.KeyValueStore;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
@@ -203,8 +204,8 @@ public class SubmissionController {
                 return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", potd));
         }
 
-        @Operation(summary = "Returns submission data for authenticated user.", description = "Returns the submission data for the authenticated user if exists. This includes the scraped LeetCode description, which is HTML that has been sanitized by the server, so it is safe to use on the frontend.", responses = {
-                        @ApiResponse(responseCode = "200", description = "Question found"),
+        @Operation(summary = "Returns submission data.", description = "Returns the submission data from any user, as long as the user making the request is authenticated. This includes the scraped LeetCode description, which is HTML that has been sanitized by the server, so it is safe to use on the frontend.", responses = {
+                        @ApiResponse(responseCode = "200", description = "Question found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_SUBMISSION_SUCCESS_RESPONSE.class))),
                         @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
         @GetMapping("/submission/{submissionId}")
@@ -212,10 +213,8 @@ public class SubmissionController {
                         @PathVariable String submissionId) {
                 FakeLag.sleep(750);
 
-                AuthenticationObject authenticationObject = protector.validateSession(request);
-                User user = authenticationObject.getUser();
-
-                Question question = questionRepository.getQuestionByIdAndUserId(submissionId, user.getId());
+                protector.validateSession(request);
+                Question question = questionRepository.getQuestionById(submissionId);
 
                 if (question == null) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
