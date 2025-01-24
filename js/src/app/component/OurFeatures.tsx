@@ -26,12 +26,12 @@ export default function OurFeatures() {
           }}
         >
           <Center>
-            <Title order={4}>Code Submission</Title>
+            <Title order={4}>Submission Points</Title>
           </Center>
           <Text>
             Earn points based on the specific LeetCode question you answer
-            correctly. An easy question earns 60 points. A medium question earns
-            80 points. A hard questions earns 110 points.
+            correctly. An easy question earns 100 points. A medium question
+            earns 300 points. A hard question earns 600 points.
           </Text>
         </Card>
         <Card
@@ -48,7 +48,7 @@ export default function OurFeatures() {
           </Center>
           <Text>
             Answer the daily LeetCode challenge question that resets at 12:00 AM
-            to gain 1.3x points.
+            to gain 1.8x points.
           </Text>
         </Card>
         <Card
