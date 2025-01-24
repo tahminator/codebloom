@@ -33,6 +33,7 @@ import com.patina.codebloom.common.kv.KeyValueStore;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.page.Page;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
@@ -51,6 +52,9 @@ import jakarta.validation.Valid;
 @Tag(name = "LeetCode Submission Routes")
 @RequestMapping("/api/leetcode")
 public class SubmissionController {
+        /* Page size for submissions */
+        private final int submissionsPageSize = 10;
+
         // 5 Minute rate limit to avoid abuse.
         // TODO - Change this from 5 seconds back to 5 minutes once done testing.
         private double SECONDS_TO_WAIT = 1 * 60;
@@ -162,18 +166,25 @@ public class SubmissionController {
         @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = "Protected endpoint that returns the list of questions completed by the user. These questions are guaranteed to be completed by the user.", responses = {
                         @ApiResponse(responseCode = "200", description = "Successful"),
                         @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
-        @GetMapping("/all")
-        public ResponseEntity<ApiResponder<ArrayList<Question>>> getAllQuestionsForUser(HttpServletRequest request,
-                        @Parameter(description = "Pagination start index", example = "0") @RequestParam(required = false, defaultValue = "0") int start,
-                        @Parameter(description = "Pagination end index", example = "5") @RequestParam(required = false, defaultValue = "5") int end) {
-                FakeLag.sleep(1000);
+        @GetMapping("submission/u/{userId}")
+        public ResponseEntity<ApiResponder<Page<ArrayList<QuestionWithUser>>>> getAllQuestionsForUser(
+                        HttpServletRequest request,
+                        @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") int page,
+                        @PathVariable String userId) {
+                FakeLag.sleep(250);
 
-                AuthenticationObject authenticationObject = protector.validateSession(request);
-                User user = authenticationObject.getUser();
+                protector.validateSession(request);
 
-                ArrayList<Question> questions = questionRepository.getQuestionsByUserId(user.getId(), start, end);
+                ArrayList<QuestionWithUser> questions = questionRepository.getQuestionsByUserId(userId, page,
+                                submissionsPageSize);
 
-                return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", questions));
+                int totalQuestions = questionRepository.getQuestionCountByUserId(userId);
+                int totalPages = (int) Math.ceil((double) totalQuestions / submissionsPageSize);
+                boolean hasNextPage = page < totalPages;
+
+                Page<ArrayList<QuestionWithUser>> createdPage = new Page<>(hasNextPage, questions, totalPages);
+
+                return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
         }
 
         @Operation(summary = "Returns current problem of the day.", description = "Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.", responses = {

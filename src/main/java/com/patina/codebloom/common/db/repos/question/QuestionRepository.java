@@ -12,11 +12,13 @@ public interface QuestionRepository {
 
     QuestionWithUser getQuestionWithUserById(String id);
 
-    ArrayList<Question> getQuestionsByUserId(String userId, int start, int end);
+    ArrayList<QuestionWithUser> getQuestionsByUserId(String userId, int page, int pageSize);
 
     Question updateQuestion(Question question);
 
     boolean deleteQuestionById(String id);
 
     Question getQuestionBySlugAndUserId(String slug, String userId);
+
+    int getQuestionCountByUserId(String userId);
 }

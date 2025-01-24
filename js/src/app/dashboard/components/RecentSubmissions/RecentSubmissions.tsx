@@ -1,11 +1,11 @@
-import { useRecentSubmissionsQuery } from "@/app/dashboard/components/RecentSubmissions/hooks";
 import RecentSubmissionsSkeleton from "@/app/dashboard/components/RecentSubmissions/RecentSubmissionsSkeleton";
+import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
 import { Badge, Box, Button, Card, Flex, Text, Title } from "@mantine/core";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-export default function RecentSubmissions() {
-  const { data, status } = useRecentSubmissionsQuery({ start: 0, end: 5 });
+export default function RecentSubmissions({ userId }: { userId: string }) {
+  const { data, status } = useUserSubmissionsQuery({ userId });
 
   if (status === "pending") {
     return <RecentSubmissionsSkeleton />;
@@ -13,7 +13,7 @@ export default function RecentSubmissions() {
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -31,7 +31,7 @@ export default function RecentSubmissions() {
 
   if (!data.success) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -47,11 +47,11 @@ export default function RecentSubmissions() {
     );
   }
 
-  const questions = data.data;
+  const questions = data.data.slice(0, 5);
 
   if (!questions.length) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -68,11 +68,15 @@ export default function RecentSubmissions() {
   }
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Flex direction={"row"} justify={"space-between"}>
         <Title order={4}>Submissions</Title>
 
-        <Button variant={"light"} component={Link} to={"/submissions"}>
+        <Button
+          variant={"light"}
+          component={Link}
+          to={`/submission/u/${userId}`}
+        >
           View all
         </Button>
       </Flex>
@@ -99,10 +103,9 @@ export default function RecentSubmissions() {
             style={{
               borderRadius: "4px",
             }}
-            p={"xs"}
+            p={"0.4rem"}
           >
             <Text>{idx + 1}.</Text>
-
             <Flex direction={"column"}>
               <Text ta="center">{q.questionTitle}</Text>
 

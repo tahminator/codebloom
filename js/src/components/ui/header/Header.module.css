@@ -1,8 +1,7 @@
 header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: solid 1px grey;
-    padding: 10px;
-  }
-  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: solid 1px grey;
+  padding: 10px;
+}
