@@ -65,7 +65,7 @@ export default function DashboardPage() {
             <DashboardLeaderboard userId={data.user.id} />
           </Flex>
           <Flex direction={"column"} flex={1}>
-            <RecentSubmissions />
+            <RecentSubmissions userId={data.user.id} />
           </Flex>
         </Flex>
       </Flex>

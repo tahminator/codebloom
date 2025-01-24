@@ -9,7 +9,7 @@ export const useSubmissionDetailsQuery = ({
   submissionId?: string;
 }) => {
   return useQuery({
-    queryKey: ["submission", submissionId],
+    queryKey: ["submission", "s", submissionId],
     queryFn: () => fetchSubmissionDetails({ submissionId }),
   });
 };

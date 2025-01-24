@@ -1,10 +1,11 @@
-import SubmissionDetails from "@/app/submission/[id]/SubmissionDetails";
+import SubmissionDetails from "@/app/submission/s/[submissionId]/SubmissionDetails.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
 import LoginPage from "@/app/login/Login.page";
 import Onboarding from "@/app/onboarding/Onboarding.page";
 import RootPage from "@/app/Root.page";
 import { createBrowserRouter } from "react-router-dom";
+import UserSubmissions from "@/app/submission/u/[userId]/UserSubmissions.page";
 
 export const router = createBrowserRouter([
   {
@@ -33,5 +34,6 @@ export const router = createBrowserRouter([
   },
   {
     path: "/submission/u/:userId",
+    element: <UserSubmissions />,
   },
 ]);
