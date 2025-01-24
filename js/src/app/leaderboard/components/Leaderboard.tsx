@@ -1,10 +1,11 @@
 import LeaderboardSkeleton from "@/app/leaderboard/components/LeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Table, Title } from "@mantine/core";
-import { FaDiscord } from "react-icons/fa";
+import { Button, Table, Title } from "@mantine/core";
+import { FaDiscord, FaExternalLinkAlt } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { useFullLeaderboardEntriesQuery } from "../hooks";
+import { Link } from "react-router-dom";
 
 export default function LeaderboardIndex() {
   const { data, status } = useFullLeaderboardEntriesQuery();
@@ -48,6 +49,7 @@ export default function LeaderboardIndex() {
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
             width={"300px"}
+            userId={second.id}
           />
         )}
         {first && (
@@ -57,6 +59,7 @@ export default function LeaderboardIndex() {
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
             width={"300px"}
+            userId={first.id}
           />
         )}
         {third && (
@@ -66,6 +69,7 @@ export default function LeaderboardIndex() {
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
             width={"300px"}
+            userId={third.id}
           />
         )}
       </div>
@@ -76,6 +80,7 @@ export default function LeaderboardIndex() {
               <Table.Th>#</Table.Th>
               <Table.Th>Name</Table.Th>
               <Table.Th>Pts</Table.Th>
+              <Table.Th>Submissions</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -97,6 +102,15 @@ export default function LeaderboardIndex() {
                     </div>
                   </Table.Td>
                   <Table.Td>{entry.totalScore}</Table.Td>
+                  <Table.Td>
+                    <Button
+                      component={Link}
+                      to={`/submission/u/${entry.id}`}
+                      variant={"subtle"}
+                    >
+                      <FaExternalLinkAlt />
+                    </Button>
+                  </Table.Td>
                 </Table.Tr>
               );
             })}
