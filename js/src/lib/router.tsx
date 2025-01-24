@@ -28,7 +28,10 @@ export const router = createBrowserRouter([
     element: <Onboarding />,
   },
   {
-    path: "/submission/:submissionId",
+    path: "/submission/s/:submissionId",
     element: <SubmissionDetails />,
+  },
+  {
+    path: "/submission/u/:userId",
   },
 ]);

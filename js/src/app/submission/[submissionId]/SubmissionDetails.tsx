@@ -28,12 +28,7 @@ export default function SubmissionDetails() {
   }
 
   if (!data.data) {
-    return (
-      <ToastWithRedirect
-        message={"Sorry, this submission doesn't exist."}
-        to={"/dashboard"}
-      />
-    );
+    return <ToastWithRedirect message={data.message} to={"/dashboard"} />;
   }
 
   const {
@@ -98,6 +93,11 @@ export default function SubmissionDetails() {
             </Title>
             <Text size="lg">{Math.round(acceptanceRate * 100)}%</Text>
           </div>
+        </Center>
+        <Center mt={"xs"}>
+          <Button component={Link} to={"/dashboard"}>
+            ← Back to dashboard
+          </Button>
         </Center>
         <Card shadow="xs" padding="lg" radius="lg" mt="xl">
           <div

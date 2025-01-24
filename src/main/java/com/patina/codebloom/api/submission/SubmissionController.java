@@ -209,7 +209,7 @@ public class SubmissionController {
                         @ApiResponse(responseCode = "200", description = "Question found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_SUBMISSION_SUCCESS_RESPONSE.class))),
                         @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
                         @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
-        @GetMapping("/submission/{submissionId}")
+        @GetMapping("/submission/s/{submissionId}")
         public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(HttpServletRequest request,
                         @PathVariable String submissionId) {
                 FakeLag.sleep(750);
