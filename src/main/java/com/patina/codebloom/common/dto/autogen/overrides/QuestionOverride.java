@@ -26,6 +26,9 @@ public class QuestionOverride {
 
     private float acceptanceRate;
 
+    private String discordName;
+    private String leetcodeUsername;
+
     public QuestionOverride(String id, String userId, String questionSlug, String questionTitle,
             QuestionDifficulty questionDifficulty, int questionNumber, String questionLink, String description,
             int pointsAwarded, float acceptanceRate, LocalDateTime createdAt, LocalDateTime submittedAt) {
@@ -140,5 +143,21 @@ public class QuestionOverride {
 
     public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+    public String getDiscordName() {
+        return discordName;
+    }
+
+    public void setDiscordName(String discordName) {
+        this.discordName = discordName;
+    }
+
+    public String getLeetcodeUsername() {
+        return leetcodeUsername;
+    }
+
+    public void setLeetcodeUsername(String leetcodeUsername) {
+        this.leetcodeUsername = leetcodeUsername;
     }
 }
