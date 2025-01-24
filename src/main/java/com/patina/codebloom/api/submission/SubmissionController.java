@@ -132,8 +132,6 @@ public class SubmissionController {
         @PostMapping("/check")
         public ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> checkLatestSubmissions(
                         HttpServletRequest request) {
-                FakeLag.sleep(350);
-
                 AuthenticationObject authenticationObject = protector.validateSession(request);
                 User user = authenticationObject.getUser();
 
