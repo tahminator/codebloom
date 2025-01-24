@@ -10,9 +10,10 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function UsernameForm() {
+  const navigate = useNavigate();
   const { mutate, isPending } = useSetLeetcodeUsername();
 
   const form = useForm({
@@ -26,10 +27,14 @@ export default function UsernameForm() {
       { leetcodeUsername: data.leetcodeUsername },
       {
         onSuccess: ({ success, message }) => {
-          return notifications.show({
+          notifications.show({
             message,
             color: success ? undefined : "red",
           });
+          if (success) {
+            navigate("/dashboard");
+          }
+          return;
         },
       }
     );
