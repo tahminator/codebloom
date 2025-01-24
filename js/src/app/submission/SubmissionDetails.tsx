@@ -1,18 +1,17 @@
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Center, Loader, Title, Text, Card } from "@mantine/core";
-import { FiExternalLink } from "react-icons/fi";
-import Toast from "@/components/ui/toast/Toast";
+import { useSubmissionDetailsQuery } from "@/app/submission/hooks";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
+import Toast from "@/components/ui/toast/Toast";
+import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { Card, Center, Loader, Text, Title } from "@mantine/core";
+import { FiExternalLink } from "react-icons/fi";
+import { useParams } from "react-router-dom";
+import classes from "./SubmissionDetail.module.css";
 
 export default function SubmissionDetails() {
   const { submissionId } = useParams();
 
-  const { data, status } = useQuery({
-    queryKey: ["submission", submissionId],
-    queryFn: () => fetchSubmissionDetails(submissionId!),
-  });
+  const { data, status } = useSubmissionDetailsQuery({ submissionId });
 
   if (status === "pending") {
     return (
@@ -26,6 +25,15 @@ export default function SubmissionDetails() {
     return <Toast message="Sorry, something went wrong." />;
   }
 
+  if (!data.data) {
+    return (
+      <ToastWithRedirect
+        message={"Sorry, this submission doesn't exist."}
+        to={"/dashboard"}
+      />
+    );
+  }
+
   const {
     questionTitle,
     questionLink,
@@ -36,7 +44,7 @@ export default function SubmissionDetails() {
   } = data.data;
 
   return (
-    <div>
+    <>
       <Header />
       <Center>
         <Title mt="lg" mb="lg" order={3}>
@@ -72,17 +80,17 @@ export default function SubmissionDetails() {
           <Text size="lg">{acceptanceRate * 100}%</Text>
         </div>
         <Card shadow="xs" padding="lg" radius="lg" mt="xl">
-          <div dangerouslySetInnerHTML={{ __html: description }}></div>
+          <div
+            dangerouslySetInnerHTML={{ __html: description }}
+            style={{
+              overflow: "auto",
+              minWidth: 0,
+            }}
+            className={classes.description}
+          />
         </Card>
       </div>
       <Footer />
-    </div>
+    </>
   );
-}
-
-async function fetchSubmissionDetails(submissionId: string) {
-  const res = await fetch(`/api/leetcode/submission/${submissionId}`);
-  const json = await res.json();
-
-  return json;
 }
