@@ -382,27 +382,38 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
         String sql = """
                 WITH latest_leaderboard AS (
-                    SELECT id AS \"leaderboardId\"
-                    FROM \"Leaderboard\"
-                    WHERE \"deletedAt\" IS NULL
-                    ORDER BY \"createdAt\" DESC
+                    SELECT id
+                    FROM "Leaderboard"
+                    WHERE "deletedAt" IS NULL
+                    ORDER BY "createdAt" DESC
                     LIMIT 1
                 )
                 SELECT
-                    l.id AS \"leaderboardId\",
-                    l.name AS \"leaderboardName\",
-                    l."createdAt" AS \"leaderboardCreatedAt\",
-                    l."deletedAt" AS \"leaderboardDeletedAt\",
-                    u.id AS \"userId\",
-                    u.\"discordId\",
-                    u.\"discordName\",
-                    u.\"leetcodeUsername\",
-                    m.\"totalScore\"
+                    l.id AS "leaderboardId",
+                    l.name AS "leaderboardName",
+                    l."createdAt" AS "leaderboardCreatedAt",
+                    l."deletedAt" AS "leaderboardDeletedAt",
+                    ranked_users."userId",
+                    ranked_users."discordId",
+                    ranked_users."discordName",
+                    ranked_users."leetcodeUsername",
+                    ranked_users."totalScore"
                 FROM "Leaderboard" l
-                INNER JOIN latest_leaderboard ll ON l.id = ll.\"leaderboardId\"
-                LEFT JOIN "Metadata" m ON l.id = m."leaderboardId"
-                LEFT JOIN "User" u ON m."userId" = u.id
-                ORDER BY \"leaderboardCreatedAt\"
+                INNER JOIN latest_leaderboard ll ON l.id = ll.id
+                LEFT JOIN (
+                        SELECT
+                            m."leaderboardId",
+                            u.id AS "userId",
+                            u."discordId",
+                            u."discordName",
+                            u."leetcodeUsername",
+                            m."totalScore",
+                            ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
+                        FROM "Metadata" m
+                        JOIN "User" u ON m."userId" = u.id
+                        ORDER BY "row_num" ASC
+                ) ranked_users ON l.id = ranked_users."leaderboardId"
+                ORDER BY "leaderboardCreatedAt" DESC
                 """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
