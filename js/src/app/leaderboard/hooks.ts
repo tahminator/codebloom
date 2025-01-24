@@ -11,7 +11,7 @@ export const useFullLeaderboardEntriesQuery = () => {
 
 async function fetchLeaderboard() {
   const response = await fetch(
-    !import.meta.env.DEV
+    import.meta.env.DEV
       ? "/api/test/leaderboard/all"
       : "/api/leaderboard/current",
     {
