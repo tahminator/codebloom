@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.patina.codebloom.api.submission.body.LeetcodeUsernameObject;
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.models.question.Question;
+import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
@@ -52,7 +53,7 @@ import jakarta.validation.Valid;
 public class SubmissionController {
         // 5 Minute rate limit to avoid abuse.
         // TODO - Change this from 5 seconds back to 5 minutes once done testing.
-        private double SECONDS_TO_WAIT = 0.1 * 60;
+        private double SECONDS_TO_WAIT = 1 * 60;
 
         private final UserRepository userRepository;
         private final Protector protector;
@@ -214,7 +215,7 @@ public class SubmissionController {
                 FakeLag.sleep(750);
 
                 protector.validateSession(request);
-                Question question = questionRepository.getQuestionById(submissionId);
+                QuestionWithUser question = questionRepository.getQuestionWithUserById(submissionId);
 
                 if (question == null) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)

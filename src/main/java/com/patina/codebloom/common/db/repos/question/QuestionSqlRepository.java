@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
+import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
@@ -92,6 +93,68 @@ public class QuestionSqlRepository implements QuestionRepository {
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
                             questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
                             submittedAt);
+                    return question;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve question", e);
+        }
+
+        return question;
+    }
+
+    public QuestionWithUser getQuestionWithUserById(String id) {
+        QuestionWithUser question = null;
+        String sql = """
+                    SELECT
+                        q.id,
+                        q."userId",
+                        q."questionSlug",
+                        q."questionDifficulty",
+                        q."questionNumber",
+                        q."questionLink",
+                        q."pointsAwarded",
+                        q."questionTitle",
+                        q.description,
+                        q."acceptanceRate",
+                        q."createdAt",
+                        q."submittedAt",
+                        u."discordName",
+                        u."leetcodeUsername"
+                    FROM "Question" q
+                    LEFT JOIN "User" u on q."userId" = u.id
+                    WHERE q.id = ?
+                """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    System.out.println(rs.toString());
+                    var questionId = rs.getString("id");
+                    var userId = rs.getString("userId");
+                    var questionSlug = rs.getString("questionSlug");
+                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
+                    var questionNumber = rs.getInt("questionNumber");
+                    var questionLink = rs.getString("questionLink");
+                    int points = rs.getInt("pointsAwarded");
+                    OptionalInt pointsAwarded;
+                    if (rs.wasNull()) {
+                        pointsAwarded = null;
+                    } else {
+                        pointsAwarded = OptionalInt.of(points);
+                    }
+                    var questionTitle = rs.getString("questionTitle");
+                    var description = rs.getString("description");
+                    var acceptanceRate = rs.getFloat("acceptanceRate");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty,
+                            questionNumber,
+                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
+                            submittedAt, discordName, leetcodeUsername);
                     return question;
                 }
             }
