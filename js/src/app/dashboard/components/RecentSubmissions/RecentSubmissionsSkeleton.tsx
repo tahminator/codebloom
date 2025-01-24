@@ -4,7 +4,7 @@ import { SiLeetcode } from "react-icons/si";
 
 export default function RecentSubmissionsSkeleton() {
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Flex direction={"row"} justify={"space-between"} w={"100%"}>
         <Title order={4}>
           <Skeleton>Really long tVal name</Skeleton>

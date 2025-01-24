@@ -15,7 +15,7 @@ export default function ProblemOfTheDay() {
 
   if (status === "pending") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -31,7 +31,7 @@ export default function ProblemOfTheDay() {
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -49,7 +49,7 @@ export default function ProblemOfTheDay() {
 
   if (!data.success) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -68,7 +68,7 @@ export default function ProblemOfTheDay() {
   const json = data.data;
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Center>
         <Title order={3}>Problem of the day</Title>
       </Center>

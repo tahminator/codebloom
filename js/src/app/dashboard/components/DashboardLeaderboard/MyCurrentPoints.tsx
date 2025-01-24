@@ -1,5 +1,5 @@
 import { useMyRecentLeaderboardData } from "@/app/dashboard/components/DashboardLeaderboard/hooks";
-import { Flex, Loader, Text } from "@mantine/core";
+import { Center, Flex, Loader, Text } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
@@ -17,7 +17,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
   }
 
   return (
-    <Flex direction={"column"} gap={"md"} my={"xs"}>
+    <Flex direction={"column"} gap={"md"} m={"xs"}>
       <Flex
         direction={"row"}
         justify={"space-between"}

@@ -1,4 +1,5 @@
 import DashboardLeaderboardSkeleton from "@/app/dashboard/components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
+import { useFixMyPointsPrefetch } from "@/app/dashboard/components/DashboardLeaderboard/hooks";
 import MyCurrentPoints from "@/app/dashboard/components/DashboardLeaderboard/MyCurrentPoints";
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
 import { Button, Card, Divider, Flex, Text, Title } from "@mantine/core";
@@ -11,6 +12,9 @@ export default function LeaderboardForDashboard({
 }: {
   userId: string;
 }) {
+  // Hack to fix a race condition.
+  useFixMyPointsPrefetch({ userId });
+
   const { data, status } = useShallowLeaderboardEntriesQuery();
 
   if (status === "pending") {
@@ -19,7 +23,7 @@ export default function LeaderboardForDashboard({
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -37,7 +41,7 @@ export default function LeaderboardForDashboard({
 
   if (!data.json || !data.json.users.length) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -59,13 +63,19 @@ export default function LeaderboardForDashboard({
   const inTop5 = !!json.users.find((u) => u.id === userId);
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"60vh"}>
+    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Flex direction={"row"} justify={"space-between"} w={"100%"}>
         <Title order={4}>{json.name}</Title>
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all
         </Button>
       </Flex>
+      {!inTop5 && (
+        <>
+          <MyCurrentPoints userId={userId} />
+          <Divider orientation={"horizontal"} />
+        </>
+      )}
       <Flex direction={"column"} gap={"md"} m={"xs"}>
         {json.users.map((user, idx) => {
           const isMe = user.id === userId;
@@ -104,39 +114,43 @@ export default function LeaderboardForDashboard({
               p={"xs"}
             >
               <Text>{idx + 1}.</Text>
-              <Flex direction={"column"}>
-                <Text ta="center">
-                  <FaDiscord
-                    style={{
-                      display: "inline",
-                      marginLeft: "4px",
-                      marginRight: "4px",
-                    }}
-                  />
-                  {user.discordName}
-                </Text>
-                <Text ta="center">
-                  <SiLeetcode
-                    style={{
-                      display: "inline",
-                      marginLeft: "4px",
-                      marginRight: "4px",
-                    }}
-                  />
-                  {user.leetcodeUsername}
-                </Text>
-              </Flex>
+              <Button
+                h={"100%"}
+                variant={"transparent"}
+                style={{
+                  color: "white",
+                }}
+                component={Link}
+                to={`/submission/u/${user.id}`}
+              >
+                <Flex direction={"column"}>
+                  <Text ta="center">
+                    <FaDiscord
+                      style={{
+                        display: "inline",
+                        marginLeft: "4px",
+                        marginRight: "4px",
+                      }}
+                    />
+                    {user.discordName}
+                  </Text>
+                  <Text ta="center">
+                    <SiLeetcode
+                      style={{
+                        display: "inline",
+                        marginLeft: "4px",
+                        marginRight: "4px",
+                      }}
+                    />
+                    {user.leetcodeUsername}
+                  </Text>
+                </Flex>
+              </Button>
               <Text>{user.totalScore}</Text>
             </Flex>
           );
         })}
       </Flex>
-      {!inTop5 && (
-        <>
-          <Divider orientation={"horizontal"} />
-          <MyCurrentPoints userId={userId} />
-        </>
-      )}
     </Card>
   );
 }

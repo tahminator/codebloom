@@ -14,6 +14,7 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.user.UserWithQuestions;
 
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
@@ -130,7 +131,6 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    System.out.println(rs.toString());
                     var questionId = rs.getString("id");
                     var userId = rs.getString("userId");
                     var questionSlug = rs.getString("questionSlug");
@@ -165,15 +165,43 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    public ArrayList<Question> getQuestionsByUserId(String userId, int start, int end) {
-        ArrayList<Question> questions = new ArrayList<>();
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE \"userId\" = ? ORDER BY \"submittedAt\" DESC LIMIT ? OFFSET ?";
+    /**
+     * TODO - Change this to be UserWithQuestions instead.
+     */
+    public ArrayList<QuestionWithUser> getQuestionsByUserId(String userId, int page, int pageSize) {
+
+        ArrayList<QuestionWithUser> questions = new ArrayList<>();
+        String sql = """
+                SELECT
+                    u."discordName",
+                    u."leetcodeUsername",
+                    q.id,
+                    q."userId",
+                    q."questionSlug",
+                    q."questionDifficulty",
+                    q."questionNumber",
+                    q."questionLink",
+                    q."pointsAwarded",
+                    q."questionTitle",
+                    q.description,
+                    q."acceptanceRate",
+                    q."createdAt",
+                    q."submittedAt"
+                FROM
+                    "Question" q
+                LEFT JOIN
+                    "User" u on q."userId" = u.id
+                WHERE
+                    "userId" = ?
+                ORDER BY "submittedAt" DESC
+                LIMIT ? OFFSET ?
+                """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
 
-            stmt.setInt(2, end - start);
-            stmt.setInt(3, start);
+            stmt.setInt(2, pageSize);
+            stmt.setInt(3, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
@@ -195,10 +223,13 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var acceptanceRate = rs.getFloat("acceptanceRate");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    Question question = new Question(questionId, userIdResult, questionSlug, questionDifficulty,
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    QuestionWithUser question = new QuestionWithUser(questionId, userIdResult, questionSlug,
+                            questionDifficulty,
                             questionNumber,
                             questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt);
+                            submittedAt, discordName, leetcodeUsername);
                     questions.add(question);
                 }
             }
@@ -292,5 +323,28 @@ public class QuestionSqlRepository implements QuestionRepository {
         }
 
         return question;
+    }
+
+    public int getQuestionCountByUserId(String userId) {
+        String sql = """
+                SELECT
+                    COUNT(*)
+                FROM
+                    "Question"
+                WHERE
+                    "userId" = ?
+                """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(userId));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve questions", e);
+        }
+
+        return 0;
     }
 }
