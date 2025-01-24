@@ -14,7 +14,6 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
-import com.patina.codebloom.common.db.models.user.UserWithQuestions;
 
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
