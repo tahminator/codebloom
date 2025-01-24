@@ -1,4 +1,4 @@
-import SubmissionDetails from "@/app/dashboard/components/RecentSubmissions/SubmissionDetails";
+import SubmissionDetails from "@/app/submission/SubmissionDetails";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
 import LoginPage from "@/app/login/Login.page";
