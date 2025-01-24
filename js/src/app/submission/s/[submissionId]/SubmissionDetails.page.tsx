@@ -114,17 +114,22 @@ export default function SubmissionDetails() {
               <Title display={"inline"} c={"blue.5"} order={3}>
                 {discordName}
               </Title>{" "}
-              (
-              <SiLeetcode
-                style={{
-                  display: "inline",
-                  color: "var(--mantine-color-yellow-5)",
-                }}
-              />{" "}
-              <Title display={"inline"} c={"yellow.5"} order={3}>
-                {leetcodeUsername}
-              </Title>
-              ).
+              <Link
+                to={`https://leetcode.com/u/${leetcodeUsername}`}
+                className="hover:underline"
+              >
+                (
+                <SiLeetcode
+                  style={{
+                    display: "inline",
+                    color: "var(--mantine-color-yellow-5)",
+                  }}
+                />{" "}
+                <Title display={"inline"} c={"yellow.5"} order={3}>
+                  {leetcodeUsername}
+                </Title>
+                ).
+              </Link>
             </Title>
           </Center>
           <Center>
