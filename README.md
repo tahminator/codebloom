@@ -6,7 +6,7 @@
 
 ## Authors
 
-- [Tahmid Ahmed](https://github.com/0pengu)
+- [Tahmid Ahmed](https://github.com/tahminator)
 - [Alfardil Alam](https://github.com/alfardil)
 - [Michael Nuñez](https://github.com/im-michaeln)
 - [Alisha Zaman](https://github.com/az2924)
