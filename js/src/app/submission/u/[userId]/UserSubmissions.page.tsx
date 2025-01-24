@@ -20,7 +20,7 @@ const pageSize = 5;
 export default function UserSubmissions() {
   const { userId } = useParams();
 
-  const { data, status, page, goBack, goForward, isPlaceholderData } =
+  const { data, status, page, goBack, goForward, isPlaceholderData, goTo } =
     useUserSubmissionsQuery({
       userId,
     });
@@ -109,18 +109,26 @@ export default function UserSubmissions() {
           <Title display={"inline"} c={"blue.5"}>
             {submissions[0].discordName}
           </Title>{" "}
-          (
-          <SiLeetcode
-            style={{
-              display: "inline",
-              color: "var(--mantine-color-yellow-5)",
-            }}
-          />{" "}
-          <Title display={"inline"} c={"yellow.5"}>
-            {submissions[0].leetcodeUsername}
-          </Title>
-          )
+          <Link
+            to={`https://leetcode.com/u/${submissions[0].leetcodeUsername}`}
+            className="hover:underline"
+          >
+            (
+            <SiLeetcode
+              style={{
+                display: "inline",
+                color: "var(--mantine-color-yellow-5)",
+              }}
+            />{" "}
+            <Title display={"inline"} c={"yellow.5"}>
+              {submissions[0].leetcodeUsername}
+            </Title>
+            )
+          </Link>
         </Title>
+        <Button component={Link} to={"/dashboard"} variant={"outline"}>
+          Go back to dashboard
+        </Button>
         <Table verticalSpacing={"sm"}>
           <Table.Thead>
             <Table.Tr>
@@ -195,6 +203,17 @@ export default function UserSubmissions() {
             <Button disabled={page === 1} onClick={goBack}>
               Back
             </Button>
+            {Array(data.pages)
+              .fill(0)
+              .map((_, index) => (
+                <button
+                  key={index + 1}
+                  onClick={() => goTo(index + 1)}
+                  style={{ margin: "0 5px" }}
+                >
+                  {index + 1}
+                </button>
+              ))}
             <Button
               disabled={isPlaceholderData || !data.hasNextPage}
               onClick={() => {

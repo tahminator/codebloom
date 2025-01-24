@@ -53,7 +53,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/leetcode")
 public class SubmissionController {
         /* Page size for submissions */
-        private final int submissionsPageSize = 10;
+        private final int submissionsPageSize = 5;
 
         // 5 Minute rate limit to avoid abuse.
         // TODO - Change this from 5 seconds back to 5 minutes once done testing.
