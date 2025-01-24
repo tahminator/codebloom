@@ -48,6 +48,7 @@ export default function MiniLeaderboardMobile() {
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
             width={"300px"}
+            userId={first.id}
           />
         )}
         {second && (
@@ -57,6 +58,7 @@ export default function MiniLeaderboardMobile() {
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
             width={"300px"}
+            userId={second.id}
           />
         )}
         {third && (
@@ -66,6 +68,7 @@ export default function MiniLeaderboardMobile() {
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
             width={"300px"}
+            userId={third.id}
           />
         )}
       </div>
