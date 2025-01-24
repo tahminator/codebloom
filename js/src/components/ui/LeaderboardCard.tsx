@@ -2,6 +2,7 @@ import { Card, Text } from "@mantine/core";
 import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
+import { Link } from "react-router-dom";
 
 export default function LeaderboardCard({
   placeString,
@@ -9,12 +10,14 @@ export default function LeaderboardCard({
   leetcodeUsername,
   totalScore,
   width,
+  userId,
 }: {
   placeString: "First" | "Second" | "Third";
   discordName: string;
   leetcodeUsername: string;
   totalScore: number;
   width: CSSProperties["width"];
+  userId: string;
 }) {
   const borderColor = (() => {
     if (placeString === "First") return "border-yellow-300";
@@ -38,6 +41,8 @@ export default function LeaderboardCard({
         height,
         width,
       }}
+      component={Link}
+      to={`/submission/u/${userId}`}
     >
       <Text ta="center" size="xl">
         {placeString}
