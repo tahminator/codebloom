@@ -11,7 +11,7 @@ export const useShallowLeaderboardEntriesQuery = () => {
 
 async function fetchLeaderboard() {
   const response = await fetch(
-    import.meta.env.DEV
+    !import.meta.env.DEV
       ? "/api/test/leaderboard/shallow"
       : "/api/leaderboard/current/shallow",
     {
