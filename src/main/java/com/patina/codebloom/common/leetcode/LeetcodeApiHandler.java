@@ -10,4 +10,6 @@ public interface LeetcodeApiHandler {
     public LeetcodeQuestion findQuestionBySlug(String slug);
 
     public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(String username);
+
+    public void findSubmissionDetailBySubmissionId(int submissionId);
 }
