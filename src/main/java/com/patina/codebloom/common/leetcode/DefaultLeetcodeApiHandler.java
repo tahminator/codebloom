@@ -10,11 +10,13 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.queries.GetSubmissionDetails;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectSubmisisonsQuery;
 
@@ -26,7 +28,7 @@ import io.restassured.specification.RequestSpecification;
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
-    public static String buildQuestionRequestBody(String query, String slug) throws Exception {
+    public static String buildQuestionRequestBody(String query, String slug) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> variables = new HashMap<>();
@@ -39,7 +41,8 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         return objectMapper.writeValueAsString(requestBodyMap);
     }
 
-    public static String buildRecentSubmissionsRequestBody(String query, String username) throws Exception {
+    public static String buildRecentSubmissionsRequestBody(String query, String username)
+            throws JsonProcessingException {
         // API doesn't let you get more than this amount.
         int limit = 20;
 
@@ -54,6 +57,21 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         requestBodyMap.put("variables", variables);
 
         return objectMapper.writeValueAsString(requestBodyMap);
+    }
+
+    public static String buildGetSubmissionDetailRequestBody(String query, int submissionId)
+            throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Integer> variables = new HashMap<>();
+        variables.put("submissionId", submissionId);
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+        requestBodyMap.put("variables", variables);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
+
     }
 
     @Override
@@ -126,12 +144,15 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
             JsonPath jsonPath = response.jsonPath();
 
+            System.out.println(response.asPrettyString());
+
             List<Map<String, Object>> submissionsList = jsonPath.getList("data.recentSubmissionList");
             if (submissionsList == null || submissionsList.isEmpty()) {
                 return submissions;
             }
 
             for (int i = 0; i < submissionsList.size(); i++) {
+                int id = jsonPath.getInt("data.recentSubmissionList[" + i + "].id");
                 String title = jsonPath.getString("data.recentSubmissionList[" + i + "].title");
                 String titleSlug = jsonPath.getString("data.recentSubmissionList[" + i + "].titleSlug");
                 String timestampString = jsonPath.getString("data.recentSubmissionList[" + i + "].timestamp");
@@ -140,13 +161,43 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
                 LocalDateTime timestamp = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
                 String statusDisplay = jsonPath.getString("data.recentSubmissionList[" + i + "].statusDisplay");
-                submissions.add(new LeetcodeSubmission(title, titleSlug, timestamp, statusDisplay));
+                submissions.add(new LeetcodeSubmission(id, title, titleSlug, timestamp, statusDisplay));
             }
 
             return submissions;
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
+    }
+
+    @Override
+    public void findSubmissionDetailBySubmissionId(int submissionId) {
+        String endpoint = "https://leetcode.com/graphql";
+        String query = GetSubmissionDetails.query;
+
+        String requestBody;
+        try {
+            requestBody = buildGetSubmissionDetailRequestBody(query, submissionId);
+        } catch (Exception e) {
+            throw new RuntimeException("Error building the request body");
+        }
+
+        try {
+            RequestSpecification reqSpec = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .header("Referer", "https://leetcode.com")
+                    .cookie("LEETCODE_SESSION=REDACTED;")
+                    .body(requestBody);
+            Response response = reqSpec.post(endpoint);
+
+            JsonPath jsonPath = response.jsonPath();
+
+            System.out.println(response.asPrettyString());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching the API", e);
+        }
+
     }
 
 }
