@@ -48,18 +48,20 @@ export default function Header() {
       }}
     >
       <header className={classes.header}>
-        <Group>
-          <img src={Logo} width={45} alt="Logo" />
-          <Title>
-            <Text
-              gradient={{ from: "rgb(75,233,167)", to: "white" }}
-              variant="gradient"
-              size="lg"
-            >
-              CodeBloom
-            </Text>
-          </Title>
-        </Group>
+        <Link to="/">
+          <Group>
+            <img src={Logo} width={45} alt="Logo" />
+            <Title>
+              <Text
+                gradient={{ from: "rgb(75,233,167)", to: "white" }}
+                variant="gradient"
+                size="lg"
+              >
+                CodeBloom
+              </Text>
+            </Title>
+          </Group>
+        </Link>
         <Group visibleFrom="sm">
           <Link to="/">
             <Button variant="transparent">Home</Button>
