@@ -28,6 +28,11 @@ public class Question {
     private LocalDateTime createdAt;
     private LocalDateTime submittedAt;
 
+    private String runtime;
+    private String memory;
+    private String code;
+    private String language;
+
     /*
      * No ID generated yet; brand new Question.
      */
@@ -45,6 +50,51 @@ public class Question {
         this.acceptanceRate = acceptanceRate;
         this.createdAt = null;
         this.submittedAt = submittedAt;
+    }
+
+    public Question(String userId, String questionSlug, QuestionDifficulty questionDifficulty, int questionNumber,
+            String questionLink, String questionTitle, String description, OptionalInt pointsAwarded,
+            float acceptanceRate, LocalDateTime submittedAt, String runtime, String memory, String code,
+            String language) {
+        this.userId = userId;
+        this.questionSlug = questionSlug;
+        this.questionDifficulty = questionDifficulty;
+        this.questionNumber = questionNumber;
+        this.questionLink = questionLink;
+        this.questionTitle = questionTitle;
+        this.description = description;
+        this.pointsAwarded = pointsAwarded;
+        this.acceptanceRate = acceptanceRate;
+        this.createdAt = null;
+        this.submittedAt = submittedAt;
+        this.runtime = runtime;
+        this.memory = memory;
+        this.code = code;
+        this.language = language;
+    }
+
+    public Question(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
+            int questionNumber,
+            String questionLink, OptionalInt pointsAwarded, String questionTitle, String description,
+            float acceptanceRate, LocalDateTime createdAt, LocalDateTime submittedAt, String runtime, String memory,
+            String code,
+            String language) {
+        this.id = id;
+        this.userId = userId;
+        this.questionSlug = questionSlug;
+        this.questionDifficulty = questionDifficulty;
+        this.questionNumber = questionNumber;
+        this.questionLink = questionLink;
+        this.pointsAwarded = pointsAwarded;
+        this.questionTitle = questionTitle;
+        this.description = description;
+        this.acceptanceRate = acceptanceRate;
+        this.createdAt = createdAt;
+        this.submittedAt = submittedAt;
+        this.runtime = runtime;
+        this.memory = memory;
+        this.code = code;
+        this.language = language;
     }
 
     public Question(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
@@ -160,4 +210,37 @@ public class Question {
     public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
     }
+
+    public String getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(String runtime) {
+        this.runtime = runtime;
+    }
+
+    public String getMemory() {
+        return memory;
+    }
+
+    public void setMemory(String memory) {
+        this.memory = memory;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
 }

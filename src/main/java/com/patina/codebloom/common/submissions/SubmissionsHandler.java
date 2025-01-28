@@ -3,8 +3,10 @@ package com.patina.codebloom.common.submissions;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalInt;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
@@ -16,7 +18,9 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
+import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
@@ -32,6 +36,7 @@ public class SubmissionsHandler {
     private final LeetcodeApiHandler leetcodeApiHandler;
     private final LeaderboardRepository leaderboardRepository;
     private final POTDRepository potdRepository;
+    private final UserRepository userRepository;
 
     private boolean isSameDay(LocalDateTime createdAt) {
         LocalDate createdAtDate = createdAt.toLocalDate();
@@ -41,11 +46,12 @@ public class SubmissionsHandler {
     }
 
     public SubmissionsHandler(QuestionRepository questionRepository, LeetcodeApiHandler leetcodeApiHandler,
-            LeaderboardRepository leaderboardRepository, POTDRepository potdRepository) {
+            LeaderboardRepository leaderboardRepository, POTDRepository potdRepository, UserRepository userRepository) {
         this.questionRepository = questionRepository;
         this.leetcodeApiHandler = leetcodeApiHandler;
         this.leaderboardRepository = leaderboardRepository;
         this.potdRepository = potdRepository;
+        this.userRepository = userRepository;
     }
 
     public ArrayList<AcceptedSubmission> handleSubmissions(ArrayList<LeetcodeSubmission> leetcodeSubmissions,
@@ -113,5 +119,52 @@ public class SubmissionsHandler {
         }
 
         return acceptedSubmissions;
+    }
+
+    // Uncomment this if you need to run the script. The 5 second delay allows the
+    // LeetcodeAuthStealer to run it's method first.
+    // @Scheduled(initialDelay = 5000, fixedDelay = 1000000)
+    public void updateSubmissions() {
+        System.out.println("Migration script activated. DO NOT LEAVE THIS ON IN PRODUCTION.");
+        List<User> users = userRepository.getAllUsers();
+        for (User user : users) {
+            System.out.println("Starting migration for user ID " + user.getId());
+            ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler
+                    .findSubmissionsByUsername(user.getLeetcodeUsername());
+
+            for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
+                if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
+                    continue;
+                }
+
+                Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(),
+                        user.getId());
+
+                if (question == null || question.getCode() != null) {
+                    continue;
+                }
+
+                LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler
+                        .findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
+
+                if (detailedQuestion == null) {
+                    continue;
+                }
+
+                System.out.println("Attempting to update User ID" + user.getId() + " with question of "
+                        + question.getQuestionSlug());
+
+                Question newQuestion = new Question(question.getId(), question.getUserId(), question.getQuestionSlug(),
+                        question.getQuestionDifficulty(), question.getQuestionNumber(), question.getQuestionLink(),
+                        question.getPointsAwarded(), question.getQuestionTitle(), question.getDescription(),
+                        question.getAcceptanceRate(), question.getCreatedAt(), question.getSubmittedAt(),
+                        detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(),
+                        detailedQuestion.getCode(), detailedQuestion.getLang().getName());
+
+                questionRepository.updateQuestion(newQuestion);
+            }
+        }
+
+        System.out.println("Exiting migration script.");
     }
 }

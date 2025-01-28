@@ -27,7 +27,27 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question createQuestion(Question question) {
-        String sql = "INSERT INTO \"Question\" (id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"submittedAt\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+                    INSERT INTO "Question" (
+                        id,
+                        "userId",
+                        "questionSlug",
+                        "questionDifficulty",
+                        "questionNumber",
+                        "questionLink",
+                        "pointsAwarded",
+                        "questionTitle",
+                        description,
+                        "acceptanceRate",
+                        "submittedAt",
+                        runtime,
+                        memory,
+                        code,
+                        language
+                    )
+                    VALUES
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         question.setId(UUID.randomUUID().toString());
 
@@ -50,6 +70,10 @@ public class QuestionSqlRepository implements QuestionRepository {
 
             stmt.setFloat(10, question.getAcceptanceRate());
             stmt.setObject(11, question.getSubmittedAt());
+            stmt.setString(12, question.getRuntime());
+            stmt.setString(13, question.getMemory());
+            stmt.setString(14, question.getCode());
+            stmt.setString(15, question.getLanguage());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -66,7 +90,29 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public Question getQuestionById(String id) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE id = ?";
+        String sql = """
+                    SELECT
+                        id,
+                        "userId",
+                        "questionSlug",
+                        "questionDifficulty",
+                        "questionNumber",
+                        "questionLink",
+                        "pointsAwarded",
+                        "questionTitle",
+                        description,
+                        "acceptanceRate",
+                        "createdAt",
+                        "submittedAt",
+                        runtime,
+                        memory,
+                        code,
+                        language
+                    FROM
+                        "Question"
+                    WHERE
+                        id = ?
+                """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
@@ -90,9 +136,14 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var acceptanceRate = rs.getFloat("acceptanceRate");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+                    var runtime = rs.getString("runtime");
+                    var memory = rs.getString("memory");
+                    var code = rs.getString("code");
+                    var language = rs.getString("language");
+
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
                             questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt);
+                            submittedAt, runtime, memory, code, language);
                     return question;
                 }
             }
@@ -119,6 +170,10 @@ public class QuestionSqlRepository implements QuestionRepository {
                         q."acceptanceRate",
                         q."createdAt",
                         q."submittedAt",
+                        q.runtime,
+                        q.memory,
+                        q.code,
+                        q.language,
                         u."discordName",
                         u."leetcodeUsername"
                     FROM "Question" q
@@ -150,10 +205,14 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var runtime = rs.getString("runtime");
+                    var memory = rs.getString("memory");
+                    var code = rs.getString("code");
+                    var language = rs.getString("language");
                     question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty,
                             questionNumber,
                             questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt, discordName, leetcodeUsername);
+                            submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
                     return question;
                 }
             }
@@ -185,7 +244,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                     q.description,
                     q."acceptanceRate",
                     q."createdAt",
-                    q."submittedAt"
+                    q."submittedAt",
+                    q.runtime,
+                    q.memory,
+                    q.code,
+                    q.language
                 FROM
                     "Question" q
                 LEFT JOIN
@@ -224,11 +287,15 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var runtime = rs.getString("runtime");
+                    var memory = rs.getString("memory");
+                    var code = rs.getString("code");
+                    var language = rs.getString("language");
                     QuestionWithUser question = new QuestionWithUser(questionId, userIdResult, questionSlug,
                             questionDifficulty,
                             questionNumber,
                             questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt, discordName, leetcodeUsername);
+                            submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
                     questions.add(question);
                 }
             }
@@ -240,12 +307,31 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public Question updateQuestion(Question inputQuestion) {
-        String sql = "UPDATE \"Question\" SET \"userId\" = ?, \"questionSlug\" = ?, \"questionDifficulty\" = ?, \"questionNumber\" = ?, \"questionLink\" = ?, \"pointsAwarded\" = ?, \"questionTitle\" = ?, description = ?, \"acceptanceRate\" = ?, \"submittedAt\" = ? WHERE id = ?";
+        String sql = """
+                    UPDATE "Question"
+                    SET
+                        "userId" = ?,
+                        "questionSlug" = ?,
+                        "questionDifficulty" = ?,
+                        "questionNumber" = ?,
+                        "questionLink" = ?,
+                        "pointsAwarded" = ?,
+                        "questionTitle" = ?,
+                        description = ?,
+                        "acceptanceRate" = ?,
+                        "submittedAt" = ?,
+                        runtime = ?,
+                        memory = ?,
+                        code = ?,
+                        language = ?
+                    WHERE
+                        id = ?
+                """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputQuestion.getUserId()));
             stmt.setString(2, inputQuestion.getQuestionSlug());
-            stmt.setString(3, inputQuestion.getQuestionDifficulty().name());
+            stmt.setObject(3, inputQuestion.getQuestionDifficulty().name(), java.sql.Types.OTHER);
             stmt.setInt(4, inputQuestion.getQuestionNumber());
             stmt.setString(5, inputQuestion.getQuestionLink());
 
@@ -258,7 +344,11 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(8, inputQuestion.getDescription());
             stmt.setFloat(9, inputQuestion.getAcceptanceRate());
             stmt.setObject(10, inputQuestion.getSubmittedAt());
-            stmt.setObject(11, UUID.fromString(inputQuestion.getId()));
+            stmt.setString(11, inputQuestion.getRuntime());
+            stmt.setString(12, inputQuestion.getMemory());
+            stmt.setString(13, inputQuestion.getCode());
+            stmt.setString(14, inputQuestion.getLanguage());
+            stmt.setObject(15, UUID.fromString(inputQuestion.getId()));
 
             stmt.executeUpdate();
 
@@ -286,7 +376,30 @@ public class QuestionSqlRepository implements QuestionRepository {
     @Override
     public Question getQuestionBySlugAndUserId(String slug, String inputtedUserId) {
         Question question = null;
-        String sql = "SELECT id, \"userId\", \"questionSlug\", \"questionDifficulty\", \"questionNumber\", \"questionLink\", \"pointsAwarded\", \"questionTitle\", description, \"acceptanceRate\", \"createdAt\", \"submittedAt\" FROM \"Question\" WHERE \"questionSlug\" = ? AND \"userId\" = ?";
+        String sql = """
+                    SELECT
+                        id,
+                        "userId",
+                        "questionSlug",
+                        "questionDifficulty",
+                        "questionNumber",
+                        "questionLink",
+                        "pointsAwarded",
+                        "questionTitle",
+                        description,
+                        "acceptanceRate",
+                        "createdAt",
+                        "submittedAt",
+                        runtime,
+                        memory,
+                        code,
+                        language
+                    FROM
+                        "Question"
+                    WHERE
+                        "questionSlug" = ?
+                        AND "userId" = ?
+                """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, slug);
@@ -311,9 +424,13 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var acceptanceRate = rs.getFloat("acceptanceRate");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+                    var runtime = rs.getString("runtime");
+                    var memory = rs.getString("memory");
+                    var code = rs.getString("code");
+                    var language = rs.getString("language");
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
                             questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt);
+                            submittedAt, runtime, memory, code, language);
                     return question;
                 }
             }
