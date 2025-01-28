@@ -201,7 +201,7 @@ export default function SubmissionDetails() {
                 minWidth: 0,
                 borderRadius: "8px",
               }}
-              language={language}
+              language={language === "python3" ? "python" : language}
             >
               {code}
             </SyntaxHighlighter>
