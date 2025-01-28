@@ -1,7 +1,11 @@
 package com.patina.codebloom.scheduled.auth;
 
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +18,8 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.Cookie;
 import com.microsoft.playwright.options.LoadState;
+import com.patina.codebloom.common.db.models.auth.Auth;
+import com.patina.codebloom.common.db.repos.auth.AuthRepository;
 
 @Component
 /**
@@ -26,6 +32,18 @@ import com.microsoft.playwright.options.LoadState;
 public class LeetcodeAuthStealer {
     private static String cookie;
 
+    @Value("${github.username}")
+    private String githubUsername;
+
+    @Value("${github.password}")
+    private String githubPassword;
+
+    private final AuthRepository authRepository;
+
+    public LeetcodeAuthStealer(AuthRepository authRepository) {
+        this.authRepository = authRepository;
+    }
+
     /**
      * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b>
      * <div />
@@ -35,11 +53,21 @@ public class LeetcodeAuthStealer {
      * authenticated queries such as used to retrieve code from
      * our user submissions.
      */
-    @Scheduled(initialDelay = 0, fixedDelay = 1000000)
+    @Scheduled(initialDelay = 0, fixedDelay = 86400000)
     public void stealAuthCookie() {
+        Auth mostRecentAuth = authRepository.getMostRecentAuth();
+
+        // The auth token should be refreshed every day.
+        if (mostRecentAuth != null
+                && mostRecentAuth.getCreatedAt().isAfter(
+                        LocalDateTime.now().minus(10, ChronoUnit.DAYS))) {
+            cookie = mostRecentAuth.getToken();
+            return;
+        }
+
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.firefox()
-                    .launch(new BrowserType.LaunchOptions().setHeadless(false).setTimeout(5000));
+                    .launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(5000));
             BrowserContext context = browser.newContext(new NewContextOptions()
                     .setUserAgent(
                             "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko)  Chrome/48.0.2090.359 Mobile Safari/601.9")
@@ -52,8 +80,8 @@ public class LeetcodeAuthStealer {
 
             page.waitForLoadState(LoadState.NETWORKIDLE);
 
-            page.fill("#login_field", "REDACTED");
-            page.fill("#password", "REDACTED");
+            page.fill("#login_field", githubUsername);
+            page.fill("#password", githubPassword);
 
             page.click("input[name=\"commit\"]");
 
@@ -80,7 +108,13 @@ public class LeetcodeAuthStealer {
             if (page.url().equals("https://leetcode.com/")) {
                 for (Cookie cookie : page.context().cookies()) {
                     if (cookie.name.equals("LEETCODE_SESSION")) {
-                        System.out.println(cookie.name + " " + cookie.value);
+                        // System.out.println(cookie.name + " " + cookie.value);
+                        try {
+                            authRepository.createAuth(new Auth(cookie.value));
+                            LeetcodeAuthStealer.cookie = cookie.value;
+                        } catch (Exception e) {
+                            System.err.println(e);
+                        }
                     }
                 }
             } else {
@@ -94,9 +128,5 @@ public class LeetcodeAuthStealer {
 
     public static String getCookie() {
         return cookie;
-    }
-
-    public static void setCookie(String cookie) {
-        LeetcodeAuthStealer.cookie = cookie;
     }
 }

@@ -9,6 +9,7 @@ import {
   Button,
   Card,
   Center,
+  Flex,
   Loader,
   Text,
   Title,
@@ -51,6 +52,10 @@ export default function SubmissionDetails() {
     acceptanceRate,
     discordName,
     leetcodeUsername,
+    code,
+    runtime,
+    memory,
+    language,
   } = data.data;
 
   const badgeAcceptedColor = (() => {
@@ -178,6 +183,24 @@ export default function SubmissionDetails() {
               }}
               className={classes.description}
             />
+          </Card>
+          <Card shadow="xs" padding="lg" radius="lg" mt="xl">
+            <Flex direction={"column"} gap={"md"} align={"center"}>
+              <Title order={3}>
+                {language[0].toUpperCase() + language.slice(1)}
+              </Title>
+              <Text>Runtime: {runtime}</Text>
+              <Text>Memory: {memory}</Text>
+            </Flex>
+            <pre
+              style={{
+                overflow: "auto",
+                minWidth: 0,
+              }}
+              className={classes.description}
+            >
+              {code}
+            </pre>
           </Card>
         </div>
       </Box>
