@@ -19,6 +19,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import classes from "./SubmissionDetail.module.css";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export default function SubmissionDetails() {
   const navigate = useNavigate();
@@ -192,15 +194,17 @@ export default function SubmissionDetails() {
               <Text>Runtime: {runtime}</Text>
               <Text>Memory: {memory}</Text>
             </Flex>
-            <pre
-              style={{
+            <SyntaxHighlighter
+              style={gruvboxDark}
+              customStyle={{
                 overflow: "auto",
                 minWidth: 0,
+                borderRadius: "8px",
               }}
-              className={classes.description}
+              language={language}
             >
               {code}
-            </pre>
+            </SyntaxHighlighter>
           </Card>
         </div>
       </Box>
