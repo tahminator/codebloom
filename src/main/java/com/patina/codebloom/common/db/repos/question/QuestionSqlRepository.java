@@ -46,7 +46,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                         language
                     )
                     VALUES
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         question.setId(UUID.randomUUID().toString());
