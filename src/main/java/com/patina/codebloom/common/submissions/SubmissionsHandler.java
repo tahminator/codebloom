@@ -83,6 +83,9 @@ public class SubmissionsHandler {
             LeetcodeQuestion leetcodeQuestion = leetcodeApiHandler
                     .findQuestionBySlug(leetcodeSubmission.getTitleSlug());
 
+            LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler
+                    .findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
+
             int points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()),
                     leetcodeQuestion.getAcceptanceRate(), multiplier);
 
@@ -96,7 +99,11 @@ public class SubmissionsHandler {
                     leetcodeQuestion.getQuestion(),
                     OptionalInt.of(points),
                     leetcodeQuestion.getAcceptanceRate(),
-                    leetcodeSubmission.getTimestamp());
+                    leetcodeSubmission.getTimestamp(),
+                    detailedQuestion.getRuntimeDisplay(),
+                    detailedQuestion.getMemoryDisplay(),
+                    detailedQuestion.getCode(),
+                    detailedQuestion.getLang().getName());
 
             questionRepository.createQuestion(newQuestion);
 
@@ -154,12 +161,21 @@ public class SubmissionsHandler {
                 System.out.println("Attempting to update User ID" + user.getId() + " with question of "
                         + question.getQuestionSlug());
 
-                Question newQuestion = new Question(question.getId(), question.getUserId(), question.getQuestionSlug(),
-                        question.getQuestionDifficulty(), question.getQuestionNumber(), question.getQuestionLink(),
-                        question.getPointsAwarded(), question.getQuestionTitle(), question.getDescription(),
-                        question.getAcceptanceRate(), question.getCreatedAt(), question.getSubmittedAt(),
-                        detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(),
-                        detailedQuestion.getCode(), detailedQuestion.getLang().getName());
+                Question newQuestion = new Question(question.getId(),
+                        question.getUserId(), question.getQuestionSlug(),
+                        question.getQuestionDifficulty(),
+                        question.getQuestionNumber(),
+                        question.getQuestionLink(),
+                        question.getPointsAwarded(),
+                        question.getQuestionTitle(),
+                        question.getDescription(),
+                        question.getAcceptanceRate(),
+                        question.getCreatedAt(),
+                        question.getSubmittedAt(),
+                        detailedQuestion.getRuntimeDisplay(),
+                        detailedQuestion.getMemoryDisplay(),
+                        detailedQuestion.getCode(),
+                        detailedQuestion.getLang().getName());
 
                 questionRepository.updateQuestion(newQuestion);
             }
