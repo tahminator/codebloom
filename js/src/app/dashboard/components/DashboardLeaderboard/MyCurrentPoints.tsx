@@ -24,7 +24,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
       gap={"md"}
       m={"xs"}
       to={`/submission/u/${userId}`}
-      className="group"
+      className="group transition-all"
     >
       <Flex
         direction={"row"}
@@ -34,10 +34,11 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
         style={{
           borderRadius: "4px",
         }}
+        className="transition-all group-hover:!bg-blue-500"
       >
-        <Text className="group-hover:underline">Me</Text>
+        <Text>Me</Text>
         <Flex direction={"column"}>
-          <Text ta="center" className="group-hover:underline">
+          <Text ta="center">
             <FaDiscord
               style={{
                 display: "inline",
@@ -47,7 +48,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
             />
             {data?.user?.discordName}
           </Text>
-          <Text ta="center" className="group-hover:underline">
+          <Text ta="center">
             <SiLeetcode
               style={{
                 display: "inline",
@@ -58,7 +59,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
             {data?.user?.leetcodeUsername}
           </Text>
         </Flex>
-        <Text className="group-hover:underline">{data?.user?.totalScore}</Text>
+        <Text>{data?.user?.totalScore}</Text>
       </Flex>
     </Flex>
   );
