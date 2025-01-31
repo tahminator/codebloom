@@ -1,228 +1,39 @@
-import CustomPagination from "@/app/submission/u/[userId]/components/CustomPagination";
-import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
-import {
-  Badge,
-  Button,
-  Center,
-  Flex,
-  Loader,
-  Table,
-  Text,
-  Title,
-} from "@mantine/core";
-import { FaDiscord, FaExternalLinkAlt } from "react-icons/fa";
-import { SiLeetcode } from "react-icons/si";
-import { Link, useParams } from "react-router-dom";
+import { useAuthQuery } from "@/app/login/hooks";
+import UserSubmissionContent from "@/app/submission/u/[userId]/component/UserSubmissionContent";
+import Toast from "@/components/ui/toast/Toast";
+import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { Flex, Loader } from "@mantine/core";
+import { useParams } from "react-router";
 
-const pageSize = 5;
-
-export default function UserSubmissions() {
+export default function UserSubmissionPage() {
   const { userId } = useParams();
-
-  const { data, status, page, goBack, goForward, isPlaceholderData, goTo } =
-    useUserSubmissionsQuery({
-      userId,
-    });
+  const { data, status } = useAuthQuery();
 
   if (status === "pending") {
     return (
-      <>
-        <Header />
-        <Flex
-          direction={"column"}
-          align={"center"}
-          justify={"center"}
-          miw={"98vw"}
-          mih={"90vh"}
-        >
-          <Loader />
-        </Flex>
-        <Footer />
-      </>
+      <Flex
+        direction={"column"}
+        align={"center"}
+        justify={"center"}
+        w={"100vw"}
+        h={"100vh"}
+      >
+        <Loader />
+      </Flex>
     );
   }
 
   if (status === "error") {
+    return <Toast message="Sorry, something went wrong." />;
+  }
+
+  const authenticated = !!data.user && !!data.session;
+
+  if (!authenticated) {
     return (
-      <>
-        <Header />
-        <Flex direction={"column"} align={"center"} miw={"98vw"} mih={"90vh"}>
-          <Text>Sorry, something went wrong.</Text>
-        </Flex>
-        <Footer />
-      </>
+      <ToastWithRedirect to="/login" message="You are not authenticated!" />
     );
   }
 
-  if (!data.success) {
-    return (
-      <>
-        <Header />
-        <Flex direction={"column"} align={"center"} miw={"98vw"} mih={"90vh"}>
-          <Text>{data.message}</Text>
-        </Flex>
-        <Footer />
-      </>
-    );
-  }
-
-  const submissions = data.data;
-
-  if (submissions.length === 0) {
-    return (
-      <>
-        <Header />
-        <Flex
-          direction={"column"}
-          align={"center"}
-          justify={"center"}
-          miw={"98vw"}
-          mih={"90vh"}
-          gap={"sm"}
-        >
-          <Text c={"dimmed"}>Sorry, no submissions were found.</Text>
-          <Button component={Link} to={"/dashboard"} variant={"outline"}>
-            Go back to dashboard
-          </Button>
-        </Flex>
-        <Footer />
-      </>
-    );
-  }
-
-  return (
-    <>
-      <Header />
-      <Flex
-        direction={"column"}
-        align={"center"}
-        miw={"98vw"}
-        mih={"90vh"}
-        p={"lg"}
-      >
-        <Title>
-          Submissions for{" "}
-          <FaDiscord
-            style={{ display: "inline", color: "var(--mantine-color-blue-5)" }}
-          />{" "}
-          <Title display={"inline"} c={"blue.5"}>
-            {submissions[0].discordName}
-          </Title>{" "}
-          <Link
-            to={`https://leetcode.com/u/${submissions[0].leetcodeUsername}`}
-            className="hover:underline"
-          >
-            (
-            <SiLeetcode
-              style={{
-                display: "inline",
-                color: "var(--mantine-color-yellow-5)",
-              }}
-            />{" "}
-            <Title display={"inline"} c={"yellow.5"}>
-              {submissions[0].leetcodeUsername}
-            </Title>
-            )
-          </Link>
-        </Title>
-        <Button component={Link} to={"/dashboard"} variant={"outline"}>
-          Go back to dashboard
-        </Button>
-        <Table verticalSpacing={"sm"}>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th />
-              <Table.Th>Title</Table.Th>
-              <Table.Th>Difficulty</Table.Th>
-              <Table.Th>Acceptance Rate</Table.Th>
-              <Table.Th>Pts</Table.Th>
-              <Table.Th />
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {submissions.map((submission, index) => {
-              const badgeDifficultyColor = (() => {
-                if (submission.questionDifficulty === "Easy") {
-                  return undefined;
-                }
-                if (submission.questionDifficulty === "Medium") {
-                  return "yellow";
-                }
-                if (submission.questionDifficulty === "Hard") {
-                  return "red";
-                }
-                return undefined;
-              })();
-
-              const badgeAcceptedColor = (() => {
-                const acceptanceRate = submission.acceptanceRate * 100;
-                if (acceptanceRate >= 75) {
-                  return undefined;
-                }
-                if (acceptanceRate >= 50) {
-                  return "yellow";
-                }
-                if (acceptanceRate >= 30) {
-                  return "red";
-                }
-                return undefined;
-              })();
-
-              return (
-                <Table.Tr key={index}>
-                  <Table.Td>{(page - 1) * pageSize + (index + 1)}</Table.Td>
-                  <Table.Td>{submission.questionTitle}</Table.Td>
-                  <Table.Td>
-                    <Badge ta="center" color={badgeDifficultyColor}>
-                      {submission.questionDifficulty}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <Badge ta={"center"} color={badgeAcceptedColor}>
-                      {Math.round(submission.acceptanceRate * 100)}%
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>{submission.pointsAwarded}</Table.Td>
-                  <Table.Td>
-                    <Button
-                      component={Link}
-                      to={`/submission/s/${submission.id}`}
-                      variant={"transparent"}
-                    >
-                      <FaExternalLinkAlt />
-                    </Button>
-                  </Table.Td>
-                </Table.Tr>
-              );
-            })}
-          </Table.Tbody>
-        </Table>
-        <Center>
-          <Flex direction={"row"} gap={"sm"}>
-            <Button disabled={page === 1} onClick={goBack}>
-              Back
-            </Button>
-            <CustomPagination
-              pages={data.pages}
-              currentPage={page}
-              goTo={goTo}
-            />
-            <Button
-              disabled={isPlaceholderData || !data.hasNextPage}
-              onClick={() => {
-                if (!isPlaceholderData && data.hasNextPage) {
-                  goForward();
-                }
-              }}
-            >
-              Next
-            </Button>
-          </Flex>
-        </Center>
-      </Flex>
-      <Footer />
-    </>
-  );
+  return <UserSubmissionContent userId={userId} />;
 }
