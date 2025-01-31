@@ -1,3 +1,4 @@
+import CustomPagination from "@/app/submission/u/[userId]/components/CustomPagination";
 import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
@@ -203,17 +204,11 @@ export default function UserSubmissions() {
             <Button disabled={page === 1} onClick={goBack}>
               Back
             </Button>
-            {Array(data.pages)
-              .fill(0)
-              .map((_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => goTo(index + 1)}
-                  style={{ margin: "0 5px" }}
-                >
-                  {index + 1}
-                </button>
-              ))}
+            <CustomPagination
+              pages={data.pages}
+              currentPage={page}
+              goTo={goTo}
+            />
             <Button
               disabled={isPlaceholderData || !data.hasNextPage}
               onClick={() => {
