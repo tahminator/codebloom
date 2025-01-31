@@ -107,9 +107,14 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
             p={"lg"}
             className="group"
           >
-            <Text className="group-hover:underline">{idx + 1}.</Text>
+            <Text className="transition-all group-hover:text-blue-500">
+              {idx + 1}.
+            </Text>
             <Flex direction={"column"}>
-              <Text ta="center" className="group-hover:underline">
+              <Text
+                ta="center"
+                className="transition-all group-hover:text-blue-500"
+              >
                 {q.questionTitle}
               </Text>
 
@@ -117,14 +122,17 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
                 <Badge
                   ta="center"
                   color={badgeColor}
-                  className="group-hover:underline cursor-pointer"
+                  className="transition-all group-hover:bg-blue-500"
                 >
                   {q.questionDifficulty}
                 </Badge>
               </Box>
             </Flex>
 
-            <Text ta={"center"} className="group-hover:underline">
+            <Text
+              ta={"center"}
+              className="transition-all group-hover:text-blue-500"
+            >
               +{q.pointsAwarded} points
             </Text>
           </Flex>
