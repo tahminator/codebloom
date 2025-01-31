@@ -130,11 +130,10 @@ export default function UserSubmissions() {
           Go back to dashboard
         </Button>
         <Table
-          verticalSpacing={"sm"}
+          verticalSpacing={"lg"}
           maw={"66vw"}
+          withRowBorders={false}
           striped
-          withColumnBorders
-          withTableBorder
           m={"md"}
         >
           <Table.Thead>
