@@ -2,6 +2,7 @@ import { useMyRecentLeaderboardData } from "@/app/dashboard/components/Dashboard
 import { Flex, Loader, Text } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
+import { Link } from "react-router-dom";
 
 export default function MyCurrentPoints({ userId }: { userId: string }) {
   const { data, status } = useMyRecentLeaderboardData({ userId });
@@ -17,7 +18,14 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
   }
 
   return (
-    <Flex direction={"column"} gap={"md"} m={"xs"}>
+    <Flex
+      component={Link}
+      direction={"column"}
+      gap={"md"}
+      m={"xs"}
+      to={`/submission/u/${userId}`}
+      className="group"
+    >
       <Flex
         direction={"row"}
         justify={"space-between"}
@@ -27,9 +35,9 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
           borderRadius: "4px",
         }}
       >
-        <Text>Me</Text>
+        <Text className="group-hover:underline">Me</Text>
         <Flex direction={"column"}>
-          <Text ta="center">
+          <Text ta="center" className="group-hover:underline">
             <FaDiscord
               style={{
                 display: "inline",
@@ -39,7 +47,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
             />
             {data?.user?.discordName}
           </Text>
-          <Text ta="center">
+          <Text ta="center" className="group-hover:underline">
             <SiLeetcode
               style={{
                 display: "inline",
@@ -50,7 +58,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
             {data?.user?.leetcodeUsername}
           </Text>
         </Flex>
-        <Text>{data?.user?.totalScore}</Text>
+        <Text className="group-hover:underline">{data?.user?.totalScore}</Text>
       </Flex>
     </Flex>
   );
