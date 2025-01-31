@@ -105,17 +105,16 @@ export default function LeaderboardForDashboard({
               justify={"space-between"}
               bg={isMe ? undefined : borderColor}
               style={{
-                width: "100%",
                 borderRadius: "4px",
-                padding: "var(--mantine-spacing-xs)", // Using Mantine's spacing variable
                 backgroundImage: isMe
                   ? `linear-gradient(90deg, ${
                       borderColor || "transparent"
                     }, #45a247)`
                   : undefined,
               }}
+              w={"100%"}
               p={"xs"}
-              className="group transition-all hover:bg-blue-500 hover:bg-none"
+              className="group transition-all hover:!bg-blue-500 hover:!bg-none"
             >
               <Text className="transition-all group-hover:text-white-500">
                 {idx + 1}.
