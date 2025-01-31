@@ -72,7 +72,7 @@ export default function CustomPagination({
             onClick={() => goTo(page)}
             style={{
               fontWeight: currentPage === page ? "bold" : "normal",
-              background: currentPage === page ? "lightgray" : "white",
+              background: currentPage === page ? "gray" : "white",
             }}
           >
             {page}
