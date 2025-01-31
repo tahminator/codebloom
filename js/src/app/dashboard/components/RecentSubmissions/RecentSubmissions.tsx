@@ -1,7 +1,6 @@
 import RecentSubmissionsSkeleton from "@/app/dashboard/components/RecentSubmissions/RecentSubmissionsSkeleton";
 import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
 import { Badge, Box, Button, Card, Flex, Text, Title } from "@mantine/core";
-import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 export default function RecentSubmissions({ userId }: { userId: string }) {
@@ -97,33 +96,37 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
 
         return (
           <Flex
+            component={Link}
+            to={`/submission/s/${q.id}`}
             key={idx}
             direction={"row"}
             justify={"space-between"}
             style={{
               borderRadius: "4px",
             }}
-            p={"0.4rem"}
+            p={"lg"}
+            className="group"
           >
-            <Text>{idx + 1}.</Text>
+            <Text className="group-hover:underline">{idx + 1}.</Text>
             <Flex direction={"column"}>
-              <Text ta="center">{q.questionTitle}</Text>
+              <Text ta="center" className="group-hover:underline">
+                {q.questionTitle}
+              </Text>
 
               <Box ta={"center"}>
-                <Badge ta="center" color={badgeColor}>
+                <Badge
+                  ta="center"
+                  color={badgeColor}
+                  className="group-hover:underline cursor-pointer"
+                >
                   {q.questionDifficulty}
                 </Badge>
               </Box>
-              <Text ta={"center"}>{q.pointsAwarded} points</Text>
             </Flex>
 
-            <Button
-              component={Link}
-              to={`/submission/s/${q.id}`}
-              variant={"subtle"}
-            >
-              <FaExternalLinkAlt />
-            </Button>
+            <Text ta={"center"} className="group-hover:underline">
+              +{q.pointsAwarded} points
+            </Text>
           </Flex>
         );
       })}
