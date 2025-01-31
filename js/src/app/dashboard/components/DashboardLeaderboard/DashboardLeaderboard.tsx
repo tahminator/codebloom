@@ -98,11 +98,14 @@ export default function LeaderboardForDashboard({
 
           return (
             <Flex
+              component={Link}
+              to={`/submission/u/${user.id}`}
               key={idx}
               direction={"row"}
               justify={"space-between"}
               bg={isMe ? undefined : borderColor}
               style={{
+                width: "100%",
                 borderRadius: "4px",
                 padding: "var(--mantine-spacing-xs)", // Using Mantine's spacing variable
                 background: isMe
@@ -112,41 +115,32 @@ export default function LeaderboardForDashboard({
                   : undefined,
               }}
               p={"xs"}
+              className="group"
             >
-              <Text>{idx + 1}.</Text>
-              <Button
-                h={"100%"}
-                variant={"transparent"}
-                style={{
-                  color: "white",
-                }}
-                component={Link}
-                to={`/submission/u/${user.id}`}
-              >
-                <Flex direction={"column"}>
-                  <Text ta="center">
-                    <FaDiscord
-                      style={{
-                        display: "inline",
-                        marginLeft: "4px",
-                        marginRight: "4px",
-                      }}
-                    />
-                    {user.discordName}
-                  </Text>
-                  <Text ta="center">
-                    <SiLeetcode
-                      style={{
-                        display: "inline",
-                        marginLeft: "4px",
-                        marginRight: "4px",
-                      }}
-                    />
-                    {user.leetcodeUsername}
-                  </Text>
-                </Flex>
-              </Button>
-              <Text>{user.totalScore}</Text>
+              <Text className="group-hover:underline">{idx + 1}.</Text>
+              <Flex direction={"column"}>
+                <Text ta="center" className="group-hover:underline">
+                  <FaDiscord
+                    style={{
+                      display: "inline",
+                      marginLeft: "4px",
+                      marginRight: "4px",
+                    }}
+                  />
+                  {user.discordName}
+                </Text>
+                <Text ta="center" className="group-hover:underline">
+                  <SiLeetcode
+                    style={{
+                      display: "inline",
+                      marginLeft: "4px",
+                      marginRight: "4px",
+                    }}
+                  />
+                  {user.leetcodeUsername}
+                </Text>
+              </Flex>
+              <Text className="group-hover:underline">{user.totalScore}</Text>
             </Flex>
           );
         })}
