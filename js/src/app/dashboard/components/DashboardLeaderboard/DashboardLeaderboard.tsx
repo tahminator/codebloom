@@ -108,18 +108,23 @@ export default function LeaderboardForDashboard({
                 width: "100%",
                 borderRadius: "4px",
                 padding: "var(--mantine-spacing-xs)", // Using Mantine's spacing variable
-                background: isMe
+                backgroundImage: isMe
                   ? `linear-gradient(90deg, ${
                       borderColor || "transparent"
                     }, #45a247)`
                   : undefined,
               }}
               p={"xs"}
-              className="group"
+              className="group transition-all hover:bg-blue-500 hover:bg-none"
             >
-              <Text className="group-hover:underline">{idx + 1}.</Text>
+              <Text className="transition-all group-hover:text-white-500">
+                {idx + 1}.
+              </Text>
               <Flex direction={"column"}>
-                <Text ta="center" className="group-hover:underline">
+                <Text
+                  ta="center"
+                  className="transition-all group-hover:text-white-500"
+                >
                   <FaDiscord
                     style={{
                       display: "inline",
@@ -129,7 +134,10 @@ export default function LeaderboardForDashboard({
                   />
                   {user.discordName}
                 </Text>
-                <Text ta="center" className="group-hover:underline">
+                <Text
+                  ta="center"
+                  className="transition-all group-hover:text-white-500"
+                >
                   <SiLeetcode
                     style={{
                       display: "inline",
@@ -140,7 +148,9 @@ export default function LeaderboardForDashboard({
                   {user.leetcodeUsername}
                 </Text>
               </Flex>
-              <Text className="group-hover:underline">{user.totalScore}</Text>
+              <Text className="transition-all group-hover:text-white-500">
+                {user.totalScore}
+              </Text>
             </Flex>
           );
         })}
