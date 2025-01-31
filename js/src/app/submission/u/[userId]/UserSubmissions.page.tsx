@@ -129,7 +129,14 @@ export default function UserSubmissions() {
         <Button component={Link} to={"/dashboard"} variant={"outline"}>
           Go back to dashboard
         </Button>
-        <Table verticalSpacing={"sm"}>
+        <Table
+          verticalSpacing={"sm"}
+          maw={"66vw"}
+          striped
+          withColumnBorders
+          withTableBorder
+          m={"md"}
+        >
           <Table.Thead>
             <Table.Tr>
               <Table.Th>#</Table.Th>
