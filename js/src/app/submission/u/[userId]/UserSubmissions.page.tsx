@@ -11,7 +11,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { FaDiscord, FaExternalLinkAlt } from "react-icons/fa";
+import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link, useParams } from "react-router-dom";
 
@@ -132,12 +132,11 @@ export default function UserSubmissions() {
         <Table verticalSpacing={"sm"}>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th />
+              <Table.Th>#</Table.Th>
               <Table.Th>Title</Table.Th>
               <Table.Th>Difficulty</Table.Th>
               <Table.Th>Acceptance Rate</Table.Th>
               <Table.Th>Pts</Table.Th>
-              <Table.Th />
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -172,7 +171,17 @@ export default function UserSubmissions() {
               return (
                 <Table.Tr key={index}>
                   <Table.Td>{(page - 1) * pageSize + (index + 1)}</Table.Td>
-                  <Table.Td>{submission.questionTitle}</Table.Td>
+                  <Table.Td>
+                    <Text
+                      py={"xl"}
+                      pr={"xl"}
+                      component={Link}
+                      to={`/submission/s/${submission.id}`}
+                      className="transition-all hover:text-blue-500"
+                    >
+                      {submission.questionTitle}
+                    </Text>
+                  </Table.Td>
                   <Table.Td>
                     <Badge ta="center" color={badgeDifficultyColor}>
                       {submission.questionDifficulty}
@@ -184,15 +193,6 @@ export default function UserSubmissions() {
                     </Badge>
                   </Table.Td>
                   <Table.Td>{submission.pointsAwarded}</Table.Td>
-                  <Table.Td>
-                    <Button
-                      component={Link}
-                      to={`/submission/s/${submission.id}`}
-                      variant={"transparent"}
-                    >
-                      <FaExternalLinkAlt />
-                    </Button>
-                  </Table.Td>
                 </Table.Tr>
               );
             })}

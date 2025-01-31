@@ -173,7 +173,7 @@ export default function SubmissionDetails() {
                 navigate(-1);
               }}
             >
-              ← Back to dashboard
+              ← Go back
             </Button>
           </Center>
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">
