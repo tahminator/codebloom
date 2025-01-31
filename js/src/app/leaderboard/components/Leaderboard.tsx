@@ -1,11 +1,11 @@
 import LeaderboardSkeleton from "@/app/leaderboard/components/LeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Button, Table, Title } from "@mantine/core";
-import { FaDiscord, FaExternalLinkAlt } from "react-icons/fa";
+import { Flex, Table, Title } from "@mantine/core";
+import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
-import { useFullLeaderboardEntriesQuery } from "../hooks";
 import { Link } from "react-router-dom";
+import { useFullLeaderboardEntriesQuery } from "../hooks";
 
 export default function LeaderboardIndex() {
   const { data, status } = useFullLeaderboardEntriesQuery();
@@ -74,13 +74,12 @@ export default function LeaderboardIndex() {
         )}
       </div>
       {json.users.length > 3 && (
-        <Table>
+        <Table verticalSpacing={"lg"} withRowBorders={false} striped>
           <Table.Thead>
             <Table.Tr>
               <Table.Th>#</Table.Th>
               <Table.Th>Name</Table.Th>
               <Table.Th>Pts</Table.Th>
-              <Table.Th>Submissions</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -90,27 +89,27 @@ export default function LeaderboardIndex() {
                 <Table.Tr key={index}>
                   <Table.Td>{index + 1}</Table.Td>
                   <Table.Td>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      <span style={{ fontSize: "18px", lineHeight: "28px" }}>
+                    <Flex
+                      direction={"column"}
+                      component={Link}
+                      to={`/submission/u/${entry.id}`}
+                      p={"lg"}
+                      className="group"
+                    >
+                      <span
+                        style={{ fontSize: "18px", lineHeight: "28px" }}
+                        className="transition-all group-hover:text-blue-500"
+                      >
                         <FaDiscord style={{ display: "inline" }} />{" "}
                         {entry.discordName}
                       </span>
-                      <span>
+                      <span className="transition-all group-hover:text-blue-500">
                         <SiLeetcode style={{ display: "inline" }} />{" "}
                         {entry.leetcodeUsername}
                       </span>
-                    </div>
+                    </Flex>
                   </Table.Td>
                   <Table.Td>{entry.totalScore}</Table.Td>
-                  <Table.Td>
-                    <Button
-                      component={Link}
-                      to={`/submission/u/${entry.id}`}
-                      variant={"subtle"}
-                    >
-                      <FaExternalLinkAlt />
-                    </Button>
-                  </Table.Td>
                 </Table.Tr>
               );
             })}
