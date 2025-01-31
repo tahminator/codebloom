@@ -1,3 +1,4 @@
+import CustomPagination from "@/app/submission/u/[userId]/components/CustomPagination";
 import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
@@ -11,7 +12,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { FaDiscord, FaExternalLinkAlt } from "react-icons/fa";
+import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
@@ -127,15 +128,20 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
         <Button component={Link} to={"/dashboard"} variant={"outline"}>
           Go back to dashboard
         </Button>
-        <Table verticalSpacing={"sm"}>
+        <Table
+          verticalSpacing={"lg"}
+          maw={"66vw"}
+          withRowBorders={false}
+          striped
+          m={"md"}
+        >
           <Table.Thead>
             <Table.Tr>
-              <Table.Th />
+              <Table.Th>#</Table.Th>
               <Table.Th>Title</Table.Th>
               <Table.Th>Difficulty</Table.Th>
               <Table.Th>Acceptance Rate</Table.Th>
               <Table.Th>Pts</Table.Th>
-              <Table.Th />
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -170,7 +176,17 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
               return (
                 <Table.Tr key={index}>
                   <Table.Td>{(page - 1) * pageSize + (index + 1)}</Table.Td>
-                  <Table.Td>{submission.questionTitle}</Table.Td>
+                  <Table.Td>
+                    <Text
+                      py={"xl"}
+                      pr={"xl"}
+                      component={Link}
+                      to={`/submission/s/${submission.id}`}
+                      className="transition-all hover:text-blue-500"
+                    >
+                      {submission.questionTitle}
+                    </Text>
+                  </Table.Td>
                   <Table.Td>
                     <Badge ta="center" color={badgeDifficultyColor}>
                       {submission.questionDifficulty}
@@ -182,15 +198,6 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                     </Badge>
                   </Table.Td>
                   <Table.Td>{submission.pointsAwarded}</Table.Td>
-                  <Table.Td>
-                    <Button
-                      component={Link}
-                      to={`/submission/s/${submission.id}`}
-                      variant={"transparent"}
-                    >
-                      <FaExternalLinkAlt />
-                    </Button>
-                  </Table.Td>
                 </Table.Tr>
               );
             })}
@@ -201,17 +208,11 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
             <Button disabled={page === 1} onClick={goBack}>
               Back
             </Button>
-            {Array(data.pages)
-              .fill(0)
-              .map((_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => goTo(index + 1)}
-                  style={{ margin: "0 5px" }}
-                >
-                  {index + 1}
-                </button>
-              ))}
+            <CustomPagination
+              goTo={goTo}
+              pages={data.pages}
+              currentPage={page}
+            />
             <Button
               disabled={isPlaceholderData || !data.hasNextPage}
               onClick={() => {
