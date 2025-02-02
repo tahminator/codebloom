@@ -201,7 +201,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                 return (
                   <Table.Tr key={index}>
                     <Table.Td>
-                      <LanguageIcon size={24} />
+                      <LanguageIcon size={24} width={24} height={24} />
                     </Table.Td>
                     <Table.Td>
                       <Text
