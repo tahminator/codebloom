@@ -254,7 +254,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
         </Box>
         <Center my={"sm"}>
           <Flex direction={"row"} gap={"sm"}>
-            <Button disabled={page === 1} onClick={goBack}>
+            <Button disabled={page === 1} onClick={goBack} size={"compact-sm"}>
               <FaArrowLeft />
             </Button>
             <CustomPagination
@@ -269,6 +269,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                   goForward();
                 }
               }}
+              size={"compact-sm"}
             >
               <FaArrowRight />
             </Button>
