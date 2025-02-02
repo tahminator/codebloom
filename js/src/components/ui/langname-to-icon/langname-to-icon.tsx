@@ -1,39 +1,30 @@
+import CppColored from "@/components/ui/icons/CppColored";
+import JavaColored from "@/components/ui/icons/JavaColored";
+import JavascriptColored from "@/components/ui/icons/JavascriptColored";
+import PythonColored from "@/components/ui/icons/PythonColored";
+import RustColored from "@/components/ui/icons/RustColored";
+import TypescriptColored from "@/components/ui/icons/TypescriptColored";
 import { BiCode, BiLogoGoLang } from "react-icons/bi";
+import { FaPhp, FaSwift } from "react-icons/fa";
 import {
-  FaCss3,
-  FaHtml5,
-  FaJava,
-  FaNodeJs,
-  FaPhp,
-  FaPython,
-  FaRust,
-  FaSwift,
-} from "react-icons/fa";
-import {
-  SiCplusplus,
   SiDart,
   SiElixir,
   SiHaskell,
-  SiJavascript,
   SiKotlin,
   SiPerl,
   SiRuby,
   SiScala,
-  SiTypescript,
 } from "react-icons/si";
 
 export const langNameToIcon = {
-  java: FaJava,
-  python3: FaPython,
-  rust: FaRust,
+  java: JavaColored,
+  python3: PythonColored,
+  rust: RustColored,
   swift: FaSwift,
   php: FaPhp,
-  html: FaHtml5,
-  css: FaCss3,
-  nodejs: FaNodeJs,
-  typescript: SiTypescript,
-  javascript: SiJavascript,
-  cpp: SiCplusplus,
+  typescript: TypescriptColored,
+  javascript: JavascriptColored,
+  cpp: CppColored,
   golang: BiLogoGoLang,
   ruby: SiRuby,
   kotlin: SiKotlin,
