@@ -1,18 +1,20 @@
+import { useURLState } from "@/lib/custom-hooks/use-url-state";
 import { ApiResponse } from "@/lib/types/apiResponse";
 import { Question } from "@/lib/types/db/question";
 import { User } from "@/lib/types/db/user";
 import { Page } from "@/lib/types/page";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
 export const useUserSubmissionsQuery = ({
   userId,
   initialPage = 1,
+  tieToUrl = false,
 }: {
   userId?: string;
   initialPage?: number;
+  tieToUrl?: boolean;
 }) => {
-  const [page, setPage] = useState(initialPage);
+  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
 
   const goBack = () => {
     setPage((old) => Math.max(old - 1, 0));
