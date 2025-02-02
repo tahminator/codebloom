@@ -1,37 +1,25 @@
-import { Button, TextInput } from "@mantine/core";
+import { Button, Flex, TextInput } from "@mantine/core";
 import { useState } from "react";
 
 const MAX_VISIBLE_PAGES = 5;
 
-const getPageNumbers = (
-  currentPage: number,
-  totalPages: number
-): (number | "...")[] => {
-  // Show regular page buttons if pages hasn't surprassed max visible pages yet.
+const getPageNumbers = (currentPage: number, totalPages: number) => {
+  // If there are less pages than the maximum, just render the numbers regularly.
   if (totalPages <= MAX_VISIBLE_PAGES) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
+    return [...Array(totalPages)].map((_, i) => i + 1);
   }
 
-  // If the current page is greater than 3, start showing a type to jump on just the right side.
-  if (currentPage < 3) {
-    return [1, 2, 3, "...", totalPages];
+  // If start of the list, render from the left.
+  if (currentPage <= MAX_VISIBLE_PAGES - 2) {
+    return [1, 2, 3, 4, totalPages];
   }
 
-  /// If we are currently near the end of the pages, show the type to jump on just the left side.
-  if (currentPage > totalPages - 2) {
-    return [1, "...", totalPages - 2, totalPages - 1, totalPages];
+  // If end of the list, render from the right.
+  if (currentPage >= MAX_VISIBLE_PAGES + 2) {
+    return [1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
   }
 
-  // If we are somewhere in the middle of the above 2 situations, show type to jump on both left and right side.
-  return [
-    1,
-    "...",
-    currentPage - 1,
-    currentPage,
-    currentPage + 1,
-    "...",
-    totalPages,
-  ];
+  return [1, currentPage - 1, currentPage, currentPage + 1, totalPages];
 };
 
 export default function CustomPagination({
@@ -55,30 +43,26 @@ export default function CustomPagination({
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-      {pageNumbers.map((page, index) =>
-        page === "..." ? (
-          <TextInput
-            key={index}
-            value={customPage}
-            onChange={(e) => setCustomPage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleCustomPageSubmit()}
-            placeholder="..."
-            style={{ width: 50, textAlign: "center" }}
-          />
-        ) : (
+    <Flex align={"center"} direction={"column"} gap={"8px"}>
+      <Flex direction={"row"} gap={"4px"}>
+        {pageNumbers.map((page, index) => (
           <Button
             key={index}
             onClick={() => goTo(page)}
-            style={{
-              fontWeight: currentPage === page ? "bold" : "normal",
-              background: currentPage === page ? "gray" : "white",
-            }}
+            fw={currentPage === page ? "bold" : "normal"}
+            bg={currentPage === page ? "gray" : "white"}
           >
             {page}
           </Button>
-        )
-      )}
-    </div>
+        ))}
+      </Flex>
+      <TextInput
+        value={customPage}
+        onChange={(e) => setCustomPage(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleCustomPageSubmit()}
+        placeholder="Enter page here..."
+        ta={"center"}
+      />
+    </Flex>
   );
 }
