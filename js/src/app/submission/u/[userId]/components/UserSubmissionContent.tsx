@@ -8,7 +8,7 @@ import {
   Center,
   Flex,
   Loader,
-  LoadingOverlay,
+  Overlay,
   Table,
   Text,
   Title,
@@ -23,6 +23,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
   const { data, status, page, goBack, goForward, isPlaceholderData, goTo } =
     useUserSubmissionsQuery({
       userId,
+      tieToUrl: true,
     });
 
   if (status === "pending") {
@@ -137,11 +138,9 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
           m={"md"}
           pos={"relative"}
         >
-          <LoadingOverlay
-            visible={isPlaceholderData}
-            zIndex={1000}
-            overlayProps={{ radius: "sm", blur: 2 }}
-          />
+          {isPlaceholderData && (
+            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
+          )}
           <Table.Thead>
             <Table.Tr>
               <Table.Th>#</Table.Th>
