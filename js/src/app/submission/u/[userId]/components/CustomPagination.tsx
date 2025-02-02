@@ -60,7 +60,7 @@ export default function CustomPagination({
         value={customPage}
         onChange={(e) => setCustomPage(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleCustomPageSubmit()}
-        placeholder="Enter page here..."
+        placeholder="Jump to page"
         ta={"center"}
       />
     </Flex>

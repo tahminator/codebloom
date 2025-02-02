@@ -8,11 +8,12 @@ import {
   Center,
   Flex,
   Loader,
+  LoadingOverlay,
   Table,
   Text,
   Title,
 } from "@mantine/core";
-import { FaDiscord } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
@@ -134,7 +135,13 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
           withRowBorders={false}
           striped
           m={"md"}
+          pos={"relative"}
         >
+          <LoadingOverlay
+            visible={isPlaceholderData}
+            zIndex={1000}
+            overlayProps={{ radius: "sm", blur: 2 }}
+          />
           <Table.Thead>
             <Table.Tr>
               <Table.Th>#</Table.Th>
@@ -206,7 +213,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
         <Center>
           <Flex direction={"row"} gap={"sm"}>
             <Button disabled={page === 1} onClick={goBack}>
-              Back
+              <FaArrowLeft />
             </Button>
             <CustomPagination
               goTo={goTo}
@@ -214,14 +221,14 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
               currentPage={page}
             />
             <Button
-              disabled={isPlaceholderData || !data.hasNextPage}
+              disabled={!data.hasNextPage || page >= data.pages}
               onClick={() => {
-                if (!isPlaceholderData && data.hasNextPage) {
+                if (data.hasNextPage || page >= data.pages) {
                   goForward();
                 }
               }}
             >
-              Next
+              <FaArrowRight />
             </Button>
           </Flex>
         </Center>
