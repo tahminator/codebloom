@@ -14,4 +14,6 @@ export type Question = {
   memory: string;
   code: string;
   language: string;
+  submittedAt: string;
+  createdAt: string;
 };
