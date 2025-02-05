@@ -17,6 +17,13 @@ public class POTD {
         this.createdAt = createdAt;
     }
 
+    public POTD(String title, String slug, float multiplier, LocalDateTime createdAt) {
+        this.title = title;
+        this.slug = slug;
+        this.multiplier = multiplier;
+        this.createdAt = createdAt;
+    }
+
     public String getId() {
         return id;
     }
