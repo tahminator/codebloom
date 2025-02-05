@@ -35,12 +35,17 @@ public class POTDSqlRepository implements POTDRepository {
 
     @Override
     public POTD createPOTD(POTD potd) {
-        String sql = "INSERT INTO \"POTD\" (\"id\", \"title\", \"slug\", \"multiplier\", \"createdAt\") VALUES (?, ?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO "POTD"
+                    ("id", "title", "slug", "multiplier", "createdAt")
+                VALUES
+                    (?, ?, ?, ?, ?)
+                """;
 
         potd.setId(UUID.randomUUID().toString());
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, potd.getId());
+            stmt.setObject(1, UUID.fromString(potd.getId()));
             stmt.setString(2, potd.getTitle());
             stmt.setString(3, potd.getSlug());
             stmt.setFloat(4, potd.getMultiplier());
@@ -91,7 +96,7 @@ public class POTDSqlRepository implements POTDRepository {
     public void updatePOTD(POTD potd) {
         String sql = "UPDATE \"POTD\" SET title = ?, slug = ?, multiplier = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, potd.getTitle());
+            stmt.setObject(1, UUID.fromString(potd.getId()));
             stmt.setString(2, potd.getSlug());
             stmt.setFloat(3, potd.getMultiplier());
             stmt.setString(4, potd.getId());
