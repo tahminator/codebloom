@@ -48,6 +48,6 @@ public class ScoreCalculator {
         }
 
         float deviation = ThreadLocalRandom.current().nextFloat(0.95f, 1.05f);
-        return baseMultiplier * deviation;
+        return Math.round(baseMultiplier * deviation * 100.0f) / 100.0f;
     }
 }
