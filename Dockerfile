@@ -6,6 +6,9 @@ WORKDIR /js
 # Copy frontend source code
 COPY js/package.json js/pnpm-lock.yaml ./
 
+# Fix a bug with corepack by installing corepack globally
+npm i -g corepack@latest
+
 # Install dependencies
 RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
