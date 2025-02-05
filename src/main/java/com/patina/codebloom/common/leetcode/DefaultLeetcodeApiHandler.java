@@ -14,10 +14,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.leetcode.models.Lang;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.models.POTD;
+import com.patina.codebloom.common.leetcode.queries.GetPotd;
 import com.patina.codebloom.common.leetcode.queries.GetSubmissionDetails;
 import com.patina.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
@@ -75,6 +78,15 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
         return objectMapper.writeValueAsString(requestBodyMap);
 
+    }
+
+    public static String buildPotdRequestBody(String query) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
     }
 
     @Override
@@ -251,6 +263,39 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             throw new RuntimeException("Error fetching the API", e);
         }
 
+    }
+
+    public POTD getPotd() {
+        String endpoint = "https://leetcode.com/graphql";
+        String query = GetPotd.query;
+
+        String requestBody;
+        try {
+            requestBody = buildPotdRequestBody(query);
+        } catch (Exception e) {
+            throw new RuntimeException("Error building the request body");
+        }
+
+        try {
+            RequestSpecification reqSpec = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .header("Referer", "https://leetcode.com")
+                    .body(requestBody);
+            Response response = reqSpec.post(endpoint);
+
+            JsonPath jsonPath = response.jsonPath();
+
+            System.out.println(response.asPrettyString());
+
+            var titleSlug = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.titleSlug");
+            var title = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.title");
+            var difficulty = QuestionDifficulty
+                    .valueOf(jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.difficulty"));
+
+            return new POTD(title, titleSlug, difficulty);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching the API", e);
+        }
     }
 
 }

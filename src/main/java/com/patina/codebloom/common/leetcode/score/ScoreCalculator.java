@@ -30,4 +30,24 @@ public class ScoreCalculator {
         double deviation = ThreadLocalRandom.current().nextDouble(0.95, 1.05);
         return (int) Math.floor(baseScore * deviation * multiplier);
     }
+
+    public static float calculateMultiplier(QuestionDifficulty questionDifficulty) {
+        float baseMultiplier;
+        switch (questionDifficulty) {
+            case Easy:
+                baseMultiplier = 1.3f;
+                break;
+            case Medium:
+                baseMultiplier = 1.5f;
+                break;
+            case Hard:
+                baseMultiplier = 1.8f;
+                break;
+            default:
+                return 1.0f;
+        }
+
+        float deviation = ThreadLocalRandom.current().nextFloat(0.95f, 1.05f);
+        return baseMultiplier * deviation;
+    }
 }
