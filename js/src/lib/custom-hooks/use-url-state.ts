@@ -2,35 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 /**
- * This function allows us to coerce the URL param value string to the type of our default value. If coercion fails, a Symbol is returned so that the error case can be handled.
- */
-function coerce<T>(param: string, defaultValue: T): T | symbol {
-  try {
-    const paramType = typeof param;
-    const defaultValueType = typeof defaultValue;
-
-    // The default param value is always string, so no type coercion is needed.
-    if (defaultValueType === "string") {
-      return paramType as T;
-    }
-
-    if (defaultValueType === "number") {
-      const possibleNumber = Number(param);
-      if (Number.isNaN(possibleNumber)) {
-        return Symbol();
-      }
-      return possibleNumber as T;
-    }
-
-    if (defaultValueType === "boolean") return (param === "true") as T;
-
-    return Symbol();
-  } catch {
-    return Symbol();
-  }
-}
-
-/**
  * A custom React hook that will attach the state to the URL params.
  *
  * @param name The name of the key in the URL
@@ -101,4 +72,33 @@ export function useURLState<T>(
   ]);
 
   return [value, setValue] as [T, React.Dispatch<React.SetStateAction<T>>];
+}
+
+/**
+ * This function allows us to coerce the URL param value string to the type of our default value. If coercion fails, a Symbol is returned so that the error case can be handled.
+ */
+function coerce<T>(param: string, defaultValue: T): T | symbol {
+  try {
+    const paramType = typeof param;
+    const defaultValueType = typeof defaultValue;
+
+    // The default param value is always string, so no type coercion is needed.
+    if (defaultValueType === "string") {
+      return paramType as T;
+    }
+
+    if (defaultValueType === "number") {
+      const possibleNumber = Number(param);
+      if (Number.isNaN(possibleNumber)) {
+        return Symbol();
+      }
+      return possibleNumber as T;
+    }
+
+    if (defaultValueType === "boolean") return (param === "true") as T;
+
+    return Symbol();
+  } catch {
+    return Symbol();
+  }
 }
