@@ -1,5 +1,6 @@
 package com.patina.codebloom.api.submission;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,11 +68,15 @@ public class SubmissionController {
         private final QuestionRepository questionRepository;
         private final POTDRepository potdRepository;
 
+        /**
+         * This checks if the different is 24 hours, instead of checking whether they
+         * are actually part of the "same day".
+         */
         private boolean isSameDay(LocalDateTime createdAt) {
-                LocalDate createdAtDate = createdAt.toLocalDate();
-                LocalDate today = LocalDate.now();
+                LocalDateTime now = LocalDateTime.now();
+                Duration duration = Duration.between(createdAt, now);
 
-                return createdAtDate.equals(today);
+                return duration.toHours() < 24;
         }
 
         public SubmissionController(UserRepository userRepository,
