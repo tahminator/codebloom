@@ -24,7 +24,7 @@ public class PotdSetter {
         this.potdRepository = potdRepository;
     }
 
-    @Scheduled(cron = "0 10 19 * * ?")
+    @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60)
     public void SetPotd() {
         com.patina.codebloom.common.leetcode.models.POTD leetcodePotd = leetcodeApiHandler.getPotd();
 
