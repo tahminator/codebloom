@@ -85,10 +85,10 @@ Development Tools:
 ---
 
 ## Authors
-[Tahmid Ahmed](https://github.com/tahminator)
-[Alfardil Alam](https://github.com/alfardil)
-[Alisha Zaman](https://github.com/az2924)
-[Michaeel Nunez](https://github.com/im-michaeln)
+- [Tahmid Ahmed](https://github.com/tahminator)
+- [Alfardil Alam](https://github.com/alfardil)
+- [Alisha Zaman](https://github.com/az2924)
+- [Michaeel Nunez](https://github.com/im-michaeln)
 
 ---
 <!-- INSTRUCTIONS -->
