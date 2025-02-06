@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
