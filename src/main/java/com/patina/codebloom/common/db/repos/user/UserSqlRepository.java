@@ -120,7 +120,8 @@ public class UserSqlRepository implements UserRepository {
             stmt.setString(1, inputUser.getDiscordName());
             stmt.setString(2, inputUser.getDiscordId());
             stmt.setString(3, inputUser.getLeetcodeUsername());
-            stmt.setObject(4, UUID.fromString(inputUser.getId()));
+            stmt.setString(4, inputUser.getNickname());
+            stmt.setObject(5, UUID.fromString(inputUser.getId()));
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
