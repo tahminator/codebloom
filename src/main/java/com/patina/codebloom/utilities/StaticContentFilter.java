@@ -31,9 +31,10 @@ public class StaticContentFilter implements Filter {
         String path = request.getServletPath();
 
         boolean isApi = path.startsWith("/api");
-        boolean isResourceFile = !isApi && fileExtensions.stream().anyMatch(path::contains);
+        boolean isOpenAPI = path.startsWith("/v3");
+        boolean isResourceFile = !isApi && !isOpenAPI && fileExtensions.stream().anyMatch(path::contains);
 
-        if (isApi || isResourceFile) {
+        if (isApi || isResourceFile || isOpenAPI) {
             chain.doFilter(request, response);
         } else {
             request.getRequestDispatcher("/").forward(request, response);
