@@ -1,7 +1,7 @@
 package com.patina.codebloom.api.submission.body;
 
-import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class LeetcodeUsernameObject {
     @NotNull
