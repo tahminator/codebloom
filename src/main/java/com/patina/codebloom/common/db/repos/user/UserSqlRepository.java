@@ -24,7 +24,7 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User createNewUser(User user) {
-        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\") VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\") VALUES (?, ?, ?, ?)";
         user.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(user.getId()));
@@ -49,7 +49,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserById(String inputId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\" FROM \"User\" WHERE id=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputId));
@@ -59,7 +59,8 @@ public class UserSqlRepository implements UserRepository {
                     var discordId = rs.getString("discordId");
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
-                    user = new User(id, discordId, discordName, leetcodeUsername);
+                    var nickname = rs.getString("nickname");
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname);
                     return user;
                 }
             }
@@ -73,7 +74,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserByDiscordId(String inputDiscordId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\" FROM \"User\" WHERE \"discordId\"=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\" WHERE \"discordId\"=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputDiscordId);
@@ -83,7 +84,8 @@ public class UserSqlRepository implements UserRepository {
                     var discordId = rs.getString("discordId");
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
-                    user = new User(id, discordId, discordName, leetcodeUsername);
+                    var nickname = rs.getString("nickname");
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname);
                     return user;
                 }
             }
@@ -112,7 +114,7 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User updateUser(User inputUser) {
-        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=? WHERE id=?";
+        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=? WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputUser.getDiscordName());
@@ -134,7 +136,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\" FROM \"User\"";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\"";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -143,7 +145,8 @@ public class UserSqlRepository implements UserRepository {
                     var discordId = rs.getString("discordId");
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
-                    users.add(new User(id, discordId, discordName, leetcodeUsername));
+                    var nickname = rs.getString("nickname");
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname));
                 }
             }
         } catch (SQLException e) {

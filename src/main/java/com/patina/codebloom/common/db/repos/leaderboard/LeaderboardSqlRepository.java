@@ -69,6 +69,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     u.\"discordId\",
                     u.\"discordName\",
                     u.\"leetcodeUsername\",
+                    u.\"nickname\",
                     m.\"totalScore\"
                 FROM "Leaderboard" l
                 LEFT JOIN "Metadata" m ON l.id = m."leaderboardId"
@@ -102,10 +103,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var discordId = rs.getString("discordId");
                         var discordName = rs.getString("discordName");
                         var leetcodeUsername = rs.getString("leetcodeUsername");
+                        var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
                         UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                totalScore);
+                                nickname, totalScore);
                         currentLeaderboard.getUsers().add(user);
                     }
                 }
@@ -131,6 +133,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     u."discordId",
                     u."discordName",
                     u."leetcodeUsername",
+                    u."nickname",
                     m."totalScore"
                 FROM "Leaderboard" l
                 LEFT JOIN (
@@ -142,6 +145,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             u."discordId",
                             u."discordName",
                             u."leetcodeUsername",
+                            u."nickname",
                             m."totalScore",
                             ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
                         FROM "Metadata" m
@@ -179,9 +183,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var discordId = rs.getString("discordId");
                         var discordName = rs.getString("discordName");
                         var leetcodeUsername = rs.getString("leetcodeUsername");
+                        var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
                         UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
+                                nickname,
                                 totalScore);
                         leaderboard.addUser(user);
                     }
@@ -208,6 +214,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     u.\"discordId\",
                     u.\"discordName\",
                     u.\"leetcodeUsername\",
+                    u.\"nickname\",
                     m.\"totalScore\"
                 FROM "Leaderboard" l
                 LEFT JOIN "Metadata" m ON l.id = m."leaderboardId"
@@ -242,10 +249,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var discordId = rs.getString("discordId");
                         var discordName = rs.getString("discordName");
                         var leetcodeUsername = rs.getString("leetcodeUsername");
+                        var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
                         UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                totalScore);
+                                nickname, totalScore);
                         leaderboard.addUser(user);
                     }
                 }
@@ -307,6 +315,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     limited_users."discordId",
                     limited_users."discordName",
                     limited_users."leetcodeUsername",
+                    limited_users."nickname",
                     limited_users."totalScore"
                 FROM "Leaderboard" l
                 INNER JOIN latest_leaderboard ll ON l.id = ll.\"leaderboardId\"
@@ -317,6 +326,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         ranked_users."discordId",
                         ranked_users."discordName",
                         ranked_users."leetcodeUsername",
+                        ranked_users."nickname",
                         ranked_users."totalScore"
                     FROM (
                         SELECT
@@ -325,6 +335,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             u."discordId",
                             u."discordName",
                             u."leetcodeUsername",
+                            u."nickname",
                             m."totalScore",
                             ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
                         FROM "Metadata" m
@@ -361,10 +372,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var discordId = rs.getString("discordId");
                         var discordName = rs.getString("discordName");
                         var leetcodeUsername = rs.getString("leetcodeUsername");
+                        var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
                         UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                totalScore);
+                                nickname, totalScore);
                         leaderboard.addUser(user);
                     }
                 }
@@ -397,6 +409,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     ranked_users."discordId",
                     ranked_users."discordName",
                     ranked_users."leetcodeUsername",
+                    ranked_users."nickname",
                     ranked_users."totalScore"
                 FROM "Leaderboard" l
                 INNER JOIN latest_leaderboard ll ON l.id = ll.id
@@ -407,6 +420,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             u."discordId",
                             u."discordName",
                             u."leetcodeUsername",
+                            u."nickname",
                             m."totalScore",
                             ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
                         FROM "Metadata" m
@@ -442,10 +456,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var discordId = rs.getString("discordId");
                         var discordName = rs.getString("discordName");
                         var leetcodeUsername = rs.getString("leetcodeUsername");
+                        var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
                         UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                totalScore);
+                                nickname, totalScore);
                         leaderboard.addUser(user);
                     }
                 }
@@ -501,6 +516,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     u.\"discordId\",
                     u.\"discordName\",
                     u.\"leetcodeUsername\",
+                    u.\"nickname\",
                     m.\"totalScore\"
                 FROM \"Metadata\" "m"
                 LEFT JOIN \"User\" "u" ON u.id = m.\"userId\"
@@ -517,8 +533,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     var discordId = rs.getString("discordId");
                     var discordName = rs.getString("discordName");
                     var leetcodeName = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
                     var totalScore = rs.getInt("totalScore");
-                    user = new UserWithScore(id, discordId, discordName, leetcodeName, totalScore);
+                    user = new UserWithScore(id, discordId, discordName, leetcodeName, nickname, totalScore);
                     return user;
                 }
             }
