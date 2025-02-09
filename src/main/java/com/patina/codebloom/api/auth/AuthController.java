@@ -1,15 +1,23 @@
 package com.patina.codebloom.api.auth;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.patina.codebloom.api.auth.body.AuthBody;
 import com.patina.codebloom.common.db.models.Session;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
 import com.patina.codebloom.common.lag.FakeLag;
@@ -28,10 +36,12 @@ import jakarta.servlet.http.HttpServletResponse;
 @Tag(name = "Authentication Routes")
 @RequestMapping("/api/auth")
 public class AuthController {
+    private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final Protector protector;
 
-    public AuthController(SessionRepository sessionRepository, Protector protector) {
+    public AuthController(UserRepository userRepository, SessionRepository sessionRepository, Protector protector) {
+        this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.protector = protector;
     }
@@ -77,6 +87,24 @@ public class AuthController {
             return new RedirectView("/login?success=false&message=You are not logged in.");
         }
 
+    }
+
+    @Operation(summary = "Change nickname", description = "Change the user's nickname. If the user is in the Patina Discord server, and they change their nickname here to be different from their Discord nickname in the server, it will no longer do that sync on every re-authentication.", responses = {
+            @ApiResponse(responseCode = "200", description = "Name change complete"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class)))
+    })
+    @PostMapping("/set")
+    public ResponseEntity<ApiResponder<Void>> setNickname(HttpServletRequest request,
+            @RequestBody AuthBody authBody) {
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+
+        User user = authenticationObject.getUser();
+
+        String nickname = authBody.getNickname();
+        user.setNickname(nickname == "" ? null : nickname);
+        userRepository.updateUser(user);
+
+        return ResponseEntity.ok().body(ApiResponder.success(nickname, null));
     }
 
 }
