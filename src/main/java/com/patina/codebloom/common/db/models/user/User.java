@@ -8,12 +8,14 @@ public class User {
     private String discordId;
     private String discordName;
     private String leetcodeUsername;
+    private String nickname;
 
-    public User(String id, String discordId, String discordName, String leetcodeUsername) {
+    public User(String id, String discordId, String discordName, String leetcodeUsername, String nickname) {
         this.id = id;
         this.discordId = discordId;
         this.discordName = discordName;
         this.leetcodeUsername = leetcodeUsername;
+        this.nickname = nickname;
     }
 
     public User(String discordId, String discordName) {
@@ -51,5 +53,13 @@ public class User {
 
     public void setLeetcodeUsername(String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }
