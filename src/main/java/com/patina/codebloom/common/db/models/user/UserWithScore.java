@@ -3,8 +3,9 @@ package com.patina.codebloom.common.db.models.user;
 public class UserWithScore extends User {
     private int totalScore;
 
-    public UserWithScore(String id, String discordId, String discordName, String leetcodeUsername, int totalScore) {
-        super(id, discordId, discordName, leetcodeUsername);
+    public UserWithScore(String id, String discordId, String discordName, String leetcodeUsername, String nickname,
+            int totalScore) {
+        super(id, discordId, discordName, leetcodeUsername, nickname);
         this.totalScore = totalScore;
     }
 
