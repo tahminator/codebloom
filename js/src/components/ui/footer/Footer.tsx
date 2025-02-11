@@ -1,7 +1,9 @@
 import { ActionIcon, Text } from "@mantine/core";
-import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import { ReactNode } from "react";
+import { FaInstagram, FaLinkedin } from "react-icons/fa";
+
 import styles from "./Footer.module.css";
+
 import Logo from "/logo.png";
 
 export function Footer() {

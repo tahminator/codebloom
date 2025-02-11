@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core";
-import { Link } from "react-router-dom";
 import { FaDiscord } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export default function LoginButton({ className }: { className?: string }) {
   return (

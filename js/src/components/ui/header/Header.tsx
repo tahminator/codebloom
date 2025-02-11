@@ -13,7 +13,9 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
+
 import classes from "./Header.module.css";
+
 import Logo from "/logo.png";
 
 export default function Header() {
