@@ -6,6 +6,10 @@
 pnpm run dev
 ```
 
+# Autoformatters
+
+Check out the autoformatter guide [here](https://github.com/tahminator/tree/main/docs/autoformatters.md)
+
 ## Routing
 
 All routes must be within the app directory.
@@ -49,8 +53,14 @@ export const router = createBrowserRouter([
 
 ### Function Naming
 
-- React functions should be in PascalCase(ex. `export default function Dashboard() { /* */ };`)
-- React hooks and any other function/constant should be in camelCase (ex. `const useAuthQuery = () => { /* */ };`)
+- React functions should be in PascalCase
+  ```tsx
+  export default function Dashboard() {}
+  ```
+- React hooks and any other function/constant should be in camelCase
+  ```tsx
+  const useAuthQuery = () => {};
+  ```
 
 ## Folder Naming Conventions
 
@@ -71,9 +81,7 @@ Complicated hooks should have JSDoc comments at the top of the function like so:
 ```tsx
 /**
  * A custom React hook that will attach the state to the URL params.
- *
  * @param name The name of the key in the URL
- *
  * Returns a stateful value and a function to update it.
  */
 ```
@@ -87,13 +95,7 @@ You will get very far using the built-in components inside of Mantine, such as `
 If you must, you may use inline styles via the style prop like so:
 
 ```tsx
-<Flex
-  direction={"row"}
-  h={"92vh"}
-  w={"98vw"}
-  visibleFrom="lg"
-  style={{ textDecorationColor: "red" }}
-/>
+<Text style={{ display: "inline" }} />
 ```
 
 If the styling is very complicated, you may reach for CSS files, but only if you use `*.module.css` so that the styles don't bleed into the global scope. Module CSS files restrict the styling by renaming styles automatically at build time so that they do not bleed into the global namespace.
