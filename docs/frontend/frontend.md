@@ -18,6 +18,15 @@ The entry point for the route should always end in `.page.tsx` (ex. `Root.page.t
 
 The folder names should represent the route. (ex. If you want to create a `/blog`, you should create a folder called `blog` inside of the `app` directory, then make a `CallMeAnything.page.tsx` file. Import that function into `/lib/router.tsx` to actually attach the routes.)
 
+Dynamic routes, where a specific part of the route can be changed, can be created by covering the file name with a bracket.
+(ex. If you want to create `/blog/:blogId`, you should create the folder like so `/app/blog/[blogId]`, then make a `*.Page.tsx` file. Make sure to import that function to `lib/router.tsx` to actually attach the routes. In order to use the route, you can use this function from the page-level entry point:
+
+```tsx
+const { blogId } = useParams();
+```
+
+If you need to utilize more complex routing behaviors, visit the docs [here](https://reactrouter.com/6.29.0/route/route).
+
 To make it clear that a folder and ALL it's children is not part of the route, append a `_` at the start of the file route. (ex. `/app/dashboard/_components`)
 
 Examples:
@@ -68,7 +77,7 @@ You should try to limit folders to one word, but if you must require multiple wo
 
 ## Separation of Concerns
 
-You may use inline styles as long as it isn't deemed to be too long or complicated (at which you should be using `.module.css` files to separate off into.)
+You may use inline styles as long as it isn't deemed to be too long or complicated (at which you should be using `.module.css` files to separate off into.). Please read the section [below](#styling) on styling for more details.
 
 You should put any custom hooks inside of a `hook.ts` file, and any custom types inside of a `types.ts` file. If you don't see any reason why the type may be re-used, you may put the file inside of the `/app` folder in the same route that it's used in. However, if you believe that the type may be re-used or would be easier to track down if in a central location (such as a database model type), put them in `/lib/types` or `/lib/hooks`.
 
