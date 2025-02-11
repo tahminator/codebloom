@@ -1,6 +1,5 @@
 package com.patina.codebloom.scheduled.auth;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
