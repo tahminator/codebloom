@@ -1,7 +1,6 @@
 package com.patina.codebloom.api.submission;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
