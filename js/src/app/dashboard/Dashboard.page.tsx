@@ -1,8 +1,8 @@
-import DashboardLeaderboard from "@/app/dashboard/components/DashboardLeaderboard/DashboardLeaderboard";
-import OnboardingLeetcodeUser from "@/app/dashboard/components/OnboardingLeetcodeUser";
-import ProblemOfTheDay from "@/app/dashboard/components/ProblemOfTheDay/ProblemOfTheDay";
-import RecentSubmissions from "@/app/dashboard/components/RecentSubmissions/RecentSubmissions";
-import RefreshSubmissions from "@/app/dashboard/components/RefreshSubmissions";
+import DashboardLeaderboard from "@/app/dashboard/_components/DashboardLeaderboard/DashboardLeaderboard";
+import OnboardingLeetcodeUser from "@/app/dashboard/_components/OnboardingLeetcodeUser";
+import ProblemOfTheDay from "@/app/dashboard/_components/ProblemOfTheDay/ProblemOfTheDay";
+import RecentSubmissions from "@/app/dashboard/_components/RecentSubmissions/RecentSubmissions";
+import RefreshSubmissions from "@/app/dashboard/_components/RefreshSubmissions";
 import { useAuthQuery } from "@/app/login/hooks";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
@@ -51,11 +51,9 @@ export default function DashboardPage() {
           <Title order={2}>Dashboard</Title>
         </Center>
         <Center>
-          {!data.user.leetcodeUsername ? (
+          {!data.user.leetcodeUsername ?
             <OnboardingLeetcodeUser />
-          ) : (
-            <RefreshSubmissions />
-          )}
+          : <RefreshSubmissions />}
         </Center>
         <Flex direction={smallPhone ? "row" : "column"} gap={"md"}>
           <Flex direction={"column"} flex={1}>

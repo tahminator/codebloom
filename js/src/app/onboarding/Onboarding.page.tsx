@@ -1,5 +1,5 @@
 import { useAuthQuery } from "@/app/login/hooks";
-import UsernameForm from "@/app/onboarding/components/UsernameForm";
+import UsernameForm from "@/app/onboarding/_components/UsernameForm";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";

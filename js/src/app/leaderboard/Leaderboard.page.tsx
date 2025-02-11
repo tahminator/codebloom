@@ -1,10 +1,10 @@
+import Leaderboard from "@/app/leaderboard/_components/Leaderboard";
 import { useAuthQuery } from "@/app/login/hooks";
+import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Loader } from "@mantine/core";
-import Leaderboard from "@/app/leaderboard/components/Leaderboard";
-import { Footer } from "@/components/ui/footer/Footer";
 
 export default function LeaderboardPage() {
   const { data, status } = useAuthQuery();

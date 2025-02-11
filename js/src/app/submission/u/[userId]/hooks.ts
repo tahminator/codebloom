@@ -1,4 +1,4 @@
-import { useURLState } from "@/lib/custom-hooks/use-url-state";
+import { useURLState } from "@/lib/hooks/useUrlState";
 import { ApiResponse } from "@/lib/types/apiResponse";
 import { Question } from "@/lib/types/db/question";
 import { User } from "@/lib/types/db/user";
@@ -45,7 +45,7 @@ async function fetchUserSubmissions({
   userId?: string;
 }) {
   const response = await fetch(
-    `/api/leetcode/submission/u/${userId ?? ""}?page=${page}`
+    `/api/leetcode/submission/u/${userId ?? ""}?page=${page}`,
   );
 
   const json = (await response.json()) as ApiResponse<
