@@ -1,5 +1,5 @@
 import { useAuthQuery } from "@/app/login/hooks";
-import UserSubmissionContent from "@/app/submission/u/[userId]/components/UserSubmissionContent";
+import UserSubmissionContent from "@/app/submission/u/[userId]/_components/UserSubmissionContent";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Flex, Loader } from "@mantine/core";

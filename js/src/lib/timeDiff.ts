@@ -1,6 +1,6 @@
 /**
  * This is a simple utility function that takes a Date object and returns a string representing the time difference between the input time and the current time.
- * @param datetimeObject - The Date object to compare the current time with.
+ * @param datetimeObject The Date object to compare the current time with.
  * @returns A string representing the time difference between the current time and the time represented by the Date object.
  */
 
