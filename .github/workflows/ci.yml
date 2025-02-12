@@ -13,17 +13,6 @@ jobs:
         name: Frontend Tests
         runs-on: ubuntu-latest
 
-        env:
-          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-          DATABASE_USER: ${{ secrets.DATABASE_USER }}
-          DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-          ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
-          
-
         steps:
           - name: Checkout Repository
             uses: actions/checkout@v4
@@ -49,6 +38,18 @@ jobs:
         name: Backend Tests
         runs-on: ubuntu-latest
         needs: frontend-tests
+
+        env:
+            DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+            DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+            DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+            DATABASE_USER: ${{ secrets.DATABASE_USER }}
+            DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+            DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+            ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
+          
+            
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
