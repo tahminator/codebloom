@@ -28,7 +28,7 @@ COPY mvnw pom.xml ./
 COPY .mvn/ .mvn/
 
 # Download dependencies
-RUN ./mvnw dependency:go-offline -B
+RUN ./mvnw -B
 
 # Copy the backend source code
 COPY src ./src
