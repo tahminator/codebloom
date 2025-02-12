@@ -21,6 +21,10 @@ jobs:
             with:
               node-version: 20
 
+          - name: Fix a bug with corepack by installing corepack globally
+            run: npm i -g corepack@latest
+            working-directory: js
+
           - name: Install Dependencies
             run: corepack enable pnpm && pnpm i --frozen-lockfile
             working-directory: js
@@ -28,3 +32,5 @@ jobs:
           - name: Run full suite of tests + linters + autoformatters
             run: pnpm run test
             working-directory: js
+
+    
