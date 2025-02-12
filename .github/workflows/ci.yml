@@ -12,6 +12,17 @@ jobs:
     frontend-tests:
         name: Frontend Tests
         runs-on: ubuntu-latest
+
+        env:
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+          ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
+
         steps:
           - name: Checkout Repository
             uses: actions/checkout@v4
@@ -48,7 +59,7 @@ jobs:
               run: |
                 echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
                 echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
-                
+
             - name: Verify Java version
               run: |
                 java -version
