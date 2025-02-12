@@ -4,7 +4,7 @@ public class AcceptedSubmission {
     private String title;
     private int points;
 
-    public AcceptedSubmission(String title, int points) {
+    public AcceptedSubmission(final String title, final int points) {
         this.title = title;
         this.points = points;
     }
@@ -13,7 +13,7 @@ public class AcceptedSubmission {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -21,7 +21,7 @@ public class AcceptedSubmission {
         return points;
     }
 
-    public void setPoints(int points) {
+    public void setPoints(final int points) {
         this.points = points;
     }
 }

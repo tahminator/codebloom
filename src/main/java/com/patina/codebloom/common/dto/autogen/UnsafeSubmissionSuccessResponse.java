@@ -5,8 +5,11 @@ import com.patina.codebloom.common.dto.autogen.overrides.QuestionOverride;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * Please do not use this unless you know what you are doing.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_SUBMISSION_SUCCESS_RESPONSE {
+public class UnsafeSubmissionSuccessResponse {
     @Schema(defaultValue = "true")
     private boolean success;
     private String message;
@@ -16,7 +19,7 @@ public class __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_SUBMISSION_SUCCESS_
         return data;
     }
 
-    public void setData(QuestionOverride data) {
+    public void setData(final QuestionOverride data) {
         this.data = data;
     }
 

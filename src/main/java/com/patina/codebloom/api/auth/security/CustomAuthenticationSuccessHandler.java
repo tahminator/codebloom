@@ -23,12 +23,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Handles successful OAuth2 login by either creating a new user or referencing
- * an old user and generating a cookie storing the session ID.
+ * Handles successful OAuth2 login by either creating a new user or referencing an old user and generating a cookie storing the session ID.
  * 
- * @see <a href=
- *      "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication
- *      Documentation</a>
+ * @see <a href= "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication Documentation</a>
  */
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -39,16 +36,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final SessionRepository sessionRepository;
     private final LeaderboardRepository leaderboardRepository;
 
-    public CustomAuthenticationSuccessHandler(UserRepository userRepository, SessionRepository sessionRepository,
-            LeaderboardRepository leaderboardRepository) {
+    public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository, final LeaderboardRepository leaderboardRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
         Object principal = authentication.getPrincipal();
         String discordId = null;
         String discordName = null;

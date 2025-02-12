@@ -1,16 +1,15 @@
 package com.patina.codebloom.common.leetcode.models;
 
 public class LeetcodeQuestion {
-    public String link;
-    public int questionId;
-    public String questionTitle;
-    public String titleSlug;
-    public String difficulty;
-    public String question;
-    public float acceptanceRate;
+    private String link;
+    private int questionId;
+    private String questionTitle;
+    private String titleSlug;
+    private String difficulty;
+    private String question;
+    private float acceptanceRate;
 
-    public LeetcodeQuestion(String link, int questionId, String questionTitle, String titleSlug, String difficulty,
-            String question, float acceptanceRate) {
+    public LeetcodeQuestion(final String link, final int questionId, final String questionTitle, final String titleSlug, final String difficulty, final String question, final float acceptanceRate) {
         this.link = link;
         this.questionId = questionId;
         this.questionTitle = questionTitle;
@@ -24,7 +23,7 @@ public class LeetcodeQuestion {
         return link;
     }
 
-    public void setLink(String link) {
+    public void setLink(final String link) {
         this.link = link;
     }
 
@@ -32,7 +31,7 @@ public class LeetcodeQuestion {
         return questionId;
     }
 
-    public void setQuestionId(int questionId) {
+    public void setQuestionId(final int questionId) {
         this.questionId = questionId;
     }
 
@@ -40,7 +39,7 @@ public class LeetcodeQuestion {
         return questionTitle;
     }
 
-    public void setQuestionTitle(String questionTitle) {
+    public void setQuestionTitle(final String questionTitle) {
         this.questionTitle = questionTitle;
     }
 
@@ -48,7 +47,7 @@ public class LeetcodeQuestion {
         return titleSlug;
     }
 
-    public void setTitleSlug(String titleSlug) {
+    public void setTitleSlug(final String titleSlug) {
         this.titleSlug = titleSlug;
     }
 
@@ -56,7 +55,7 @@ public class LeetcodeQuestion {
         return difficulty;
     }
 
-    public void setDifficulty(String difficulty) {
+    public void setDifficulty(final String difficulty) {
         this.difficulty = difficulty;
     }
 
@@ -64,7 +63,7 @@ public class LeetcodeQuestion {
         return question;
     }
 
-    public void setQuestion(String question) {
+    public void setQuestion(final String question) {
         this.question = question;
     }
 
@@ -72,7 +71,7 @@ public class LeetcodeQuestion {
         return acceptanceRate;
     }
 
-    public void setAcceptanceRate(float acceptanceRate) {
+    public void setAcceptanceRate(final float acceptanceRate) {
         this.acceptanceRate = acceptanceRate;
     }
 }

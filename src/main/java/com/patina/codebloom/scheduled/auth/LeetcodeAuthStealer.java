@@ -39,7 +39,7 @@ public class LeetcodeAuthStealer {
 
     private final AuthRepository authRepository;
 
-    public LeetcodeAuthStealer(AuthRepository authRepository) {
+    public LeetcodeAuthStealer(final AuthRepository authRepository) {
         this.authRepository = authRepository;
     }
 

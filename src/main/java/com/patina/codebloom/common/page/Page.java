@@ -5,7 +5,7 @@ public class Page<T> {
     private T data;
     private int pages;
 
-    public Page(boolean hasNextPage, T data, int pages) {
+    public Page(final boolean hasNextPage, final T data, final int pages) {
         this.hasNextPage = hasNextPage;
         this.data = data;
         this.pages = pages;
@@ -15,7 +15,7 @@ public class Page<T> {
         return hasNextPage;
     }
 
-    public void setHasNextPage(boolean hasNextPage) {
+    public void setHasNextPage(final boolean hasNextPage) {
         this.hasNextPage = hasNextPage;
     }
 
@@ -23,7 +23,7 @@ public class Page<T> {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(final T data) {
         this.data = data;
     }
 
@@ -31,7 +31,7 @@ public class Page<T> {
         return pages;
     }
 
-    public void setPages(int pages) {
+    public void setPages(final int pages) {
         this.pages = pages;
     }
 }

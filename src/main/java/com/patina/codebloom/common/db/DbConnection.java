@@ -13,11 +13,11 @@ import jakarta.annotation.PreDestroy;
 @Component
 @EnableConfigurationProperties(DbProperties.class)
 public class DbConnection {
-    final DbProperties dbProperties;
+    private final DbProperties dbProperties;
 
-    public Connection conn = null;
+    private Connection conn = null;
 
-    public DbConnection(DbProperties dbProperties) {
+    public DbConnection(final DbProperties dbProperties) {
         this.dbProperties = dbProperties;
     }
 

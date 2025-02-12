@@ -13,7 +13,7 @@ public class Metadata {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -21,7 +21,7 @@ public class Metadata {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
@@ -29,7 +29,7 @@ public class Metadata {
         return leaderboardId;
     }
 
-    public void setLeaderboardId(String leaderboardId) {
+    public void setLeaderboardId(final String leaderboardId) {
         this.leaderboardId = leaderboardId;
     }
 
@@ -37,7 +37,7 @@ public class Metadata {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -45,7 +45,7 @@ public class Metadata {
         return totalScore;
     }
 
-    public void setTotalScore(int totalScore) {
+    public void setTotalScore(final int totalScore) {
         this.totalScore = totalScore;
     }
 

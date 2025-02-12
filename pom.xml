@@ -28,9 +28,15 @@
 		<url />
 	</scm>
 	<properties>
+		<checkstyle.config.location>./checkstyle.xml</checkstyle.config.location>
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.puppycrawl.tools</groupId>
+			<artifactId>checkstyle</artifactId>
+			<version>10.21.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -137,5 +143,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

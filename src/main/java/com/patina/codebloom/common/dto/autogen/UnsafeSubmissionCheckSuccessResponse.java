@@ -6,7 +6,10 @@ import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_CHECK_SUCCESS_RESPONSE {
+/**
+ * Please do not use this unless you know what you are doing.
+ */
+public class UnsafeSubmissionCheckSuccessResponse {
     @Schema(defaultValue = "true")
     private boolean success;
     @Schema(defaultValue = "[{\"title\": \"Default Title\", \"points\": 10}]")
@@ -26,7 +29,7 @@ public class __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_
         return acceptedSubmissions;
     }
 
-    public void setAcceptedSubmissions(ArrayList<AcceptedSubmission> acceptedSubmissions) {
+    public void setAcceptedSubmissions(final ArrayList<AcceptedSubmission> acceptedSubmissions) {
         this.acceptedSubmissions = acceptedSubmissions;
     }
 }

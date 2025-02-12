@@ -16,15 +16,15 @@ import com.patina.codebloom.common.db.models.potd.POTD;
 @Component
 public class POTDSqlRepository implements POTDRepository {
 
-    DbConnection dbConnection;
-    Connection conn;
+    private DbConnection dbConnection;
+    private Connection conn;
 
-    public POTDSqlRepository(DbConnection dbConnection) {
+    public POTDSqlRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.conn = dbConnection.getConn();
     }
 
-    private POTD mapRowToPOTD(ResultSet rs) throws SQLException {
+    private POTD mapRowToPOTD(final ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         String title = rs.getString("title");
         String slug = rs.getString("slug");
@@ -34,7 +34,7 @@ public class POTDSqlRepository implements POTDRepository {
     }
 
     @Override
-    public POTD createPOTD(POTD potd) {
+    public POTD createPOTD(final POTD potd) {
         String sql = """
                 INSERT INTO "POTD"
                     ("id", "title", "slug", "multiplier", "createdAt")
@@ -59,7 +59,7 @@ public class POTDSqlRepository implements POTDRepository {
     }
 
     @Override
-    public POTD getPOTDById(String id) {
+    public POTD getPOTDById(final String id) {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -93,7 +93,7 @@ public class POTDSqlRepository implements POTDRepository {
     }
 
     @Override
-    public void updatePOTD(POTD potd) {
+    public void updatePOTD(final POTD potd) {
         String sql = "UPDATE \"POTD\" SET title = ?, slug = ?, multiplier = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(potd.getId()));
@@ -107,7 +107,7 @@ public class POTDSqlRepository implements POTDRepository {
     }
 
     @Override
-    public void deletePOTD(String id) {
+    public void deletePOTD(final String id) {
         String sql = "DELETE FROM \"POTD\" WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
@@ -119,10 +119,12 @@ public class POTDSqlRepository implements POTDRepository {
 
     @Override
     public POTD getCurrentPOTD() {
-        String sql = "SELECT \"id\", \"title\", \"slug\", \"multiplier\", \"createdAt\" " +
-                "FROM \"POTD\" " +
-                "ORDER BY \"createdAt\" DESC " +
-                "LIMIT 1";
+        String sql = """
+                SELECT "id", "title", "slug", "multiplier", "createdAt"
+                FROM "POTD"
+                ORDER BY "createdAt" DESC
+                LIMIT 1
+                """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()) {

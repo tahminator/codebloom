@@ -20,7 +20,7 @@ public class ServerMetadataObject {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -28,7 +28,7 @@ public class ServerMetadataObject {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -36,7 +36,7 @@ public class ServerMetadataObject {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -44,7 +44,7 @@ public class ServerMetadataObject {
         return authors;
     }
 
-    public void setAuthors(ArrayList<String> authors) {
+    public void setAuthors(final ArrayList<String> authors) {
         this.authors = authors;
     }
 

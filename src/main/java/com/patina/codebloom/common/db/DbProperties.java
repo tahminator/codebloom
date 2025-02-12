@@ -10,7 +10,7 @@ public class DbProperties {
         return this.connection;
     }
 
-    public void setConnection(String connection) {
+    public void setConnection(final String connection) {
         this.connection = connection;
     }
 }

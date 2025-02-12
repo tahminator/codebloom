@@ -18,15 +18,13 @@ import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
 
-    DbConnection dbConnection;
-    Connection conn;
+    private Connection conn;
 
-    public QuestionSqlRepository(DbConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public QuestionSqlRepository(final DbConnection dbConnection) {
         this.conn = dbConnection.getConn();
     }
 
-    public Question createQuestion(Question question) {
+    public Question createQuestion(final Question question) {
         String sql = """
                     INSERT INTO "Question" (
                         id,
@@ -88,7 +86,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         }
     }
 
-    public Question getQuestionById(String id) {
+    public Question getQuestionById(final String id) {
         Question question = null;
         String sql = """
                     SELECT
@@ -141,8 +139,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
 
-                    question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
+                    question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
                             submittedAt, runtime, memory, code, language);
                     return question;
                 }
@@ -154,7 +151,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    public QuestionWithUser getQuestionWithUserById(String id) {
+    public QuestionWithUser getQuestionWithUserById(final String id) {
         QuestionWithUser question = null;
         String sql = """
                     SELECT
@@ -209,10 +206,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
-                    question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty,
-                            questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
+                    question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
+                            createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
                     return question;
                 }
             }
@@ -226,7 +221,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     /**
      * TODO - Change this to be UserWithQuestions instead.
      */
-    public ArrayList<QuestionWithUser> getQuestionsByUserId(String userId, int page, int pageSize) {
+    public ArrayList<QuestionWithUser> getQuestionsByUserId(final String userId, final int page, final int pageSize) {
 
         ArrayList<QuestionWithUser> questions = new ArrayList<>();
         String sql = """
@@ -269,8 +264,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionId = rs.getString("id");
                     var userIdResult = rs.getString("userId");
                     var questionSlug = rs.getString("questionSlug");
-                    var questionDifficulty = QuestionDifficulty
-                            .valueOf(rs.getString("questionDifficulty"));
+                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
                     var questionNumber = rs.getInt("questionNumber");
                     var questionLink = rs.getString("questionLink");
                     int points = rs.getInt("pointsAwarded");
@@ -291,11 +285,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
-                    QuestionWithUser question = new QuestionWithUser(questionId, userIdResult, questionSlug,
-                            questionDifficulty,
-                            questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
+                    QuestionWithUser question = new QuestionWithUser(questionId, userIdResult, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle,
+                            description, acceptanceRate, createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
                     questions.add(question);
                 }
             }
@@ -306,7 +297,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return questions;
     }
 
-    public Question updateQuestion(Question inputQuestion) {
+    public Question updateQuestion(final Question inputQuestion) {
         String sql = """
                     UPDATE "Question"
                     SET
@@ -359,7 +350,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public boolean deleteQuestionById(String id) {
+    public boolean deleteQuestionById(final String id) {
         String sql = "DELETE FROM \"Question\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -374,7 +365,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public Question getQuestionBySlugAndUserId(String slug, String inputtedUserId) {
+    public Question getQuestionBySlugAndUserId(final String slug, final String inputtedUserId) {
         Question question = null;
         String sql = """
                     SELECT
@@ -428,8 +419,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
-                    question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber,
-                            questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
+                    question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
                             submittedAt, runtime, memory, code, language);
                     return question;
                 }
@@ -441,7 +431,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    public int getQuestionCountByUserId(String userId) {
+    public int getQuestionCountByUserId(final String userId) {
         String sql = """
                 SELECT
                     COUNT(*)

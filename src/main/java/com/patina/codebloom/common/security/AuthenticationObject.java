@@ -7,7 +7,7 @@ public class AuthenticationObject {
     private User user;
     private Session session;
 
-    public AuthenticationObject(User user, Session session) {
+    public AuthenticationObject(final User user, final Session session) {
         this.user = user;
         this.session = session;
     }

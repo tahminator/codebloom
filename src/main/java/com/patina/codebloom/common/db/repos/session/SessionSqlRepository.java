@@ -14,16 +14,14 @@ import com.patina.codebloom.common.db.models.Session;
 
 @Component
 public class SessionSqlRepository implements SessionRepository {
-    DbConnection dbConnection;
-    Connection conn;
+    private Connection conn;
 
-    public SessionSqlRepository(DbConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public SessionSqlRepository(final DbConnection dbConnection) {
         this.conn = dbConnection.getConn();
     }
 
     @Override
-    public Session createSession(Session session) {
+    public Session createSession(final Session session) {
         String sql = "INSERT INTO \"Session\" (id, \"userId\", \"expiresAt\") VALUES (?, ?, ?)";
         // Don't want dashes inside of the cookie, so better to just remove it from the
         // ID altogether.
@@ -48,7 +46,7 @@ public class SessionSqlRepository implements SessionRepository {
     }
 
     @Override
-    public Session getSessionById(String id) {
+    public Session getSessionById(final String id) {
         Session session = null;
         String sql = "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE id=?";
 
@@ -71,7 +69,7 @@ public class SessionSqlRepository implements SessionRepository {
     }
 
     @Override
-    public ArrayList<Session> getSessionsByUserId(String id) {
+    public ArrayList<Session> getSessionsByUserId(final String id) {
         String sql = "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE \"userId\"=?";
         ArrayList<Session> sessions = new ArrayList<>();
 
@@ -93,7 +91,7 @@ public class SessionSqlRepository implements SessionRepository {
     }
 
     @Override
-    public boolean deleteSessionById(String id) {
+    public boolean deleteSessionById(final String id) {
         String sql = "DELETE FROM \"Session\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

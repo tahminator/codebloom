@@ -7,8 +7,7 @@ import com.patina.codebloom.common.db.models.question.Question;
 public class UserWithQuestions extends User {
     private ArrayList<Question> questions;
 
-    public UserWithQuestions(String id, String discordId, String discordName, String leetcodeUsername,
-            String nickname) {
+    public UserWithQuestions(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname) {
         super(id, discordId, discordName, leetcodeUsername, nickname);
         this.questions = new ArrayList<>();
     }
@@ -17,7 +16,7 @@ public class UserWithQuestions extends User {
         return questions;
     }
 
-    public void addQuestion(Question question) {
+    public void addQuestion(final Question question) {
         questions.add(question);
     }
 }
