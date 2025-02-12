@@ -44,12 +44,17 @@ jobs:
             - name: Set up OpenJDK 21
               run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
 
+            - name: Set JAVA_HOME to Java 21
+              run: |
+                echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
+                echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
+                
             - name: Verify Java version
               run: |
                 java -version
                 javac -version
                 echo "JAVA_HOME=$JAVA_HOME"
-                
+
             - name: Cache Maven Dependencies
               uses: actions/cache@v3
               with:
