@@ -10,7 +10,7 @@ public class User {
     private String leetcodeUsername;
     private String nickname;
 
-    public User(String id, String discordId, String discordName, String leetcodeUsername, String nickname) {
+    public User(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname) {
         this.id = id;
         this.discordId = discordId;
         this.discordName = discordName;
@@ -18,7 +18,7 @@ public class User {
         this.nickname = nickname;
     }
 
-    public User(String discordId, String discordName) {
+    public User(final String discordId, final String discordName) {
         this.discordId = discordId;
         this.discordName = discordName;
     }
@@ -27,7 +27,7 @@ public class User {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class User {
         return discordId;
     }
 
-    public void setDiscordId(String discordId) {
+    public void setDiscordId(final String discordId) {
         this.discordId = discordId;
     }
 
@@ -43,7 +43,7 @@ public class User {
         return discordName;
     }
 
-    public void setDiscordName(String discordName) {
+    public void setDiscordName(final String discordName) {
         this.discordName = discordName;
     }
 
@@ -51,7 +51,7 @@ public class User {
         return leetcodeUsername;
     }
 
-    public void setLeetcodeUsername(String leetcodeUsername) {
+    public void setLeetcodeUsername(final String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
     }
 
@@ -59,7 +59,7 @@ public class User {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
+    public void setNickname(final String nickname) {
         this.nickname = nickname;
     }
 }

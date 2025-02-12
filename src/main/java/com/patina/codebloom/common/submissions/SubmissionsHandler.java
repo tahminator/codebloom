@@ -26,8 +26,7 @@ import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 /**
- * The submission logic is abstracted because it gets reused in two different
- * parts of the app: the submissions API and the automated recurring task.
+ * The submission logic is abstracted because it gets reused in two different parts of the app: the submissions API and the automated recurring task.
  */
 @Controller
 public class SubmissionsHandler {
@@ -37,15 +36,15 @@ public class SubmissionsHandler {
     private final POTDRepository potdRepository;
     private final UserRepository userRepository;
 
-    private boolean isSameDay(LocalDateTime createdAt) {
+    private boolean isSameDay(final LocalDateTime createdAt) {
         LocalDate createdAtDate = createdAt.toLocalDate();
         LocalDate today = LocalDate.now();
 
         return createdAtDate.equals(today);
     }
 
-    public SubmissionsHandler(QuestionRepository questionRepository, LeetcodeApiHandler leetcodeApiHandler,
-            LeaderboardRepository leaderboardRepository, POTDRepository potdRepository, UserRepository userRepository) {
+    public SubmissionsHandler(final QuestionRepository questionRepository, final LeetcodeApiHandler leetcodeApiHandler, final LeaderboardRepository leaderboardRepository,
+            final POTDRepository potdRepository, final UserRepository userRepository) {
         this.questionRepository = questionRepository;
         this.leetcodeApiHandler = leetcodeApiHandler;
         this.leaderboardRepository = leaderboardRepository;
@@ -53,8 +52,7 @@ public class SubmissionsHandler {
         this.userRepository = userRepository;
     }
 
-    public ArrayList<AcceptedSubmission> handleSubmissions(ArrayList<LeetcodeSubmission> leetcodeSubmissions,
-            User user) {
+    public ArrayList<AcceptedSubmission> handleSubmissions(final ArrayList<LeetcodeSubmission> leetcodeSubmissions, final User user) {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
@@ -62,8 +60,7 @@ public class SubmissionsHandler {
                 continue;
             }
 
-            Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(),
-                    user.getId());
+            Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
 
             if (question != null) {
                 continue;
@@ -79,29 +76,15 @@ public class SubmissionsHandler {
                 multiplier = potd.getMultiplier();
             }
 
-            LeetcodeQuestion leetcodeQuestion = leetcodeApiHandler
-                    .findQuestionBySlug(leetcodeSubmission.getTitleSlug());
+            LeetcodeQuestion leetcodeQuestion = leetcodeApiHandler.findQuestionBySlug(leetcodeSubmission.getTitleSlug());
 
-            LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler
-                    .findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
+            LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
 
-            int points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()),
-                    leetcodeQuestion.getAcceptanceRate(), multiplier);
+            int points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
 
-            Question newQuestion = new Question(
-                    user.getId(),
-                    leetcodeQuestion.getTitleSlug(),
-                    QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()),
-                    leetcodeQuestion.getQuestionId(),
-                    "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(),
-                    leetcodeQuestion.getQuestionTitle(),
-                    leetcodeQuestion.getQuestion(),
-                    OptionalInt.of(points),
-                    leetcodeQuestion.getAcceptanceRate(),
-                    leetcodeSubmission.getTimestamp(),
-                    detailedQuestion.getRuntimeDisplay(),
-                    detailedQuestion.getMemoryDisplay(),
-                    detailedQuestion.getCode(),
+            Question newQuestion = new Question(user.getId(), leetcodeQuestion.getTitleSlug(), QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getQuestionId(),
+                    "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getQuestion(), OptionalInt.of(points),
+                    leetcodeQuestion.getAcceptanceRate(), leetcodeSubmission.getTimestamp(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(), detailedQuestion.getCode(),
                     detailedQuestion.getLang().getName());
 
             questionRepository.createQuestion(newQuestion);
@@ -117,11 +100,9 @@ public class SubmissionsHandler {
                 throw new RuntimeException("No recent leaderboard found.");
             }
 
-            UserWithScore recentUserMetadata = leaderboardRepository.getUserFromLeaderboard(recentLeaderboard.getId(),
-                    user.getId());
+            UserWithScore recentUserMetadata = leaderboardRepository.getUserFromLeaderboard(recentLeaderboard.getId(), user.getId());
 
-            leaderboardRepository.updateUserPointsFromLeaderboard(recentLeaderboard.getId(), user.getId(),
-                    recentUserMetadata.getTotalScore() + points);
+            leaderboardRepository.updateUserPointsFromLeaderboard(recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }
 
         return acceptedSubmissions;
@@ -135,46 +116,30 @@ public class SubmissionsHandler {
         List<User> users = userRepository.getAllUsers();
         for (User user : users) {
             System.out.println("Starting migration for user ID " + user.getId());
-            ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler
-                    .findSubmissionsByUsername(user.getLeetcodeUsername());
+            ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(user.getLeetcodeUsername());
 
             for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
                 if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
                     continue;
                 }
 
-                Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(),
-                        user.getId());
+                Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
 
                 if (question == null || question.getCode() != null) {
                     continue;
                 }
 
-                LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler
-                        .findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
+                LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
 
                 if (detailedQuestion == null) {
                     continue;
                 }
 
-                System.out.println("Attempting to update User ID" + user.getId() + " with question of "
-                        + question.getQuestionSlug());
+                System.out.println("Attempting to update User ID" + user.getId() + " with question of " + question.getQuestionSlug());
 
-                Question newQuestion = new Question(question.getId(),
-                        question.getUserId(), question.getQuestionSlug(),
-                        question.getQuestionDifficulty(),
-                        question.getQuestionNumber(),
-                        question.getQuestionLink(),
-                        question.getPointsAwarded(),
-                        question.getQuestionTitle(),
-                        question.getDescription(),
-                        question.getAcceptanceRate(),
-                        question.getCreatedAt(),
-                        question.getSubmittedAt(),
-                        detailedQuestion.getRuntimeDisplay(),
-                        detailedQuestion.getMemoryDisplay(),
-                        detailedQuestion.getCode(),
-                        detailedQuestion.getLang().getName());
+                Question newQuestion = new Question(question.getId(), question.getUserId(), question.getQuestionSlug(), question.getQuestionDifficulty(), question.getQuestionNumber(),
+                        question.getQuestionLink(), question.getPointsAwarded(), question.getQuestionTitle(), question.getDescription(), question.getAcceptanceRate(), question.getCreatedAt(),
+                        question.getSubmittedAt(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(), detailedQuestion.getCode(), detailedQuestion.getLang().getName());
 
                 questionRepository.updateQuestion(newQuestion);
             }

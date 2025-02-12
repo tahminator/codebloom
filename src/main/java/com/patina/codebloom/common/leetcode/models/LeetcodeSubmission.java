@@ -10,7 +10,7 @@ public class LeetcodeSubmission {
     private LocalDateTime timestamp;
     private String statusDisplay;
 
-    public LeetcodeSubmission(int id, String title, String titleSlug, LocalDateTime timestamp, String statusDisplay) {
+    public LeetcodeSubmission(final int id, final String title, final String titleSlug, final LocalDateTime timestamp, final String statusDisplay) {
         this.id = id;
         this.title = title;
         this.titleSlug = titleSlug;
@@ -22,7 +22,7 @@ public class LeetcodeSubmission {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -30,7 +30,7 @@ public class LeetcodeSubmission {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -38,7 +38,7 @@ public class LeetcodeSubmission {
         return titleSlug;
     }
 
-    public void setTitleSlug(String titleSlug) {
+    public void setTitleSlug(final String titleSlug) {
         this.titleSlug = titleSlug;
     }
 
@@ -46,7 +46,7 @@ public class LeetcodeSubmission {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(final LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -54,7 +54,7 @@ public class LeetcodeSubmission {
         return statusDisplay;
     }
 
-    public void setStatusDisplay(String statusDisplay) {
+    public void setStatusDisplay(final String statusDisplay) {
         this.statusDisplay = statusDisplay;
     }
 

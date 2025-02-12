@@ -18,11 +18,9 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 
 @Component
 public class LeaderboardSqlRepository implements LeaderboardRepository {
-    DbConnection dbConnection;
-    Connection conn;
+    private Connection conn;
 
-    public LeaderboardSqlRepository(DbConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public LeaderboardSqlRepository(final DbConnection dbConnection) {
         this.conn = dbConnection.getConn();
     }
 
@@ -93,8 +91,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             deletedAt = deletedAtTimestamp.toLocalDateTime();
                         }
 
-                        currentLeaderboard = new LeaderboardWithUsers(
-                                leaderboardId, name, createdAt, deletedAt, new ArrayList<>());
+                        currentLeaderboard = new LeaderboardWithUsers(leaderboardId, name, createdAt, deletedAt, new ArrayList<>());
                         leaderboards.add(currentLeaderboard);
                     }
 
@@ -106,8 +103,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                nickname, totalScore);
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
                         currentLeaderboard.getUsers().add(user);
                     }
                 }
@@ -120,7 +116,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public LeaderboardWithUsers getLeaderboardByIdShallow(String leaderboardId) {
+    public LeaderboardWithUsers getLeaderboardByIdShallow(final String leaderboardId) {
         LeaderboardWithUsers leaderboard = null;
 
         String sql = """
@@ -172,8 +168,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             deletedAt = deletedAtTimestamp.toLocalDateTime();
                         }
 
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(
-                                currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
+                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
                         leaderboard = currentLeaderboard;
                     }
 
@@ -186,9 +181,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                nickname,
-                                totalScore);
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
                         leaderboard.addUser(user);
                     }
                 }
@@ -201,7 +194,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public LeaderboardWithUsers getLeaderboardByIdFull(String leaderboardId) {
+    public LeaderboardWithUsers getLeaderboardByIdFull(final String leaderboardId) {
         LeaderboardWithUsers leaderboard = null;
 
         String sql = """
@@ -238,8 +231,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             deletedAt = deletedAtTimestamp.toLocalDateTime();
                         }
 
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(
-                                currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
+                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
                         leaderboard = currentLeaderboard;
                     }
 
@@ -252,8 +244,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                nickname, totalScore);
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
                         leaderboard.addUser(user);
                     }
                 }
@@ -266,10 +257,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public boolean disableLeaderboardById(String leaderboardId) {
-        String SQL = "UPDATE \"Leaderboard\" SET \"deletedAt\" = NOW() WHERE id = ?";
+    public boolean disableLeaderboardById(final String leaderboardId) {
+        String sql = "UPDATE \"Leaderboard\" SET \"deletedAt\" = NOW() WHERE id = ?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(SQL)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             int rowsAffected = stmt.executeUpdate();
 
             return rowsAffected > 0;
@@ -279,7 +270,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public Leaderboard addNewLeaderboard(Leaderboard leaderboard) {
+    public Leaderboard addNewLeaderboard(final Leaderboard leaderboard) {
         String sql = "INSERT INTO \"Leaderboard\" (id, name) VALUES (?, ?)";
         leaderboard.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -361,8 +352,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             deletedAt = deletedAtTimestamp.toLocalDateTime();
                         }
 
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(
-                                currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
+                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
                         leaderboard = currentLeaderboard;
                     }
 
@@ -375,8 +365,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                nickname, totalScore);
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
                         leaderboard.addUser(user);
                     }
                 }
@@ -445,8 +434,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             deletedAt = deletedAtTimestamp.toLocalDateTime();
                         }
 
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(
-                                currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
+                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
                         leaderboard = currentLeaderboard;
                     }
 
@@ -459,8 +447,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername,
-                                nickname, totalScore);
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
                         leaderboard.addUser(user);
                     }
                 }
@@ -473,10 +460,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public boolean updateLeaderboard(Leaderboard leaderboard) {
-        String SQL = "UPDATE \"Leaderboard\" SET name = ?, \"createdAt\" = ?, \"deletedAt\" = ?, WHERE id = ?";
+    public boolean updateLeaderboard(final Leaderboard leaderboard) {
+        String sql = "UPDATE \"Leaderboard\" SET name = ?, \"createdAt\" = ?, \"deletedAt\" = ?, WHERE id = ?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(SQL)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, leaderboard.getName());
             stmt.setObject(2, leaderboard.getCreatedAt());
             stmt.setObject(3, leaderboard.getDeletedAt());
@@ -491,7 +478,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public boolean addUserToLeaderboard(String userId, String leaderboardId) {
+    public boolean addUserToLeaderboard(final String userId, final String leaderboardId) {
         String sql = "INSERT INTO \"Metadata\" (id, \"userId\", \"leaderboardId\") VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -507,7 +494,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public UserWithScore getUserFromLeaderboard(String leaderboardId, String userId) {
+    public UserWithScore getUserFromLeaderboard(final String leaderboardId, final String userId) {
         UserWithScore user = null;
 
         String sql = """
@@ -547,7 +534,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public boolean updateUserPointsFromLeaderboard(String leaderboardId, String userId, int totalScore) {
+    public boolean updateUserPointsFromLeaderboard(final String leaderboardId, final String userId, final int totalScore) {
         String sql = "UPDATE \"Metadata\" SET \"totalScore\" = ? WHERE \"userId\" = ? AND \"leaderboardId\" = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

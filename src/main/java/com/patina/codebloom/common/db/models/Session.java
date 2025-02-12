@@ -8,13 +8,13 @@ public class Session {
 
     private LocalDateTime expiresAt;
 
-    public Session(String id, String userId, LocalDateTime expiresAt) {
+    public Session(final String id, final String userId, final LocalDateTime expiresAt) {
         this.id = id;
         this.userId = userId;
         this.expiresAt = expiresAt;
     }
 
-    public Session(String userId, LocalDateTime expiresAt) {
+    public Session(final String userId, final LocalDateTime expiresAt) {
         this.userId = userId;
         this.expiresAt = expiresAt;
     }
@@ -23,7 +23,7 @@ public class Session {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -31,7 +31,7 @@ public class Session {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
@@ -39,7 +39,7 @@ public class Session {
         return expiresAt;
     }
 
-    public void setExpiresAt(LocalDateTime expiresAt) {
+    public void setExpiresAt(final LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
 }

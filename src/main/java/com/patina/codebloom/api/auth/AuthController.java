@@ -16,7 +16,7 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
+import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
@@ -37,18 +37,16 @@ public class AuthController {
     private final SessionRepository sessionRepository;
     private final Protector protector;
 
-    public AuthController(UserRepository userRepository, SessionRepository sessionRepository, Protector protector) {
+    public AuthController(final UserRepository userRepository, final SessionRepository sessionRepository, final Protector protector) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.protector = protector;
     }
 
-    @Operation(summary = "Validate if the user is authenticated or not.", responses = {
-            @ApiResponse(responseCode = "200", description = "Authenticated"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class)))
-    })
+    @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/validate")
-    public ResponseEntity<ApiResponder<AuthenticationObject>> validateAuth(HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<AuthenticationObject>> validateAuth(final HttpServletRequest request) {
         FakeLag.sleep(350);
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
@@ -56,13 +54,12 @@ public class AuthController {
         return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!", authenticationObject));
     }
 
-    @Operation(summary = "Logs user out", description = "Logs the user out if currently authenticated. This is a Redirect route that does redirects as responses.", responses = {
-            @ApiResponse(responseCode = "302", description = "Redirect to `/login?success=true&message=\"Successful logout message here.\"` on successful authentication.", content = @Content())
-    })
     // Decided to make this redirect to routes, with a message query if needed,
     // keeping it inline with the logic of the authentication handler.
+    @Operation(summary = "Logs user out", description = "Logs the user out if currently authenticated. This is a Redirect route that does redirects as responses.", responses = {
+            @ApiResponse(responseCode = "302", description = "Redirect to `/login?success=true&message=\"Successful logout message here.\"` on successful authentication.", content = @Content()) })
     @GetMapping("/logout")
-    public RedirectView logout(HttpServletRequest request, HttpServletResponse response) {
+    public RedirectView logout(final HttpServletRequest request, final HttpServletResponse response) {
         try {
             AuthenticationObject authenticationObject = protector.validateSession(request);
 
@@ -70,13 +67,11 @@ public class AuthController {
 
             boolean sessionDeleted = sessionRepository.deleteSessionById(session.getId());
 
-            if (sessionDeleted == false) {
+            if (!sessionDeleted) {
                 return new RedirectView("/login?success=false&message=You are not logged in.");
-
             }
 
-            ResponseCookie strippedCookie = ResponseCookie.from("session_token", "").path("/").httpOnly(true).maxAge(0)
-                    .build();
+            ResponseCookie strippedCookie = ResponseCookie.from("session_token", "").path("/").httpOnly(true).maxAge(0).build();
             response.addHeader(HttpHeaders.SET_COOKIE, strippedCookie.toString());
 
             return new RedirectView("/login?success=true&message=You have been logged out!");
@@ -86,13 +81,14 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "Change nickname", description = "Change the user's nickname. If the user is in the Patina Discord server, and they change their nickname here to be different from their Discord nickname in the server, it will no longer do that sync on every re-authentication.", responses = {
-            @ApiResponse(responseCode = "200", description = "Name change complete"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class)))
-    })
+    @Operation(summary = "Change nickname", description = """
+            Change the user's nickname. If the user is in the Patina Discord server,
+            and they change their nickname here to be different from their Discord nickname in the server,
+            it will no longer do that sync on every re-authentication.
+            """, responses = { @ApiResponse(responseCode = "200", description = "Name change complete"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @PostMapping("/set")
-    public ResponseEntity<ApiResponder<Void>> setNickname(HttpServletRequest request,
-            @RequestBody AuthBody authBody) {
+    public ResponseEntity<ApiResponder<Void>> setNickname(final HttpServletRequest request, @RequestBody final AuthBody authBody) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
 
         User user = authenticationObject.getUser();

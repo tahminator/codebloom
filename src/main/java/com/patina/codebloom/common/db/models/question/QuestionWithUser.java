@@ -7,14 +7,13 @@ public class QuestionWithUser extends Question {
     private String discordName;
     private String leetcodeUsername;
 
-    public QuestionWithUser(String id, String userId, String questionSlug, QuestionDifficulty questionDifficulty,
-            int questionNumber,
-            String questionLink, OptionalInt pointsAwarded, String questionTitle, String description,
-            float acceptanceRate, LocalDateTime createdAt, LocalDateTime submittedAt, String discordName,
-            String leetcodeUsername, String runtime, String memory, String code,
-            String language) {
-        super(id, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle,
-                description, acceptanceRate, createdAt, submittedAt, runtime, memory, code, language);
+    public QuestionWithUser(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty,
+            final int questionNumber, final String questionLink, final OptionalInt pointsAwarded, final String questionTitle,
+            final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt,
+            final String discordName, final String leetcodeUsername, final String runtime, final String memory, final String code,
+            final String language) {
+        super(id, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
+                createdAt, submittedAt, runtime, memory, code, language);
         this.discordName = discordName;
         this.leetcodeUsername = leetcodeUsername;
     }
@@ -23,7 +22,7 @@ public class QuestionWithUser extends Question {
         return discordName;
     }
 
-    public void setDiscordName(String discordName) {
+    public void setDiscordName(final String discordName) {
         this.discordName = discordName;
     }
 
@@ -31,7 +30,7 @@ public class QuestionWithUser extends Question {
         return leetcodeUsername;
     }
 
-    public void setLeetcodeUsername(String leetcodeUsername) {
+    public void setLeetcodeUsername(final String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
     }
 

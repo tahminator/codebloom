@@ -12,35 +12,27 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 /**
  * This is where the OAuth provider lives.
  * 
- * @see <a href=
- *      "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication
- *      Documentation</a>
+ * @see <a href= "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication Documentation</a>
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    public SecurityConfig(AuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+    public SecurityConfig(final AuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
     }
 
     /**
-     * The authorization endpoint is used to get redirected to the OAuth login page.
-     * The redirection endpoint is the callback endpoint on our server that then
-     * handles the authentication logic.
+     * The authorization endpoint is used to get redirected to the OAuth login page. The redirection endpoint is the callback endpoint on our server that
+     * then handles the authentication logic.
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(auth -> auth
-                                // This baseUri implicitly has {registrationId} at the end of it. That's why
-                                // /api/auth/flow/discord still works.
-                                .baseUri("/api/auth/flow"))
-                        .redirectionEndpoint(auth -> auth.baseUri("/api/auth/flow/callback/{registrationId}"))
-                        .successHandler(customAuthenticationSuccessHandler));
+    public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable).oauth2Login(oauth2 -> oauth2.authorizationEndpoint(auth -> auth
+                // This baseUri implicitly has {registrationId} at the end of it. That's why
+                // /api/auth/flow/discord still works.
+                .baseUri("/api/auth/flow")).redirectionEndpoint(auth -> auth.baseUri("/api/auth/flow/callback/{registrationId}")).successHandler(customAuthenticationSuccessHandler));
 
         return http.build();
     }

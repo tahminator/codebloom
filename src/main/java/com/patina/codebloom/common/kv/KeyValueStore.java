@@ -9,19 +9,19 @@ import org.springframework.stereotype.Service;
 public class KeyValueStore {
     private final Map<String, Object> store = new ConcurrentHashMap<>();
 
-    public void put(String key, Object value) {
+    public void put(final String key, final Object value) {
         store.put(key, value);
     }
 
-    public Object get(String key) {
+    public Object get(final String key) {
         return store.get(key);
     }
 
-    public void remove(String key) {
+    public void remove(final String key) {
         store.remove(key);
     }
 
-    public boolean containsKey(String key) {
+    public boolean containsKey(final String key) {
         return store.containsKey(key);
     }
 

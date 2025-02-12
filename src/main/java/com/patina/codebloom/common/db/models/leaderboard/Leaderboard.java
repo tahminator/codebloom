@@ -8,12 +8,12 @@ public class Leaderboard {
     private LocalDateTime createdAt;
     private LocalDateTime deletedAt;
 
-    public Leaderboard(String name, LocalDateTime createdAt) {
+    public Leaderboard(final String name, final LocalDateTime createdAt) {
         this.name = name;
         this.createdAt = createdAt;
     }
 
-    public Leaderboard(String id, String name, LocalDateTime createdAt, LocalDateTime deletedAt) {
+    public Leaderboard(final String id, final String name, final LocalDateTime createdAt, final LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
@@ -24,7 +24,7 @@ public class Leaderboard {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -32,7 +32,7 @@ public class Leaderboard {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -40,7 +40,7 @@ public class Leaderboard {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -48,7 +48,7 @@ public class Leaderboard {
         return deletedAt;
     }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
+    public void setDeletedAt(final LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 

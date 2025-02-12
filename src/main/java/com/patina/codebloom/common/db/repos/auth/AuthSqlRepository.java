@@ -13,16 +13,14 @@ import com.patina.codebloom.common.db.models.auth.Auth;
 
 @Component
 public class AuthSqlRepository implements AuthRepository {
-    DbConnection dbConnection;
-    Connection conn;
+    private Connection conn;
 
-    public AuthSqlRepository(DbConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public AuthSqlRepository(final DbConnection dbConnection) {
         this.conn = dbConnection.getConn();
     }
 
     @Override
-    public Auth createAuth(Auth auth) {
+    public Auth createAuth(final Auth auth) {
         String sql = """
                 INSERT INTO "Auth"
                     (id, token)
@@ -44,7 +42,7 @@ public class AuthSqlRepository implements AuthRepository {
     }
 
     @Override
-    public boolean updateAuth(Auth auth) {
+    public boolean updateAuth(final Auth auth) {
         String sql = """
                 UPDATE "Auth"
                 SET
@@ -65,7 +63,7 @@ public class AuthSqlRepository implements AuthRepository {
     }
 
     @Override
-    public Auth getAuthById(String inputtedId) {
+    public Auth getAuthById(final String inputtedId) {
         String sql = """
                 SELECT
                     id, token, "createdAt"

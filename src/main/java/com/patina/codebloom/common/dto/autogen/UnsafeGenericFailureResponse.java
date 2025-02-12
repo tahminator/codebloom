@@ -1,12 +1,12 @@
 package com.patina.codebloom.common.dto.autogen;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EMPTY_SUCCESS_RESPONSE {
-    @Schema(defaultValue = "true")
+/**
+ * Please do not use this unless you know what you are doing.
+ */
+public class UnsafeGenericFailureResponse {
+    @Schema(defaultValue = "false")
     private boolean success;
     private String message;
 

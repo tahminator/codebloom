@@ -24,11 +24,10 @@ import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EMPTY_SUCCESS_RESPONSE;
-import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_CHECK_SUCCESS_RESPONSE;
-import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE;
-import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE;
-import com.patina.codebloom.common.dto.autogen.__DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_SUBMISSION_SUCCESS_RESPONSE;
+import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
+import com.patina.codebloom.common.dto.autogen.UnsafeSubmissionSuccessResponse;
+import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.kv.KeyValueStore;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
@@ -52,189 +51,177 @@ import jakarta.validation.Valid;
 @Tag(name = "LeetCode Submission Routes")
 @RequestMapping("/api/leetcode")
 public class SubmissionController {
-        /* Page size for submissions */
-        private final int submissionsPageSize = 5;
+    /* Page size for submissions */
+    private static final int SUBMISSIONS_PAGE_SIZE = 5;
 
-        // 5 Minute rate limit to avoid abuse.
-        // TODO - Change this from 5 seconds back to 5 minutes once done testing.
-        private double SECONDS_TO_WAIT = 1 * 60;
+    // 5 Minute rate limit to avoid abuse.
+    // TODO - Change this from 5 seconds back to 5 minutes once done testing.
+    private static final double SECONDS_TO_WAIT = 1 * 60;
 
-        private final UserRepository userRepository;
-        private final Protector protector;
-        private final KeyValueStore keyValueStore;
-        private final LeetcodeApiHandler leetcodeApiHandler;
-        private final SubmissionsHandler submissionsHandler;
-        private final QuestionRepository questionRepository;
-        private final POTDRepository potdRepository;
+    private final UserRepository userRepository;
+    private final Protector protector;
+    private final KeyValueStore keyValueStore;
+    private final LeetcodeApiHandler leetcodeApiHandler;
+    private final SubmissionsHandler submissionsHandler;
+    private final QuestionRepository questionRepository;
+    private final POTDRepository potdRepository;
 
-        /**
-         * This checks if the different is 24 hours, instead of checking whether they
-         * are actually part of the "same day".
-         */
-        private boolean isSameDay(LocalDateTime createdAt) {
-                LocalDateTime now = LocalDateTime.now();
-                Duration duration = Duration.between(createdAt, now);
+    /**
+     * This checks if the different is 24 hours, instead of checking whether they are actually part of the "same day".
+     */
+    private boolean isSameDay(final LocalDateTime createdAt) {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(createdAt, now);
 
-                return duration.toHours() < 24;
+        return duration.toHours() < 24;
+    }
+
+    public SubmissionController(final UserRepository userRepository, final Protector protector, final KeyValueStore keyValueStore, final LeetcodeApiHandler leetcodeApiHandler,
+            final SubmissionsHandler submissionsHandler, final QuestionRepository questionRepository, final POTDRepository potdRepository) {
+        this.userRepository = userRepository;
+        this.protector = protector;
+        this.keyValueStore = keyValueStore;
+        this.leetcodeApiHandler = leetcodeApiHandler;
+        this.submissionsHandler = submissionsHandler;
+        this.questionRepository = questionRepository;
+        this.potdRepository = potdRepository;
+    }
+
+    @Operation(summary = "Set a Leetcode username for the current user", description = """
+            Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add.
+            Cannot re-use this endpoint once a name is set.
+            """, responses = { @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Name has been set successfully", content = @Content(schema = @Schema(implementation = UnsafeEmptySuccessResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Attempt to set name that has already been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    @PostMapping("/set")
+    public ResponseEntity<ApiResponder<Void>> setLeetcodeUsername(final HttpServletRequest request, @Valid @RequestBody final LeetcodeUsernameObject leetcodeUsernameObject) {
+        FakeLag.sleep(350);
+
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+        User user = authenticationObject.getUser();
+
+        if (user.getLeetcodeUsername() != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
         }
 
-        public SubmissionController(UserRepository userRepository,
-                        Protector protector,
-                        KeyValueStore keyValueStore, LeetcodeApiHandler leetcodeApiHandler,
-                        SubmissionsHandler submissionsHandler, QuestionRepository questionRepository,
-                        POTDRepository potdRepository) {
-                this.userRepository = userRepository;
-                this.protector = protector;
-                this.keyValueStore = keyValueStore;
-                this.leetcodeApiHandler = leetcodeApiHandler;
-                this.submissionsHandler = submissionsHandler;
-                this.questionRepository = questionRepository;
-                this.potdRepository = potdRepository;
+        ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(leetcodeUsernameObject.getLeetcodeUsername());
+
+        if (leetcodeSubmissions.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The username is not valid. Please make sure the LeetCode username is valid, and has completed atleast one problem before.");
         }
 
-        @Operation(summary = "Set a Leetcode username for the current user", description = "Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add. Cannot re-use this endpoint once a name is set.", responses = {
-                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "200", description = "Name has been set successfully", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EMPTY_SUCCESS_RESPONSE.class))),
-                        @ApiResponse(responseCode = "409", description = "Attempt to set name that has already been set", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class)))
-        })
-        @PostMapping("/set")
-        public ResponseEntity<ApiResponder<Void>> setLeetcodeUsername(HttpServletRequest request,
-                        @Valid @RequestBody LeetcodeUsernameObject leetcodeUsernameObject) {
-                FakeLag.sleep(350);
+        user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
+        userRepository.updateUser(user);
 
-                AuthenticationObject authenticationObject = protector.validateSession(request);
-                User user = authenticationObject.getUser();
+        return ResponseEntity.ok().body(ApiResponder.success("Leetcode username has been set!", null));
 
-                if (user.getLeetcodeUsername() != null) {
-                        throw new ResponseStatusException(HttpStatus.CONFLICT,
-                                        "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
-                }
+    }
 
-                ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler
-                                .findSubmissionsByUsername(leetcodeUsernameObject.getLeetcodeUsername());
+    @Operation(summary = "Check the current user's LeetCode submissions and update leaderboard", description = """
+            Protected endpoint that handles the logic of checking the most recent submissions,
+            as well as updating the current leaderboard with any new points the user has accumulated.
+            There is a rate limit on the route to prevent abuse (currently: 5 minutes).
+            """, responses = { @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "The check was completed successfuly", content = @Content(schema = @Schema(implementation = UnsafeSubmissionSuccessResponse.class))),
+            @ApiResponse(responseCode = "412", description = "Leetcode username hasn't been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "429", description = "Rate limited", content = @Content(schema = @Schema(implementation = UnsafeRateLimitResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    @PostMapping("/check")
+    public ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> checkLatestSubmissions(final HttpServletRequest request) {
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+        User user = authenticationObject.getUser();
 
-                if (leetcodeSubmissions.size() == 0) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                        "The username is not valid. Please make sure the LeetCode username is valid, and has completed atleast one problem before.");
-                }
-
-                user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
-                userRepository.updateUser(user);
-
-                return ResponseEntity.ok().body(ApiResponder.success("Leetcode username has been set!", null));
-
+        if (user.getLeetcodeUsername() == null) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "You cannot access this resource without setting a Leetcode username first.");
         }
 
-        @Operation(summary = "Check the current user's LeetCode submissions and update leaderboard", description = "Protected endpoint that handles the logic of checking the most recent submissions as well as updating the current leaderboard with any new points the user has accumulated. There is a rate limit on the route to prevent abuse (currently: 5 minutes).", responses = {
-                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "200", description = "The check was completed successfuly", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_EXAMPLE_SUBMISSION_CHECK_SUCCESS_RESPONSE.class))),
-                        @ApiResponse(responseCode = "412", description = "Leetcode username hasn't been set", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "429", description = "Rate limited", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class)))
-        })
-        @PostMapping("/check")
-        public ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> checkLatestSubmissions(
-                        HttpServletRequest request) {
-                AuthenticationObject authenticationObject = protector.validateSession(request);
-                User user = authenticationObject.getUser();
+        if (keyValueStore.containsKey(user.getId())) {
+            long timeThen = (long) keyValueStore.get(user.getId());
+            long timeNow = System.currentTimeMillis();
+            long difference = (timeNow - timeThen) / 1000;
 
-                if (user.getLeetcodeUsername() == null) {
-                        throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
-                                        "You cannot access this resource without setting a Leetcode username first.");
-                }
-
-                if (keyValueStore.containsKey(user.getId())) {
-                        long timeThen = (long) keyValueStore.get(user.getId());
-                        long timeNow = System.currentTimeMillis();
-                        long difference = (timeNow - timeThen) / 1000;
-
-                        if (difference < SECONDS_TO_WAIT) {
-                                long remainingTime = (long) SECONDS_TO_WAIT - difference;
-                                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
-                                                Long.toString(remainingTime));
-                        }
-                }
-
-                keyValueStore.put(user.getId(), System.currentTimeMillis());
-
-                ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler
-                                .findSubmissionsByUsername(user.getLeetcodeUsername());
-
-                return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!",
-                                submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
+            if (difference < SECONDS_TO_WAIT) {
+                long remainingTime = (long) SECONDS_TO_WAIT - difference;
+                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, Long.toString(remainingTime));
+            }
         }
 
-        @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = "Protected endpoint that returns the list of questions completed by the user. These questions are guaranteed to be completed by the user.", responses = {
-                        @ApiResponse(responseCode = "200", description = "Successful"),
-                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
-        @GetMapping("submission/u/{userId}")
-        public ResponseEntity<ApiResponder<Page<ArrayList<QuestionWithUser>>>> getAllQuestionsForUser(
-                        HttpServletRequest request,
-                        @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") int page,
-                        @PathVariable String userId) {
-                FakeLag.sleep(250);
+        keyValueStore.put(user.getId(), System.currentTimeMillis());
 
-                protector.validateSession(request);
+        ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(user.getLeetcodeUsername());
 
-                ArrayList<QuestionWithUser> questions = questionRepository.getQuestionsByUserId(userId, page,
-                                submissionsPageSize);
+        return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!", submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
+    }
 
-                int totalQuestions = questionRepository.getQuestionCountByUserId(userId);
-                int totalPages = (int) Math.ceil((double) totalQuestions / submissionsPageSize);
-                boolean hasNextPage = page < totalPages;
+    @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = """
+            Protected endpoint that returns the list of questions completed by the user.
+            These questions are guaranteed to be completed by the user.
+            """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    @GetMapping("submission/u/{userId}")
+    public ResponseEntity<ApiResponder<Page<ArrayList<QuestionWithUser>>>> getAllQuestionsForUser(final HttpServletRequest request,
+            @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page, @PathVariable final String userId) {
+        FakeLag.sleep(250);
 
-                Page<ArrayList<QuestionWithUser>> createdPage = new Page<>(hasNextPage, questions, totalPages);
+        protector.validateSession(request);
 
-                return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
+        ArrayList<QuestionWithUser> questions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE);
+
+        int totalQuestions = questionRepository.getQuestionCountByUserId(userId);
+        int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
+        boolean hasNextPage = page < totalPages;
+
+        Page<ArrayList<QuestionWithUser>> createdPage = new Page<>(hasNextPage, questions, totalPages);
+
+        return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
+    }
+
+    @Operation(summary = "Returns current problem of the day.", description = """
+            Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.
+            """, responses = { @ApiResponse(responseCode = "200", description = "POTD found"),
+            @ApiResponse(responseCode = "404", description = "POTD not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    @GetMapping("/potd")
+    public ResponseEntity<ApiResponder<POTD>> getCurrentPotd(final HttpServletRequest request) {
+        FakeLag.sleep(750);
+
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+        User user = authenticationObject.getUser();
+
+        POTD potd = potdRepository.getCurrentPOTD();
+
+        if (potd == null || !isSameDay(potd.getCreatedAt())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponder.failure("Sorry, no problem of the day today!"));
         }
 
-        @Operation(summary = "Returns current problem of the day.", description = "Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.", responses = {
-                        @ApiResponse(responseCode = "200", description = "POTD found"),
-                        @ApiResponse(responseCode = "404", description = "POTD not found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
-        @GetMapping("/potd")
-        public ResponseEntity<ApiResponder<POTD>> getCurrentPotd(HttpServletRequest request) {
-                FakeLag.sleep(750);
+        Question completedQuestion = questionRepository.getQuestionBySlugAndUserId(potd.getSlug(), user.getId());
 
-                AuthenticationObject authenticationObject = protector.validateSession(request);
-                User user = authenticationObject.getUser();
-
-                POTD potd = potdRepository.getCurrentPOTD();
-
-                if (potd == null || !isSameDay(potd.getCreatedAt())) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(ApiResponder.failure("Sorry, no problem of the day today!"));
-                }
-
-                Question completedQuestion = questionRepository.getQuestionBySlugAndUserId(potd.getSlug(),
-                                user.getId());
-
-                if (completedQuestion != null) {
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder.failure(
-                                        "Nice, you have already completed the problem of the day! Come back tomorrow for a new one!"));
-                }
-
-                return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", potd));
+        if (completedQuestion != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder.failure("Nice, you have already completed the problem of the day! Come back tomorrow for a new one!"));
         }
 
-        @Operation(summary = "Returns submission data.", description = "Returns the submission data from any user, as long as the user making the request is authenticated. This includes the scraped LeetCode description, which is HTML that has been sanitized by the server, so it is safe to use on the frontend.", responses = {
-                        @ApiResponse(responseCode = "200", description = "Question found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_SUBMISSION_SUCCESS_RESPONSE.class))),
-                        @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))),
-                        @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_GENERIC_FAILURE_RESPONSE.class))) })
-        @GetMapping("/submission/s/{submissionId}")
-        public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(HttpServletRequest request,
-                        @PathVariable String submissionId) {
-                FakeLag.sleep(750);
+        return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", potd));
+    }
 
-                protector.validateSession(request);
-                QuestionWithUser question = questionRepository.getQuestionWithUserById(submissionId);
+    @Operation(summary = "Returns submission data.", description = """
+            Returns the submission data from any user, as long as the user making the request is authenticated.
+            This includes the scraped LeetCode description, which is HTML that has been sanitized by the server,
+            so it is safe to use on the frontend.
+            """, responses = { @ApiResponse(responseCode = "200", description = "Question found", content = @Content(schema = @Schema(implementation = UnsafeSubmissionSuccessResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    @GetMapping("/submission/s/{submissionId}")
+    public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(final HttpServletRequest request, @PathVariable final String submissionId) {
+        FakeLag.sleep(750);
 
-                if (question == null) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(ApiResponder.failure("Sorry, submission could not be found."));
-                }
+        protector.validateSession(request);
+        QuestionWithUser question = questionRepository.getQuestionWithUserById(submissionId);
 
-                return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", question));
+        if (question == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponder.failure("Sorry, submission could not be found."));
         }
+
+        return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", question));
+    }
 }

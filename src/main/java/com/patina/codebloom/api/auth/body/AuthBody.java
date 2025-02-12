@@ -6,7 +6,7 @@ public class AuthBody {
     @Max(255)
     private String nickname;
 
-    public AuthBody(String nickname) {
+    public AuthBody(final String nickname) {
         this.nickname = nickname;
     }
 
@@ -14,7 +14,7 @@ public class AuthBody {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
+    public void setNickname(final String nickname) {
         this.nickname = nickname;
     }
 }

@@ -1,7 +1,7 @@
 package com.patina.codebloom.common.leetcode.queries;
 
 public class GetPotd {
-    public static String query = """
+    public static final String QUERY = """
             #graphql
             query questionOfToday {
                 activeDailyCodingChallengeQuestion {

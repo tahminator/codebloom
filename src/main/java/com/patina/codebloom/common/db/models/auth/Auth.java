@@ -7,13 +7,13 @@ public class Auth {
     private String token;
     private LocalDateTime createdAt;
 
-    public Auth(String id, String token, LocalDateTime createdAt) {
+    public Auth(final String id, final String token, final LocalDateTime createdAt) {
         this.id = id;
         this.token = token;
         this.createdAt = createdAt;
     }
 
-    public Auth(String token) {
+    public Auth(final String token) {
         this.token = token;
     }
 
@@ -21,7 +21,7 @@ public class Auth {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -29,7 +29,7 @@ public class Auth {
         return token;
     }
 
-    public void setToken(String token) {
+    public void setToken(final String token) {
         this.token = token;
     }
 
@@ -37,7 +37,7 @@ public class Auth {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }
