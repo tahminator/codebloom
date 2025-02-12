@@ -26,7 +26,7 @@ public class TestLeaderboardController {
     private final Protector protector;
     private final LeaderboardRepository leaderboardRepository;
 
-    public TestLeaderboardController(Protector protector, LeaderboardRepository leaderboardRepository) {
+    public TestLeaderboardController(final Protector protector, final LeaderboardRepository leaderboardRepository) {
         this.protector = protector;
         this.leaderboardRepository = leaderboardRepository;
     }
@@ -45,17 +45,15 @@ public class TestLeaderboardController {
 
         combinedUsers.sort((user1, user2) -> Integer.compare(user2.getTotalScore(), user1.getTotalScore()));
 
-        ArrayList<UserWithScore> topUsers = new ArrayList<>(
-                combinedUsers.subList(0, Math.min(5, combinedUsers.size())));
+        ArrayList<UserWithScore> topUsers = new ArrayList<>(combinedUsers.subList(0, Math.min(5, combinedUsers.size())));
 
-        LeaderboardWithUsers newLeaderboard = new LeaderboardWithUsers(leaderboard.getId(), leaderboard.getName(),
-                leaderboard.getCreatedAt(), leaderboard.getDeletedAt(), topUsers);
+        LeaderboardWithUsers newLeaderboard = new LeaderboardWithUsers(leaderboard.getId(), leaderboard.getName(), leaderboard.getCreatedAt(), leaderboard.getDeletedAt(), topUsers);
 
         return ResponseEntity.ok().body(ApiResponder.success("Here is some of the leaderboard!", newLeaderboard));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getFullLeaderboard(HttpServletRequest request) {
+    public ResponseEntity<?> getFullLeaderboard(final HttpServletRequest request) {
         FakeLag.sleep(900);
 
         protector.validateSession(request);
@@ -69,8 +67,7 @@ public class TestLeaderboardController {
 
         combinedUsers.sort((user1, user2) -> Integer.compare(user2.getTotalScore(), user1.getTotalScore()));
 
-        LeaderboardWithUsers newLeaderboard = new LeaderboardWithUsers(leaderboard.getId(), leaderboard.getName(),
-                leaderboard.getCreatedAt(), leaderboard.getDeletedAt(), combinedUsers);
+        LeaderboardWithUsers newLeaderboard = new LeaderboardWithUsers(leaderboard.getId(), leaderboard.getName(), leaderboard.getCreatedAt(), leaderboard.getDeletedAt(), combinedUsers);
 
         return ResponseEntity.ok().body(ApiResponder.success("Giving you the full leaderboard!", newLeaderboard));
     }

@@ -1,11 +1,16 @@
 package com.patina.codebloom.common.dto.autogen;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class __DO_NOT_USE_UNLESS_YOU_KNOW_WHAT_YOU_ARE_DOING_RATE_LIMIT_FAILURE_RESPONSE {
-    @Schema(defaultValue = "false")
+/**
+ * Please do not use this unless you know what you are doing.
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UnsafeEmptySuccessResponse {
+    @Schema(defaultValue = "true")
     private boolean success;
-    @Schema(defaultValue = "28")
     private String message;
 
     public boolean isSuccess() {

@@ -9,14 +9,14 @@ import io.swagger.v3.oas.models.OpenAPI;
 
 @Configuration
 public class OpenApiConfig {
-        @Bean
-        public OpenAPI customOpenAPI() {
-                OpenAPI openAPI = new OpenAPI();
+    @Bean
+    public OpenAPI customOpenAPI() {
+        OpenAPI openAPI = new OpenAPI();
 
-                openAPI.path("/api/auth/flow/discord", CustomOpenApiAuthItems.discordOAuthFlow);
+        openAPI.path("/api/auth/flow/discord", CustomOpenApiAuthItems.getDiscordOAuthFlow());
 
-                openAPI.path("/api/auth/flow/callback/discord", CustomOpenApiAuthItems.discordOAuthFlowCallback);
+        openAPI.path("/api/auth/flow/callback/discord", CustomOpenApiAuthItems.getDiscordOAuthFlowCallback());
 
-                return openAPI;
-        }
+        return openAPI;
+    }
 }

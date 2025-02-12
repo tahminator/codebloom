@@ -34,7 +34,7 @@ import io.restassured.specification.RequestSpecification;
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
-    public static String buildQuestionRequestBody(String query, String slug) throws JsonProcessingException {
+    public static String buildQuestionRequestBody(final String query, final String slug) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> variables = new HashMap<>();
@@ -47,8 +47,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         return objectMapper.writeValueAsString(requestBodyMap);
     }
 
-    public static String buildAcceptedSubmissionsRequestBody(String query, String username)
-            throws JsonProcessingException {
+    public static String buildAcceptedSubmissionsRequestBody(final String query, final String username) throws JsonProcessingException {
         // API doesn't let you get more than this amount.
         int limit = 20;
 
@@ -65,8 +64,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         return objectMapper.writeValueAsString(requestBodyMap);
     }
 
-    public static String buildGetSubmissionDetailRequestBody(String query, int submissionId)
-            throws JsonProcessingException {
+    public static String buildGetSubmissionDetailRequestBody(final String query, final int submissionId) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Integer> variables = new HashMap<>();
@@ -80,7 +78,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
     }
 
-    public static String buildPotdRequestBody(String query) throws JsonProcessingException {
+    public static String buildPotdRequestBody(final String query) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> requestBodyMap = new HashMap<>();
@@ -90,9 +88,9 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
     }
 
     @Override
-    public LeetcodeQuestion findQuestionBySlug(String slug) {
+    public LeetcodeQuestion findQuestionBySlug(final String slug) {
         String endpoint = "https://leetcode.com/graphql";
-        String query = SelectProblemQuery.query;
+        String query = SelectProblemQuery.QUERY;
 
         String requestBody;
         try {
@@ -102,10 +100,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given()
-                    .header("Content-Type", "application/json")
-                    .header("Referer", "https://leetcode.com")
-                    .body(requestBody);
+            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
 
             Response response = reqSpec.post(endpoint);
 
@@ -137,11 +132,11 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
     }
 
     @Override
-    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(String username) {
+    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username) {
         ArrayList<LeetcodeSubmission> submissions = new ArrayList<>();
 
         String endpoint = "https://leetcode.com/graphql";
-        String query = SelectAcceptedSubmisisonsQuery.query;
+        String query = SelectAcceptedSubmisisonsQuery.QUERY;
 
         String requestBody;
         try {
@@ -151,10 +146,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given()
-                    .header("Content-Type", "application/json")
-                    .header("Referer", "https://leetcode.com")
-                    .body(requestBody);
+            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
             Response response = reqSpec.post(endpoint);
 
             JsonPath jsonPath = response.jsonPath();
@@ -184,9 +176,9 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
     }
 
     @Override
-    public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(int submissionId) {
+    public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(final int submissionId) {
         String endpoint = "https://leetcode.com/graphql";
-        String query = GetSubmissionDetails.query;
+        String query = GetSubmissionDetails.QUERY;
 
         String requestBody;
         try {
@@ -196,66 +188,35 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given()
-                    .header("Content-Type", "application/json")
-                    .header("Referer", "https://leetcode.com")
-                    .cookie("LEETCODE_SESSION=" + LeetcodeAuthStealer.getCookie() + ";")
-                    .body(requestBody);
+            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com")
+                    .cookie("LEETCODE_SESSION=" + LeetcodeAuthStealer.getCookie() + ";").body(requestBody);
             Response response = reqSpec.post(endpoint);
 
             JsonPath jsonPath = response.jsonPath();
 
             System.out.println(response.asPrettyString());
 
-            int runtime = (jsonPath.get("data.submissionDetails.runtime") instanceof Integer)
-                    ? jsonPath.getInt("data.submissionDetails.runtime")
-                    : 0;
+            int runtime = (jsonPath.get("data.submissionDetails.runtime") instanceof Integer) ? jsonPath.getInt("data.submissionDetails.runtime") : 0;
 
-            String runtimeDisplay = (jsonPath.get("data.submissionDetails.runtimeDisplay") instanceof String)
-                    ? jsonPath.getString("data.submissionDetails.runtimeDisplay")
-                    : null;
+            String runtimeDisplay = (jsonPath.get("data.submissionDetails.runtimeDisplay") instanceof String) ? jsonPath.getString("data.submissionDetails.runtimeDisplay") : null;
 
-            float runtimePercentile = (jsonPath.get("data.submissionDetails.runtimePercentile") instanceof Float)
-                    ? jsonPath.getFloat("data.submissionDetails.runtimePercentile")
-                    : 0.0f;
+            float runtimePercentile = (jsonPath.get("data.submissionDetails.runtimePercentile") instanceof Float) ? jsonPath.getFloat("data.submissionDetails.runtimePercentile") : 0.0f;
 
-            int memory = (jsonPath.get("data.submissionDetails.memory") instanceof Integer)
-                    ? jsonPath.getInt("data.submissionDetails.memory")
-                    : 0;
+            int memory = (jsonPath.get("data.submissionDetails.memory") instanceof Integer) ? jsonPath.getInt("data.submissionDetails.memory") : 0;
 
-            String memoryDisplay = (jsonPath.get("data.submissionDetails.memoryDisplay") instanceof String)
-                    ? jsonPath.getString("data.submissionDetails.memoryDisplay")
-                    : null;
+            String memoryDisplay = (jsonPath.get("data.submissionDetails.memoryDisplay") instanceof String) ? jsonPath.getString("data.submissionDetails.memoryDisplay") : null;
 
-            float memoryPercentile = (jsonPath.get("data.submissionDetails.memoryPercentile") instanceof Float)
-                    ? jsonPath.getFloat("data.submissionDetails.memoryPercentile")
-                    : 0.0f;
+            float memoryPercentile = (jsonPath.get("data.submissionDetails.memoryPercentile") instanceof Float) ? jsonPath.getFloat("data.submissionDetails.memoryPercentile") : 0.0f;
 
-            String code = (jsonPath.get("data.submissionDetails.code") instanceof String)
-                    ? jsonPath.getString("data.submissionDetails.code")
-                    : null;
+            String code = (jsonPath.get("data.submissionDetails.code") instanceof String) ? jsonPath.getString("data.submissionDetails.code") : null;
 
-            String langName = (jsonPath.get("data.submissionDetails.lang.name") instanceof String)
-                    ? jsonPath.getString("data.submissionDetails.lang.name")
-                    : null;
+            String langName = (jsonPath.get("data.submissionDetails.lang.name") instanceof String) ? jsonPath.getString("data.submissionDetails.lang.name") : null;
 
-            String langVerboseName = (jsonPath.get("data.submissionDetails.lang.verboseName") instanceof String)
-                    ? jsonPath.getString("data.submissionDetails.lang.verboseName")
-                    : null;
+            String langVerboseName = (jsonPath.get("data.submissionDetails.lang.verboseName") instanceof String) ? jsonPath.getString("data.submissionDetails.lang.verboseName") : null;
 
-            Lang lang = (langName != null && langVerboseName != null)
-                    ? new Lang(langName, langVerboseName)
-                    : null;
+            Lang lang = (langName != null && langVerboseName != null) ? new Lang(langName, langVerboseName) : null;
 
-            LeetcodeDetailedQuestion question = new LeetcodeDetailedQuestion(
-                    runtime,
-                    runtimeDisplay,
-                    runtimePercentile,
-                    memory,
-                    memoryDisplay,
-                    memoryPercentile,
-                    code,
-                    lang);
+            LeetcodeDetailedQuestion question = new LeetcodeDetailedQuestion(runtime, runtimeDisplay, runtimePercentile, memory, memoryDisplay, memoryPercentile, code, lang);
 
             return question;
 
@@ -267,7 +228,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
     public POTD getPotd() {
         String endpoint = "https://leetcode.com/graphql";
-        String query = GetPotd.query;
+        String query = GetPotd.QUERY;
 
         String requestBody;
         try {
@@ -277,10 +238,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given()
-                    .header("Content-Type", "application/json")
-                    .header("Referer", "https://leetcode.com")
-                    .body(requestBody);
+            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
             Response response = reqSpec.post(endpoint);
 
             JsonPath jsonPath = response.jsonPath();
@@ -289,8 +247,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
             var titleSlug = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.titleSlug");
             var title = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.title");
-            var difficulty = QuestionDifficulty
-                    .valueOf(jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.difficulty"));
+            var difficulty = QuestionDifficulty.valueOf(jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.difficulty"));
 
             return new POTD(title, titleSlug, difficulty);
         } catch (Exception e) {

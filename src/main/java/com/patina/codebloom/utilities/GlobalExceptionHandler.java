@@ -12,11 +12,9 @@ import com.patina.codebloom.common.dto.ApiResponder;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex) {
+    public ResponseEntity<?> handleResponseStatusException(final ResponseStatusException ex) {
         if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponder.failure("You are not authorized"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponder.failure("You are not authorized"));
         }
 
         if (ex.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
@@ -31,8 +29,6 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder.failure(ex.getReason()));
         }
 
-        return ResponseEntity
-                .status(ex.getStatusCode())
-                .body(ex.getReason());
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
     }
 }

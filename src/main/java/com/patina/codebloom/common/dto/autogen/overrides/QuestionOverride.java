@@ -18,9 +18,8 @@ public class QuestionOverride {
     private String description;
 
     /**
-     * Optional for the case of future proofing. We might end up using AI to award
-     * some points, so there might be a case where we create the DB entry and then
-     * pass it to a message queue to use AI and calculate a score.
+     * Optional for the case of future proofing. We might end up using AI to award some points, so there might be a case where we create the DB entry and then pass it to a message
+     * queue to use AI and calculate a score.
      */
     private int pointsAwarded;
 
@@ -29,9 +28,9 @@ public class QuestionOverride {
     private String discordName;
     private String leetcodeUsername;
 
-    public QuestionOverride(String id, String userId, String questionSlug, String questionTitle,
-            QuestionDifficulty questionDifficulty, int questionNumber, String questionLink, String description,
-            int pointsAwarded, float acceptanceRate, LocalDateTime createdAt, LocalDateTime submittedAt) {
+    public QuestionOverride(final String id, final String userId, final String questionSlug, final String questionTitle,
+            final QuestionDifficulty questionDifficulty, final int questionNumber, final String questionLink, final String description,
+            final int pointsAwarded, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -53,7 +52,7 @@ public class QuestionOverride {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -61,7 +60,7 @@ public class QuestionOverride {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
@@ -69,7 +68,7 @@ public class QuestionOverride {
         return questionSlug;
     }
 
-    public void setQuestionSlug(String questionSlug) {
+    public void setQuestionSlug(final String questionSlug) {
         this.questionSlug = questionSlug;
     }
 
@@ -77,7 +76,7 @@ public class QuestionOverride {
         return questionTitle;
     }
 
-    public void setQuestionTitle(String questionTitle) {
+    public void setQuestionTitle(final String questionTitle) {
         this.questionTitle = questionTitle;
     }
 
@@ -85,7 +84,7 @@ public class QuestionOverride {
         return questionDifficulty;
     }
 
-    public void setQuestionDifficulty(QuestionDifficulty questionDifficulty) {
+    public void setQuestionDifficulty(final QuestionDifficulty questionDifficulty) {
         this.questionDifficulty = questionDifficulty;
     }
 
@@ -93,7 +92,7 @@ public class QuestionOverride {
         return questionNumber;
     }
 
-    public void setQuestionNumber(int questionNumber) {
+    public void setQuestionNumber(final int questionNumber) {
         this.questionNumber = questionNumber;
     }
 
@@ -101,7 +100,7 @@ public class QuestionOverride {
         return questionLink;
     }
 
-    public void setQuestionLink(String questionLink) {
+    public void setQuestionLink(final String questionLink) {
         this.questionLink = questionLink;
     }
 
@@ -109,7 +108,7 @@ public class QuestionOverride {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -117,7 +116,7 @@ public class QuestionOverride {
         return pointsAwarded;
     }
 
-    public void setPointsAwarded(int pointsAwarded) {
+    public void setPointsAwarded(final int pointsAwarded) {
         this.pointsAwarded = pointsAwarded;
     }
 
@@ -125,7 +124,7 @@ public class QuestionOverride {
         return acceptanceRate;
     }
 
-    public void setAcceptanceRate(float acceptanceRate) {
+    public void setAcceptanceRate(final float acceptanceRate) {
         this.acceptanceRate = acceptanceRate;
     }
 
@@ -133,7 +132,7 @@ public class QuestionOverride {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -141,7 +140,7 @@ public class QuestionOverride {
         return submittedAt;
     }
 
-    public void setSubmittedAt(LocalDateTime submittedAt) {
+    public void setSubmittedAt(final LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
     }
 
@@ -149,7 +148,7 @@ public class QuestionOverride {
         return discordName;
     }
 
-    public void setDiscordName(String discordName) {
+    public void setDiscordName(final String discordName) {
         this.discordName = discordName;
     }
 
@@ -157,7 +156,7 @@ public class QuestionOverride {
         return leetcodeUsername;
     }
 
-    public void setLeetcodeUsername(String leetcodeUsername) {
+    public void setLeetcodeUsername(final String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
     }
 }

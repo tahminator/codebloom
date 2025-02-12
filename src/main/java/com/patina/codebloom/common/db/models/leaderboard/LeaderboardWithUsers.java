@@ -8,13 +8,13 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 public class LeaderboardWithUsers extends Leaderboard {
     private ArrayList<UserWithScore> users;
 
-    public LeaderboardWithUsers(String name, LocalDateTime createdAt, ArrayList<UserWithScore> users) {
+    public LeaderboardWithUsers(final String name, final LocalDateTime createdAt, final ArrayList<UserWithScore> users) {
         super(name, createdAt);
         this.users = users;
     }
 
-    public LeaderboardWithUsers(String id, String name, LocalDateTime createdAt, LocalDateTime deletedAt,
-            ArrayList<UserWithScore> users) {
+    public LeaderboardWithUsers(final String id, final String name, final LocalDateTime createdAt, final LocalDateTime deletedAt,
+            final ArrayList<UserWithScore> users) {
         super(id, name, createdAt, deletedAt);
         this.users = users;
     }
@@ -23,11 +23,11 @@ public class LeaderboardWithUsers extends Leaderboard {
         return users;
     }
 
-    public void setUsers(ArrayList<UserWithScore> users) {
+    public void setUsers(final ArrayList<UserWithScore> users) {
         this.users = users;
     }
 
-    public void addUser(UserWithScore user) {
+    public void addUser(final UserWithScore user) {
         this.users.add(user);
     }
 }

@@ -5,4 +5,10 @@
       "source.fixAll": "explicit"
     },
     "editor.formatOnSave": true,
+    "java.checkstyle.configuration": "./checkstyle.xml",
+    "java.format.settings.url": ".vscode/java-formatter.xml",
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "java.checkstyle.version": "10.21.2",
 }

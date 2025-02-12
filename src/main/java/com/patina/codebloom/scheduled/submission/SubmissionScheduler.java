@@ -15,14 +15,14 @@ import com.patina.codebloom.common.submissions.SubmissionsHandler;
 
 @Component
 public class SubmissionScheduler {
-    private static final Logger log = LoggerFactory.getLogger(SubmissionScheduler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionScheduler.class);
 
     private final UserRepository userRepository;
     private final LeetcodeApiHandler leetcodeApiHandler;
     private final SubmissionsHandler submissionsHandler;
 
-    public SubmissionScheduler(UserRepository userRepository, LeetcodeApiHandler leetcodeApiHandler,
-            SubmissionsHandler submissionsHandler) {
+    public SubmissionScheduler(final UserRepository userRepository, final LeetcodeApiHandler leetcodeApiHandler,
+            final SubmissionsHandler submissionsHandler) {
         this.userRepository = userRepository;
         this.leetcodeApiHandler = leetcodeApiHandler;
         this.submissionsHandler = submissionsHandler;
@@ -32,12 +32,12 @@ public class SubmissionScheduler {
     // TODO - Discuss this value
     @Scheduled(cron = "0 */30 * * * *")
     public void handleAllUserSubmissions() {
-        log.info("Beginning the scheduled task to handle all user submissions now:");
+        LOGGER.info("Beginning the scheduled task to handle all user submissions now:");
         ArrayList<User> users = userRepository.getAllUsers();
 
         for (User user : users) {
             if (user.getLeetcodeUsername() == null) {
-                log.error("User with id of {} does not have a leetcode username set.", user.getId());
+                LOGGER.error("User with id of {} does not have a leetcode username set.", user.getId());
                 continue;
             }
 
@@ -45,9 +45,9 @@ public class SubmissionScheduler {
                     .findSubmissionsByUsername(user.getLeetcodeUsername());
 
             submissionsHandler.handleSubmissions(leetcodeSubmissions, user);
-            log.info("User with id of {} has been completed", user.getId());
+            LOGGER.info("User with id of {} has been completed", user.getId());
         }
 
-        log.info("Scheduled task complete");
+        LOGGER.info("Scheduled task complete");
     }
 }

@@ -14,23 +14,23 @@ import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 
 @Component
 public class PotdSetter {
-    private static final Logger log = LoggerFactory.getLogger(PotdSetter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PotdSetter.class);
 
-    LeetcodeApiHandler leetcodeApiHandler;
-    POTDRepository potdRepository;
+    private LeetcodeApiHandler leetcodeApiHandler;
+    private POTDRepository potdRepository;
 
-    public PotdSetter(LeetcodeApiHandler leetcodeApiHandler, POTDRepository potdRepository) {
+    public PotdSetter(final LeetcodeApiHandler leetcodeApiHandler, final POTDRepository potdRepository) {
         this.leetcodeApiHandler = leetcodeApiHandler;
         this.potdRepository = potdRepository;
     }
 
     @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60)
-    public void SetPotd() {
+    public void setPotd() {
         com.patina.codebloom.common.leetcode.models.POTD leetcodePotd = leetcodeApiHandler.getPotd();
 
         if (potdRepository.getCurrentPOTD().getTitle().equals(leetcodePotd.getTitle())) {
             // It's already the latest POTD, don't want to do it again.
-            log.info("POTD has already been set before, will not be doing it again.");
+            LOGGER.info("POTD has already been set before, will not be doing it again.");
             return;
         }
 

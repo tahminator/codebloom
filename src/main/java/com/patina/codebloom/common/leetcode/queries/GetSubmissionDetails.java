@@ -1,7 +1,7 @@
 package com.patina.codebloom.common.leetcode.queries;
 
 public class GetSubmissionDetails {
-    public static String query = """
+    public static final String QUERY = """
             #graphql
             query submissionDetails($submissionId: Int!) {
                 submissionDetails(submissionId: $submissionId) {

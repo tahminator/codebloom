@@ -9,7 +9,7 @@ public class POTD {
     private float multiplier;
     private LocalDateTime createdAt;
 
-    public POTD(String id, String title, String slug, float multiplier, LocalDateTime createdAt) {
+    public POTD(final String id, final String title, final String slug, final float multiplier, final LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.slug = slug;
@@ -17,7 +17,7 @@ public class POTD {
         this.createdAt = createdAt;
     }
 
-    public POTD(String title, String slug, float multiplier, LocalDateTime createdAt) {
+    public POTD(final String title, final String slug, final float multiplier, final LocalDateTime createdAt) {
         this.title = title;
         this.slug = slug;
         this.multiplier = multiplier;
@@ -28,7 +28,7 @@ public class POTD {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class POTD {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -44,7 +44,7 @@ public class POTD {
         return slug;
     }
 
-    public void setSlug(String slug) {
+    public void setSlug(final String slug) {
         this.slug = slug;
     }
 
@@ -52,7 +52,7 @@ public class POTD {
         return multiplier;
     }
 
-    public void setMultiplier(float multiplier) {
+    public void setMultiplier(final float multiplier) {
         this.multiplier = multiplier;
     }
 
@@ -60,7 +60,7 @@ public class POTD {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(final LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

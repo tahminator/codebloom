@@ -14,16 +14,14 @@ import com.patina.codebloom.common.db.models.user.User;
 
 @Component
 public class UserSqlRepository implements UserRepository {
-    DbConnection dbConnection;
-    Connection conn;
+    private Connection conn;
 
-    public UserSqlRepository(DbConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public UserSqlRepository(final DbConnection dbConnection) {
         this.conn = dbConnection.getConn();
     }
 
     @Override
-    public User createNewUser(User user) {
+    public User createNewUser(final User user) {
         String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\") VALUES (?, ?, ?, ?)";
         user.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -47,7 +45,7 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public User getUserById(String inputId) {
+    public User getUserById(final String inputId) {
         User user = null;
         String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\" WHERE id=?";
 
@@ -72,7 +70,7 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public User getUserByDiscordId(String inputDiscordId) {
+    public User getUserByDiscordId(final String inputDiscordId) {
         User user = null;
         String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\" WHERE \"discordId\"=?";
 
@@ -100,8 +98,7 @@ public class UserSqlRepository implements UserRepository {
     public int getUserCount() {
         String sql = "SELECT COUNT(*) FROM \"User\"";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -113,7 +110,7 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public User updateUser(User inputUser) {
+    public User updateUser(final User inputUser) {
         String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=? WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -4,7 +4,7 @@ public class Lang {
     private String name;
     private String verboseName;
 
-    public Lang(String name, String verboseName) {
+    public Lang(final String name, final String verboseName) {
         this.name = name;
         this.verboseName = verboseName;
     }
@@ -13,7 +13,7 @@ public class Lang {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -21,7 +21,7 @@ public class Lang {
         return verboseName;
     }
 
-    public void setVerboseName(String verboseName) {
+    public void setVerboseName(final String verboseName) {
         this.verboseName = verboseName;
     }
 }

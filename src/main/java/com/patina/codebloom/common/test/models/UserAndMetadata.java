@@ -11,7 +11,7 @@ public class UserAndMetadata {
     private String deletedAt;
     private ArrayList<User> users;
 
-    public UserAndMetadata(String id, String name, String createdAt, String deletedAt, ArrayList<User> users) {
+    public UserAndMetadata(final String id, final String name, final String createdAt, final String deletedAt, final ArrayList<User> users) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
@@ -23,7 +23,7 @@ public class UserAndMetadata {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -31,7 +31,7 @@ public class UserAndMetadata {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -39,7 +39,7 @@ public class UserAndMetadata {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(final String createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -47,7 +47,7 @@ public class UserAndMetadata {
         return deletedAt;
     }
 
-    public void setDeletedAt(String deletedAt) {
+    public void setDeletedAt(final String deletedAt) {
         this.deletedAt = deletedAt;
     }
 
@@ -55,7 +55,7 @@ public class UserAndMetadata {
         return users;
     }
 
-    public void setUsers(ArrayList<User> users) {
+    public void setUsers(final ArrayList<User> users) {
         this.users = users;
     }
 

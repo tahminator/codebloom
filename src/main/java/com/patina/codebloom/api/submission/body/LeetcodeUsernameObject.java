@@ -8,7 +8,7 @@ public class LeetcodeUsernameObject {
     @NotBlank
     private String leetcodeUsername;
 
-    public LeetcodeUsernameObject(String leetcodeUsername) {
+    public LeetcodeUsernameObject(final String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
     }
 
@@ -16,7 +16,7 @@ public class LeetcodeUsernameObject {
         return leetcodeUsername;
     }
 
-    public void setLeetcodeUsername(String leetcodeUsername) {
+    public void setLeetcodeUsername(final String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
     }
 
