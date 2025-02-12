@@ -16,11 +16,9 @@ import com.patina.codebloom.common.db.models.potd.POTD;
 @Component
 public class POTDSqlRepository implements POTDRepository {
 
-    private DbConnection dbConnection;
     private Connection conn;
 
     public POTDSqlRepository(final DbConnection dbConnection) {
-        this.dbConnection = dbConnection;
         this.conn = dbConnection.getConn();
     }
 
@@ -81,8 +79,7 @@ public class POTDSqlRepository implements POTDRepository {
     public ArrayList<POTD> getAllPOTDS() {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\"";
         ArrayList<POTD> potdList = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 potdList.add(mapRowToPOTD(rs));
             }
@@ -126,8 +123,7 @@ public class POTDSqlRepository implements POTDRepository {
                 LIMIT 1
                 """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 return mapRowToPOTD(rs);
