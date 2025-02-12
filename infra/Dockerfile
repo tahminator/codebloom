@@ -28,7 +28,7 @@ COPY mvnw pom.xml ./
 COPY .mvn/ .mvn/
 
 # Download dependencies
-RUN ./mvnw -B
+RUN ./mvnw dependency:resolve -B
 
 # Copy the backend source code
 COPY src ./src
@@ -38,8 +38,6 @@ COPY --from=frontend-build /js/dist/ src/main/resources/static/
 
 # Package the application
 RUN ./mvnw clean package -DskipTests
-# Skipping tests for now, failing the build pipeline.
-# TODO - Fix this problem.
 
 
 # ==== Runtime Stage ====
