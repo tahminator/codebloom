@@ -14,7 +14,7 @@ import "./index.css";
 import { RouterProvider } from "react-router";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  <StrictMode> 
     <ReactQueryProvider>
       <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
         <RouterProvider router={router} />
