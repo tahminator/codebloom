@@ -48,12 +48,12 @@
 ## About The Project
 
 
-<img src="js/public/screenshot1.png" width="1000" height="325
+<img src="js/public/screenshot1.png" width="1000" height="567
 ">
 
-<img src="js/public/screenshot2.png" width="1000" height="325">
+<img src="js/public/screenshot2.png" width="1000" height="567">
 
-<img src="js/public/screenshot3.png" width="1000" height="325">
+<img src="js/public/screenshot3.png" width="1000" height="567">
 
 
 CodeBloom aims to motivate Patina Network community reach their LeetCode goals by being able to track their progess, rank them on a leaderboard, and push them to complete the daily challenge to incentivize them.
