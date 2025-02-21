@@ -1,5 +1,7 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+
 <a id="readme-top"></a>
+
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
 *** that would make this better, please fork the repo and create a pull request
@@ -7,8 +9,6 @@
 *** Don't forget to give the project a star!
 *** Thanks again! Now go create something AMAZING! :D
 -->
-
-
 
 <!-- PROJECT SHIELDS -->
 <!--
@@ -18,12 +18,11 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -45,20 +44,19 @@
 </div>
 
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
+<img src="js/public/screenshot1.png">
 
-<img src="js/public/screenshot1.png" width="1000" height="567
-">
+<img src="js/public/screenshot2.png">
 
-<img src="js/public/screenshot2.png" width="1000" height="567">
-
-<img src="js/public/screenshot3.png" width="1000" height="567">
-
+<img src="js/public/screenshot3.png">
 
 CodeBloom aims to motivate Patina Network community reach their LeetCode goals by being able to track their progess, rank them on a leaderboard, and push them to complete the daily challenge to incentivize them.
 
 ---
+
 ## Technical Stack
 
 Frontend:
@@ -85,17 +83,22 @@ Development Tools:
 ---
 
 ## Authors
+
 - [Tahmid Ahmed](https://github.com/tahminator)
 - [Alfardil Alam](https://github.com/alfardil)
 - [Alisha Zaman](https://github.com/az2924)
 - [Michaeel Nunez](https://github.com/im-michaeln)
 
 ---
+
 <!-- INSTRUCTIONS -->
+
 ### Instructions:
+
 For setup instructions, click [ here](https://github.com/tahminator/codebloom/blob/main/docs/local.md).
 
 ---
+
 ### Top contributors:
 
 <a href="https://github.com/tahminator/codebloom/graphs/contributors">
@@ -107,11 +110,9 @@ For setup instructions, click [ here](https://github.com/tahminator/codebloom/bl
 
 To read more detailed documentation, click[ here](https://github.com/tahminator/codebloom/tree/main/docs).
 
-
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/tahminator/codebloom.svg?style=for-the-badge
 [contributors-url]: https://github.com/tahminator/codebloom/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/tahminator/codebloom.svg?style=for-the-badge
@@ -142,4 +143,4 @@ To read more detailed documentation, click[ here](https://github.com/tahminator/
 [Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com 
+[JQuery-url]: https://jquery.com
