@@ -20,9 +20,9 @@ importers:
       '@mantine/notifications':
         specifier: ^7.15.2
         version: 7.15.2(@mantine/core@7.15.2(@mantine/hooks@7.15.2(react@18.3.1))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.15.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@tabler/icons':
-        specifier: ^3.28.1
-        version: 3.28.1
+      '@tabler/icons-react':
+        specifier: ^3.30.0
+        version: 3.30.0(react@18.3.1)
       '@tanstack/react-query':
         specifier: ^5.64.2
         version: 5.64.2(react@18.3.1)
@@ -720,8 +720,13 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@tabler/icons@3.28.1':
-    resolution: {integrity: sha512-h7nqKEvFooLtFxhMOC1/2eiV+KRXhBUuDUUJrJlt6Ft6tuMw2eU/9GLQgrTk41DNmIEzp/LI83K9J9UUU8YBYQ==}
+  '@tabler/icons-react@3.30.0':
+    resolution: {integrity: sha512-9KZ9D1UNAyjlLkkYp2HBPHdf6lAJ2aelDqh8YYAnnmLF3xwprWKxxW8+zw5jlI0IwdfN4XFFuzqePkaw+DpIOg==}
+    peerDependencies:
+      react: '>= 16'
+
+  '@tabler/icons@3.30.0':
+    resolution: {integrity: sha512-c8OKLM48l00u9TFbh2qhSODMONIzML8ajtCyq95rW8vzkWcBrKRPM61tdkThz2j4kd5u17srPGIjqdeRUZdfdw==}
 
   '@tanstack/query-core@5.64.2':
     resolution: {integrity: sha512-hdO8SZpWXoADNTWXV9We8CwTkXU88OVWRBcsiFrk7xJQnhm6WRlweDzMD+uH+GnuieTBVSML6xFa17C2cNV8+g==}
@@ -2716,7 +2721,12 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.34.7':
     optional: true
 
-  '@tabler/icons@3.28.1': {}
+  '@tabler/icons-react@3.30.0(react@18.3.1)':
+    dependencies:
+      '@tabler/icons': 3.30.0
+      react: 18.3.1
+
+  '@tabler/icons@3.30.0': {}
 
   '@tanstack/query-core@5.64.2': {}
 

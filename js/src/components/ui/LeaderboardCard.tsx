@@ -1,4 +1,6 @@
-import { Card, Text } from "@mantine/core";
+import { theme } from "@/lib/theme";
+import { Card, Text, Tooltip } from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
@@ -11,6 +13,7 @@ export default function LeaderboardCard({
   totalScore,
   width,
   userId,
+  nickname,
 }: {
   placeString: "First" | "Second" | "Third";
   discordName: string;
@@ -18,6 +21,7 @@ export default function LeaderboardCard({
   totalScore: number;
   width: CSSProperties["width"];
   userId: string;
+  nickname: string | null;
 }) {
   const borderColor = (() => {
     if (placeString === "First") return "border-yellow-300";
@@ -47,19 +51,44 @@ export default function LeaderboardCard({
       <Text ta="center" size="xl">
         {placeString}
       </Text>
-      <Text
-        ta="center"
-        fw={700}
-        style={{
-          width: "100%",
-          fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        <FaDiscord className="inline" /> {discordName}
-      </Text>
+      {nickname ?
+        <Tooltip
+          label={"This user is a member of the Patina Discord server."}
+          color={"dark.4"}
+        >
+          <Text
+            ta="center"
+            fw={700}
+            style={{
+              width: "100%",
+              fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            <IconCircleCheckFilled
+              className="inline"
+              color={theme.colors.patina[4]}
+              z={5000000}
+            />{" "}
+            {nickname}
+          </Text>
+        </Tooltip>
+      : <Text
+          ta="center"
+          fw={700}
+          style={{
+            width: "100%",
+            fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <FaDiscord className="inline" /> {discordName}
+        </Text>
+      }
       <Text ta="center" style={{ whiteSpace: "nowrap" }}>
         <SiLeetcode className="inline" /> {leetcodeUsername}
       </Text>
