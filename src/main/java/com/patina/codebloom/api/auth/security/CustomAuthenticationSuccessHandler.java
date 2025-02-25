@@ -2,6 +2,7 @@ package com.patina.codebloom.api.auth.security;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -16,11 +17,15 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.jda.JDAInitializer;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 
 /**
  * Handles successful OAuth2 login by either creating a new user or referencing an old user and generating a cookie storing the session ID.
@@ -35,11 +40,24 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final LeaderboardRepository leaderboardRepository;
+    private final JDAInitializer jdaInitializer;
+    private final JDA jda;
 
-    public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository, final LeaderboardRepository leaderboardRepository) {
+    public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository, final LeaderboardRepository leaderboardRepository,
+            final JDAInitializer jdaInitializer) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
+        this.jdaInitializer = jdaInitializer;
+        this.jda = initializeJda(jdaInitializer);
+    }
+
+    private JDA initializeJda(final JDAInitializer jdaInitializer) {
+        try {
+            return jdaInitializer.jda();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize JDA", e);
+        }
     }
 
     @Override
@@ -64,6 +82,29 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 existingUser = userRepository.createNewUser(newUser);
                 Leaderboard leaderboard = leaderboardRepository.getRecentLeaderboardShallow();
                 leaderboardRepository.addUserToLeaderboard(existingUser.getId(), leaderboard.getId());
+            }
+
+            List<Guild> guilds = jda.getGuilds();
+
+            Guild foundGuild = null;
+            for (Guild g : guilds) {
+                // System.out.println(g.getId() + "=" + jdaInitializer.getJdaProperties().getId());
+                if (g.getId().equals(jdaInitializer.getJdaProperties().getId())) {
+                    foundGuild = g;
+                    break;
+                }
+            }
+
+            if (foundGuild != null) {
+                List<Member> members = foundGuild.getMembers();
+
+                for (Member m : members) {
+                    // System.out.println(m.getId() + "=" + existingUser.getDiscordId());
+                    if (m.getId().equals(existingUser.getDiscordId())) {
+                        existingUser.setNickname(m.getNickname());
+                        userRepository.updateUser(existingUser);
+                    }
+                }
             }
 
             LocalDateTime expirationTime = LocalDateTime.now().plusSeconds(maxAgeSeconds);
