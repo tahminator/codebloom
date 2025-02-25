@@ -81,23 +81,4 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "Change nickname", description = """
-            Change the user's nickname. If the user is in the Patina Discord server,
-            and they change their nickname here to be different from their Discord nickname in the server,
-            it will no longer do that sync on every re-authentication.
-            """, responses = { @ApiResponse(responseCode = "200", description = "Name change complete"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    @PostMapping("/set")
-    public ResponseEntity<ApiResponder<Void>> setNickname(final HttpServletRequest request, @RequestBody final AuthBody authBody) {
-        AuthenticationObject authenticationObject = protector.validateSession(request);
-
-        User user = authenticationObject.getUser();
-
-        String nickname = authBody.getNickname();
-        user.setNickname(nickname == "" ? null : nickname);
-        userRepository.updateUser(user);
-
-        return ResponseEntity.ok().body(ApiResponder.success(nickname, null));
-    }
-
 }

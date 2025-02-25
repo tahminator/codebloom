@@ -2,7 +2,17 @@ import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardL
 import { useFixMyPointsPrefetch } from "@/app/dashboard/_components/DashboardLeaderboard/hooks";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
-import { Button, Card, Divider, Flex, Text, Title } from "@mantine/core";
+import { theme } from "@/lib/theme";
+import {
+  Button,
+  Card,
+  Divider,
+  Flex,
+  Text,
+  Title,
+  Tooltip,
+} from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -121,19 +131,42 @@ export default function LeaderboardForDashboard({
                 {idx + 1}.
               </Text>
               <Flex direction={"column"}>
-                <Text
-                  ta="center"
-                  className="transition-all group-hover:text-white-500"
-                >
-                  <FaDiscord
-                    style={{
-                      display: "inline",
-                      marginLeft: "4px",
-                      marginRight: "4px",
-                    }}
-                  />
-                  {user.discordName}
-                </Text>
+                {user.nickname ?
+                  <Tooltip
+                    label={
+                      "This user is a member of the Patina Discord server."
+                    }
+                    color={"dark.4"}
+                  >
+                    <Text
+                      ta="center"
+                      className="transition-all group-hover:text-white-500"
+                    >
+                      <IconCircleCheckFilled
+                        style={{
+                          display: "inline",
+                        }}
+                        color={theme.colors.patina[4]}
+                        z={5000000}
+                        size={20}
+                      />{" "}
+                      {user.discordName}
+                    </Text>
+                  </Tooltip>
+                : <Text
+                    ta="center"
+                    className="transition-all group-hover:text-white-500"
+                  >
+                    <FaDiscord
+                      style={{
+                        display: "inline",
+                        marginLeft: "4px",
+                        marginRight: "4px",
+                      }}
+                    />
+                    {user.discordName}
+                  </Text>
+                }
                 <Text
                   ta="center"
                   className="transition-all group-hover:text-white-500"
