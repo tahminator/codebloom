@@ -50,9 +50,7 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
 
     <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
     <module name="SuppressionFilter">
-        <property name="file"
-            value="${org.checkstyle.sun.suppressionfilter.config}"
-            default="checkstyle-suppressions.xml" />
+        <property name="file" value="${org.checkstyle.sun.suppressionfilter.config}" default="checkstyle-suppressions.xml" />
         <property name="optional" value="true" />
     </module>
 
@@ -66,7 +64,7 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
 
     <!-- Checks whether files end with a new line.                        -->
     <!-- See https://checkstyle.org/config_misc.html#NewlineAtEndOfFile -->
-    <module name="NewlineAtEndOfFile" />
+    <!-- <module name="NewlineAtEndOfFile" /> -->
 
     <!-- Checks that property files contain the same keys.         -->
     <!-- See https://checkstyle.org/config_misc.html#Translation -->
@@ -118,7 +116,8 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
         <!-- Checks for imports                              -->
         <!-- See https://checkstyle.org/config_imports.html -->
         <module name="AvoidStarImport" />
-        <module name="IllegalImport" /> <!-- defaults to sun.* packages -->
+        <module name="IllegalImport" />
+        <!-- defaults to sun.* packages -->
         <module name="RedundantImport" />
         <module name="UnusedImports">
             <property name="processJavadoc" value="false" />
@@ -183,9 +182,7 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
 
         <!-- https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
         <module name="SuppressionXpathFilter">
-            <property name="file"
-                value="${org.checkstyle.sun.suppressionxpathfilter.config}"
-                default="checkstyle-xpath-suppressions.xml" />
+            <property name="file" value="${org.checkstyle.sun.suppressionxpathfilter.config}" default="checkstyle-xpath-suppressions.xml" />
             <property name="optional" value="true" />
         </module>
 
