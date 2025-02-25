@@ -1,7 +1,9 @@
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Flex, Table, Title } from "@mantine/core";
+import { theme } from "@/lib/theme";
+import { Flex, Table, Title, Tooltip } from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -49,6 +51,7 @@ export default function LeaderboardIndex() {
             discordName={second.discordName}
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
+            nickname={second.nickname}
             width={"300px"}
             userId={second.id}
           />
@@ -59,6 +62,7 @@ export default function LeaderboardIndex() {
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
+            nickname={first.nickname}
             width={"300px"}
             userId={first.id}
           />
@@ -69,6 +73,7 @@ export default function LeaderboardIndex() {
             discordName={third.discordName}
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
+            nickname={third.nickname}
             width={"300px"}
             userId={third.id}
           />
@@ -97,14 +102,29 @@ export default function LeaderboardIndex() {
                       p={"lg"}
                       className="group"
                     >
-                      <span
-                        style={{ fontSize: "18px", lineHeight: "28px" }}
-                        className="transition-all group-hover:text-blue-500"
-                      >
-                        <FaDiscord style={{ display: "inline" }} />{" "}
-                        {entry.discordName}
-                      </span>
-                      <span className="transition-all group-hover:text-blue-500">
+                      {entry.nickname ?
+                        <Tooltip
+                          label={
+                            "This user is a member of the Patina Discord server."
+                          }
+                          color={"dark.4"}
+                        >
+                          <span className="transition-all group-hover:text-blue-500 w-max">
+                            <IconCircleCheckFilled
+                              className="inline"
+                              color={theme.colors.patina[4]}
+                              z={5000000}
+                              size={20}
+                            />{" "}
+                            {entry.nickname}
+                          </span>
+                        </Tooltip>
+                      : <span className="transition-all group-hover:text-blue-500 w-max">
+                          <FaDiscord style={{ display: "inline" }} />{" "}
+                          {entry.discordName}
+                        </span>
+                      }
+                      <span className="transition-all group-hover:text-blue-500 w-max">
                         <SiLeetcode style={{ display: "inline" }} />{" "}
                         {entry.leetcodeUsername}
                       </span>

@@ -2,7 +2,9 @@ import MiniLeaderboardSkeleton from "@/app/_component/skeletons/MiniLeaderboardS
 import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
-import { Table, Title } from "@mantine/core";
+import { theme } from "@/lib/theme";
+import { Table, Text, Title, Tooltip } from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
@@ -48,6 +50,7 @@ export default function MiniLeaderboardDesktop() {
             discordName={second.discordName}
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
+            nickname={second.nickname}
             width={"200px"}
             userId={second.id}
           />
@@ -58,6 +61,7 @@ export default function MiniLeaderboardDesktop() {
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
+            nickname={first.nickname}
             width={"200px"}
             userId={first.id}
           />
@@ -68,6 +72,7 @@ export default function MiniLeaderboardDesktop() {
             discordName={third.discordName}
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
+            nickname={third.nickname}
             width={"200px"}
             userId={third.id}
           />
@@ -90,10 +95,30 @@ export default function MiniLeaderboardDesktop() {
                   <Table.Td>{index + 1}</Table.Td>
                   <Table.Td>
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                      <span style={{ fontSize: "18px", lineHeight: "28px" }}>
-                        <FaDiscord style={{ display: "inline" }} />{" "}
-                        {entry.discordName}
-                      </span>
+                      {entry.nickname ?
+                        <span style={{ fontSize: "18px", lineHeight: "28px" }}>
+                          <Tooltip
+                            label={
+                              "This user is a member of the Patina Discord server."
+                            }
+                            color={"dark.4"}
+                          >
+                            <Text>
+                              <IconCircleCheckFilled
+                                className="inline"
+                                color={theme.colors.patina[4]}
+                                z={5000000}
+                                size={20}
+                              />{" "}
+                              {entry.nickname}
+                            </Text>
+                          </Tooltip>
+                        </span>
+                      : <span style={{ fontSize: "18px", lineHeight: "28px" }}>
+                          <FaDiscord style={{ display: "inline" }} />{" "}
+                          {entry.discordName}
+                        </span>
+                      }
                       <span>
                         <SiLeetcode style={{ display: "inline" }} />{" "}
                         {entry.leetcodeUsername}

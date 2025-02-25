@@ -43,8 +43,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final JDAInitializer jdaInitializer;
     private final JDA jda;
 
-    public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository, final LeaderboardRepository leaderboardRepository,
-            final JDAInitializer jdaInitializer) {
+    public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
+                    final LeaderboardRepository leaderboardRepository,
+                    final JDAInitializer jdaInitializer) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
@@ -61,7 +62,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     @Override
-    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
+                    final Authentication authentication) throws IOException, ServletException {
         Object principal = authentication.getPrincipal();
         String discordId = null;
         String discordName = null;
@@ -100,8 +102,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
                 for (Member m : members) {
                     // System.out.println(m.getId() + "=" + existingUser.getDiscordId());
+                    // System.out.println(m.getNickname() + "&" + m.getUser().getName());
                     if (m.getId().equals(existingUser.getDiscordId())) {
-                        existingUser.setNickname(m.getNickname());
+                        if (m.getNickname() != null) {
+                            existingUser.setNickname(m.getNickname());
+                        } else if (m.getUser().getGlobalName() != null) {
+                            existingUser.setNickname(m.getUser().getGlobalName());
+                        } else {
+                            existingUser.setNickname(existingUser.getDiscordName());
+                        }
                         userRepository.updateUser(existingUser);
                     }
                 }
