@@ -134,7 +134,7 @@ export default function LeaderboardForDashboard({
                 {user.nickname ?
                   <Tooltip
                     label={
-                      "This user is a member of the Patina Discord server."
+                      "This user is a verified member of the Patina Discord server."
                     }
                     color={"dark.4"}
                   >
