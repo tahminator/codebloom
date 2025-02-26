@@ -46,6 +46,7 @@ export default function MiniLeaderboardMobile() {
             placeString={"First"}
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
+            nickname={first.nickname}
             totalScore={first.totalScore}
             width={"300px"}
             userId={first.id}
@@ -56,6 +57,7 @@ export default function MiniLeaderboardMobile() {
             placeString={"Second"}
             discordName={second.discordName}
             leetcodeUsername={second.leetcodeUsername}
+            nickname={second.nickname}
             totalScore={second.totalScore}
             width={"300px"}
             userId={second.id}
@@ -66,6 +68,7 @@ export default function MiniLeaderboardMobile() {
             placeString={"Third"}
             discordName={third.discordName}
             leetcodeUsername={third.leetcodeUsername}
+            nickname={third.nickname}
             totalScore={third.totalScore}
             width={"300px"}
             userId={third.id}

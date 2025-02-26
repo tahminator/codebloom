@@ -6,6 +6,7 @@ import {
   langNameKey,
   langNameToIcon,
 } from "@/components/ui/langname-to-icon/LangNameToIcon";
+import { theme } from "@/lib/theme";
 import { timeDiff } from "@/lib/timeDiff";
 import {
   Badge,
@@ -19,7 +20,9 @@ import {
   Table,
   Text,
   Title,
+  Tooltip,
 } from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -114,15 +117,37 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
             Latest data for
           </Title>
           <Group wrap="wrap" justify="center" gap="xs">
-            <FaDiscord
-              style={{
-                color: "var(--mantine-color-blue-5)",
-                fontSize: "1.5rem",
-              }}
-            />
-            <Title size="h4" c="blue.5">
-              {submissions[0].discordName}
-            </Title>
+            {submissions[0].nickname ?
+              <>
+                <Tooltip
+                  label={
+                    "This user is a verified member of the Patina Discord server."
+                  }
+                  color={"dark.4"}
+                >
+                  <Title size="h4" c="patina.4">
+                    <IconCircleCheckFilled
+                      className="inline"
+                      color={theme.colors.patina[4]}
+                      z={5000000}
+                      size={20}
+                    />{" "}
+                    {submissions[0].discordName}
+                  </Title>
+                </Tooltip>
+              </>
+            : <>
+                <FaDiscord
+                  style={{
+                    color: "var(--mantine-color-blue-5)",
+                    fontSize: "1.5rem",
+                  }}
+                />
+                <Title size="h4" c="blue.5">
+                  {submissions[0].discordName}
+                </Title>
+              </>
+            }
             <Link
               to={`https://leetcode.com/u/${submissions[0].leetcodeUsername}`}
               className="hover:underline"

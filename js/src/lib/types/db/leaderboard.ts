@@ -9,5 +9,6 @@ export type LeaderboardEntry = {
     discordName: string;
     leetcodeUsername: string;
     totalScore: number;
+    nickname: string | null;
   }[];
 };

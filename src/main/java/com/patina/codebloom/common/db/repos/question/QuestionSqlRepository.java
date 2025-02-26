@@ -173,6 +173,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                         q.language,
                         u."discordName",
                         u."leetcodeUsername"
+                        u."nickname"
                     FROM "Question" q
                     LEFT JOIN "User" u on q."userId" = u.id
                     WHERE q.id = ?
@@ -202,12 +203,13 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
                     var runtime = rs.getString("runtime");
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
-                            createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
+                            createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname);
                     return question;
                 }
             }
@@ -228,6 +230,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                 SELECT
                     u."discordName",
                     u."leetcodeUsername",
+                    u."nickname",
                     q.id,
                     q."userId",
                     q."questionSlug",
@@ -281,12 +284,13 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
                     var runtime = rs.getString("runtime");
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     QuestionWithUser question = new QuestionWithUser(questionId, userIdResult, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle,
-                            description, acceptanceRate, createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language);
+                            description, acceptanceRate, createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname);
                     questions.add(question);
                 }
             }

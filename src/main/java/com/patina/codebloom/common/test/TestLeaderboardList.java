@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.javafaker.Faker;
 import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
@@ -23,8 +24,9 @@ public class TestLeaderboardList {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
-            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), FAKER.name().username(),
-                    FAKER.number().numberBetween(0, 12000)));
+            boolean addNickname = ThreadLocalRandom.current().nextInt(0, 2) % 2 == 0;
+            String nickname = addNickname ? FAKER.name().username() : null;
+            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, FAKER.number().numberBetween(0, 12000)));
         }
 
         users.sort(Comparator.comparingInt(UserWithScore::getTotalScore).reversed());
@@ -44,8 +46,9 @@ public class TestLeaderboardList {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         for (int i = 0; i < 200; i++) {
-            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), FAKER.name().username(),
-                    FAKER.number().numberBetween(0, 12000)));
+            boolean addNickname = ThreadLocalRandom.current().nextInt(0, 2) % 2 == 0;
+            String nickname = addNickname ? FAKER.name().username() : null;
+            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, FAKER.number().numberBetween(0, 12000)));
         }
 
         users.sort(Comparator.comparingInt(UserWithScore::getTotalScore).reversed());

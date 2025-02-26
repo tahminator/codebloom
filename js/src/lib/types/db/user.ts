@@ -3,4 +3,5 @@ export type User = {
   discordId: string;
   discordName: string;
   leetcodeUsername: string | null;
+  nickname: string | null;
 };
