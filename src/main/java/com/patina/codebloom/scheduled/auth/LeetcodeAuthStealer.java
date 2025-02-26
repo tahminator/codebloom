@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import jakarta.mail.Message;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,14 +21,14 @@ import com.microsoft.playwright.options.Cookie;
 import com.microsoft.playwright.options.LoadState;
 import com.patina.codebloom.common.db.models.auth.Auth;
 import com.patina.codebloom.common.db.repos.auth.AuthRepository;
+import com.patina.codebloom.common.email.Email;
+import com.patina.codebloom.common.email.MessageLite;
 
 @Component
 /**
- * TODO - Handle 2FA Case
- * TODO - Handle account swapping (improve success probability if script fails).
- * TODO - Create database table to store the key as well as store the date
- * retrieved to avoid running the task until ~12 days pass (LEETCODE_SESSION
- * cookie returns with an expiration date of 14 days).
+ * TODO - Handle 2FA Case TODO - Handle account swapping (improve success probability if script fails). TODO - Create database table to store the key
+ * as well as store the date retrieved to avoid running the task until ~12 days pass (LEETCODE_SESSION cookie returns with an expiration date of 14
+ * days).
  */
 public class LeetcodeAuthStealer {
     private static String cookie;
@@ -38,38 +40,31 @@ public class LeetcodeAuthStealer {
     private String githubPassword;
 
     private final AuthRepository authRepository;
+    private final Email email;
 
-    public LeetcodeAuthStealer(final AuthRepository authRepository) {
+    public LeetcodeAuthStealer(final AuthRepository authRepository, final Email email) {
         this.authRepository = authRepository;
+        this.email = email;
     }
 
     /**
-     * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b>
-     * <div />
-     * This function utilizes Playwright in order to get an authentication
-     * key from
-     * Leetcode. That code is stored in the database and can then be used to run
-     * authenticated queries such as used to retrieve code from
-     * our user submissions.
+     * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b> <div /> This function utilizes Playwright in order to get an authentication key from Leetcode.
+     * That code is stored in the database and can then be used to run authenticated queries such as used to retrieve code from our user submissions.
      */
     @Scheduled(initialDelay = 0, fixedDelay = 86400000)
     public void stealAuthCookie() {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
         // The auth token should be refreshed every day.
-        if (mostRecentAuth != null
-                && mostRecentAuth.getCreatedAt().isAfter(
-                        LocalDateTime.now().minus(10, ChronoUnit.DAYS))) {
+        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(LocalDateTime.now().minus(10, ChronoUnit.DAYS))) {
             cookie = mostRecentAuth.getToken();
             return;
         }
 
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.firefox()
-                    .launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(5000));
+            Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(false).setTimeout(20000));
             BrowserContext context = browser.newContext(new NewContextOptions()
-                    .setUserAgent(
-                            "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko)  Chrome/48.0.2090.359 Mobile Safari/601.9")
+                    .setUserAgent("Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9")
                     .setStorageState(null));
             context.clearCookies();
 
@@ -84,9 +79,37 @@ public class LeetcodeAuthStealer {
 
             page.click("input[name=\"commit\"]");
 
-            // TODO - Handle this case.
             if (page.isVisible("#device-verification-prompt") || page.isVisible("#session-otp-input-description")) {
-                page.waitForTimeout(200000);
+                List<MessageLite> messages;
+
+                page.waitForTimeout(10000);
+
+                try {
+                    messages = email.getPastMessages();
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to retrieve past messages", e);
+                }
+
+                MessageLite target = null;
+                for (MessageLite m : messages) {
+                    // Don't break so we can get the newest available code.
+                    if (m.getSubject().equals("[GitHub] Please verify your device")) {
+                        target = m;
+                    }
+                }
+
+                if (target == null) {
+                    throw new RuntimeException("Something went wrong when parsing the inbox. Manual intervention required");
+                }
+
+                String code = CodeExtractor.extractCode(target.getMessage());
+
+                if (code == null) {
+                    throw new RuntimeException("Code was not found in the email. Manual intervention required.");
+                }
+
+                page.fill("input[name='otp']", code);
+
             }
 
             if (page.isVisible("button[name=\"authorize\"]")) {
