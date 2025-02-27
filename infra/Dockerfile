@@ -19,7 +19,7 @@ COPY js/ ./
 RUN pnpm run build
 
 # ==== Backend Build Stage ====
-FROM openjdk:21-jdk AS backend-build
+FROM sapmachine:21-jdk-ubuntu-20.04 AS backend-build
 
 WORKDIR /app
 
@@ -29,9 +29,6 @@ COPY .mvn/ .mvn/
 
 # Download dependencies
 RUN ./mvnw dependency:resolve -B
-
-# Download Playwright-specific dependencies
-RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
 
 # Copy the backend source code
 COPY src ./src
