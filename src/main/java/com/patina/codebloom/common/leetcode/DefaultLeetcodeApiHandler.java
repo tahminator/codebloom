@@ -20,8 +20,10 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.POTD;
+import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.queries.GetPotd;
 import com.patina.codebloom.common.leetcode.queries.GetSubmissionDetails;
+import com.patina.codebloom.common.leetcode.queries.GetUserProfile;
 import com.patina.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
@@ -83,6 +85,19 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
         Map<String, Object> requestBodyMap = new HashMap<>();
         requestBodyMap.put("query", query);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
+    }
+
+    public static String buildUserProfileRequestBody(final String query, final String username) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("username", username);
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+        requestBodyMap.put("variables", variables);
 
         return objectMapper.writeValueAsString(requestBodyMap);
     }
@@ -250,6 +265,41 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             var difficulty = QuestionDifficulty.valueOf(jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.difficulty"));
 
             return new POTD(title, titleSlug, difficulty);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching the API", e);
+        }
+    }
+
+    @Override
+    public UserProfile getUserProfile(String username) {
+        String endpoint = "https://leetcode.com/graphql";
+        String query = GetUserProfile.QUERY;
+
+        String requestBody;
+        try {
+            requestBody = buildUserProfileRequestBody(query, username);
+        } catch (Exception e) {
+            throw new RuntimeException("Error building the request body", e);
+        }
+
+        try {
+            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
+
+            Response response = reqSpec.post(endpoint);
+            int statusCode = response.getStatusCode();
+
+            if (statusCode != 200) {
+                return null;
+            }
+
+            JsonPath jsonPath = response.jsonPath();
+
+            var returedUsername = jsonPath.getString("data.matchedUser.username");
+            var ranking = jsonPath.getString("data.matchedUser.profile.ranking");
+            var userAvatar = jsonPath.getString("data.matchedUser.profile.userAvatar");
+            var realName = jsonPath.getString("data.matchedUser.profile.realName");
+            var aboutMe = jsonPath.getString("data.matchedUser.profile.aboutMe");
+            return new UserProfile(returedUsername, ranking, userAvatar, realName, aboutMe);
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }

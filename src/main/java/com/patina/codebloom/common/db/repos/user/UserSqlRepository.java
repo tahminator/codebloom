@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 
 @Component
@@ -22,7 +23,7 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User createNewUser(final User user) {
-        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\") VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\") VALUES (?, ?, ?, ?, ?)";
         user.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(user.getId()));
@@ -31,6 +32,7 @@ public class UserSqlRepository implements UserRepository {
             // User cannot be instantiated with a leetcodeUsername, it gets collected after
             // user authentication.
             stmt.setNull(4, java.sql.Types.VARCHAR);
+            stmt.setString(4, user.getNickname());
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
@@ -153,4 +155,41 @@ public class UserSqlRepository implements UserRepository {
 
         return users;
     }
+
+    @Override
+    public PrivateUser getPrivateUserById(final String inputId) {
+        PrivateUser user = null;
+        String sql = """
+                SELECT
+                    id,
+                    "discordId",
+                    "discordName",
+                    "leetcodeUsername",
+                    "nickname",
+                    "verifyKey"
+                FROM "User"
+                WHERE id = ?
+                """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(inputId));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    var id = rs.getString("id");
+                    var discordId = rs.getString("discordId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
+                    var verifyKey = rs.getString("verifyKey");
+                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, verifyKey);
+                    return user;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving user", e);
+        }
+
+        return user;
+    }
+
 }

@@ -19,6 +19,7 @@ import com.patina.codebloom.api.submission.body.LeetcodeUsernameObject;
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
@@ -32,6 +33,7 @@ import com.patina.codebloom.common.kv.KeyValueStore;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.page.Page;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
@@ -87,6 +89,27 @@ public class SubmissionController {
         this.potdRepository = potdRepository;
     }
 
+    @Operation(summary = "Returns the currently authenticated user's verification key.", description = """
+                    Protected endpoint that returns the currently authenticated user's verification key. In order to set their Leetcode username,
+                    users must change their About Me in order to pass validation.
+            """, responses = { @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved key") })
+    @GetMapping("/key")
+    public ResponseEntity<ApiResponder<String>> getVerificationKey(final HttpServletRequest request) {
+        FakeLag.sleep(350);
+
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+        User user = authenticationObject.getUser();
+        PrivateUser privateUser = userRepository.getPrivateUserById(user.getId());
+
+        if (privateUser == null) {
+            throw new RuntimeException("PrivateUser doesn't exist when User does. This should not be happening");
+        }
+
+        return ResponseEntity.ok().body(ApiResponder.success("Successfully retreived authentication key", privateUser.getVerifyKey()));
+
+    }
+
     @Operation(summary = "Set a Leetcode username for the current user", description = """
             Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add.
             Cannot re-use this endpoint once a name is set.
@@ -100,6 +123,11 @@ public class SubmissionController {
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
+        PrivateUser privateUser = userRepository.getPrivateUserById(user.getId());
+
+        if (privateUser == null) {
+            throw new RuntimeException("PrivateUser doesn't exist when User does. This should not be happening");
+        }
 
         if (user.getLeetcodeUsername() != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
@@ -111,8 +139,14 @@ public class SubmissionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The username is not valid. Please make sure the LeetCode username is valid, and has completed atleast one problem before.");
         }
 
-        user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
-        userRepository.updateUser(user);
+        UserProfile leetcodeUserProfile = leetcodeApiHandler.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
+        String aboutMe = leetcodeUserProfile.getAboutMe();
+        if (aboutMe == null || !aboutMe.equals(privateUser.getVerifyKey())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The verification key did not match the user's about me or the about me did not exist.");
+        }
+
+        // user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
+        // userRepository.updateUser(user);
 
         return ResponseEntity.ok().body(ApiResponder.success("Leetcode username has been set!", null));
 

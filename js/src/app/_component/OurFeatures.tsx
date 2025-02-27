@@ -30,8 +30,8 @@ export default function OurFeatures() {
           </Center>
           <Text>
             Earn points based on the specific LeetCode question you answer
-            correctly. An easy question earns 100 points. A medium question
-            earns 300 points. A hard question earns 600 points.
+            correctly. We use a formula to calculate your score that takes
+            difficulty, acceptance rate, and more into consideration.
           </Text>
         </Card>
         <Card
