@@ -30,8 +30,6 @@ COPY .mvn/ .mvn/
 # Download dependencies
 RUN ./mvnw dependency:resolve -B
 
-# Install the required Playwright dependencies
-RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
 
 # Copy the backend source code
 COPY src ./src
@@ -50,6 +48,10 @@ WORKDIR /app
 
 # Copy the built JAR file
 COPY --from=backend-build /app/target/*.jar app.jar
+COPY --from=backend-build /app/mvnw mvnw
+
+# Install the required Playwright dependencies
+RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
 
 
 # Expose backend port
