@@ -48,7 +48,8 @@ WORKDIR /app
 
 # Copy the built JAR file
 COPY --from=backend-build /app/target/*.jar app.jar
-COPY --from=backend-build /app/mvnw mvnw
+COPY --from=backend-build /app/.mvn/ ./mvn
+COPY --from=backend-build /app/mvnw pom.xml ./
 
 # Install the required Playwright dependencies
 RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
