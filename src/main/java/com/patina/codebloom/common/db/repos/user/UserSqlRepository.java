@@ -32,7 +32,7 @@ public class UserSqlRepository implements UserRepository {
             // User cannot be instantiated with a leetcodeUsername, it gets collected after
             // user authentication.
             stmt.setNull(4, java.sql.Types.VARCHAR);
-            stmt.setString(4, user.getNickname());
+            stmt.setString(5, user.getNickname());
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
