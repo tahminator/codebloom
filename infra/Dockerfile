@@ -19,7 +19,7 @@ COPY js/ ./
 RUN pnpm run build
 
 # ==== Backend Build Stage ====
-FROM sapmachine:21-jdk-ubuntu-20.04 AS backend-build
+FROM sapmachine:21-jdk-ubuntu-24.04 AS backend-build
 
 WORKDIR /app
 
@@ -42,7 +42,7 @@ RUN ./mvnw clean package -DskipTests
 
 
 # ==== Runtime Stage ====
-FROM sapmachine:21-jdk-ubuntu-20.04
+FROM sapmachine:21-jdk-ubuntu-24.04
 
 WORKDIR /app
 
