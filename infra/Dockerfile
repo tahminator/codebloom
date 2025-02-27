@@ -30,6 +30,9 @@ COPY .mvn/ .mvn/
 # Download dependencies
 RUN ./mvnw dependency:resolve -B
 
+# Download Playwright-specific dependencies
+RUN mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
+
 # Copy the backend source code
 COPY src ./src
 
