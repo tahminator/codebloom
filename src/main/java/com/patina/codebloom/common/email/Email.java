@@ -28,13 +28,12 @@ public class Email {
         final Properties properties = new Properties();
         properties.setProperty("mail.imap.host", emailProperties.getHost());
         properties.setProperty("mail.imap.port", emailProperties.getPort());
-        properties.setProperty("mail.imap.starttls.enable", "true");
 
         session = Session.getDefaultInstance(properties);
     }
 
     public List<MessageLite> getPastMessages() throws NoSuchProviderException, MessagingException {
-        final Store store = session.getStore("imaps");
+        final Store store = session.getStore("imap");
 
         store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
 
