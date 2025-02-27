@@ -50,7 +50,13 @@ jobs:
             ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
             GH_USERNAME: ${{ secrets.GH_USERNAME }}
             GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-          
+            DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+            DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+            EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+            EMAIL_POST: ${{ secrets.EMAIL_PORT }}
+            EMAIL_TYPE: ${{ secrets.EMAIL_TYPE }}
+            EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+            EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
             
         steps:
             - name: Checkout Repository
