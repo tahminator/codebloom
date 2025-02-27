@@ -60,7 +60,7 @@ public class LeetcodeAuthStealer {
         }
 
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(20000));
+            Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(false).setTimeout(40000));
             BrowserContext context = browser.newContext(new NewContextOptions()
                             .setUserAgent("Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9")
                             .setStorageState(null));
