@@ -1,6 +1,10 @@
 # Database Migrations
 
-**TLDR**: If you are looking for the command to run migrations, it is `dotenvx run -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration`
+**TLDR**: If you are looking for the command to run migrations, it is
+`dotenvx run -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration`
+and to run production migrations (BE CAREFUL), it is:
+`dotenvx run -f .env.production -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration`
+[You must manually fill .env.production yourself if you have the required access to the secrets.]
 
 We use Flyway to handle our database migrations. However, we perform migrations manually, so it's crucial to exercise extreme caution when dealing with data.
 
