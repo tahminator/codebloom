@@ -24,7 +24,7 @@ public class PotdSetter {
         this.potdRepository = potdRepository;
     }
 
-    @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60)
+    @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60 * 5)
     public void setPotd() {
         com.patina.codebloom.common.leetcode.models.POTD leetcodePotd = leetcodeApiHandler.getPotd();
 
@@ -34,8 +34,6 @@ public class PotdSetter {
             return;
         }
 
-        potdRepository.createPOTD(new POTD(leetcodePotd.getTitle(),
-                leetcodePotd.getTitleSlug(), ScoreCalculator.calculateMultiplier(leetcodePotd.getDifficulty()),
-                LocalDateTime.now()));
+        potdRepository.createPOTD(new POTD(leetcodePotd.getTitle(), leetcodePotd.getTitleSlug(), ScoreCalculator.calculateMultiplier(leetcodePotd.getDifficulty()), LocalDateTime.now()));
     }
 }
