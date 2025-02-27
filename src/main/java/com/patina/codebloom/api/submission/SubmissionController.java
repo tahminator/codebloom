@@ -145,8 +145,8 @@ public class SubmissionController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The verification key did not match the user's about me or the about me did not exist.");
         }
 
-        // user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
-        // userRepository.updateUser(user);
+        user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
+        userRepository.updateUser(user);
 
         return ResponseEntity.ok().body(ApiResponder.success("Leetcode username has been set!", null));
 
