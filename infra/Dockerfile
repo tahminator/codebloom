@@ -41,7 +41,7 @@ RUN ./mvnw clean package -DskipTests
 
 
 # ==== Runtime Stage ====
-FROM openjdk:21-jdk
+FROM sapmachine:21-jdk-ubuntu-20.04
 
 WORKDIR /app
 
