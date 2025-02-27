@@ -172,7 +172,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                         q.code,
                         q.language,
                         u."discordName",
-                        u."leetcodeUsername"
+                        u."leetcodeUsername",
                         u."nickname"
                     FROM "Question" q
                     LEFT JOIN "User" u on q."userId" = u.id
