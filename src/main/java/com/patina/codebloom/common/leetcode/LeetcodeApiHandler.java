@@ -6,6 +6,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.POTD;
+import com.patina.codebloom.common.leetcode.models.UserProfile;
 
 public interface LeetcodeApiHandler {
 
@@ -16,4 +17,6 @@ public interface LeetcodeApiHandler {
     LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(int submissionId);
 
     POTD getPotd();
+
+    UserProfile getUserProfile(String username);
 }

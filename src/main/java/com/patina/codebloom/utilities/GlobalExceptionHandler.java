@@ -29,6 +29,10 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder.failure(ex.getReason()));
         }
 
+        if (ex.getStatusCode() == HttpStatus.FORBIDDEN) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponder.failure(ex.getReason()));
+        }
+
         return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
     }
 }
