@@ -49,7 +49,7 @@ WORKDIR /app
 COPY --from=backend-build /app/target/*.jar app.jar
 
 # Install the required Playwright dependencies
-RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps
+RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
 
 # Expose backend port
 EXPOSE 8080
