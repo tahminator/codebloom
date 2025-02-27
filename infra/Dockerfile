@@ -49,6 +49,13 @@ WORKDIR /app
 # Copy the built JAR file
 COPY --from=backend-build /app/target/*.jar app.jar
 
+# Download any needed Playwright configurations.
+COPY mvnw pom.xml ./
+COPY .mvn/ .mvn/
+RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
+
+
+
 # Expose backend port
 EXPOSE 8080
 
