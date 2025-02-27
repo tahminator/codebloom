@@ -271,7 +271,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
     }
 
     @Override
-    public UserProfile getUserProfile(String username) {
+    public UserProfile getUserProfile(final String username) {
         String endpoint = "https://leetcode.com/graphql";
         String query = GetUserProfile.QUERY;
 

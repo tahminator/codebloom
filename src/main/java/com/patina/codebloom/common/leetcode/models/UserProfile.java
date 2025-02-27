@@ -7,7 +7,7 @@ public class UserProfile {
     private final String realName;
     private final String aboutMe;
 
-    public UserProfile(String username, String ranking, String userAvatar, String realName, String aboutMe) {
+    public UserProfile(final String username, final String ranking, final String userAvatar, final String realName, final String aboutMe) {
         this.username = username;
         this.ranking = ranking;
         this.userAvatar = userAvatar;
