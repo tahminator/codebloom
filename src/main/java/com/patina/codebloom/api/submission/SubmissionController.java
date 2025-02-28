@@ -133,12 +133,6 @@ public class SubmissionController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
         }
 
-        ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(leetcodeUsernameObject.getLeetcodeUsername());
-
-        if (leetcodeSubmissions.size() == 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The username is not valid. Please make sure the LeetCode username is valid, and has completed atleast one problem before.");
-        }
-
         UserProfile leetcodeUserProfile = leetcodeApiHandler.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
         String aboutMe = leetcodeUserProfile.getAboutMe();
         if (aboutMe == null || !aboutMe.equals(privateUser.getVerifyKey())) {
