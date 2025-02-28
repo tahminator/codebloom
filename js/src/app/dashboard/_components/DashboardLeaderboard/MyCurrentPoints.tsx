@@ -1,5 +1,7 @@
 import { useMyRecentLeaderboardData } from "@/app/dashboard/_components/DashboardLeaderboard/hooks";
-import { Flex, Loader, Text } from "@mantine/core";
+import { theme } from "@/lib/theme";
+import { Flex, Loader, Text, Tooltip } from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -38,16 +40,42 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
       >
         <Text>Me</Text>
         <Flex direction={"column"}>
-          <Text ta="center">
-            <FaDiscord
-              style={{
-                display: "inline",
-                marginLeft: "4px",
-                marginRight: "4px",
-              }}
-            />
-            {data?.user?.discordName}
-          </Text>
+          {data?.user?.nickname ?
+            <Tooltip
+              label={
+                "This user is a verified member of the Patina Discord server."
+              }
+              color={"dark.4"}
+            >
+              <Text
+                ta="center"
+                className="transition-all group-hover:text-white-500"
+              >
+                <IconCircleCheckFilled
+                  style={{
+                    display: "inline",
+                  }}
+                  color={theme.colors.patina[4]}
+                  z={5000000}
+                  size={20}
+                />{" "}
+                {data?.user.discordName}
+              </Text>
+            </Tooltip>
+          : <Text
+              ta="center"
+              className="transition-all group-hover:text-white-500"
+            >
+              <FaDiscord
+                style={{
+                  display: "inline",
+                  marginLeft: "4px",
+                  marginRight: "4px",
+                }}
+              />
+              {data?.user?.discordName}
+            </Text>
+          }
           <Text ta="center">
             <SiLeetcode
               style={{
