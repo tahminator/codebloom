@@ -47,8 +47,8 @@ export default function OurFeatures() {
             <Title order={4}>Daily Challenge</Title>
           </Center>
           <Text>
-            Answer the daily LeetCode challenge question that resets at 12:00 AM
-            to gain 1.8x points.
+            Answer the daily LeetCode challenge question that resets at 7:00 PM
+            EST to gain a varying bonus multiplier!
           </Text>
         </Card>
         <Card
