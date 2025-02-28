@@ -25,6 +25,8 @@
     "@tabler/icons-react": "^3.30.0",
     "@tanstack/react-query": "^5.64.2",
     "@tanstack/react-query-devtools": "^5.64.2",
+    "clsx": "^2.1.1",
+    "motion": "^12.4.7",
     "prettier": "^3.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
