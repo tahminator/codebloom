@@ -145,6 +145,10 @@ public class SubmissionController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The verification key did not match the user's about me or the about me did not exist.");
         }
 
+        if (userRepository.userExistsByLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This username has already been taken. If this is a mistake, please get in touch with us so we can attempt to rectify it.");
+        }
+
         user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
         userRepository.updateUser(user);
 

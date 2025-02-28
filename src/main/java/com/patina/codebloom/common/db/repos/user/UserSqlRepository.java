@@ -160,16 +160,16 @@ public class UserSqlRepository implements UserRepository {
     public PrivateUser getPrivateUserById(final String inputId) {
         PrivateUser user = null;
         String sql = """
-                SELECT
-                    id,
-                    "discordId",
-                    "discordName",
-                    "leetcodeUsername",
-                    "nickname",
-                    "verifyKey"
-                FROM "User"
-                WHERE id = ?
-                """;
+                        SELECT
+                            id,
+                            "discordId",
+                            "discordName",
+                            "leetcodeUsername",
+                            "nickname",
+                            "verifyKey"
+                        FROM "User"
+                        WHERE id = ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputId));
@@ -190,6 +190,26 @@ public class UserSqlRepository implements UserRepository {
         }
 
         return user;
+    }
+
+    @Override
+    public boolean userExistsByLeetcodeUsername(final String leetcodeUsername) {
+        String sql = """
+                        SELECT
+                            1
+                        FROM "User"
+                        WHERE "leetcodeUsername" = ?
+                        LIMIT 1
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, leetcodeUsername);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving user count with given leetcodeUsername", e);
+        }
     }
 
 }

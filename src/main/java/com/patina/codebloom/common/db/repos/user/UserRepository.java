@@ -19,4 +19,6 @@ public interface UserRepository {
     ArrayList<User> getAllUsers();
 
     PrivateUser getPrivateUserById(String id);
+
+    boolean userExistsByLeetcodeUsername(String leetcodeUsername);
 }
