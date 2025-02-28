@@ -16,8 +16,6 @@ import { Link } from "react-router-dom";
 
 import classes from "./Header.module.css";
 
-import Logo from "/logo.png";
-
 export default function Header() {
   const { data, status } = useAuthQuery();
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
@@ -52,7 +50,7 @@ export default function Header() {
       <header className={classes.header}>
         <Link to="/">
           <Group>
-            <img src={Logo} width={45} alt="Logo" />
+            <img src={"/logo.png"} width={45} alt="Logo" />
             <Title>
               <Text
                 gradient={{ from: "rgb(75,233,167)", to: "white" }}
