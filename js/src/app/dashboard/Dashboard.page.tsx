@@ -35,6 +35,16 @@ export default function DashboardPage() {
     );
   }
 
+  const onboarded = data.user.leetcodeUsername;
+
+  if (!onboarded) {
+    return (
+      <ToastWithRedirect
+        to="/onboarding"
+        message="Please finish the onboarding to gain access to the dashboard."
+      />
+    );
+  }
   return (
     <>
       <Header />

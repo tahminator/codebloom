@@ -78,8 +78,10 @@ public class SubmissionController {
         return duration.toHours() < 24;
     }
 
-    public SubmissionController(final UserRepository userRepository, final Protector protector, final KeyValueStore keyValueStore, final LeetcodeApiHandler leetcodeApiHandler,
-            final SubmissionsHandler submissionsHandler, final QuestionRepository questionRepository, final POTDRepository potdRepository) {
+    public SubmissionController(final UserRepository userRepository, final Protector protector, final KeyValueStore keyValueStore,
+                    final LeetcodeApiHandler leetcodeApiHandler,
+                    final SubmissionsHandler submissionsHandler, final QuestionRepository questionRepository,
+                    final POTDRepository potdRepository) {
         this.userRepository = userRepository;
         this.protector = protector;
         this.keyValueStore = keyValueStore;
@@ -90,9 +92,10 @@ public class SubmissionController {
     }
 
     @Operation(summary = "Returns the currently authenticated user's verification key.", description = """
-                    Protected endpoint that returns the currently authenticated user's verification key. In order to set their Leetcode username,
-                    users must change their About Me in order to pass validation.
-            """, responses = { @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                            Protected endpoint that returns the currently authenticated user's verification key. In order to set their Leetcode username,
+                            users must change their About Me in order to pass validation.
+                    """, responses = {
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "200", description = "Successfully retrieved key") })
     @GetMapping("/key")
     public ResponseEntity<ApiResponder<String>> getVerificationKey(final HttpServletRequest request) {
@@ -111,14 +114,16 @@ public class SubmissionController {
     }
 
     @Operation(summary = "Set a Leetcode username for the current user", description = """
-            Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add.
-            Cannot re-use this endpoint once a name is set.
-            """, responses = { @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                    Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add.
+                    Cannot re-use this endpoint once a name is set.
+                    """, responses = {
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "200", description = "Name has been set successfully", content = @Content(schema = @Schema(implementation = UnsafeEmptySuccessResponse.class))),
             @ApiResponse(responseCode = "409", description = "Attempt to set name that has already been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @PostMapping("/set")
-    public ResponseEntity<ApiResponder<Void>> setLeetcodeUsername(final HttpServletRequest request, @Valid @RequestBody final LeetcodeUsernameObject leetcodeUsernameObject) {
+    public ResponseEntity<ApiResponder<Void>> setLeetcodeUsername(final HttpServletRequest request,
+                    @Valid @RequestBody final LeetcodeUsernameObject leetcodeUsernameObject) {
         FakeLag.sleep(350);
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
@@ -130,17 +135,20 @@ public class SubmissionController {
         }
 
         if (user.getLeetcodeUsername() != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                            "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
         }
 
         UserProfile leetcodeUserProfile = leetcodeApiHandler.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
         String aboutMe = leetcodeUserProfile.getAboutMe();
         if (aboutMe == null || !aboutMe.equals(privateUser.getVerifyKey())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The verification key did not match the user's about me or the about me did not exist.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "The verification key did not match the user's about me or the about me did not exist.");
         }
 
         if (userRepository.userExistsByLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This username has already been taken. If this is a mistake, please get in touch with us so we can attempt to rectify it.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "This username has already been taken. If this is a mistake, please get in touch with us so we can attempt to rectify it.");
         }
 
         user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
@@ -151,10 +159,11 @@ public class SubmissionController {
     }
 
     @Operation(summary = "Check the current user's LeetCode submissions and update leaderboard", description = """
-            Protected endpoint that handles the logic of checking the most recent submissions,
-            as well as updating the current leaderboard with any new points the user has accumulated.
-            There is a rate limit on the route to prevent abuse (currently: 5 minutes).
-            """, responses = { @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                    Protected endpoint that handles the logic of checking the most recent submissions,
+                    as well as updating the current leaderboard with any new points the user has accumulated.
+                    There is a rate limit on the route to prevent abuse (currently: 5 minutes).
+                    """, responses = {
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "200", description = "The check was completed successfuly", content = @Content(schema = @Schema(implementation = UnsafeSubmissionSuccessResponse.class))),
             @ApiResponse(responseCode = "412", description = "Leetcode username hasn't been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "429", description = "Rate limited", content = @Content(schema = @Schema(implementation = UnsafeRateLimitResponse.class))),
@@ -165,7 +174,8 @@ public class SubmissionController {
         User user = authenticationObject.getUser();
 
         if (user.getLeetcodeUsername() == null) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "You cannot access this resource without setting a Leetcode username first.");
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
+                            "You cannot access this resource without setting a Leetcode username first.");
         }
 
         if (keyValueStore.containsKey(user.getId())) {
@@ -183,17 +193,19 @@ public class SubmissionController {
 
         ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(user.getLeetcodeUsername());
 
-        return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!", submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
+        return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!",
+                        submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
     }
 
     @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = """
-            Protected endpoint that returns the list of questions completed by the user.
-            These questions are guaranteed to be completed by the user.
-            """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
+                    Protected endpoint that returns the list of questions completed by the user.
+                    These questions are guaranteed to be completed by the user.
+                    """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("submission/u/{userId}")
     public ResponseEntity<ApiResponder<Page<ArrayList<QuestionWithUser>>>> getAllQuestionsForUser(final HttpServletRequest request,
-            @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page, @PathVariable final String userId) {
+                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
+                    @PathVariable final String userId) {
         FakeLag.sleep(250);
 
         protector.validateSession(request);
@@ -210,8 +222,9 @@ public class SubmissionController {
     }
 
     @Operation(summary = "Returns current problem of the day.", description = """
-            Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.
-            """, responses = { @ApiResponse(responseCode = "200", description = "POTD found"),
+                    Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.
+                    """, responses = {
+            @ApiResponse(responseCode = "200", description = "POTD found"),
             @ApiResponse(responseCode = "404", description = "POTD not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/potd")
@@ -230,21 +243,24 @@ public class SubmissionController {
         Question completedQuestion = questionRepository.getQuestionBySlugAndUserId(potd.getSlug(), user.getId());
 
         if (completedQuestion != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder.failure("Nice, you have already completed the problem of the day! Come back tomorrow for a new one!"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponder
+                            .failure("Nice, you have already completed the problem of the day! Come back tomorrow for a new one!"));
         }
 
         return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", potd));
     }
 
     @Operation(summary = "Returns submission data.", description = """
-            Returns the submission data from any user, as long as the user making the request is authenticated.
-            This includes the scraped LeetCode description, which is HTML that has been sanitized by the server,
-            so it is safe to use on the frontend.
-            """, responses = { @ApiResponse(responseCode = "200", description = "Question found", content = @Content(schema = @Schema(implementation = UnsafeSubmissionSuccessResponse.class))),
+                    Returns the submission data from any user, as long as the user making the request is authenticated.
+                    This includes the scraped LeetCode description, which is HTML that has been sanitized by the server,
+                    so it is safe to use on the frontend.
+                    """, responses = {
+            @ApiResponse(responseCode = "200", description = "Question found", content = @Content(schema = @Schema(implementation = UnsafeSubmissionSuccessResponse.class))),
             @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/submission/s/{submissionId}")
-    public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(final HttpServletRequest request, @PathVariable final String submissionId) {
+    public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(final HttpServletRequest request,
+                    @PathVariable final String submissionId) {
         FakeLag.sleep(750);
 
         protector.validateSession(request);
