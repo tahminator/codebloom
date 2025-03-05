@@ -14,9 +14,11 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function UsernameForm() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const { data, status } = useAuthKeyQuery();
@@ -32,12 +34,15 @@ export default function UsernameForm() {
     mutate(
       { leetcodeUsername: data.leetcodeUsername },
       {
-        onSuccess: ({ success, message }) => {
+        onSuccess: async ({ success, message }) => {
           notifications.show({
             message,
             color: success ? undefined : "red",
           });
           if (success) {
+            await queryClient.invalidateQueries({
+              queryKey: ["auth"],
+            });
             navigate("/dashboard");
           }
           return;
@@ -64,7 +69,7 @@ export default function UsernameForm() {
                 fw={500}
                 size="lg"
               >
-                LeetCode Username
+                Set LeetCode Username
               </Text>
             </Group>
           </Center>
