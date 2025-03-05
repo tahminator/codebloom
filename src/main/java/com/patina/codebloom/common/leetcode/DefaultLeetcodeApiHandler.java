@@ -298,7 +298,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             var ranking = jsonPath.getString("data.matchedUser.profile.ranking");
             var userAvatar = jsonPath.getString("data.matchedUser.profile.userAvatar");
             var realName = jsonPath.getString("data.matchedUser.profile.realName");
-            var aboutMe = jsonPath.getString("data.matchedUser.profile.aboutMe");
+            var aboutMe = jsonPath.getString("data.matchedUser.profile.aboutMe").trim();
             return new UserProfile(returedUsername, ranking, userAvatar, realName, aboutMe);
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
