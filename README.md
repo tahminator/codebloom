@@ -53,7 +53,7 @@
 
 <img src="js/public/screenshot3.png">
 
-CodeBloom aims to motivate Patina Network community reach their LeetCode goals by being able to track their progess, rank them on a leaderboard, and push them to complete the daily challenge to incentivize them.
+CodeBloom aims to motivate Patina Network community reach their LeetCode goals by being able to track their progress, rank them on a leaderboard, and push them to complete the daily challenge to incentivize them.
 
 ---
 
