@@ -95,7 +95,7 @@ Development Tools:
 
 ### Instructions:
 
-For setup instructions, click [ here](https://github.com/tahminator/codebloom/blob/main/docs/local.md).
+For setup instructions, click [ here](https://github.com/tahminator/codebloom/blob/main/docs/setup/local.md).
 
 ---
 
