@@ -57,7 +57,7 @@ export default function UsernameForm() {
         <Card
           radius="md"
           style={{
-            width: "350px",
+            width: "380px",
           }}
         >
           <Center>
@@ -78,12 +78,21 @@ export default function UsernameForm() {
             You must set the following key inside of your "Summary" section on
             Leetcode:
           </Text>
-          <Text ta={"center"} pt={"xs"}>
+          <Text ta={"center"} pt={"xs"} size={"lg"}>
             {status === "pending" && <Loader />}
             {status === "error" &&
               "Sorry, something went wrong. Please try again later."}
             {status === "success" && data.data}
           </Text>
+          <Link
+            to={"https://leetcode.com/profile/"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Text ta={"center"} pt={"sm"} className={"hover:underline"}>
+              Click here to go to your profile.
+            </Text>
+          </Link>
 
           <TextInput
             label="Username"
