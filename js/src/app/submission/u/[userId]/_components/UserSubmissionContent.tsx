@@ -213,7 +213,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                   if (acceptanceRate >= 50) {
                     return "yellow";
                   }
-                  if (acceptanceRate >= 30) {
+                  if (acceptanceRate >= 0) {
                     return "red";
                   }
                   return undefined;
