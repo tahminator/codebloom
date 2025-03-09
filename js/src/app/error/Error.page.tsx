@@ -1,7 +1,8 @@
 import { Button, Container, Flex, Group, Text, Title } from "@mantine/core";
-import { Illustration } from "./Illustration";
-import classes from "./ErrorPage.module.css";
 import { Link } from "react-router-dom";
+
+import classes from "./ErrorPage.module.css";
+import { Illustration } from "./Illustration";
 
 export default function ErrorPage() {
   return (
