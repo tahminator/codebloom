@@ -33,7 +33,8 @@ public class PotdSetter {
             return;
         }
 
-        if (potdRepository.getCurrentPOTD().getTitle().equals(leetcodePotd.getTitle())) {
+        POTD currentPotd = potdRepository.getCurrentPOTD();
+        if (currentPotd != null && currentPotd.getTitle().equals(leetcodePotd.getTitle())) {
             // It's already the latest POTD, don't want to do it again.
             LOGGER.info("POTD has already been set before, will not be doing it again.");
             return;
