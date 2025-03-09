@@ -28,12 +28,18 @@ public class PotdSetter {
     public void setPotd() {
         com.patina.codebloom.common.leetcode.models.POTD leetcodePotd = leetcodeApiHandler.getPotd();
 
+        if (leetcodePotd == null) {
+            LOGGER.warn("No POTD was been returned.");
+            return;
+        }
+
         if (potdRepository.getCurrentPOTD().getTitle().equals(leetcodePotd.getTitle())) {
             // It's already the latest POTD, don't want to do it again.
             LOGGER.info("POTD has already been set before, will not be doing it again.");
             return;
         }
 
-        potdRepository.createPOTD(new POTD(leetcodePotd.getTitle(), leetcodePotd.getTitleSlug(), ScoreCalculator.calculateMultiplier(leetcodePotd.getDifficulty()), LocalDateTime.now()));
+        potdRepository.createPOTD(new POTD(leetcodePotd.getTitle(), leetcodePotd.getTitleSlug(),
+                        ScoreCalculator.calculateMultiplier(leetcodePotd.getDifficulty()), LocalDateTime.now()));
     }
 }
