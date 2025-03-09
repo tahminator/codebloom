@@ -59,7 +59,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
                   z={5000000}
                   size={20}
                 />{" "}
-                {data?.user.discordName}
+                {data?.user.nickname}
               </Text>
             </Tooltip>
           : <Text

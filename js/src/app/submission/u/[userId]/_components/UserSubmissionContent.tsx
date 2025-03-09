@@ -132,7 +132,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                       z={5000000}
                       size={20}
                     />{" "}
-                    {submissions[0].discordName}
+                    {submissions[0].nickname}
                   </Title>
                 </Tooltip>
               </>
