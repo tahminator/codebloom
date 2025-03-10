@@ -54,7 +54,7 @@ public class LeetcodeAuthStealer {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
         // The auth token should be refreshed every day.
-        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(LocalDateTime.now().minus(10, ChronoUnit.DAYS))) {
+        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(LocalDateTime.now().minus(4, ChronoUnit.DAYS))) {
             cookie = mostRecentAuth.getToken();
             return;
         }
@@ -62,8 +62,8 @@ public class LeetcodeAuthStealer {
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
             BrowserContext context = browser.newContext(new NewContextOptions()
-                            .setUserAgent("Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9")
-                            .setStorageState(null));
+                    .setUserAgent("Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9")
+                    .setStorageState(null));
             context.clearCookies();
 
             Page page = context.newPage();
