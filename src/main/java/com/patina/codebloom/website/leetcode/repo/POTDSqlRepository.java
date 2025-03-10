@@ -11,7 +11,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
-import com.patina.codebloom.website.leetcode.models.POTD;
+import com.patina.codebloom.website.leetcode.model.POTD;
 
 @Component
 public class POTDSqlRepository implements POTDRepository {

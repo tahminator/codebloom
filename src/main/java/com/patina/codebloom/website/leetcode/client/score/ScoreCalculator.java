@@ -2,7 +2,7 @@ package com.patina.codebloom.website.leetcode.client.score;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.patina.codebloom.website.leetcode.models.QuestionDifficulty;
+import com.patina.codebloom.website.leetcode.model.QuestionDifficulty;
 
 public class ScoreCalculator {
     // TODO - Discuss the final values.

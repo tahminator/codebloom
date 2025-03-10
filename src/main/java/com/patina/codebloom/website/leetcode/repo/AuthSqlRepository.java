@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
-import com.patina.codebloom.website.leetcode.models.Auth;
+import com.patina.codebloom.website.leetcode.model.Auth;
 
 @Component
 public class AuthSqlRepository implements AuthRepository {

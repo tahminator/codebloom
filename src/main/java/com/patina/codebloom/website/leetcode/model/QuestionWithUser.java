@@ -1,7 +1,6 @@
-package com.patina.codebloom.website.leetcode.models;
+package com.patina.codebloom.website.leetcode.model;
 
 import java.time.LocalDateTime;
-import java.util.OptionalInt;
 
 public class QuestionWithUser extends Question {
     private String discordName;
@@ -10,7 +9,7 @@ public class QuestionWithUser extends Question {
 
     public QuestionWithUser(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty,
                     final int questionNumber, final String questionLink,
-                    final OptionalInt pointsAwarded, final String questionTitle, final String description, final float acceptanceRate,
+                    final Integer pointsAwarded, final String questionTitle, final String description, final float acceptanceRate,
                     final LocalDateTime createdAt, final LocalDateTime submittedAt,
                     final String discordName, final String leetcodeUsername, final String runtime, final String memory, final String code,
                     final String language, final String nickname) {

@@ -3,7 +3,7 @@ package com.patina.codebloom.website.leaderboard.model;
 import java.util.ArrayList;
 
 import com.patina.codebloom.website.auth.model.User;
-import com.patina.codebloom.website.leetcode.models.Question;
+import com.patina.codebloom.website.leetcode.model.Question;
 
 public class UserWithQuestions extends User {
     private ArrayList<Question> questions;

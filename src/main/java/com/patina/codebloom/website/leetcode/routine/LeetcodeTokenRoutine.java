@@ -1,4 +1,4 @@
-package com.patina.codebloom.website.leetcode.routines;
+package com.patina.codebloom.website.leetcode.routine;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -21,7 +21,7 @@ import com.microsoft.playwright.options.Cookie;
 import com.microsoft.playwright.options.LoadState;
 import com.patina.codebloom.common.email.Email;
 import com.patina.codebloom.common.email.MessageLite;
-import com.patina.codebloom.website.leetcode.models.Auth;
+import com.patina.codebloom.website.leetcode.model.Auth;
 import com.patina.codebloom.website.leetcode.repo.AuthRepository;
 
 /**

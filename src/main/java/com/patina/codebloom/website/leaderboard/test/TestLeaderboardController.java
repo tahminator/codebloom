@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.website.auth.client.Protector;
+import com.patina.codebloom.website.leaderboard.LeaderboardController;
 import com.patina.codebloom.website.leaderboard.model.LeaderboardWithUsers;
 import com.patina.codebloom.website.leaderboard.model.UserWithScore;
 import com.patina.codebloom.website.leaderboard.repo.LeaderboardRepository;

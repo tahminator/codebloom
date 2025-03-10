@@ -2,7 +2,7 @@ package com.patina.codebloom.website.leetcode.repo;
 
 import java.util.ArrayList;
 
-import com.patina.codebloom.website.leetcode.models.POTD;
+import com.patina.codebloom.website.leetcode.model.POTD;
 
 public interface POTDRepository {
     POTD createPOTD(POTD potd);

@@ -1,4 +1,4 @@
-package com.patina.codebloom.website.leetcode.models;
+package com.patina.codebloom.website.leetcode.model;
 
 import java.time.LocalDateTime;
 

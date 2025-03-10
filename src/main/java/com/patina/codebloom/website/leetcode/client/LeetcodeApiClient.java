@@ -2,11 +2,11 @@ package com.patina.codebloom.website.leetcode.client;
 
 import java.util.ArrayList;
 
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodePOTD;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeQuestion;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeSubmission;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeUserProfile;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeDetailedQuestion;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodePOTD;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeQuestion;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeSubmission;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeUserProfile;
 
 /**
  * This client is used to interface with leetcode.com

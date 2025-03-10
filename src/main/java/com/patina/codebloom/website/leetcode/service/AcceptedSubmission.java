@@ -1,4 +1,4 @@
-package com.patina.codebloom.website.leetcode.services;
+package com.patina.codebloom.website.leetcode.service;
 
 public class AcceptedSubmission {
     private String title;

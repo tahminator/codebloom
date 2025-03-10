@@ -1,4 +1,4 @@
-package com.patina.codebloom.website.leetcode.services;
+package com.patina.codebloom.website.leetcode.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,13 +14,13 @@ import com.patina.codebloom.website.leaderboard.model.Leaderboard;
 import com.patina.codebloom.website.leaderboard.model.UserWithScore;
 import com.patina.codebloom.website.leaderboard.repo.LeaderboardRepository;
 import com.patina.codebloom.website.leetcode.client.LeetcodeApiClient;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeQuestion;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeSubmission;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeDetailedQuestion;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeQuestion;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeSubmission;
 import com.patina.codebloom.website.leetcode.client.score.ScoreCalculator;
-import com.patina.codebloom.website.leetcode.models.POTD;
-import com.patina.codebloom.website.leetcode.models.Question;
-import com.patina.codebloom.website.leetcode.models.QuestionDifficulty;
+import com.patina.codebloom.website.leetcode.model.POTD;
+import com.patina.codebloom.website.leetcode.model.Question;
+import com.patina.codebloom.website.leetcode.model.QuestionDifficulty;
 import com.patina.codebloom.website.leetcode.repo.POTDRepository;
 import com.patina.codebloom.website.leetcode.repo.QuestionRepository;
 
@@ -88,7 +88,7 @@ public class SubmissionService {
             Question newQuestion = new Question(user.getId(), leetcodeQuestion.getTitleSlug(),
                             QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getQuestionId(),
                             "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(),
-                            leetcodeQuestion.getQuestion(), OptionalInt.of(points),
+                            leetcodeQuestion.getQuestion(), points,
                             leetcodeQuestion.getAcceptanceRate(), leetcodeSubmission.getTimestamp(), detailedQuestion.getRuntimeDisplay(),
                             detailedQuestion.getMemoryDisplay(), detailedQuestion.getCode(),
                             detailedQuestion.getLang().getName());

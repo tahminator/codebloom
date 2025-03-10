@@ -1,6 +1,6 @@
-package com.patina.codebloom.website.leetcode.client.models;
+package com.patina.codebloom.website.leetcode.client.model;
 
-import com.patina.codebloom.website.leetcode.models.QuestionDifficulty;
+import com.patina.codebloom.website.leetcode.model.QuestionDifficulty;
 
 public class LeetcodePOTD {
     private String title;

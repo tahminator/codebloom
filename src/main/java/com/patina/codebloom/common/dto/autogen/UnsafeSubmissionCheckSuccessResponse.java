@@ -2,7 +2,7 @@ package com.patina.codebloom.common.dto.autogen;
 
 import java.util.ArrayList;
 
-import com.patina.codebloom.website.leetcode.services.AcceptedSubmission;
+import com.patina.codebloom.website.leetcode.service.AcceptedSubmission;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

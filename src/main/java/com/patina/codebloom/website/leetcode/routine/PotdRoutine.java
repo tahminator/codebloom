@@ -1,4 +1,4 @@
-package com.patina.codebloom.website.leetcode.routines;
+package com.patina.codebloom.website.leetcode.routine;
 
 import java.time.LocalDateTime;
 
@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.website.leetcode.client.LeetcodeApiClient;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodePOTD;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodePOTD;
 import com.patina.codebloom.website.leetcode.client.score.ScoreCalculator;
-import com.patina.codebloom.website.leetcode.models.POTD;
+import com.patina.codebloom.website.leetcode.model.POTD;
 import com.patina.codebloom.website.leetcode.repo.POTDRepository;
 
 /**

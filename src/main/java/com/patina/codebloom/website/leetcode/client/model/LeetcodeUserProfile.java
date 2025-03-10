@@ -1,4 +1,4 @@
-package com.patina.codebloom.website.leetcode.client.models;
+package com.patina.codebloom.website.leetcode.client.model;
 
 public class LeetcodeUserProfile {
     private final String username;

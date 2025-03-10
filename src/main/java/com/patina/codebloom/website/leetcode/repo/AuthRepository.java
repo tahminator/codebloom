@@ -1,6 +1,6 @@
 package com.patina.codebloom.website.leetcode.repo;
 
-import com.patina.codebloom.website.leetcode.models.Auth;
+import com.patina.codebloom.website.leetcode.model.Auth;
 
 public interface AuthRepository {
     Auth createAuth(Auth auth);

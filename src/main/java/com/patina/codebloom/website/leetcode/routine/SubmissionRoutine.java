@@ -1,4 +1,4 @@
-package com.patina.codebloom.website.leetcode.routines;
+package com.patina.codebloom.website.leetcode.routine;
 
 import java.util.ArrayList;
 
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.website.auth.model.User;
 import com.patina.codebloom.website.auth.repo.UserRepository;
 import com.patina.codebloom.website.leetcode.client.LeetcodeApiClient;
-import com.patina.codebloom.website.leetcode.client.models.LeetcodeSubmission;
-import com.patina.codebloom.website.leetcode.services.SubmissionService;
+import com.patina.codebloom.website.leetcode.client.model.LeetcodeSubmission;
+import com.patina.codebloom.website.leetcode.service.SubmissionService;
 
 /**
  * This routine is used to automatically collect any new

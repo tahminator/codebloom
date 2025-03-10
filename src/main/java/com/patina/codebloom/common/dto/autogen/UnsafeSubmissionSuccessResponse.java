@@ -1,7 +1,7 @@
 package com.patina.codebloom.common.dto.autogen;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.patina.codebloom.website.leetcode.models.Question;
+import com.patina.codebloom.website.leetcode.model.Question;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

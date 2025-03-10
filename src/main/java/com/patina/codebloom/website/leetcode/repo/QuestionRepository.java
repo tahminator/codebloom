@@ -2,8 +2,8 @@ package com.patina.codebloom.website.leetcode.repo;
 
 import java.util.ArrayList;
 
-import com.patina.codebloom.website.leetcode.models.Question;
-import com.patina.codebloom.website.leetcode.models.QuestionWithUser;
+import com.patina.codebloom.website.leetcode.model.Question;
+import com.patina.codebloom.website.leetcode.model.QuestionWithUser;
 
 public interface QuestionRepository {
     Question createQuestion(Question question);
