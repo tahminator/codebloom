@@ -2,12 +2,13 @@ package com.patina.codebloom.common.dto.autogen;
 
 import java.util.ArrayList;
 
-import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
+import com.patina.codebloom.website.leetcode.services.AcceptedSubmission;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Please do not use this unless you know what you are doing.
+ * Please do not use this unless you know what you are
+ * doing.
  */
 public class UnsafeSubmissionCheckSuccessResponse {
     @Schema(defaultValue = "true")

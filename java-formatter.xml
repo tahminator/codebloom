@@ -174,7 +174,7 @@
             value="insert" />
         <setting id="org.eclipse.jdt.core.formatter.comment.align_tags_descriptions_grouped"
             value="true" />
-        <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="150" />
+        <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="60" />
         <setting id="org.eclipse.jdt.core.formatter.use_on_off_tags" value="true" />
         <setting id="org.eclipse.jdt.core.formatter.keep_method_body_on_one_line"
             value="one_line_never" />
