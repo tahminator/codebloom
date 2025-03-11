@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS "Question"
+ADD COLUMN "submissionId" TEXT UNIQUE NULL;
