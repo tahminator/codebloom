@@ -20,5 +20,7 @@ public interface QuestionRepository {
 
     Question getQuestionBySlugAndUserId(String slug, String userId);
 
+    boolean questionExistsBySubmissionId(String submissionId);
+
     int getQuestionCountByUserId(String userId);
 }

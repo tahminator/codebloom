@@ -17,8 +17,9 @@ public class Question {
     private String description;
 
     /**
-     * Optional for the case of future proofing. We might end up using AI to award some points, so there might be a case where we create the DB entry and then pass it to a message
-     * queue to use AI and calculate a score.
+     * Optional for the case of future proofing. We might end up using AI to award
+     * some points, so there might be a case where we create the DB entry and then
+     * pass it to a message queue to use AI and calculate a score.
      */
     private OptionalInt pointsAwarded;
 
@@ -32,12 +33,15 @@ public class Question {
     private String code;
     private String language;
 
+    // Not every submission will have this.
+    private String submissionId;
+
     /*
      * No ID generated yet; brand new Question.
      */
     public Question(final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty, final int questionNumber,
-            final String questionLink, final String questionTitle, final String description, final OptionalInt pointsAwarded,
-            final float acceptanceRate, final LocalDateTime submittedAt) {
+                    final String questionLink, final String questionTitle, final String description, final OptionalInt pointsAwarded,
+                    final float acceptanceRate, final LocalDateTime submittedAt) {
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
@@ -52,9 +56,9 @@ public class Question {
     }
 
     public Question(final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty, final int questionNumber,
-            final String questionLink, final String questionTitle, final String description, final OptionalInt pointsAwarded,
-            final float acceptanceRate, final LocalDateTime submittedAt, final String runtime, final String memory, final String code,
-            final String language) {
+                    final String questionLink, final String questionTitle, final String description, final OptionalInt pointsAwarded,
+                    final float acceptanceRate, final LocalDateTime submittedAt, final String runtime, final String memory, final String code,
+                    final String language, final String submissionId) {
         this.userId = userId;
         this.questionSlug = questionSlug;
         this.questionDifficulty = questionDifficulty;
@@ -70,12 +74,13 @@ public class Question {
         this.memory = memory;
         this.code = code;
         this.language = language;
+        this.submissionId = submissionId;
     }
 
     public Question(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty,
-            final int questionNumber, final String questionLink, final OptionalInt pointsAwarded, final String questionTitle,
-            final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt,
-            final String runtime, final String memory, final String code, final String language) {
+                    final int questionNumber, final String questionLink, final OptionalInt pointsAwarded, final String questionTitle,
+                    final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt,
+                    final String runtime, final String memory, final String code, final String language, final String submissionId) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -92,11 +97,12 @@ public class Question {
         this.memory = memory;
         this.code = code;
         this.language = language;
+        this.submissionId = submissionId;
     }
 
     public Question(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty,
-            final int questionNumber, final String questionLink, final OptionalInt pointsAwarded, final String questionTitle,
-            final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt) {
+                    final int questionNumber, final String questionLink, final OptionalInt pointsAwarded, final String questionTitle,
+                    final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt, final String submissionId) {
         this.id = id;
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -109,6 +115,7 @@ public class Question {
         this.acceptanceRate = acceptanceRate;
         this.createdAt = createdAt;
         this.submittedAt = submittedAt;
+        this.submissionId = submissionId;
     }
 
     public String getId() {
@@ -239,4 +246,11 @@ public class Question {
         this.language = language;
     }
 
+    public String getSubmissionId() {
+        return submissionId;
+    }
+
+    public void setSubmissionId(final String submissionId) {
+        this.submissionId = submissionId;
+    }
 }

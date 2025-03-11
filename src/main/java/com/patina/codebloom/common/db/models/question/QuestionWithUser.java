@@ -10,9 +10,9 @@ public class QuestionWithUser extends Question {
 
     public QuestionWithUser(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty, final int questionNumber, final String questionLink,
             final OptionalInt pointsAwarded, final String questionTitle, final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt,
-            final String discordName, final String leetcodeUsername, final String runtime, final String memory, final String code, final String language, final String nickname) {
+            final String discordName, final String leetcodeUsername, final String runtime, final String memory, final String code, final String language, final String nickname, final String submissionId) {
         super(id, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt, submittedAt, runtime, memory, code,
-                language);
+                language, submissionId);
         this.discordName = discordName;
         this.leetcodeUsername = leetcodeUsername;
         this.nickname = nickname;
