@@ -62,10 +62,6 @@ public class SubmissionsHandler {
 
             Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
 
-            if (question != null) {
-                continue;
-            }
-
             float multiplier;
 
             POTD potd = potdRepository.getCurrentPOTD();
@@ -80,7 +76,12 @@ public class SubmissionsHandler {
 
             LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
 
-            int points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
+            int points;
+            if (question != null) {
+                points = 0;
+            } else {
+                points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
+            }
 
             Question newQuestion = new Question(user.getId(), leetcodeQuestion.getTitleSlug(), QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getQuestionId(),
                     "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getQuestion(), OptionalInt.of(points),
