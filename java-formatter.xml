@@ -174,7 +174,7 @@
             value="insert" />
         <setting id="org.eclipse.jdt.core.formatter.comment.align_tags_descriptions_grouped"
             value="true" />
-        <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="150" />
+        <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="80" />
         <setting id="org.eclipse.jdt.core.formatter.use_on_off_tags" value="true" />
         <setting id="org.eclipse.jdt.core.formatter.keep_method_body_on_one_line"
             value="one_line_never" />
@@ -805,7 +805,7 @@
             value="do not insert" />
         <setting id="org.eclipse.jdt.core.formatter.wrap_before_string_concatenation" value="true" />
         <setting id="org.eclipse.jdt.core.formatter.blank_lines_between_import_groups" value="1" />
-        <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="140" />
+        <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="200" />
         <setting id="org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_annotation"
             value="do not insert" />
         <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_switch"
