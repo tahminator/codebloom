@@ -75,7 +75,7 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
     <module name="FileLength" />
     <module name="LineLength">
         <property name="fileExtensions" value="java" />
-        <property name="max" value="205" />
+        <property name="max" value="200" />
     </module>
 
     <!-- Checks for whitespace                               -->
