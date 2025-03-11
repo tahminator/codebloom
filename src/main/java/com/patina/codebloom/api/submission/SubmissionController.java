@@ -56,8 +56,7 @@ public class SubmissionController {
     private static final int SUBMISSIONS_PAGE_SIZE = 5;
 
     // 5 Minute rate limit to avoid abuse.
-    // TODO - Change this from 5 seconds back to 5 minutes once done testing.
-    private static final double SECONDS_TO_WAIT = 1 * 60;
+    private static final double SECONDS_TO_WAIT = 5 * 60;
 
     private final UserRepository userRepository;
     private final Protector protector;

@@ -15,7 +15,9 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Protector is used to validate whether or not the user is logged in or not.
  * 
- * @see <a href= "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication Documentation</a>
+ * @see <a href=
+ * "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication
+ * Documentation</a>
  */
 @Component
 public class Protector {
@@ -44,9 +46,6 @@ public class Protector {
                 }
 
                 User user = userRepository.getUserById(session.getUserId());
-                /**
-                 * This shouldn't be happening. TODO - Decide if this should throw a runtime exception instead like in the /auth/validate endpoint.
-                 */
                 if (user == null) {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
