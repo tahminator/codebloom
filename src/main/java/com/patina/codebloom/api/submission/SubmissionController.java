@@ -69,7 +69,8 @@ public class SubmissionController {
     private final POTDRepository potdRepository;
 
     /**
-     * This checks if the different is 24 hours, instead of checking whether they are actually part of the "same day".
+     * This checks if the different is 24 hours, instead of checking whether they
+     * are actually part of the "same day".
      */
     private boolean isSameDay(final LocalDateTime createdAt) {
         LocalDateTime now = LocalDateTime.now();
@@ -119,7 +120,7 @@ public class SubmissionController {
                     """, responses = {
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "200", description = "Name has been set successfully", content = @Content(schema = @Schema(implementation = UnsafeEmptySuccessResponse.class))),
-            @ApiResponse(responseCode = "409", description = "Attempt to set name that has already been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Attempt to set name that's already been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @PostMapping("/set")
     public ResponseEntity<ApiResponder<Void>> setLeetcodeUsername(final HttpServletRequest request,
