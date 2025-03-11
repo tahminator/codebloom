@@ -23,11 +23,6 @@ import com.patina.codebloom.common.email.Email;
 import com.patina.codebloom.common.email.MessageLite;
 
 @Component
-/**
- * TODO - Handle 2FA Case TODO - Handle account swapping (improve success probability if script fails). TODO - Create database table to store the key
- * as well as store the date retrieved to avoid running the task until ~12 days pass (LEETCODE_SESSION cookie returns with an expiration date of 14
- * days).
- */
 public class LeetcodeAuthStealer {
     private static String cookie;
 
@@ -46,8 +41,10 @@ public class LeetcodeAuthStealer {
     }
 
     /**
-     * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b> <div /> This function utilizes Playwright in order to get an authentication key from Leetcode.
-     * That code is stored in the database and can then be used to run authenticated queries such as used to retrieve code from our user submissions.
+     * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b> <div /> This function
+     * utilizes Playwright in order to get an authentication key from Leetcode. That
+     * code is stored in the database and can then be used to run authenticated
+     * queries such as used to retrieve code from our user submissions.
      */
     @Scheduled(initialDelay = 0, fixedDelay = 86400000)
     public void stealAuthCookie() {
@@ -62,8 +59,8 @@ public class LeetcodeAuthStealer {
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
             BrowserContext context = browser.newContext(new NewContextOptions()
-                    .setUserAgent("Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9")
-                    .setStorageState(null));
+                            .setUserAgent("Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9")
+                            .setStorageState(null));
             context.clearCookies();
 
             Page page = context.newPage();

@@ -22,14 +22,13 @@ public class SubmissionScheduler {
     private final SubmissionsHandler submissionsHandler;
 
     public SubmissionScheduler(final UserRepository userRepository, final LeetcodeApiHandler leetcodeApiHandler,
-            final SubmissionsHandler submissionsHandler) {
+                    final SubmissionsHandler submissionsHandler) {
         this.userRepository = userRepository;
         this.leetcodeApiHandler = leetcodeApiHandler;
         this.submissionsHandler = submissionsHandler;
     }
 
     // Cron runs every 30 minutes
-    // TODO - Discuss this value
     @Scheduled(cron = "0 */30 * * * *")
     public void handleAllUserSubmissions() {
         LOGGER.info("Beginning the scheduled task to handle all user submissions now:");
@@ -42,7 +41,7 @@ public class SubmissionScheduler {
             }
 
             ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler
-                    .findSubmissionsByUsername(user.getLeetcodeUsername());
+                            .findSubmissionsByUsername(user.getLeetcodeUsername());
 
             submissionsHandler.handleSubmissions(leetcodeSubmissions, user);
             LOGGER.info("User with id of {} has been completed", user.getId());

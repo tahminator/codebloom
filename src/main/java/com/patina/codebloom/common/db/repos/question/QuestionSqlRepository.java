@@ -225,9 +225,6 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    /**
-     * TODO - Change this to be UserWithQuestions instead.
-     */
     public ArrayList<QuestionWithUser> getQuestionsByUserId(final String userId, final int page, final int pageSize) {
 
         ArrayList<QuestionWithUser> questions = new ArrayList<>();
