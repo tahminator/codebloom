@@ -26,7 +26,8 @@ import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 /**
- * The submission logic is abstracted because it gets reused in two different parts of the app: the submissions API and the automated recurring task.
+ * The submission logic is abstracted because it gets reused in two different
+ * parts of the app: the submissions API and the automated recurring task.
  */
 @Controller
 public class SubmissionsHandler {
@@ -44,7 +45,7 @@ public class SubmissionsHandler {
     }
 
     public SubmissionsHandler(final QuestionRepository questionRepository, final LeetcodeApiHandler leetcodeApiHandler, final LeaderboardRepository leaderboardRepository,
-            final POTDRepository potdRepository, final UserRepository userRepository) {
+                    final POTDRepository potdRepository, final UserRepository userRepository) {
         this.questionRepository = questionRepository;
         this.leetcodeApiHandler = leetcodeApiHandler;
         this.leaderboardRepository = leaderboardRepository;
@@ -61,6 +62,9 @@ public class SubmissionsHandler {
             }
 
             Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
+            if (questionRepository.questionExistsBySubmissionId(String.valueOf(leetcodeSubmission.getId()))) {
+                continue;
+            }
 
             float multiplier;
 
@@ -84,9 +88,10 @@ public class SubmissionsHandler {
             }
 
             Question newQuestion = new Question(user.getId(), leetcodeQuestion.getTitleSlug(), QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getQuestionId(),
-                    "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getQuestion(), OptionalInt.of(points),
-                    leetcodeQuestion.getAcceptanceRate(), leetcodeSubmission.getTimestamp(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(), detailedQuestion.getCode(),
-                    detailedQuestion.getLang().getName());
+                            "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getQuestion(), OptionalInt.of(points),
+                            leetcodeQuestion.getAcceptanceRate(), leetcodeSubmission.getTimestamp(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(),
+                            detailedQuestion.getCode(),
+                            detailedQuestion.getLang().getName(), String.valueOf(leetcodeSubmission.getId()));
 
             questionRepository.createQuestion(newQuestion);
 
@@ -139,8 +144,9 @@ public class SubmissionsHandler {
                 System.out.println("Attempting to update User ID" + user.getId() + " with question of " + question.getQuestionSlug());
 
                 Question newQuestion = new Question(question.getId(), question.getUserId(), question.getQuestionSlug(), question.getQuestionDifficulty(), question.getQuestionNumber(),
-                        question.getQuestionLink(), question.getPointsAwarded(), question.getQuestionTitle(), question.getDescription(), question.getAcceptanceRate(), question.getCreatedAt(),
-                        question.getSubmittedAt(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(), detailedQuestion.getCode(), detailedQuestion.getLang().getName());
+                                question.getQuestionLink(), question.getPointsAwarded(), question.getQuestionTitle(), question.getDescription(), question.getAcceptanceRate(), question.getCreatedAt(),
+                                question.getSubmittedAt(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(), detailedQuestion.getCode(), detailedQuestion.getLang().getName(),
+                                String.valueOf(leetcodeSubmission.getId()));
 
                 questionRepository.updateQuestion(newQuestion);
             }
