@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.test.models;
+package com.patina.codebloom.api.test.leaderboard.model;
 
 import java.util.ArrayList;
 

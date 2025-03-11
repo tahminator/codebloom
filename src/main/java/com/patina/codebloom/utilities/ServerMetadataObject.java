@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.metadata;
+package com.patina.codebloom.utilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
