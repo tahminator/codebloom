@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.OptionalInt;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -58,8 +57,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setInt(5, question.getQuestionNumber());
             stmt.setString(6, question.getQuestionLink());
 
-            if (question.getPointsAwarded().isPresent()) {
-                stmt.setInt(7, question.getPointsAwarded().getAsInt());
+            if (question.getPointsAwarded() != null) {
+                stmt.setInt(7, question.getPointsAwarded());
             } else {
                 stmt.setNull(7, java.sql.Types.INTEGER);
             }
@@ -126,11 +125,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionNumber = rs.getInt("questionNumber");
                     var questionLink = rs.getString("questionLink");
                     int points = rs.getInt("pointsAwarded");
-                    OptionalInt pointsAwarded;
+                    Integer pointsAwarded;
                     if (rs.wasNull()) {
                         pointsAwarded = null;
                     } else {
-                        pointsAwarded = OptionalInt.of(points);
+                        pointsAwarded = points;
                     }
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
@@ -195,11 +194,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionNumber = rs.getInt("questionNumber");
                     var questionLink = rs.getString("questionLink");
                     int points = rs.getInt("pointsAwarded");
-                    OptionalInt pointsAwarded;
+                    Integer pointsAwarded;
                     if (rs.wasNull()) {
                         pointsAwarded = null;
                     } else {
-                        pointsAwarded = OptionalInt.of(points);
+                        pointsAwarded = points;
                     }
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
@@ -278,11 +277,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionNumber = rs.getInt("questionNumber");
                     var questionLink = rs.getString("questionLink");
                     int points = rs.getInt("pointsAwarded");
-                    OptionalInt pointsAwarded;
+                    Integer pointsAwarded;
                     if (rs.wasNull()) {
                         pointsAwarded = null;
                     } else {
-                        pointsAwarded = OptionalInt.of(points);
+                        pointsAwarded = points;
                     }
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");
@@ -339,8 +338,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setInt(4, inputQuestion.getQuestionNumber());
             stmt.setString(5, inputQuestion.getQuestionLink());
 
-            if (inputQuestion.getPointsAwarded().isPresent()) {
-                stmt.setInt(6, inputQuestion.getPointsAwarded().getAsInt());
+            if (inputQuestion.getPointsAwarded() != null) {
+                stmt.setInt(6, inputQuestion.getPointsAwarded());
             } else {
                 stmt.setNull(6, java.sql.Types.INTEGER);
             }
@@ -420,11 +419,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var questionNumber = rs.getInt("questionNumber");
                     var questionLink = rs.getString("questionLink");
                     int points = rs.getInt("pointsAwarded");
-                    OptionalInt pointsAwarded;
+                    Integer pointsAwarded;
                     if (rs.wasNull()) {
                         pointsAwarded = null;
                     } else {
-                        pointsAwarded = OptionalInt.of(points);
+                        pointsAwarded = points;
                     }
                     var questionTitle = rs.getString("questionTitle");
                     var description = rs.getString("description");

@@ -28,8 +28,8 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeSubmissionSuccessResponse;
+import com.patina.codebloom.common.simpleredis.SimpleRedis;
 import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
-import com.patina.codebloom.common.kv.KeyValueStore;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -62,7 +62,7 @@ public class SubmissionController {
 
     private final UserRepository userRepository;
     private final Protector protector;
-    private final KeyValueStore keyValueStore;
+    private final SimpleRedis simpleRedis;
     private final LeetcodeApiHandler leetcodeApiHandler;
     private final SubmissionsHandler submissionsHandler;
     private final QuestionRepository questionRepository;
@@ -79,13 +79,13 @@ public class SubmissionController {
         return duration.toHours() < 24;
     }
 
-    public SubmissionController(final UserRepository userRepository, final Protector protector, final KeyValueStore keyValueStore,
+    public SubmissionController(final UserRepository userRepository, final Protector protector, final SimpleRedis simpleRedis,
                     final LeetcodeApiHandler leetcodeApiHandler,
                     final SubmissionsHandler submissionsHandler, final QuestionRepository questionRepository,
                     final POTDRepository potdRepository) {
         this.userRepository = userRepository;
         this.protector = protector;
-        this.keyValueStore = keyValueStore;
+        this.simpleRedis = simpleRedis;
         this.leetcodeApiHandler = leetcodeApiHandler;
         this.submissionsHandler = submissionsHandler;
         this.questionRepository = questionRepository;
@@ -179,8 +179,8 @@ public class SubmissionController {
                             "You cannot access this resource without setting a Leetcode username first.");
         }
 
-        if (keyValueStore.containsKey(user.getId())) {
-            long timeThen = (long) keyValueStore.get(user.getId());
+        if (simpleRedis.containsKey(0, user.getId())) {
+            long timeThen = (long) simpleRedis.get(0, user.getId());
             long timeNow = System.currentTimeMillis();
             long difference = (timeNow - timeThen) / 1000;
 
@@ -190,7 +190,7 @@ public class SubmissionController {
             }
         }
 
-        keyValueStore.put(user.getId(), System.currentTimeMillis());
+        simpleRedis.put(0, user.getId(), System.currentTimeMillis());
 
         ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(user.getLeetcodeUsername());
 

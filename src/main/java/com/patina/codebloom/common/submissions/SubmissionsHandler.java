@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalInt;
 
 import org.springframework.stereotype.Controller;
 
@@ -88,7 +87,7 @@ public class SubmissionsHandler {
             }
 
             Question newQuestion = new Question(user.getId(), leetcodeQuestion.getTitleSlug(), QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getQuestionId(),
-                            "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getQuestion(), OptionalInt.of(points),
+                            "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getQuestion(), points,
                             leetcodeQuestion.getAcceptanceRate(), leetcodeSubmission.getTimestamp(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(),
                             detailedQuestion.getCode(),
                             detailedQuestion.getLang().getName(), String.valueOf(leetcodeSubmission.getId()));

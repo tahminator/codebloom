@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.test;
+package com.patina.codebloom.api.test.leaderboard.helper;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;

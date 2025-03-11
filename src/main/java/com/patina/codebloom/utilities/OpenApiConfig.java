@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.openapi;
+package com.patina.codebloom.utilities;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
