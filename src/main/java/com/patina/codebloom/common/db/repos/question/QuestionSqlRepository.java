@@ -26,26 +26,27 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public Question createQuestion(final Question question) {
         String sql = """
-                    INSERT INTO "Question" (
-                        id,
-                        "userId",
-                        "questionSlug",
-                        "questionDifficulty",
-                        "questionNumber",
-                        "questionLink",
-                        "pointsAwarded",
-                        "questionTitle",
-                        description,
-                        "acceptanceRate",
-                        "submittedAt",
-                        runtime,
-                        memory,
-                        code,
-                        language
-                    )
-                    VALUES
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+                            INSERT INTO "Question" (
+                                id,
+                                "userId",
+                                "questionSlug",
+                                "questionDifficulty",
+                                "questionNumber",
+                                "questionLink",
+                                "pointsAwarded",
+                                "questionTitle",
+                                description,
+                                "acceptanceRate",
+                                "submittedAt",
+                                runtime,
+                                memory,
+                                code,
+                                language,
+                                "submissionId"
+                            )
+                            VALUES
+                                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """;
 
         question.setId(UUID.randomUUID().toString());
 
@@ -72,6 +73,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(13, question.getMemory());
             stmt.setString(14, question.getCode());
             stmt.setString(15, question.getLanguage());
+            stmt.setString(16, question.getSubmissionId());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -89,28 +91,29 @@ public class QuestionSqlRepository implements QuestionRepository {
     public Question getQuestionById(final String id) {
         Question question = null;
         String sql = """
-                    SELECT
-                        id,
-                        "userId",
-                        "questionSlug",
-                        "questionDifficulty",
-                        "questionNumber",
-                        "questionLink",
-                        "pointsAwarded",
-                        "questionTitle",
-                        description,
-                        "acceptanceRate",
-                        "createdAt",
-                        "submittedAt",
-                        runtime,
-                        memory,
-                        code,
-                        language
-                    FROM
-                        "Question"
-                    WHERE
-                        id = ?
-                """;
+                            SELECT
+                                id,
+                                "userId",
+                                "questionSlug",
+                                "questionDifficulty",
+                                "questionNumber",
+                                "questionLink",
+                                "pointsAwarded",
+                                "questionTitle",
+                                description,
+                                "acceptanceRate",
+                                "createdAt",
+                                "submittedAt",
+                                runtime,
+                                memory,
+                                code,
+                                language,
+                                "submissionId"
+                            FROM
+                                "Question"
+                            WHERE
+                                id = ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
@@ -138,9 +141,10 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
+                    var submissionId = rs.getString("submissionId");
 
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt, runtime, memory, code, language);
+                                    submittedAt, runtime, memory, code, language, submissionId);
                     return question;
                 }
             }
@@ -154,30 +158,31 @@ public class QuestionSqlRepository implements QuestionRepository {
     public QuestionWithUser getQuestionWithUserById(final String id) {
         QuestionWithUser question = null;
         String sql = """
-                    SELECT
-                        q.id,
-                        q."userId",
-                        q."questionSlug",
-                        q."questionDifficulty",
-                        q."questionNumber",
-                        q."questionLink",
-                        q."pointsAwarded",
-                        q."questionTitle",
-                        q.description,
-                        q."acceptanceRate",
-                        q."createdAt",
-                        q."submittedAt",
-                        q.runtime,
-                        q.memory,
-                        q.code,
-                        q.language,
-                        u."discordName",
-                        u."leetcodeUsername",
-                        u."nickname"
-                    FROM "Question" q
-                    LEFT JOIN "User" u on q."userId" = u.id
-                    WHERE q.id = ?
-                """;
+                            SELECT
+                                q.id,
+                                q."userId",
+                                q."questionSlug",
+                                q."questionDifficulty",
+                                q."questionNumber",
+                                q."questionLink",
+                                q."pointsAwarded",
+                                q."questionTitle",
+                                q.description,
+                                q."acceptanceRate",
+                                q."createdAt",
+                                q."submittedAt",
+                                q.runtime,
+                                q.memory,
+                                q.code,
+                                q.language,
+                                q."submissionId",
+                                u."discordName",
+                                u."leetcodeUsername",
+                                u."nickname"
+                            FROM "Question" q
+                            LEFT JOIN "User" u on q."userId" = u.id
+                            WHERE q.id = ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
@@ -208,8 +213,9 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
+                    var submissionId = rs.getString("submissionId");
                     question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
-                            createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname);
+                                    createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname, submissionId);
                     return question;
                 }
             }
@@ -227,35 +233,36 @@ public class QuestionSqlRepository implements QuestionRepository {
 
         ArrayList<QuestionWithUser> questions = new ArrayList<>();
         String sql = """
-                SELECT
-                    u."discordName",
-                    u."leetcodeUsername",
-                    u."nickname",
-                    q.id,
-                    q."userId",
-                    q."questionSlug",
-                    q."questionDifficulty",
-                    q."questionNumber",
-                    q."questionLink",
-                    q."pointsAwarded",
-                    q."questionTitle",
-                    q.description,
-                    q."acceptanceRate",
-                    q."createdAt",
-                    q."submittedAt",
-                    q.runtime,
-                    q.memory,
-                    q.code,
-                    q.language
-                FROM
-                    "Question" q
-                LEFT JOIN
-                    "User" u on q."userId" = u.id
-                WHERE
-                    "userId" = ?
-                ORDER BY "submittedAt" DESC
-                LIMIT ? OFFSET ?
-                """;
+                        SELECT
+                            u."discordName",
+                            u."leetcodeUsername",
+                            u."nickname",
+                            q.id,
+                            q."userId",
+                            q."questionSlug",
+                            q."questionDifficulty",
+                            q."questionNumber",
+                            q."questionLink",
+                            q."pointsAwarded",
+                            q."questionTitle",
+                            q.description,
+                            q."acceptanceRate",
+                            q."createdAt",
+                            q."submittedAt",
+                            q.runtime,
+                            q.memory,
+                            q.code,
+                            q.language,
+                            q."submissionId"
+                        FROM
+                            "Question" q
+                        LEFT JOIN
+                            "User" u on q."userId" = u.id
+                        WHERE
+                            "userId" = ?
+                        ORDER BY "submittedAt" DESC
+                        LIMIT ? OFFSET ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
@@ -289,8 +296,9 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
+                    var submissionId = rs.getString("submissionId");
                     QuestionWithUser question = new QuestionWithUser(questionId, userIdResult, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle,
-                            description, acceptanceRate, createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname);
+                                    description, acceptanceRate, createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname, submissionId);
                     questions.add(question);
                 }
             }
@@ -303,25 +311,26 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public Question updateQuestion(final Question inputQuestion) {
         String sql = """
-                    UPDATE "Question"
-                    SET
-                        "userId" = ?,
-                        "questionSlug" = ?,
-                        "questionDifficulty" = ?,
-                        "questionNumber" = ?,
-                        "questionLink" = ?,
-                        "pointsAwarded" = ?,
-                        "questionTitle" = ?,
-                        description = ?,
-                        "acceptanceRate" = ?,
-                        "submittedAt" = ?,
-                        runtime = ?,
-                        memory = ?,
-                        code = ?,
-                        language = ?
-                    WHERE
-                        id = ?
-                """;
+                            UPDATE "Question"
+                            SET
+                                "userId" = ?,
+                                "questionSlug" = ?,
+                                "questionDifficulty" = ?,
+                                "questionNumber" = ?,
+                                "questionLink" = ?,
+                                "pointsAwarded" = ?,
+                                "questionTitle" = ?,
+                                description = ?,
+                                "acceptanceRate" = ?,
+                                "submittedAt" = ?,
+                                runtime = ?,
+                                memory = ?,
+                                code = ?,
+                                language = ?,
+                                "submissionId" = ?
+                            WHERE
+                                id = ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputQuestion.getUserId()));
@@ -344,6 +353,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(13, inputQuestion.getCode());
             stmt.setString(14, inputQuestion.getLanguage());
             stmt.setObject(15, UUID.fromString(inputQuestion.getId()));
+            stmt.setString(16, inputQuestion.getSubmissionId());
 
             stmt.executeUpdate();
 
@@ -372,30 +382,31 @@ public class QuestionSqlRepository implements QuestionRepository {
     public Question getQuestionBySlugAndUserId(final String slug, final String inputtedUserId) {
         Question question = null;
         String sql = """
-                    SELECT
-                        id,
-                        "userId",
-                        "questionSlug",
-                        "questionDifficulty",
-                        "questionNumber",
-                        "questionLink",
-                        "pointsAwarded",
-                        "questionTitle",
-                        description,
-                        "acceptanceRate",
-                        "createdAt",
-                        "submittedAt",
-                        runtime,
-                        memory,
-                        code,
-                        language
-                    FROM
-                        "Question"
-                    WHERE
-                        "questionSlug" = ?
-                        AND "userId" = ?
-                    LIMIT 1
-                """;
+                            SELECT
+                                id,
+                                "userId",
+                                "questionSlug",
+                                "questionDifficulty",
+                                "questionNumber",
+                                "questionLink",
+                                "pointsAwarded",
+                                "questionTitle",
+                                description,
+                                "acceptanceRate",
+                                "createdAt",
+                                "submittedAt",
+                                runtime,
+                                memory,
+                                code,
+                                language,
+                                "submissionId"
+                            FROM
+                                "Question"
+                            WHERE
+                                "questionSlug" = ?
+                                AND "userId" = ?
+                            LIMIT 1
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, slug);
@@ -424,8 +435,9 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
+                    var submissionId = rs.getString("submissionId");
                     question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                            submittedAt, runtime, memory, code, language);
+                                    submittedAt, runtime, memory, code, language, submissionId);
                     return question;
                 }
             }
@@ -438,13 +450,13 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     public int getQuestionCountByUserId(final String userId) {
         String sql = """
-                SELECT
-                    COUNT(*)
-                FROM
-                    "Question"
-                WHERE
-                    "userId" = ?
-                """;
+                        SELECT
+                            COUNT(*)
+                        FROM
+                            "Question"
+                        WHERE
+                            "userId" = ?
+                        """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
@@ -457,5 +469,25 @@ public class QuestionSqlRepository implements QuestionRepository {
         }
 
         return 0;
+    }
+
+    public boolean questionExistsBySubmissionId(final String submissionId) {
+        String sql = """
+                            SELECT
+                                id
+                            FROM
+                                "Question"
+                            WHERE
+                                "submissionId" = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, submissionId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve question", e);
+        }
     }
 }

@@ -56,17 +56,29 @@ return {
 		config = function()
 			local jdtls = require("jdtls")
 
-			jdtls.start_or_attach({
-				cmd = { "jdtls" },
-				settings = {
-					java = {
-						format = {
-							settings = {
-								url = vim.fn.expand("./java-formatter.xml"),
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "java",
+				callback = function()
+					-- prints and pcall are there only to give quick feedback if it works.
+					print("Starting JDTLS...")
+					local success, result = pcall(jdtls.start_or_attach, {
+						cmd = { "jdtls" },
+						settings = {
+							java = {
+								format = {
+									settings = {
+										url = vim.fn.expand("./java-formatter.xml"),
+									},
+								},
 							},
 						},
-					},
-				},
+					})
+					if success then
+						print("JDTLS started successfully")
+					else
+						print("Error starting JDTLS: " .. tostring(result))
+					end
+				end,
 			})
 		end,
 	},
