@@ -96,7 +96,6 @@ public class SubmissionsHandler {
 
             acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
-            // TODO - Update the points given on the current leaderboard.
             Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardShallow();
 
             // This should never be happening as there should always be an existing
