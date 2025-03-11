@@ -27,7 +27,6 @@ import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
-import com.patina.codebloom.common.dto.autogen.UnsafeSubmissionSuccessResponse;
 import com.patina.codebloom.common.simpleredis.SimpleRedis;
 import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.lag.FakeLag;
@@ -165,7 +164,7 @@ public class SubmissionController {
                     There is a rate limit on the route to prevent abuse (currently: 5 minutes).
                     """, responses = {
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-            @ApiResponse(responseCode = "200", description = "The check was completed successfuly", content = @Content(schema = @Schema(implementation = UnsafeSubmissionSuccessResponse.class))),
+            @ApiResponse(responseCode = "200", description = "The check was completed successfuly"),
             @ApiResponse(responseCode = "412", description = "Leetcode username hasn't been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "429", description = "Rate limited", content = @Content(schema = @Schema(implementation = UnsafeRateLimitResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
@@ -256,7 +255,7 @@ public class SubmissionController {
                     This includes the scraped LeetCode description, which is HTML that has been sanitized by the server,
                     so it is safe to use on the frontend.
                     """, responses = {
-            @ApiResponse(responseCode = "200", description = "Question found", content = @Content(schema = @Schema(implementation = UnsafeSubmissionSuccessResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Question found"),
             @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/submission/s/{submissionId}")
