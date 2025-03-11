@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.models.question;
 
 import java.time.LocalDateTime;
-import java.util.OptionalInt;
 
 public class Question {
     private String id;
@@ -21,7 +20,7 @@ public class Question {
      * some points, so there might be a case where we create the DB entry and then
      * pass it to a message queue to use AI and calculate a score.
      */
-    private OptionalInt pointsAwarded;
+    private Integer pointsAwarded;
 
     private float acceptanceRate;
 
@@ -40,7 +39,7 @@ public class Question {
      * No ID generated yet; brand new Question.
      */
     public Question(final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty, final int questionNumber,
-                    final String questionLink, final String questionTitle, final String description, final OptionalInt pointsAwarded,
+                    final String questionLink, final String questionTitle, final String description, final Integer pointsAwarded,
                     final float acceptanceRate, final LocalDateTime submittedAt) {
         this.userId = userId;
         this.questionSlug = questionSlug;
@@ -56,7 +55,7 @@ public class Question {
     }
 
     public Question(final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty, final int questionNumber,
-                    final String questionLink, final String questionTitle, final String description, final OptionalInt pointsAwarded,
+                    final String questionLink, final String questionTitle, final String description, final Integer pointsAwarded,
                     final float acceptanceRate, final LocalDateTime submittedAt, final String runtime, final String memory, final String code,
                     final String language, final String submissionId) {
         this.userId = userId;
@@ -78,7 +77,7 @@ public class Question {
     }
 
     public Question(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty,
-                    final int questionNumber, final String questionLink, final OptionalInt pointsAwarded, final String questionTitle,
+                    final int questionNumber, final String questionLink, final Integer pointsAwarded, final String questionTitle,
                     final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt,
                     final String runtime, final String memory, final String code, final String language, final String submissionId) {
         this.id = id;
@@ -101,7 +100,7 @@ public class Question {
     }
 
     public Question(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty,
-                    final int questionNumber, final String questionLink, final OptionalInt pointsAwarded, final String questionTitle,
+                    final int questionNumber, final String questionLink, final Integer pointsAwarded, final String questionTitle,
                     final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt, final String submissionId) {
         this.id = id;
         this.userId = userId;
@@ -166,11 +165,11 @@ public class Question {
         this.questionLink = questionLink;
     }
 
-    public OptionalInt getPointsAwarded() {
+    public Integer getPointsAwarded() {
         return pointsAwarded;
     }
 
-    public void setPointsAwarded(final OptionalInt pointsAwarded) {
+    public void setPointsAwarded(final Integer pointsAwarded) {
         this.pointsAwarded = pointsAwarded;
     }
 
