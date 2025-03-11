@@ -394,6 +394,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     WHERE
                         "questionSlug" = ?
                         AND "userId" = ?
+                    LIMIT 1
                 """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
