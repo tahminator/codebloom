@@ -10,7 +10,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
-import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
@@ -29,12 +28,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Tag(name = "Authentication Routes")
 @RequestMapping("/api/auth")
 public class AuthController {
-    private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final Protector protector;
 
-    public AuthController(final UserRepository userRepository, final SessionRepository sessionRepository, final Protector protector) {
-        this.userRepository = userRepository;
+    public AuthController(final SessionRepository sessionRepository, final Protector protector) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
     }
