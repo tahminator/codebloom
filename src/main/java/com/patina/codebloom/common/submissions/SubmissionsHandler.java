@@ -75,7 +75,7 @@ public class SubmissionsHandler {
             LeetcodeQuestion leetcodeQuestion = leetcodeApiHandler.findQuestionBySlug(leetcodeSubmission.getTitleSlug());
 
             LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
-            
+
             int points;
             if (question != null) {
                 points = 0;
