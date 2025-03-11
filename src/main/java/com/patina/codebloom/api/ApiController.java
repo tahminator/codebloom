@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.common.metadata.ServerMetadataObject;
+import com.patina.codebloom.utilities.ServerMetadataObject;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
