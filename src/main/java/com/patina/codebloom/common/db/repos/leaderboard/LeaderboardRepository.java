@@ -13,6 +13,8 @@ public interface LeaderboardRepository {
 
     LeaderboardWithUsers getRecentLeaderboardShallow();
 
+    // Replace header
+    // LeaderboardWithUsers getRecentLeaderboardFull(int page, int pageSize);
     LeaderboardWithUsers getRecentLeaderboardFull();
 
     LeaderboardWithUsers getLeaderboardByIdShallow(String leaderboardId);
@@ -25,7 +27,7 @@ public interface LeaderboardRepository {
 
     /**
      * @implNote If you want to update the users in a leaderboard, use
-     *           updateUserFromLeaderboard instead.
+     * updateUserFromLeaderboard instead.
      */
     boolean updateLeaderboard(Leaderboard leaderboard);
 
