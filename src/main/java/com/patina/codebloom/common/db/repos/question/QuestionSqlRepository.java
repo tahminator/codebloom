@@ -306,8 +306,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                         var code = rs.getString("code");
                         var language = rs.getString("language");
                         var submissionId = rs.getString("submissionId");
-                        Question question = new Question(questionId, user.getId(), questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle,
-                                        description, acceptanceRate, createdAt, submittedAt, runtime, memory, code, language, submissionId);
+                        Question question = new Question(questionId, user.getId(), questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description,
+                                        acceptanceRate, createdAt, submittedAt, runtime, memory, code, language, submissionId);
                         user.addQuestion(question);
                     }
                 }

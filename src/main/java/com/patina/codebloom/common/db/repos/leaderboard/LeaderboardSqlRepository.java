@@ -379,49 +379,53 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     // Use this header.
-    // public LeaderboardWithUsers getRecentLeaderboardFull(final int page, final int pageSize) {
-    public LeaderboardWithUsers getRecentLeaderboardFull() {
+    // public LeaderboardWithUsers getRecentLeaderboardFull(final int page, final
+    // int pageSize) {
+    public LeaderboardWithUsers getRecentLeaderboardFull(final int page, final int pageSize) {
         LeaderboardWithUsers leaderboard = null;
 
         String sql = """
-                WITH latest_leaderboard AS (
-                    SELECT id
-                    FROM "Leaderboard"
-                    WHERE "deletedAt" IS NULL
-                    ORDER BY "createdAt" DESC
-                    LIMIT 1
-                )
-                SELECT
-                    l.id AS "leaderboardId",
-                    l.name AS "leaderboardName",
-                    l."createdAt" AS "leaderboardCreatedAt",
-                    l."deletedAt" AS "leaderboardDeletedAt",
-                    ranked_users."userId",
-                    ranked_users."discordId",
-                    ranked_users."discordName",
-                    ranked_users."leetcodeUsername",
-                    ranked_users."nickname",
-                    ranked_users."totalScore"
-                FROM "Leaderboard" l
-                INNER JOIN latest_leaderboard ll ON l.id = ll.id
-                LEFT JOIN (
+                        WITH latest_leaderboard AS (
+                            SELECT id
+                            FROM "Leaderboard"
+                            WHERE "deletedAt" IS NULL
+                            ORDER BY "createdAt" DESC
+                            LIMIT 1
+                        )
                         SELECT
-                            m."leaderboardId",
-                            u.id AS "userId",
-                            u."discordId",
-                            u."discordName",
-                            u."leetcodeUsername",
-                            u."nickname",
-                            m."totalScore",
-                            ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
-                        FROM "Metadata" m
-                        JOIN "User" u ON m."userId" = u.id
-                        ORDER BY "row_num" ASC
-                ) ranked_users ON l.id = ranked_users."leaderboardId"
-                ORDER BY "leaderboardCreatedAt" DESC
-                """;
+                            l.id AS "leaderboardId",
+                            l.name AS "leaderboardName",
+                            l."createdAt" AS "leaderboardCreatedAt",
+                            l."deletedAt" AS "leaderboardDeletedAt",
+                            ranked_users."userId",
+                            ranked_users."discordId",
+                            ranked_users."discordName",
+                            ranked_users."leetcodeUsername",
+                            ranked_users."nickname",
+                            ranked_users."totalScore"
+                        FROM "Leaderboard" l
+                        INNER JOIN latest_leaderboard ll ON l.id = ll.id
+                        LEFT JOIN (
+                                SELECT
+                                    m."leaderboardId",
+                                    u.id AS "userId",
+                                    u."discordId",
+                                    u."discordName",
+                                    u."leetcodeUsername",
+                                    u."nickname",
+                                    m."totalScore",
+                                    ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
+                                FROM "Metadata" m
+                                JOIN "User" u ON m."userId" = u.id
+                                ORDER BY "row_num" ASC
+                                LIMIT ? OFFSET ?
+                        ) ranked_users ON l.id = ranked_users."leaderboardId"
+                        ORDER BY "leaderboardCreatedAt" DESC
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, pageSize);
+            stmt.setInt(2, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     if (leaderboard == null) {
@@ -550,6 +554,37 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update metadata", e);
         }
+    }
+
+    @Override
+    public int getRecentLeaderboardUserCount() {
+        String sql = """
+                            WITH latest_leaderboard AS (
+                                SELECT id
+                                FROM "Leaderboard"
+                                WHERE "deletedAt" IS NULL
+                                ORDER BY "createdAt" DESC
+                                LIMIT 1
+                            )
+                            SELECT
+                                COUNT(m.id)
+                            FROM
+                                "Leaderboard" l
+                            INNER JOIN latest_leaderboard ON latest_leaderboard.id = l.id
+                            LEFT JOIN
+                                "Metadata" m ON m."leaderboardId" = l.id
+                        """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve leaderboard users", e);
+        }
+
+        return 0;
     }
 
 }

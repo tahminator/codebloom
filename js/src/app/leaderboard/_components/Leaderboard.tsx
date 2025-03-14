@@ -1,17 +1,27 @@
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
+import CustomPagination from "@/components/ui/CustomPagination";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { theme } from "@/lib/theme";
-import { Flex, Table, Title, Tooltip } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Flex,
+  Overlay,
+  Table,
+  Title,
+  Tooltip,
+} from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
-import { FaDiscord } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 import { useFullLeaderboardEntriesQuery } from "../hooks";
 
 export default function LeaderboardIndex() {
-  const { data, status } = useFullLeaderboardEntriesQuery();
+  const { data, status, goTo, page, goBack, goForward, isPlaceholderData } =
+    useFullLeaderboardEntriesQuery({});
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -21,11 +31,11 @@ export default function LeaderboardIndex() {
     return <Toast message="Sorry, something went wrong." />;
   }
 
-  if (!data.json) {
+  if (!data.success) {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const json = data.json;
+  const json = data.data;
   const [first, second, third] = json.users;
 
   return (
@@ -45,7 +55,7 @@ export default function LeaderboardIndex() {
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
       >
-        {second && (
+        {page === 1 && second && (
           <LeaderboardCard
             placeString={"Second"}
             discordName={second.discordName}
@@ -56,7 +66,7 @@ export default function LeaderboardIndex() {
             userId={second.id}
           />
         )}
-        {first && (
+        {page === 1 && first && (
           <LeaderboardCard
             placeString={"First"}
             discordName={first.discordName}
@@ -67,7 +77,7 @@ export default function LeaderboardIndex() {
             userId={first.id}
           />
         )}
-        {third && (
+        {page === 1 && third && (
           <LeaderboardCard
             placeString={"Third"}
             discordName={third.discordName}
@@ -81,6 +91,9 @@ export default function LeaderboardIndex() {
       </div>
       {json.users.length > 3 && (
         <Table verticalSpacing={"lg"} withRowBorders={false} striped>
+          {isPlaceholderData && (
+            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
+          )}
           <Table.Thead>
             <Table.Tr>
               <Table.Th>#</Table.Th>
@@ -90,7 +103,7 @@ export default function LeaderboardIndex() {
           </Table.Thead>
           <Table.Tbody>
             {json.users.map((entry, index) => {
-              if ([0, 1, 2].includes(index)) return null;
+              if (page === 1 && [0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={index}>
                   <Table.Td>{index + 1}</Table.Td>
@@ -137,6 +150,25 @@ export default function LeaderboardIndex() {
           </Table.Tbody>
         </Table>
       )}
+      <Center my={"sm"}>
+        <Flex direction={"row"} gap={"sm"}>
+          <Button disabled={page === 1} onClick={goBack} size={"compact-sm"}>
+            <FaArrowLeft />
+          </Button>
+          <CustomPagination goTo={goTo} pages={data.pages} currentPage={page} />
+          <Button
+            disabled={!data.hasNextPage || page >= data.pages}
+            onClick={() => {
+              if (data.hasNextPage || page >= data.pages) {
+                goForward();
+              }
+            }}
+            size={"compact-sm"}
+          >
+            <FaArrowRight />
+          </Button>
+        </Flex>
+      </Center>
     </div>
   );
 }
