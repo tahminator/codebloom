@@ -255,20 +255,20 @@ public class QuestionSqlRepository implements QuestionRepository {
                             "User" u
                         LEFT JOIN
                             "Question" q ON q."userId" = u.id
+                            AND (
+                            q."questionTitle" IS NULL
+                            OR
+                            q."questionTitle" ILIKE ?
+                            )
                         WHERE
                             u.id = ?
-                            AND (
-                            q."questionTitle" ILIKE ?
-                            OR
-                            q."questionTitle" IS NULL
-                            )
                         ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
-            stmt.setString(2, "%" + query + "%");
+            stmt.setString(1, "%" + query + "%");
+            stmt.setObject(2, UUID.fromString(userId));
             stmt.setInt(3, pageSize);
             stmt.setInt(4, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
