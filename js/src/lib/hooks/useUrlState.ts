@@ -79,12 +79,12 @@ export function useURLState<T>(
  */
 function coerce<T>(param: string, defaultValue: T): T | symbol {
   try {
-    const paramType = typeof param;
+    // const paramType = typeof param;
     const defaultValueType = typeof defaultValue;
 
     // The default param value is always string, so no type coercion is needed.
     if (defaultValueType === "string") {
-      return paramType as T;
+      return param as T;
     }
 
     if (defaultValueType === "number") {
