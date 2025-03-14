@@ -1,3 +1,4 @@
+import { useDebouncedValue } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -8,17 +9,20 @@ import { useSearchParams } from "react-router-dom";
  * @param defaultValue The default value of the param if none is present in the URL. The type of this variable will also be used to determine if the string value from the URL should be coerced into something else.
  * @param enabled If you would like, you may disable tieing the values of this to a hook. This defaults to true.
  * @param resetOnDefault If the value equals to the default value (either on mount or if it returns back to the default value), clear the URL param. This defaults to true.
+ * @param debounce If you would like to tie the URL state to an expensive operation, such as search queries. The default value is 0 (disabled)
  *
- * Returns a stateful value and a function to update it.
+ * Returns a stateful value and a function to update it, as well as an optional third value with the debounced value.
  */
 export function useURLState<T>(
   name: string,
   defaultValue: T,
   enabled = true,
   resetOnDefault = true,
+  debounce = 0,
 ) {
   const [initial, setInitial] = useState(false);
   const [value, setValue] = useState<T>(defaultValue);
+  const [debouncedValue] = useDebouncedValue<T>(value, debounce);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // On initial mount, update the state with the URL params. This hook will not run if the hook is not enabled or the initial value has already been provided.
@@ -49,7 +53,7 @@ export function useURLState<T>(
     }
 
     // If resetOnDefault is enabled, clear the key.
-    if (value === defaultValue && resetOnDefault) {
+    if (debouncedValue === defaultValue && resetOnDefault) {
       setSearchParams((prev) => {
         prev.delete(name);
         return prev;
@@ -58,10 +62,11 @@ export function useURLState<T>(
     }
 
     setSearchParams((prev) => {
-      prev.set(name, String(value));
+      prev.set(name, String(debouncedValue));
       return prev;
     });
   }, [
+    debouncedValue,
     defaultValue,
     enabled,
     initial,
@@ -71,7 +76,11 @@ export function useURLState<T>(
     value,
   ]);
 
-  return [value, setValue] as [T, React.Dispatch<React.SetStateAction<T>>];
+  return [value, setValue, debouncedValue] as [
+    T,
+    React.Dispatch<React.SetStateAction<T>>,
+    T,
+  ];
 }
 
 /**
