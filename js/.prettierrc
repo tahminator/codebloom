@@ -1,4 +1,4 @@
 {
-    "experimentalTernaries": true,
-    "semi": true
+  "experimentalTernaries": true,
+  "semi": true
 }
