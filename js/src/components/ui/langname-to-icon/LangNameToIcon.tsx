@@ -18,6 +18,7 @@ import {
 
 export const langNameToIcon = {
   java: JavaColored,
+  python: PythonColored,
   python3: PythonColored,
   rust: RustColored,
   swift: FaSwift,
