@@ -203,7 +203,8 @@ public class SubmissionController {
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("submission/u/{userId}")
     public ResponseEntity<ApiResponder<Page<ArrayList<QuestionWithUser>>>> getAllQuestionsForUser(final HttpServletRequest request,
-                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page, @RequestParam(required = false, defaultValue = "") final String query,
+                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
+                    @RequestParam(required = false, defaultValue = "") final String query,
                     @PathVariable final String userId) {
         FakeLag.sleep(250);
 
