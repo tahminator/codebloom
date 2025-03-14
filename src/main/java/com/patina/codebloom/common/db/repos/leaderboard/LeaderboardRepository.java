@@ -15,7 +15,7 @@ public interface LeaderboardRepository {
 
     // Replace header
     // LeaderboardWithUsers getRecentLeaderboardFull(int page, int pageSize);
-    LeaderboardWithUsers getRecentLeaderboardFull();
+    LeaderboardWithUsers getRecentLeaderboardFull(int page, int pageSize);
 
     LeaderboardWithUsers getLeaderboardByIdShallow(String leaderboardId);
 
@@ -36,5 +36,7 @@ public interface LeaderboardRepository {
     UserWithScore getUserFromLeaderboard(String leaderboardId, String userId);
 
     boolean updateUserPointsFromLeaderboard(String leaderboardId, String userId, int totalScore);
+
+    int getRecentLeaderboardUserCount();
 
 }

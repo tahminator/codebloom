@@ -17,7 +17,6 @@ import com.patina.codebloom.common.security.Protector;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/test/leaderboard")
@@ -52,23 +51,29 @@ public class TestLeaderboardController {
         return ResponseEntity.ok().body(ApiResponder.success("Here is some of the leaderboard!", newLeaderboard));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getFullLeaderboard(final HttpServletRequest request) {
-        FakeLag.sleep(900);
+    // @GetMapping("/all")
+    // public ResponseEntity<?> getFullLeaderboard(final HttpServletRequest request)
+    // {
+    // FakeLag.sleep(900);
 
-        protector.validateSession(request);
+    // protector.validateSession(request);
 
-        LeaderboardWithUsers realLeaderboard = leaderboardRepository.getRecentLeaderboardFull();
-        LeaderboardWithUsers leaderboard = TestLeaderboardList.getTestDataLongList();
+    // LeaderboardWithUsers realLeaderboard =
+    // leaderboardRepository.getRecentLeaderboardFull();
+    // LeaderboardWithUsers leaderboard = TestLeaderboardList.getTestDataLongList();
 
-        ArrayList<UserWithScore> combinedUsers = new ArrayList<>();
-        combinedUsers.addAll(realLeaderboard.getUsers());
-        combinedUsers.addAll(leaderboard.getUsers());
+    // ArrayList<UserWithScore> combinedUsers = new ArrayList<>();
+    // combinedUsers.addAll(realLeaderboard.getUsers());
+    // combinedUsers.addAll(leaderboard.getUsers());
 
-        combinedUsers.sort((user1, user2) -> Integer.compare(user2.getTotalScore(), user1.getTotalScore()));
+    // combinedUsers.sort((user1, user2) -> Integer.compare(user2.getTotalScore(),
+    // user1.getTotalScore()));
 
-        LeaderboardWithUsers newLeaderboard = new LeaderboardWithUsers(leaderboard.getId(), leaderboard.getName(), leaderboard.getCreatedAt(), leaderboard.getDeletedAt(), combinedUsers);
+    // LeaderboardWithUsers newLeaderboard = new
+    // LeaderboardWithUsers(leaderboard.getId(), leaderboard.getName(),
+    // leaderboard.getCreatedAt(), leaderboard.getDeletedAt(), combinedUsers);
 
-        return ResponseEntity.ok().body(ApiResponder.success("Giving you the full leaderboard!", newLeaderboard));
-    }
+    // return ResponseEntity.ok().body(ApiResponder.success("Giving you the full
+    // leaderboard!", newLeaderboard));
+    // }
 }
