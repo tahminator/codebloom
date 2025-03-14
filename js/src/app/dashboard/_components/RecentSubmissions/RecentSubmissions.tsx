@@ -46,7 +46,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
     );
   }
 
-  const questions = data.data;
+  const questions = data.data.questions;
 
   if (!questions.length) {
     return (
