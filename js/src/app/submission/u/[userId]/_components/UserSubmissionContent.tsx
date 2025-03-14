@@ -1,4 +1,5 @@
 import CustomPagination from "@/app/submission/u/[userId]/_components/CustomPagination";
+import SearchBox from "@/app/submission/u/[userId]/_components/SearchBox";
 import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
@@ -30,11 +31,20 @@ import { Link } from "react-router-dom";
 const MAX_PER_PAGE = 5;
 
 export default function UserSubmissionContent({ userId }: { userId?: string }) {
-  const { data, status, page, goBack, goForward, isPlaceholderData, goTo } =
-    useUserSubmissionsQuery({
-      userId,
-      tieToUrl: true,
-    });
+  const {
+    data,
+    status,
+    page,
+    goBack,
+    goForward,
+    isPlaceholderData,
+    goTo,
+    searchQuery,
+    setSearchQuery,
+  } = useUserSubmissionsQuery({
+    userId,
+    tieToUrl: true,
+  });
 
   if (status === "pending") {
     return (
@@ -168,6 +178,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
         <Button component={Link} to={"/dashboard"} variant={"outline"}>
           Go back to dashboard
         </Button>
+        <SearchBox query={searchQuery} setQuery={setSearchQuery} />
         <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
           <Table
             verticalSpacing={"lg"}
