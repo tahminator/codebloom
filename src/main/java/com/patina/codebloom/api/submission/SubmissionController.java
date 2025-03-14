@@ -205,7 +205,7 @@ public class SubmissionController {
     @GetMapping("submission/u/{userId}")
     public ResponseEntity<ApiResponder<Page<UserWithQuestions>>> getAllQuestionsForUser(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
-                    @RequestParam(required = false, defaultValue = "") final String query,
+                    @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @PathVariable final String userId) {
         FakeLag.sleep(250);
 
