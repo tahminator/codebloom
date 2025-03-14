@@ -68,9 +68,7 @@ async function fetchUserSubmissions({
   );
 
   const json = (await response.json()) as ApiResponse<
-    Page<
-      (Question & Pick<User, "discordName" | "leetcodeUsername" | "nickname">)[]
-    >
+    Page<User & { questions: Question[] }>
   >;
 
   if (json.success) {

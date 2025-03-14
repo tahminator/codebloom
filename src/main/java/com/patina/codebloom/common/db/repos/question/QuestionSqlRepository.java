@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.user.UserWithQuestions;
 
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
@@ -225,11 +225,12 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    public ArrayList<QuestionWithUser> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query) {
-
-        ArrayList<QuestionWithUser> questions = new ArrayList<>();
+    public UserWithQuestions getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query) {
+        UserWithQuestions user = null;
         String sql = """
                         SELECT
+                            u.id AS "userId",
+                            u."discordId",
                             u."discordName",
                             u."leetcodeUsername",
                             u."nickname",
@@ -251,13 +252,16 @@ public class QuestionSqlRepository implements QuestionRepository {
                             q.language,
                             q."submissionId"
                         FROM
-                            "Question" q
+                            "User" u
                         LEFT JOIN
-                            "User" u ON q."userId" = u.id
+                            "Question" q ON q."userId" = u.id
                         WHERE
-                            "userId" = ?
-                            AND
-                            "questionTitle" ILIKE ?
+                            u.id = ?
+                            AND (
+                            q."questionTitle" ILIKE ?
+                            OR
+                            q."questionTitle" IS NULL
+                            )
                         ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?
                         """;
@@ -269,42 +273,50 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setInt(4, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    var questionId = rs.getString("id");
-                    var userIdResult = rs.getString("userId");
-                    var questionSlug = rs.getString("questionSlug");
-                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
-                    var questionNumber = rs.getInt("questionNumber");
-                    var questionLink = rs.getString("questionLink");
-                    int points = rs.getInt("pointsAwarded");
-                    Integer pointsAwarded;
-                    if (rs.wasNull()) {
-                        pointsAwarded = null;
-                    } else {
-                        pointsAwarded = points;
+                    if (user == null) {
+                        var userSqlId = rs.getString("userId");
+                        var discordId = rs.getString("discordId");
+                        var discordName = rs.getString("discordName");
+                        var leetcodeUsername = rs.getString("leetcodeUsername");
+                        var nickname = rs.getString("nickname");
+                        user = new UserWithQuestions(userSqlId, discordId, discordName, leetcodeUsername, nickname);
                     }
-                    var questionTitle = rs.getString("questionTitle");
-                    var description = rs.getString("description");
-                    var acceptanceRate = rs.getFloat("acceptanceRate");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var runtime = rs.getString("runtime");
-                    var memory = rs.getString("memory");
-                    var code = rs.getString("code");
-                    var language = rs.getString("language");
-                    var submissionId = rs.getString("submissionId");
-                    QuestionWithUser question = new QuestionWithUser(questionId, userIdResult, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle,
-                                    description, acceptanceRate, createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname, submissionId);
-                    questions.add(question);
+
+                    var questionId = rs.getString("id");
+
+                    if (questionId != null) {
+                        var questionSlug = rs.getString("questionSlug");
+                        var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
+                        var questionNumber = rs.getInt("questionNumber");
+                        var questionLink = rs.getString("questionLink");
+                        int points = rs.getInt("pointsAwarded");
+                        Integer pointsAwarded;
+                        if (rs.wasNull()) {
+                            pointsAwarded = null;
+                        } else {
+                            pointsAwarded = points;
+                        }
+                        var questionTitle = rs.getString("questionTitle");
+                        var description = rs.getString("description");
+                        var acceptanceRate = rs.getFloat("acceptanceRate");
+                        var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                        var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+                        var runtime = rs.getString("runtime");
+                        var memory = rs.getString("memory");
+                        var code = rs.getString("code");
+                        var language = rs.getString("language");
+                        var submissionId = rs.getString("submissionId");
+                        Question question = new Question(questionId, user.getId(), questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle,
+                                        description, acceptanceRate, createdAt, submittedAt, runtime, memory, code, language, submissionId);
+                        user.addQuestion(question);
+                    }
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve questions", e);
         }
 
-        return questions;
+        return user;
     }
 
     public Question updateQuestion(final Question inputQuestion) {
