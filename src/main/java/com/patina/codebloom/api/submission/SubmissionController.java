@@ -21,6 +21,7 @@ import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.models.user.UserWithQuestions;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
@@ -202,7 +203,7 @@ public class SubmissionController {
                     """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("submission/u/{userId}")
-    public ResponseEntity<ApiResponder<Page<ArrayList<QuestionWithUser>>>> getAllQuestionsForUser(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<UserWithQuestions>>> getAllQuestionsForUser(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @RequestParam(required = false, defaultValue = "") final String query,
                     @PathVariable final String userId) {
@@ -210,13 +211,13 @@ public class SubmissionController {
 
         protector.validateSession(request);
 
-        ArrayList<QuestionWithUser> questions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE, query);
+        UserWithQuestions userWithQuestions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE, query);
 
         int totalQuestions = questionRepository.getQuestionCountByUserId(userId);
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<QuestionWithUser>> createdPage = new Page<>(hasNextPage, questions, totalPages);
+        Page<UserWithQuestions> createdPage = new Page<>(hasNextPage, userWithQuestions, totalPages);
 
         return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
     }
