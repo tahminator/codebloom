@@ -1,6 +1,6 @@
-import CustomPagination from "@/app/submission/u/[userId]/_components/CustomPagination";
 import SearchBox from "@/app/submission/u/[userId]/_components/SearchBox";
 import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
+import CustomPagination from "@/components/ui/CustomPagination";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import {
