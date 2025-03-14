@@ -225,7 +225,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    public ArrayList<QuestionWithUser> getQuestionsByUserId(final String userId, final int page, final int pageSize) {
+    public ArrayList<QuestionWithUser> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query) {
 
         ArrayList<QuestionWithUser> questions = new ArrayList<>();
         String sql = """
@@ -253,17 +253,19 @@ public class QuestionSqlRepository implements QuestionRepository {
                         FROM
                             "Question" q
                         LEFT JOIN
-                            "User" u on q."userId" = u.id
+                            "User" u ON q."userId" = u.id
                         WHERE
-                            "userId" = ?
+                            "userId" = ? 
+                            AND 
+                            "questionTitle" LIKE ?
                         ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
-
-            stmt.setInt(2, pageSize);
+            stmt.setString(2, "%" + query + "%");
+            stmt.setInt(3, pageSize);
             stmt.setInt(3, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
