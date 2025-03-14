@@ -213,7 +213,7 @@ public class SubmissionController {
 
         UserWithQuestions userWithQuestions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE, query);
 
-        int totalQuestions = questionRepository.getQuestionCountByUserId(userId);
+        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query);
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 

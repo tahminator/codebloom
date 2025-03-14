@@ -458,7 +458,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
-    public int getQuestionCountByUserId(final String userId) {
+    public int getQuestionCountByUserId(final String userId, final String query) {
         String sql = """
                         SELECT
                             COUNT(*)
@@ -466,9 +466,15 @@ public class QuestionSqlRepository implements QuestionRepository {
                             "Question"
                         WHERE
                             "userId" = ?
+                            AND (
+                            "questionTitle" IS NULL
+                            OR
+                            "questionTitle" ILIKE ?
+                            )
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
+            stmt.setString(2, "%" + query + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
