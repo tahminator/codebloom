@@ -90,28 +90,6 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
 
   const submissions = data.data;
 
-  if (submissions.length === 0) {
-    return (
-      <>
-        <Header />
-        <Flex
-          direction={"column"}
-          align={"center"}
-          justify={"center"}
-          miw={"98vw"}
-          mih={"90vh"}
-          gap={"sm"}
-        >
-          <Text c={"dimmed"}>Sorry, no submissions were found.</Text>
-          <Button component={Link} to={"/dashboard"} variant={"outline"}>
-            Go back to dashboard
-          </Button>
-        </Flex>
-        <Footer />
-      </>
-    );
-  }
-
   return (
     <>
       <Header />
@@ -127,7 +105,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
             Latest data for
           </Title>
           <Group wrap="wrap" justify="center" gap="xs">
-            {submissions[0].nickname ?
+            {submissions.nickname ?
               <>
                 <Tooltip
                   label={
@@ -142,7 +120,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                       z={5000000}
                       size={20}
                     />{" "}
-                    {submissions[0].nickname}
+                    {submissions.nickname}
                   </Title>
                 </Tooltip>
               </>
@@ -154,12 +132,12 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                   }}
                 />
                 <Title size="h4" c="blue.5">
-                  {submissions[0].discordName}
+                  {submissions.discordName}
                 </Title>
               </>
             }
             <Link
-              to={`https://leetcode.com/u/${submissions[0].leetcodeUsername}`}
+              to={`https://leetcode.com/u/${submissions.leetcodeUsername}`}
               className="hover:underline"
               style={{ display: "flex", alignItems: "center", gap: "4px" }}
             >
@@ -170,7 +148,7 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                 }}
               />
               <Title size="h4" c="yellow.5">
-                {submissions[0].leetcodeUsername}
+                {submissions.leetcodeUsername}
               </Title>
             </Link>
           </Group>
@@ -202,7 +180,16 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {submissions.map((submission, index) => {
+              {submissions.questions.length == 0 && (
+                <Table.Tr>
+                  <Table.Td colSpan={100}>
+                    <Text fw={500} ta="center">
+                      Nothing found
+                    </Text>
+                  </Table.Td>
+                </Table.Tr>
+              )}
+              {submissions.questions.map((submission, index) => {
                 const badgeDifficultyColor = (() => {
                   if (submission.questionDifficulty === "Easy") {
                     return undefined;
@@ -266,8 +253,8 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                 );
               })}
               {/* Render empty values to fill up page and avoid content shifting.*/}
-              {submissions.length < MAX_PER_PAGE &&
-                Array(MAX_PER_PAGE - submissions.length)
+              {submissions.questions.length < MAX_PER_PAGE &&
+                Array(MAX_PER_PAGE - submissions.questions.length)
                   .fill(0)
                   .map((_, idx) => (
                     <Table.Tr key={idx} opacity={0}>
