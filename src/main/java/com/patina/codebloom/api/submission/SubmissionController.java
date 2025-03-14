@@ -25,10 +25,9 @@ import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
-import com.patina.codebloom.common.simpleredis.SimpleRedis;
-import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -36,6 +35,7 @@ import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.page.Page;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.simpleredis.SimpleRedis;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
@@ -203,13 +203,13 @@ public class SubmissionController {
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("submission/u/{userId}")
     public ResponseEntity<ApiResponder<Page<ArrayList<QuestionWithUser>>>> getAllQuestionsForUser(final HttpServletRequest request,
-                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
+                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page, @RequestParam(required = false, defaultValue = "") final String query,
                     @PathVariable final String userId) {
         FakeLag.sleep(250);
 
         protector.validateSession(request);
 
-        ArrayList<QuestionWithUser> questions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE);
+        ArrayList<QuestionWithUser> questions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE, query);
 
         int totalQuestions = questionRepository.getQuestionCountByUserId(userId);
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);

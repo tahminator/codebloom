@@ -12,7 +12,7 @@ public interface QuestionRepository {
 
     QuestionWithUser getQuestionWithUserById(String id);
 
-    ArrayList<QuestionWithUser> getQuestionsByUserId(String userId, int page, int pageSize);
+    ArrayList<QuestionWithUser> getQuestionsByUserId(String userId, int page, int pageSize, String query);
 
     Question updateQuestion(Question question);
 
