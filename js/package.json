@@ -35,6 +35,7 @@
     "react-router-dom": "6",
     "react-syntax-highlighter": "^15.6.1",
     "sass": "^1.83.1",
+    "use-debounce": "^10.0.4",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
