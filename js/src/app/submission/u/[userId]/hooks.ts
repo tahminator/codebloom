@@ -4,6 +4,7 @@ import { Question } from "@/lib/types/db/question";
 import { User } from "@/lib/types/db/user";
 import { Page } from "@/lib/types/page";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect } from "react";
 
 export const useUserSubmissionsQuery = ({
   userId,
@@ -15,37 +16,55 @@ export const useUserSubmissionsQuery = ({
   tieToUrl?: boolean;
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const [searchQuery, setSearchQuery] = useURLState("query", "", tieToUrl);
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
-  };
+  }, [setPage]);
 
-  const goForward = () => {
+  const goForward = useCallback(() => {
     setPage((old) => old + 1);
-  };
+  }, [setPage]);
 
-  const goTo = (pageNumber: number) => {
-    setPage(() => Math.max(pageNumber, 0));
-  };
+  const goTo = useCallback(
+    (pageNumber: number) => {
+      setPage(() => Math.max(pageNumber, 0));
+    },
+    [setPage],
+  );
+
+  useEffect(() => {
+    goTo(1);
+  }, [searchQuery, goTo]);
 
   const query = useQuery({
-    queryKey: ["submission", "user", userId, page],
-    queryFn: () => fetchUserSubmissions({ page, userId }),
+    queryKey: ["submission", "user", userId, page, searchQuery],
+    queryFn: () => fetchUserSubmissions({ page, userId, query: searchQuery }),
     placeholderData: keepPreviousData,
   });
 
-  return { ...query, page, goBack, goForward, goTo };
+  return {
+    ...query,
+    page,
+    goBack,
+    goForward,
+    goTo,
+    searchQuery,
+    setSearchQuery,
+  };
 };
 
 async function fetchUserSubmissions({
   page,
   userId,
+  query,
 }: {
   page: number;
   userId?: string;
+  query?: string;
 }) {
   const response = await fetch(
-    `/api/leetcode/submission/u/${userId ?? ""}?page=${page}`,
+    `/api/leetcode/submission/u/${userId ?? ""}?page=${page}&query=${query}`,
   );
 
   const json = (await response.json()) as ApiResponse<
