@@ -1,5 +1,8 @@
 import { Center, Skeleton, Table, Title } from "@mantine/core";
 
+/**
+ * @todo - Could possibly scan the URL for page number and define different skeletons based off of that.
+ */
 export default function LeaderboardSkeleton() {
   return (
     <div style={{ padding: "1rem" }}>
@@ -49,7 +52,7 @@ export default function LeaderboardSkeleton() {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {Array(20)
+          {Array(2)
             .fill(0)
             .map((_, index) => (
               <Table.Tr key={index}>

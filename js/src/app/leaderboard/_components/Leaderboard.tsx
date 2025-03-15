@@ -4,6 +4,7 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { theme } from "@/lib/theme";
 import {
+  Box,
   Button,
   Center,
   Flex,
@@ -89,8 +90,15 @@ export default function LeaderboardIndex() {
           />
         )}
       </div>
-      {json.users.length > 3 && (
-        <Table verticalSpacing={"lg"} withRowBorders={false} striped>
+      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
+        <Table
+          verticalSpacing={"lg"}
+          horizontalSpacing={"xs"}
+          withRowBorders={false}
+          striped
+          my={"sm"}
+          pos={"relative"}
+        >
           {isPlaceholderData && (
             <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
           )}
@@ -106,13 +114,12 @@ export default function LeaderboardIndex() {
               if (page === 1 && [0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={index}>
-                  <Table.Td>{index + 1}</Table.Td>
+                  <Table.Td>{index + 1 + (page - 1) * 5}</Table.Td>
                   <Table.Td>
                     <Flex
                       direction={"column"}
                       component={Link}
                       to={`/submission/u/${entry.id}`}
-                      p={"lg"}
                       className="group"
                     >
                       {entry.nickname ?
@@ -149,7 +156,7 @@ export default function LeaderboardIndex() {
             })}
           </Table.Tbody>
         </Table>
-      )}
+      </Box>
       <Center my={"sm"}>
         <Flex direction={"row"} gap={"sm"}>
           <Button disabled={page === 1} onClick={goBack} size={"compact-sm"}>
