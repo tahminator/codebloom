@@ -114,7 +114,7 @@ export default function LeaderboardIndex() {
               if (page === 1 && [0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={index}>
-                  <Table.Td>{index + 1 + (page - 1) * 5}</Table.Td>
+                  <Table.Td>{index + 1 + (page - 1) * data.pageSize}</Table.Td>
                   <Table.Td>
                     <Flex
                       direction={"column"}

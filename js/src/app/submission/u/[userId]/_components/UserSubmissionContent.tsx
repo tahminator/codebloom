@@ -28,8 +28,6 @@ import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-const MAX_PER_PAGE = 5;
-
 export default function UserSubmissionContent({ userId }: { userId?: string }) {
   const {
     data,
@@ -253,8 +251,8 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
                 );
               })}
               {/* Render empty values to fill up page and avoid content shifting.*/}
-              {submissions.questions.length < MAX_PER_PAGE &&
-                Array(MAX_PER_PAGE - submissions.questions.length)
+              {submissions.questions.length < data.pageSize &&
+                Array(data.pageSize - submissions.questions.length)
                   .fill(0)
                   .map((_, idx) => (
                     <Table.Tr key={idx} opacity={0}>
