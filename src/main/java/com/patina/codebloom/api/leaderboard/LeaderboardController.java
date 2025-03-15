@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api/leaderboard")
 @Tag(name = "Leaderboard routes")
 public class LeaderboardController {
-    private static final int LEADERBOARD_PAGE_SIZE = 5;
+    private static final int LEADERBOARD_PAGE_SIZE = 20;
 
     private final LeaderboardRepository leaderboardRepository;
     private final Protector protector;
@@ -80,7 +80,7 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalUsers / LEADERBOARD_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
-        Page<LeaderboardWithUsers> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages);
+        Page<LeaderboardWithUsers> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
