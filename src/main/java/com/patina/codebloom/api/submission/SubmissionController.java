@@ -54,7 +54,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/leetcode")
 public class SubmissionController {
     /* Page size for submissions */
-    private static final int SUBMISSIONS_PAGE_SIZE = 5;
+    private static final int SUBMISSIONS_PAGE_SIZE = 20;
 
     // 5 Minute rate limit to avoid abuse.
     private static final double SECONDS_TO_WAIT = 5 * 60;
@@ -217,7 +217,7 @@ public class SubmissionController {
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
-        Page<UserWithQuestions> createdPage = new Page<>(hasNextPage, userWithQuestions, totalPages);
+        Page<UserWithQuestions> createdPage = new Page<>(hasNextPage, userWithQuestions, totalPages, SUBMISSIONS_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
     }
