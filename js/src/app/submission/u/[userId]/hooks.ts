@@ -89,5 +89,6 @@ async function fetchUserSubmissions({
     pages: 0,
     message: json.message,
     success: json.success,
+    pageSize: 0,
   };
 }
