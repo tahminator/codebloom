@@ -5,10 +5,13 @@ public class Page<T> {
     private T data;
     private int pages;
 
-    public Page(final boolean hasNextPage, final T data, final int pages) {
+    private int pageSize;
+
+    public Page(final boolean hasNextPage, final T data, final int pages, final int pageSize) {
         this.hasNextPage = hasNextPage;
         this.data = data;
         this.pages = pages;
+        this.pageSize = pageSize;
     }
 
     public boolean isHasNextPage() {
@@ -33,5 +36,13 @@ public class Page<T> {
 
     public void setPages(final int pages) {
         this.pages = pages;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(final int pageSize) {
+        this.pageSize = pageSize;
     }
 }
