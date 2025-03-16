@@ -119,7 +119,7 @@ export default function LeaderboardIndex() {
                     <Flex
                       direction={"column"}
                       component={Link}
-                      to={`/submission/u/${entry.id}`}
+                      to={`/user/${entry.id}`}
                       className="group"
                     >
                       {entry.nickname ?

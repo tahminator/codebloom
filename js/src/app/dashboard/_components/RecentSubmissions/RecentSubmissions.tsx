@@ -1,5 +1,5 @@
 import RecentSubmissionsSkeleton from "@/app/dashboard/_components/RecentSubmissions/RecentSubmissionsSkeleton";
-import { useUserSubmissionsQuery } from "@/app/submission/u/[userId]/hooks";
+import { useUserSubmissionsQuery } from "@/app/user/[userId]/hooks";
 import { Badge, Box, Button, Card, Flex, Text, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
