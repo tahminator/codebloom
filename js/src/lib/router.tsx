@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/submission/s/:submissionId",
+    path: "/submission/:submissionId",
     element: <SubmissionDetailsPage />,
     errorElement: <ErrorPage />,
   },
