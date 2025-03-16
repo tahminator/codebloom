@@ -97,7 +97,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
         return (
           <Flex
             component={Link}
-            to={`/submission/s/${q.id}`}
+            to={`/submission/${q.id}`}
             key={idx}
             direction={"row"}
             justify={"space-between"}
