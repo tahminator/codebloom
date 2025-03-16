@@ -5,7 +5,7 @@ import LoginPage from "@/app/login/Login.page";
 import Onboarding from "@/app/onboarding/Onboarding.page";
 import RootPage from "@/app/Root.page";
 import SubmissionDetailsPage from "@/app/submission/s/[submissionId]/SubmissionDetails.page";
-import UserSubmissionsPage from "@/app/submission/u/[userId]/UserSubmissions.page";
+import UserSubmissionsPage from "@/app/user/[userId]/UserSubmissions.page";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/submission/u/:userId",
+    path: "/user/:userId",
     element: <UserSubmissionsPage />,
     errorElement: <ErrorPage />,
   },

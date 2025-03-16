@@ -72,7 +72,7 @@ async function fetchUserSubmissions({
   query?: string;
 }) {
   const response = await fetch(
-    `/api/leetcode/submission/u/${userId ?? ""}?page=${page}&query=${query}`,
+    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}`,
   );
 
   const json = (await response.json()) as ApiResponse<

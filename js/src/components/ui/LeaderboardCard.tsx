@@ -46,7 +46,7 @@ export default function LeaderboardCard({
         width,
       }}
       component={Link}
-      to={`/submission/u/${userId}`}
+      to={`/user/${userId}`}
     >
       <Text ta="center" size="xl">
         {placeString}
