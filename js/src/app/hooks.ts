@@ -21,9 +21,5 @@ async function fetchLeaderboard() {
 
   const json = (await response.json()) as ApiResponse<LeaderboardEntry>;
 
-  if (json.success) {
-    return { json: json.data };
-  }
-
-  return { json: undefined };
+  return json;
 }
