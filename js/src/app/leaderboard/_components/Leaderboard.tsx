@@ -1,6 +1,6 @@
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
-import CustomPagination from "@/components/ui/CustomPagination";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
+import CustomPagination from "@/components/ui/table/CustomPagination";
 import Toast from "@/components/ui/toast/Toast";
 import { theme } from "@/lib/theme";
 import {

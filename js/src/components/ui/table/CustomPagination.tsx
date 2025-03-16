@@ -36,6 +36,10 @@ const getPageNumbers = (currentPage: number, totalPages: number) => {
   ];
 };
 
+/**
+ * Don't call this directly, unless you are trying to build your own pagination component.
+ * Instead, use `Paginator`
+ */
 export default function CustomPagination({
   goTo,
   pages,
