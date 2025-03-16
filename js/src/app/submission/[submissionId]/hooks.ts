@@ -19,7 +19,7 @@ async function fetchSubmissionDetails({
 }: {
   submissionId?: string;
 }) {
-  const res = await fetch(`/api/leetcode/submission/s/${submissionId}`);
+  const res = await fetch(`/api/leetcode/submission/${submissionId}`);
   const json = (await res.json()) as ApiResponse<
     Question & Pick<User, "discordName" | "leetcodeUsername">
   >;
