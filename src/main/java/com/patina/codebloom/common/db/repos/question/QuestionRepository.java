@@ -1,8 +1,9 @@
 package com.patina.codebloom.common.db.repos.question;
 
+import java.util.ArrayList;
+
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
-import com.patina.codebloom.common.db.models.user.UserWithQuestions;
 
 public interface QuestionRepository {
     Question createQuestion(Question question);
@@ -11,7 +12,7 @@ public interface QuestionRepository {
 
     QuestionWithUser getQuestionWithUserById(String id);
 
-    UserWithQuestions getQuestionsByUserId(String userId, int page, int pageSize, String query);
+    ArrayList<Question> getQuestionsByUserId(String userId, int page, int pageSize, String query);
 
     Question updateQuestion(Question question);
 
