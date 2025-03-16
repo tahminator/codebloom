@@ -60,6 +60,7 @@ export const useUserSubmissionsQuery = ({
     searchQuery,
     setSearchQuery,
     debouncedQuery,
+    pageSize,
   };
 };
 
