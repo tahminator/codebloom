@@ -14,8 +14,5 @@ async function fetchPotd() {
 
   const json = (await res.json()) as ApiResponse<POTD>;
 
-  if (!json.success) {
-    return { ...json, data: null };
-  }
-  return { ...json, data: json.data };
+  return json;
 }
