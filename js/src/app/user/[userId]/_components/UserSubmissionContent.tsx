@@ -1,4 +1,3 @@
-import SearchBox from "@/app/user/[userId]/_components/SearchBox";
 import { useUserSubmissionsQuery } from "@/app/user/[userId]/hooks";
 import CustomPagination from "@/components/ui/CustomPagination";
 import { Footer } from "@/components/ui/footer/Footer";
@@ -7,6 +6,7 @@ import {
   langNameKey,
   langNameToIcon,
 } from "@/components/ui/langname-to-icon/LangNameToIcon";
+import SearchBox from "@/components/ui/search-box/SearchBox";
 import { theme } from "@/lib/theme";
 import { timeDiff } from "@/lib/timeDiff";
 import {
@@ -154,7 +154,13 @@ export default function UserSubmissionContent({ userId }: { userId?: string }) {
         <Button component={Link} to={"/dashboard"} variant={"outline"}>
           Go back to dashboard
         </Button>
-        <SearchBox query={searchQuery} setQuery={setSearchQuery} />
+        <SearchBox
+          query={searchQuery}
+          onChange={(event) => {
+            setSearchQuery(event.currentTarget.value);
+          }}
+          placeholder={"Search for submission title"}
+        />
         <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
           <Table
             verticalSpacing={"lg"}
