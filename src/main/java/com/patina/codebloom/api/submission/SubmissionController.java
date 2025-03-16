@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,7 +20,6 @@ import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
-import com.patina.codebloom.common.db.models.user.UserWithQuestions;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
@@ -33,7 +31,6 @@ import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
-import com.patina.codebloom.common.page.Page;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.simpleredis.SimpleRedis;
@@ -41,7 +38,6 @@ import com.patina.codebloom.common.submissions.SubmissionsHandler;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,12 +46,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@Tag(name = "LeetCode Submission Routes")
+@Tag(name = "LeetCode Routes", description = """
+                This route is responsible for the actual submission logic,
+                such as setting LeetCode username, fetching the problem of the day, retreiving submission data, and more.
+                """)
 @RequestMapping("/api/leetcode")
 public class SubmissionController {
-    /* Page size for submissions */
-    private static final int SUBMISSIONS_PAGE_SIZE = 20;
-
     // 5 Minute rate limit to avoid abuse.
     private static final double SECONDS_TO_WAIT = 5 * 60;
 
@@ -197,31 +193,6 @@ public class SubmissionController {
                         submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
     }
 
-    @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = """
-                    Protected endpoint that returns the list of questions completed by the user.
-                    These questions are guaranteed to be completed by the user.
-                    """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    @GetMapping("submission/u/{userId}")
-    public ResponseEntity<ApiResponder<Page<UserWithQuestions>>> getAllQuestionsForUser(final HttpServletRequest request,
-                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
-                    @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
-                    @PathVariable final String userId) {
-        FakeLag.sleep(250);
-
-        protector.validateSession(request);
-
-        UserWithQuestions userWithQuestions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE, query);
-
-        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query);
-        int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
-        boolean hasNextPage = page < totalPages;
-
-        Page<UserWithQuestions> createdPage = new Page<>(hasNextPage, userWithQuestions, totalPages, SUBMISSIONS_PAGE_SIZE);
-
-        return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
-    }
-
     @Operation(summary = "Returns current problem of the day.", description = """
                     Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.
                     """, responses = {
@@ -259,7 +230,7 @@ public class SubmissionController {
             @ApiResponse(responseCode = "200", description = "Question found"),
             @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    @GetMapping("/submission/s/{submissionId}")
+    @GetMapping("/submission/{submissionId}")
     public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(final HttpServletRequest request,
                     @PathVariable final String submissionId) {
         FakeLag.sleep(750);
