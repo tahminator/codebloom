@@ -55,6 +55,8 @@ public class UserController {
     })
     @GetMapping("{userId}/profile")
     public ResponseEntity<ApiResponder<User>> getUserProfileByUserId(final HttpServletRequest request, @PathVariable final String userId) {
+        FakeLag.sleep(650);
+
         User user = userRepository.getUserById(userId);
 
         if (user == null) {
@@ -75,7 +77,7 @@ public class UserController {
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize,
                     @PathVariable final String userId) {
-        FakeLag.sleep(250);
+        FakeLag.sleep(500);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
 
