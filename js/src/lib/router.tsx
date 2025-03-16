@@ -4,7 +4,7 @@ import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
 import LoginPage from "@/app/login/Login.page";
 import Onboarding from "@/app/onboarding/Onboarding.page";
 import RootPage from "@/app/Root.page";
-import SubmissionDetailsPage from "@/app/submission/s/[submissionId]/SubmissionDetails.page";
+import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDetails.page";
 import UserSubmissionsPage from "@/app/user/[userId]/UserProfile.page";
 import { createBrowserRouter } from "react-router-dom";
 
