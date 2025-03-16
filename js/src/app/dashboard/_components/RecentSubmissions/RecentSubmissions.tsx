@@ -71,11 +71,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
       <Flex direction={"row"} justify={"space-between"}>
         <Title order={4}>Submissions</Title>
 
-        <Button
-          variant={"light"}
-          component={Link}
-          to={`/submission/u/${userId}`}
-        >
+        <Button variant={"light"} component={Link} to={`/user/${userId}`}>
           View all
         </Button>
       </Flex>
