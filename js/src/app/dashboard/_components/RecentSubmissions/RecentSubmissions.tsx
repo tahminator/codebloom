@@ -1,10 +1,10 @@
 import RecentSubmissionsSkeleton from "@/app/dashboard/_components/RecentSubmissions/RecentSubmissionsSkeleton";
-import { useUserSubmissionsQuery } from "@/app/user/[userId]/hooks";
+import { useUserSubmissionsQuery } from "@/app/user/[userId]/_components/UserSubmissions/hooks";
 import { Badge, Box, Button, Card, Flex, Text, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function RecentSubmissions({ userId }: { userId: string }) {
-  const { data, status } = useUserSubmissionsQuery({ userId });
+  const { data, status } = useUserSubmissionsQuery({ userId, pageSize: 5 });
 
   if (status === "pending") {
     return <RecentSubmissionsSkeleton />;
@@ -46,7 +46,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
     );
   }
 
-  const questions = data.data.questions;
+  const questions = data.data.data;
 
   if (!questions.length) {
     return (
