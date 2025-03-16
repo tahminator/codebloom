@@ -36,8 +36,8 @@ export default function LeaderboardIndex() {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const json = data.data;
-  const [first, second, third] = json.users;
+  const pageData = data.data;
+  const [first, second, third] = pageData.data.users;
 
   return (
     <div style={{ padding: "1rem" }}>
@@ -50,7 +50,7 @@ export default function LeaderboardIndex() {
         }}
         className="text-center sm:text-lg"
       >
-        {json.name}
+        {pageData.data.name}
       </Title>
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
@@ -110,11 +110,13 @@ export default function LeaderboardIndex() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {json.users.map((entry, index) => {
+            {pageData.data.users.map((entry, index) => {
               if (page === 1 && [0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={index}>
-                  <Table.Td>{index + 1 + (page - 1) * data.pageSize}</Table.Td>
+                  <Table.Td>
+                    {index + 1 + (page - 1) * pageData.pageSize}
+                  </Table.Td>
                   <Table.Td>
                     <Flex
                       direction={"column"}
@@ -162,11 +164,15 @@ export default function LeaderboardIndex() {
           <Button disabled={page === 1} onClick={goBack} size={"compact-sm"}>
             <FaArrowLeft />
           </Button>
-          <CustomPagination goTo={goTo} pages={data.pages} currentPage={page} />
+          <CustomPagination
+            goTo={goTo}
+            pages={pageData.pages}
+            currentPage={page}
+          />
           <Button
-            disabled={!data.hasNextPage || page >= data.pages}
+            disabled={!pageData.hasNextPage || page >= pageData.pages}
             onClick={() => {
-              if (data.hasNextPage || page >= data.pages) {
+              if (pageData.hasNextPage || page >= pageData.pages) {
                 goForward();
               }
             }}

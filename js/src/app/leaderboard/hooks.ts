@@ -49,15 +49,5 @@ async function fetchLeaderboard({ page }: { page: number }) {
 
   const json = (await response.json()) as ApiResponse<Page<LeaderboardEntry>>;
 
-  if (json.success) {
-    return { ...json.data, success: json.success, message: json.message };
-  }
-
-  return {
-    hasNextPage: false,
-    data: null,
-    pages: 0,
-    message: json.message,
-    success: json.success,
-  };
+  return json;
 }
