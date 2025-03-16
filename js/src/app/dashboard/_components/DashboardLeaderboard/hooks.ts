@@ -30,9 +30,5 @@ export async function getMyRecentLeaderboardData({
 
   const json = (await res.json()) as ApiResponse<User & { totalScore: number }>;
 
-  if (json.success) {
-    return { user: json.data };
-  }
-
-  return { user: undefined };
+  return json;
 }

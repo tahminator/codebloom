@@ -49,7 +49,27 @@ export default function LeaderboardForDashboard({
     );
   }
 
-  if (!data.json || !data.json.users.length) {
+  if (!data.success) {
+    return (
+      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+        <Flex
+          direction={"row"}
+          justify={"center"}
+          align={"center"}
+          w={"100%"}
+          h={"100%"}
+        >
+          <Title order={6} ta={"center"}>
+            {data.message}
+          </Title>
+        </Flex>
+      </Card>
+    );
+  }
+
+  const leaderboardData = data.data;
+
+  if (leaderboardData.users.length == 0) {
     return (
       <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
@@ -68,14 +88,12 @@ export default function LeaderboardForDashboard({
     );
   }
 
-  const json = data.json;
-
-  const inTop5 = !!json.users.find((u) => u.id === userId);
+  const inTop5 = !!leaderboardData.users.find((u) => u.id === userId);
 
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Flex direction={"row"} justify={"space-between"} w={"100%"}>
-        <Title order={4}>{json.name}</Title>
+        <Title order={4}>{leaderboardData.name}</Title>
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all
         </Button>
@@ -87,7 +105,7 @@ export default function LeaderboardForDashboard({
         </>
       )}
       <Flex direction={"column"} gap={"md"} m={"xs"}>
-        {json.users.map((user, idx) => {
+        {leaderboardData.users.map((user, idx) => {
           const isMe = user.id === userId;
 
           const borderColor = (() => {
