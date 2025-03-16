@@ -10,7 +10,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
   const { data, status } = useMyRecentLeaderboardData({ userId });
 
   if (status === "pending") {
-    <Loader />;
+    return <Loader />;
   }
 
   if (status === "error") {
@@ -18,6 +18,12 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
       <Text>Sorry, failed to fetch user data from current leaderboard.</Text>
     );
   }
+
+  if (!data.success) {
+    return <Text>{data.message}</Text>;
+  }
+
+  const userData = data.data;
 
   return (
     <Flex
@@ -40,7 +46,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
       >
         <Text>Me</Text>
         <Flex direction={"column"}>
-          {data?.user?.nickname ?
+          {userData.nickname ?
             <Tooltip
               label={
                 "This user is a verified member of the Patina Discord server."
@@ -59,7 +65,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
                   z={5000000}
                   size={20}
                 />{" "}
-                {data?.user.nickname}
+                {userData.nickname}
               </Text>
             </Tooltip>
           : <Text
@@ -73,7 +79,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
                   marginRight: "4px",
                 }}
               />
-              {data?.user?.discordName}
+              {userData.discordName}
             </Text>
           }
           <Text ta="center">
@@ -84,10 +90,10 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
                 marginRight: "4px",
               }}
             />
-            {data?.user?.leetcodeUsername}
+            {userData.leetcodeUsername}
           </Text>
         </Flex>
-        <Text>{data?.user?.totalScore}</Text>
+        <Text>{userData.totalScore}</Text>
       </Flex>
     </Flex>
   );
