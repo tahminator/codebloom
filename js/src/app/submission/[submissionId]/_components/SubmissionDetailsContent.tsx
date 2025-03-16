@@ -1,4 +1,4 @@
-import { useSubmissionDetailsQuery } from "@/app/submission/s/[submissionId]/hooks";
+import { useSubmissionDetailsQuery } from "@/app/submission/[submissionId]/hooks";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";

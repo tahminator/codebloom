@@ -128,7 +128,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                   <Table.Td>
                     <Text
                       component={Link}
-                      to={`/submission/s/${submission.id}`}
+                      to={`/submission/${submission.id}`}
                       className="transition-all hover:text-blue-500"
                     >
                       {submission.questionTitle}
