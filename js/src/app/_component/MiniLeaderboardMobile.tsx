@@ -17,13 +17,17 @@ export default function MiniLeaderboardMobile() {
     return <Toast message="Sorry, something went wrong." />;
   }
 
-  if (!data.json) {
+  if (!data.success) {
+    return <Toast message={data.message} />;
+  }
+
+  const leaderboardData = data.data;
+
+  if (leaderboardData.users.length == 0) {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const json = data.json;
-
-  const [first, second, third] = json.users;
+  const [first, second, third] = leaderboardData.users;
 
   return (
     <>
@@ -35,7 +39,7 @@ export default function MiniLeaderboardMobile() {
         }}
         className="text-center sm:text-lg"
       >
-        {json.name}
+        {leaderboardData.name}
       </h1>
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
@@ -75,7 +79,7 @@ export default function MiniLeaderboardMobile() {
           />
         )}
       </div>
-      {json.users.length > 3 && (
+      {leaderboardData.users.length > 3 && (
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -85,7 +89,7 @@ export default function MiniLeaderboardMobile() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {json.users.map((entry, index) => {
+            {leaderboardData.users.map((entry, index) => {
               if ([0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={entry.discordName}>
