@@ -19,13 +19,17 @@ export default function MiniLeaderboardDesktop() {
     return <Toast message="Sorry, something went wrong." />;
   }
 
-  if (!data.json) {
+  if (!data.success) {
+    return <Toast message={data.message} />;
+  }
+
+  const leaderboardData = data.data;
+
+  if (leaderboardData.users.length == 0) {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const json = data.json;
-
-  const [first, second, third] = json.users;
+  const [first, second, third] = leaderboardData.users;
 
   return (
     <div style={{ padding: "1rem" }}>
@@ -38,7 +42,7 @@ export default function MiniLeaderboardDesktop() {
         }}
         className="text-center sm:text-lg"
       >
-        {json.name}
+        {leaderboardData.name}
       </Title>
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
@@ -78,7 +82,7 @@ export default function MiniLeaderboardDesktop() {
           />
         )}
       </div>
-      {json.users.length > 3 && (
+      {leaderboardData.users.length > 3 && (
         <Table horizontalSpacing="xl">
           <Table.Thead>
             <Table.Tr>
@@ -88,7 +92,7 @@ export default function MiniLeaderboardDesktop() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {json.users.map((entry, index) => {
+            {leaderboardData.users.map((entry, index) => {
               if ([0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={index}>
