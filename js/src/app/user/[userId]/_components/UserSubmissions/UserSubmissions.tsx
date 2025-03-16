@@ -1,0 +1,179 @@
+import { useUserSubmissionsQuery } from "@/app/user/[userId]/_components/UserSubmissions/hooks";
+import {
+  langNameToIcon,
+  langNameKey,
+} from "@/components/ui/langname-to-icon/LangNameToIcon";
+import Paginator from "@/components/ui/table/Paginator";
+import SearchBox from "@/components/ui/table/SearchBox";
+import { timeDiff } from "@/lib/timeDiff";
+import { Box, Table, Overlay, Badge, Text } from "@mantine/core";
+import { Link } from "react-router-dom";
+
+export default function UserSubmissions({ userId }: { userId?: string }) {
+  const {
+    data,
+    status,
+    page,
+    goBack,
+    goForward,
+    isPlaceholderData,
+    goTo,
+    searchQuery,
+    setSearchQuery,
+  } = useUserSubmissionsQuery({
+    userId,
+    tieToUrl: true,
+  });
+
+  if (status === "pending") {
+    return <>pending</>;
+  }
+
+  if (status === "error") {
+    return <>error</>;
+  }
+
+  if (!data.success) {
+    return <>{data.message}</>;
+  }
+
+  const pageData = data.data;
+
+  return (
+    <>
+      <SearchBox
+        query={searchQuery}
+        onChange={(event) => {
+          setSearchQuery(event.currentTarget.value);
+        }}
+        placeholder={"Search for submission title"}
+      />
+      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
+        <Table
+          verticalSpacing={"lg"}
+          horizontalSpacing={"xs"}
+          withRowBorders={false}
+          striped
+          my={"sm"}
+          pos={"relative"}
+        >
+          {isPlaceholderData && (
+            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
+          )}
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Lang</Table.Th>
+              <Table.Th>Title</Table.Th>
+              <Table.Th>Difficulty</Table.Th>
+              <Table.Th>Accepted</Table.Th>
+              <Table.Th>Pts</Table.Th>
+              <Table.Th>Solved</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {pageData.data.length == 0 && (
+              <Table.Tr>
+                <Table.Td colSpan={100}>
+                  <Text fw={500} ta="center">
+                    Nothing found
+                  </Text>
+                </Table.Td>
+              </Table.Tr>
+            )}
+            {pageData.data.map((submission, index) => {
+              const badgeDifficultyColor = (() => {
+                if (submission.questionDifficulty === "Easy") {
+                  return undefined;
+                }
+                if (submission.questionDifficulty === "Medium") {
+                  return "yellow";
+                }
+                if (submission.questionDifficulty === "Hard") {
+                  return "red";
+                }
+                return undefined;
+              })();
+
+              const badgeAcceptedColor = (() => {
+                const acceptanceRate = submission.acceptanceRate * 100;
+                if (acceptanceRate >= 75) {
+                  return undefined;
+                }
+                if (acceptanceRate >= 50) {
+                  return "yellow";
+                }
+                if (acceptanceRate >= 0) {
+                  return "red";
+                }
+                return undefined;
+              })();
+
+              const LanguageIcon =
+                langNameToIcon[submission.language as langNameKey] ||
+                langNameToIcon["default"];
+
+              return (
+                <Table.Tr key={index}>
+                  <Table.Td>
+                    <LanguageIcon size={24} width={24} height={24} />
+                  </Table.Td>
+                  <Table.Td>
+                    <Text
+                      component={Link}
+                      to={`/submission/s/${submission.id}`}
+                      className="transition-all hover:text-blue-500"
+                    >
+                      {submission.questionTitle}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge ta="center" color={badgeDifficultyColor}>
+                      {submission.questionDifficulty}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge ta={"center"} color={badgeAcceptedColor}>
+                      {Math.round(submission.acceptanceRate * 100)}%
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td>{submission.pointsAwarded}</Table.Td>
+                  <Table.Td>
+                    {timeDiff(new Date(submission.submittedAt))}
+                  </Table.Td>
+                </Table.Tr>
+              );
+            })}
+            {/* Render empty values to fill up page and avoid content shifting.*/}
+            {pageData.data.length < pageData.pageSize &&
+              Array(pageData.pageSize - pageData.data.length)
+                .fill(0)
+                .map((_, idx) => (
+                  <Table.Tr key={idx} opacity={0}>
+                    <Table.Td>Language Icon</Table.Td>
+                    <Table.Td>
+                      <Text>Sample problem.</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge ta="center">Difficulty</Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge ta={"center"}>AC%</Badge>
+                    </Table.Td>
+                    <Table.Td>PTs</Table.Td>
+                    <Table.Td>Date 1</Table.Td>
+                  </Table.Tr>
+                ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <Paginator
+        pages={pageData.pages}
+        currentPage={page}
+        hasNextPage={pageData.hasNextPage}
+        goBack={goBack}
+        goForward={goForward}
+        goTo={goTo}
+      />
+    </>
+  );
+}
