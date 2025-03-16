@@ -1,12 +1,14 @@
 import { useUserSubmissionsQuery } from "@/app/user/[userId]/_components/UserSubmissions/hooks";
+import UserSubmissionsSkeleton from "@/app/user/[userId]/_components/UserSubmissions/UserSubmissionsSkeleton";
 import {
-  langNameToIcon,
   langNameKey,
+  langNameToIcon,
 } from "@/components/ui/langname-to-icon/LangNameToIcon";
 import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
+import Toast from "@/components/ui/toast/Toast";
 import { timeDiff } from "@/lib/timeDiff";
-import { Box, Table, Overlay, Badge, Text } from "@mantine/core";
+import { Badge, Box, Overlay, Table, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function UserSubmissions({ userId }: { userId?: string }) {
@@ -26,11 +28,17 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   });
 
   if (status === "pending") {
-    return <>pending</>;
+    return (
+      <>
+        <UserSubmissionsSkeleton />
+      </>
+    );
   }
 
   if (status === "error") {
-    return <>error</>;
+    return (
+      <Toast message="Sorry, something went wrong when trying to fetch user's submissions. Please try again later." />
+    );
   }
 
   if (!data.success) {
