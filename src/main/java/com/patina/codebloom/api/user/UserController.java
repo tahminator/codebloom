@@ -35,6 +35,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class UserController {
     /* Page size for submissions */
     private static final int SUBMISSIONS_PAGE_SIZE = 20;
+    private static final String SUBMISSIONS_PAGE_SIZE_STRING = String.valueOf(SUBMISSIONS_PAGE_SIZE);
 
     private final Protector protector;
     private final QuestionRepository questionRepository;
@@ -72,18 +73,21 @@ public class UserController {
     public ResponseEntity<ApiResponder<Page<ArrayList<Question>>>> getAllQuestionsForUser(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
+                    @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize,
                     @PathVariable final String userId) {
         FakeLag.sleep(250);
 
+        final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
+
         protector.validateSession(request);
 
-        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, SUBMISSIONS_PAGE_SIZE, query);
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query);
 
         int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query);
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<Question>> createdPage = new Page<>(hasNextPage, questions, totalPages, SUBMISSIONS_PAGE_SIZE);
+        Page<ArrayList<Question>> createdPage = new Page<>(hasNextPage, questions, totalPages, parsedPageSize);
 
         return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
     }
