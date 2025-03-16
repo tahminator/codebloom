@@ -109,7 +109,7 @@ export default function LeaderboardForDashboard({
           return (
             <Flex
               component={Link}
-              to={`/submission/u/${user.id}`}
+              to={`/user/${user.id}`}
               key={idx}
               direction={"row"}
               justify={"space-between"}
