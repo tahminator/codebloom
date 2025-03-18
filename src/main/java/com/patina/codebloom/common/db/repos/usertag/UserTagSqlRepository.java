@@ -63,7 +63,7 @@ public class UserTagSqlRepository implements UserTagRepository {
                         SELECT
                             id,
                             "createdAt",
-                            userId,
+                            "userId",
                             tag
                         FROM
                             "UserTag"
