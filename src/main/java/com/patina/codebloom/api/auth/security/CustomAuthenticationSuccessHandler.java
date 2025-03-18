@@ -14,9 +14,11 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 import com.patina.codebloom.jda.JDAInitializer;
 
 import jakarta.servlet.ServletException;
@@ -28,9 +30,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
 /**
- * Handles successful OAuth2 login by either creating a new user or referencing an old user and generating a cookie storing the session ID.
+ * Handles successful OAuth2 login by either creating a new user or referencing
+ * an old user and generating a cookie storing the session ID.
  * 
- * @see <a href= "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication Documentation</a>
+ * @see <a href=
+ * "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication
+ * Documentation</a>
  */
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -40,17 +45,19 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final LeaderboardRepository leaderboardRepository;
+    private final UserTagRepository userTagRepository;
     private final JDAInitializer jdaInitializer;
     private final JDA jda;
 
     public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
                     final LeaderboardRepository leaderboardRepository,
-                    final JDAInitializer jdaInitializer) {
+                    final JDAInitializer jdaInitializer, final UserTagRepository userTagRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
         this.jdaInitializer = jdaInitializer;
         this.jda = initializeJda(jdaInitializer);
+        this.userTagRepository = userTagRepository;
     }
 
     private JDA initializeJda(final JDAInitializer jdaInitializer) {
@@ -90,7 +97,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
             Guild foundGuild = null;
             for (Guild g : guilds) {
-                // System.out.println(g.getId() + "=" + jdaInitializer.getJdaProperties().getId());
+                // System.out.println(g.getId() + "=" +
+                // jdaInitializer.getJdaProperties().getId());
                 if (g.getId().equals(jdaInitializer.getJdaProperties().getId())) {
                     foundGuild = g;
                     break;
@@ -98,6 +106,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             }
 
             if (foundGuild != null) {
+                userTagRepository.createTagByUserId(existingUser.getId(), Tag.Patina);
                 List<Member> members = foundGuild.getMembers();
 
                 for (Member m : members) {
