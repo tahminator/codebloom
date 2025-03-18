@@ -106,7 +106,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             }
 
             if (foundGuild != null) {
-                userTagRepository.createTagByUserId(existingUser.getId(), Tag.Patina);
+                if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), Tag.Patina) == null) {
+                    userTagRepository.createTagByUserId(existingUser.getId(), Tag.Patina);
+                }
                 List<Member> members = foundGuild.getMembers();
 
                 for (Member m : members) {
