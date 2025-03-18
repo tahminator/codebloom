@@ -31,7 +31,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
       direction={"column"}
       gap={"md"}
       m={"xs"}
-      to={`/submission/u/${userId}`}
+      to={`/user/${userId}`}
       className="group transition-all"
     >
       <Flex
