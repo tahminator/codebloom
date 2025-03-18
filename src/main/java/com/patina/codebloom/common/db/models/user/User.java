@@ -1,5 +1,9 @@
 package com.patina.codebloom.common.db.models.user;
 
+import java.util.ArrayList;
+
+import com.patina.codebloom.common.db.models.usertag.UserTag;
+
 public class User {
     private String id;
 
@@ -10,14 +14,24 @@ public class User {
     private String leetcodeUsername;
     private String nickname;
 
-    public User(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname) {
+    /**
+     * If you want to update tags in the database, you have to use the
+     * {@link com.patina.codebloom.common.db.repos.usertag.UserTagRepository}
+     */
+    private ArrayList<UserTag> tags;
+
+    public User(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final ArrayList<UserTag> tags) {
         this.id = id;
         this.discordId = discordId;
         this.discordName = discordName;
         this.leetcodeUsername = leetcodeUsername;
         this.nickname = nickname;
+        this.tags = tags;
     }
 
+    /**
+     * A new user should not have any tags to begin with.
+     */
     public User(final String discordId, final String discordName) {
         this.discordId = discordId;
         this.discordName = discordName;
@@ -61,5 +75,27 @@ public class User {
 
     public void setNickname(final String nickname) {
         this.nickname = nickname;
+    }
+
+    public ArrayList<UserTag> getTags() {
+        return tags;
+    }
+
+    /**
+     * This operation is permitted, but the tag will not be used in update
+     * operations in the UserRepository. Instead call this method with the parameter
+     * being the add method from
+     * {@link com.patina.codebloom.common.db.repos.usertag.UserTagRepository}
+     *
+     * Essentially, this operation should be used to keep the User model up-to-date
+     * with any Tag operations without needlessly querying the database for the full
+     * User object.
+     */
+    public void addTag(final UserTag tag) {
+        if (tag == null) {
+            return;
+        }
+
+        tags.add(tag);
     }
 }

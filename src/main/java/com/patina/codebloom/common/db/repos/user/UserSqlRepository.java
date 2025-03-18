@@ -12,15 +12,23 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 
 @Component
 public class UserSqlRepository implements UserRepository {
     private Connection conn;
+    private final UserTagRepository userTagRepository;
 
-    public UserSqlRepository(final DbConnection dbConnection) {
+    public UserSqlRepository(final DbConnection dbConnection, final UserTagRepository userTagRepository) {
         this.conn = dbConnection.getConn();
+        this.userTagRepository = userTagRepository;
     }
 
+    /**
+     * @implNote - You can not set tags on a new user. Create the user, and if the
+     * returned user is not null, you can use updateUserTagById from
+     * {@link UserTagRepository}
+     */
     @Override
     public User createNewUser(final User user) {
         String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\") VALUES (?, ?, ?, ?, ?)";
@@ -60,7 +68,10 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname);
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, tags);
                     return user;
                 }
             }
@@ -85,7 +96,10 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname);
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, tags);
                     return user;
                 }
             }
@@ -146,7 +160,10 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname));
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, tags));
                 }
             }
         } catch (SQLException e) {
@@ -181,7 +198,10 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var verifyKey = rs.getString("verifyKey");
-                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, verifyKey);
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, verifyKey, tags);
                     return user;
                 }
             }

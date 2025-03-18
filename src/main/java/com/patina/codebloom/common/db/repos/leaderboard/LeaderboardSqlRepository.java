@@ -15,13 +15,16 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
+import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 
 @Component
 public class LeaderboardSqlRepository implements LeaderboardRepository {
     private Connection conn;
+    private final UserTagRepository userTagRepository;
 
-    public LeaderboardSqlRepository(final DbConnection dbConnection) {
+    public LeaderboardSqlRepository(final DbConnection dbConnection, final UserTagRepository userTagRepository) {
         this.conn = dbConnection.getConn();
+        this.userTagRepository = userTagRepository;
     }
 
     @Override
@@ -103,7 +106,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
+                        var tags = userTagRepository.findTagsByUserId(userId);
+
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
                         currentLeaderboard.getUsers().add(user);
                     }
                 }
@@ -181,7 +186,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
+                        var tags = userTagRepository.findTagsByUserId(userId);
+
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
                         leaderboard.addUser(user);
                     }
                 }
@@ -244,7 +251,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
+                        var tags = userTagRepository.findTagsByUserId(userId);
+
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
                         leaderboard.addUser(user);
                     }
                 }
@@ -365,7 +374,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
+                        var tags = userTagRepository.findTagsByUserId(userId);
+
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
                         leaderboard.addUser(user);
                     }
                 }
@@ -453,7 +464,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         var nickname = rs.getString("nickname");
                         var totalScore = rs.getInt("totalScore");
 
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore);
+                        var tags = userTagRepository.findTagsByUserId(userId);
+
+                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
                         leaderboard.addUser(user);
                     }
                 }
@@ -528,7 +541,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     var leetcodeName = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var totalScore = rs.getInt("totalScore");
-                    user = new UserWithScore(id, discordId, discordName, leetcodeName, nickname, totalScore);
+
+                    var tags = userTagRepository.findTagsByUserId(userId);
+
+                    user = new UserWithScore(id, discordId, discordName, leetcodeName, nickname, totalScore, tags);
                     return user;
                 }
             }
