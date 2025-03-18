@@ -114,7 +114,7 @@ While you can use any editor, VSCode is recommended as it can handle multiple la
 
    ```bash
    # As an example
-   cd frontend
+   cd js
    pnpm install zod
    ```
 
@@ -124,4 +124,4 @@ While you can use any editor, VSCode is recommended as it can handle multiple la
    pnpm run dev
    ```
 
-3. Additional frontend documentation can be found in the `frontend` folder [here](https://github.com/tahminator/tree/main/docs/frontend).
+3. Additional frontend documentation can be found in the `frontend` folder [here](https://github.com/tahminator/codebloom/tree/main/docs/frontend).
