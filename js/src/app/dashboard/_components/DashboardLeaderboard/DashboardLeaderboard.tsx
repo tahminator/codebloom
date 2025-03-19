@@ -1,8 +1,10 @@
 import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
-import { useFixMyPointsPrefetch } from "@/app/dashboard/_components/DashboardLeaderboard/hooks";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
-import { useFullLeaderboardEntriesQuery } from "@/app/leaderboard/hooks";
+import {
+  useCurrentLeaderboardUsersQuery,
+  useFixMyPointsPrefetch,
+} from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -26,7 +28,7 @@ export default function LeaderboardForDashboard({
   // Hack to fix a race condition.
   useFixMyPointsPrefetch({ userId });
 
-  const { data, status } = useFullLeaderboardEntriesQuery({ pageSize: 5 });
+  const { data, status } = useCurrentLeaderboardUsersQuery({ pageSize: 5 });
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;

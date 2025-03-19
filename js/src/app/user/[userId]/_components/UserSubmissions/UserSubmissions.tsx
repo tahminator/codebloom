@@ -1,4 +1,3 @@
-import { useUserSubmissionsQuery } from "@/app/user/[userId]/_components/UserSubmissions/hooks";
 import UserSubmissionsSkeleton from "@/app/user/[userId]/_components/UserSubmissions/UserSubmissionsSkeleton";
 import {
   langNameKey,
@@ -7,6 +6,7 @@ import {
 import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
+import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { timeDiff } from "@/lib/timeDiff";
 import { Badge, Box, Overlay, Table, Text } from "@mantine/core";
 import { Link } from "react-router-dom";

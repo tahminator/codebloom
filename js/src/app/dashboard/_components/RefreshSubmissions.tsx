@@ -1,4 +1,4 @@
-import { useUsersTotalPoints } from "@/app/dashboard/hooks";
+import { useUsersTotalPoints } from "@/lib/api/queries/leaderboard";
 import { Button, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
