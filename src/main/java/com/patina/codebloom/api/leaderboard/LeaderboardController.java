@@ -59,14 +59,15 @@ public class LeaderboardController {
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     public ResponseEntity<ApiResponder<Page<ArrayList<UserWithScore>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
-                    @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize) {
+                    @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize,
+                    @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina) {
         FakeLag.sleep(800);
 
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
-        ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(page, parsedPageSize);
+        ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(page, parsedPageSize, patina);
 
-        int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount();
+        int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount(patina);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
