@@ -19,7 +19,6 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
-import com.patina.codebloom.common.security.Protector;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,14 +34,11 @@ import jakarta.servlet.http.HttpServletRequest;
 public class UserController {
     /* Page size for submissions */
     private static final int SUBMISSIONS_PAGE_SIZE = 20;
-    private static final String SUBMISSIONS_PAGE_SIZE_STRING = String.valueOf(SUBMISSIONS_PAGE_SIZE);
 
-    private final Protector protector;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
 
-    public UserController(final Protector protector, final QuestionRepository questionRepository, final UserRepository userRepository) {
-        this.protector = protector;
+    public UserController(final QuestionRepository questionRepository, final UserRepository userRepository) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
     }
@@ -80,8 +76,6 @@ public class UserController {
         FakeLag.sleep(500);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
-
-        protector.validateSession(request);
 
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query);
 
