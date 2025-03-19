@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 
 @Component
@@ -230,6 +231,48 @@ public class UserSqlRepository implements UserRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Error while retrieving user count with given leetcodeUsername", e);
         }
+    }
+
+    @Override
+    public UserWithScore getUserWithScoreById(final String userId, final String leaderboardId) {
+        String sql = """
+                            SELECT
+                                u.id,
+                                u."discordId",
+                                u."discordName",
+                                u."leetcodeUsername",
+                                u.nickname,
+                                m."totalScore"
+                            FROM
+                                "User" u
+                            LEFT JOIN "Metadata" m ON m."userId" = u.id;
+                            WHERE
+                                u.id = ?
+                                AND
+                                m."leaderboardId" = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(userId));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    var id = rs.getString("id");
+                    var discordId = rs.getString("discordId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
+                    var totalScore = rs.getInt("totalScore");
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    return new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get user with score by id", e);
+        }
+
+        return null;
     }
 
 }

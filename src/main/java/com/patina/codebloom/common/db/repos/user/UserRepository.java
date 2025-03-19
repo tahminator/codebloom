@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.models.user.UserWithScore;
 
 public interface UserRepository {
     User createNewUser(User user);
 
     User getUserById(String id);
+
+    UserWithScore getUserWithScoreById(String userId, String leaderboardId);
 
     User getUserByDiscordId(String discordId);
 
