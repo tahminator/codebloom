@@ -17,7 +17,7 @@ export default function LeaderboardCard({
 }: {
   placeString: "First" | "Second" | "Third";
   discordName: string;
-  leetcodeUsername: string;
+  leetcodeUsername: string | null;
   totalScore: number;
   width: CSSProperties["width"];
   userId: string;

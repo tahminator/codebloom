@@ -1,3 +1,4 @@
+import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
@@ -10,7 +11,6 @@ import {
   Flex,
   Overlay,
   Table,
-  Title,
   Tooltip,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
@@ -37,21 +37,11 @@ export default function LeaderboardIndex() {
   }
 
   const pageData = data.data;
-  const [first, second, third] = pageData.data.users;
+  const [first, second, third] = pageData.data;
 
   return (
     <div style={{ padding: "1rem" }}>
-      <Title
-        order={3}
-        style={{
-          fontSize: "1rem",
-          fontWeight: "bold",
-          marginBottom: "1rem",
-        }}
-        className="text-center sm:text-lg"
-      >
-        {pageData.data.name}
-      </Title>
+      <LeaderboardMetadata />
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
@@ -110,7 +100,7 @@ export default function LeaderboardIndex() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {pageData.data.users.map((entry, index) => {
+            {pageData.data.map((entry, index) => {
               if (page === 1 && [0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={index}>

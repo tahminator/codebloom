@@ -235,7 +235,6 @@ public class SubmissionController {
                     @PathVariable final String submissionId) {
         FakeLag.sleep(750);
 
-        protector.validateSession(request);
         QuestionWithUser question = questionRepository.getQuestionWithUserById(submissionId);
 
         if (question == null) {

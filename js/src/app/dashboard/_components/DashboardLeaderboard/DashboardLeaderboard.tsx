@@ -1,7 +1,8 @@
 import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
 import { useFixMyPointsPrefetch } from "@/app/dashboard/_components/DashboardLeaderboard/hooks";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
-import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
+import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import { useFullLeaderboardEntriesQuery } from "@/app/leaderboard/hooks";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -25,7 +26,7 @@ export default function LeaderboardForDashboard({
   // Hack to fix a race condition.
   useFixMyPointsPrefetch({ userId });
 
-  const { data, status } = useShallowLeaderboardEntriesQuery();
+  const { data, status } = useFullLeaderboardEntriesQuery({ pageSize: 5 });
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
@@ -69,7 +70,7 @@ export default function LeaderboardForDashboard({
 
   const leaderboardData = data.data;
 
-  if (leaderboardData.users.length == 0) {
+  if (leaderboardData.data.length == 0) {
     return (
       <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
@@ -88,12 +89,12 @@ export default function LeaderboardForDashboard({
     );
   }
 
-  const inTop5 = !!leaderboardData.users.find((u) => u.id === userId);
+  const inTop5 = !!leaderboardData.data.find((u) => u.id === userId);
 
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Flex direction={"row"} justify={"space-between"} w={"100%"}>
-        <Title order={4}>{leaderboardData.name}</Title>
+        <LeaderboardMetadata />
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all
         </Button>
@@ -105,7 +106,7 @@ export default function LeaderboardForDashboard({
         </>
       )}
       <Flex direction={"column"} gap={"md"} m={"xs"}>
-        {leaderboardData.users.map((user, idx) => {
+        {leaderboardData.data.map((user, idx) => {
           const isMe = user.id === userId;
 
           const borderColor = (() => {

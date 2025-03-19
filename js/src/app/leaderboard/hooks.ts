@@ -1,16 +1,20 @@
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { ApiResponse } from "@/lib/types/apiResponse";
-import { LeaderboardEntry } from "@/lib/types/db/leaderboard";
+import { UserWithScore } from "@/lib/types/db/user";
 import { Page } from "@/lib/types/page";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 
 export const useFullLeaderboardEntriesQuery = ({
   initialPage = 1,
+  pageSize = 20,
+  tieToUrl = true,
 }: {
   initialPage?: number;
+  pageSize?: number;
+  tieToUrl?: boolean;
 }) => {
-  const [page, setPage] = useURLState("page", initialPage);
+  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
@@ -28,8 +32,8 @@ export const useFullLeaderboardEntriesQuery = ({
   );
 
   const query = useQuery({
-    queryKey: ["leaderboard", "all", "full", page],
-    queryFn: () => fetchLeaderboard({ page }),
+    queryKey: ["leaderboard", "users", page, pageSize],
+    queryFn: () => fetchLeaderboard({ page, pageSize }),
     placeholderData: keepPreviousData,
   });
 
@@ -42,12 +46,21 @@ export const useFullLeaderboardEntriesQuery = ({
   };
 };
 
-async function fetchLeaderboard({ page }: { page: number }) {
-  const response = await fetch(`/api/leaderboard/current?page=${page}`, {
-    method: "GET",
-  });
+async function fetchLeaderboard({
+  page,
+  pageSize,
+}: {
+  page: number;
+  pageSize: number;
+}) {
+  const response = await fetch(
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}`,
+    {
+      method: "GET",
+    },
+  );
 
-  const json = (await response.json()) as ApiResponse<Page<LeaderboardEntry>>;
+  const json = (await response.json()) as ApiResponse<Page<UserWithScore[]>>;
 
   return json;
 }

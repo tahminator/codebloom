@@ -1,5 +1,6 @@
 import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeaderboardMobileSkeleton";
-import { useShallowLeaderboardEntriesQuery } from "@/app/hooks";
+import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import { useFullLeaderboardEntriesQuery } from "@/app/leaderboard/hooks";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { Table } from "@mantine/core";
@@ -7,7 +8,7 @@ import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
 export default function MiniLeaderboardMobile() {
-  const { data, status } = useShallowLeaderboardEntriesQuery();
+  const { data, status } = useFullLeaderboardEntriesQuery({ pageSize: 5 });
 
   if (status === "pending") {
     return <MiniLeaderboardMobileSkeleton />;
@@ -23,24 +24,15 @@ export default function MiniLeaderboardMobile() {
 
   const leaderboardData = data.data;
 
-  if (leaderboardData.users.length == 0) {
+  if (leaderboardData.data.length == 0) {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const [first, second, third] = leaderboardData.users;
+  const [first, second, third] = leaderboardData.data;
 
   return (
     <>
-      <h1
-        style={{
-          fontSize: "1rem",
-          fontWeight: "bold",
-          marginBottom: "1rem",
-        }}
-        className="text-center sm:text-lg"
-      >
-        {leaderboardData.name}
-      </h1>
+      <LeaderboardMetadata />
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
@@ -79,7 +71,7 @@ export default function MiniLeaderboardMobile() {
           />
         )}
       </div>
-      {leaderboardData.users.length > 3 && (
+      {leaderboardData.data.length > 3 && (
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -89,7 +81,7 @@ export default function MiniLeaderboardMobile() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {leaderboardData.users.map((entry, index) => {
+            {leaderboardData.data.map((entry, index) => {
               if ([0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={entry.discordName}>
