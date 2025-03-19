@@ -13,256 +13,17 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
-import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
-import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 @Component
 public class LeaderboardSqlRepository implements LeaderboardRepository {
     private Connection conn;
-    private final UserTagRepository userTagRepository;
+    private final UserRepository userRepository;
 
-    public LeaderboardSqlRepository(final DbConnection dbConnection, final UserTagRepository userTagRepository) {
+    public LeaderboardSqlRepository(final DbConnection dbConnection, final UserRepository userRepository) {
         this.conn = dbConnection.getConn();
-        this.userTagRepository = userTagRepository;
-    }
-
-    @Override
-    public ArrayList<Leaderboard> getAllLeaderboardsShallow() {
-        ArrayList<Leaderboard> leaderboards = new ArrayList<>();
-
-        String sql = "SELECT id, name, \"createdAt\", \"deletedAt\" FROM \"Leaderboard\" ORDER BY \"createdAt\" DESC";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    var id = rs.getString("id");
-                    var name = rs.getString("name");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-
-                    Timestamp deletedAtTimestamp = rs.getTimestamp("deletedAt");
-
-                    LocalDateTime deletedAt = null;
-                    if (deletedAtTimestamp != null) {
-                        deletedAt = deletedAtTimestamp.toLocalDateTime();
-                    }
-
-                    leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all shallow leaderboards", e);
-        }
-
-        return leaderboards;
-    }
-
-    @Override
-    public ArrayList<LeaderboardWithUsers> getAllLeaderboardsFull() {
-        ArrayList<LeaderboardWithUsers> leaderboards = new ArrayList<>();
-
-        String sql = """
-                        SELECT
-                            l.id AS \"leaderboardId\",
-                            l.name AS \"leaderboardName\",
-                            l."createdAt" AS \"leaderboardCreatedAt\",
-                            l."deletedAt" AS \"leaderboardDeletedAt\",
-                            u.id AS \"userId\",
-                            u.\"discordId\",
-                            u.\"discordName\",
-                            u.\"leetcodeUsername\",
-                            u.\"nickname\",
-                            m.\"totalScore\"
-                        FROM "Leaderboard" l
-                        LEFT JOIN "Metadata" m ON l.id = m."leaderboardId"
-                        LEFT JOIN "User" u ON m."userId" = u.id
-                        """;
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                LeaderboardWithUsers currentLeaderboard = null;
-
-                while (rs.next()) {
-                    String leaderboardId = rs.getString("leaderboardId");
-                    if (currentLeaderboard == null || !currentLeaderboard.getId().equals(leaderboardId)) {
-                        var name = rs.getString("leaderboardName");
-                        var createdAt = rs.getTimestamp("leaderboardCreatedAt").toLocalDateTime();
-
-                        Timestamp deletedAtTimestamp = rs.getTimestamp("leaderboardDeletedAt");
-
-                        LocalDateTime deletedAt = null;
-                        if (deletedAtTimestamp != null) {
-                            deletedAt = deletedAtTimestamp.toLocalDateTime();
-                        }
-
-                        currentLeaderboard = new LeaderboardWithUsers(leaderboardId, name, createdAt, deletedAt, new ArrayList<>());
-                        leaderboards.add(currentLeaderboard);
-                    }
-
-                    String userId = rs.getString("userId");
-                    if (userId != null) {
-                        var discordId = rs.getString("discordId");
-                        var discordName = rs.getString("discordName");
-                        var leetcodeUsername = rs.getString("leetcodeUsername");
-                        var nickname = rs.getString("nickname");
-                        var totalScore = rs.getInt("totalScore");
-
-                        var tags = userTagRepository.findTagsByUserId(userId);
-
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
-                        currentLeaderboard.getUsers().add(user);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all full leaderboards", e);
-        }
-
-        return leaderboards;
-    }
-
-    @Override
-    public LeaderboardWithUsers getLeaderboardByIdShallow(final String leaderboardId) {
-        LeaderboardWithUsers leaderboard = null;
-
-        String sql = """
-                        SELECT
-                            l.id AS "leaderboardId",
-                            l.name AS "leaderboardName",
-                            l."createdAt" AS "leaderboardCreatedAt",
-                            l."deletedAt" AS "leaderboardDeletedAt",
-                            u.id AS "userId",
-                            u."discordId",
-                            u."discordName",
-                            u."leetcodeUsername",
-                            u."nickname",
-                            m."totalScore"
-                        FROM "Leaderboard" l
-                        LEFT JOIN (
-                            SELECT *
-                            FROM (
-                                SELECT
-                                    m."leaderboardId",
-                                    u.id AS "userId",
-                                    u."discordId",
-                                    u."discordName",
-                                    u."leetcodeUsername",
-                                    u."nickname",
-                                    m."totalScore",
-                                    ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
-                                FROM "Metadata" m
-                                JOIN "User" u ON m."userId" = u.id
-                            ) ranked_users
-                            WHERE "row_num" <= 5
-                        ) limited_users ON l.id = limited_users."leaderboardId"
-                        WHERE l.id = ?
-                        """;
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(leaderboardId));
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    if (leaderboard == null) {
-                        var currLeaderboardId = rs.getString("leaderboardId");
-                        var name = rs.getString("leaderboardName");
-                        var createdAt = rs.getTimestamp("leaderboardCreatedAt").toLocalDateTime();
-
-                        Timestamp deletedAtTimestamp = rs.getTimestamp("leaderboardDeletedAt");
-
-                        LocalDateTime deletedAt = null;
-                        if (deletedAtTimestamp != null) {
-                            deletedAt = deletedAtTimestamp.toLocalDateTime();
-                        }
-
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
-                        leaderboard = currentLeaderboard;
-                    }
-
-                    String userId = rs.getString("userId");
-
-                    if (userId != null) {
-                        var discordId = rs.getString("discordId");
-                        var discordName = rs.getString("discordName");
-                        var leetcodeUsername = rs.getString("leetcodeUsername");
-                        var nickname = rs.getString("nickname");
-                        var totalScore = rs.getInt("totalScore");
-
-                        var tags = userTagRepository.findTagsByUserId(userId);
-
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
-                        leaderboard.addUser(user);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all full leaderboards", e);
-        }
-
-        return leaderboard;
-    }
-
-    @Override
-    public LeaderboardWithUsers getLeaderboardByIdFull(final String leaderboardId) {
-        LeaderboardWithUsers leaderboard = null;
-
-        String sql = """
-                        SELECT
-                            l.id AS \"leaderboardId\",
-                            l.name AS \"leaderboardName\",
-                            l."createdAt" AS \"leaderboardCreatedAt\",
-                            l."deletedAt" AS \"leaderboardDeletedAt\",
-                            u.id AS \"userId\",
-                            u.\"discordId\",
-                            u.\"discordName\",
-                            u.\"leetcodeUsername\",
-                            u.\"nickname\",
-                            m.\"totalScore\"
-                        FROM "Leaderboard" l
-                        LEFT JOIN "Metadata" m ON l.id = m."leaderboardId"
-                        LEFT JOIN "User" u ON m."userId" = u.id
-                        WHERE l.id = ?
-                        """;
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(leaderboardId));
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    if (leaderboard == null) {
-                        var currLeaderboardId = rs.getString("leaderboardId");
-                        var name = rs.getString("leaderboardName");
-                        var createdAt = rs.getTimestamp("leaderboardCreatedAt").toLocalDateTime();
-
-                        Timestamp deletedAtTimestamp = rs.getTimestamp("leaderboardDeletedAt");
-
-                        LocalDateTime deletedAt = null;
-                        if (deletedAtTimestamp != null) {
-                            deletedAt = deletedAtTimestamp.toLocalDateTime();
-                        }
-
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
-                        leaderboard = currentLeaderboard;
-                    }
-
-                    String userId = rs.getString("userId");
-
-                    if (userId != null) {
-                        var discordId = rs.getString("discordId");
-                        var discordName = rs.getString("discordName");
-                        var leetcodeUsername = rs.getString("leetcodeUsername");
-                        var nickname = rs.getString("nickname");
-                        var totalScore = rs.getInt("totalScore");
-
-                        var tags = userTagRepository.findTagsByUserId(userId);
-
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
-                        leaderboard.addUser(user);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all full leaderboards", e);
-        }
-
-        return leaderboard;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -295,187 +56,93 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public LeaderboardWithUsers getRecentLeaderboardShallow() {
-        LeaderboardWithUsers leaderboard = null;
-
+    public Leaderboard getRecentLeaderboardMetadata() {
         String sql = """
-                        WITH latest_leaderboard AS (
-                            SELECT id AS \"leaderboardId\"
-                            FROM \"Leaderboard\"
-                            WHERE \"deletedAt\" IS NULL
-                            ORDER BY \"createdAt\" DESC
-                            LIMIT 1
-                        )
                         SELECT
-                            l.id AS "leaderboardId",
-                            l.name AS "leaderboardName",
-                            l."createdAt" AS "leaderboardCreatedAt",
-                            l."deletedAt" AS "leaderboardDeletedAt",
-                            limited_users."userId",
-                            limited_users."discordId",
-                            limited_users."discordName",
-                            limited_users."leetcodeUsername",
-                            limited_users."nickname",
-                            limited_users."totalScore"
-                        FROM "Leaderboard" l
-                        INNER JOIN latest_leaderboard ll ON l.id = ll.\"leaderboardId\"
-                        LEFT JOIN (
-                            SELECT
-                                ranked_users."leaderboardId",
-                                ranked_users."userId",
-                                ranked_users."discordId",
-                                ranked_users."discordName",
-                                ranked_users."leetcodeUsername",
-                                ranked_users."nickname",
-                                ranked_users."totalScore"
-                            FROM (
-                                SELECT
-                                    m."leaderboardId",
-                                    u.id AS "userId",
-                                    u."discordId",
-                                    u."discordName",
-                                    u."leetcodeUsername",
-                                    u."nickname",
-                                    m."totalScore",
-                                    ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
-                                FROM "Metadata" m
-                                JOIN "User" u ON m."userId" = u.id
-                            ) ranked_users
-                            WHERE ranked_users."row_num" <= 5
-                        ) limited_users ON l.id = limited_users."leaderboardId"
-                        ORDER BY l."createdAt" DESC
+                            id,
+                            name,
+                            "createdAt",
+                            "deletedAt"
+                        FROM "Leaderboard"
+                        WHERE
+                            "deletedAt" IS NULL
+                        ORDER BY "createdAt" DESC
+                        LIMIT 1
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    if (leaderboard == null) {
-                        var currLeaderboardId = rs.getString("leaderboardId");
-                        var name = rs.getString("leaderboardName");
-                        var createdAt = rs.getTimestamp("leaderboardCreatedAt").toLocalDateTime();
+                if (rs.next()) {
+                    var id = rs.getString("id");
+                    var name = rs.getString("name");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    Timestamp deletedAtTimestamp = rs.getTimestamp("deletedAt");
 
-                        Timestamp deletedAtTimestamp = rs.getTimestamp("leaderboardDeletedAt");
-
-                        LocalDateTime deletedAt = null;
-                        if (deletedAtTimestamp != null) {
-                            deletedAt = deletedAtTimestamp.toLocalDateTime();
-                        }
-
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
-                        leaderboard = currentLeaderboard;
+                    LocalDateTime deletedAt = null;
+                    if (deletedAtTimestamp != null) {
+                        deletedAt = deletedAtTimestamp.toLocalDateTime();
                     }
 
-                    String userId = rs.getString("userId");
-
-                    if (userId != null) {
-                        var discordId = rs.getString("discordId");
-                        var discordName = rs.getString("discordName");
-                        var leetcodeUsername = rs.getString("leetcodeUsername");
-                        var nickname = rs.getString("nickname");
-                        var totalScore = rs.getInt("totalScore");
-
-                        var tags = userTagRepository.findTagsByUserId(userId);
-
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
-                        leaderboard.addUser(user);
-                    }
+                    return new Leaderboard(id, name, createdAt, deletedAt);
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all full leaderboards", e);
+            throw new RuntimeException("Failed to fetch recent leaderboard metadata", e);
         }
 
-        return leaderboard;
+        return null;
     }
 
     @Override
-    // Use this header.
-    // public LeaderboardWithUsers getRecentLeaderboardFull(final int page, final
-    // int pageSize) {
-    public LeaderboardWithUsers getRecentLeaderboardFull(final int page, final int pageSize) {
-        LeaderboardWithUsers leaderboard = null;
+    public ArrayList<UserWithScore> getRecentLeaderboardUsers(final int page, final int pageSize) {
+        ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
                         WITH latest_leaderboard AS (
-                            SELECT id
-                            FROM "Leaderboard"
-                            WHERE "deletedAt" IS NULL
-                            ORDER BY "createdAt" DESC
+                            SELECT
+                                id
+                            FROM
+                                "Leaderboard"
+                            WHERE
+                                "deletedAt" IS NULL
+                            ORDER BY
+                                "createdAt" DESC
                             LIMIT 1
                         )
                         SELECT
-                            l.id AS "leaderboardId",
-                            l.name AS "leaderboardName",
-                            l."createdAt" AS "leaderboardCreatedAt",
-                            l."deletedAt" AS "leaderboardDeletedAt",
-                            ranked_users."userId",
-                            ranked_users."discordId",
-                            ranked_users."discordName",
-                            ranked_users."leetcodeUsername",
-                            ranked_users."nickname",
-                            ranked_users."totalScore"
-                        FROM "Leaderboard" l
-                        INNER JOIN latest_leaderboard ll ON l.id = ll.id
-                        LEFT JOIN (
-                                SELECT
-                                    m."leaderboardId",
-                                    u.id AS "userId",
-                                    u."discordId",
-                                    u."discordName",
-                                    u."leetcodeUsername",
-                                    u."nickname",
-                                    m."totalScore",
-                                    ROW_NUMBER() OVER (PARTITION BY m."leaderboardId" ORDER BY m."totalScore" DESC) AS "row_num"
-                                FROM "Metadata" m
-                                JOIN "User" u ON m."userId" = u.id
-                                ORDER BY "row_num" ASC
-                                LIMIT ? OFFSET ?
-                        ) ranked_users ON l.id = ranked_users."leaderboardId"
-                        ORDER BY "leaderboardCreatedAt" DESC
-                        """;
+                            u.id AS "userId",
+                            ll.id as "leaderboardId"
+                        FROM
+                            latest_leaderboard ll
+                        JOIN "Metadata" m ON
+                            m."leaderboardId" = ll.id
+                        JOIN "User" u
+                            ON m."userId" = u.id
+                        ORDER BY
+                            m."totalScore" DESC
+                        LIMIT ? OFFSET ?;
+                                                """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, pageSize);
             stmt.setInt(2, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    if (leaderboard == null) {
-                        var currLeaderboardId = rs.getString("leaderboardId");
-                        var name = rs.getString("leaderboardName");
-                        var createdAt = rs.getTimestamp("leaderboardCreatedAt").toLocalDateTime();
+                    var userId = rs.getString("userId");
+                    var leaderboardId = rs.getString("leaderboardId");
 
-                        Timestamp deletedAtTimestamp = rs.getTimestamp("leaderboardDeletedAt");
+                    UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
 
-                        LocalDateTime deletedAt = null;
-                        if (deletedAtTimestamp != null) {
-                            deletedAt = deletedAtTimestamp.toLocalDateTime();
-                        }
-
-                        LeaderboardWithUsers currentLeaderboard = new LeaderboardWithUsers(currLeaderboardId, name, createdAt, deletedAt, new ArrayList<>());
-                        leaderboard = currentLeaderboard;
-                    }
-
-                    String userId = rs.getString("userId");
-
-                    if (userId != null) {
-                        var discordId = rs.getString("discordId");
-                        var discordName = rs.getString("discordName");
-                        var leetcodeUsername = rs.getString("leetcodeUsername");
-                        var nickname = rs.getString("nickname");
-                        var totalScore = rs.getInt("totalScore");
-
-                        var tags = userTagRepository.findTagsByUserId(userId);
-
-                        UserWithScore user = new UserWithScore(userId, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
-                        leaderboard.addUser(user);
+                    if (user != null) {
+                        users.add(user);
                     }
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all full leaderboards", e);
+            throw new RuntimeException("Failed to fetch recent leaderboard users", e);
         }
 
-        return leaderboard;
+        return users;
     }
 
     @Override
@@ -510,49 +177,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to add user to leaderboard", e);
         }
-    }
-
-    @Override
-    public UserWithScore getUserFromLeaderboard(final String leaderboardId, final String userId) {
-        UserWithScore user = null;
-
-        String sql = """
-                        SELECT
-                            u.id,
-                            u.\"discordId\",
-                            u.\"discordName\",
-                            u.\"leetcodeUsername\",
-                            u.\"nickname\",
-                            m.\"totalScore\"
-                        FROM \"Metadata\" "m"
-                        LEFT JOIN \"User\" "u" ON u.id = m.\"userId\"
-                        LEFT JOIN \"Leaderboard\" "l" ON l.id = m.\"leaderboardId\"
-                        WHERE m.\"userId\" = ? AND m.\"leaderboardId\" = ?
-                        """;
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
-            stmt.setObject(2, UUID.fromString(leaderboardId));
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeName = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var totalScore = rs.getInt("totalScore");
-
-                    var tags = userTagRepository.findTagsByUserId(userId);
-
-                    user = new UserWithScore(id, discordId, discordName, leetcodeName, nickname, totalScore, tags);
-                    return user;
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch user from a specific leaderboard", e);
-        }
-
-        return user;
     }
 
     @Override

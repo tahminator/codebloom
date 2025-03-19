@@ -96,7 +96,7 @@ public class SubmissionsHandler {
 
             acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
-            Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardShallow();
+            Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
             // This should never be happening as there should always be an existing
             // leaderboard to fall on. Howerver, race conditions could trigger this problem.
@@ -104,7 +104,7 @@ public class SubmissionsHandler {
                 throw new RuntimeException("No recent leaderboard found.");
             }
 
-            UserWithScore recentUserMetadata = leaderboardRepository.getUserFromLeaderboard(recentLeaderboard.getId(), user.getId());
+            UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(recentLeaderboard.getId(), user.getId());
 
             leaderboardRepository.updateUserPointsFromLeaderboard(recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }

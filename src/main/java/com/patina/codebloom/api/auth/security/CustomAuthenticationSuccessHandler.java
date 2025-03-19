@@ -89,7 +89,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             } else {
                 User newUser = new User(discordId, discordName);
                 existingUser = userRepository.createNewUser(newUser);
-                Leaderboard leaderboard = leaderboardRepository.getRecentLeaderboardShallow();
+                Leaderboard leaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
                 leaderboardRepository.addUserToLeaderboard(existingUser.getId(), leaderboard.getId());
             }
 
