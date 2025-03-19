@@ -235,8 +235,6 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public UserWithScore getUserWithScoreById(final String userId, final String leaderboardId) {
-        System.out.println(userId);
-        System.out.println(leaderboardId);
         String sql = """
                             SELECT
                                 u.id,
@@ -276,8 +274,6 @@ public class UserSqlRepository implements UserRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get user with score by id", e);
         }
-
-        System.out.println("krjrjrj");
 
         return null;
     }
