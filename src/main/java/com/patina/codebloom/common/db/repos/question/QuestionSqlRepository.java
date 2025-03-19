@@ -13,14 +13,18 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
 
     private Connection conn;
+    private final UserRepository userRepository;
 
-    public QuestionSqlRepository(final DbConnection dbConnection) {
+    public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository) {
         this.conn = dbConnection.getConn();
+        this.userRepository = userRepository;
     }
 
     public Question createQuestion(final Question question) {
@@ -175,11 +179,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                                 q.code,
                                 q.language,
                                 q."submissionId",
-                                u."discordName",
-                                u."leetcodeUsername",
-                                u."nickname"
                             FROM "Question" q
-                            LEFT JOIN "User" u on q."userId" = u.id
                             WHERE q.id = ?
                         """;
 
@@ -205,16 +205,15 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var acceptanceRate = rs.getFloat("acceptanceRate");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
                     var runtime = rs.getString("runtime");
                     var memory = rs.getString("memory");
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
+
+                    User user = userRepository.getUserById(userId);
                     question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
-                                    createdAt, submittedAt, discordName, leetcodeUsername, runtime, memory, code, language, nickname, submissionId);
+                                    createdAt, submittedAt, user.getDiscordName(), user.getLeetcodeUsername(), runtime, memory, code, language, user.getNickname(), submissionId);
                     return question;
                 }
             }
@@ -249,7 +248,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                             q."submissionId"
                         FROM
                             "Question" q
-                        LEFT JOIN
+                        JOIN
                             "User" u ON q."userId" = u.id
                         WHERE
                             "userId" = ?
