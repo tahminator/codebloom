@@ -245,7 +245,7 @@ public class UserSqlRepository implements UserRepository {
                                 m."totalScore"
                             FROM
                                 "User" u
-                            LEFT JOIN "Metadata" m ON m."userId" = u.id;
+                            LEFT JOIN "Metadata" m ON m."userId" = u.id
                             WHERE
                                 u.id = ?
                                 AND
@@ -254,6 +254,7 @@ public class UserSqlRepository implements UserRepository {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
+            stmt.setObject(2, UUID.fromString(leaderboardId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     var id = rs.getString("id");

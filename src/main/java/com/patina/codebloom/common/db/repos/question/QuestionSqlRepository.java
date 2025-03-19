@@ -181,7 +181,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                                 q.memory,
                                 q.code,
                                 q.language,
-                                q."submissionId",
+                                q."submissionId"
                             FROM "Question" q
                             WHERE q.id = ?
                         """;
