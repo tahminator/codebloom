@@ -1,4 +1,4 @@
-import { useMyRecentLeaderboardData } from "@/app/dashboard/_components/DashboardLeaderboard/hooks";
+import { useMyRecentLeaderboardData } from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
 import { Flex, Loader, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";

@@ -1,8 +1,8 @@
-import { useSubmissionDetailsQuery } from "@/app/submission/[submissionId]/hooks";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { useSubmissionDetailsQuery } from "@/lib/api/queries/submissions";
 import {
   Badge,
   Box,
@@ -44,7 +44,7 @@ export default function SubmissionDetailsContent({
     return <Toast message="Sorry, something went wrong." />;
   }
 
-  if (!data.data) {
+  if (!data.success) {
     return <ToastWithRedirect message={data.message} to={"/dashboard"} />;
   }
 

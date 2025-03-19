@@ -1,5 +1,5 @@
-import { ApiResponse } from "@/lib/types/apiResponse";
-import { POTD } from "@/lib/types/db/potd";
+import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { POTD } from "@/lib/api/types/potd";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchPotdQuery = () => {

@@ -1,6 +1,9 @@
-import { ApiResponse } from "@/lib/types/apiResponse";
+import { ApiResponse } from "@/lib/api/common/apiResponse";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+/**
+ * This mutation will set the user's leetcode username, refetching on success
+ */
 export const useSetLeetcodeUsername = () => {
   const queryClient = useQueryClient();
 
@@ -12,6 +15,9 @@ export const useSetLeetcodeUsername = () => {
   });
 };
 
+/**
+ * Fetch the user's private key used for Leetcode authentication.
+ */
 export const useAuthKeyQuery = () => {
   return useQuery({
     queryKey: ["auth", "key"],

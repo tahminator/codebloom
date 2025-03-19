@@ -1,4 +1,4 @@
-import { useCurrentLeaderboardMetadataQuery } from "@/app/leaderboard/_components/LeaderboardMetadata/hooks";
+import { useCurrentLeaderboardMetadataQuery } from "@/lib/api/queries/leaderboard";
 import { Center, Skeleton, Title } from "@mantine/core";
 
 export default function LeaderboardMetadata() {

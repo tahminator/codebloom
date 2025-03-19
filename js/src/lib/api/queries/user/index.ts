@@ -1,10 +1,26 @@
+import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { Page } from "@/lib/api/common/page";
+import { Question } from "@/lib/api/types/question";
+import { User } from "@/lib/api/types/user";
 import { useURLState } from "@/lib/hooks/useUrlState";
-import { ApiResponse } from "@/lib/types/apiResponse";
-import { Question } from "@/lib/types/db/question";
-import { Page } from "@/lib/types/page";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 
+/**
+ * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more.
+ */
+export const useUserProfileQuery = ({ userId }: { userId?: string }) => {
+  return useQuery({
+    queryKey: ["user", "profile", userId],
+    queryFn: () => fetchUserProfile({ userId }),
+    placeholderData: keepPreviousData,
+  });
+};
+
+/**
+ * Fetch the user's submissions. This is a super query and as such,
+ * also exports pagination and search capabilities.
+ */
 export const useUserSubmissionsQuery = ({
   userId,
   initialPage = 1,
@@ -63,6 +79,14 @@ export const useUserSubmissionsQuery = ({
     pageSize,
   };
 };
+
+async function fetchUserProfile({ userId }: { userId?: string }) {
+  const response = await fetch(`/api/user/${userId ?? ""}/profile`);
+
+  const json = (await response.json()) as ApiResponse<User>;
+
+  return json;
+}
 
 async function fetchUserSubmissions({
   page,

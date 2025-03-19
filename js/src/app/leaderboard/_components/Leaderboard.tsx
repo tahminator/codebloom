@@ -3,6 +3,7 @@ import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkelet
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import Toast from "@/components/ui/toast/Toast";
+import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
 import {
   Box,
@@ -18,11 +19,9 @@ import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-import { useFullLeaderboardEntriesQuery } from "../hooks";
-
 export default function LeaderboardIndex() {
   const { data, status, goTo, page, goBack, goForward, isPlaceholderData } =
-    useFullLeaderboardEntriesQuery({});
+    useCurrentLeaderboardUsersQuery({});
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;

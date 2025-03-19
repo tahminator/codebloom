@@ -1,4 +1,4 @@
-import { useFetchPotdQuery } from "@/app/dashboard/_components/ProblemOfTheDay/hooks";
+import { useFetchPotdQuery } from "@/lib/api/queries/potd";
 import {
   Badge,
   Button,
