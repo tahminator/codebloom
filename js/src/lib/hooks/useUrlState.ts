@@ -54,17 +54,23 @@ export function useURLState<T>(
 
     // If resetOnDefault is enabled, clear the key.
     if (debouncedValue === defaultValue && resetOnDefault) {
-      setSearchParams((prev) => {
-        prev.delete(name);
-        return prev;
-      });
+      setSearchParams(
+        (prev) => {
+          prev.delete(name);
+          return prev;
+        },
+        { replace: true },
+      );
       return;
     }
 
-    setSearchParams((prev) => {
-      prev.set(name, String(debouncedValue));
-      return prev;
-    });
+    setSearchParams(
+      (prev) => {
+        prev.set(name, String(debouncedValue));
+        return prev;
+      },
+      { replace: true },
+    );
   }, [
     debouncedValue,
     defaultValue,
