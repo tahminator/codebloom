@@ -1,15 +1,18 @@
-import { ApiResponse } from "@/lib/types/apiResponse";
-import { Question } from "@/lib/types/db/question";
-import { User } from "@/lib/types/db/user";
+import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { Question } from "@/lib/api/types/question";
+import { User } from "@/lib/api/types/user";
 import { useQuery } from "@tanstack/react-query";
 
+/**
+ * Fetch the details of a submission
+ */
 export const useSubmissionDetailsQuery = ({
   submissionId,
 }: {
   submissionId?: string;
 }) => {
   return useQuery({
-    queryKey: ["submission", "s", submissionId],
+    queryKey: ["submission", submissionId],
     queryFn: () => fetchSubmissionDetails({ submissionId }),
   });
 };
@@ -24,9 +27,5 @@ async function fetchSubmissionDetails({
     Question & Pick<User, "discordName" | "leetcodeUsername">
   >;
 
-  if (json.success) {
-    return { data: json.data, message: json.message };
-  }
-
-  return { data: null, message: json.message };
+  return json;
 }

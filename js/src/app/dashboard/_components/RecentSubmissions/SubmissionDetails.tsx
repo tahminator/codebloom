@@ -1,18 +1,15 @@
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
+import { useSubmissionDetailsQuery } from "@/lib/api/queries/submissions";
 import { Center, Loader, Title, Text, Card } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
 import { FiExternalLink } from "react-icons/fi";
 import { useParams } from "react-router-dom";
 
 export default function SubmissionDetails() {
   const { submissionId } = useParams();
 
-  const { data, status } = useQuery({
-    queryKey: ["submission", submissionId],
-    queryFn: () => fetchSubmissionDetails(submissionId!),
-  });
+  const { data, status } = useSubmissionDetailsQuery({ submissionId });
 
   if (status === "pending") {
     return (
@@ -24,6 +21,10 @@ export default function SubmissionDetails() {
 
   if (status === "error") {
     return <Toast message="Sorry, something went wrong." />;
+  }
+
+  if (!data.success) {
+    return <Toast message={data.message} />;
   }
 
   const {
@@ -78,11 +79,4 @@ export default function SubmissionDetails() {
       <Footer />
     </div>
   );
-}
-
-async function fetchSubmissionDetails(submissionId: string) {
-  const res = await fetch(`/api/leetcode/submission/${submissionId}`);
-  const json = await res.json();
-
-  return json;
 }

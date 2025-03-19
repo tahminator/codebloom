@@ -1,6 +1,6 @@
-import { useUserProfileQuery } from "@/app/user/[userId]/_components/UserProfile/hooks";
 import UserProfileHeaderSkeleton from "@/app/user/[userId]/_components/UserProfile/UserProfileHeaderSkeleton";
 import Toast from "@/components/ui/toast/Toast";
+import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { theme } from "@/lib/theme";
 import { Flex, Group, Title, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
