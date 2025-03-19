@@ -94,7 +94,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<UserWithScore> getRecentLeaderboardUsers(final int page, final int pageSize) {
+    public ArrayList<UserWithScore> getRecentLeaderboardUsers(final int page, final int pageSize, final boolean patina) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -110,22 +110,25 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             LIMIT 1
                         )
                         SELECT
-                            u.id AS "userId",
+                            m."userId",
                             ll.id as "leaderboardId"
                         FROM
                             latest_leaderboard ll
                         JOIN "Metadata" m ON
                             m."leaderboardId" = ll.id
-                        JOIN "User" u
-                            ON m."userId" = u.id
+                        LEFT JOIN "UserTag" ut
+                            ON ut."userId" = u.id
+                        WHERE
+                            (? = FALSE OR ut.tag = 'Patina')
                         ORDER BY
                             m."totalScore" DESC
                         LIMIT ? OFFSET ?;
                                                 """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, pageSize);
-            stmt.setInt(2, (page - 1) * pageSize);
+            stmt.setBoolean(1, patina);
+            stmt.setInt(2, pageSize);
+            stmt.setInt(3, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -197,7 +200,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public int getRecentLeaderboardUserCount() {
+    public int getRecentLeaderboardUserCount(final boolean patina) {
         String sql = """
                             WITH latest_leaderboard AS (
                                 SELECT id
@@ -212,9 +215,18 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "Leaderboard" l
                             INNER JOIN latest_leaderboard ON latest_leaderboard.id = l.id
                             LEFT JOIN
-                                "Metadata" m ON m."leaderboardId" = l.id
+                                "Metadata" m
+                            ON
+                                m."leaderboardId" = l.id
+                            LEFT JOIN
+                                "UserTag" ut
+                            ON
+                                ut."userId" = m."userId"
+                            WHERE
+                                (? = FALSE OR ut.tag = 'Patina')
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBoolean(1, patina);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
