@@ -1,7 +1,8 @@
-import { useAuthCallbackInfo, useAuthQuery } from "@/app/login/hooks";
+import { useAuthCallbackInfo } from "@/app/login/hooks";
 import LoginButton from "@/components/ui/auth/LoginButton";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Button, Card, Center, Loader, Space, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";

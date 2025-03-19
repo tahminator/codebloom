@@ -1,14 +1,14 @@
 import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeaderboardMobileSkeleton";
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
-import { useFullLeaderboardEntriesQuery } from "@/app/leaderboard/hooks";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
+import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { Table } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 
 export default function MiniLeaderboardMobile() {
-  const { data, status } = useFullLeaderboardEntriesQuery({ pageSize: 5 });
+  const { data, status } = useCurrentLeaderboardUsersQuery({ pageSize: 5 });
 
   if (status === "pending") {
     return <MiniLeaderboardMobileSkeleton />;
