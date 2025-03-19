@@ -1,6 +1,6 @@
-import { useAuthQuery } from "@/app/login/hooks";
 import LogoutButton from "@/components/ui/auth/LogoutButton";
 import SkeletonButton from "@/components/ui/auth/SkeletonButton";
+import { useAuthQuery } from "@/lib/api/queries/auth";
 import {
   Box,
   Burger,

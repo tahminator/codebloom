@@ -1,7 +1,7 @@
 import {
   useAuthKeyQuery,
   useSetLeetcodeUsername,
-} from "@/app/onboarding/hooks";
+} from "@/lib/api/queries/auth/leetcode";
 import {
   Button,
   Card,
