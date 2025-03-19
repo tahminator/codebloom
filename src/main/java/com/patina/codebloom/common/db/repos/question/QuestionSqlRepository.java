@@ -27,6 +27,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         this.userRepository = userRepository;
     }
 
+    @Override
     public Question createQuestion(final Question question) {
         String sql = """
                             INSERT INTO "Question" (
@@ -91,6 +92,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         }
     }
 
+    @Override
     public Question getQuestionById(final String id) {
         Question question = null;
         String sql = """
@@ -158,6 +160,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
+    @Override
     public QuestionWithUser getQuestionWithUserById(final String id) {
         QuestionWithUser question = null;
         String sql = """
@@ -224,6 +227,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
+    @Override
     public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query) {
 
         ArrayList<Question> questions = new ArrayList<>();
@@ -302,6 +306,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return questions;
     }
 
+    @Override
     public Question updateQuestion(final Question inputQuestion) {
         String sql = """
                             UPDATE "Question"
@@ -441,6 +446,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return question;
     }
 
+    @Override
     public int getQuestionCountByUserId(final String userId, final String query) {
         String sql = """
                         SELECT
@@ -470,6 +476,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         return 0;
     }
 
+    @Override
     public boolean questionExistsBySubmissionId(final String submissionId) {
         String sql = """
                             SELECT
