@@ -2,7 +2,6 @@ package com.patina.codebloom.api.leaderboard;
 
 import java.util.ArrayList;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,11 +84,13 @@ public class LeaderboardController {
 
         Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
-        UserWithScore user = userRepository.getUserWithScoreById(leaderboardData.getId(), userId);
+        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardData.getId());
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponder.failure("This user does not exist on this leaderboard."));
-        }
+        // if (user == null) {
+        // return
+        // ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponder.failure("This
+        // user does not exist on this leaderboard."));
+        // }
 
         return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
     }

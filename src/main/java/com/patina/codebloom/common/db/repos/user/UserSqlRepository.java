@@ -235,6 +235,8 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public UserWithScore getUserWithScoreById(final String userId, final String leaderboardId) {
+        System.out.println(userId);
+        System.out.println(leaderboardId);
         String sql = """
                             SELECT
                                 u.id,
@@ -245,7 +247,7 @@ public class UserSqlRepository implements UserRepository {
                                 m."totalScore"
                             FROM
                                 "User" u
-                            LEFT JOIN "Metadata" m ON m."userId" = u.id
+                            JOIN "Metadata" m ON m."userId" = u.id
                             WHERE
                                 u.id = ?
                                 AND
@@ -266,12 +268,16 @@ public class UserSqlRepository implements UserRepository {
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    return new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
+                    var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
+                    System.out.println(userWithScore.getDiscordId());
+                    return userWithScore;
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get user with score by id", e);
         }
+
+        System.out.println("krjrjrj");
 
         return null;
     }
