@@ -1,6 +1,6 @@
 import { ActionIcon, Text } from "@mantine/core";
 import { ReactNode } from "react";
-import { FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaInstagram, FaLinkedin,FaGithub } from "react-icons/fa";
 
 import styles from "./Footer.module.css";
 
@@ -26,6 +26,9 @@ export function Footer() {
           </FooterIconLink>
           <FooterIconLink href={"https://www.instagram.com/patinanetwork"}>
             <FaInstagram size={24} />
+          </FooterIconLink>
+          <FooterIconLink href={"https://github.com/tahminator/codebloom"}>
+            <FaGithub size={24} />
           </FooterIconLink>
         </div>
       </div>
