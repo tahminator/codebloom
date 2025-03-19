@@ -2,7 +2,7 @@ package com.patina.codebloom.api.leaderboard;
 
 import java.util.ArrayList;
 
-import org.apache.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,14 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
-import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
-import com.patina.codebloom.common.security.Protector;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,67 +34,46 @@ public class LeaderboardController {
     private static final int LEADERBOARD_PAGE_SIZE = 20;
 
     private final LeaderboardRepository leaderboardRepository;
-    private final Protector protector;
+    private final UserRepository userRepository;
 
-    public LeaderboardController(final LeaderboardRepository leaderboardRepository, final Protector protector) {
+    public LeaderboardController(final LeaderboardRepository leaderboardRepository, final UserRepository userRepository) {
         this.leaderboardRepository = leaderboardRepository;
-        this.protector = protector;
+        this.userRepository = userRepository;
     }
 
-    @GetMapping("/all")
-    @Operation(summary = "Fetch all leaderboards, attaching the users for each leaderboard.", responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<ArrayList<LeaderboardWithUsers>>> getAllLeaderboardsFull(final HttpServletRequest request) {
-        FakeLag.sleep(1200);
-        protector.validateSession(request);
-
-        ArrayList<LeaderboardWithUsers> leaderboards = leaderboardRepository.getAllLeaderboardsFull();
-
-        return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", leaderboards));
-    }
-
-    @GetMapping("/all/shallow")
-    @Operation(summary = "Fetch all leaderboards, excluding users.", responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<ArrayList<Leaderboard>>> getAllLeaderboardsShallow(final HttpServletRequest request) {
-        protector.validateSession(request);
-
-        ArrayList<Leaderboard> leaderboards = leaderboardRepository.getAllLeaderboardsShallow();
-        return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", leaderboards));
-    }
-
-    @GetMapping("/current")
-    @Operation(summary = "Fetch the currently active leaderboard data, attaching the users for each leaderboard.", responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<Page<LeaderboardWithUsers>>> getCurrentLeaderboardFull(final HttpServletRequest request,
-                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page) {
-        FakeLag.sleep(800);
-
-        protector.validateSession(request);
-
-        LeaderboardWithUsers leaderboardData = leaderboardRepository.getRecentLeaderboardFull(page, LEADERBOARD_PAGE_SIZE);
-
-        int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount();
-        int totalPages = (int) Math.ceil((double) totalUsers / LEADERBOARD_PAGE_SIZE);
-        boolean hasNextPage = page < totalPages;
-
-        Page<LeaderboardWithUsers> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, LEADERBOARD_PAGE_SIZE);
-
-        return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
-    }
-
-    @GetMapping("/current/shallow")
+    @GetMapping("/current/metadata")
     @Operation(summary = "Unprotected route that fetches the currently active leaderboard data, attaching only the top 5 users for each leaderboard.", responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
 
-    public ResponseEntity<ApiResponder<LeaderboardWithUsers>> getCurrentLeaderboardShallow(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Leaderboard>> getCurrentLeaderboardMetadata(final HttpServletRequest request) {
         FakeLag.sleep(650);
 
-        LeaderboardWithUsers leaderboardData = leaderboardRepository.getRecentLeaderboardShallow();
+        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", leaderboardData));
+    }
+
+    @GetMapping("/current/user/all")
+    @Operation(summary = "Fetch the currently active leaderboard data, attaching the users for each leaderboard.", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    public ResponseEntity<ApiResponder<Page<ArrayList<UserWithScore>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
+                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
+                    @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize) {
+        FakeLag.sleep(800);
+
+        final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
+
+        ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(page, parsedPageSize);
+
+        int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount();
+        int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
+        boolean hasNextPage = page < totalPages;
+
+        Page<ArrayList<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, LEADERBOARD_PAGE_SIZE);
+
+        return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
 
     @GetMapping("/current/user/{userId}")
@@ -105,55 +83,14 @@ public class LeaderboardController {
                     @PathVariable final String userId) {
         FakeLag.sleep(650);
 
-        protector.validateSession(request);
+        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
-        LeaderboardWithUsers leaderboardData = leaderboardRepository.getRecentLeaderboardShallow();
-
-        UserWithScore user = leaderboardRepository.getUserFromLeaderboard(leaderboardData.getId(), userId);
+        UserWithScore user = userRepository.getUserWithScoreById(leaderboardData.getId(), userId);
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(ApiResponder.failure("This user does not exist on this leaderboard."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponder.failure("This user does not exist on this leaderboard."));
         }
 
         return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
     }
-
-    @GetMapping("/{leaderboardId}")
-    @Operation(description = "", responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Leaderboard not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<LeaderboardWithUsers>> getLeaderboardByIdFull(final HttpServletRequest request,
-                    @PathVariable final String leaderboardId) {
-        FakeLag.sleep(800);
-
-        protector.validateSession(request);
-
-        LeaderboardWithUsers leaderboardData = leaderboardRepository.getLeaderboardByIdFull(leaderboardId);
-
-        if (leaderboardData == null) {
-            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(ApiResponder.failure("This leaderboard does not exist."));
-        }
-
-        return ResponseEntity.ok().body(ApiResponder.success("Leaderboard found!", leaderboardData));
-    }
-
-    @GetMapping("/{leaderboardId}/user/{userId}")
-    @Operation(summary = "Fetch the user data in the current leaderboard.", responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Leaderboard not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<UserWithScore>> getUserByLeaderboardById(final HttpServletRequest request,
-                    @PathVariable final String leaderboardId, @PathVariable final String userId) {
-        FakeLag.sleep(650);
-
-        protector.validateSession(request);
-
-        UserWithScore user = leaderboardRepository.getUserFromLeaderboard(leaderboardId, userId);
-
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(ApiResponder.failure("This user does not exist on this leaderboard."));
-        }
-
-        return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
-    }
-
 }
