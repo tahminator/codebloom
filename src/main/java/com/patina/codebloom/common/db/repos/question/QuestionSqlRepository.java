@@ -255,12 +255,9 @@ public class QuestionSqlRepository implements QuestionRepository {
                         JOIN
                             "User" u ON q."userId" = u.id
                         WHERE
-                            "userId" = ?
-                            AND (
-                            q."questionTitle" IS NULL
-                            OR
-                            q."questionTitle" ILIKE ?
-                            )
+                                "userId" = ?
+                            AND
+                                q."questionTitle" ILIKE ?
                         ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?
                         """;
