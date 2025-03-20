@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <div className={styles.footer}>
       <div className={styles.footerContents}>
-        <div className={styles.logoTextContainer}>
+        <div>
           <img src={Logo} width={45} alt="Logo" />
         </div>
         <Text px={30} fs="italic">
