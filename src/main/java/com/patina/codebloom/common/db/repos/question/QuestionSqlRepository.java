@@ -255,9 +255,9 @@ public class QuestionSqlRepository implements QuestionRepository {
                         JOIN
                             "User" u ON q."userId" = u.id
                         WHERE
-                                "userId" = ?
-                            AND
-                                q."questionTitle" ILIKE ?
+                            "userId" = ?
+                        AND
+                            q."questionTitle" ILIKE ?
                         ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?
                         """;
@@ -399,7 +399,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                                 "Question"
                             WHERE
                                 "questionSlug" = ?
-                                AND "userId" = ?
+                            AND
+                                "userId" = ?
                             LIMIT 1
                         """;
 
@@ -452,12 +453,10 @@ public class QuestionSqlRepository implements QuestionRepository {
                             "Question"
                         WHERE
                             "userId" = ?
-                            AND (
-                            "questionTitle" IS NULL
-                            OR
+                        AND
                             "questionTitle" ILIKE ?
-                            )
                         """;
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
