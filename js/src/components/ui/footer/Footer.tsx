@@ -13,7 +13,7 @@ export function Footer() {
         <div>
           <img src={Logo} width={45} alt="Logo" />
         </div>
-        <Text px={30} fs="italic">
+        <Text px={30} fs="italic" visibleFrom={"sm"}>
           {
             "CodeBloom is a LeetCode motivation site for Patina Network members."
           }
