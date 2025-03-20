@@ -117,7 +117,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         JOIN "Metadata" m ON
                             m."leaderboardId" = ll.id
                         LEFT JOIN "UserTag" ut
-                            ON ut."userId" = u.id
+                            ON ut."userId" = m."userId"
                         WHERE
                             (? = FALSE OR ut.tag = 'Patina')
                         ORDER BY
