@@ -1,2 +1,0 @@
-ALTER TABLE IF EXISTS "Question"
-DROP COLUMN IF EXISTS description;
