@@ -1,14 +1,26 @@
 # Database Migrations
 
-**TLDR**: If you are looking for the command to run migrations, it is
-`dotenvx run -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration`
-and to run production migrations (BE CAREFUL), it is:
+**TLDR**: If you are looking for the command to run migrations on your local machine, you can either run
+
+`./migrate.sh`
+
+or
+
+`dotenvx run -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration`.
+
+To run production migrations (BE CAREFUL WITH THIS IF YOU HAVE PRODUCTION ACCESS), it is:
+
 `dotenvx run -f .env.production -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration`
+
 [You must manually fill .env.production yourself if you have the required access to the secrets.]
 
 We use Flyway to handle our database migrations. However, we perform migrations manually, so it's crucial to exercise extreme caution when dealing with data.
 
-View the current migrations folder [here](https://github.com/0pengu/codebloom/tree/main/src/main/resources/db/migration)
+View the current migrations folder [here](https://github.com/0pengu/codebloom/tree/main/db)
+
+## Mock Data
+
+There is a repeatable script inside of the db folder that should run if your database is completely empty.
 
 ## Migration File Naming
 
