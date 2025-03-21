@@ -8,7 +8,7 @@ pnpm run dev
 
 # Autoformatters
 
-Check out the autoformatter guide [here](https://github.com/tahminator/tree/main/docs/autoformatters.md)
+Check out the autoformatter guide [here](https://github.com/tahminator/codebloom/tree/main/docs/autoformatters.md)
 
 ## Routing
 
@@ -37,18 +37,18 @@ Examples:
 
 ```tsx
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RootPage />,
-  },
-  {
-    path: "/dashboard",
-    element: <DashboardPage />,
-  },
-  {
-    path: "/submission/s/:submissionId",
-    element: <SubmissionPage />,
-  },
+    {
+        path: "/",
+        element: <RootPage />,
+    },
+    {
+        path: "/dashboard",
+        element: <DashboardPage />,
+    },
+    {
+        path: "/submission/s/:submissionId",
+        element: <SubmissionPage />,
+    },
 ]);
 ```
 
@@ -63,13 +63,16 @@ export const router = createBrowserRouter([
 ### Function Naming
 
 - React functions should be in PascalCase
-  ```tsx
-  export default function Dashboard() {}
-  ```
+
+    ```tsx
+    export default function Dashboard() {}
+    ```
+
 - React hooks and any other function/constant should be in camelCase
-  ```tsx
-  const useAuthQuery = () => {};
-  ```
+
+    ```tsx
+    const useAuthQuery = () => {};
+    ```
 
 ## Folder Naming Conventions
 
@@ -80,6 +83,29 @@ You should try to limit folders to one word, but if you must require multiple wo
 You may use inline styles as long as it isn't deemed to be too long or complicated (at which you should be using `.module.css` files to separate off into.). Please read the section [below](#styling) on styling for more details.
 
 You should put any custom hooks inside of a `hook.ts` file, and any custom types inside of a `types.ts` file. If you don't see any reason why the type may be re-used, you may put the file inside of the `/app` folder in the same route that it's used in. However, if you believe that the type may be re-used or would be easier to track down if in a central location (such as a database model type), put them in `/lib/types` or `/lib/hooks`.
+
+## React Query
+
+React Query should NEVER be created inline to a component. Instead, you should abstract the query into a custom hook so that if you need to call this query in another component, you can do so trivially.
+
+```tsx
+export const useFetchPotdQuery = () => {
+    return useQuery({
+        queryKey: ["potd", new Date().getDay()],
+        queryFn: fetchPotd,
+    });
+};
+
+async function fetchPotd() {
+    const res = await fetch("/api/leetcode/potd");
+
+    const json = (await res.json()) as ApiResponse<POTD>;
+
+    return json;
+}
+```
+
+All React Query functions should be placed inside of the `js/src/lib/queries` folder. You should try to match it a specific service so similar hooks can be found together, but this isn't strictly enforced.
 
 ## Comments
 
