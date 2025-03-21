@@ -1,2 +1,0 @@
-ALTER TABLE IF EXISTS "User"
-DROP COLUMN IF EXISTS "leetcodeUsername";
