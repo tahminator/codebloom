@@ -104,7 +104,7 @@ public class SubmissionsHandler {
                 throw new RuntimeException("No recent leaderboard found.");
             }
 
-            UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(recentLeaderboard.getId(), user.getId());
+            UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(user.getId(), recentLeaderboard.getId());
 
             leaderboardRepository.updateUserPointsFromLeaderboard(recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }
