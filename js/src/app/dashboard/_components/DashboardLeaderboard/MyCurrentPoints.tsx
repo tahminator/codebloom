@@ -1,6 +1,6 @@
 import { useMyRecentLeaderboardData } from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
-import { Flex, Loader, Text, Tooltip } from "@mantine/core";
+import { Flex, Skeleton, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
@@ -10,7 +10,46 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
   const { data, status } = useMyRecentLeaderboardData({ userId });
 
   if (status === "pending") {
-    return <Loader />;
+    return (
+      <Flex direction={"column"} gap={"md"} m={"xs"}>
+        <Skeleton>
+          <Flex
+            direction={"row"}
+            justify={"space-between"}
+            style={{
+              borderRadius: "4px",
+              padding: "var(--mantine-spacing-xs)",
+            }}
+            p={"xs"}
+          >
+            <Text>Me.</Text>
+            <Flex direction={"column"}>
+              <Text ta="center">
+                <FaDiscord
+                  style={{
+                    display: "inline",
+                    marginLeft: "4px",
+                    marginRight: "4px",
+                  }}
+                />
+                tVal name
+              </Text>
+              <Text ta="center">
+                <SiLeetcode
+                  style={{
+                    display: "inline",
+                    marginLeft: "4px",
+                    marginRight: "4px",
+                  }}
+                />
+                tVal name
+              </Text>
+            </Flex>
+            <Text>tVal score</Text>
+          </Flex>
+        </Skeleton>
+      </Flex>
+    );
   }
 
   if (status === "error") {
