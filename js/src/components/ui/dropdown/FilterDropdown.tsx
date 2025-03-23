@@ -6,6 +6,12 @@ interface FilterDropdownProps extends ButtonProps {
   children: React.ReactNode;
 }
 
+/**
+ * FilterDropdown component for toggling a menu with filter options.
+ *
+ * @param buttonName - The label for the dropdown button.
+ * @returns A component that toggles a menu with filter options.
+ */
 export default function FilterDropdown({
   buttonName,
   children,
