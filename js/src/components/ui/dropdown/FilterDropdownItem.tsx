@@ -12,7 +12,7 @@ export default function FilterDropdownItem({
   name,
 }: FilterDropdownItemProps) {
   return (
-    <Menu.Item onClick={toggle}>
+    <Menu.Item onClick={toggle} closeMenuOnClick={false}>
       <Checkbox checked={value} />
       {name}
     </Menu.Item>
