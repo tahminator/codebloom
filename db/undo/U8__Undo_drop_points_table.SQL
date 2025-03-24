@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS "Session" (
-    id VARCHAR(64) PRIMARY KEY,
-    "expiresAt" TIMESTAMP WITH TIME ZONE NOT NULL,
-    -- One to many --
-    "userId" UUID NOT NULL,
-    CONSTRAINT "fk_user" FOREIGN KEY ("userId") REFERENCES "User"(id) ON DELETE CASCADE ON UPDATE CASCADE
-)
