@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final SessionRepository sessionRepository;
+
     private final Protector protector;
 
     public AuthController(final SessionRepository sessionRepository, final Protector protector) {
