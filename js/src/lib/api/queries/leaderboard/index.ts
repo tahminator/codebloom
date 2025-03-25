@@ -9,7 +9,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 /**
  * Fetch the users on the current leaderboard. This is a super query
@@ -25,6 +25,13 @@ export const useCurrentLeaderboardUsersQuery = ({
   tieToUrl?: boolean;
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
+    "query",
+    "",
+    tieToUrl,
+    true,
+    500,
+  );
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
@@ -40,10 +47,14 @@ export const useCurrentLeaderboardUsersQuery = ({
     },
     [setPage],
   );
+  useEffect(() => {
+    goTo(1);
+  },[searchQuery,goTo]);
+
 
   const query = useQuery({
-    queryKey: ["leaderboard", "users", page, pageSize],
-    queryFn: () => fetchLeaderboardUsers({ page, pageSize }),
+    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery],
+    queryFn: () => fetchLeaderboardUsers({ page, query:debouncedQuery, pageSize }),
     placeholderData: keepPreviousData,
   });
 
@@ -53,6 +64,10 @@ export const useCurrentLeaderboardUsersQuery = ({
     goBack,
     goForward,
     goTo,
+    searchQuery,
+    setSearchQuery,
+    debouncedQuery,
+    pageSize,
   };
 };
 
@@ -107,13 +122,15 @@ export const useMyRecentLeaderboardData = ({ userId }: { userId: string }) => {
 
 async function fetchLeaderboardUsers({
   page,
+  query,
   pageSize,
 }: {
   page: number;
+  query: string;
   pageSize: number;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}`,
+    `/api/leaderboard/current/user/all?page=${page}&query=${query}&pageSize=${pageSize}`,
     {
       method: "GET",
     },
