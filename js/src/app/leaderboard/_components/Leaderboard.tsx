@@ -24,6 +24,7 @@ import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function LeaderboardIndex() {
+  const [patina, setPatina] = useURLState("patina", false, true, true, 100);
   const {
     data,
     status,
@@ -35,14 +36,7 @@ export default function LeaderboardIndex() {
     searchQuery,
     debouncedQuery,
     isPlaceholderData,
-  } = useCurrentLeaderboardUsersQuery({});
-  const [patina, setPatina] = useURLState(
-    "leaderboard",
-    false,
-    true,
-    true,
-    100,
-  );
+  } = useCurrentLeaderboardUsersQuery({ patina });
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
