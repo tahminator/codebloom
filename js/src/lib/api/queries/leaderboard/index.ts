@@ -19,12 +19,10 @@ export const useCurrentLeaderboardUsersQuery = ({
   initialPage = 1,
   pageSize = 20,
   tieToUrl = true,
-  patina = false,
 }: {
   initialPage?: number;
   pageSize?: number;
   tieToUrl?: boolean;
-  patina?: boolean;
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
@@ -34,6 +32,7 @@ export const useCurrentLeaderboardUsersQuery = ({
     true,
     500,
   );
+  const [patina, setPatina] = useURLState("patina", false, true, true, 100);
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
@@ -53,6 +52,10 @@ export const useCurrentLeaderboardUsersQuery = ({
     goTo(1);
   }, [searchQuery, goTo]);
 
+  const togglePatina = useCallback(() => {
+    setPatina((prev) => !prev);
+  }, [setPatina]);
+
   const query = useQuery({
     queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, patina],
     queryFn: () =>
@@ -63,6 +66,7 @@ export const useCurrentLeaderboardUsersQuery = ({
   return {
     ...query,
     page,
+    patina,
     goBack,
     goForward,
     goTo,
@@ -70,6 +74,7 @@ export const useCurrentLeaderboardUsersQuery = ({
     setSearchQuery,
     debouncedQuery,
     pageSize,
+    togglePatina,
   };
 };
 

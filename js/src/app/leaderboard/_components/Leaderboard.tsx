@@ -7,7 +7,6 @@ import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { useURLState } from "@/lib/hooks/useUrlState";
 import { theme } from "@/lib/theme";
 import {
   Box,
@@ -24,7 +23,6 @@ import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function LeaderboardIndex() {
-  const [patina, setPatina] = useURLState("patina", false, true, true, 100);
   const {
     data,
     status,
@@ -35,8 +33,10 @@ export default function LeaderboardIndex() {
     setSearchQuery,
     searchQuery,
     debouncedQuery,
+    patina,
+    togglePatina,
     isPlaceholderData,
-  } = useCurrentLeaderboardUsersQuery({ patina });
+  } = useCurrentLeaderboardUsersQuery({});
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -111,7 +111,7 @@ export default function LeaderboardIndex() {
         >
           <FilterDropdownItem
             value={patina}
-            toggle={() => setPatina((prev) => !prev)}
+            toggle={() => togglePatina()}
             name="Patina"
           />
         </FilterDropdown>
