@@ -1,10 +1,13 @@
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
+import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
+import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import { useURLState } from "@/lib/hooks/useUrlState";
 import { theme } from "@/lib/theme";
 import {
   Box,
@@ -33,6 +36,13 @@ export default function LeaderboardIndex() {
     debouncedQuery,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery({});
+  const [patina, setPatina] = useURLState(
+    "leaderboard",
+    false,
+    true,
+    true,
+    100,
+  );
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -98,6 +108,19 @@ export default function LeaderboardIndex() {
         placeholder={"Search for User"}
       />
       <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
+        <FilterDropdown
+          style={{
+            marginLeft: "auto",
+            display: "block",
+          }}
+          buttonName="Filters"
+        >
+          <FilterDropdownItem
+            value={patina}
+            toggle={() => setPatina((prev) => !prev)}
+            name="Patina"
+          />
+        </FilterDropdown>
         <Table
           verticalSpacing={"lg"}
           horizontalSpacing={"xs"}
