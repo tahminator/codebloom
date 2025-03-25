@@ -49,12 +49,12 @@ export const useCurrentLeaderboardUsersQuery = ({
   );
   useEffect(() => {
     goTo(1);
-  },[searchQuery,goTo]);
-
+  }, [searchQuery, goTo]);
 
   const query = useQuery({
     queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery],
-    queryFn: () => fetchLeaderboardUsers({ page, query:debouncedQuery, pageSize }),
+    queryFn: () =>
+      fetchLeaderboardUsers({ page, query: debouncedQuery, pageSize }),
     placeholderData: keepPreviousData,
   });
 
