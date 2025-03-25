@@ -2,6 +2,7 @@ import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetada
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
+import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
@@ -20,7 +21,7 @@ import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function LeaderboardIndex() {
-  const { data, status, goTo, page, goBack, goForward, isPlaceholderData } =
+  const { data, status, goTo, page, goBack, goForward,setSearchQuery,searchQuery, isPlaceholderData } =
     useCurrentLeaderboardUsersQuery({});
 
   if (status === "pending") {
@@ -45,7 +46,7 @@ export default function LeaderboardIndex() {
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
       >
-        {page === 1 && second && (
+        {page === 1 && second && !searchQuery&& (
           <LeaderboardCard
             placeString={"Second"}
             discordName={second.discordName}
@@ -56,7 +57,7 @@ export default function LeaderboardIndex() {
             userId={second.id}
           />
         )}
-        {page === 1 && first && (
+        {page === 1 && first && !searchQuery && (
           <LeaderboardCard
             placeString={"First"}
             discordName={first.discordName}
@@ -67,7 +68,7 @@ export default function LeaderboardIndex() {
             userId={first.id}
           />
         )}
-        {page === 1 && third && (
+        {page === 1 && third && !searchQuery && (
           <LeaderboardCard
             placeString={"Third"}
             discordName={third.discordName}
@@ -78,7 +79,14 @@ export default function LeaderboardIndex() {
             userId={third.id}
           />
         )}
-      </div>
+        </div>
+        <SearchBox
+            query={searchQuery}
+            onChange={(event) => {
+                setSearchQuery(event.currentTarget.value);
+            }}
+            placeholder={"Search for User"}
+        />
       <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
         <Table
           verticalSpacing={"lg"}
@@ -100,7 +108,7 @@ export default function LeaderboardIndex() {
           </Table.Thead>
           <Table.Tbody>
             {pageData.data.map((entry, index) => {
-              if (page === 1 && [0, 1, 2].includes(index)) return null;
+              if (page === 1 && !searchQuery && [0, 1, 2].includes(index)) return null;
               return (
                 <Table.Tr key={index}>
                   <Table.Td>
