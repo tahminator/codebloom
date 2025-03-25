@@ -19,10 +19,12 @@ export const useCurrentLeaderboardUsersQuery = ({
   initialPage = 1,
   pageSize = 20,
   tieToUrl = true,
+  patina = false,
 }: {
   initialPage?: number;
   pageSize?: number;
   tieToUrl?: boolean;
+  patina?: boolean;
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
@@ -52,9 +54,9 @@ export const useCurrentLeaderboardUsersQuery = ({
   }, [searchQuery, goTo]);
 
   const query = useQuery({
-    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery],
+    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, patina],
     queryFn: () =>
-      fetchLeaderboardUsers({ page, query: debouncedQuery, pageSize }),
+      fetchLeaderboardUsers({ page, pageSize, patina, query: debouncedQuery }),
     placeholderData: keepPreviousData,
   });
 
@@ -124,13 +126,15 @@ async function fetchLeaderboardUsers({
   page,
   query,
   pageSize,
+  patina,
 }: {
   page: number;
   query: string;
   pageSize: number;
+  patina: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&query=${query}&pageSize=${pageSize}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}`,
     {
       method: "GET",
     },
