@@ -20,7 +20,7 @@ export default function FilterDropdown({
   const [opened, setOpened] = useState(false);
 
   return (
-    <Menu opened={opened} onChange={setOpened}>
+    <Menu opened={opened} onChange={setOpened} position="left-end" withArrow>
       <Menu.Target>
         <Button onClick={() => setOpened((prev) => !prev)} {...props}>
           {buttonName}
