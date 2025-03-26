@@ -34,6 +34,10 @@ export const useCurrentLeaderboardUsersQuery = ({
   );
   const [patina, setPatina] = useURLState("patina", false, true, true, 100);
 
+  useEffect(() => {
+    setPage(1);
+  }, [patina, setPage]);
+
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
   }, [setPage]);
