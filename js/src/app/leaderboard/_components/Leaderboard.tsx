@@ -94,6 +94,19 @@ export default function LeaderboardIndex() {
           />
         )}
       </div>
+      <FilterDropdown
+        style={{
+          marginLeft: "auto",
+          display: "block",
+        }}
+        buttonName="Filters"
+      >
+        <FilterDropdownItem
+          value={patina}
+          toggle={() => togglePatina()}
+          name="Patina"
+        />
+      </FilterDropdown>
       <SearchBox
         query={searchQuery}
         onChange={(event) => {
@@ -102,19 +115,6 @@ export default function LeaderboardIndex() {
         placeholder={"Search for User"}
       />
       <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
-        <FilterDropdown
-          style={{
-            marginLeft: "auto",
-            display: "block",
-          }}
-          buttonName="Filters"
-        >
-          <FilterDropdownItem
-            value={patina}
-            toggle={() => togglePatina()}
-            name="Patina"
-          />
-        </FilterDropdown>
         <Table
           verticalSpacing={"lg"}
           horizontalSpacing={"xs"}
