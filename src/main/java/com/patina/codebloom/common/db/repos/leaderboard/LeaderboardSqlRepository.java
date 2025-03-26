@@ -123,7 +123,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         WHERE
                             (? = FALSE OR ut.tag = 'Patina')
                         AND
-                            (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
+                            (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
                             m."totalScore" DESC
                         LIMIT ? OFFSET ?;
@@ -133,8 +133,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean(1, patina);
             stmt.setString(2, "%" + query + "%");
             stmt.setString(3, "%" + query + "%");
-            stmt.setInt(4, pageSize);
-            stmt.setInt(5, (page - 1) * pageSize);
+            stmt.setString(4, "%" + query + "%");
+            stmt.setInt(5, pageSize);
+            stmt.setInt(6, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
