@@ -22,8 +22,17 @@ export default function FilterDropdownItem({
 }: FilterDropdownItemProps) {
   return (
     <Menu.Item onClick={toggle} closeMenuOnClick={false}>
-      <Checkbox checked={value} />
-      {name}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          width: "100%",
+        }}
+      >
+        <Checkbox checked={value} />
+        {name}
+      </div>
     </Menu.Item>
   );
 }
