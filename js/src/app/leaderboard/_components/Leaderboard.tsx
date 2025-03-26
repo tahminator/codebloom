@@ -30,6 +30,7 @@ export default function LeaderboardIndex() {
     goForward,
     setSearchQuery,
     searchQuery,
+    debouncedQuery,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery({});
 
@@ -55,7 +56,7 @@ export default function LeaderboardIndex() {
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
       >
-        {page === 1 && second && !searchQuery && (
+        {page === 1 && second && !debouncedQuery && (
           <LeaderboardCard
             placeString={"Second"}
             discordName={second.discordName}
@@ -66,7 +67,7 @@ export default function LeaderboardIndex() {
             userId={second.id}
           />
         )}
-        {page === 1 && first && !searchQuery && (
+        {page === 1 && first && !debouncedQuery && (
           <LeaderboardCard
             placeString={"First"}
             discordName={first.discordName}
@@ -77,7 +78,7 @@ export default function LeaderboardIndex() {
             userId={first.id}
           />
         )}
-        {page === 1 && third && !searchQuery && (
+        {page === 1 && third && !debouncedQuery && (
           <LeaderboardCard
             placeString={"Third"}
             discordName={third.discordName}
@@ -117,7 +118,7 @@ export default function LeaderboardIndex() {
           </Table.Thead>
           <Table.Tbody>
             {pageData.data.map((entry, index) => {
-              if (page === 1 && !searchQuery && [0, 1, 2].includes(index))
+              if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index))
                 return null;
               return (
                 <Table.Tr key={index}>
