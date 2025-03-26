@@ -171,7 +171,7 @@ export default function LeaderboardForDashboard({
                         z={5000000}
                         size={20}
                       />{" "}
-                      {user.discordName}
+                      {user.nickname}
                     </Text>
                   </Tooltip>
                 : <Text
