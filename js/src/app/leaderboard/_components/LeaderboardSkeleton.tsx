@@ -52,7 +52,7 @@ export default function LeaderboardSkeleton() {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {Array(2)
+          {Array(17)
             .fill(0)
             .map((_, index) => (
               <Table.Tr key={index}>
