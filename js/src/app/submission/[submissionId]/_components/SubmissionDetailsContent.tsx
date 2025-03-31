@@ -13,7 +13,9 @@ import {
   Loader,
   Text,
   Title,
+  Tooltip,
 } from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { SiLeetcode } from "react-icons/si";
@@ -56,6 +58,7 @@ export default function SubmissionDetailsContent({
     description,
     acceptanceRate,
     discordName,
+    nickname,
     leetcodeUsername,
     code,
     runtime,
@@ -115,14 +118,29 @@ export default function SubmissionDetailsContent({
           <Center>
             <Title order={3}>
               Solved by{" "}
-              <FaDiscord
-                style={{
-                  display: "inline",
-                  color: "var(--mantine-color-blue-5)",
-                }}
-              />{" "}
-              <Title display={"inline"} c={"blue.5"} order={3}>
-                {discordName}
+              {nickname ? (
+                <Tooltip
+                  label="This user is a verified member of the Patina Discord server."
+                  color={"dark.4"}
+                >
+                    <IconCircleCheckFilled
+                      style={{
+                        display: "inline",
+                        color: "var(--mantine-color-patina-4)",
+                      }}
+                      size={30}
+                    />
+                </Tooltip>
+              ) : (
+                <FaDiscord
+                  style={{
+                    display: "inline",
+                    color: "var(--mantine-color-blue-5)",
+                  }}
+                />
+              )}{" "}
+              <Title display={"inline"} c={nickname ? "patina.4" : "blue.5"} order={3}>
+                {nickname || discordName}
               </Title>{" "}
               <Link
                 to={`https://leetcode.com/u/${leetcodeUsername}`}
