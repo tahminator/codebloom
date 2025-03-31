@@ -9,12 +9,13 @@ public class LeetcodeQuestion {
     private String question;
     private float acceptanceRate;
 
-    public LeetcodeQuestion(final String link, final int questionId, final String questionTitle, final String titleSlug, final String difficulty, final String question, final float acceptanceRate) {
+    public LeetcodeQuestion(final String link, final int questionId, final String questionTitle, final String titleSlug,
+    final String difficulty2, final String question, final float acceptanceRate) {
         this.link = link;
         this.questionId = questionId;
         this.questionTitle = questionTitle;
         this.titleSlug = titleSlug;
-        this.difficulty = difficulty;
+        this.difficulty = difficulty2;
         this.question = question;
         this.acceptanceRate = acceptanceRate;
     }
