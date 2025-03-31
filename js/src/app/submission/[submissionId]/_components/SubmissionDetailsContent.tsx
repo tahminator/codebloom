@@ -118,28 +118,31 @@ export default function SubmissionDetailsContent({
           <Center>
             <Title order={3}>
               Solved by{" "}
-              {nickname ? (
+              {nickname ?
                 <Tooltip
                   label="This user is a verified member of the Patina Discord server."
                   color={"dark.4"}
                 >
-                    <IconCircleCheckFilled
-                      style={{
-                        display: "inline",
-                        color: "var(--mantine-color-patina-4)",
-                      }}
-                      size={30}
-                    />
+                  <IconCircleCheckFilled
+                    style={{
+                      display: "inline",
+                      color: "var(--mantine-color-patina-4)",
+                    }}
+                    size={30}
+                  />
                 </Tooltip>
-              ) : (
-                <FaDiscord
+              : <FaDiscord
                   style={{
                     display: "inline",
                     color: "var(--mantine-color-blue-5)",
                   }}
                 />
-              )}{" "}
-              <Title display={"inline"} c={nickname ? "patina.4" : "blue.5"} order={3}>
+              }{" "}
+              <Title
+                display={"inline"}
+                c={nickname ? "patina.4" : "blue.5"}
+                order={3}
+              >
                 {nickname || discordName}
               </Title>{" "}
               <Link
