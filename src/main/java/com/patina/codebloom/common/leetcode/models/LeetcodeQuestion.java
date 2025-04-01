@@ -10,12 +10,12 @@ public class LeetcodeQuestion {
     private float acceptanceRate;
 
     public LeetcodeQuestion(final String link, final int questionId, final String questionTitle, final String titleSlug,
-    final String difficulty2, final String question, final float acceptanceRate) {
+                    final String difficulty, final String question, final float acceptanceRate) {
         this.link = link;
         this.questionId = questionId;
         this.questionTitle = questionTitle;
         this.titleSlug = titleSlug;
-        this.difficulty = difficulty2;
+        this.difficulty = difficulty;
         this.question = question;
         this.acceptanceRate = acceptanceRate;
     }
