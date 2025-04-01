@@ -1,107 +1,126 @@
 package com.patina.codebloom;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
-import static com.patina.codebloom.common.db.models.question.QuestionDifficulty.Hard;
-import com.patina.codebloom.common.leetcode.models.Lang;
+import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 
-class LeetcodeApiHandlerTest {
-    @Test
-    void userSubmission() {
-        List<LeetcodeSubmission> submissionsList = new ArrayList<>();
-        LeetcodeSubmission submission1 = new LeetcodeSubmission(
-            1,
-            "Trapping Rain Water",
-            "trapping-rain-water",
-            LocalDateTime.now(),
-            "Accepted"
-        );
+@SpringBootTest
+public class LeetcodeApiHandlerTest {
+    private final LeetcodeApiHandler leetcodeApiHandler;
 
-        submissionsList.add(submission1);
-        assertEquals(1, submissionsList.size());
+    @Autowired
+    public LeetcodeApiHandlerTest(final LeetcodeApiHandler leetcodeApiHandler) {
+        this.leetcodeApiHandler = leetcodeApiHandler;
     }
 
     @Test
-    void submissionID() {
-        int runtime = 5;
-        String runtimeDisplay = "O(1)";
-        float runtimePercentile = 50.0f;
-        int memory = 1;
-        String memoryDisplay = "Fully displayed.";
-        float memoryPercentile = 50.0f;
-        String code = "return water";
-        Lang lang = new Lang("java", "Java");
+    void questionSlugValid() {
+        LeetcodeQuestion question = leetcodeApiHandler.findQuestionBySlug("trapping-rain-water");
 
-        LeetcodeDetailedQuestion submission = new LeetcodeDetailedQuestion(runtime, runtimeDisplay, runtimePercentile, memory, memoryDisplay, memoryPercentile, code, lang);
+        assertTrue(question != null);
 
-        assertEquals(runtime, submission.getRuntime());
-        assertEquals(runtimeDisplay, submission.getRuntimeDisplay());
-        assertEquals(runtimePercentile, submission.getRuntimePercentile());
-        assertEquals(memory, submission.getMemory());
-        assertEquals(memoryDisplay, submission.getMemoryDisplay());
-        assertEquals(memoryPercentile, submission.getMemoryPercentile());
-        assertEquals(code, submission.getCode());
-        assertEquals(lang, submission.getLang());
+        assertTrue(question.getLink() != null);
+        assertTrue(question.getLink().length() != 0);
+
+        assertTrue(question.getQuestionId() != 0);
+
+        assertTrue(question.getQuestionTitle() != null);
+        assertTrue(question.getQuestionTitle().length() != 0);
+
+        assertTrue(question.getTitleSlug() != null);
+        assertTrue(question.getTitleSlug().length() != 0);
+
+        assertTrue(question.getDifficulty() != null);
+        assertTrue(question.getDifficulty().length() != 0);
+
+        assertTrue(question.getQuestion() != null);
+        assertTrue(question.getQuestion().length() != 0);
+
+        assertTrue(question.getAcceptanceRate() != 0.0f);
     }
 
     @Test
-    void questionSlug() {
-        String link = "https://leetcode.com/problems/trapping-rain-water/description/";
-        int questionId = 423;
-        String questionTitle = "Trapping Rain Water";
-        String titleSlug = "trapping-rain-water";
-        String difficulty = "Hard";
-        String question = "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.";
-        float acceptanceRate = 64.0f;
+    void submissionIdValid() {
+        LeetcodeDetailedQuestion submission = leetcodeApiHandler.findSubmissionDetailBySubmissionId(1578438567);
+        // idk how to get a valid sample submissionId from the leetcode question so test
+        // is failing
 
-        LeetcodeQuestion questionDetails = new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question, acceptanceRate);
-        assertEquals(link, questionDetails.getLink());
-        assertEquals(questionId, questionDetails.getQuestionId());
-        assertEquals(questionTitle, questionDetails.getQuestionTitle());
-        assertEquals(titleSlug, questionDetails.getTitleSlug());
-        assertEquals(difficulty, questionDetails.getDifficulty());
-        assertEquals(question, questionDetails.getQuestion());
-        assertEquals(acceptanceRate, questionDetails.getAcceptanceRate());
+        assertTrue(submission != null);
+
+        assertTrue(submission.getRuntime() != 0);
+
+        assertTrue(submission.getRuntimeDisplay() != null);
+        assertTrue(submission.getRuntimeDisplay().length() != 0);
+
+        assertTrue(submission.getRuntimePercentile() != 0.0f);
+
+        assertTrue(submission.getMemory() != 0);
+
+        assertTrue(submission.getMemoryDisplay() != null);
+        assertTrue(submission.getMemoryDisplay().length() != 0);
+
+        assertTrue(submission.getMemoryPercentile() != 0.0f);
+
+        assertTrue(submission.getCode() != null);
+        assertTrue(submission.getCode().length() != 0);
+
+        assertTrue(submission.getLang() != null);
     }
 
     @Test
-    void potd() {
-        String title = "Trapping Rain Water";
-        String titleSlug = "trapping-rain-water";
-        QuestionDifficulty difficulty = Hard;
+    void potdValid() {
+        POTD potd = leetcodeApiHandler.getPotd();
 
-        POTD potdDetails = new POTD(title, titleSlug, difficulty);
+        assertTrue(potd != null);
 
-        assertEquals(title, potdDetails.getTitle());
-        assertEquals(titleSlug, potdDetails.getTitleSlug());
-        assertEquals(difficulty, potdDetails.getDifficulty());
+        assertTrue(potd.getTitle() != null);
+        assertTrue(potd.getTitle().length() != 0);
+
+        assertTrue(potd.getTitleSlug() != null);
+        assertTrue(potd.getTitleSlug().length() != 0);
+
+        assertTrue(potd.getDifficulty() != null);
     }
 
     @Test
-    void userProfileData() {
-        String username = "tahminator";
-        String ranking = "The Best";
-        String userAvatar = "userAvatar.png";
-        String realName = "Tahmid Ahmed";
-        String aboutMe = "I love Leetcode.";
+    void userProfileValid() {
+        UserProfile profile = leetcodeApiHandler.getUserProfile("az2924");
 
-        UserProfile userProfile = new UserProfile(username, ranking, userAvatar, realName, aboutMe);
+        assertTrue(profile != null);
 
-        assertEquals(username, userProfile.getUsername());
-        assertEquals(ranking, userProfile.getRanking());
-        assertEquals(userAvatar, userProfile.getUserAvatar());
-        assertEquals(realName, userProfile.getRealName());
-        assertEquals(aboutMe, userProfile.getAboutMe());
+        assertTrue(profile.getUsername() != null);
+        assertTrue(profile.getUsername().length() != 0);
+
+        assertTrue(profile.getRanking() != null);
+        assertTrue(profile.getRanking().length() != 0);
+
+        assertTrue(profile.getUserAvatar() != null);
+        assertTrue(profile.getUserAvatar().length() != 0);
+
+        assertTrue(profile.getRealName() != null);
+        assertTrue(profile.getRealName().length() != 0);
+
+        assertTrue(profile.getAboutMe() != null);
+        assertTrue(profile.getAboutMe().length() != 0);
+    }
+
+    @Test
+    void userListValid() {
+        ArrayList<LeetcodeSubmission> userList = leetcodeApiHandler.findSubmissionsByUsername("az2924");
+
+        assertTrue(userList != null);
+
+        assertNotNull(userList, "Expecting a non-zero list of submissions");
     }
 }
