@@ -15,7 +15,7 @@ export default function useCountdown(start = 60, interval = 1000) {
     let timeoutId: number;
     if (countdown > 0) {
       timeoutId = setTimeout(() => {
-        setCountdown((prev) => prev - interval / 1000);
+        setCountdown((prev) => prev - Math.floor(interval) / 1000);
       }, interval);
     }
     return () => clearTimeout(timeoutId);
@@ -23,7 +23,7 @@ export default function useCountdown(start = 60, interval = 1000) {
 
   const reset = useCallback(
     (newValue: number) => {
-      setCountdown(newValue);
+      setCountdown(Math.floor(newValue));
     },
     [setCountdown],
   );
