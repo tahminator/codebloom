@@ -1,13 +1,14 @@
 import { useUsersTotalPoints } from "@/lib/api/queries/leaderboard";
+import useCountdown from "@/lib/hooks/useCountdown";
 import { Button, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useEffect, useState } from "react";
 
 export default function RefreshSubmissions() {
   const { mutate, isPending } = useUsersTotalPoints();
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+  const [countdown, resetCountdown] = useCountdown(0);
+
+  const isDisabled = countdown > 0;
 
   const form = useForm({
     initialValues: {
@@ -15,24 +16,12 @@ export default function RefreshSubmissions() {
     },
   });
 
-  useEffect(() => {
-    if (countdown > 0) {
-      setTimeout(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-      return;
-    }
-
-    setIsDisabled(false);
-  }, [countdown, isDisabled]);
-
   const onSubmit = () => {
     mutate(undefined, {
       onSuccess: ({ success, message: responseMessage }) => {
         // Hack to avoid breaking the standard ApiResponse flow.
         if (typeof responseMessage === "number") {
-          setIsDisabled(true);
-          setCountdown(responseMessage);
+          resetCountdown(responseMessage);
           return;
         }
 
