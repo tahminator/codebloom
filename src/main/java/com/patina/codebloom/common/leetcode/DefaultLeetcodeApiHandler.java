@@ -204,12 +204,10 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
         try {
             RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com")
-                    .cookie("LEETCODE_SESSION=" + LeetcodeAuthStealer.getCookie() + ";").body(requestBody);
+                            .cookie("LEETCODE_SESSION=" + LeetcodeAuthStealer.getCookie() + ";").body(requestBody);
             Response response = reqSpec.post(endpoint);
 
             JsonPath jsonPath = response.jsonPath();
-
-            System.out.println(response.asPrettyString());
 
             int runtime = (jsonPath.get("data.submissionDetails.runtime") instanceof Integer) ? jsonPath.getInt("data.submissionDetails.runtime") : 0;
 
@@ -257,8 +255,6 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             Response response = reqSpec.post(endpoint);
 
             JsonPath jsonPath = response.jsonPath();
-
-            System.out.println(response.asPrettyString());
 
             var titleSlug = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.titleSlug");
             var title = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.title");
