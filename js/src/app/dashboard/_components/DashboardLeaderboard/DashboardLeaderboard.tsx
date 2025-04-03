@@ -95,7 +95,11 @@ export default function LeaderboardForDashboard({
 
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-      <Flex direction={"row"} justify={"space-between"} w={"100%"}>
+      <Flex
+        direction={{ base: "column", md: "row" }}
+        justify={"space-between"}
+        w={"100%"}
+      >
         <LeaderboardMetadata />
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all
