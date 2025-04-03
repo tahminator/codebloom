@@ -18,10 +18,10 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@mantine/core": "^7.15.2",
+        "@mantine/core": "^7.17.3",
         "@mantine/form": "^7.16.1",
-        "@mantine/hooks": "^7.15.2",
-        "@mantine/notifications": "^7.15.2",
+        "@mantine/hooks": "^7.17.3",
+        "@mantine/notifications": "^7.17.3",
         "@tabler/icons-react": "^3.30.0",
         "@tanstack/react-query": "^5.64.2",
         "@tanstack/react-query-devtools": "^5.64.2",
