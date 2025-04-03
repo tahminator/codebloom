@@ -24,7 +24,7 @@ import com.patina.codebloom.common.email.MessageLite;
 
 @Component
 public class LeetcodeAuthStealer {
-    private static String cookie;
+    private String cookie;
 
     @Value("${github.username}")
     private String githubUsername;
@@ -46,8 +46,8 @@ public class LeetcodeAuthStealer {
      * code is stored in the database and can then be used to run authenticated
      * queries such as used to retrieve code from our user submissions.
      */
-    @Scheduled(initialDelay = 0, fixedDelay = 86400000)
-    public void stealAuthCookie() {
+    @Scheduled(cron = "0 0 0 * * *")
+    public synchronized void stealAuthCookie() {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
         // The auth token should be refreshed every day.
@@ -128,7 +128,7 @@ public class LeetcodeAuthStealer {
                         // System.out.println(cookie.name + " " + cookie.value);
                         try {
                             authRepository.createAuth(new Auth(cookie.value));
-                            LeetcodeAuthStealer.cookie = cookie.value;
+                            this.cookie = cookie.value;
                         } catch (Exception e) {
                             System.err.println(e);
                         }
@@ -143,7 +143,10 @@ public class LeetcodeAuthStealer {
         }
     }
 
-    public static String getCookie() {
+    public synchronized String getCookie() {
+        if (cookie == null) {
+            stealAuthCookie();
+        }
         return cookie;
     }
 }
