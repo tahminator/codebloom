@@ -1,6 +1,15 @@
 import RecentSubmissionsSkeleton from "@/app/dashboard/_components/RecentSubmissions/RecentSubmissionsSkeleton";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
-import { Badge, Box, Button, Card, Flex, Text, Title } from "@mantine/core";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Center,
+  Flex,
+  Text,
+  Title,
+} from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function RecentSubmissions({ userId }: { userId: string }) {
@@ -69,9 +78,16 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
 
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-      <Flex direction={"row"} justify={"space-between"}>
-        <Title order={4}>Submissions</Title>
-
+      <Flex
+        direction={{ base: "column", md: "row" }}
+        justify={"space-between"}
+        w={"100%"}
+      >
+        <Center>
+          <Title order={4} className="text-center" pb={"sm"}>
+            Submissions
+          </Title>
+        </Center>
         <Button variant={"light"} component={Link} to={`/user/${userId}`}>
           View all
         </Button>
