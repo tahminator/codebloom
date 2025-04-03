@@ -27,10 +27,12 @@ export default function Banner({
         <Flex
           bg={"green"}
           ta={"center"}
-          direction={"row"}
+          direction={"column"}
+          align={"center"}
           style={style}
           justify={"center"}
           gap={"sm"}
+          p={"10px"}
         >
           <Text size={"lg"}>{message}</Text>
           {counter && <PrettyCounter size={"lg"} time={countdown} />}
