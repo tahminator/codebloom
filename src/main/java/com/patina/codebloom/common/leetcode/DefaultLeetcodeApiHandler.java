@@ -35,6 +35,11 @@ import io.restassured.specification.RequestSpecification;
 
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
+    private final LeetcodeAuthStealer leetcodeAuthStealer;
+
+    public DefaultLeetcodeApiHandler(final LeetcodeAuthStealer leetcodeAuthStealer) {
+        this.leetcodeAuthStealer = leetcodeAuthStealer;
+    }
 
     public static String buildQuestionRequestBody(final String query, final String slug) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -204,7 +209,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
         try {
             RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com")
-                            .cookie("LEETCODE_SESSION=" + LeetcodeAuthStealer.getCookie() + ";").body(requestBody);
+                            .cookie("LEETCODE_SESSION=" + leetcodeAuthStealer.getCookie() + ";").body(requestBody);
             Response response = reqSpec.post(endpoint);
 
             JsonPath jsonPath = response.jsonPath();
