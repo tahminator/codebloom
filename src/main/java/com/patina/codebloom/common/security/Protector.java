@@ -57,7 +57,7 @@ public class Protector {
     }
     public AuthenticationObject validateAdminSession(final HttpServletRequest request){
         AuthenticationObject admin = validateSession(request);
-        if(admin.getUser().isAdmin() == false){
+        if(!admin.getUser().isAdmin()){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         return admin;
