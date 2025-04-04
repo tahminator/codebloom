@@ -13,6 +13,7 @@ public class User {
     private String discordName;
     private String leetcodeUsername;
     private String nickname;
+    private Boolean admin;
 
     /**
      * If you want to update tags in the database, you have to use the
@@ -20,12 +21,14 @@ public class User {
      */
     private ArrayList<UserTag> tags;
 
-    public User(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final ArrayList<UserTag> tags) {
+    public User(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final boolean admin, final ArrayList<UserTag> tags) {
         this.id = id;
         this.discordId = discordId;
         this.discordName = discordName;
         this.leetcodeUsername = leetcodeUsername;
         this.nickname = nickname;
+        this.admin = admin;
+
         this.tags = tags;
     }
 
@@ -75,6 +78,14 @@ public class User {
 
     public void setNickname(final String nickname) {
         this.nickname = nickname;
+    }
+
+    public Boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(final Boolean admin) {
+        this.admin = admin;
     }
 
     public ArrayList<UserTag> getTags() {

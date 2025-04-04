@@ -58,7 +58,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserById(final String inputId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\" WHERE id=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"admin\" FROM \"User\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputId));
@@ -69,10 +69,11 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, tags);
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
                     return user;
                 }
             }
@@ -86,7 +87,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserByDiscordId(final String inputDiscordId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\" WHERE \"discordId\"=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"admin\" FROM \"User\" WHERE \"discordId\"=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputDiscordId);
@@ -97,10 +98,11 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, tags);
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
                     return user;
                 }
             }
@@ -128,14 +130,15 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User updateUser(final User inputUser) {
-        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=? WHERE id=?";
+        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=?, \"admin\"=? WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputUser.getDiscordName());
             stmt.setString(2, inputUser.getDiscordId());
             stmt.setString(3, inputUser.getLeetcodeUsername());
             stmt.setString(4, inputUser.getNickname());
-            stmt.setObject(5, UUID.fromString(inputUser.getId()));
+            stmt.setBoolean(5, inputUser.getAdmin());
+            stmt.setObject(6, UUID.fromString(inputUser.getId()));
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
@@ -151,7 +154,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\" FROM \"User\"";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"admin\" FROM \"User\"";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -161,10 +164,11 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, tags));
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags));
                 }
             }
         } catch (SQLException e) {
@@ -184,6 +188,7 @@ public class UserSqlRepository implements UserRepository {
                             "discordName",
                             "leetcodeUsername",
                             "nickname",
+                            "admin",
                             "verifyKey"
                         FROM "User"
                         WHERE id = ?
@@ -198,11 +203,12 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
                     var verifyKey = rs.getString("verifyKey");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, verifyKey, tags);
+                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, admin, verifyKey, tags);
                     return user;
                 }
             }
@@ -242,6 +248,7 @@ public class UserSqlRepository implements UserRepository {
                                 u."discordName",
                                 u."leetcodeUsername",
                                 u.nickname,
+                                u.admin,
                                 m."totalScore"
                             FROM
                                 "User" u
@@ -262,11 +269,12 @@ public class UserSqlRepository implements UserRepository {
                     var discordName = rs.getString("discordName");
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
                     var totalScore = rs.getInt("totalScore");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, totalScore, tags);
+                    var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, admin, totalScore, tags);
                     System.out.println(userWithScore.getDiscordId());
                     return userWithScore;
                 }
