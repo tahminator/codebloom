@@ -80,7 +80,7 @@ public class User {
         this.nickname = nickname;
     }
 
-    public Boolean getAdmin() {
+    public boolean isAdmin() {
         return admin;
     }
 
