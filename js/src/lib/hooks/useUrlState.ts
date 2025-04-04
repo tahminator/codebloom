@@ -20,14 +20,14 @@ export function useURLState<T>(
   resetOnDefault = true,
   debounce = 0,
 ) {
-  const [initial, setInitial] = useState(false);
+  const [initial, setInitial] = useState(true);
   const [value, setValue] = useState<T>(defaultValue);
   const [debouncedValue] = useDebouncedValue<T>(value, debounce);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // On initial mount, update the state with the URL params. This hook will not run if the hook is not enabled or the initial value has already been provided.
   useEffect(() => {
-    if (!enabled || initial) {
+    if (!enabled || !initial) {
       return;
     }
 
@@ -36,19 +36,23 @@ export function useURLState<T>(
     // No value found in the URL.
     if (param == null) {
       setValue(defaultValue);
-      setInitial(true);
+      setInitial(false);
       return;
     }
 
     const val = coerce(param, defaultValue);
     // If coercion of type fails, it will return Symbol.
     setValue(typeof val === "symbol" ? defaultValue : val);
-    setInitial(true);
+    setInitial(false);
   }, [defaultValue, name, searchParams, enabled, initial]);
 
   // Update the URL with the new state, only if the initial value hasn't been set already and if the hook is enabled.
   useEffect(() => {
-    if (!enabled || !initial) {
+    if (!enabled || initial) {
+      return;
+    }
+
+    if (debouncedValue != value) {
       return;
     }
 
