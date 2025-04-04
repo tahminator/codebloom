@@ -137,7 +137,7 @@ public class UserSqlRepository implements UserRepository {
             stmt.setString(2, inputUser.getDiscordId());
             stmt.setString(3, inputUser.getLeetcodeUsername());
             stmt.setString(4, inputUser.getNickname());
-            stmt.setBoolean(5, inputUser.getAdmin());
+            stmt.setBoolean(5, inputUser.isAdmin());
             stmt.setObject(6, UUID.fromString(inputUser.getId()));
 
             // We don't care what this actually returns, it can never be more than 1 anyways
