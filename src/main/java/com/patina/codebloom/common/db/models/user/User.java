@@ -13,7 +13,7 @@ public class User {
     private String discordName;
     private String leetcodeUsername;
     private String nickname;
-    private Boolean admin;
+    private boolean admin;
 
     /**
      * If you want to update tags in the database, you have to use the
