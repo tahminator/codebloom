@@ -9,7 +9,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
 /**
  * Fetch the users on the current leaderboard. This is a super query
@@ -26,6 +26,9 @@ export const useCurrentLeaderboardUsersQuery = ({
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
 
+  /**
+   * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
+   */
   const [searchQuery, _setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
@@ -50,6 +53,10 @@ export const useCurrentLeaderboardUsersQuery = ({
     [setPage],
   );
 
+  /**
+   * Abstracted function so that we can also reset the page back to 1 whenever we update the query.
+   * TODO - Move these side effects within the useURLState function, which will make it easier to deal with.
+   */
   const setSearchQuery = useCallback(
     (query: string) => {
       _setSearchQuery(query);
