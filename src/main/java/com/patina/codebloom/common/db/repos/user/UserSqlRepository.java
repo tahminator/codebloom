@@ -154,7 +154,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"admin\" FROM \"User\"";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", admin FROM \"User\"";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
