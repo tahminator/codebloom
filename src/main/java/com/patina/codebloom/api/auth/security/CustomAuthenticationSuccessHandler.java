@@ -106,9 +106,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             }
 
             if (foundGuild != null) {
-                if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), Tag.Patina) == null) {
-                    userTagRepository.createTagByUserId(existingUser.getId(), Tag.Patina);
-                }
                 List<Member> members = foundGuild.getMembers();
 
                 for (Member m : members) {
@@ -121,6 +118,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                             existingUser.setNickname(m.getUser().getGlobalName());
                         } else {
                             existingUser.setNickname(existingUser.getDiscordName());
+                        }
+                        if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), Tag.Patina) == null) {
+                            userTagRepository.createTagByUserId(existingUser.getId(), Tag.Patina);
                         }
                         userRepository.updateUser(existingUser);
                     }
