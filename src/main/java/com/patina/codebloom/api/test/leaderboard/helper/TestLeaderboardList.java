@@ -33,7 +33,8 @@ public class TestLeaderboardList {
             if (addNickname) {
                 tags.add(new UserTag(FAKER.internet().uuid(), LocalDateTime.now(), FAKER.internet().uuid(), Tag.Patina));
             }
-            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, FAKER.number().numberBetween(0, 12000),
+            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, addNickname,
+                            FAKER.number().numberBetween(0, 12000),
                             tags));
         }
 
@@ -62,7 +63,8 @@ public class TestLeaderboardList {
             if (addNickname) {
                 tags.add(new UserTag(FAKER.internet().uuid(), LocalDateTime.now(), FAKER.internet().uuid(), Tag.Patina));
             }
-            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, FAKER.number().numberBetween(0, 12000),
+            users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, addNickname,
+                            FAKER.number().numberBetween(0, 12000),
                             tags));
         }
 
