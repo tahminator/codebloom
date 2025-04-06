@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class StaticContentFilter implements Filter {
 
     private List<String> fileExtensions = Arrays.asList("html", "js", "json", "csv", "css", "png", "svg", "eot", "ttf",
-            "woff", "appcache", "jpg", "jpeg", "gif", "ico");
+            "woff", "appcache", "jpg", "jpeg", "gif", "ico", "txt");
 
     @Override
     public final void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
