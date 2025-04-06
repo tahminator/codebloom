@@ -21,13 +21,20 @@ export function Footer() {
         <div className={styles.footerLinks}>
           <FooterIconLink
             href={"https://www.linkedin.com/company/patinanetwork"}
+            ariaLabel={"Patina Network LinkedIn"}
           >
             <FaLinkedin size={24} />
           </FooterIconLink>
-          <FooterIconLink href={"https://www.instagram.com/patinanetwork"}>
+          <FooterIconLink
+            href={"https://www.instagram.com/patinanetwork"}
+            ariaLabel={"Patina Network Instagram"}
+          >
             <FaInstagram size={24} />
           </FooterIconLink>
-          <FooterIconLink href={"https://github.com/tahminator/codebloom"}>
+          <FooterIconLink
+            href={"https://github.com/tahminator/codebloom"}
+            ariaLabel={"CodeBloom GitHub"}
+          >
             <FaGithub size={24} />
           </FooterIconLink>
         </div>
@@ -39,9 +46,11 @@ export function Footer() {
 function FooterIconLink({
   href,
   children,
+  ariaLabel,
 }: {
   href: string;
   children: ReactNode;
+  ariaLabel: string;
 }) {
   return (
     <ActionIcon
@@ -51,6 +60,7 @@ function FooterIconLink({
       color={"dark.0"}
       variant="transparent"
       size="lg"
+      aria-label={ariaLabel}
     >
       {children}
     </ActionIcon>
