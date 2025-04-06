@@ -106,7 +106,7 @@ While you can use any editor, VSCode is recommended as it can handle multiple la
    - Populate your .env file with required values
    - Contact Tahmid if you need access to certain secrets
    - For local database setup, refer to `/local-database.md`
-   - Find more information about the backend in the `backend` folder which you can go to by clicking [here](https://github.com/tahminator/tree/main/docs/backend).
+   - Find more information about the backend in the `backend` folder which you can go to by clicking [here](https://github.com/tahminator/codebloom/tree/main/docs/backend)
 
 ### Frontend
 
