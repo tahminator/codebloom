@@ -254,4 +254,35 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         return 0;
     }
 
+    @Override
+    public ArrayList<Leaderboard> getAllLeaderboardsShallow() {
+        ArrayList<Leaderboard> leaderboards = new ArrayList<>();
+        String sql = """
+                        SELECT
+                            id,
+                            name,
+                            "createdAt",
+                            "deletedAt"
+                        FROM "Leaderboard"
+                        """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var id = rs.getString("id");
+                    var name = rs.getString("name");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    Timestamp tsDeletedAt = rs.getTimestamp("deletedAt");
+                    LocalDateTime deletedAt = null;
+                    if (tsDeletedAt != null) {
+                        deletedAt = tsDeletedAt.toLocalDateTime();
+                    }
+                    leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch all leaderboards", e);
+        }
+        return leaderboards;
+    }
+
 }
