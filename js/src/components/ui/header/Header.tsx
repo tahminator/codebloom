@@ -50,7 +50,7 @@ export default function Header() {
       <header className={classes.header}>
         <Link to="/">
           <Group>
-            <img src={"/logo.png"} width={45} alt="Logo" />
+            <img src={"/logo.png"} width={45} height={45} alt="Logo" />
             <Title>
               <Text
                 gradient={{ from: "rgb(75,233,167)", to: "white" }}
