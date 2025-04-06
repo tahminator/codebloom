@@ -74,7 +74,12 @@ export default function Header() {
           </Link>
         </Group>
         <Group visibleFrom="sm">{renderButton()}</Group>
-        <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
+        <Burger
+          opened={drawerOpened}
+          onClick={toggleDrawer}
+          hiddenFrom="sm"
+          aria-label={"Menu button"}
+        />
       </header>
       <Drawer opened={drawerOpened} onClose={closeDrawer} title="Navigation">
         <Flex direction="column" align="center" gap="md" mt="sm">
