@@ -285,4 +285,25 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         return leaderboards;
     }
 
+    @Override
+    public boolean addAllUsersToLeaderboard(final String leaderboardId) {
+        var users = userRepository.getAllUsers();
+        String sql = "INSERT INTO \"Metadata\" (id, \"userId\", \"leaderboardId\") VALUES (?, ?, ?)";
+        int rowsAffected = 0;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (var user : users) {
+                String userMetaId = UUID.randomUUID().toString();
+                stmt.setObject(1, UUID.fromString(userMetaId));
+                stmt.setObject(2, UUID.fromString(user.getId()));
+                stmt.setObject(3, UUID.fromString(leaderboardId));
+                rowsAffected += stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to add all users to the the leaderboard", e);
+        }
+
+        return rowsAffected == users.size();
+    }
+
 }

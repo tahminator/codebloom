@@ -28,4 +28,5 @@ public interface LeaderboardRepository {
 
     ArrayList<Leaderboard> getAllLeaderboardsShallow();
 
+    boolean addAllUsersToLeaderboard(String leaderboardId);
 }
