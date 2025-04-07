@@ -3,13 +3,14 @@ import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetada
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { Button, Table } from "@mantine/core";
+import { Button, SegmentedControl, Table } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function MiniLeaderboardMobile() {
-  const { data, status } = useCurrentLeaderboardUsersQuery({ pageSize: 5 });
+  const { data, status, patina, togglePatina } =
+    useCurrentLeaderboardUsersQuery({ pageSize: 5 });
 
   if (status === "pending") {
     return <MiniLeaderboardMobileSkeleton />;
@@ -34,9 +35,19 @@ export default function MiniLeaderboardMobile() {
   return (
     <>
       <LeaderboardMetadata />
+      <SegmentedControl
+        value={patina ? "patina" : "all"}
+        w={"100%"}
+        variant={"light"}
+        data={[
+          { label: "All", value: "all" },
+          { label: "Patina", value: "patina" },
+        ]}
+        onChange={togglePatina}
+      />
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem" }}
+        style={{ marginBottom: "2rem", marginTop: "1rem" }}
       >
         {first && (
           <LeaderboardCard
