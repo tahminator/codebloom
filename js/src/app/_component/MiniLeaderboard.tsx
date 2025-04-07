@@ -56,7 +56,12 @@ export default function MiniLeaderboardDesktop() {
       />
       <div style={{ position: "relative" }}>
         {isPlaceholderData && (
-          <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
+          <Overlay
+            zIndex={1000}
+            backgroundOpacity={0.55}
+            blur={10}
+            radius={"md"}
+          />
         )}
         <div
           className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
