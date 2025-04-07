@@ -4,10 +4,11 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
-import { Table, Text, Tooltip } from "@mantine/core";
+import { Button, Table, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
+import { Link } from "react-router-dom";
 
 export default function MiniLeaderboardDesktop() {
   const { data, status } = useCurrentLeaderboardUsersQuery({ pageSize: 5 });
@@ -127,6 +128,9 @@ export default function MiniLeaderboardDesktop() {
           </Table.Tbody>
         </Table>
       )}
+      <Button variant={"light"} w={"100%"} component={Link} to={"/leaderboard"}>
+        View all
+      </Button>
     </div>
   );
 }
