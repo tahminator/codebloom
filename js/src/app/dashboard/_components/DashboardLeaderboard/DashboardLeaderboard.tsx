@@ -11,6 +11,7 @@ import {
   Card,
   Divider,
   Flex,
+  SegmentedControl,
   Text,
   Title,
   Tooltip,
@@ -28,7 +29,10 @@ export default function LeaderboardForDashboard({
   // Hack to fix a race condition.
   useFixMyPointsPrefetch({ userId });
 
-  const { data, status } = useCurrentLeaderboardUsersQuery({ pageSize: 5 });
+  const { data, status, patina, togglePatina } =
+    useCurrentLeaderboardUsersQuery({
+      pageSize: 5,
+    });
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
@@ -101,10 +105,21 @@ export default function LeaderboardForDashboard({
         w={"100%"}
       >
         <LeaderboardMetadata />
+
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all
         </Button>
       </Flex>
+      <SegmentedControl
+        value={patina ? "patina" : "all"}
+        w={"100%"}
+        variant={"light"}
+        data={[
+          { label: "All", value: "all" },
+          { label: "Patina", value: "patina" },
+        ]}
+        onChange={togglePatina}
+      />
       {!inTop5 && (
         <>
           <MyCurrentPoints userId={userId} />
