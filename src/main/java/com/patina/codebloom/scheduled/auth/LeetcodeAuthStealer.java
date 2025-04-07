@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import com.patina.codebloom.common.email.MessageLite;
 
 @Component
 public class LeetcodeAuthStealer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LeetcodeAuthStealer.class);
     private String cookie;
 
     @Value("${github.username}")
@@ -52,9 +55,12 @@ public class LeetcodeAuthStealer {
 
         // The auth token should be refreshed every day.
         if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(LocalDateTime.now().minus(4, ChronoUnit.DAYS))) {
+            LOGGER.debug("Auth token already exists, using token from database.");
             cookie = mostRecentAuth.getToken();
             return;
         }
+
+        LOGGER.debug("Auth token is missing/expired. Attempting to receive token...");
 
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
@@ -63,18 +69,25 @@ public class LeetcodeAuthStealer {
                             .setStorageState(null));
             context.clearCookies();
 
+            LOGGER.debug("Loaded browser context");
+
             Page page = context.newPage();
 
             page.navigate("https://leetcode.com/accounts/github/login/?next=%2F");
+
+            LOGGER.debug("Navigated to leetcode.com login");
 
             page.waitForLoadState(LoadState.NETWORKIDLE);
 
             page.fill("#login_field", githubUsername);
             page.fill("#password", githubPassword);
 
+            LOGGER.debug("Filled in credentials, clicking login...");
+
             page.click("input[name=\"commit\"]");
 
             if (page.isVisible("#device-verification-prompt") || page.isVisible("#session-otp-input-description")) {
+                LOGGER.debug("2FA Required");
                 List<MessageLite> messages;
 
                 page.waitForTimeout(10000);
@@ -82,6 +95,7 @@ public class LeetcodeAuthStealer {
                 try {
                     messages = email.getPastMessages();
                 } catch (Exception e) {
+                    LOGGER.debug("Failed to retrieve past messages");
                     throw new RuntimeException("Failed to retrieve past messages", e);
                 }
 
@@ -89,6 +103,7 @@ public class LeetcodeAuthStealer {
                 for (MessageLite m : messages) {
                     // Don't break so we can get the newest available code.
                     if (m.getSubject().equals("[GitHub] Please verify your device")) {
+                        LOGGER.debug("Found verification email");
                         target = m;
                     }
                 }
@@ -99,11 +114,15 @@ public class LeetcodeAuthStealer {
 
                 String code = CodeExtractor.extractCode(target.getMessage());
 
+                LOGGER.debug("Found code in email, will fill now...");
+
                 if (code == null) {
                     throw new RuntimeException("Code was not found in the email. Manual intervention required.");
                 }
 
                 page.fill("input[name='otp']", code);
+
+                LOGGER.debug("Page filled!");
 
             }
 
@@ -113,9 +132,12 @@ public class LeetcodeAuthStealer {
                     // Click the second button (which is the actual authorize button)
                     buttons.get(1).click();
                 }
+                LOGGER.debug("Authorization button clicked");
             }
 
             page.waitForURL("https://leetcode.com/");
+
+            LOGGER.debug("Back to leetcode.com!");
 
             // if (page.isVisible("h1:has-text(\"Login Cancelled\")")) {
             // page.navigate("https://leetcode.com/accounts/github/login/?next=%2F");
@@ -127,6 +149,7 @@ public class LeetcodeAuthStealer {
                     if (cookie.name.equals("LEETCODE_SESSION")) {
                         // System.out.println(cookie.name + " " + cookie.value);
                         try {
+                            LOGGER.debug("Cookie found!");
                             authRepository.createAuth(new Auth(cookie.value));
                             this.cookie = cookie.value;
                         } catch (Exception e) {
