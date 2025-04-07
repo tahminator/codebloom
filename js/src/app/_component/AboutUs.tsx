@@ -64,14 +64,6 @@ export default function AboutUs() {
           w={"50%"}
         >
           <MiniLeaderboard />
-          <Button
-            variant={"light"}
-            w={"100%"}
-            component={Link}
-            to={"/leaderboard"}
-          >
-            View all
-          </Button>
         </Flex>
       </Flex>
       <Flex h={"80vh"} w={"100vw"} hiddenFrom="lg">
@@ -100,14 +92,6 @@ export default function AboutUs() {
       </Flex>
       <Container hiddenFrom={"lg"}>
         <MiniLeaderboardMobile />
-        <Button
-          variant={"light"}
-          w={"100%"}
-          component={Link}
-          to={"/leaderboard"}
-        >
-          View all
-        </Button>
       </Container>
       <div ref={targetSectionRef} style={{ padding: "2rem" }}>
         <OurFeatures />
