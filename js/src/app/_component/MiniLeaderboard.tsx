@@ -4,14 +4,21 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
-import { Button, SegmentedControl, Table, Text, Tooltip } from "@mantine/core";
+import {
+  Button,
+  Overlay,
+  SegmentedControl,
+  Table,
+  Text,
+  Tooltip,
+} from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function MiniLeaderboardDesktop() {
-  const { data, status, patina, togglePatina } =
+  const { data, status, patina, togglePatina, isPlaceholderData } =
     useCurrentLeaderboardUsersQuery({ pageSize: 5 });
 
   if (status === "pending") {
@@ -35,7 +42,7 @@ export default function MiniLeaderboardDesktop() {
   const [first, second, third] = leaderboardData.data;
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "1rem", position: "relative" }}>
       <LeaderboardMetadata />
       <SegmentedControl
         value={patina ? "patina" : "all"}
@@ -47,42 +54,108 @@ export default function MiniLeaderboardDesktop() {
         ]}
         onChange={togglePatina}
       />
-      <div
-        className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem", marginTop: "1rem" }}
-      >
-        {second && (
-          <LeaderboardCard
-            placeString={"Second"}
-            discordName={second.discordName}
-            leetcodeUsername={second.leetcodeUsername}
-            totalScore={second.totalScore}
-            nickname={second.nickname}
-            width={"200px"}
-            userId={second.id}
-          />
+      <div style={{ position: "relative" }}>
+        {isPlaceholderData && (
+          <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
         )}
-        {first && (
-          <LeaderboardCard
-            placeString={"First"}
-            discordName={first.discordName}
-            leetcodeUsername={first.leetcodeUsername}
-            totalScore={first.totalScore}
-            nickname={first.nickname}
-            width={"200px"}
-            userId={first.id}
-          />
-        )}
-        {third && (
-          <LeaderboardCard
-            placeString={"Third"}
-            discordName={third.discordName}
-            leetcodeUsername={third.leetcodeUsername}
-            totalScore={third.totalScore}
-            nickname={third.nickname}
-            width={"200px"}
-            userId={third.id}
-          />
+        <div
+          className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
+          style={{
+            marginBottom: "2rem",
+            marginTop: "1rem",
+          }}
+        >
+          {second && (
+            <LeaderboardCard
+              placeString={"Second"}
+              discordName={second.discordName}
+              leetcodeUsername={second.leetcodeUsername}
+              totalScore={second.totalScore}
+              nickname={second.nickname}
+              width={"200px"}
+              userId={second.id}
+            />
+          )}
+          {first && (
+            <LeaderboardCard
+              placeString={"First"}
+              discordName={first.discordName}
+              leetcodeUsername={first.leetcodeUsername}
+              totalScore={first.totalScore}
+              nickname={first.nickname}
+              width={"200px"}
+              userId={first.id}
+            />
+          )}
+          {third && (
+            <LeaderboardCard
+              placeString={"Third"}
+              discordName={third.discordName}
+              leetcodeUsername={third.leetcodeUsername}
+              totalScore={third.totalScore}
+              nickname={third.nickname}
+              width={"200px"}
+              userId={third.id}
+            />
+          )}
+        </div>
+        {leaderboardData.data.length > 3 && (
+          <Table horizontalSpacing="xl">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th></Table.Th>
+                <Table.Th>Name </Table.Th>
+                <Table.Th>Total Points</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {leaderboardData.data.map((entry, index) => {
+                if ([0, 1, 2].includes(index)) return null;
+                return (
+                  <Table.Tr key={index}>
+                    <Table.Td>{index + 1}</Table.Td>
+                    <Table.Td>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        {entry.nickname ?
+                          <span
+                            style={{ fontSize: "18px", lineHeight: "28px" }}
+                          >
+                            <Tooltip
+                              label={
+                                "This user is a member of the Patina Discord server."
+                              }
+                              color={"dark.4"}
+                            >
+                              <Text>
+                                <IconCircleCheckFilled
+                                  className="inline"
+                                  color={theme.colors.patina[4]}
+                                  z={5000000}
+                                  size={20}
+                                />{" "}
+                                {entry.nickname}
+                              </Text>
+                            </Tooltip>
+                          </span>
+                        : <span
+                            style={{ fontSize: "18px", lineHeight: "28px" }}
+                          >
+                            <FaDiscord style={{ display: "inline" }} />{" "}
+                            {entry.discordName}
+                          </span>
+                        }
+                        <span>
+                          <SiLeetcode style={{ display: "inline" }} />{" "}
+                          {entry.leetcodeUsername}
+                        </span>
+                      </div>
+                    </Table.Td>
+                    <Table.Td>{entry.totalScore}</Table.Td>
+                  </Table.Tr>
+                );
+              })}
+            </Table.Tbody>
+          </Table>
         )}
       </div>
       {leaderboardData.data.length > 3 && (
