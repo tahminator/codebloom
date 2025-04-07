@@ -4,14 +4,15 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { theme } from "@/lib/theme";
-import { Button, Table, Text, Tooltip } from "@mantine/core";
+import { Button, SegmentedControl, Table, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function MiniLeaderboardDesktop() {
-  const { data, status } = useCurrentLeaderboardUsersQuery({ pageSize: 5 });
+  const { data, status, patina, togglePatina } =
+    useCurrentLeaderboardUsersQuery({ pageSize: 5 });
 
   if (status === "pending") {
     return <MiniLeaderboardSkeleton />;
@@ -36,9 +37,19 @@ export default function MiniLeaderboardDesktop() {
   return (
     <div style={{ padding: "1rem" }}>
       <LeaderboardMetadata />
+      <SegmentedControl
+        value={patina ? "patina" : "all"}
+        w={"100%"}
+        variant={"light"}
+        data={[
+          { label: "All", value: "all" },
+          { label: "Patina", value: "patina" },
+        ]}
+        onChange={togglePatina}
+      />
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem" }}
+        style={{ marginBottom: "2rem", marginTop: "1rem" }}
       >
         {second && (
           <LeaderboardCard
