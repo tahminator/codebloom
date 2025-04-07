@@ -36,7 +36,7 @@ export const useCurrentLeaderboardUsersQuery = ({
     true,
     500,
   );
-  const [patina, setPatina] = useURLState("patina", false, true, true, 100);
+  const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));

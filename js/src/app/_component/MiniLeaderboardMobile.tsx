@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 
 export default function MiniLeaderboardMobile() {
   const { data, status, patina, togglePatina, isPlaceholderData } =
-    useCurrentLeaderboardUsersQuery({ pageSize: 5 });
+    useCurrentLeaderboardUsersQuery({ pageSize: 5, tieToUrl: false });
 
   if (status === "pending") {
     return <MiniLeaderboardMobileSkeleton />;
