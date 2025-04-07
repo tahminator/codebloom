@@ -3,9 +3,10 @@ import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetada
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { Table } from "@mantine/core";
+import { Button, Table } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
+import { Link } from "react-router-dom";
 
 export default function MiniLeaderboardMobile() {
   const { data, status } = useCurrentLeaderboardUsersQuery({ pageSize: 5 });
@@ -105,6 +106,9 @@ export default function MiniLeaderboardMobile() {
           </Table.Tbody>
         </Table>
       )}
+      <Button variant={"light"} w={"100%"} component={Link} to={"/leaderboard"}>
+        View all
+      </Button>
     </>
   );
 }
