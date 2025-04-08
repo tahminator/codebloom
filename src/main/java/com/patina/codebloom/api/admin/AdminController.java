@@ -14,6 +14,7 @@ import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.security.Protector;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,20 +26,26 @@ import jakarta.validation.Valid;
 public class AdminController {
 
     private final LeaderboardRepository leaderboardRepository;
+    private final Protector protector;
 
-    public AdminController(final LeaderboardRepository leaderboardRepository) {
+    public AdminController(final LeaderboardRepository leaderboardRepository,final Protector protector) {
         this.leaderboardRepository = leaderboardRepository;
+        this.protector = protector;
     }
 
-    @PostMapping("/create-leaderboard")
+    @PostMapping("/leaderboard/create")
     public ResponseEntity<ApiResponder<Void>> createLeaderboard(
                     final HttpServletRequest request,
                     @Valid @RequestBody final NewLeaderboardBody newLeaderboardBody) {
+        /**
+         * This checks if user is an admin.
+         */
+        protector.validateAdminSession(request);
 
         final String name = newLeaderboardBody.getName().trim();
 
         /**
-         * This checks if the leaderboard name is not an emoty string or longer than 512
+         * This checks if the leaderboard name is not an empty string or longer than 512
          * characters.
          */
 
@@ -67,11 +74,11 @@ public class AdminController {
         newLeaderboard.setCreatedAt(LocalDateTime.now());
 
         boolean success = leaderboardRepository.addNewLeaderboard(newLeaderboard) != null;
-
         if (!success) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Failed to create leaderboard due to an internal error."));
         }
+        leaderboardRepository.addAllUsersToLeaderboard(newLeaderboard.getId());
 
         return ResponseEntity.ok(ApiResponder.success("Leaderboard was created successfully.", null));
     }
