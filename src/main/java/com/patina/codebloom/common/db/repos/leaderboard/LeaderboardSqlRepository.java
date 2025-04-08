@@ -45,7 +45,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         leaderboard.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(leaderboard.getId()));
-            stmt.setObject(2, UUID.fromString(leaderboard.getName()));
+            stmt.setString(2, leaderboard.getName());
 
             stmt.executeUpdate();
 
