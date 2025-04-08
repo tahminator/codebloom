@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -125,7 +126,16 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         AND
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
-                            m."totalScore" DESC
+                            m."totalScore" DESC,
+                            -- The following case is used to put users with linked leetcode names before
+                            -- those who don't.
+                            CASE
+                                WHEN m."totalScore" = 0 THEN
+                                    CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
+                                ELSE 0
+                            END,
+                            -- This is the tie breaker if we can't sort them by the above conditions.
+                            m."createdAt" ASC
                         LIMIT ? OFFSET ?;
                                                 """;
 
@@ -289,7 +299,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     public boolean addAllUsersToLeaderboard(final String leaderboardId) {
         var users = userRepository.getAllUsers();
         String sql = "INSERT INTO \"Metadata\" (id, \"userId\", \"leaderboardId\") VALUES (?, ?, ?)";
-        int rowsAffected = 0;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             for (var user : users) {
@@ -297,13 +306,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 stmt.setObject(1, UUID.fromString(userMetaId));
                 stmt.setObject(2, UUID.fromString(user.getId()));
                 stmt.setObject(3, UUID.fromString(leaderboardId));
-                rowsAffected += stmt.executeUpdate();
+                stmt.addBatch();
             }
+
+            int[] updates = stmt.executeBatch();
+            long successfulInsertions = Arrays.stream(updates).filter(count -> count > 0).count();
+            return successfulInsertions == users.size();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to add all users to the the leaderboard", e);
         }
-
-        return rowsAffected == users.size();
     }
-
 }
