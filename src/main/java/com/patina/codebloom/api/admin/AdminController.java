@@ -28,7 +28,7 @@ public class AdminController {
     private final LeaderboardRepository leaderboardRepository;
     private final Protector protector;
 
-    public AdminController(final LeaderboardRepository leaderboardRepository,final Protector protector) {
+    public AdminController(final LeaderboardRepository leaderboardRepository, final Protector protector) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
     }
