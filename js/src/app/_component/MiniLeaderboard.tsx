@@ -104,61 +104,65 @@ export default function MiniLeaderboardDesktop() {
             />
           )}
         </div>
-      </div>
-      {leaderboardData.data.length > 3 && (
-        <Table horizontalSpacing="xl">
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th></Table.Th>
-              <Table.Th>Name </Table.Th>
-              <Table.Th>Total Points</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {leaderboardData.data.map((entry, index) => {
-              if ([0, 1, 2].includes(index)) return null;
-              return (
-                <Table.Tr key={index}>
-                  <Table.Td>{index + 1}</Table.Td>
-                  <Table.Td>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      {entry.nickname ?
-                        <span style={{ fontSize: "18px", lineHeight: "28px" }}>
-                          <Tooltip
-                            label={
-                              "This user is a member of the Patina Discord server."
-                            }
-                            color={"dark.4"}
+        {leaderboardData.data.length > 3 && (
+          <Table horizontalSpacing="xl">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th></Table.Th>
+                <Table.Th>Name </Table.Th>
+                <Table.Th>Total Points</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {leaderboardData.data.map((entry, index) => {
+                if ([0, 1, 2].includes(index)) return null;
+                return (
+                  <Table.Tr key={index}>
+                    <Table.Td>{index + 1}</Table.Td>
+                    <Table.Td>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        {entry.nickname ?
+                          <span
+                            style={{ fontSize: "18px", lineHeight: "28px" }}
                           >
-                            <Text>
-                              <IconCircleCheckFilled
-                                className="inline"
-                                color={theme.colors.patina[4]}
-                                z={5000000}
-                                size={20}
-                              />{" "}
-                              {entry.nickname}
-                            </Text>
-                          </Tooltip>
+                            <Tooltip
+                              label={
+                                "This user is a member of the Patina Discord server."
+                              }
+                              color={"dark.4"}
+                            >
+                              <Text>
+                                <IconCircleCheckFilled
+                                  className="inline"
+                                  color={theme.colors.patina[4]}
+                                  z={5000000}
+                                  size={20}
+                                />{" "}
+                                {entry.nickname}
+                              </Text>
+                            </Tooltip>
+                          </span>
+                        : <span
+                            style={{ fontSize: "18px", lineHeight: "28px" }}
+                          >
+                            <FaDiscord style={{ display: "inline" }} />{" "}
+                            {entry.discordName}
+                          </span>
+                        }
+                        <span>
+                          <SiLeetcode style={{ display: "inline" }} />{" "}
+                          {entry.leetcodeUsername}
                         </span>
-                      : <span style={{ fontSize: "18px", lineHeight: "28px" }}>
-                          <FaDiscord style={{ display: "inline" }} />{" "}
-                          {entry.discordName}
-                        </span>
-                      }
-                      <span>
-                        <SiLeetcode style={{ display: "inline" }} />{" "}
-                        {entry.leetcodeUsername}
-                      </span>
-                    </div>
-                  </Table.Td>
-                  <Table.Td>{entry.totalScore}</Table.Td>
-                </Table.Tr>
-              );
-            })}
-          </Table.Tbody>
-        </Table>
-      )}
+                      </div>
+                    </Table.Td>
+                    <Table.Td>{entry.totalScore}</Table.Td>
+                  </Table.Tr>
+                );
+              })}
+            </Table.Tbody>
+          </Table>
+        )}
+      </div>
       <Button variant={"light"} w={"100%"} component={Link} to={"/leaderboard"}>
         View all
       </Button>
