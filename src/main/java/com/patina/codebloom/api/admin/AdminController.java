@@ -6,15 +6,15 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.patina.codebloom.api.admin.body.NewLeaderboardBodyObject;
+import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -33,9 +33,9 @@ public class AdminController {
     @PostMapping("/create-leaderboard")
     public ResponseEntity<ApiResponder<Void>> createLeaderboard(
                     final HttpServletRequest request,
-                    @Valid @RequestBody final NewLeaderboardBodyObject newLeaderboardBody) {
+                    @Valid @RequestBody final NewLeaderboardBody newLeaderboardBody) {
 
-        final String name = newLeaderboardBody.getLeaderboardBodyName().trim();
+        final String name = newLeaderboardBody.getName().trim();
 
         /**
          * This checks if the leaderboard name is not an emoty string or longer than 512
