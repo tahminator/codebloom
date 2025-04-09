@@ -73,7 +73,7 @@ public class AdminController {
         newLeaderboard.setName(name);
         newLeaderboard.setCreatedAt(LocalDateTime.now());
 
-        boolean success = leaderboardRepository.addNewLeaderboard(newLeaderboard) != null;
+        boolean success = leaderboardRepository.addNewLeaderboard(newLeaderboard);
         if (!success) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Failed to create leaderboard due to an internal error."));
