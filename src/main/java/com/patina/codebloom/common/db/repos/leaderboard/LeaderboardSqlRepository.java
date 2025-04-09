@@ -41,16 +41,20 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public Leaderboard addNewLeaderboard(final Leaderboard leaderboard) {
-        String sql = "INSERT INTO \"Leaderboard\" (id, name) VALUES (?, ?)";
+    public boolean addNewLeaderboard(final Leaderboard leaderboard) {
+        String sql = "INSERT INTO \"Leaderboard\" (id, name) VALUES (?, ?) RETURNING \"createdAt\"";
         leaderboard.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(leaderboard.getId()));
             stmt.setString(2, leaderboard.getName());
-
-            stmt.executeUpdate();
-
-            return leaderboard;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    leaderboard.setCreatedAt(createdAt);
+                    return true;
+                }
+            }
+            return false;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create new leaderboard", e);
         }

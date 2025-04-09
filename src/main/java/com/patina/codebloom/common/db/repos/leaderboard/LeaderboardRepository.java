@@ -12,7 +12,7 @@ public interface LeaderboardRepository {
 
     boolean disableLeaderboardById(String leaderboardId);
 
-    Leaderboard addNewLeaderboard(Leaderboard leaderboard);
+    boolean addNewLeaderboard(Leaderboard leaderboard);
 
     /**
      * @implNote If you want to update the users in a leaderboard, use
