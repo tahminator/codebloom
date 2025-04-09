@@ -1,4 +1,3 @@
-import Banner from "@/components/ui/banner/Banner";
 import ReactQueryProvider from "@/lib/queryProvider";
 import { router } from "@/lib/router";
 import "@mantine/core/styles.css";
@@ -18,10 +17,10 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReactQueryProvider>
       <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
-        <Banner
-          message="The FIRST official leaderboard for the month of April will be starting very soon!"
-          counter={new Date("2025-04-09T18:00:00-04:00")}
-        />
+        {/* <Banner */}
+        {/*   message="The FIRST official leaderboard for the month of April will be starting very soon!" */}
+        {/*   counter={new Date("2025-04-09T18:00:00-04:00")} */}
+        {/* /> */}
         <RouterProvider router={router} />
         <Notifications />
       </MantineProvider>
