@@ -16,6 +16,7 @@ import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -33,6 +34,9 @@ public class AdminController {
         this.protector = protector;
     }
 
+    @Operation(summary = "Drops current leaderboard and add new one", description = """
+                        BE SUPER CAREFUL WITH THIS ROUTE!!!!!!! It will drop the current leaderboard and add a new leaderboard based on the given parameters.
+                    """)
     @PostMapping("/leaderboard/create")
     public ResponseEntity<ApiResponder<Void>> createLeaderboard(
                     final HttpServletRequest request,
@@ -58,10 +62,11 @@ public class AdminController {
          * This checks if there is no current leaderboard.
          */
 
+        // BE VERY CAREFUL WITH THIS ROUTE. IT WILL DEACTIVATE THE PREVIOUS LEADERBOARD
+        // (however, it is in a recoverable state).
         Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
         if (currentLeaderboard != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body(ApiResponder.failure("A leaderboard is currently active. Please deactivate it before creating a new one."));
+            leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
         }
 
         /**
