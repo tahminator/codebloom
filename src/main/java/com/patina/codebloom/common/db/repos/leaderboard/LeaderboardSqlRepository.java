@@ -32,6 +32,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         String sql = "UPDATE \"Leaderboard\" SET \"deletedAt\" = NOW() WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(leaderboardId));
             int rowsAffected = stmt.executeUpdate();
 
             return rowsAffected > 0;
