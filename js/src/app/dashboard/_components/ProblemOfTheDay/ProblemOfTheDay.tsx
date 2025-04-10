@@ -73,7 +73,7 @@ export default function ProblemOfTheDay() {
         <Title order={3}>Problem of the day</Title>
       </Center>
       <Center>
-      <Title order = {6}> POTD resets at 8:00 EDT everyday</Title>
+        <Title order={6}> POTD resets at 8:00 EDT everyday</Title>
       </Center>
       <Flex
         direction={"column"}
