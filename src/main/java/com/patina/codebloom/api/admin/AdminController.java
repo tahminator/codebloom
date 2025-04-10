@@ -29,13 +29,17 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/admin")
 public class AdminController {
 
+    private final UserRepository userRepository;
     private final LeaderboardRepository leaderboardRepository;
     private final Protector protector;
 
-    public AdminController(final LeaderboardRepository leaderboardRepository, final Protector protector) {
+    public AdminController(
+                    final LeaderboardRepository leaderboardRepository,
+                    final Protector protector,
+                    final UserRepository userRepository) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
-        this.userRepository = null;
+        this.userRepository = userRepository;
     }
 
     @Operation(summary = "Drops current leaderboard and add new one", description = """
@@ -83,16 +87,6 @@ public class AdminController {
         leaderboardRepository.addAllUsersToLeaderboard(newLeaderboard.getId());
 
         return ResponseEntity.ok(ApiResponder.success("Leaderboard was created successfully.", null));
-    }
-
-    private final UserRepository userRepository;
-
-    public AdminController(
-                    final Protector protector,
-                    final UserRepository userRepository) {
-        this.leaderboardRepository = null;
-        this.userRepository = userRepository;
-        this.protector = protector;
     }
 
     @Operation(summary = "Allows current admin to toggle another user's admin status", description = """
