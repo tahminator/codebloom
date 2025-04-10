@@ -79,8 +79,19 @@ public class SubmissionsHandler {
 
             LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
 
+            // If the submission is before the leaderboard started, points awarded = 0
+            Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+
+            // This should never be happening as there should always be an existing
+            // leaderboard to fall on. Howerver, race conditions could trigger this problem.
+            if (recentLeaderboard == null) {
+                throw new RuntimeException("No recent leaderboard found.");
+            }
+
+            boolean isTooLate = recentLeaderboard.getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
+
             int points;
-            if (question != null) {
+            if (question != null || isTooLate) {
                 points = 0;
             } else {
                 points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
@@ -95,14 +106,6 @@ public class SubmissionsHandler {
             questionRepository.createQuestion(newQuestion);
 
             acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
-
-            Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-
-            // This should never be happening as there should always be an existing
-            // leaderboard to fall on. Howerver, race conditions could trigger this problem.
-            if (recentLeaderboard == null) {
-                throw new RuntimeException("No recent leaderboard found.");
-            }
 
             UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(user.getId(), recentLeaderboard.getId());
 
