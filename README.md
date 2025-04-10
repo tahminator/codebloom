@@ -87,7 +87,7 @@ Development Tools:
 - [Tahmid Ahmed](https://github.com/tahminator)
 - [Alfardil Alam](https://github.com/alfardil)
 - [Alisha Zaman](https://github.com/az2924)
-- [Michaeel Nunez](https://github.com/im-michaeln)
+- [Angela Yu](https://github.com/angelayu0530)
 
 ---
 
