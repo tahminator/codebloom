@@ -72,6 +72,9 @@ export default function ProblemOfTheDay() {
       <Center>
         <Title order={3}>Problem of the day</Title>
       </Center>
+      <Center>
+      <Title order = {6}> POTD resets at 8:00 EDT everyday</Title>
+      </Center>
       <Flex
         direction={"column"}
         gap={"sm"}
