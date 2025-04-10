@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
+import com.patina.codebloom.api.admin.body.UpdateAdminBody;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
 
@@ -32,6 +35,7 @@ public class AdminController {
     public AdminController(final LeaderboardRepository leaderboardRepository, final Protector protector) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
+        this.userRepository = null;
     }
 
     @Operation(summary = "Drops current leaderboard and add new one", description = """
@@ -79,5 +83,49 @@ public class AdminController {
         leaderboardRepository.addAllUsersToLeaderboard(newLeaderboard.getId());
 
         return ResponseEntity.ok(ApiResponder.success("Leaderboard was created successfully.", null));
+    }
+
+    private final UserRepository userRepository;
+
+    public AdminController(
+                    final Protector protector,
+                    final UserRepository userRepository) {
+        this.leaderboardRepository = null;
+        this.userRepository = userRepository;
+        this.protector = protector;
+    }
+
+    @Operation(summary = "Allows current admin to toggle another user's admin status", description = """
+                        BE SUPER CAREFUL WITH THIS ROUTE!!!!!!! It allows an existing admin to give another user admin.
+                    """)
+    @PostMapping("/user/admin/toggle")
+    public ResponseEntity<ApiResponder<Void>> updateAdmin(
+                    final HttpServletRequest request,
+                    @Valid @RequestBody final UpdateAdminBody newAdminBody) {
+
+        // This checks if user is an admin.
+        protector.validateAdminSession(request);
+
+        final String userId = newAdminBody.getId();
+        final boolean toggleTo = newAdminBody.getToggleTo();
+
+        User user = userRepository.getUserById(userId);
+
+        // This checks if the user exists.
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(ApiResponder.failure("User has not been found."));
+        }
+
+        // This sets the toggle and updates the adminif the user exists.
+        user.setAdmin(toggleTo);
+        User updatedUser = userRepository.updateUser(user);
+
+        if (updatedUser == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(ApiResponder.failure("Failed to update the admin."));
+        }
+
+        return ResponseEntity.ok(ApiResponder.success("Admin status was updated successfully.", null));
     }
 }
