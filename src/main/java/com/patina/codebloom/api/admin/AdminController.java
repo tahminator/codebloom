@@ -41,26 +41,21 @@ public class AdminController {
     public ResponseEntity<ApiResponder<Void>> createLeaderboard(
                     final HttpServletRequest request,
                     @Valid @RequestBody final NewLeaderboardBody newLeaderboardBody) {
-        /**
-         * This checks if user is an admin.
-         */
+
+        // This checks if user is an admin.
         protector.validateAdminSession(request);
 
         final String name = newLeaderboardBody.getName().trim();
 
-        /**
-         * This checks if the leaderboard name is not an empty string or longer than 512
-         * characters.
-         */
+        // This checks if the leaderboard name is not an empty string or longer than 512
+        // characters.
 
         if (name.isEmpty() || name.length() > 512) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(ApiResponder.failure("Leaderboard name must be between 1 and 512 characters."));
         }
 
-        /**
-         * This checks if there is no current leaderboard.
-         */
+        // This checks if there is no current leaderboard.
 
         // BE VERY CAREFUL WITH THIS ROUTE. IT WILL DEACTIVATE THE PREVIOUS LEADERBOARD
         // (however, it is in a recoverable state).
@@ -69,9 +64,7 @@ public class AdminController {
             leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
         }
 
-        /**
-         * If there is no current leaderboard, then a new leaderboard is created.
-         */
+        // If there is no current leaderboard, then a new leaderboard is created.
 
         Leaderboard newLeaderboard = new Leaderboard(name, null);
         newLeaderboard.setId(UUID.randomUUID().toString());
