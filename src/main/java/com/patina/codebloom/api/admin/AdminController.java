@@ -49,30 +49,22 @@ public class AdminController {
     public ResponseEntity<ApiResponder<Void>> createLeaderboard(
                     final HttpServletRequest request,
                     @Valid @RequestBody final NewLeaderboardBody newLeaderboardBody) {
-
-        // This checks if user is an admin.
         protector.validateAdminSession(request);
 
         final String name = newLeaderboardBody.getName().trim();
-
-        // This checks if the leaderboard name is not an empty string or longer than 512
-        // characters.
 
         if (name.isEmpty() || name.length() > 512) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(ApiResponder.failure("Leaderboard name must be between 1 and 512 characters."));
         }
 
-        // This checks if there is no current leaderboard.
-
         // BE VERY CAREFUL WITH THIS ROUTE. IT WILL DEACTIVATE THE PREVIOUS LEADERBOARD
-        // (however, it is in a recoverable state).
+        // (however, it should be in a recoverable state, as it just gets toggled to be
+        // deactivated, not deleted).
         Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
         if (currentLeaderboard != null) {
             leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
         }
-
-        // If there is no current leaderboard, then a new leaderboard is created.
 
         Leaderboard newLeaderboard = new Leaderboard(name, null);
         newLeaderboard.setId(UUID.randomUUID().toString());
@@ -90,14 +82,11 @@ public class AdminController {
     }
 
     @Operation(summary = "Allows current admin to toggle another user's admin status", description = """
-                        BE SUPER CAREFUL WITH THIS ROUTE!!!!!!! It allows an existing admin to give another user admin.
                     """)
     @PostMapping("/user/admin/toggle")
     public ResponseEntity<ApiResponder<Void>> updateAdmin(
                     final HttpServletRequest request,
                     @Valid @RequestBody final UpdateAdminBody newAdminBody) {
-
-        // This checks if user is an admin.
         protector.validateAdminSession(request);
 
         final String userId = newAdminBody.getId();
@@ -105,13 +94,11 @@ public class AdminController {
 
         User user = userRepository.getUserById(userId);
 
-        // This checks if the user exists.
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(ApiResponder.failure("User has not been found."));
         }
 
-        // This sets the toggle and updates the adminif the user exists.
         user.setAdmin(toggleTo);
         User updatedUser = userRepository.updateUser(user);
 
