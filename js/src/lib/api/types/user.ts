@@ -4,6 +4,7 @@ export type User = {
   discordName: string;
   leetcodeUsername: string | null;
   nickname: string | null;
+  admin: boolean;
 };
 
 export type UserWithScore = User & { totalScore: number };
