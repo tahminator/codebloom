@@ -22,10 +22,13 @@ async function validateAuthentication() {
     user: User;
     session: Session;
   }>;
-
   if (json.success) {
-    return { session: json.data?.session, user: json.data?.user };
+    return {
+      session: json.data.session,
+      user: json.data.user,
+      isAdmin: json.data.user.admin,
+    };
   }
 
-  return { session: undefined, user: undefined };
+  return { session: undefined, user: undefined, isAdmin: false };
 }
