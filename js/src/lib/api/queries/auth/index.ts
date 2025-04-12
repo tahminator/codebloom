@@ -14,24 +14,21 @@ export const useAuthQuery = () => {
 };
 
 async function validateAuthentication() {
-  const response = await fetch("/api/auth/validate", {
-    method: "GET",
-  });
-
-  const json = (await response.json()) as ApiResponse<{
-    user: User;
-    session: Session;
-  }>;
-  let isAdmin = false;
-  if (json.success) {
-    if (json.data.session && json.data.user) {
-      if (json.data.user.admin == true) {
-        isAdmin = true;
-      }
+    const response = await fetch("/api/auth/validate", {
+      method: "GET",
+    });
+  
+    const json = (await response.json()) as ApiResponse<{
+      user: User;
+      session: Session;
+    }>;
+    if (json.success) {
+      return {
+        session: json.data.session,
+        user: json.data.user,
+        isAdmin: json.data.user.admin,
+      };
     }
-
-    return { session: json.data?.session, user: json.data?.user, isAdmin };
-  }
-
-  return { session: undefined, user: undefined, isAdmin };
+  
+    return { session: undefined, user: undefined, isAdmin: false };
 }
