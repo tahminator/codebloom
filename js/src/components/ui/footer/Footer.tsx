@@ -1,4 +1,5 @@
-import { ActionIcon, Text } from "@mantine/core";
+import { useAuthQuery } from "@/lib/api/queries/auth";
+import { ActionIcon, Text, Button } from "@mantine/core";
 import { ReactNode } from "react";
 import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
 
@@ -7,12 +8,28 @@ import styles from "./Footer.module.css";
 import Logo from "/logo.png";
 
 export function Footer() {
+    const { data } = useAuthQuery();
+    if (!data) 
+        return null;
   return (
     <div className={styles.footer}>
       <div className={styles.footerContents}>
+
         <div>
           <img src={Logo} width={45} alt="Logo" />
         </div>
+        {data.isAdmin && (
+          <Button
+            component="a"
+            href="/admin"
+            mt={0}
+            size="xs"
+            variant = "outline"
+            style={{}}
+          >
+            Admin
+          </Button>
+        )}
         <Text px={30} fs="italic" visibleFrom={"sm"}>
           {
             "CodeBloom is a LeetCode motivation site for Patina Network members."
@@ -66,3 +83,4 @@ function FooterIconLink({
     </ActionIcon>
   );
 }
+
