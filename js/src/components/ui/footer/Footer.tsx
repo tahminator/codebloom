@@ -8,13 +8,11 @@ import styles from "./Footer.module.css";
 import Logo from "/logo.png";
 
 export function Footer() {
-    const { data } = useAuthQuery();
-    if (!data) 
-        return null;
+  const { data } = useAuthQuery();
+  if (!data) return null;
   return (
     <div className={styles.footer}>
       <div className={styles.footerContents}>
-
         <div>
           <img src={Logo} width={45} alt="Logo" />
         </div>
@@ -24,7 +22,7 @@ export function Footer() {
             href="/admin"
             mt={0}
             size="xs"
-            variant = "outline"
+            variant="outline"
             style={{}}
           >
             Admin
@@ -83,4 +81,3 @@ function FooterIconLink({
     </ActionIcon>
   );
 }
-
