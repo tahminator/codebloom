@@ -1,3 +1,4 @@
+import AdminPage from "@/app/admin/admin.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import ErrorPage from "@/app/error/Error.page";
 import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
@@ -44,4 +45,9 @@ export const router = createBrowserRouter([
     element: <UserSubmissionsPage />,
     errorElement: <ErrorPage />,
   },
+  {
+    path: "/admin",
+    element: <AdminPage/>,
+    errorElement: <ErrorPage />,
+  }
 ]);
