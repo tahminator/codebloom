@@ -96,4 +96,15 @@ public class LeaderboardController {
 
         return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
     }
+
+    @GetMapping("/api/leaderboard/all/metadata")
+    @Operation(summary = "Fetch the meta data for all those on the leaderboard.", responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    public ResponseEntity<ApiResponder<ArrayList<Leaderboard>>> getAllLeaderboardMetadata() {
+        FakeLag.sleep(650);
+
+        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow();
+
+        return ResponseEntity.ok().body(ApiResponder.success("Meta data found!", leaderboardMetaData));
+    }
 }
