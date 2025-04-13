@@ -98,7 +98,7 @@ public class LeaderboardController {
     }
 
     @GetMapping("/api/leaderboard/all/metadata")
-    @Operation(summary = "Fetch the meta data for all those on the leaderboard.", responses = { @ApiResponse(responseCode = "200"),
+    @Operation(summary = "Returns the metadata for all leaderboards.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     public ResponseEntity<ApiResponder<ArrayList<Leaderboard>>> getAllLeaderboardMetadata() {
         FakeLag.sleep(650);
