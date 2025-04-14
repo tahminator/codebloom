@@ -1,3 +1,4 @@
+import { GotoAdminPageButton } from "@/components/ui/admin-button/AdminButton";
 import { ActionIcon, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
@@ -13,11 +14,13 @@ export function Footer() {
         <div>
           <img src={Logo} width={45} alt="Logo" />
         </div>
+        <GotoAdminPageButton />
         <Text px={30} fs="italic" visibleFrom={"sm"}>
           {
             "CodeBloom is a LeetCode motivation site for Patina Network members."
           }
         </Text>
+
         <div className={styles.footerLinks}>
           <FooterIconLink
             href={"https://www.linkedin.com/company/patinanetwork"}
