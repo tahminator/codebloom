@@ -37,6 +37,22 @@ export default function LeaderboardSkeleton() {
             );
           })}
       </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "1rem",
+        }}
+      >
+        <Skeleton visible width={"100px"} height={"36px"}>
+          <div style={{ width: "100%", height: "36px" }} />
+        </Skeleton>
+      </div>
+      <Center mb="md">
+        <Skeleton visible width="100%" height="36px">
+          <div style={{ width: "100%", height: "36px" }} />
+        </Skeleton>
+      </Center>
       <Table horizontalSpacing="lg">
         <Table.Thead>
           <Table.Tr>

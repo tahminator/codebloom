@@ -16,6 +16,11 @@ export default function MiniLeaderboardSkeleton() {
           <Skeleton visible>Really long tVal name</Skeleton>
         </Title>
       </Center>
+      <Center mb="md">
+        <Skeleton visible width="100%" height="36px">
+          <div style={{ width: "100%", height: "36px" }} />
+        </Skeleton>
+      </Center>
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
@@ -48,9 +53,7 @@ export default function MiniLeaderboardSkeleton() {
       <Table horizontalSpacing="lg">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>
-              <Skeleton visible width={"1rem"} height={"0.75rem"} mx={"xs"} />
-            </Table.Th>
+            <Table.Th></Table.Th>
             <Table.Th>
               <Skeleton visible width={"3rem"} height={"0.75rem"} />
             </Table.Th>
