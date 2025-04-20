@@ -1,7 +1,6 @@
 name: Run Tests
 run-name: Running tests on ${{ github.actor }}'s commits
 
-
 on:
     push:
         branches:
@@ -14,26 +13,26 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-          - name: Checkout Repository
-            uses: actions/checkout@v4
-    
-          - name: Set up Node.js
-            uses: actions/setup-node@v4
-            with:
-              node-version: 20
+            - name: Checkout Repository
+              uses: actions/checkout@v4
 
-          - name: Fix a bug with corepack by installing corepack globally
-            run: npm i -g corepack@latest
-            working-directory: js
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
 
-          - name: Install Dependencies
-            run: corepack enable pnpm && pnpm i --frozen-lockfile
-            working-directory: js
+            - name: Fix a bug with corepack by installing corepack globally
+              run: npm i -g corepack@latest
+              working-directory: js
 
-          - name: Run full suite of tests + linters + autoformatters
-            run: pnpm run test
-            working-directory: js
-    
+            - name: Install Dependencies
+              run: corepack enable pnpm && pnpm i --frozen-lockfile
+              working-directory: js
+
+            - name: Run full suite of tests + linters + autoformatters
+              run: pnpm run test
+              working-directory: js
+
     backend-tests:
         name: Backend Tests
         runs-on: ubuntu-latest
@@ -57,7 +56,7 @@ jobs:
             EMAIL_TYPE: ${{ secrets.EMAIL_TYPE }}
             EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
             EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-            
+
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
@@ -67,31 +66,30 @@ jobs:
 
             - name: Set JAVA_HOME to Java 21
               run: |
-                echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
-                echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
+                  echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
+                  echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
 
             - name: Verify Java version
               run: |
-                java -version
-                javac -version
-                echo "JAVA_HOME=$JAVA_HOME"
+                  java -version
+                  javac -version
+                  echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Cache Maven Dependencies
-              uses: actions/cache@v3
-              with:
-                path: ~/.m2
-                key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-                restore-keys: maven-${{ runner.os }}-
- 
+            # - name: Cache Maven Dependencies
+            #   uses: actions/cache@v3
+            #   with:
+            #     path: ~/.m2
+            #     key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+            #     restore-keys: maven-${{ runner.os }}-
+
             - name: Build & Install
-              run: mvn -B install -D skipTests --no-transfer-progress
+              run: ./mvnw -B install -D skipTests --no-transfer-progress
 
             - name: Run Checkstyle
               run: ./mvnw checkstyle:check
 
             - name: Ensure browsers are installed
-              run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
+              run: ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
 
             - name: Run Tests
               run: ./mvnw test
-    
