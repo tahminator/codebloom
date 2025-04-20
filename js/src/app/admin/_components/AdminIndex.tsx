@@ -1,7 +1,7 @@
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
-import { Loader, Title } from "@mantine/core";
+import { Flex, Loader, Title } from "@mantine/core";
 
 export default function AdminIndex() {
   const { data, status } = useAuthQuery();
@@ -25,10 +25,18 @@ export default function AdminIndex() {
     );
   }
   return (
-    <div>
+    <Flex w={"100vw"} h={"100vh"} direction={"column"}>
       <Title order={1} ta="center">
         Admin Page
       </Title>
-    </div>
+      <Flex w={"100%"} direction={"row"}>
+        <Flex w={"50%"} direction={"column"} ta={"center"}>
+          <Title order={4}>Leaderboards (WIP)</Title>
+        </Flex>
+        <Flex w={"50%"} direction={"column"} ta={"center"}>
+          <Title order={4}>Users (WIP)</Title>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 }
