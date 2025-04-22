@@ -80,6 +80,11 @@ export default function MiniLeaderboardSkeleton() {
             ))}
         </Table.Tbody>
       </Table>
+      <Center mb="md" mt={"md"}>
+        <Skeleton visible width="100%" height="36px">
+          <div style={{ width: "100%", height: "36px" }} />
+        </Skeleton>
+      </Center>
     </div>
   );
 }
