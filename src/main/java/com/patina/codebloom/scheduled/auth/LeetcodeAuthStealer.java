@@ -53,7 +53,7 @@ public class LeetcodeAuthStealer {
     public synchronized void stealAuthCookie() {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
-        // The auth token should be refreshed every day.
+        // The auth token should be refreshed every 4 days.
         if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(LocalDateTime.now().minus(4, ChronoUnit.DAYS))) {
             LOGGER.info("Auth token already exists, using token from database.");
             cookie = mostRecentAuth.getToken();
