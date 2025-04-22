@@ -204,3 +204,20 @@ export async function getMyRecentLeaderboardData({
 
   return json;
 }
+
+async function fetchAllLeaderboardsMetadata() {
+  const response = await fetch(`/api/leaderboard/all/metadata`, {
+    method: "GET",
+  });
+
+  const json = (await response.json()) as ApiResponse<Leaderboard[]>;
+
+  return json;
+}
+
+export const useAllLeaderboardsMetadataQuery = () => {
+  return useQuery({
+    queryKey: ["leaderboard", "metadata", "all"],
+    queryFn: fetchAllLeaderboardsMetadata,
+  });
+};
