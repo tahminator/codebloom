@@ -19,7 +19,7 @@ COPY js/ ./
 RUN pnpm run build
 
 # ==== Backend Build Stage ====
-FROM sapmachine:21-jdk-ubuntu-24.04 AS backend-build
+FROM eclipse-temurin:21-jdk-jammy AS backend-build
 
 WORKDIR /app
 
@@ -42,7 +42,7 @@ RUN ./mvnw clean package -DskipTests
 
 
 # ==== Runtime Stage ====
-FROM sapmachine:21-jdk-ubuntu-24.04
+FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 
@@ -52,9 +52,8 @@ COPY --from=backend-build /app/target/*.jar app.jar
 # Download any needed Playwright configurations.
 COPY mvnw pom.xml ./
 COPY .mvn/ .mvn/
-RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
-
-
+RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
+RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install firefox"
 
 # Expose backend port
 EXPOSE 8080
