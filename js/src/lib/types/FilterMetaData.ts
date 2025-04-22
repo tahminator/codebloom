@@ -1,6 +1,5 @@
 export type FilterMetaData<T> = {
-    name: string;
-    key: T;
-    expiresBy: Date;
-  };
-  
+  name: string;
+  key: T;
+  expiresBy: Date;
+};
