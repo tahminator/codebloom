@@ -97,7 +97,7 @@ public class LeaderboardController {
         return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
     }
 
-    @GetMapping("/api/leaderboard/all/metadata")
+    @GetMapping("/all/metadata")
     @Operation(summary = "Returns the metadata for all leaderboards.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     public ResponseEntity<ApiResponder<ArrayList<Leaderboard>>> getAllLeaderboardMetadata() {
