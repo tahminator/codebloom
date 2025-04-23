@@ -115,13 +115,21 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
 
+            - name: Set image tags
+              run: |
+                  echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+                  echo "GIT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
                   context: .
                   file: infra/Dockerfile
                   push: true
-                  tags: tahminator/codebloom:latest
+                  tags: |
+                      tahminator/codebloom:latest
+                      tahminator/codebloom:${{ env.TIMESTAMP }}
+                      tahminator/codebloom:${{ env.GIT_SHA }}
 
     redeploy:
         name: Redeploy on DigitalOcean
