@@ -115,6 +115,11 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
 
+            - name: Set Timezone
+              uses: szenius/set-timezone@v2.0
+              with:
+                  timezoneLinux: "America/New_York"
+
             - name: Set image tags
               run: |
                   echo "TIMESTAMP=$(date +%Y-%m-%d-%H.%M.%S)" >> $GITHUB_ENV
