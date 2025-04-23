@@ -132,8 +132,9 @@ jobs:
 
         steps:
             - name: Trigger App Platform Redeploy
-              run: |
-                  curl -X POST \
-                  -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
-                  -H "Content-Type: application/json" \
-                  https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments
+            run: |
+              curl -s -o /dev/null -w "%{http_code}\n" \
+              -X POST \
+              -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
+              -H "Content-Type: application/json" \
+              https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments
