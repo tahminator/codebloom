@@ -87,4 +87,23 @@ public class UserController {
 
         return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
     }
+
+    @Operation(summary = "Public route that returns a list of all the users' metadata.", description = """
+                        Unprotected endpoint that returns basic metadata for all users.
+                    """, responses = {
+            @ApiResponse(responseCode = "404", description = "All users' metadata has not been found.", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "All users' metadata has been found.")
+    })
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponder<ArrayList<User>>> getAllUsers(final HttpServletRequest request) {
+        FakeLag.sleep(650);
+
+        ArrayList<User> users = userRepository.getAllUsers();
+
+        if (users == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find any users' metadata.");
+        }
+
+        return ResponseEntity.ok().body(ApiResponder.success("All users have been successfully fetched!", users));
+    }
 }
