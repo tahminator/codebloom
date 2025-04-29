@@ -163,8 +163,13 @@ export default function MiniLeaderboardDesktop() {
           </Table>
         )}
       </div>
-      <Button variant={"light"} w={"100%"} component={Link} to={"/leaderboard"}>
-        View all
+      <Button
+        variant={"light"}
+        w={"100%"}
+        component={Link}
+        to={`/leaderboard?patina=${patina}`}
+      >
+        View All
       </Button>
     </div>
   );

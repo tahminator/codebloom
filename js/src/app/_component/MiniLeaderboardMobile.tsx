@@ -160,7 +160,12 @@ export default function MiniLeaderboardMobile() {
           </Table>
         )}
       </div>
-      <Button variant={"light"} w={"100%"} component={Link} to={"/leaderboard"}>
+      <Button
+        variant={"light"}
+        w={"100%"}
+        component={Link}
+        to={`/leaderboard?patina=${patina}`}
+      >
         View all
       </Button>
     </>
