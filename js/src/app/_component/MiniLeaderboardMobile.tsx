@@ -3,7 +3,16 @@ import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetada
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { Button, Overlay, SegmentedControl, Table } from "@mantine/core";
+import { theme } from "@/lib/theme";
+import {
+  Button,
+  Overlay,
+  SegmentedControl,
+  Table,
+  Text,
+  Tooltip,
+} from "@mantine/core";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -109,10 +118,34 @@ export default function MiniLeaderboardMobile() {
                     <Table.Td>{index + 1}</Table.Td>
                     <Table.Td>
                       <div style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontSize: "18px", lineHeight: "28px" }}>
-                          <FaDiscord style={{ display: "inline" }} />{" "}
-                          {entry.discordName}
-                        </span>
+                        {entry.nickname ?
+                          <span
+                            style={{ fontSize: "18px", lineHeight: "28px" }}
+                          >
+                            <Tooltip
+                              label={
+                                "This user is a member of the Patina Discord server."
+                              }
+                              color={"dark.4"}
+                            >
+                              <Text>
+                                <IconCircleCheckFilled
+                                  className="inline"
+                                  color={theme.colors.patina[4]}
+                                  z={5000000}
+                                  size={20}
+                                />{" "}
+                                {entry.nickname}
+                              </Text>
+                            </Tooltip>
+                          </span>
+                        : <span
+                            style={{ fontSize: "18px", lineHeight: "28px" }}
+                          >
+                            <FaDiscord style={{ display: "inline" }} />{" "}
+                            {entry.discordName}
+                          </span>
+                        }
                         <span>
                           <SiLeetcode style={{ display: "inline" }} />{" "}
                           {entry.leetcodeUsername}

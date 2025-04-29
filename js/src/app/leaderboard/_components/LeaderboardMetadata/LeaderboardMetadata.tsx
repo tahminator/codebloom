@@ -57,15 +57,7 @@ export default function LeaderboardMetadata() {
   const leaderboardData = data.data;
 
   return (
-    <Title
-      order={3}
-      style={{
-        fontSize: "1rem",
-        fontWeight: "bold",
-        marginBottom: "1rem",
-      }}
-      className="text-center sm:text-lg"
-    >
+    <Title order={3} ta={"center"} mb={"xs"}>
       {leaderboardData.name}
     </Title>
   );
