@@ -34,7 +34,7 @@ export default function AdminIndex() {
       <Flex w={"100%"} direction={"row"}>
         <Flex w={"50%"} direction={"column"} ta={"center"}>
           <Title order={4}>Leaderboards (WIP)</Title>
-          <NewLeaderboardForm/>
+          <NewLeaderboardForm />
         </Flex>
         <Flex w={"50%"} direction={"column"} ta={"center"}>
           <Title order={4}>Users (WIP)</Title>
