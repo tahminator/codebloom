@@ -1,4 +1,4 @@
-import { Modal, Title, Button } from "@mantine/core";
+import { Modal, Button } from "@mantine/core";
 import { useState } from "react";
 
 function NewLeaderboardForm() {
@@ -12,11 +12,11 @@ function NewLeaderboardForm() {
       <Button variant="outline" onClick={toggleModal}>
         Open Leaderboard(WIP)
       </Button>
-      <Modal opened={isModalOpen} onClose={toggleModal}>
-        <Title order={6} ta="center">
-          {" "}
-          Leaderboard (WIP){" "}
-        </Title>
+      <Modal
+        opened={isModalOpen}
+        onClose={toggleModal}
+        title={"Create New Leaderboard"}
+      >
         <div></div>
       </Modal>
     </div>
