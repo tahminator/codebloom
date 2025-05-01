@@ -103,7 +103,7 @@ public class LeaderboardController {
     public ResponseEntity<ApiResponder<ArrayList<Leaderboard>>> getAllLeaderboardMetadata() {
         FakeLag.sleep(650);
 
-        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow();
+        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(0, 0, null);
 
         return ResponseEntity.ok().body(ApiResponder.success("Meta data found!", leaderboardMetaData));
     }
