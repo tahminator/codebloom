@@ -10,7 +10,7 @@ function NewLeaderboardForm() {
   return (
     <div>
       <Button variant="outline" onClick={toggleModal}>
-        Open Leaderboard(WIP)
+        Create
       </Button>
       <Modal
         opened={isModalOpen}
