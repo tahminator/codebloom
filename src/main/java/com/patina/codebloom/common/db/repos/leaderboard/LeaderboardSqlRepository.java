@@ -302,7 +302,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public boolean addAllUsersToLeaderboard(final String leaderboardId) {
-        var users = userRepository.getAllUsers();
+        var users = userRepository.getAllUsers(0, 0, leaderboardId);
         String sql = "INSERT INTO \"Metadata\" (id, \"userId\", \"leaderboardId\") VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

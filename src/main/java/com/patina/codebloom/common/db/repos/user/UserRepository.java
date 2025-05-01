@@ -19,7 +19,7 @@ public interface UserRepository {
 
     User updateUser(User user);
 
-    ArrayList<User> getAllUsers();
+    ArrayList<User> getAllUsers(int page, int pageSize, String query);
 
     PrivateUser getPrivateUserById(String id);
 
