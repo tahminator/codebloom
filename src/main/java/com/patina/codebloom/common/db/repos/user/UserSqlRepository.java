@@ -152,11 +152,21 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public ArrayList<User> getAllUsers() {
+    public ArrayList<User> getAllUsers(final int page, final int pageSize, final String query) {
         ArrayList<User> users = new ArrayList<>();
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", admin FROM \"User\"";
+        String sql = """
+                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", admin
+                            FROM "User"
+                            WHERE "nickname" ILIKE ?
+                            ORDER BY id
+                            LIMIT ? OFFSET ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setInt(2, pageSize);
+            stmt.setInt(3, (page - 1) * pageSize);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var id = rs.getString("id");
@@ -172,7 +182,7 @@ public class UserSqlRepository implements UserRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while retrieving user", e);
+            throw new RuntimeException("Error while retrieving paginated users", e);
         }
 
         return users;
@@ -285,5 +295,4 @@ public class UserSqlRepository implements UserRepository {
 
         return null;
     }
-
 }

@@ -32,7 +32,7 @@ public class SubmissionScheduler {
     @Scheduled(cron = "0 */30 * * * *")
     public void handleAllUserSubmissions() {
         LOGGER.info("Beginning the scheduled task to handle all user submissions now:");
-        ArrayList<User> users = userRepository.getAllUsers();
+        ArrayList<User> users = userRepository.getAllUsers(0, 0, null);
 
         for (User user : users) {
             if (user.getLeetcodeUsername() == null) {

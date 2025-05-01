@@ -120,7 +120,7 @@ public class SubmissionsHandler {
     // @Scheduled(initialDelay = 5000, fixedDelay = 1000000)
     public void updateSubmissions() {
         System.out.println("Migration script activated. DO NOT LEAVE THIS ON IN PRODUCTION.");
-        List<User> users = userRepository.getAllUsers();
+        List<User> users = userRepository.getAllUsers(0, 0, null);
         for (User user : users) {
             System.out.println("Starting migration for user ID " + user.getId());
             ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(user.getLeetcodeUsername());
