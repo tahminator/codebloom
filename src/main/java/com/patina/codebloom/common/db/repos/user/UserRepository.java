@@ -21,6 +21,8 @@ public interface UserRepository {
 
     ArrayList<User> getAllUsers();
 
+    ArrayList<User> getAllUsers(int page, int pageSize, String query);
+
     PrivateUser getPrivateUserById(String id);
 
     boolean userExistsByLeetcodeUsername(String leetcodeUsername);
