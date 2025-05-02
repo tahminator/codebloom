@@ -100,11 +100,22 @@ public class LeaderboardController {
     @GetMapping("/all/metadata")
     @Operation(summary = "Returns the metadata for all leaderboards.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<ArrayList<Leaderboard>>> getAllLeaderboardMetadata() {
+    public ResponseEntity<ApiResponder<Page<ArrayList<Leaderboard>>>> getAllLeaderboardMetadata(final HttpServletRequest request,
+                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
+                    @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
+                    @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize) {
         FakeLag.sleep(650);
 
-        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow();
+        final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
-        return ResponseEntity.ok().body(ApiResponder.success("Meta data found!", leaderboardMetaData));
+        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(page, parsedPageSize, query);
+
+        int totalLeaderboards = leaderboardRepository.getLeaderboardCount();
+        int totalPages = (int) Math.ceil((double) totalLeaderboards / LEADERBOARD_PAGE_SIZE);
+        boolean hasNextPage = page < totalPages;
+
+        Page<ArrayList<Leaderboard>> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);
+
+        return ResponseEntity.ok().body(ApiResponder.success("Meta data found!", createdPage));
     }
 }
