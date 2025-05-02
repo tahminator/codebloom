@@ -328,4 +328,19 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             throw new RuntimeException("Failed to add all users to the the leaderboard", e);
         }
     }
+
+    @Override
+    public int getLeaderboardCount() {
+        String sql = "SELECT COUNT(*) FROM \"Leaderboard\"";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving leaderboard count", e);
+        }
+
+        return 0;
+    }
 }
