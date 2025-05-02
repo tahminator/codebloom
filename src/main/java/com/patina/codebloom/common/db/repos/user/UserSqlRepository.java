@@ -179,6 +179,43 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
+    public ArrayList<User> getAllUsers(final int page, final int pageSize, final String query) {
+        ArrayList<User> users = new ArrayList<>();
+        String sql = """
+                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", admin
+                            FROM "User"
+                            WHERE "nickname" ILIKE ?
+                            ORDER BY id
+                            LIMIT ? OFFSET ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setInt(2, pageSize);
+            stmt.setInt(3, (page - 1) * pageSize);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var id = rs.getString("id");
+                    var discordId = rs.getString("discordId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving paginated users", e);
+        }
+
+        return users;
+    }
+
+    @Override
     public PrivateUser getPrivateUserById(final String inputId) {
         PrivateUser user = null;
         String sql = """
