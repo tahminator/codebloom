@@ -270,33 +270,40 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<Leaderboard> getAllLeaderboardsShallow() {
+    public ArrayList<Leaderboard> getAllLeaderboardsShallow(final int page, final int pageSize, final String query) {
         ArrayList<Leaderboard> leaderboards = new ArrayList<>();
         String sql = """
-                        SELECT
-                            id,
-                            name,
-                            "createdAt",
-                            "deletedAt"
-                        FROM "Leaderboard"
+                            SELECT
+                                id,
+                                name,
+                                "createdAt",
+                                "deletedAt"
+                            FROM "Leaderboard"
+                            WHERE name ILIKE ?
+                            ORDER BY id
+                            LIMIT ? OFFSET ?
                         """;
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setInt(2, pageSize);
+            stmt.setInt(3, (page - 1) * pageSize);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var id = rs.getString("id");
                     var name = rs.getString("name");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     Timestamp tsDeletedAt = rs.getTimestamp("deletedAt");
-                    LocalDateTime deletedAt = null;
-                    if (tsDeletedAt != null) {
-                        deletedAt = tsDeletedAt.toLocalDateTime();
-                    }
+                    LocalDateTime deletedAt = (tsDeletedAt != null) ? tsDeletedAt.toLocalDateTime() : null;
+
                     leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch all leaderboards", e);
+            throw new RuntimeException("Error while retrieving all paginated leaderboards", e);
         }
+
         return leaderboards;
     }
 
