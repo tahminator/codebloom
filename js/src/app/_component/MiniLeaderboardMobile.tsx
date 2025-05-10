@@ -1,5 +1,4 @@
 import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeaderboardMobileSkeleton";
-import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
@@ -43,7 +42,6 @@ export default function MiniLeaderboardMobile() {
 
   return (
     <>
-      <LeaderboardMetadata showClock />
       <SegmentedControl
         value={patina ? "patina" : "all"}
         w={"100%"}
