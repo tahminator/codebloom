@@ -1,4 +1,3 @@
-import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
