@@ -68,7 +68,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             id,
                             name,
                             "createdAt",
-                            "deletedAt"
+                            "deletedAt",
+                            "shouldExpireBy"
                         FROM "Leaderboard"
                         WHERE
                             "deletedAt" IS NULL
@@ -83,13 +84,19 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     var name = rs.getString("name");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     Timestamp deletedAtTimestamp = rs.getTimestamp("deletedAt");
+                    Timestamp shouldExpireByTimestamp = rs.getTimestamp("shouldExpireBy");
 
                     LocalDateTime deletedAt = null;
                     if (deletedAtTimestamp != null) {
                         deletedAt = deletedAtTimestamp.toLocalDateTime();
                     }
 
-                    return new Leaderboard(id, name, createdAt, deletedAt);
+                    LocalDateTime shouldExpireBy = null;
+                    if (shouldExpireByTimestamp != null) {
+                        deletedAt = shouldExpireByTimestamp.toLocalDateTime();
+                    }
+
+                    return new Leaderboard(id, name, createdAt, deletedAt, shouldExpireBy);
                 }
             }
         } catch (SQLException e) {
@@ -277,7 +284,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 id,
                                 name,
                                 "createdAt",
-                                "deletedAt"
+                                "deletedAt",
+                                "shouldExpireBy"
                             FROM "Leaderboard"
                             WHERE name ILIKE ?
                             ORDER BY id
@@ -295,9 +303,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     var name = rs.getString("name");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     Timestamp tsDeletedAt = rs.getTimestamp("deletedAt");
+                    Timestamp tsShouldExpireBy = rs.getTimestamp("shouldExpireBy");
                     LocalDateTime deletedAt = (tsDeletedAt != null) ? tsDeletedAt.toLocalDateTime() : null;
+                    LocalDateTime shouldExpireBy = (tsShouldExpireBy != null) ? tsShouldExpireBy.toLocalDateTime() : null;
 
-                    leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt));
+                    leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt, shouldExpireBy));
                 }
             }
         } catch (SQLException e) {
