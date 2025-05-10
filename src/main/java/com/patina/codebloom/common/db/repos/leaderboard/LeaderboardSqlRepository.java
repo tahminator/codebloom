@@ -93,7 +93,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
                     LocalDateTime shouldExpireBy = null;
                     if (shouldExpireByTimestamp != null) {
-                        deletedAt = shouldExpireByTimestamp.toLocalDateTime();
+                        shouldExpireBy = shouldExpireByTimestamp.toLocalDateTime();
                     }
 
                     return new Leaderboard(id, name, createdAt, deletedAt, shouldExpireBy);
