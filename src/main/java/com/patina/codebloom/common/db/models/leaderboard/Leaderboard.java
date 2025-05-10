@@ -7,17 +7,20 @@ public class Leaderboard {
     private String name;
     private LocalDateTime createdAt;
     private LocalDateTime deletedAt;
+    private LocalDateTime shouldExpireBy;
 
-    public Leaderboard(final String name, final LocalDateTime createdAt) {
+    public Leaderboard(final String name, final LocalDateTime createdAt, final LocalDateTime shouldExpireBy) {
         this.name = name;
         this.createdAt = createdAt;
+        this.shouldExpireBy = shouldExpireBy;
     }
 
-    public Leaderboard(final String id, final String name, final LocalDateTime createdAt, final LocalDateTime deletedAt) {
+    public Leaderboard(final String id, final String name, final LocalDateTime createdAt, final LocalDateTime deletedAt, final LocalDateTime shouldExpireBy) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
         this.deletedAt = deletedAt;
+        this.shouldExpireBy = shouldExpireBy;
     }
 
     public String getId() {
@@ -52,4 +55,11 @@ public class Leaderboard {
         this.deletedAt = deletedAt;
     }
 
+    public LocalDateTime getShouldExpireBy() {
+        return shouldExpireBy;
+    }
+
+    public void setShouldExpireBy(final LocalDateTime shouldExpireBy) {
+        this.shouldExpireBy = shouldExpireBy;
+    }
 }
