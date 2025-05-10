@@ -96,6 +96,7 @@ export default function AboutUs() {
         </Stack>
       </Flex>
       <Container hiddenFrom={"lg"}>
+        <LeaderboardMetadata showClock />
         <MiniLeaderboardMobile />
       </Container>
       <div ref={targetSectionRef} style={{ padding: "2rem" }}>
