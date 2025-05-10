@@ -43,7 +43,7 @@ export default function MiniLeaderboardMobile() {
 
   return (
     <>
-      <LeaderboardMetadata />
+      <LeaderboardMetadata showClock />
       <SegmentedControl
         value={patina ? "patina" : "all"}
         w={"100%"}

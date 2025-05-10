@@ -43,7 +43,7 @@ export default function MiniLeaderboardDesktop() {
 
   return (
     <div style={{ padding: "1rem", position: "relative" }}>
-      <LeaderboardMetadata />
+      <LeaderboardMetadata showClock />
       <SegmentedControl
         value={patina ? "patina" : "all"}
         w={"100%"}
