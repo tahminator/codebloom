@@ -54,8 +54,7 @@ export default function LeaderboardIndex() {
   const [first, second, third] = pageData.data;
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <LeaderboardMetadata showClock />
+    <>
       <div
         className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
         style={{ marginBottom: "2rem" }}
@@ -207,6 +206,6 @@ export default function LeaderboardIndex() {
           </Button>
         </Flex>
       </Center>
-    </div>
+    </>
   );
 }
