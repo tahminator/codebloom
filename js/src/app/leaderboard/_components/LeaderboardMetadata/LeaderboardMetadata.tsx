@@ -27,21 +27,10 @@ export default function LeaderboardMetadata(
 
   if (status === "pending") {
     return (
-      <Center>
-        <Title
-          order={3}
-          style={{
-            fontSize: "1rem",
-            fontWeight: "bold",
-            marginBottom: "1rem",
-          }}
-          className="text-center sm:text-lg"
-        >
-          <Skeleton visible>Really long tVal name</Skeleton>
-        </Title>
-        {showClock && (
+      <>
+        <Center>
           <Title
-            order={6}
+            order={3}
             style={{
               fontSize: "1rem",
               fontWeight: "bold",
@@ -51,8 +40,23 @@ export default function LeaderboardMetadata(
           >
             <Skeleton visible>Really long tVal name</Skeleton>
           </Title>
-        )}
-      </Center>
+        </Center>
+        <Center>
+          {showClock && (
+            <Title
+              order={6}
+              style={{
+                fontSize: "1rem",
+                fontWeight: "bold",
+                marginBottom: "1rem",
+              }}
+              className="text-center sm:text-lg"
+            >
+              <Skeleton visible>Really long tVal name</Skeleton>
+            </Title>
+          )}
+        </Center>
+      </>
     );
   }
 
