@@ -1,5 +1,4 @@
 import MiniLeaderboardSkeleton from "@/app/_component/skeletons/MiniLeaderboardSkeleton";
-import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
@@ -42,8 +41,7 @@ export default function MiniLeaderboardDesktop() {
   const [first, second, third] = leaderboardData.data;
 
   return (
-    <div style={{ padding: "1rem", position: "relative" }}>
-      <LeaderboardMetadata showClock />
+    <>
       <SegmentedControl
         value={patina ? "patina" : "all"}
         w={"100%"}
@@ -171,6 +169,6 @@ export default function MiniLeaderboardDesktop() {
       >
         View All
       </Button>
-    </div>
+    </>
   );
 }
