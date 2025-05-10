@@ -3,4 +3,5 @@ export type Leaderboard = {
   name: string;
   createdAt: string;
   deletedAt: string | null;
+  shouldExpireBy: string | null;
 };
