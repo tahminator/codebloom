@@ -40,7 +40,7 @@ public class TestLeaderboardList {
 
         users.sort(Comparator.comparingInt(UserWithScore::getTotalScore).reversed());
 
-        leaderboard = new LeaderboardWithUsers(FAKER.internet().uuid(), String.join(" ", FAKER.lorem().words()), LocalDateTime.parse(randomDate), null, users);
+        leaderboard = new LeaderboardWithUsers(FAKER.internet().uuid(), String.join(" ", FAKER.lorem().words()), LocalDateTime.parse(randomDate), null, users, null);
 
         return leaderboard;
     }
@@ -70,7 +70,7 @@ public class TestLeaderboardList {
 
         users.sort(Comparator.comparingInt(UserWithScore::getTotalScore).reversed());
 
-        leaderboard = new LeaderboardWithUsers(FAKER.internet().uuid(), String.join(" ", FAKER.lorem().words()), LocalDateTime.parse(randomDate), null, users);
+        leaderboard = new LeaderboardWithUsers(FAKER.internet().uuid(), String.join(" ", FAKER.lorem().words()), LocalDateTime.parse(randomDate), null, users, null);
 
         return leaderboard;
     }
