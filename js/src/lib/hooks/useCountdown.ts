@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from "react";
  * Returns a stateful value and a function to reset the countdown to a new value.
  */
 export default function useCountdown(start = 60, interval = 1000) {
-  const [countdown, setCountdown] = useState(start);
+  const [countdown, setCountdown] = useState(Math.max(start, 0));
 
   useEffect(() => {
     let timeoutId: number;
@@ -23,7 +23,7 @@ export default function useCountdown(start = 60, interval = 1000) {
 
   const reset = useCallback(
     (newValue: number) => {
-      setCountdown(Math.floor(newValue));
+      setCountdown(Math.max(Math.floor(newValue), 0));
     },
     [setCountdown],
   );
