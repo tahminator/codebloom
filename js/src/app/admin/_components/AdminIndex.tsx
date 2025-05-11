@@ -1,3 +1,4 @@
+import UserAdminList from "@/app/admin/_components/UserAdminList";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -38,6 +39,7 @@ export default function AdminIndex() {
         </Flex>
         <Flex w={"50%"} direction={"column"} ta={"center"}>
           <Title order={4}>Users (WIP)</Title>
+          <UserAdminList />
         </Flex>
       </Flex>
     </Flex>
