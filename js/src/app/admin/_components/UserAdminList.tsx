@@ -3,6 +3,7 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import { useToggleAdminMutation } from "@/lib/api/queries/admin";
 import { useGetAllUsersQuery } from "@/lib/api/queries/user";
 import { Box, Button, Loader, Overlay, Table, Text } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 /**
  * This function renders a list of users of which the toggle button launches a modal that allows you to
@@ -41,14 +42,31 @@ export default function UserAdminList() {
   const onToggle = (userId: string, currentAdminStatus: boolean) => {
     // Check the mutate function origin on why we
     // need this metadata object as well.
-    mutate({
-      userId,
-      toggleTo: !currentAdminStatus,
-      metadata: {
-        page,
-        debouncedQuery,
+    mutate(
+      {
+        userId,
+        toggleTo: !currentAdminStatus,
+        metadata: {
+          page,
+          debouncedQuery,
+        },
       },
-    });
+      {
+        onSuccess: (data) => {
+          if (!data.success) {
+            return notifications.show({
+              color: "red",
+              message: data.message,
+            });
+          }
+
+          notifications.show({
+            color: data.data.admin ? undefined : "red",
+            message: data.message,
+          });
+        },
+      },
+    );
   };
 
   return (
