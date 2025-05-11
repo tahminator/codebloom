@@ -108,6 +108,8 @@ public class AdminController {
                             .body(ApiResponder.failure("Failed to update the admin."));
         }
 
-        return ResponseEntity.ok(ApiResponder.success("Admin status was updated successfully.", updatedUser));
+        return ResponseEntity.ok(ApiResponder.success("User with Discord name of "
+                        + updatedUser.getDiscordName() + " is "
+                        + (toggleTo ? "now an admin!" : "no longer an admin."), updatedUser));
     }
 }
