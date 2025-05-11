@@ -35,6 +35,8 @@ export default function UserAdminList() {
 
   const pageData = data.data;
 
+  const onToggle = (userId: string, currentAdminStatus: boolean) => {};
+
   return (
     <>
       <SearchBox
@@ -91,7 +93,11 @@ export default function UserAdminList() {
                   <Table.Td>{user.discordName}</Table.Td>
                   <Table.Td>{user.leetcodeUsername}</Table.Td>
                   <Table.Td>
-                    <Button ta="center" color={adminBadgeColor}>
+                    <Button
+                      ta="center"
+                      color={adminBadgeColor}
+                      onClick={() => onToggle(user.id, user.admin)}
+                    >
                       {user.admin ? "✓" : "×"}
                     </Button>
                   </Table.Td>
