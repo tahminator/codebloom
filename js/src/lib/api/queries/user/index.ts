@@ -116,7 +116,7 @@ export const useGetAllUsersQuery = ({
   }, [searchQuery, goTo]);
 
   const query = useQuery({
-    queryKey: ["submission", "user", "all", page, debouncedQuery],
+    queryKey: ["user", "all", page, debouncedQuery],
     queryFn: () =>
       fetchAllUsers({
         page,

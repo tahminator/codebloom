@@ -1,8 +1,8 @@
 import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
+import { useToggleAdminMutation } from "@/lib/api/queries/admin";
 import { useGetAllUsersQuery } from "@/lib/api/queries/user";
 import { Box, Button, Loader, Overlay, Table, Text } from "@mantine/core";
-import { IconBrandDiscord, IconBrandLeetcode } from "@tabler/icons-react";
 
 /**
  * This function renders a list of users of which the toggle button launches a modal that allows you to
@@ -19,7 +19,10 @@ export default function UserAdminList() {
     goTo,
     searchQuery,
     setSearchQuery,
+    debouncedQuery,
   } = useGetAllUsersQuery({});
+
+  const { mutate } = useToggleAdminMutation();
 
   if (status === "pending") {
     return <Loader />;
@@ -35,7 +38,18 @@ export default function UserAdminList() {
 
   const pageData = data.data;
 
-  const onToggle = (userId: string, currentAdminStatus: boolean) => {};
+  const onToggle = (userId: string, currentAdminStatus: boolean) => {
+    // Check the mutate function origin on why we
+    // need this metadata object as well.
+    mutate({
+      userId,
+      toggleTo: !currentAdminStatus,
+      metadata: {
+        page,
+        debouncedQuery,
+      },
+    });
+  };
 
   return (
     <>
