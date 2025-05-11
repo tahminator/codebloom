@@ -85,7 +85,7 @@ export const useGetAllUsersQuery = ({
   tieToUrl?: boolean;
 }) => {
   const initialPage = 1;
-  const pageSize = 20;
+  const pageSize = 5;
 
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
