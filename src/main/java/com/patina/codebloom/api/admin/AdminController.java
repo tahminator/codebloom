@@ -85,7 +85,7 @@ public class AdminController {
     @Operation(summary = "Allows current admin to toggle another user's admin status", description = """
                     """)
     @PostMapping("/user/admin/toggle")
-    public ResponseEntity<ApiResponder<Void>> updateAdmin(
+    public ResponseEntity<ApiResponder<User>> updateAdmin(
                     final HttpServletRequest request,
                     @Valid @RequestBody final UpdateAdminBody newAdminBody) {
         protector.validateAdminSession(request);
@@ -108,6 +108,6 @@ public class AdminController {
                             .body(ApiResponder.failure("Failed to update the admin."));
         }
 
-        return ResponseEntity.ok(ApiResponder.success("Admin status was updated successfully.", null));
+        return ResponseEntity.ok(ApiResponder.success("Admin status was updated successfully.", updatedUser));
     }
 }
