@@ -1,12 +1,13 @@
 package com.patina.codebloom.api.admin.body;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class UpdateAdminBody {
     @NotBlank
     private String id;
 
-    @NotBlank
+    @NotNull
     private Boolean toggleTo;
 
     public String getId() {
