@@ -79,6 +79,66 @@ export const useUserSubmissionsQuery = ({
   };
 };
 
+export const useGetAllUsersQuery = ({
+  tieToUrl = false,
+}: {
+  tieToUrl?: boolean;
+}) => {
+  const initialPage = 1;
+  const pageSize = 20;
+
+  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
+    "query",
+    "",
+    tieToUrl,
+    true,
+    500,
+  );
+
+  const goBack = useCallback(() => {
+    setPage((old) => Math.max(old - 1, 0));
+  }, [setPage]);
+
+  const goForward = useCallback(() => {
+    setPage((old) => old + 1);
+  }, [setPage]);
+
+  const goTo = useCallback(
+    (pageNumber: number) => {
+      setPage(() => Math.max(pageNumber, 0));
+    },
+    [setPage],
+  );
+
+  useEffect(() => {
+    goTo(1);
+  }, [searchQuery, goTo]);
+
+  const query = useQuery({
+    queryKey: ["submission", "user", "all", page, debouncedQuery],
+    queryFn: () =>
+      fetchAllUsers({
+        page,
+        pageSize,
+        query: debouncedQuery,
+      }),
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    ...query,
+    page,
+    goBack,
+    goForward,
+    goTo,
+    searchQuery,
+    setSearchQuery,
+    debouncedQuery,
+    pageSize,
+  };
+};
+
 async function fetchUserProfile({ userId }: { userId?: string }) {
   const response = await fetch(`/api/user/${userId ?? ""}/profile`);
 
@@ -103,6 +163,24 @@ async function fetchUserSubmissions({
   );
 
   const json = (await response.json()) as ApiResponse<Page<Question[]>>;
+
+  return json;
+}
+
+async function fetchAllUsers({
+  page,
+  query,
+  pageSize,
+}: {
+  page: number;
+  query?: string;
+  pageSize: number;
+}) {
+  const response = await fetch(
+    `/api/user/all?page=${page}&query=${query}&pageSize=${pageSize}`,
+  );
+
+  const json = (await response.json()) as ApiResponse<Page<User[]>>;
 
   return json;
 }
