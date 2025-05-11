@@ -7,6 +7,7 @@ export const useToggleAdminMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    // Check the mutation function regarding `metadata`.
     mutationFn: toggleUserAdmin,
     onMutate: async (newData) => {
       const { userId, toggleTo, metadata } = newData;
@@ -26,25 +27,45 @@ export const useToggleAdminMutation = () => {
         return;
       }
 
+      // Find the user and insert the new admin status to it's object.
       const newUsers = previousApiResponse.data.data.map((user) =>
         user.id === userId ? { ...user, admin: toggleTo } : user,
       ) as User[];
 
+      // Replace the data (users array) with the newUsers, and keep the rest of the Page items the same.
+      //
+      // Remember, ApiResponse<Page<T>> has a type that looks like this:
+      //
+      // {
+      //  success: boolean;
+      //  message: string;
+      //  // This `data` is `Page`.
+      //  data: {
+      //    page: number;
+      //    pageSize: number;
+      //    ...
+      //    // This is the actual array of users.
+      //    data: T
+      //  };
+      // }
       const newPage = { ...previousApiResponse.data, data: newUsers } as Page<
         User[]
       >;
 
+      // Insert this new Page type, and keep the success and message from the previous API response.
       queryClient.setQueryData(
         ["user", "all", metadata.page, metadata.debouncedQuery],
         { ...previousApiResponse, data: newPage },
       );
 
+      // This is context that is passed on, so we can hold onto it and possibly put it back if needed.
       return { previousApiResponse };
     },
     onError: (_, newData, ctx) => {
       const { metadata } = newData;
       queryClient.setQueryData(
         ["user", "all", metadata.page, metadata.debouncedQuery],
+        // Shallow copy because sometimes there is a bug with the object passed in by reference.
         { ...ctx?.previousApiResponse },
       );
     },
