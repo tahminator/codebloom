@@ -17,6 +17,8 @@ public interface UserRepository {
 
     int getUserCount();
 
+    int getUserCount(String query);
+
     User updateUser(User user);
 
     ArrayList<User> getAllUsers();
