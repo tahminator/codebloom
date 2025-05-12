@@ -2,8 +2,19 @@ import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
 import { useToggleAdminMutation } from "@/lib/api/queries/admin";
 import { useGetAllUsersQuery } from "@/lib/api/queries/user";
-import { Box, Button, Loader, Overlay, Table, Text } from "@mantine/core";
+import { theme } from "@/lib/theme";
+import {
+  Box,
+  Button,
+  Loader,
+  Overlay,
+  Table,
+  Text,
+  Tooltip,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
+import { FaDiscord } from "react-icons/fa";
 
 /**
  * This function renders a list of users of which the toggle button launches a modal that allows you to
@@ -120,7 +131,44 @@ export default function UserAdminList() {
 
               return (
                 <Table.Tr key={index}>
-                  <Table.Td>{user.discordName}</Table.Td>
+                  <Table.Td>
+                    {user.nickname ?
+                      <Tooltip
+                        label={
+                          "This user is a verified member of the Patina Discord server."
+                        }
+                        color={"dark.4"}
+                      >
+                        <Text
+                          ta="center"
+                          className="transition-all group-hover:text-white-500"
+                        >
+                          <IconCircleCheckFilled
+                            style={{
+                              display: "inline",
+                            }}
+                            color={theme.colors.patina[4]}
+                            z={5000000}
+                            size={20}
+                          />{" "}
+                          {user.nickname}
+                        </Text>
+                      </Tooltip>
+                    : <Text
+                        ta="center"
+                        className="transition-all group-hover:text-white-500"
+                      >
+                        <FaDiscord
+                          style={{
+                            display: "inline",
+                            marginLeft: "4px",
+                            marginRight: "4px",
+                          }}
+                        />
+                        {user.discordName}
+                      </Text>
+                    }
+                  </Table.Td>
                   <Table.Td>{user.leetcodeUsername}</Table.Td>
                   <Table.Td>
                     <Button
