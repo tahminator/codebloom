@@ -32,7 +32,7 @@ export default function AdminIndex() {
       <Title order={1} ta="center">
         Admin Page
       </Title>
-      <Flex w={"100%"} direction={"row"}>
+      <Flex w={"100%"} direction={{ base: "column", sm: "row" }}>
         <Flex w={"50%"} direction={"column"} ta={"center"}>
           <Title order={4}>Leaderboards (WIP)</Title>
           <NewLeaderboardForm />
