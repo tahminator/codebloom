@@ -105,7 +105,7 @@ public class UserController {
 
         ArrayList<User> users = userRepository.getAllUsers(page, parsedPageSize, query);
 
-        int totalUsers = userRepository.getUserCount();
+        int totalUsers = userRepository.getUserCount(query);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
