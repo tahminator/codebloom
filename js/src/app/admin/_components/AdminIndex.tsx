@@ -28,16 +28,26 @@ export default function AdminIndex() {
     );
   }
   return (
-    <Flex w={"100vw"} h={"100vh"} direction={"column"}>
+    <Flex w={"98vw"} h={"100vh"} direction={"column"}>
       <Title order={1} ta="center">
         Admin Page
       </Title>
       <Flex w={"100%"} direction={{ base: "column", sm: "row" }}>
-        <Flex w={"50%"} direction={"column"} ta={"center"}>
+        <Flex
+          w={{ base: "100%", sm: "50%" }}
+          direction={"column"}
+          ta={"center"}
+          m={"sm"}
+        >
           <Title order={4}>Leaderboards (WIP)</Title>
           <NewLeaderboardForm />
         </Flex>
-        <Flex w={"50%"} direction={"column"} ta={"center"}>
+        <Flex
+          w={{ base: "100%", sm: "50%" }}
+          direction={"column"}
+          ta={"center"}
+          m={"sm"}
+        >
           <Title order={4}>Users (WIP)</Title>
           <UserAdminList />
         </Flex>
