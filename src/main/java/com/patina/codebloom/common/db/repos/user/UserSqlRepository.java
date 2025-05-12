@@ -323,4 +323,20 @@ public class UserSqlRepository implements UserRepository {
         return null;
     }
 
+    @Override
+    public int getUserCount(final String query) {
+        String sql = "SELECT COUNT(*) FROM \"User\" WHERE \"nickname\" ILIKE ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while counting users", e);
+        }
+        return 0;
+    }
+
 }
