@@ -1,7 +1,11 @@
 import { ApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { User } from "@/lib/api/types/user";
+import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+
+import { Leaderboard } from "../../types/leaderboard";
 
 export const useToggleAdminMutation = () => {
   const queryClient = useQueryClient();
@@ -117,3 +121,34 @@ async function toggleUserAdmin({
 
   return json;
 }
+
+export async function createLeaderboard(leaderboardName: string) {
+  const response = await fetch("/api/admin/leaderboard/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: leaderboardName }),
+  });
+
+  const json = (await response.json()) as ApiResponse<Leaderboard>;
+   return json;
+}
+
+export const useCreateLeaderboardMutation = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: createLeaderboard,
+    onSuccess: async (data) => {
+      notifications.show({
+        message: data.message,
+        color: data.success ? undefined : "red",
+      });
+
+      if (data.success) {
+        await queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+        navigate("/admin");
+      }
+    },
+  });
+};
