@@ -1,19 +1,8 @@
-import { Center, Skeleton, Table, Title } from "@mantine/core";
+import { Center, Skeleton, Table } from "@mantine/core";
 
 export default function MiniLeaderboardMobileSkeleton() {
   return (
     <>
-      <Center>
-        <Title
-          style={{
-            fontSize: "1rem",
-            fontWeight: "bold",
-            marginBottom: "1rem",
-          }}
-        >
-          <Skeleton visible>Really long tVal name</Skeleton>
-        </Title>
-      </Center>
       <Center mb="md">
         <Skeleton visible width="100%" height="36px">
           <div style={{ width: "100%", height: "36px" }} />

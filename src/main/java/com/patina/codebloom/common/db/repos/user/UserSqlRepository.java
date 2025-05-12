@@ -179,6 +179,46 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
+    public ArrayList<User> getAllUsers(final int page, final int pageSize, final String query) {
+        ArrayList<User> users = new ArrayList<>();
+        String sql = """
+                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", admin
+                            FROM "User"
+                            WHERE
+                                ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
+                            ORDER BY id
+                            LIMIT ? OFFSET ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setString(2, "%" + query + "%");
+            stmt.setString(3, "%" + query + "%");
+            stmt.setInt(4, pageSize);
+            stmt.setInt(5, (page - 1) * pageSize);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var id = rs.getString("id");
+                    var discordId = rs.getString("discordId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving paginated users", e);
+        }
+
+        return users;
+    }
+
+    @Override
     public PrivateUser getPrivateUserById(final String inputId) {
         PrivateUser user = null;
         String sql = """
@@ -284,6 +324,31 @@ public class UserSqlRepository implements UserRepository {
         }
 
         return null;
+    }
+
+    @Override
+    public int getUserCount(final String query) {
+        String sql = """
+                        SELECT
+                            COUNT(*)
+                        FROM
+                            "User"
+                        WHERE
+                            ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
+                        """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setString(2, "%" + query + "%");
+            stmt.setString(3, "%" + query + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while counting users", e);
+        }
+        return 0;
     }
 
 }

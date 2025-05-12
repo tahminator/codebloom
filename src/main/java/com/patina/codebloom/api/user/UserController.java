@@ -87,4 +87,30 @@ public class UserController {
 
         return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
     }
+
+    @Operation(summary = "Public route that returns a list of all the users' metadata.", description = """
+                        Unprotected endpoint that returns basic metadata for all users.
+                    """, responses = {
+            @ApiResponse(responseCode = "404", description = "All users' metadata has not been found.", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "All users' metadata has been found.")
+    })
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponder<Page<ArrayList<User>>>> getAllUsers(final HttpServletRequest request,
+                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
+                    @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
+                    @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize) {
+        FakeLag.sleep(650);
+
+        final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
+
+        ArrayList<User> users = userRepository.getAllUsers(page, parsedPageSize, query);
+
+        int totalUsers = userRepository.getUserCount(query);
+        int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
+        boolean hasNextPage = page < totalPages;
+
+        Page<ArrayList<User>> createdPage = new Page<>(hasNextPage, users, totalPages, parsedPageSize);
+
+        return ResponseEntity.ok().body(ApiResponder.success("All users have been successfully fetched!", createdPage));
+    }
 }

@@ -68,7 +68,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             id,
                             name,
                             "createdAt",
-                            "deletedAt"
+                            "deletedAt",
+                            "shouldExpireBy"
                         FROM "Leaderboard"
                         WHERE
                             "deletedAt" IS NULL
@@ -83,13 +84,19 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     var name = rs.getString("name");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     Timestamp deletedAtTimestamp = rs.getTimestamp("deletedAt");
+                    Timestamp shouldExpireByTimestamp = rs.getTimestamp("shouldExpireBy");
 
                     LocalDateTime deletedAt = null;
                     if (deletedAtTimestamp != null) {
                         deletedAt = deletedAtTimestamp.toLocalDateTime();
                     }
 
-                    return new Leaderboard(id, name, createdAt, deletedAt);
+                    LocalDateTime shouldExpireBy = null;
+                    if (shouldExpireByTimestamp != null) {
+                        shouldExpireBy = shouldExpireByTimestamp.toLocalDateTime();
+                    }
+
+                    return new Leaderboard(id, name, createdAt, deletedAt, shouldExpireBy);
                 }
             }
         } catch (SQLException e) {
@@ -270,33 +277,43 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<Leaderboard> getAllLeaderboardsShallow() {
+    public ArrayList<Leaderboard> getAllLeaderboardsShallow(final int page, final int pageSize, final String query) {
         ArrayList<Leaderboard> leaderboards = new ArrayList<>();
         String sql = """
-                        SELECT
-                            id,
-                            name,
-                            "createdAt",
-                            "deletedAt"
-                        FROM "Leaderboard"
+                            SELECT
+                                id,
+                                name,
+                                "createdAt",
+                                "deletedAt",
+                                "shouldExpireBy"
+                            FROM "Leaderboard"
+                            WHERE name ILIKE ?
+                            ORDER BY id
+                            LIMIT ? OFFSET ?
                         """;
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setInt(2, pageSize);
+            stmt.setInt(3, (page - 1) * pageSize);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var id = rs.getString("id");
                     var name = rs.getString("name");
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     Timestamp tsDeletedAt = rs.getTimestamp("deletedAt");
-                    LocalDateTime deletedAt = null;
-                    if (tsDeletedAt != null) {
-                        deletedAt = tsDeletedAt.toLocalDateTime();
-                    }
-                    leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt));
+                    Timestamp tsShouldExpireBy = rs.getTimestamp("shouldExpireBy");
+                    LocalDateTime deletedAt = (tsDeletedAt != null) ? tsDeletedAt.toLocalDateTime() : null;
+                    LocalDateTime shouldExpireBy = (tsShouldExpireBy != null) ? tsShouldExpireBy.toLocalDateTime() : null;
+
+                    leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt, shouldExpireBy));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch all leaderboards", e);
+            throw new RuntimeException("Error while retrieving all paginated leaderboards", e);
         }
+
         return leaderboards;
     }
 
@@ -320,5 +337,20 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to add all users to the the leaderboard", e);
         }
+    }
+
+    @Override
+    public int getLeaderboardCount() {
+        String sql = "SELECT COUNT(*) FROM \"Leaderboard\"";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving leaderboard count", e);
+        }
+
+        return 0;
     }
 }

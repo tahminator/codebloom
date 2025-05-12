@@ -1,21 +1,8 @@
-import { Card, Center, Skeleton, Table, Title } from "@mantine/core";
+import { Box, Card, Center, Skeleton, Table } from "@mantine/core";
 
 export default function MiniLeaderboardSkeleton() {
   return (
-    <div style={{ padding: "1rem" }}>
-      <Center>
-        <Title
-          order={3}
-          style={{
-            fontSize: "1rem",
-            fontWeight: "bold",
-            marginBottom: "1rem",
-          }}
-          className="text-center sm:text-lg"
-        >
-          <Skeleton visible>Really long tVal name</Skeleton>
-        </Title>
-      </Center>
+    <Box pos={"relative"} p={"xs"}>
       <Center mb="md">
         <Skeleton visible width="100%" height="36px">
           <div style={{ width: "100%", height: "36px" }} />
@@ -85,6 +72,6 @@ export default function MiniLeaderboardSkeleton() {
           <div style={{ width: "100%", height: "36px" }} />
         </Skeleton>
       </Center>
-    </div>
+    </Box>
   );
 }

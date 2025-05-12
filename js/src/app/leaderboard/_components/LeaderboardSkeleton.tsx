@@ -1,28 +1,12 @@
-import { Center, Skeleton, Table, Title } from "@mantine/core";
+import { Center, Skeleton, Table } from "@mantine/core";
 
 /**
  * @todo - Could possibly scan the URL for page number and define different skeletons based off of that.
  */
 export default function LeaderboardSkeleton() {
   return (
-    <div style={{ padding: "1rem" }}>
-      <Center>
-        <Title
-          order={3}
-          style={{
-            fontSize: "1rem",
-            fontWeight: "bold",
-            marginBottom: "1rem",
-          }}
-          className="text-center sm:text-lg"
-        >
-          <Skeleton visible>Really long tVal name</Skeleton>
-        </Title>
-      </Center>
-      <div
-        className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem" }}
-      >
+    <>
+      <div className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4">
         {Array(3)
           .fill(0)
           .map((_, index) => {
@@ -42,6 +26,7 @@ export default function LeaderboardSkeleton() {
           display: "flex",
           justifyContent: "flex-end",
           marginBottom: "1rem",
+          paddingTop: "2rem",
         }}
       >
         <Skeleton visible width={"100px"} height={"36px"}>
@@ -85,6 +70,6 @@ export default function LeaderboardSkeleton() {
             ))}
         </Table.Tbody>
       </Table>
-    </div>
+    </>
   );
 }

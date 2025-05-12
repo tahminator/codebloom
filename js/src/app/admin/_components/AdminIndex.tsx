@@ -1,3 +1,4 @@
+import UserAdminList from "@/app/admin/_components/UserAdminList";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -27,17 +28,28 @@ export default function AdminIndex() {
     );
   }
   return (
-    <Flex w={"100vw"} h={"100vh"} direction={"column"}>
+    <Flex w={"98vw"} h={"100vh"} direction={"column"}>
       <Title order={1} ta="center">
         Admin Page
       </Title>
-      <Flex w={"100%"} direction={"row"}>
-        <Flex w={"50%"} direction={"column"} ta={"center"}>
-          <Title order={4}>Leaderboards (WIP)</Title>
+      <Flex w={"100%"} direction={{ base: "column", sm: "row" }}>
+        <Flex
+          w={{ base: "100%", sm: "50%" }}
+          direction={"column"}
+          ta={"center"}
+          m={"sm"}
+        >
+          <Title order={4}>Leaderboards</Title>
           <NewLeaderboardForm />
         </Flex>
-        <Flex w={"50%"} direction={"column"} ta={"center"}>
-          <Title order={4}>Users (WIP)</Title>
+        <Flex
+          w={{ base: "100%", sm: "50%" }}
+          direction={"column"}
+          ta={"center"}
+          m={"sm"}
+        >
+          <Title order={4}>Users</Title>
+          <UserAdminList />
         </Flex>
       </Flex>
     </Flex>

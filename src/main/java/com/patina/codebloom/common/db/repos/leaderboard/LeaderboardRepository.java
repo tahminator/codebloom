@@ -26,7 +26,9 @@ public interface LeaderboardRepository {
 
     int getRecentLeaderboardUserCount(boolean patina, String query);
 
-    ArrayList<Leaderboard> getAllLeaderboardsShallow();
+    int getLeaderboardCount();
+
+    ArrayList<Leaderboard> getAllLeaderboardsShallow(int page, int pageSize, String query);
 
     boolean addAllUsersToLeaderboard(String leaderboardId);
 }

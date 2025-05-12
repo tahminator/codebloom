@@ -1,7 +1,9 @@
 import MiniLeaderboard from "@/app/_component/MiniLeaderboard";
 import MiniLeaderboardMobile from "@/app/_component/MiniLeaderboardMobile";
 import OurFeatures from "@/app/_component/OurFeatures";
+import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import {
+  Box,
   Button,
   Center,
   Container,
@@ -63,7 +65,10 @@ export default function AboutUs() {
           direction={"column"}
           w={"50%"}
         >
-          <MiniLeaderboard />
+          <Box pos={"relative"} p={"xs"}>
+            <LeaderboardMetadata showClock />
+            <MiniLeaderboard />
+          </Box>
         </Flex>
       </Flex>
       <Flex h={"80vh"} w={"100vw"} hiddenFrom="lg">
@@ -91,6 +96,7 @@ export default function AboutUs() {
         </Stack>
       </Flex>
       <Container hiddenFrom={"lg"}>
+        <LeaderboardMetadata showClock />
         <MiniLeaderboardMobile />
       </Container>
       <div ref={targetSectionRef} style={{ padding: "2rem" }}>

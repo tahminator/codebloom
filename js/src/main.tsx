@@ -1,15 +1,15 @@
 import ReactQueryProvider from "@/lib/queryProvider";
-import { router } from "@/lib/router";
 import "@mantine/core/styles.css";
+import { router } from "@/lib/router";
 import { themeOverride } from "@/lib/theme";
-import { MantineProvider } from "@mantine/core";
 import "@mantine/notifications/styles.css";
+import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { StrictMode } from "react";
 
 import "./index.css";
 
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 
@@ -18,8 +18,8 @@ createRoot(document.getElementById("root")!).render(
     <ReactQueryProvider>
       <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
         {/* <Banner */}
-        {/*   message="The FIRST official leaderboard for the month of April will be starting very soon!" */}
-        {/*   counter={new Date("2025-04-09T18:00:00-04:00")} */}
+        {/*   message="The FIRST official leaderboard for the month of April will be ending very soon!" */}
+        {/*   counter={new Date("2025-05-02T18:00:00-04:00")} */}
         {/* /> */}
         <RouterProvider router={router} />
         <Notifications />
