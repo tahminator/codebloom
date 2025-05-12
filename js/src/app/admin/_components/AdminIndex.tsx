@@ -39,7 +39,7 @@ export default function AdminIndex() {
           ta={"center"}
           m={"sm"}
         >
-          <Title order={4}>Leaderboards (WIP)</Title>
+          <Title order={4}>Leaderboards</Title>
           <NewLeaderboardForm />
         </Flex>
         <Flex
@@ -48,7 +48,7 @@ export default function AdminIndex() {
           ta={"center"}
           m={"sm"}
         >
-          <Title order={4}>Users (WIP)</Title>
+          <Title order={4}>Users</Title>
           <UserAdminList />
         </Flex>
       </Flex>
