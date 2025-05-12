@@ -184,15 +184,18 @@ public class UserSqlRepository implements UserRepository {
         String sql = """
                             SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", admin
                             FROM "User"
-                            WHERE "nickname" ILIKE ?
+                            WHERE
+                                ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
                             ORDER BY id
                             LIMIT ? OFFSET ?
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + query + "%");
-            stmt.setInt(2, pageSize);
-            stmt.setInt(3, (page - 1) * pageSize);
+            stmt.setString(2, "%" + query + "%");
+            stmt.setString(3, "%" + query + "%");
+            stmt.setInt(4, pageSize);
+            stmt.setInt(5, (page - 1) * pageSize);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -325,9 +328,18 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public int getUserCount(final String query) {
-        String sql = "SELECT COUNT(*) FROM \"User\" WHERE \"nickname\" ILIKE ?";
+        String sql = """
+                        SELECT
+                            COUNT(*)
+                        FROM
+                            "User"
+                        WHERE
+                            ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
+                        """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + query + "%");
+            stmt.setString(2, "%" + query + "%");
+            stmt.setString(3, "%" + query + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
