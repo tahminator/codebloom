@@ -130,7 +130,7 @@ export async function createLeaderboard(leaderboardName: string) {
   });
 
   const json = (await response.json()) as ApiResponse<Leaderboard>;
-   return json;
+  return json;
 }
 
 export const useCreateLeaderboardMutation = () => {
