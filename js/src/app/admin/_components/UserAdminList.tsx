@@ -77,8 +77,6 @@ export default function UserAdminList() {
           setSearchQuery(event.currentTarget.value);
         }}
         placeholder={"Search for user"}
-        maw={undefined}
-        miw={undefined}
         m={"lg"}
         mb={0}
       />
