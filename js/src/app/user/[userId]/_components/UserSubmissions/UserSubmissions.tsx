@@ -45,7 +45,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     return <>{data.message}</>;
   }
 
-  const pageData = data.data;
+  const pageData = data.payload;
 
   return (
     <>

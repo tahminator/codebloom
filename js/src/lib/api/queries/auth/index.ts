@@ -24,9 +24,9 @@ async function validateAuthentication() {
   }>;
   if (json.success) {
     return {
-      session: json.data.session,
-      user: json.data.user,
-      isAdmin: json.data.user.admin,
+      session: json.payload.session,
+      user: json.payload.user,
+      isAdmin: json.payload.user.admin,
     };
   }
 

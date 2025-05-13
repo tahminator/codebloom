@@ -65,7 +65,7 @@ export default function ProblemOfTheDay() {
     );
   }
 
-  const json = data.data;
+  const json = data.payload;
 
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
