@@ -2,14 +2,14 @@ package com.patina.codebloom.common.page;
 
 public class Page<T> {
     private boolean hasNextPage;
-    private T data;
+    private T items;
     private int pages;
 
     private int pageSize;
 
-    public Page(final boolean hasNextPage, final T data, final int pages, final int pageSize) {
+    public Page(final boolean hasNextPage, final T items, final int pages, final int pageSize) {
         this.hasNextPage = hasNextPage;
-        this.data = data;
+        this.items = items;
         this.pages = pages;
         this.pageSize = pageSize;
     }
@@ -22,12 +22,12 @@ public class Page<T> {
         this.hasNextPage = hasNextPage;
     }
 
-    public T getData() {
-        return data;
+    public T getItems() {
+        return items;
     }
 
-    public void setData(final T data) {
-        this.data = data;
+    public void setItems(final T items) {
+        this.items = items;
     }
 
     public int getPages() {
