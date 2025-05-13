@@ -1,12 +1,12 @@
 import { Prettify } from "@/lib/prettify";
 
-type SuccessType<T> = Prettify<{
+type ApiSuccess<T> = Prettify<{
   success: true;
   message: string;
   payload: T;
 }>;
 
-type ErrorType = Prettify<{
+type ApiError = Prettify<{
   success: false;
   message: string;
 }>;
@@ -30,4 +30,4 @@ type ErrorType = Prettify<{
  * const todo = json.payload; // no error, type of Todo.
  * ```
  */
-export type ApiResponse<T> = SuccessType<T> | ErrorType;
+export type ApiResponse<T> = ApiSuccess<T> | ApiError;
