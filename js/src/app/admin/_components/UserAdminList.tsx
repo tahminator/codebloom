@@ -111,7 +111,7 @@ export default function UserAdminList() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {pageData.data.length == 0 && (
+            {pageData.items.length == 0 && (
               <Table.Tr>
                 <Table.Td colSpan={100}>
                   <Text fw={500} ta="center">
@@ -120,7 +120,7 @@ export default function UserAdminList() {
                 </Table.Td>
               </Table.Tr>
             )}
-            {pageData.data.map((user, index) => {
+            {pageData.items.map((user, index) => {
               const adminBadgeColor = (() => {
                 if (user.admin) {
                   return undefined;
