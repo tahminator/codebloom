@@ -51,8 +51,12 @@ async function getLeetcodeQueryKey() {
   const json = (await res.json()) as ApiResponse<string>;
 
   if (!json.success) {
-    return { success: json.success, message: json.message, data: null };
+    return { success: json.success, message: json.message, payload: null };
   }
 
-  return { success: json.success, message: json.message, data: json.data };
+  return {
+    success: json.success,
+    message: json.message,
+    payload: json.payload,
+  };
 }

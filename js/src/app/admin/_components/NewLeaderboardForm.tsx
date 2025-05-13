@@ -26,7 +26,7 @@ function NewLeaderboardForm() {
     return <Toast message={data.message} />;
   }
 
-  const currentLeaderboardName = data.data.name;
+  const currentLeaderboardName = data.payload.name;
   return (
     <NewLeaderboardFormBody currentLeaderboardName={currentLeaderboardName} />
   );

@@ -49,7 +49,7 @@ export default function LeaderboardIndex() {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const pageData = data.data;
+  const pageData = data.payload;
   const [first, second, third] = pageData.data;
 
   return (

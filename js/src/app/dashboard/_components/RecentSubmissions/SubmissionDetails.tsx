@@ -34,7 +34,7 @@ export default function SubmissionDetails() {
     questionDifficulty,
     description,
     acceptanceRate,
-  } = data.data;
+  } = data.payload;
 
   return (
     <div>

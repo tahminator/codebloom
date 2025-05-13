@@ -62,7 +62,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
     return <Text>{data.message}</Text>;
   }
 
-  const userData = data.data;
+  const userData = data.payload;
 
   return (
     <Flex

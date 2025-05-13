@@ -75,7 +75,7 @@ export default function LeaderboardForDashboard({
     );
   }
 
-  const leaderboardData = data.data;
+  const leaderboardData = data.payload;
 
   if (leaderboardData.data.length == 0) {
     return (

@@ -82,7 +82,7 @@ export default function UsernameForm() {
             {status === "pending" && <Loader />}
             {status === "error" &&
               "Sorry, something went wrong. Please try again later."}
-            {status === "success" && data.data}
+            {status === "success" && data.payload}
           </Text>
           <Link
             to={"https://leetcode.com/profile/"}
