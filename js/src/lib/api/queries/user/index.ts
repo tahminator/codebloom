@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Question } from "@/lib/api/types/question";
 import { User } from "@/lib/api/types/user";
@@ -142,7 +142,7 @@ export const useGetAllUsersQuery = ({
 async function fetchUserProfile({ userId }: { userId?: string }) {
   const response = await fetch(`/api/user/${userId ?? ""}/profile`);
 
-  const json = (await response.json()) as ApiResponse<User>;
+  const json = (await response.json()) as UnknownApiResponse<User>;
 
   return json;
 }
@@ -162,7 +162,7 @@ async function fetchUserSubmissions({
     `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}`,
   );
 
-  const json = (await response.json()) as ApiResponse<Page<Question[]>>;
+  const json = (await response.json()) as UnknownApiResponse<Page<Question[]>>;
 
   return json;
 }
@@ -180,7 +180,7 @@ async function fetchAllUsers({
     `/api/user/all?page=${page}&query=${query}&pageSize=${pageSize}`,
   );
 
-  const json = (await response.json()) as ApiResponse<Page<User[]>>;
+  const json = (await response.json()) as UnknownApiResponse<Page<User[]>>;
 
   return json;
 }
