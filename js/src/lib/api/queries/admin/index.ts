@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { User } from "@/lib/api/types/user";
@@ -21,7 +21,7 @@ export const useToggleAdminMutation = () => {
         "all",
         metadata.page,
         metadata.debouncedQuery,
-      ]) as ApiResponse<Page<User[]>>;
+      ]) as UnknownApiResponse<Page<User[]>>;
 
       // Impossible, just handle it to make TS happy and narrow the type.
       if (!previousApiResponse.success) {
@@ -115,7 +115,7 @@ async function toggleUserAdmin({
     }),
   });
 
-  const json = (await response.json()) as ApiResponse<User>;
+  const json = (await response.json()) as UnknownApiResponse<User>;
 
   return json;
 }
@@ -127,13 +127,13 @@ export async function createLeaderboard(leaderboard: { name: string }) {
     body: JSON.stringify(leaderboard),
   });
 
-  const json = (await response.json()) as ApiResponse<Leaderboard>;
+  const json = (await response.json()) as UnknownApiResponse<Leaderboard>;
   return json;
 }
 
 export const useCreateLeaderboardMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation<ApiResponse<Leaderboard>, Error, { name: string }>({
+  return useMutation<UnknownApiResponse<Leaderboard>, Error, { name: string }>({
     mutationFn: createLeaderboard,
     onSuccess: async (data) => {
       if (data.success) {
