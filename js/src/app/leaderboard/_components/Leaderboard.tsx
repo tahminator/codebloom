@@ -50,7 +50,7 @@ export default function LeaderboardIndex() {
   }
 
   const pageData = data.payload;
-  const [first, second, third] = pageData.data;
+  const [first, second, third] = pageData.items;
 
   return (
     <>
@@ -132,7 +132,7 @@ export default function LeaderboardIndex() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {pageData.data.map((entry, index) => {
+            {pageData.items.map((entry, index) => {
               if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index))
                 return null;
               return (
