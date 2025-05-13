@@ -8,39 +8,39 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class ApiResponder<T> {
     private boolean success;
-    private T data;
+    private T payload;
     private String message;
 
-    private ApiResponder(final boolean success, final String message, final T data) {
+    private ApiResponder(final boolean success, final String message, final T payload) {
         this.success = success;
-        this.data = data;
+        this.payload = payload;
         this.message = message;
     };
 
     private ApiResponder(final boolean success, final String message) {
         this.success = success;
-        this.data = null;
+        this.payload = null;
         this.message = message;
     };
 
-    public static <T> ApiResponder<T> success(final String message, final T data) {
-        return new ApiResponder<>(true, message, data);
+    public static <T> ApiResponder<T> success(final String message, final T payload) {
+        return new ApiResponder<>(true, message, payload);
     }
 
     public static <T> ApiResponder<T> failure(final String message) {
         return new ApiResponder<>(false, message, null);
     }
 
-    public static <T> ApiResponder<T> custom(final boolean success, final String message, final T data) {
-        return new ApiResponder<>(success, message, data);
+    public static <T> ApiResponder<T> custom(final boolean success, final String message, final T payload) {
+        return new ApiResponder<>(success, message, payload);
     }
 
     public boolean isSuccess() {
         return success;
     }
 
-    public T getData() {
-        return data;
+    public T getPayload() {
+        return payload;
     }
 
     public String getMessage() {
