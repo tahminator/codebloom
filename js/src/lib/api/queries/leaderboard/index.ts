@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { User, UserWithScore } from "@/lib/api/types/user";
@@ -159,7 +159,9 @@ async function fetchLeaderboardUsers({
     },
   );
 
-  const json = (await response.json()) as ApiResponse<Page<UserWithScore[]>>;
+  const json = (await response.json()) as UnknownApiResponse<
+    Page<UserWithScore[]>
+  >;
 
   return json;
 }
@@ -169,7 +171,7 @@ async function useCurrentLeaderboardMetadata() {
     method: "GET",
   });
 
-  const json = (await response.json()) as ApiResponse<Leaderboard>;
+  const json = (await response.json()) as UnknownApiResponse<Leaderboard>;
 
   return json;
 }
@@ -182,7 +184,7 @@ async function updateTotalPoints() {
     },
   });
 
-  const json = (await res.json()) as ApiResponse<{
+  const json = (await res.json()) as UnknownApiResponse<{
     acceptedSubmissions: { title: string; points: number }[];
   }>;
 
@@ -200,7 +202,9 @@ export async function getMyRecentLeaderboardData({
 }) {
   const res = await fetch(`/api/leaderboard/current/user/${userId}`);
 
-  const json = (await res.json()) as ApiResponse<User & { totalScore: number }>;
+  const json = (await res.json()) as UnknownApiResponse<
+    User & { totalScore: number }
+  >;
 
   return json;
 }
@@ -210,7 +214,7 @@ async function fetchAllLeaderboardsMetadata() {
     method: "GET",
   });
 
-  const json = (await response.json()) as ApiResponse<Leaderboard[]>;
+  const json = (await response.json()) as UnknownApiResponse<Leaderboard[]>;
 
   return json;
 }

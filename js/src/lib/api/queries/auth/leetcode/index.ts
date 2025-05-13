@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
@@ -40,7 +40,7 @@ async function updateLeetcodeUsername({
     },
   });
 
-  const json = (await res.json()) as ApiResponse<undefined>;
+  const json = (await res.json()) as UnknownApiResponse<undefined>;
 
   return { success: json.success, message: json.message };
 }
@@ -48,7 +48,7 @@ async function updateLeetcodeUsername({
 async function getLeetcodeQueryKey() {
   const res = await fetch("/api/leetcode/key");
 
-  const json = (await res.json()) as ApiResponse<string>;
+  const json = (await res.json()) as UnknownApiResponse<string>;
 
   if (!json.success) {
     return { success: json.success, message: json.message, payload: null };
