@@ -29,7 +29,7 @@ export const useToggleAdminMutation = () => {
       }
 
       // Find the user and insert the new admin status to it's object.
-      const newUsers = previousApiResponse.payload.data.map((user) =>
+      const newUsers = previousApiResponse.payload.items.map((user) =>
         user.id === userId ? { ...user, admin: toggleTo } : user,
       ) as User[];
 

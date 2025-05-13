@@ -79,7 +79,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {pageData.data.length == 0 && (
+            {pageData.items.length == 0 && (
               <Table.Tr>
                 <Table.Td colSpan={100}>
                   <Text fw={500} ta="center">
@@ -88,7 +88,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                 </Table.Td>
               </Table.Tr>
             )}
-            {pageData.data.map((submission, index) => {
+            {pageData.items.map((submission, index) => {
               const badgeDifficultyColor = (() => {
                 if (submission.questionDifficulty === "Easy") {
                   return undefined;
@@ -152,8 +152,8 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               );
             })}
             {/* Render empty values to fill up page and avoid content shifting.*/}
-            {pageData.data.length < pageData.pageSize &&
-              Array(pageData.pageSize - pageData.data.length)
+            {pageData.items.length < pageData.pageSize &&
+              Array(pageData.pageSize - pageData.items.length)
                 .fill(0)
                 .map((_, idx) => (
                   <Table.Tr key={idx} opacity={0}>

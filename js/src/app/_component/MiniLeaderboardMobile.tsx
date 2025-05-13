@@ -34,11 +34,11 @@ export default function MiniLeaderboardMobile() {
 
   const leaderboardData = data.payload;
 
-  if (leaderboardData.data.length == 0) {
+  if (leaderboardData.items.length == 0) {
     return <p>Sorry, there are no users to display.</p>;
   }
 
-  const [first, second, third] = leaderboardData.data;
+  const [first, second, third] = leaderboardData.items;
 
   return (
     <>
@@ -99,7 +99,7 @@ export default function MiniLeaderboardMobile() {
             />
           )}
         </div>
-        {leaderboardData.data.length > 3 && (
+        {leaderboardData.items.length > 3 && (
           <Table>
             <Table.Thead>
               <Table.Tr>
@@ -109,7 +109,7 @@ export default function MiniLeaderboardMobile() {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {leaderboardData.data.map((entry, index) => {
+              {leaderboardData.items.map((entry, index) => {
                 if ([0, 1, 2].includes(index)) return null;
                 return (
                   <Table.Tr key={entry.discordName}>
