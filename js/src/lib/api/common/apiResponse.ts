@@ -30,4 +30,4 @@ type ApiError = Prettify<{
  * const todo = json.payload; // no error, type of Todo.
  * ```
  */
-export type ApiResponse<T> = ApiSuccess<T> | ApiError;
+export type UnknownApiResponse<T> = ApiSuccess<T> | ApiError;
