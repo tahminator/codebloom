@@ -16,7 +16,7 @@ function NewLeaderboardForm() {
   }
 
   if (status === "error") {
-    return <Toast message= {"Something went wrong."} />;
+    return <Toast message={"Something went wrong."} />;
   }
 
   if (!data) {
