@@ -2,7 +2,7 @@ import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardMetadataQuery } from "@/lib/api/queries/leaderboard";
 import { Loader } from "@mantine/core";
 
-import NewLeaderboardFormBody from "./NewLeaderboardFormBody";
+import NewLeaderboardFormBody from "./NewLeaderBoardFormBody";
 
 function NewLeaderboardForm() {
   const { data, status } = useCurrentLeaderboardMetadataQuery();
