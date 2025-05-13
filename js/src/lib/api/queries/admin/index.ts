@@ -3,7 +3,6 @@ import { Page } from "@/lib/api/common/page";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { User } from "@/lib/api/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 
 export const useToggleAdminMutation = () => {
   const queryClient = useQueryClient();
@@ -133,13 +132,11 @@ export async function createLeaderboard(leaderboard: { name: string }) {
 
 export const useCreateLeaderboardMutation = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   return useMutation<ApiResponse<Leaderboard>, Error, { name: string }>({
     mutationFn: createLeaderboard,
     onSuccess: async (data) => {
       if (data.success) {
         await queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-        navigate("/admin");
       }
     },
   });
