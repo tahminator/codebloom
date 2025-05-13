@@ -1,12 +1,14 @@
-type SuccessType<T> = {
+import { Prettify } from "@/lib/prettify";
+
+type SuccessType<T> = Prettify<{
   success: true;
   message: string;
   payload: T;
-};
+}>;
 
-type ErrorType = {
+type ErrorType = Prettify<{
   success: false;
   message: string;
-};
+}>;
 
-export type ApiResponse<T> = SuccessType<T> | ErrorType;
+type ApiResponse<T> = SuccessType<T> | ErrorType;
