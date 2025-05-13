@@ -1,6 +1,6 @@
 export type Page<T> = {
   hasNextPage: boolean;
-  data: T;
+  items: T;
   pages: number;
   pageSize: number;
 };

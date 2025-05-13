@@ -77,7 +77,7 @@ export default function LeaderboardForDashboard({
 
   const leaderboardData = data.payload;
 
-  if (leaderboardData.data.length == 0) {
+  if (leaderboardData.items.length == 0) {
     return (
       <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
@@ -96,7 +96,7 @@ export default function LeaderboardForDashboard({
     );
   }
 
-  const inTop5 = !!leaderboardData.data.find((u) => u.id === userId);
+  const inTop5 = !!leaderboardData.items.find((u) => u.id === userId);
 
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
@@ -136,7 +136,7 @@ export default function LeaderboardForDashboard({
             radius={"md"}
           />
         )}
-        {leaderboardData.data.map((user, idx) => {
+        {leaderboardData.items.map((user, idx) => {
           const isMe = user.id === userId;
 
           const borderColor = (() => {
