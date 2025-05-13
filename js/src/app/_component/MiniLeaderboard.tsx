@@ -32,7 +32,7 @@ export default function MiniLeaderboardDesktop() {
     return <Toast message={data.message} />;
   }
 
-  const leaderboardData = data.data;
+  const leaderboardData = data.payload;
 
   if (leaderboardData.data.length == 0) {
     return <p>Sorry, there are no users to display.</p>;
