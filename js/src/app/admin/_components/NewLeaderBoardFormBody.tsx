@@ -35,10 +35,10 @@ function NewLeaderboardFormBody({
             message: data.message,
             color: data.success ? undefined : "red",
           });
-            if (data.success) {
-                form.reset();
-                setModalOpen(false);
-            }
+          if (data.success) {
+            form.reset();
+            setModalOpen(false);
+          }
         },
       },
     );
