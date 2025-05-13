@@ -55,7 +55,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
     );
   }
 
-  const questions = data.data.data;
+  const questions = data.payload.data;
   const dashboardQuestions = questions.slice(0, 5);
 
   if (!questions.length) {

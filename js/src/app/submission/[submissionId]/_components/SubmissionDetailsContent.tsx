@@ -64,7 +64,7 @@ export default function SubmissionDetailsContent({
     runtime,
     memory,
     language,
-  } = data.data;
+  } = data.payload;
 
   const badgeAcceptedColor = (() => {
     const ac = acceptanceRate * 100;

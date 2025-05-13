@@ -48,7 +48,7 @@ export default function UserAdminList() {
     return <div>{data.message}</div>;
   }
 
-  const pageData = data.data;
+  const pageData = data.payload;
 
   const onToggle = (userId: string, currentAdminStatus: boolean) => {
     // Check the mutate function origin on why we
@@ -72,7 +72,7 @@ export default function UserAdminList() {
           }
 
           notifications.show({
-            color: data.data.admin ? undefined : "red",
+            color: data.payload.admin ? undefined : "red",
             message: data.message,
           });
         },
