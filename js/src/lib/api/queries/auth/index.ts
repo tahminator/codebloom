@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/lib/api/common/apiResponse";
+import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Session } from "@/lib/api/types/session";
 import { User } from "@/lib/api/types/user";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +18,7 @@ async function validateAuthentication() {
     method: "GET",
   });
 
-  const json = (await response.json()) as ApiResponse<{
+  const json = (await response.json()) as UnknownApiResponse<{
     user: User;
     session: Session;
   }>;
