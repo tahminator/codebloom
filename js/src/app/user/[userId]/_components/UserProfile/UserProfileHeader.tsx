@@ -25,7 +25,7 @@ export default function UserProfileHeader({ userId }: { userId?: string }) {
     return <Toast message={data.message} />;
   }
 
-  const userProfile = data.data;
+  const userProfile = data.payload;
   return (
     <Flex direction={"row"} gap="xs" wrap={"wrap"} mb={"xs"}>
       <Group wrap="wrap" justify="center" gap="xs">

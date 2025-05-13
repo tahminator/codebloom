@@ -17,8 +17,8 @@ export default function LeaderboardMetadata(
   const [countdown, reset] = useCountdown(-10);
 
   useEffect(() => {
-    if (status === "success" && data.success && data.data.shouldExpireBy) {
-      const shouldExpireByDate = new Date(data.data.shouldExpireBy);
+    if (status === "success" && data.success && data.payload.shouldExpireBy) {
+      const shouldExpireByDate = new Date(data.payload.shouldExpireBy);
       const expireSeconds = (shouldExpireByDate.getTime() - Date.now()) / 1000;
       console.log(expireSeconds);
       reset(expireSeconds);
@@ -76,7 +76,7 @@ export default function LeaderboardMetadata(
     );
   }
 
-  const leaderboardData = data.data;
+  const leaderboardData = data.payload;
 
   return (
     <>

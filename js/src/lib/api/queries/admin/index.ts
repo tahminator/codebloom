@@ -29,7 +29,7 @@ export const useToggleAdminMutation = () => {
       }
 
       // Find the user and insert the new admin status to it's object.
-      const newUsers = previousApiResponse.data.data.map((user) =>
+      const newUsers = previousApiResponse.payload.data.map((user) =>
         user.id === userId ? { ...user, admin: toggleTo } : user,
       ) as User[];
 
@@ -49,9 +49,10 @@ export const useToggleAdminMutation = () => {
       //    data: T
       //  };
       // }
-      const newPage = { ...previousApiResponse.data, data: newUsers } as Page<
-        User[]
-      >;
+      const newPage = {
+        ...previousApiResponse.payload,
+        data: newUsers,
+      } as Page<User[]>;
 
       // Insert this new Page type, and keep the success and message from the previous API response.
       queryClient.setQueryData(
