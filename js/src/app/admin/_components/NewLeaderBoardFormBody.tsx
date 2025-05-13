@@ -71,7 +71,7 @@ function NewLeaderboardFormBody({
             size="xs"
             mt="sm"
             variant="outline"
-            disabled={!form.isValid()}
+            disabled={!form.isValid("confirmation")}
           >
             Submit
           </Button>
