@@ -16,22 +16,19 @@ export const useToggleAdminMutation = () => {
         queryKey: ["user", "all", metadata.page, metadata.debouncedQuery],
       });
 
-      const previousApiResponse = queryClient.getQueryData([
-        "user",
-        "all",
-        metadata.page,
-        metadata.debouncedQuery,
-      ]) as UnknownApiResponse<Page<User[]>>;
+      const previousApiResponse = queryClient.getQueryData<
+        UnknownApiResponse<Page<User[]>>
+      >(["user", "all", metadata.page, metadata.debouncedQuery]);
 
       // Impossible, just handle it to make TS happy and narrow the type.
-      if (!previousApiResponse.success) {
+      if (!previousApiResponse || !previousApiResponse.success) {
         return;
       }
 
       // Find the user and insert the new admin status to it's object.
-      const newUsers = previousApiResponse.payload.items.map((user) =>
+      const newUsers: User[] = previousApiResponse.payload.items.map((user) =>
         user.id === userId ? { ...user, admin: toggleTo } : user,
-      ) as User[];
+      );
 
       // Replace the data (users array) with the newUsers, and keep the rest of the Page items the same.
       //
@@ -49,15 +46,15 @@ export const useToggleAdminMutation = () => {
       //    data: T
       //  };
       // }
-      const newPage = {
+      const newPage: Page<User[]> = {
         ...previousApiResponse.payload,
-        data: newUsers,
-      } as Page<User[]>;
+        items: newUsers,
+      };
 
       // Insert this new Page type, and keep the success and message from the previous API response.
-      queryClient.setQueryData(
+      queryClient.setQueryData<UnknownApiResponse<Page<User[]>>>(
         ["user", "all", metadata.page, metadata.debouncedQuery],
-        { ...previousApiResponse, data: newPage },
+        { ...previousApiResponse, payload: newPage },
       );
 
       // This is context that is passed on, so we can hold onto it and possibly put it back if needed.
