@@ -5,6 +5,7 @@ import { themeOverride } from "@/lib/theme";
 import "@mantine/notifications/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import * as Sentry from "@sentry/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./index.css";
@@ -12,6 +13,13 @@ import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
+
+Sentry.init({
+  dsn: import.meta.env.DSN,
+  // Setting this option to true will send default PII data to Sentry.
+  // For example, automatic IP address collection on events
+  sendDefaultPii: true,
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
