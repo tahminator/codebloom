@@ -154,6 +154,14 @@
                     <!-- for showing output of sentry-cli -->
                     <debugSentryCli>true</debugSentryCli>
 
+                    <skip>false</skip>
+                    <!--  Disable source-context -->
+                    <skipSourceBundle>false</skipSourceBundle>
+                    <!--  Disable auto-install of SDK and Integrations -->
+                    <skipAutoInstall>false</skipAutoInstall>
+                    <!--  Disable validating consistency of SDK dependency versions -->
+                    <skipValidateSdkDependencyVersions>false</skipValidateSdkDependencyVersions>
+
                     <org>codebloom-vv</org>
 
                     <project>codebloom-java</project>
