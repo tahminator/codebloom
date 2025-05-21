@@ -154,7 +154,7 @@
                     <!-- for showing output of sentry-cli -->
                     <debugSentryCli>true</debugSentryCli>
 
-                    <skip>false</skip>
+                    <skip>true</skip>
                     <!--  Disable source-context -->
                     <skipSourceBundle>false</skipSourceBundle>
                     <!--  Disable auto-install of SDK and Integrations -->
