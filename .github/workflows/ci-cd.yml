@@ -87,7 +87,7 @@ jobs:
             #     restore-keys: maven-${{ runner.os }}-
 
             - name: Build & Install
-              run: ./mvnw -B install -D skipTests --no-transfer-progress
+              run: ./mvnw -B install -D skipTests --no-transfer-progress -Denv.SKIP=true
 
             - name: Run Checkstyle
               run: ./mvnw checkstyle:check
