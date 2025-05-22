@@ -14,7 +14,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 
-if (import.meta.env.VITE_MODE === "production") {
+if (import.meta.env.PROD) {
   Sentry.init({
     dsn: import.meta.env.VITE_DSN,
     // Setting this option to true will send default PII data to Sentry.
