@@ -136,7 +136,7 @@ jobs:
 
             - name: Check if SENTRY_AUTH_TOKEN is present
               run: |
-                  echo "Token: SENTRY_AUTH_TOKEN"
+                  echo "Token: $SENTRY_AUTH_TOKEN"
 
             - name: Set image tags
               run: |
