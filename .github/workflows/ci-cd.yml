@@ -133,6 +133,10 @@ jobs:
                   echo "TIMESTAMP=$(date +%Y.%m.%d-%H.%M.%S)" >> $GITHUB_ENV
                   echo "GIT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
+            - name: Check if SENTRY_AUTH_TOKEN is present
+              run: |
+                  echo "Token: $SENTRY_AUTH_TOKEN"
+
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
