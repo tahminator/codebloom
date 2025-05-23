@@ -60,6 +60,10 @@ jobs:
             EMAIL_TYPE: ${{ secrets.EMAIL_TYPE }}
             EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
             EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+            SKIP: ${{ secrets.SKIP }}
+            VITE_DSN: ${{ secrets.VITE_DSN }}
 
         steps:
             - name: Checkout Repository
