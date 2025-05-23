@@ -110,7 +110,7 @@ jobs:
         if: github.ref_name == 'main'
 
         env:
-            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_AUTH_TOKEN: "testvalue"
             SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
             SKIP: ${{ secrets.SKIP }}
             VITE_DSN: ${{ secrets.VITE_DSN }}
@@ -133,6 +133,10 @@ jobs:
               uses: szenius/set-timezone@v2.0
               with:
                   timezoneLinux: "America/New_York"
+
+            - name: Check if SENTRY_AUTH_TOKEN is present
+              run: |
+                  echo "Token: SENTRY_AUTH_TOKEN"
 
             - name: Set image tags
               run: |
