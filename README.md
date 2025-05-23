@@ -37,6 +37,8 @@
     <br />
     <a href="https://codebloom.patinanetwork.org">View Website</a>
     &middot;
+    <a href="https://codebloom.notion.site/">View Current Tasks</a>
+    &middot;
     <a href="https://github.com/tahminator/codebloom/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;
     <a href="https://github.com/tahminator/codebloom/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
