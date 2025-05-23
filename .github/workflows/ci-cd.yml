@@ -110,7 +110,7 @@ jobs:
         if: github.ref_name == 'main'
 
         env:
-            SENTRY_AUTH_TOKEN: "testvalue"
+            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
             SKIP: ${{ secrets.SKIP }}
             VITE_DSN: ${{ secrets.VITE_DSN }}
@@ -134,10 +134,6 @@ jobs:
               with:
                   timezoneLinux: "America/New_York"
 
-            - name: Check if SENTRY_AUTH_TOKEN is present
-              run: |
-                  echo "Token: $SENTRY_AUTH_TOKEN"
-
             - name: Set image tags
               run: |
                   echo "TIMESTAMP=$(date +%Y.%m.%d-%H.%M.%S)" >> $GITHUB_ENV
@@ -153,6 +149,11 @@ jobs:
                       tahminator/codebloom:latest
                       tahminator/codebloom:${{ env.TIMESTAMP }}
                       tahminator/codebloom:${{ env.GIT_SHA }}
+                  build-args: |
+                      SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
+                      SENTRY_DSN=${{ env.SENTRY_DSN }}
+                      SKIP=${{ env.SKIP }}
+                      VITE_DSN=${{ env.VITE_DSN }}
 
     redeploy:
         name: Redeploy on DigitalOcean
