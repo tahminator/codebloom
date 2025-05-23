@@ -27,7 +27,15 @@ WORKDIR /app
 COPY mvnw pom.xml ./
 COPY .mvn/ .mvn/
 
-RUN echo $SENTRY_AUTH_TOKEN
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_DSN
+ARG SKIP
+ARG VITE_DSN
+
+RUN echo "SENTRY_AUTH_TOKEN is: ${SENTRY_AUTH_TOKEN:+set}" \
+    && echo "SENTRY_DSN is: ${SENTRY_DSN:+set}" \
+    && echo "SKIP is: ${SKIP:+set}" \
+    && echo "VITE_DSN is: ${VITE_DSN:+set}"
 
 # Download dependencies
 RUN ./mvnw dependency:resolve -B
