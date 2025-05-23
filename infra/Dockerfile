@@ -27,6 +27,8 @@ WORKDIR /app
 COPY mvnw pom.xml ./
 COPY .mvn/ .mvn/
 
+RUN echo $SENTRY_AUTH_TOKEN
+
 # Download dependencies
 RUN ./mvnw dependency:resolve -B
 
