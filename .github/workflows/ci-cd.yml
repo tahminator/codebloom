@@ -56,7 +56,7 @@ jobs:
             DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
             DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
             EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-            EMAIL_POST: ${{ secrets.EMAIL_PORT }}
+            EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
             EMAIL_TYPE: ${{ secrets.EMAIL_TYPE }}
             EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
             EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
