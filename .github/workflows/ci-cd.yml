@@ -77,6 +77,10 @@ jobs:
                   echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
                   echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
 
+            - name: Check if SENTRY_AUTH_TOKEN is present
+              run: |
+                  echo "Token: $SENTRY_AUTH_TOKEN"
+
             - name: Verify Java version
               run: |
                   java -version
