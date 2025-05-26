@@ -15,9 +15,9 @@ The simplest way to set up PostgreSQL on macOS is using Postgres.app.
 
 Postgres.app uses "trust" authentication, which means:
 
--   The password you enter in your application doesn't matter
--   On first connection attempt, Postgres.app will prompt you to trust the specific program
--   After allowing access once, it won't ask again for that program
+- The password you enter in your application doesn't matter
+- On first connection attempt, Postgres.app will prompt you to trust the specific program
+- After allowing access once, it won't ask again for that program
 
 ## Docker Setup (MacOS or Windows)
 
@@ -38,11 +38,11 @@ Click PostgreSQL > Next
 
 Fill in:
 
--   Host
--   Post
--   Check Show All Databases
--   Username
--   Password
--   Click Connection details and name the connection (for example: localhostdb if it's your local machine, codebloom-prod if it's the Codebloom production database, etc.)
+- Host
+- Post
+- Check Show All Databases
+- Username
+- Password
+- Click Connection details and name the connection (for example: localhostdb if it's your local machine, codebloom-prod if it's the Codebloom production database, etc.)
 
 Click Finish.
