@@ -36,7 +36,7 @@ public class SubmissionScheduler {
 
         for (User user : users) {
             if (user.getLeetcodeUsername() == null) {
-                LOGGER.error("User with id of {} does not have a leetcode username set.", user.getId());
+                LOGGER.info("User with id of {} does not have a leetcode username set.", user.getId());
                 continue;
             }
 
