@@ -75,7 +75,7 @@ public class JDAClient {
 
     public long getPatinaLeetcodeChannelId() {
         isJdaReadyOrThrow();
-        return jdaInitializer.getJdaProperties().getChannelId();
+        return jdaInitializer.getJdaProperties().getChannelIdAsLong();
     }
 
     public Guild getGuildById(final String guildId) {
