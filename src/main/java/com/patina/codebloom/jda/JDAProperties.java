@@ -5,8 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "jda.discord")
 public class JDAProperties {
     private String token;
-
     private String id;
+    private long channelId;
 
     public String getToken() {
         return token;
@@ -24,4 +24,11 @@ public class JDAProperties {
         this.id = id;
     }
 
+    public long getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(final long channelId) {
+        this.channelId = channelId;
+    }
 }
