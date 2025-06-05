@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JDAProperties {
     private String token;
     private String id;
-    private long channelId;
+    private String channelId;
 
     public String getToken() {
         return token;
@@ -24,11 +24,15 @@ public class JDAProperties {
         this.id = id;
     }
 
-    public long getChannelId() {
+    public String getChannelId() {
         return channelId;
     }
 
-    public void setChannelId(final long channelId) {
+    public long getChannelIdAsLong() {
+        return Long.valueOf(channelId);
+    }
+
+    public void setChannelId(final String channelId) {
         this.channelId = channelId;
     }
 }
