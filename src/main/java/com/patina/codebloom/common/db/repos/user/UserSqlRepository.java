@@ -32,7 +32,7 @@ public class UserSqlRepository implements UserRepository {
      */
     @Override
     public User createNewUser(final User user) {
-        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\") VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\") VALUES (?, ?, ?, ?, ?, ?)";
         user.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(user.getId()));
@@ -42,6 +42,7 @@ public class UserSqlRepository implements UserRepository {
             // user authentication.
             stmt.setNull(4, java.sql.Types.VARCHAR);
             stmt.setString(5, user.getNickname());
+            stmt.setString(6, user.getSchoolEmail());
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
@@ -58,7 +59,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserById(final String inputId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", admin FROM \"User\" WHERE id=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\",admin FROM \"User\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputId));
@@ -70,10 +71,10 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
-
+                    var schoolEmail = rs.getString("schoolEmail");
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
                     return user;
                 }
             }
@@ -87,7 +88,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserByDiscordId(final String inputDiscordId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", admin FROM \"User\" WHERE \"discordId\"=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\",admin FROM \"User\" WHERE \"discordId\"=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputDiscordId);
@@ -99,10 +100,11 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
+                    var schoolEmail = rs.getString("schoolEmail");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
                     return user;
                 }
             }
@@ -130,7 +132,7 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User updateUser(final User inputUser) {
-        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=?, \"admin\"=? WHERE id=?";
+        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=?, \"admin\"=?, \"schoolEmail\"=? WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputUser.getDiscordName());
@@ -138,7 +140,8 @@ public class UserSqlRepository implements UserRepository {
             stmt.setString(3, inputUser.getLeetcodeUsername());
             stmt.setString(4, inputUser.getNickname());
             stmt.setBoolean(5, inputUser.isAdmin());
-            stmt.setObject(6, UUID.fromString(inputUser.getId()));
+            stmt.setString(6, inputUser.getSchoolEmail());
+            stmt.setObject(7, UUID.fromString(inputUser.getId()));
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
@@ -154,7 +157,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", admin FROM \"User\"";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\", admin FROM \"User\"";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -165,10 +168,11 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
+                    var schoolEmail = rs.getString("schoolEmail");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags));
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags));
                 }
             }
         } catch (SQLException e) {
@@ -182,7 +186,7 @@ public class UserSqlRepository implements UserRepository {
     public ArrayList<User> getAllUsers(final int page, final int pageSize, final String query) {
         ArrayList<User> users = new ArrayList<>();
         String sql = """
-                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", admin
+                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", "schoolEmail", admin
                             FROM "User"
                             WHERE
                                 ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
@@ -205,10 +209,11 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
+                    var schoolEmail = rs.getString("schoolEmail");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags));
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags));
                 }
             }
         } catch (SQLException e) {
@@ -229,6 +234,7 @@ public class UserSqlRepository implements UserRepository {
                             "leetcodeUsername",
                             "nickname",
                             "admin",
+                            "schoolEmail",
                             "verifyKey"
                         FROM "User"
                         WHERE id = ?
@@ -244,11 +250,12 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
+                    var schoolEmail = rs.getString("schoolEmail");
                     var verifyKey = rs.getString("verifyKey");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, admin, verifyKey, tags);
+                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, verifyKey, tags);
                     return user;
                 }
             }
