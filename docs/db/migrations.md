@@ -6,6 +6,10 @@
 
 or
 
+make migrate
+
+or
+
 `dotenvx run -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration`.
 
 To run production migrations (BE CAREFUL WITH THIS IF YOU HAVE PRODUCTION ACCESS), it is:
