@@ -6,7 +6,7 @@ public enum SchoolEnum {
 
     private final String emailDomain;
 
-    SchoolEnum(String emailDomain) {
+    SchoolEnum(final String emailDomain) {
         this.emailDomain = emailDomain;
     }
 
