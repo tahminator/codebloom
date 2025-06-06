@@ -2,9 +2,6 @@ package com.patina.codebloom.common.jwt;
 
 import java.time.Duration;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
