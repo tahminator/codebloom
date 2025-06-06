@@ -82,7 +82,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "not implemented")
     })
     @PostMapping("/school/validate")
-    public ResponseEntity<ApiResponder<Object>> validateSchool(@Valid @RequestBody EmailBody emailBody) {
+    public ResponseEntity<ApiResponder<Object>> validateSchool(@Valid @RequestBody final EmailBody emailBody) {
         return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
     }
 }
