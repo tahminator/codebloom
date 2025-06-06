@@ -20,7 +20,7 @@ public class PrivateUser extends User {
                     final String nickname,
                     final boolean admin,
                     final String schoolEmail,
-                    final String verifyKey, 
+                    final String verifyKey,
                     final ArrayList<UserTag> tags) {
         super(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
         this.verifyKey = verifyKey;
