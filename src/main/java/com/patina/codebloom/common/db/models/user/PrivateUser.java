@@ -12,9 +12,17 @@ public class PrivateUser extends User {
 
     private final String verifyKey;
 
-    public PrivateUser(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final boolean admin, final String verifyKey,
+    public PrivateUser(
+                    final String id,
+                    final String discordId,
+                    final String discordName,
+                    final String leetcodeUsername,
+                    final String nickname,
+                    final boolean admin,
+                    final String schoolEmail,
+                    final String verifyKey, 
                     final ArrayList<UserTag> tags) {
-        super(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
+        super(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
         this.verifyKey = verifyKey;
     }
 
