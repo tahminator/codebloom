@@ -1,9 +1,13 @@
 package com.patina.codebloom.api.auth;
 
+import com.patina.codebloom.api.auth.body.EmailBody;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -23,6 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @Tag(name = "Authentication Routes")
@@ -71,7 +76,13 @@ public class AuthController {
         } catch (Exception e) {
             return new RedirectView("/login?success=false&message=You are not logged in.");
         }
-
     }
 
+    @Operation(summary = "Validates school email if there is one", description = "Protected endpoint that returns the school if the currently authenticated user is part of a school.", responses = {
+            @ApiResponse(responseCode = "500", description = "not implemented")
+    })
+    @PostMapping("/school/validate")
+    public ResponseEntity<ApiResponder<Object>> validateSchool(@Valid @RequestBody EmailBody emailBody) {
+        return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
+    }
 }
