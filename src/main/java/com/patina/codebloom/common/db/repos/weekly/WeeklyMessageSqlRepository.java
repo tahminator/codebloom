@@ -26,7 +26,7 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
                         .build();
     }
 
-    private void updateWeeklyMessageWithResultSet(WeeklyMessage message, final ResultSet resultSet) throws SQLException {
+    private void updateWeeklyMessageWithResultSet(final WeeklyMessage message, final ResultSet resultSet) throws SQLException {
         message.setId(resultSet.getString("id"));
         message.setCreatedAt(resultSet.getTimestamp("createdAt").toLocalDateTime());
     }
@@ -58,7 +58,7 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
     }
 
     @Override
-    public boolean createLatestWeeklyMessage(WeeklyMessage message) {
+    public boolean createLatestWeeklyMessage(final WeeklyMessage message) {
         String sql = """
                             INSERT INTO "WeeklyMessage"
                                 (id)
