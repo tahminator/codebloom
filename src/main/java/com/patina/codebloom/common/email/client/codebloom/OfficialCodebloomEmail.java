@@ -72,4 +72,16 @@ public class OfficialCodebloomEmail extends Email {
         }
     }
 
+    @Override
+    public void testConnection() throws EmailException {
+        try {
+            // Should trigger connection already by this point, but just to be safe, calling
+            // something with session.
+            jakarta.mail.Message message = new MimeMessage(session);
+            // TODO - May need to actually test sending an email out, which can be added
+            // pretty trivially.
+        } catch (Exception e) {
+            throw new EmailException("Something went wrong when testing connection", e);
+        }
+    }
 }
