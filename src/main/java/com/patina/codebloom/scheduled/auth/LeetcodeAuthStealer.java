@@ -22,7 +22,8 @@ import com.microsoft.playwright.options.LoadState;
 import com.patina.codebloom.common.db.models.auth.Auth;
 import com.patina.codebloom.common.db.repos.auth.AuthRepository;
 import com.patina.codebloom.common.email.Email;
-import com.patina.codebloom.common.email.MessageLite;
+import com.patina.codebloom.common.email.Message;
+import com.patina.codebloom.common.email.client.github.GithubOAuthEmail;
 
 @Component
 public class LeetcodeAuthStealer {
@@ -38,7 +39,7 @@ public class LeetcodeAuthStealer {
     private final AuthRepository authRepository;
     private final Email email;
 
-    public LeetcodeAuthStealer(final AuthRepository authRepository, final Email email) {
+    public LeetcodeAuthStealer(final AuthRepository authRepository, final GithubOAuthEmail email) {
         this.authRepository = authRepository;
         this.email = email;
     }
@@ -88,7 +89,7 @@ public class LeetcodeAuthStealer {
 
             if (page.isVisible("#device-verification-prompt") || page.isVisible("#session-otp-input-description")) {
                 LOGGER.info("2FA Required");
-                List<MessageLite> messages;
+                List<Message> messages;
 
                 page.waitForTimeout(10000);
 
@@ -99,8 +100,8 @@ public class LeetcodeAuthStealer {
                     throw new RuntimeException("Failed to retrieve past messages", e);
                 }
 
-                MessageLite target = null;
-                for (MessageLite m : messages) {
+                Message target = null;
+                for (Message m : messages) {
                     // Don't break so we can get the newest available code.
                     if (m.getSubject().equals("[GitHub] Please verify your device")) {
                         LOGGER.info("Found verification email");
