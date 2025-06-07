@@ -82,7 +82,7 @@ public class GithubOAuthEmail extends Email {
      * @deprecated - This is not supported.
      */
     @Override
-    public void sendMessage(SendEmailOptions sendEmailOptions) throws EmailException {
+    public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
         throw new UnsupportedOperationException("GithubOAuthEmail does not support sending messages.");
     }
 
