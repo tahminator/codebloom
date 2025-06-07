@@ -139,9 +139,9 @@ public class JDAClient {
             String description = String.format("""
                             Hey everyone! Here is a weekly update on the LeetCode leaderboard for our very own Patina members!
 
-                            🥇- <@%s>
-                            🥈- <@%s>
-                            🥉- <@%s>
+                            🥇- <@%s> - %s pts
+                            🥈- <@%s> - %s pts
+                            🥉- <@%s> - %s pts
 
                             To view the rest of the members, visit the website or check out the image embedded in this message!
 
@@ -155,8 +155,11 @@ public class JDAClient {
                             <https://codebloom.patinanetwork.org>
                             """,
                             users.get(0).getDiscordId(),
+                            users.get(0).getTotalScore(),
                             users.get(1).getDiscordId(),
+                            users.get(1).getTotalScore(),
                             users.get(2).getDiscordId(),
+                            users.get(2).getTotalScore(),
                             daysLeft,
                             hoursLeft,
                             minutesLeft);
