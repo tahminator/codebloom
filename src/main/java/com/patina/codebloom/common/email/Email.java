@@ -16,4 +16,10 @@ public abstract class Email {
     public abstract List<Message> getPastMessages() throws EmailException;
 
     public abstract void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException;
+
+    /**
+     * Validate that the connection and all the properties work, without actually
+     * doing any action.
+     */
+    public abstract void testConnection() throws EmailException;
 }

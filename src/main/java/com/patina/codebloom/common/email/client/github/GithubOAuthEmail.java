@@ -86,4 +86,21 @@ public class GithubOAuthEmail extends Email {
         throw new UnsupportedOperationException("GithubOAuthEmail does not support sending messages.");
     }
 
+    @Override
+    public void testConnection() throws EmailException {
+        try {
+            final Store store = session.getStore("imap");
+
+            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
+
+            final Folder emailFolder = store.getFolder("Inbox");
+            emailFolder.open(Folder.READ_ONLY);
+
+            emailFolder.close();
+            store.close();
+        } catch (Exception e) {
+            throw new EmailException("Something went wrong when testing connection", e);
+        }
+    }
+
 }
