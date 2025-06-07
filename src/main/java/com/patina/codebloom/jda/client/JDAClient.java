@@ -117,6 +117,7 @@ public class JDAClient {
             Browser browser = playwright.firefox().launch();
             Page page = browser.newPage();
             page.navigate("https://codebloom.patinanetwork.org/leaderboard?patina=true");
+            LOGGER.info("Loading page for screenshot...");
 
             page.waitForTimeout(5_000);
 
@@ -171,9 +172,13 @@ public class JDAClient {
                             .setImage("attachment://leaderboard.png")
                             .setColor(new Color(69, 129, 103)).build();
 
+            LOGGER.info("Message has been built, ready to send...");
+
             channel.sendFiles(FileUpload.fromData(screenshotBytes, "leaderboard.png"))
                             .setEmbeds(embed)
                             .queue();
+
+            LOGGER.info("Message has been queued");
 
         } catch (Exception e) {
             e.printStackTrace();
