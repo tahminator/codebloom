@@ -87,7 +87,8 @@ public class AuthController {
     @Operation(summary = "Enroll with a school email (if supported)", description = "Allows users to submit a school-specific email if supported."
                     + "Emails will be verified with a magic link sent to their email. Supported schools: @myhunter.cuny.edu, @nyu.edu", responses = {
                             @ApiResponse(responseCode = "500", description = "not implemented"),
-                            @ApiResponse(responseCode = "400", description = "The email is not part of our supported schools")
+                            @ApiResponse(responseCode = "400", description = "The email is not part of our supported schools"),
+                            @ApiResponse(responseCode = "200", description = "Error processing request")
                     })
     @PostMapping("/school/enroll")
     public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody) {
