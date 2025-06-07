@@ -15,5 +15,5 @@ import com.patina.codebloom.common.email.options.SendEmailOptions;
 public abstract class Email {
     public abstract List<Message> getPastMessages() throws EmailException;
 
-    public abstract boolean sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException;
+    public abstract void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException;
 }
