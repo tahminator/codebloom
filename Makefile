@@ -14,7 +14,7 @@ dev:
 	pnpm i -g concurrently && concurrently "make java-dev" "make js-dev"
 
 backend-install:
-	dotenvx run -- mvn install -Dskiptests=true
+	dotenvx run -- mvn install -DskipTests=true
 
 backend-test:
 	dotenvx run -- mvn test
