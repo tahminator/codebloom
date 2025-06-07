@@ -1,6 +1,9 @@
 migrate:
 	dotenvx run -- mvn flyway:migrate -Dflyway.locations=filesystem:./db
 
+migrate-ci:
+	dotenvx run -f .env.ci -- mvn flyway:migrate -Dflyway.locations=filesystem:./db
+
 migrate-prod:
 	dotenvx run -f .env.production -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration
 
