@@ -84,14 +84,17 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Enroll with a school email (if supported)", description = "Allows users to submit a school-specific email if supported. Emails still need to be verified with a magic link sent to their email. Supported schools: @myhunter.cuny.edu, @nyu.edu", responses = {
-            @ApiResponse(responseCode = "500", description = "not implemented"),
-            @ApiResponse(responseCode = "400", description = " The email is not part of our supported schools")
-    })
+    @Operation(summary = "Enroll with a school email (if supported)", description = "Allows users to submit a school-specific email if supported."
+                    + "Emails will be verified with a magic link sent to their email. Supported schools: @myhunter.cuny.edu, @nyu.edu", responses = {
+                            @ApiResponse(responseCode = "500", description = "not implemented"),
+                            @ApiResponse(responseCode = "400", description = "The email is not part of our supported schools")
+                    })
     @PostMapping("/school/enroll")
     public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody) {
         String email = emailBody.getEmail();
-        String supportedSchools = SupportedSchools.getList().stream().map(Object::toString).collect(Collectors.joining(", "));
+        String supportedSchools = SupportedSchools.getList().stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
         String domain = "";
         int atIndex = email.indexOf("@");
         if (atIndex != -1) {
@@ -99,7 +102,8 @@ public class AuthController {
         }
 
         if (!supportedSchools.contains(domain)) {
-            return ResponseEntity.badRequest().body(ApiResponder.failure("The email is not part of our supported schools: " + supportedSchools));
+            return ResponseEntity.badRequest().body(
+                            ApiResponder.failure("The email is not part of our supported schools: " + supportedSchools));
         }
         MagicLink magicLink = new MagicLink(email, null);
         try {
