@@ -1,0 +1,84 @@
+package com.patina.codebloom.common.db.repos.weekly;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
+
+import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
+
+public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
+    private Connection conn;
+
+    public WeeklyMessageSqlRepository(final DbConnection dbConnection) {
+        this.conn = dbConnection.getConn();
+    }
+
+    private WeeklyMessage parseResultSetToWeeklyMessage(final ResultSet resultSet) throws SQLException {
+        return WeeklyMessage.builder()
+                        .id(resultSet.getString("id"))
+                        .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
+                        .build();
+    }
+
+    private void updateWeeklyMessageWithResultSet(WeeklyMessage message, final ResultSet resultSet) throws SQLException {
+        message.setId(resultSet.getString("id"));
+        message.setCreatedAt(resultSet.getTimestamp("createdAt").toLocalDateTime());
+    }
+
+    @Override
+    public WeeklyMessage getLatestWeeklyMessage() {
+        String sql = """
+                        SELECT
+                            id,
+                            "createdAt"
+                        FROM
+                            "WeeklyMessage"
+                        ORDER BY
+                            "createdAt" DESC
+                        LIMIT 1
+                                            """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetToWeeklyMessage(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving latest weekly message", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean createLatestWeeklyMessage(WeeklyMessage message) {
+        String sql = """
+                            INSERT INTO "WeeklyMessage"
+                                (id)
+                            VALUES
+                                (?)
+                            RETURNING
+                                id, "createdAt"
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(0, UUID.randomUUID());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    updateWeeklyMessageWithResultSet(message, rs);
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create new latest weekly message", e);
+        }
+
+        return false;
+    }
+
+}
