@@ -1,9 +1,9 @@
-package com.patina.codebloom.common.email;
+package com.patina.codebloom.common.email.client.github;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "email")
-public class EmailProperties {
+@ConfigurationProperties(prefix = "github.email")
+public class GithubOAuthEmailProperties {
     private String host;
     private String port;
     private String type;
