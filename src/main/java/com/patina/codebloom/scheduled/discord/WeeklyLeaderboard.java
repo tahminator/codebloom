@@ -1,34 +1,56 @@
 package com.patina.codebloom.scheduled.discord;
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
+import com.patina.codebloom.common.db.repos.weekly.WeeklyMessageRepository;
 import com.patina.codebloom.jda.client.JDAClient;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class WeeklyLeaderboard {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WeeklyLeaderboard.class);
 
     private final JDAClient jdaClient;
+    private final WeeklyMessageRepository weeklyMessageRepository;
 
-    WeeklyLeaderboard(final JDAClient jdaClient) {
+    WeeklyLeaderboard(final JDAClient jdaClient, final WeeklyMessageRepository weeklyMessageRepository) {
         this.jdaClient = jdaClient;
+        this.weeklyMessageRepository = weeklyMessageRepository;
     }
 
-    @Scheduled(cron = "0 33 13 ? * SAT")
+    @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60 * 60)
     public void sendWeeklyLeaderboard() {
-        LOGGER.info("WeeklyLeaderboard triggered.");
+        WeeklyMessage weeklyMessage = weeklyMessageRepository.getLatestWeeklyMessage();
+
+        if (weeklyMessage != null && !weeklyMessage
+                        .getCreatedAt()
+                        .isBefore(
+                                        LocalDateTime
+                                                        .now()
+                                                        .minusDays(7L))) {
+            log.info("WeeklyLeaderboard skipped.");
+            return;
+        }
+
+        log.info("WeeklyLeaderboard triggered.");
         try {
-            LOGGER.info("Connecting to JDA client...");
+            log.info("Connecting to JDA client...");
             jdaClient.connect();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize JDAClient", e);
         }
-        LOGGER.info("JDDA Client should be connected now. Sending leaderboard...");
+        log.info("JDDA Client should be connected now. Sending leaderboard...");
 
         jdaClient.sendLeaderboardMessage(jdaClient.getPatinaGuildId(), jdaClient.getPatinaLeetcodeChannelId());
+
+        weeklyMessageRepository.createLatestWeeklyMessage();
     }
 
 }
