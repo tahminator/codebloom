@@ -17,7 +17,7 @@ public class WeeklyLeaderboard {
         this.jdaClient = jdaClient;
     }
 
-    @Scheduled(cron = "0 48 12 ? * SAT")
+    @Scheduled(cron = "0 50 12 ? * SAT")
     public void sendWeeklyLeaderboard() {
         LOGGER.info("WeeklyLeaderboard triggered.");
         try {
