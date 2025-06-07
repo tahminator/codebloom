@@ -16,7 +16,10 @@ import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.common.lag.FakeLag;
+import com.patina.codebloom.common.schools.SupportedSchools;
+import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 
@@ -28,6 +31,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "Authentication Routes")
@@ -35,10 +39,12 @@ import jakarta.validation.Valid;
 public class AuthController {
     private final SessionRepository sessionRepository;
     private final Protector protector;
+    private final JWTClient jwtClient;
 
-    public AuthController(final SessionRepository sessionRepository, final Protector protector) {
+    public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
+        this.jwtClient = jwtClient;
     }
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
@@ -78,11 +84,31 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Validates school email if there is one", description = "Protected endpoint that returns the school if the currently authenticated user is part of a school.", responses = {
-            @ApiResponse(responseCode = "500", description = "not implemented")
-    })
-    @PostMapping("/school/validate")
-    public ResponseEntity<ApiResponder<Object>> validateSchool(@Valid @RequestBody final EmailBody emailBody) {
-        return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
+    @Operation(summary = "Enroll with a school email (if supported)", description = "Allows users to submit a school-specific email if supported. Emails still need to be verified with a magic link sent to their email. Supported schools: @myhunter.cuny.edu, @nyu.edu"
+                    , responses = {
+                            @ApiResponse(responseCode = "500", description = "not implemented"),
+                            @ApiResponse(responseCode = "400", description = " The email is not part of our supported schools")
+                    })
+    @PostMapping("/school/enroll")
+    public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody) {
+        String email = emailBody.getEmail();
+        String supportedSchools = SupportedSchools.getList().stream().map(Object::toString).collect(Collectors.joining(", "));
+        String domain = "";
+        int atIndex = email.indexOf("@");
+        if (atIndex != -1) {
+            domain = email.substring(atIndex);
+        }
+
+        if(!supportedSchools.contains(domain)) {
+            return ResponseEntity.badRequest().body(ApiResponder.failure("The email is not part of our supported schools: " + supportedSchools));
+        }
+      MagicLink magicLink = new MagicLink(email, null); 
+      try {
+          String token = jwtClient.encode(magicLink);
+          
+      } catch (Exception e) {
+          return ResponseEntity.status(200).body(ApiResponder.failure("Error processing request"));
+      }
+      return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
     }
 }
