@@ -6,9 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
 
+@Component
 public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
     private Connection conn;
 
@@ -66,7 +69,7 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(0, UUID.randomUUID());
+            stmt.setObject(1, UUID.randomUUID());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -79,6 +82,26 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean createLatestWeeklyMessage() {
+        String sql = """
+                            INSERT INTO "WeeklyMessage"
+                                (id)
+                            VALUES
+                                (?)
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.randomUUID());
+
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create new latest weekly message", e);
+        }
     }
 
 }
