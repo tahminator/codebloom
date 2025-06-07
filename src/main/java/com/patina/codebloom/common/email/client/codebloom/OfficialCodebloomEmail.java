@@ -57,7 +57,7 @@ public class OfficialCodebloomEmail extends Email {
     }
 
     @Override
-    public void sendMessage(SendEmailOptions sendEmailOptions) throws EmailException {
+    public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
         try {
             jakarta.mail.Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(emailProperties.getUsername()));
@@ -77,7 +77,7 @@ public class OfficialCodebloomEmail extends Email {
         try {
             // Should trigger connection already by this point, but just to be safe, calling
             // something with session.
-            jakarta.mail.Message message = new MimeMessage(session);
+            new MimeMessage(session);
             // TODO - May need to actually test sending an email out, which can be added
             // pretty trivially.
         } catch (Exception e) {
