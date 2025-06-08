@@ -1,7 +1,5 @@
 package com.patina.codebloom.api.auth;
 
-
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +39,6 @@ import org.springframework.http.HttpStatus;
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
-
 
 @RestController
 @Tag(name = "Authentication Routes")
@@ -97,13 +94,9 @@ public class AuthController {
         }
     }
 
-  @Operation(
-    summary = "Enroll with a school email (if supported)",
-    description = "Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.",
-    responses = {
-        @ApiResponse(responseCode = "500", description = "not implemented")
-    }
-)
+    @Operation(summary = "Enroll with a school email (if supported)", description = "Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.", responses = {
+            @ApiResponse(responseCode = "500", description = "not implemented")
+    })
     @PostMapping("/school/enroll")
     public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
@@ -114,31 +107,23 @@ public class AuthController {
                         .collect(Collectors.toSet());
 
         if (!supportedDomains.contains(domain)) {
-             String supportedSchools = String.join(", ", supportedDomains);
+            String supportedSchools = String.join(", ", supportedDomains);
             throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "The email is not part of our supported schools domains: " + supportedSchools
-                            );
+                            "The email is not part of our supported schools domains: " + supportedSchools);
         }
 
         User user = authenticationObject.getUser();
         String userId = user.getId();
-        PrivateUser privateUser = userRepository.getPrivateUserById(user.getId());
-
-        if (privateUser == null) {
-            throw new RuntimeException("PrivateUser doesn't exist when User does. This should not be happening");
-        }
-
 
         MagicLink magicLink = new MagicLink(email, userId);
         // TODO - Integrate email client to send the magic link with the token
         try {
             String token = jwtClient.encode(magicLink);
         } catch (Exception e) {
-                        throw new ResponseStatusException(
+            throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                             "Error processing request: not implemented"
-                            );
+                            "Error processing request: not implemented");
         }
 
         return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
