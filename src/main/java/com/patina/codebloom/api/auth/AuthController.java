@@ -1,6 +1,6 @@
 package com.patina.codebloom.api.auth;
 
-import com.patina.codebloom.api.auth.body.EmailBody;
+
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -22,6 +22,7 @@ import com.patina.codebloom.common.schools.SupportedSchools;
 import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.api.auth.body.EmailBody;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,7 +32,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
+import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import com.patina.codebloom.common.db.models.user.User;
 
 @RestController
 @Tag(name = "Authentication Routes")
@@ -84,35 +90,39 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Enroll with a school email (if supported)", description = "Allows users to submit a school-specific email if supported."
-                    + "Emails will be verified with a magic link sent to their email. Supported schools: @myhunter.cuny.edu, @nyu.edu", responses = {
-                            @ApiResponse(responseCode = "500", description = "not implemented"),
-                            @ApiResponse(responseCode = "400", description = "The email is not part of our supported schools"),
-                            @ApiResponse(responseCode = "200", description = "Error processing request")
-                    })
+  @Operation(
+    summary = "Enroll with a school email (if supported)",
+    description = "Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.",
+    responses = {
+        @ApiResponse(responseCode = "500", description = "not implemented")
+    }
+)
     @PostMapping("/school/enroll")
-    public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody) {
+    public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final User user) {
         String email = emailBody.getEmail();
-        String supportedSchools = SupportedSchools.getList().stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(", "));
-        String domain = "";
-        int atIndex = email.indexOf("@");
-        if (atIndex != -1) {
-            domain = email.substring(atIndex);
-        }
+        String domain = email.substring(email.indexOf("@")).toLowerCase();
+        Set<String> supportedDomains = SupportedSchools.getList().stream()
+                        .map(school -> school.getEmailDomain())
+                        .collect(Collectors.toSet());
 
-        if (!supportedSchools.contains(domain)) {
-            return ResponseEntity.status(400).body(
-                            ApiResponder.failure("The email is not part of our supported schools: " + supportedSchools));
+        if (!supportedDomains.contains(domain)) {
+             String supportedSchools = String.join(", ", supportedDomains);
+            throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "The email is not part of our supported schools: " + supportedSchools
+                            );
         }
-        MagicLink magicLink = new MagicLink(email, null);
+        String userId = user.getId();
+
+        MagicLink magicLink = new MagicLink(email, userId);
+        // TODO - Integrate email client to send the magic link with the token
         try {
             String token = jwtClient.encode(magicLink);
-
         } catch (Exception e) {
-            return ResponseEntity.status(200).body(ApiResponder.failure("Error processing request"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(ApiResponder.failure("Error processing request"));
         }
+
         return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
     }
 }
