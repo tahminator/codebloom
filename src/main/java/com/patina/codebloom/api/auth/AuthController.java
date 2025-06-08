@@ -103,7 +103,7 @@ public class AuthController {
         }
 
         if (!supportedSchools.contains(domain)) {
-            return ResponseEntity.badRequest().body(
+            return ResponseEntity.status(400).body(
                             ApiResponder.failure("The email is not part of our supported schools: " + supportedSchools));
         }
         MagicLink magicLink = new MagicLink(email, null);
