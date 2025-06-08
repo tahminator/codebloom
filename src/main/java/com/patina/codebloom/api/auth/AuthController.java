@@ -109,7 +109,7 @@ public class AuthController {
              String supportedSchools = String.join(", ", supportedDomains);
             throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "The email is not part of our supported schools: " + supportedSchools
+                            "The email is not part of our supported schools domains: " + supportedSchools
                             );
         }
         String userId = user.getId();
@@ -119,8 +119,10 @@ public class AuthController {
         try {
             String token = jwtClient.encode(magicLink);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(ApiResponder.failure("Error processing request"));
+                        throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                             "Error processing request: not implemented"
+                            );
         }
 
         return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
