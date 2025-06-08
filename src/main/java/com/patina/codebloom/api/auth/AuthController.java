@@ -106,6 +106,7 @@ public class AuthController {
 )
     @PostMapping("/school/enroll")
     public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
+        AuthenticationObject authenticationObject = protector.validateSession(request);
         String email = emailBody.getEmail();
         String domain = email.substring(email.indexOf("@")).toLowerCase();
         Set<String> supportedDomains = SupportedSchools.getList().stream()
@@ -119,7 +120,7 @@ public class AuthController {
                             "The email is not part of our supported schools domains: " + supportedSchools
                             );
         }
-        AuthenticationObject authenticationObject = protector.validateSession(request);
+
         User user = authenticationObject.getUser();
         String userId = user.getId();
         PrivateUser privateUser = userRepository.getPrivateUserById(user.getId());
