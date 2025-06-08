@@ -38,8 +38,9 @@ import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
-
+import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 
 @RestController
@@ -49,11 +50,14 @@ public class AuthController {
     private final SessionRepository sessionRepository;
     private final Protector protector;
     private final JWTClient jwtClient;
+    private final UserRepository userRepository;
 
-    public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient) {
+    public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
+        this.userRepository = userRepository;
         this.jwtClient = jwtClient;
+
     }
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
@@ -118,6 +122,12 @@ public class AuthController {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
         String userId = user.getId();
+        PrivateUser privateUser = userRepository.getPrivateUserById(user.getId());
+
+        if (privateUser == null) {
+            throw new RuntimeException("PrivateUser doesn't exist when User does. This should not be happening");
+        }
+
 
         MagicLink magicLink = new MagicLink(email, userId);
         // TODO - Integrate email client to send the magic link with the token
