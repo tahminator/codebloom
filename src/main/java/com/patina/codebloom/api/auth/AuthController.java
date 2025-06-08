@@ -37,7 +37,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+
+
 import com.patina.codebloom.common.db.models.user.User;
+
 
 @RestController
 @Tag(name = "Authentication Routes")
@@ -98,7 +101,7 @@ public class AuthController {
     }
 )
     @PostMapping("/school/enroll")
-    public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final User user) {
+    public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
         String email = emailBody.getEmail();
         String domain = email.substring(email.indexOf("@")).toLowerCase();
         Set<String> supportedDomains = SupportedSchools.getList().stream()
@@ -112,6 +115,8 @@ public class AuthController {
                             "The email is not part of our supported schools domains: " + supportedSchools
                             );
         }
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+        User user = authenticationObject.getUser();
         String userId = user.getId();
 
         MagicLink magicLink = new MagicLink(email, userId);
