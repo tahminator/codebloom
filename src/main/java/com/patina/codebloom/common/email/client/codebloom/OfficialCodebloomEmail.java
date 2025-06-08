@@ -52,6 +52,7 @@ public class OfficialCodebloomEmail extends Email {
      * @deprecated - This is not supported.
      */
     @Override
+    @Deprecated
     public List<Message> getPastMessages() throws EmailException {
         throw new EmailException("Reading messages is not supported");
     }
