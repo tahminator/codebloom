@@ -2,6 +2,7 @@ package com.patina.codebloom.common.db.models.user;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
 public class User {
@@ -22,6 +23,7 @@ public class User {
      */
     private ArrayList<UserTag> tags;
 
+    @JsonCreator
     public User(
                     final String id,
                     final String discordId,
