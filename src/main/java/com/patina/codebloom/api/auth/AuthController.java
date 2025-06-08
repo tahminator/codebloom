@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
-import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 
@@ -94,7 +93,9 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Enroll with a school email (if supported)", description = "Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.", responses = {
+    @Operation(summary = "Enroll with a school email (if supported)", description = """
+                    Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.
+                        """, responses = {
             @ApiResponse(responseCode = "500", description = "not implemented")
     })
     @PostMapping("/school/enroll")
