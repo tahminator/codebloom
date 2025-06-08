@@ -1,4 +1,4 @@
-package com.patina.codebloom;
+package com.patina.codebloom.leetcode;
 
 import java.util.ArrayList;
 
