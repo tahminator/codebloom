@@ -1,5 +1,6 @@
 package com.patina.codebloom.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -11,6 +12,7 @@ public final class ApiResponder<T> {
     private T payload;
     private String message;
 
+    @JsonCreator
     private ApiResponder(final boolean success, final String message, final T payload) {
         this.success = success;
         this.payload = payload;
