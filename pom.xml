@@ -78,6 +78,12 @@
             <version>5.0.0</version>
         </dependency>
         <dependency>
+            <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured-all</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
