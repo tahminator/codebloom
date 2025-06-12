@@ -82,14 +82,17 @@ Development Tools:
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
 
+Error Reporting:
+![Sentry](https://img.shields.io/badge/Sentry-black?style=for-the-badge&logo=Sentry&logoColor=#362D59)
+
 ---
 
 ## Authors
 
-- [Tahmid Ahmed](https://github.com/tahminator)
-- [Alfardil Alam](https://github.com/alfardil)
-- [Alisha Zaman](https://github.com/az2924)
-- [Angela Yu](https://github.com/angelayu0530)
+-   [Tahmid Ahmed](https://github.com/tahminator)
+-   [Alfardil Alam](https://github.com/alfardil)
+-   [Alisha Zaman](https://github.com/az2924)
+-   [Angela Yu](https://github.com/angelayu0530)
 
 ---
 
