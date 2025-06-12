@@ -1,5 +1,11 @@
 package com.patina.codebloom.common.leetcode;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,6 +17,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -120,27 +127,32 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
+            HttpClient client = HttpClient.newHttpClient();
 
-            Response response = reqSpec.post(endpoint);
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create("https://leetcode.com"))
+                            .POST(BodyPublishers.ofString(requestBody))
+                            .header("Content-Type", "application/json")
+                            .build();
 
-            int statusCode = response.getStatusCode();
-            String body = response.getBody().asString();
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
 
             if (statusCode != 200) {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            JsonPath jsonPath = response.jsonPath();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(body);
 
-            int questionId = jsonPath.getInt("data.question.questionId");
-            String questionTitle = jsonPath.getString("data.question.title");
-            String titleSlug = jsonPath.getString("data.question.titleSlug");
+            int questionId = node.path("data").path("question").path("questionId").asInt();
+            String questionTitle = node.path("data").path("question").path("title").asText();
+            String titleSlug = node.path("data").path("question").path("titleSlug").asText();
             String link = "https://leetcode.com/problems/" + titleSlug;
-            String difficulty = jsonPath.getString("data.question.difficulty");
-            String question = jsonPath.getString("data.question.content");
-
-            String statsJson = jsonPath.getString("data.question.stats");
+            String difficulty = node.path("data").path("question").path("difficulty").asText();
+            String question = node.path("data").path("question").path("content").asText();
+            String statsJson = node.path("data").path("question").path("stats").asText();
             JsonObject stats = JsonParser.parseString(statsJson).getAsJsonObject();
             String acRateString = stats.get("acRate").getAsString();
             float acRate = Float.parseFloat(acRateString.replace("%", "")) / 100f;
