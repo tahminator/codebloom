@@ -3,18 +3,12 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import { useToggleAdminMutation } from "@/lib/api/queries/admin";
 import { useGetAllUsersQuery } from "@/lib/api/queries/user";
 import { theme } from "@/lib/theme";
-import {
-  Box,
-  Button,
-  Loader,
-  Overlay,
-  Table,
-  Text,
-  Tooltip,
-} from "@mantine/core";
+import { Box, Button, Overlay, Table, Text, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
+
+import UserAdminListSkeleton from "./UserAdminListSkeleton";
 
 /**
  * This function renders a list of users of which the toggle button launches a modal that allows you to
@@ -37,7 +31,7 @@ export default function UserAdminList() {
   const { mutate } = useToggleAdminMutation();
 
   if (status === "pending") {
-    return <Loader />;
+    return <UserAdminListSkeleton />;
   }
 
   if (status === "error") {
