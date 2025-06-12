@@ -1,18 +1,14 @@
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardMetadataQuery } from "@/lib/api/queries/leaderboard";
-import { Loader } from "@mantine/core";
 
 import NewLeaderboardFormBody from "./NewLeaderBoardFormBody";
+import NewLeaderboardFormSkeleton from "./NewLeaderboardFormSkeleton";
 
 function NewLeaderboardForm() {
   const { data, status } = useCurrentLeaderboardMetadataQuery();
 
   if (status === "pending") {
-    return (
-      <div className="flex flex-col items-center justify-center w-screen h-screen">
-        <Loader />
-      </div>
-    );
+    return <NewLeaderboardFormSkeleton />;
   }
 
   if (status === "error") {
