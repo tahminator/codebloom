@@ -55,8 +55,9 @@ public class AuthController {
     private final UserRepository userRepository;
     private final OfficialCodebloomEmail emailClient;
     private final ServerurlUtils serverurlUtils;
-    
-    public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository, final OfficialCodebloomEmail emailClient, final ServerurlUtils serverurlUtils) {
+
+    public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository,
+                    final OfficialCodebloomEmail emailClient, final ServerurlUtils serverurlUtils) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
@@ -105,7 +106,8 @@ public class AuthController {
     @Operation(summary = "Enroll with a school email (if supported)", description = """
                     Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.
                         """, responses = {
-            @ApiResponse(responseCode = "500", description = "not implemented")
+            @ApiResponse(responseCode = "200", description = "email send successfully")
+            ,@ApiResponse(responseCode = "500", description = "not implemented")
     })
     @PostMapping("/school/enroll")
     public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
@@ -129,20 +131,26 @@ public class AuthController {
         MagicLink magicLink = new MagicLink(email, userId);
         try {
             String token = jwtClient.encode(magicLink, Duration.ofHours(1));
-            String verificationLink = serverurlUtils.getUrl() + "/api/auth/school/verify?state=" + token;
-            emailClient.sendMessage(SendEmailOptions.builder().recipientEmail(email).subject("Hello from Codebloom!").body("This is verification of school from Codebloom,\n" +
-                            "Click Here to verify your school email " + verificationLink + "\n" +
-                            "Note: This link will expire in 1 hour If it expires, you’ll need to request a new one.").build());
-                return ResponseEntity.ok(ApiResponder.success( "Magic link sent! Check your school inbox to continue.", List.of()));
-                } catch (EmailException e) {
-        throw new ResponseStatusException(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to send email.");
+            String verificationLink = serverurlUtils.getUrl()
+                            + "/api/auth/school/verify?state=" + token;
+            emailClient.sendMessage(
+                            SendEmailOptions.builder()
+                                            .recipientEmail(email)
+                                            .subject("Hello from Codebloom!")
+                                            .body("This is verification of school from Codebloom,\n"
+                                                            + "Click Here to verify your school email "
+                                                            + verificationLink + "\n"
+                                                            + "Note: This link will expire in 1 hour. If it expires, you’ll need to request a new one.")
+                                            .build());
+            return ResponseEntity.ok().body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", List.of()));
+        } catch (EmailException e) {
+            throw new ResponseStatusException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Failed to send email.");
         } catch (Exception e) {
             throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
                             "Error processing request: not implemented");
         }
-       
     }
 }
