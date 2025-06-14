@@ -6,12 +6,13 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "server")
 @Component
 public class ServerurlUtils {
-	private String url;
+    private String url;
+
     public String getUrl() {
         return url;
     }
-    public void setUrl(String url) {
+
+    public void setUrl(final String url) {
         this.url = url;
     }
-
 }
