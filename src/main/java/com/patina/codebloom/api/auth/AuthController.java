@@ -20,7 +20,11 @@ import com.patina.codebloom.common.schools.SupportedSchools;
 import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.email.options.SendEmailOptions;
 import com.patina.codebloom.api.auth.body.EmailBody;
+import com.patina.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
+import com.patina.codebloom.common.email.error.EmailException;
+import com.patina.codebloom.common.url.ServerurlUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,6 +35,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
@@ -47,13 +53,16 @@ public class AuthController {
     private final Protector protector;
     private final JWTClient jwtClient;
     private final UserRepository userRepository;
-
-    public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository) {
+    private final OfficialCodebloomEmail emailClient;
+    private final ServerurlUtils serverurlUtils;
+    
+    public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository, final OfficialCodebloomEmail emailClient, final ServerurlUtils serverurlUtils) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
         this.jwtClient = jwtClient;
-
+        this.emailClient = emailClient;
+        this.serverurlUtils = serverurlUtils;
     }
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
@@ -118,15 +127,22 @@ public class AuthController {
         String userId = user.getId();
 
         MagicLink magicLink = new MagicLink(email, userId);
-        // TODO - Integrate email client to send the magic link with the token
         try {
-            String token = jwtClient.encode(magicLink);
+            String token = jwtClient.encode(magicLink, Duration.ofHours(1));
+            String verificationLink = serverurlUtils.getUrl() + "/api/auth/school/verify?state=" + token;
+            emailClient.sendMessage(SendEmailOptions.builder().recipientEmail(email).subject("Hello from Codebloom!").body("This is verification of school from Codebloom,\n" +
+                            "Click Here to verify your school email " + verificationLink + "\n" +
+                            "Note: This link will expire in 1 hour If it expires, you’ll need to request a new one.").build());
+                return ResponseEntity.ok(ApiResponder.success( "Magic link sent! Check your school inbox to continue.", List.of()));
+                } catch (EmailException e) {
+        throw new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to send email.");
         } catch (Exception e) {
             throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
                             "Error processing request: not implemented");
         }
-
-        return ResponseEntity.status(500).body(ApiResponder.failure("not implemented"));
+       
     }
 }
