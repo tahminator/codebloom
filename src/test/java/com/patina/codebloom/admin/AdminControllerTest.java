@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,16 @@ public class AdminControllerTest {
     @BeforeAll
     static void setUpUri() {
         RestAssured.baseURI = "http://localhost";
+    }
+
+    // Changing the port leaks to different testing classes, as well as the regular
+    // code causing requests to Leetcode.com to fail.
+    //
+    // TODO - This should be fixed once Alfardil migrates the leetcode
+    // client off of RestAssured
+    @AfterAll
+    void removePort() {
+        RestAssured.port = RestAssured.DEFAULT_PORT;
     }
 
     private String buildTestAdminToggleBody(final String id, final boolean toggleTo) throws JsonProcessingException {
