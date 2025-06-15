@@ -241,6 +241,7 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
                             .POST(BodyPublishers.ofString(requestBody))
                             .header("Content-Type", "application/json")
                             .header("Referer", "https://leetcode.com")
+                            .header("Cookie", "LEETCODE_SESSION=" + leetcodeAuthStealer.getCookie())
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
