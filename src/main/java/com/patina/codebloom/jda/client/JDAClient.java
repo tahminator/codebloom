@@ -138,7 +138,7 @@ public class JDAClient {
             Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
             LocalDateTime shouldExpireByTime = Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
                             // this orElse will only trigger if leaderboard doesn't have expiration time.
-                            .orElse(LocalDateTime.now().plusMinutes(5L));
+                            .orElse(LocalDateTime.now());
 
             Duration remaining = Duration.between(LocalDateTime.now(), shouldExpireByTime);
 
