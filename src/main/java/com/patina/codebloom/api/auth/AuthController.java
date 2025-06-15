@@ -138,7 +138,7 @@ public class AuthController {
                                             .recipientEmail(email)
                                             .subject("Hello from Codebloom!")
                                             .body("This is verification of school from Codebloom,\n"
-                                                            + "Click Here to verify your school email "
+                                                            + "Click Here to verify your school email: "
                                                             + verificationLink + "\n"
                                                             + "Note: This link will expire in 1 hour. If it expires, you’ll need to request a new one.")
                                             .build());
