@@ -80,16 +80,6 @@ public class LeetcodeApiHandlerTest {
     @Test
     void submissionIdValid() {
         LeetcodeDetailedQuestion submission = leetcodeApiHandler.findSubmissionDetailBySubmissionId(1588648200);
-        System.out.println(submission.getRuntime());
-        System.out.println(submission.getRuntimeDisplay());
-        System.out.println(submission.getRuntimePercentile());
-        System.out.println(submission.getMemory());
-        System.out.println(submission.getMemoryDisplay());
-        System.out.println(submission.getMemoryPercentile());
-        System.out.println(submission.getCode());
-        System.out.println(submission.getLang().getName());
-        System.out.println(submission.getLang().getVerboseName());
-        System.out.println(submission.getLang());
 
         assertTrue(submission != null);
 
