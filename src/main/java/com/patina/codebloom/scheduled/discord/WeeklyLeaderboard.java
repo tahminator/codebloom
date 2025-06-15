@@ -2,6 +2,7 @@ package com.patina.codebloom.scheduled.discord;
 
 import java.time.LocalDateTime;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
+@Profile("!ci")
 public class WeeklyLeaderboard {
 
     private final JDAClient jdaClient;

@@ -108,7 +108,7 @@ jobs:
               run: ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps" -Denv.SKIP=true
 
             - name: Run Tests
-              run: ./mvnw test -Denv.SKIP=true
+              run: ./mvnw test -Denv.SKIP=true -Dspring.profiles.active=ci
 
     buildImage:
         name: Build Docker Image & Upload to Registry
