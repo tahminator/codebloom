@@ -255,15 +255,15 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             JsonNode node = mapper.readTree(body);
             JsonNode baseNode = node.path("data").path("submissionDetails");
 
-            int runtime = baseNode.path("runtime").asInt(0);
-            String runtimeDisplay = baseNode.path("runtimeDisplay").asText(null);
-            float runtimePercentile = (float) baseNode.path("runtimePercentile").asDouble(0.0);
-            int memory = baseNode.path("memory").asInt(0);
-            String memoryDisplay = baseNode.path("memoryDisplay").asText(null);
-            float memoryPercentile = (float) baseNode.path("memoryPercentile").asDouble(0.0);
-            String code = baseNode.path("code").asText(null);
-            String langName = baseNode.path("lang").path("name").asText(null);
-            String langVerboseName = baseNode.path("lang").path("verboseName").asText(null);
+            int runtime = baseNode.path("runtime").asInt();
+            String runtimeDisplay = baseNode.path("runtimeDisplay").asText();
+            float runtimePercentile = (float) baseNode.path("runtimePercentile").asDouble();
+            int memory = baseNode.path("memory").asInt();
+            String memoryDisplay = baseNode.path("memoryDisplay").asText();
+            float memoryPercentile = (float) baseNode.path("memoryPercentile").asDouble();
+            String code = baseNode.path("code").asText();
+            String langName = baseNode.path("lang").path("name").asText();
+            String langVerboseName = baseNode.path("lang").path("verboseName").asText();
             Lang lang = (langName != null && langVerboseName != null) ? new Lang(langName, langVerboseName) : null;
 
             LeetcodeDetailedQuestion question = new LeetcodeDetailedQuestion(runtime, runtimeDisplay, runtimePercentile, memory, memoryDisplay, memoryPercentile, code, lang);
