@@ -1,38 +1,25 @@
-import { Skeleton } from "@mantine/core";
+import { Box, Skeleton } from "@mantine/core";
 
 export default function UserAdminListSkeleton() {
   return (
-    <div style={{ padding: "2rem" }}>
+    <Box p={"xs"}>
       <Skeleton height={40} width="100%" mb="xl" />
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <Skeleton height={36} width={320} />
-      </div>
+      <Box p={"md"}>
+        <Skeleton height={36} width="100%" />
+      </Box>
 
       {[...Array(5)].map((_, i) => (
         <Skeleton key={i} height={60} mb="sm" radius="md">
-          <div style={{ height: "60px" }} />
+          <Box p={"md"} />
         </Skeleton>
       ))}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "0.5rem",
-          marginTop: "2rem",
-        }}
-      >
+      <Box p="xl" display="flex">
         {[...Array(6)].map((_, i) => (
-          <Skeleton key={i} height={36} width={36} />
+          <Skeleton key={i} height={36} width={36} mr={8} />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

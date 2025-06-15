@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -34,11 +33,6 @@ import com.patina.codebloom.common.leetcode.queries.GetUserProfile;
 import com.patina.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
-
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 @Component
 public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
@@ -130,9 +124,10 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create("https://leetcode.com"))
+                            .uri(URI.create(endpoint))
                             .POST(BodyPublishers.ofString(requestBody))
                             .header("Content-Type", "application/json")
+                            .header("Referer", "https://leetcode.com")
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -178,27 +173,46 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
-            Response response = reqSpec.post(endpoint);
+            HttpClient client = HttpClient.newHttpClient();
 
-            JsonPath jsonPath = response.jsonPath();
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(endpoint))
+                            .POST(BodyPublishers.ofString(requestBody))
+                            .header("Content-Type", "application/json")
+                            .header("Referer", "https://leetcode.com")
+                            .build();
 
-            List<Map<String, Object>> submissionsList = jsonPath.getList("data.recentAcSubmissionList");
-            if (submissionsList == null || submissionsList.isEmpty()) {
-                return submissions;
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
+
+            if (statusCode != 200) {
+                throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            for (int i = 0; i < submissionsList.size(); i++) {
-                int id = jsonPath.getInt("data.recentAcSubmissionList[" + i + "].id");
-                String title = jsonPath.getString("data.recentAcSubmissionList[" + i + "].title");
-                String titleSlug = jsonPath.getString("data.recentAcSubmissionList[" + i + "].titleSlug");
-                String timestampString = jsonPath.getString("data.recentAcSubmissionList[" + i + "].timestamp");
-                long epochSeconds = Long.parseLong(timestampString);
-                Instant instant = Instant.ofEpochSecond(epochSeconds);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(body);
+            JsonNode submissionsNode = node.path("data").path("recentAcSubmissionList");
 
-                LocalDateTime timestamp = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-                String statusDisplay = jsonPath.getString("data.recentAcSubmissionList[" + i + "].statusDisplay");
-                submissions.add(new LeetcodeSubmission(id, title, titleSlug, timestamp, statusDisplay));
+            if (submissionsNode.isArray()) {
+
+                if (submissionsNode.isEmpty() || submissionsNode == null) {
+                    return submissions;
+                }
+
+                for (JsonNode submission : submissionsNode) {
+                    int id = submission.path("id").asInt();
+                    String title = submission.path("title").asText();
+                    String titleSlug = submission.path("titleSlug").asText();
+                    String timestampString = submission.path("timestamp").asText();
+                    long epochSeconds = Long.parseLong(timestampString);
+                    Instant instant = Instant.ofEpochSecond(epochSeconds);
+
+                    LocalDateTime timestamp = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+                    String statusDisplay = submission.path("statusDisplay").asText();
+                    submissions.add(new LeetcodeSubmission(id, title, titleSlug, timestamp, statusDisplay));
+
+                }
             }
 
             return submissions;
@@ -220,30 +234,36 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com")
-                            .cookie("LEETCODE_SESSION=" + leetcodeAuthStealer.getCookie() + ";").body(requestBody);
-            Response response = reqSpec.post(endpoint);
+            HttpClient client = HttpClient.newHttpClient();
 
-            JsonPath jsonPath = response.jsonPath();
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(endpoint))
+                            .POST(BodyPublishers.ofString(requestBody))
+                            .header("Content-Type", "application/json")
+                            .header("Referer", "https://leetcode.com")
+                            .build();
 
-            int runtime = (jsonPath.get("data.submissionDetails.runtime") instanceof Integer) ? jsonPath.getInt("data.submissionDetails.runtime") : 0;
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
 
-            String runtimeDisplay = (jsonPath.get("data.submissionDetails.runtimeDisplay") instanceof String) ? jsonPath.getString("data.submissionDetails.runtimeDisplay") : null;
+            if (statusCode != 200) {
+                throw new RuntimeException("API Returned status " + statusCode + ": " + body);
+            }
 
-            float runtimePercentile = (jsonPath.get("data.submissionDetails.runtimePercentile") instanceof Float) ? jsonPath.getFloat("data.submissionDetails.runtimePercentile") : 0.0f;
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(body);
+            JsonNode baseNode = node.path("data").path("submissionDetails");
 
-            int memory = (jsonPath.get("data.submissionDetails.memory") instanceof Integer) ? jsonPath.getInt("data.submissionDetails.memory") : 0;
-
-            String memoryDisplay = (jsonPath.get("data.submissionDetails.memoryDisplay") instanceof String) ? jsonPath.getString("data.submissionDetails.memoryDisplay") : null;
-
-            float memoryPercentile = (jsonPath.get("data.submissionDetails.memoryPercentile") instanceof Float) ? jsonPath.getFloat("data.submissionDetails.memoryPercentile") : 0.0f;
-
-            String code = (jsonPath.get("data.submissionDetails.code") instanceof String) ? jsonPath.getString("data.submissionDetails.code") : null;
-
-            String langName = (jsonPath.get("data.submissionDetails.lang.name") instanceof String) ? jsonPath.getString("data.submissionDetails.lang.name") : null;
-
-            String langVerboseName = (jsonPath.get("data.submissionDetails.lang.verboseName") instanceof String) ? jsonPath.getString("data.submissionDetails.lang.verboseName") : null;
-
+            int runtime = baseNode.path("runtime").asInt(0);
+            String runtimeDisplay = baseNode.path("runtimeDisplay").asText(null);
+            float runtimePercentile = (float) baseNode.path("runtimePercentile").asDouble(0.0);
+            int memory = baseNode.path("memory").asInt(0);
+            String memoryDisplay = baseNode.path("memoryDisplay").asText(null);
+            float memoryPercentile = (float) baseNode.path("memoryPercentile").asDouble(0.0);
+            String code = baseNode.path("code").asText(null);
+            String langName = baseNode.path("lang").path("name").asText(null);
+            String langVerboseName = baseNode.path("lang").path("verboseName").asText(null);
             Lang lang = (langName != null && langVerboseName != null) ? new Lang(langName, langVerboseName) : null;
 
             LeetcodeDetailedQuestion question = new LeetcodeDetailedQuestion(runtime, runtimeDisplay, runtimePercentile, memory, memoryDisplay, memoryPercentile, code, lang);
@@ -268,14 +288,30 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
-            Response response = reqSpec.post(endpoint);
+            HttpClient client = HttpClient.newHttpClient();
 
-            JsonPath jsonPath = response.jsonPath();
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(endpoint))
+                            .POST(BodyPublishers.ofString(requestBody))
+                            .header("Content-Type", "application/json")
+                            .header("Referer", "https://leetcode.com")
+                            .build();
 
-            var titleSlug = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.titleSlug");
-            var title = jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.title");
-            var difficulty = QuestionDifficulty.valueOf(jsonPath.getString("data.activeDailyCodingChallengeQuestion.question.difficulty"));
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
+
+            if (statusCode != 200) {
+                throw new RuntimeException("API Returned status " + statusCode + ": " + body);
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(body);
+            JsonNode baseNode = node.path("data").path("activeDailyCodingChallengeQuestion").path("question");
+
+            String titleSlug = baseNode.path("titleSlug").asText();
+            String title = baseNode.path("title").asText();
+            var difficulty = QuestionDifficulty.valueOf(baseNode.path("difficulty").asText());
 
             return new POTD(title, titleSlug, difficulty);
         } catch (Exception e) {
@@ -296,23 +332,34 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
         }
 
         try {
-            RequestSpecification reqSpec = RestAssured.given().header("Content-Type", "application/json").header("Referer", "https://leetcode.com").body(requestBody);
+            HttpClient client = HttpClient.newHttpClient();
 
-            Response response = reqSpec.post(endpoint);
-            int statusCode = response.getStatusCode();
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(endpoint))
+                            .POST(BodyPublishers.ofString(requestBody))
+                            .header("Content-Type", "application/json")
+                            .header("Referer", "https://leetcode.com")
+                            .build();
+
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
 
             if (statusCode != 200) {
-                return null;
+                throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            JsonPath jsonPath = response.jsonPath();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(body);
+            JsonNode baseNode = node.path("data").path("matchedUser");
 
-            var returedUsername = jsonPath.getString("data.matchedUser.username");
-            var ranking = jsonPath.getString("data.matchedUser.profile.ranking");
-            var userAvatar = jsonPath.getString("data.matchedUser.profile.userAvatar");
-            var realName = jsonPath.getString("data.matchedUser.profile.realName");
-            var aboutMe = jsonPath.getString("data.matchedUser.profile.aboutMe").trim();
-            return new UserProfile(returedUsername, ranking, userAvatar, realName, aboutMe);
+            var returnedUsername = baseNode.path("username").asText();
+            var ranking = baseNode.path("profile").path("ranking").asText();
+            var userAvatar = baseNode.path("profile").path("userAvatar").asText();
+            var realName = baseNode.path("profile").path("realName").asText();
+            var aboutMe = baseNode.path("profile").path("aboutMe").asText().trim();
+
+            return new UserProfile(returnedUsername, ranking, userAvatar, realName, aboutMe);
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
