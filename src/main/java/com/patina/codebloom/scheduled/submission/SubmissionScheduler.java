@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
 
 @Component
+@Profile("!ci")
 public class SubmissionScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionScheduler.class);
 
