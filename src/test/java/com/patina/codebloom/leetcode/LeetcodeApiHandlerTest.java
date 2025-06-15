@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +18,8 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 
+import io.restassured.RestAssured;
+
 @SpringBootTest
 public class LeetcodeApiHandlerTest {
     private final LeetcodeApiHandler leetcodeApiHandler;
@@ -22,6 +27,26 @@ public class LeetcodeApiHandlerTest {
     @Autowired
     public LeetcodeApiHandlerTest(final LeetcodeApiHandler leetcodeApiHandler) {
         this.leetcodeApiHandler = leetcodeApiHandler;
+    }
+
+    // We have to do this because
+    // RestAssured is trying to use a port value
+    // that is not valid for connecting to leetcode.com.
+    //
+    // This happens only because we override the port
+    // in tests where we need to actually run the Spring
+    // Boot server and run tests on specific endpoints.
+    //
+    // TODO - This should be fixed once Alfardil replaces
+    // RestAssured with the default HttpClient
+    @BeforeAll
+    void hackyFixForBadPort() {
+        RestAssured.port = 443;
+    }
+
+    @AfterAll
+    void revertHackyFix() {
+        RestAssured.port = RestAssured.DEFAULT_PORT;
     }
 
     @Test
