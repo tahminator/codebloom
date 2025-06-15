@@ -28,7 +28,7 @@ import com.patina.codebloom.testconfig.TestProtector;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import(TestProtector.class)
 public class SendEmailTest {
-       @LocalServerPort
+    @LocalServerPort
     private int port;
 
     @BeforeEach
