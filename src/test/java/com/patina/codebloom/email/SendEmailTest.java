@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.dto.ApiResponder;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,7 @@ import com.patina.codebloom.testconfig.TestProtector;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import(TestProtector.class)
 public class SendEmailTest {
-    @LocalServerPort
+       @LocalServerPort
     private int port;
 
     @BeforeEach
@@ -38,13 +40,23 @@ public class SendEmailTest {
     static void setUpUri() {
         RestAssured.baseURI = "http://localhost";
     }
+
+    // Changing the port leaks to different testing classes, as well as the regular
+    // code causing requests to Leetcode.com to fail.
+    //
+    // TODO - This should be fixed once Alfardil migrates the leetcode
+    // client off of RestAssured
+    @AfterAll
+    void removePort() {
+        RestAssured.port = RestAssured.DEFAULT_PORT;
+    }
     private String buildTestEmailPayload(final String email) throws JsonProcessingException {
     Map<String, Object> body = new HashMap<>();
     body.put("email", email);
     return new ObjectMapper().writeValueAsString(body);
 }
    @Test
-    void testValidSchoolEmail() throws JsonProcessingException {
+    void testNonValidSchoolEmail() throws JsonProcessingException {
         String payload = buildTestEmailPayload("name@example.com ");
         ApiResponder<Object> apiResponder = RestAssured.given()
                         .header("Content-Type", "application/json")
@@ -64,7 +76,7 @@ public class SendEmailTest {
 
 
     @Test
-    void testSchoolEnroll() throws JsonProcessingException {
+    void testValidSchoolEmail() throws JsonProcessingException {
         String payload = buildTestEmailPayload("TIMMY.APPLES420@myhunter.cuny.edu");
 
         ApiResponder<Object> apiResponder = RestAssured.given()
