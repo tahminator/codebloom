@@ -35,16 +35,6 @@ public class ApiControllerTest {
         RestAssured.baseURI = "http://localhost";
     }
 
-    // Changing the port leaks to different testing classes, as well as the regular
-    // code causing requests to Leetcode.com to fail.
-    //
-    // TODO - This should be fixed once Alfardil migrates the leetcode
-    // client off of RestAssured
-    @AfterAll
-    void removePort() {
-        RestAssured.port = RestAssured.DEFAULT_PORT;
-    }
-
     @Test
     void testBaseApiRoute() {
         ApiResponder<ServerMetadataObject> apiResponder = RestAssured
