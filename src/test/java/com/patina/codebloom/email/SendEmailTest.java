@@ -1,6 +1,5 @@
 package com.patina.codebloom.email;
 
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
@@ -41,21 +40,13 @@ public class SendEmailTest {
         RestAssured.baseURI = "http://localhost";
     }
 
-    // Changing the port leaks to different testing classes, as well as the regular
-    // code causing requests to Leetcode.com to fail.
-    //
-    // TODO - This should be fixed once Alfardil migrates the leetcode
-    // client off of RestAssured
-    @AfterAll
-    void removePort() {
-        RestAssured.port = RestAssured.DEFAULT_PORT;
-    }
     private String buildTestEmailPayload(final String email) throws JsonProcessingException {
-    Map<String, Object> body = new HashMap<>();
-    body.put("email", email);
-    return new ObjectMapper().writeValueAsString(body);
-}
-   @Test
+        Map<String, Object> body = new HashMap<>();
+        body.put("email", email);
+        return new ObjectMapper().writeValueAsString(body);
+    }
+
+    @Test
     void testNonValidSchoolEmail() throws JsonProcessingException {
         String payload = buildTestEmailPayload("name@example.com ");
         ApiResponder<Object> apiResponder = RestAssured.given()
@@ -67,13 +58,11 @@ public class SendEmailTest {
                         .extract()
                         .as(new TypeRef<ApiResponder<Object>>() {
                         });
-                
+
         assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
         assertTrue(apiResponder.isSuccess() == false, "Testing apiResponder success is false");
         assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
-       
     }
-
 
     @Test
     void testValidSchoolEmail() throws JsonProcessingException {

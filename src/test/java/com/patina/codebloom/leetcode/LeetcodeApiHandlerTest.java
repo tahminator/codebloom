@@ -22,33 +22,12 @@ import com.patina.codebloom.common.leetcode.models.UserProfile;
 import io.restassured.RestAssured;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LeetcodeApiHandlerTest {
     private final LeetcodeApiHandler leetcodeApiHandler;
 
     @Autowired
     public LeetcodeApiHandlerTest(final LeetcodeApiHandler leetcodeApiHandler) {
         this.leetcodeApiHandler = leetcodeApiHandler;
-    }
-
-    // We have to do this because
-    // RestAssured is trying to use a port value
-    // that is not valid for connecting to leetcode.com.
-    //
-    // This happens only because we override the port
-    // in tests where we need to actually run the Spring
-    // Boot server and run tests on specific endpoints.
-    //
-    // TODO - This should be fixed once Alfardil replaces
-    // RestAssured with the default HttpClient
-    @BeforeAll
-    void hackyFixForBadPort() {
-        RestAssured.port = 443;
-    }
-
-    @AfterAll
-    void revertHackyFix() {
-        RestAssured.port = RestAssured.DEFAULT_PORT;
     }
 
     @Test

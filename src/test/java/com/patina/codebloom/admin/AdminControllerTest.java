@@ -41,16 +41,6 @@ public class AdminControllerTest {
         RestAssured.baseURI = "http://localhost";
     }
 
-    // Changing the port leaks to different testing classes, as well as the regular
-    // code causing requests to Leetcode.com to fail.
-    //
-    // TODO - This should be fixed once Alfardil migrates the leetcode
-    // client off of RestAssured
-    @AfterAll
-    void removePort() {
-        RestAssured.port = RestAssured.DEFAULT_PORT;
-    }
-
     private String buildTestAdminToggleBody(final String id, final boolean toggleTo) throws JsonProcessingException {
         Map<String, Object> body = new HashMap<>();
         body.put("id", id);
