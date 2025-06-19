@@ -36,6 +36,7 @@ import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.simpleredis.SimpleRedis;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -68,7 +69,7 @@ public class SubmissionController {
      * are actually part of the "same day".
      */
     private boolean isSameDay(final LocalDateTime createdAt) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = StandardizedLocalDateTime.now();
         Duration duration = Duration.between(createdAt, now);
 
         return duration.toHours() < 24;

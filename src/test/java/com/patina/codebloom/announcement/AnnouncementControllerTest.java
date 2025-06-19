@@ -2,7 +2,6 @@ package com.patina.codebloom.announcement;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +23,7 @@ import com.patina.codebloom.api.announcement.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.testconfig.TestProtector;
 
 import io.restassured.RestAssured;
@@ -42,7 +42,7 @@ public class AnnouncementControllerTest {
                     .builder()
                     .message("Hi this is a test message!")
                     .showTimer(true)
-                    .expiresAt(LocalDateTime.now().plusMinutes(5L))
+                    .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
                     .build();
     private Announcement testAnnouncement;
 
