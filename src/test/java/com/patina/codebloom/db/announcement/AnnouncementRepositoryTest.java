@@ -2,7 +2,6 @@ package com.patina.codebloom.db.announcement;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -17,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +38,7 @@ public class AnnouncementRepositoryTest {
         testAnnouncement = Announcement.builder()
                         // id will be set by announcementRepository
                         .id(null)
-                        .expiresAt(LocalDateTime.now().plusMinutes(5L))
+                        .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
                         .showTimer(true)
                         .message("Hi this is a test announcement!")
                         .build();

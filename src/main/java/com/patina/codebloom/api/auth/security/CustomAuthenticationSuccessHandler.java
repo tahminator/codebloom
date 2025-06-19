@@ -19,6 +19,7 @@ import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.JDAInitializer;
 
 import jakarta.servlet.ServletException;
@@ -127,7 +128,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 }
             }
 
-            LocalDateTime expirationTime = LocalDateTime.now().plusSeconds(maxAgeSeconds);
+            LocalDateTime expirationTime = StandardizedLocalDateTime.now().plusSeconds(maxAgeSeconds);
 
             Session session = new Session(existingUser.getId(), expirationTime);
             session = sessionRepository.createSession(session);

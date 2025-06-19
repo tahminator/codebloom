@@ -1,7 +1,5 @@
 package com.patina.codebloom.testconfig;
 
-import java.time.LocalDateTime;
-
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -10,6 +8,7 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -38,7 +37,7 @@ public class TestProtector {
             @Override
             public AuthenticationObject validateSession(HttpServletRequest request) {
                 User mockAdminUser = userRepository.getUserById("ed3bfe18-e42a-467f-b4fa-07e8da4d2555");
-                Session fakeSession = new Session("ed3bfe18-e42a-467f-b4fa-07e8da4d2555", LocalDateTime.now().plusYears(10L));
+                Session fakeSession = new Session("ed3bfe18-e42a-467f-b4fa-07e8da4d2555", StandardizedLocalDateTime.now().plusYears(10L));
                 return new AuthenticationObject(mockAdminUser, fakeSession);
             }
 
