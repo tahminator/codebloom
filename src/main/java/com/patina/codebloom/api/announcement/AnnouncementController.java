@@ -13,6 +13,7 @@ import com.patina.codebloom.api.announcement.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.autogen.UnsafeAnnouncementResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
@@ -39,16 +40,18 @@ public class AnnouncementController {
         this.announcementRepository = announcementRepository;
     }
 
-    @Operation(summary = "Fetches the latest announcement, if available and/or not expired.", responses = {
-            @ApiResponse(responseCode = "204", description = "No announcement found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-            @ApiResponse(responseCode = "200", description = "Announcement found")
+    @Operation(summary = "Fetches the latest announcement, if available and/or not expired.", description = """
+                    NOTE - 200 does not mean an announcement was found. The correct way to determine whether there is an announcement or not
+                    is to use the success key of the payload and check whether it is true (announcement found) or false (no announcement currently)
+                    """, responses = {
+            @ApiResponse(responseCode = "200", description = "Successful response (may or may not be announcement, check success key)")
     })
     @GetMapping("")
     public ResponseEntity<ApiResponder<Announcement>> getLatestAnnouncement() {
         Announcement announcement = announcementRepository.getRecentAnnouncement();
 
         if (announcement == null) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.ok()
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
 
