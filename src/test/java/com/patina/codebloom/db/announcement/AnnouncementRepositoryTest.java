@@ -33,9 +33,11 @@ public class AnnouncementRepositoryTest {
     @BeforeAll
     void createTestAnnouncement() {
         testAnnouncement = Announcement.builder()
+                        // id will be set by announcementRepository
                         .id(null)
                         .expiresAt(LocalDateTime.now().plusMinutes(5L))
                         .showTimer(true)
+                        .message("Hi this is a test announcement!")
                         .build();
         boolean isSuccessful = announcementRepository.createAnnouncement(testAnnouncement);
 
