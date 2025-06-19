@@ -1,6 +1,5 @@
 package com.patina.codebloom.scheduled.auth;
 
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -24,6 +23,7 @@ import com.patina.codebloom.common.db.repos.auth.AuthRepository;
 import com.patina.codebloom.common.email.Email;
 import com.patina.codebloom.common.email.Message;
 import com.patina.codebloom.common.email.client.github.GithubOAuthEmail;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 @Component
 public class LeetcodeAuthStealer {
@@ -55,7 +55,7 @@ public class LeetcodeAuthStealer {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
         // The auth token should be refreshed every 4 days.
-        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(LocalDateTime.now().minus(4, ChronoUnit.DAYS))) {
+        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(StandardizedLocalDateTime.now().minus(4, ChronoUnit.DAYS))) {
             LOGGER.info("Auth token already exists, using token from database.");
             cookie = mostRecentAuth.getToken();
             return;
