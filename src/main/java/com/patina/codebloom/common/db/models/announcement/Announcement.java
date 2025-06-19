@@ -22,4 +22,5 @@ public class Announcement {
     @NotNull
     private LocalDateTime expiresAt;
     private boolean showTimer;
+    private String message;
 }
