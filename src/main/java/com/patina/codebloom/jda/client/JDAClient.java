@@ -21,6 +21,7 @@ import com.microsoft.playwright.options.ScreenshotType;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.JDAInitializer;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -138,9 +139,9 @@ public class JDAClient {
             Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
             LocalDateTime shouldExpireByTime = Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
                             // this orElse will only trigger if leaderboard doesn't have expiration time.
-                            .orElse(LocalDateTime.now());
+                            .orElse(StandardizedLocalDateTime.now());
 
-            Duration remaining = Duration.between(LocalDateTime.now(), shouldExpireByTime);
+            Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireByTime);
 
             long daysLeft = remaining.toDays();
             long hoursLeft = remaining.toHours() % 24;

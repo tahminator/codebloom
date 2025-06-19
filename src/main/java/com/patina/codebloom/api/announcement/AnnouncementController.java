@@ -1,7 +1,5 @@
 package com.patina.codebloom.api.announcement;
 
-import java.time.LocalDateTime;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +15,7 @@ import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,7 +52,7 @@ public class AnnouncementController {
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
 
-        boolean isExpired = announcement.getExpiresAt().isBefore(LocalDateTime.now());
+        boolean isExpired = announcement.getExpiresAt().isBefore(StandardizedLocalDateTime.now());
 
         if (isExpired) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
