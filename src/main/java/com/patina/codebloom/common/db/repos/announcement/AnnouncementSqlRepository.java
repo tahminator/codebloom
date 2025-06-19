@@ -26,7 +26,10 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                         .id(resultSet.getString("id"))
                         .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
                         .expiresAt(resultSet.getTimestamp("expiresAt").toLocalDateTime())
-                        .showTimer(resultSet.getBoolean("showTimer")).build();
+                        .showTimer(resultSet.getBoolean("showTimer"))
+                        .message(resultSet.getString("message"))
+                        .build();
+
     }
 
     @Override
@@ -37,7 +40,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                                 id,
                                 "createdAt",
                                 "expiresAt",
-                                "showTimer"
+                                "showTimer",
+                                message
                             FROM
                                 "Announcement"
                             ORDER BY
@@ -64,7 +68,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                                                 id,
                                                 "createdAt",
                                                 "expiresAt",
-                                                "showTimer"
+                                                "showTimer",
+                                                message
                                             FROM
                                                 "Announcement"
                                             WHERE
@@ -92,7 +97,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                                                 id,
                                                 "createdAt",
                                                 "expiresAt",
-                                                "showTimer"
+                                                "showTimer",
+                                                message
                                             FROM
                                                 "Announcement"
                                             ORDER BY
@@ -117,9 +123,9 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
     public boolean createAnnouncement(Announcement announcement) {
         String sql = """
                            INSERT INTO "Announcement"
-                               (id, "expiresAt", "showTimer")
+                               (id, "expiresAt", "showTimer", "message")
                            VALUES
-                               (?, ?, ?)
+                               (?, ?, ?, ?)
                             RETURNING
                                 id, "createdAt"
                         """;
@@ -128,6 +134,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
             stmt.setObject(1, UUID.randomUUID());
             stmt.setObject(2, announcement.getExpiresAt());
             stmt.setBoolean(3, announcement.isShowTimer());
+            stmt.setString(4, announcement.getMessage());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     announcement.setId(rs.getString("id"));
