@@ -1,8 +1,6 @@
 package com.patina.codebloom.api.announcement;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,6 @@ import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
-import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,8 +32,8 @@ import jakarta.validation.Valid;
                 """)
 @RequestMapping("/api/announcement")
 public class AnnouncementController {
-    final Protector protector;
-    final AnnouncementRepository announcementRepository;
+    private final Protector protector;
+    private final AnnouncementRepository announcementRepository;
 
     public AnnouncementController(final Protector protector, final AnnouncementRepository announcementRepository) {
         this.protector = protector;
