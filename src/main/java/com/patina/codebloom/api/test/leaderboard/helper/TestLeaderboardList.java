@@ -12,6 +12,7 @@ import com.patina.codebloom.common.db.models.leaderboard.LeaderboardWithUsers;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 public class TestLeaderboardList {
     private static final Faker FAKER = new Faker();
@@ -31,7 +32,7 @@ public class TestLeaderboardList {
             ArrayList<UserTag> tags = new ArrayList<>();
 
             if (addNickname) {
-                tags.add(new UserTag(FAKER.internet().uuid(), LocalDateTime.now(), FAKER.internet().uuid(), Tag.Patina));
+                tags.add(new UserTag(FAKER.internet().uuid(), StandardizedLocalDateTime.now(), FAKER.internet().uuid(), Tag.Patina));
             }
             users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, addNickname,
                             FAKER.number().numberBetween(0, 12000),
@@ -61,7 +62,7 @@ public class TestLeaderboardList {
             ArrayList<UserTag> tags = new ArrayList<>();
 
             if (addNickname) {
-                tags.add(new UserTag(FAKER.internet().uuid(), LocalDateTime.now(), FAKER.internet().uuid(), Tag.Patina));
+                tags.add(new UserTag(FAKER.internet().uuid(), StandardizedLocalDateTime.now(), FAKER.internet().uuid(), Tag.Patina));
             }
             users.add(new UserWithScore(FAKER.internet().uuid(), FAKER.number().digits(20), FAKER.name().username(), FAKER.name().username(), nickname, addNickname,
                             FAKER.number().numberBetween(0, 12000),

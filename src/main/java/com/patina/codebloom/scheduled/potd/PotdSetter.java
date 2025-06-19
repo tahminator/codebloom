@@ -1,7 +1,5 @@
 package com.patina.codebloom.scheduled.potd;
 
-import java.time.LocalDateTime;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -12,6 +10,7 @@ import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 @Component
 @Profile("!ci")
@@ -43,6 +42,6 @@ public class PotdSetter {
         }
 
         potdRepository.createPOTD(new POTD(leetcodePotd.getTitle(), leetcodePotd.getTitleSlug(),
-                        ScoreCalculator.calculateMultiplier(leetcodePotd.getDifficulty()), LocalDateTime.now()));
+                        ScoreCalculator.calculateMultiplier(leetcodePotd.getDifficulty()), StandardizedLocalDateTime.now()));
     }
 }
