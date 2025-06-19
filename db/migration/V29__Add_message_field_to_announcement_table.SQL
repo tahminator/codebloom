@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS "Announcement"
+ADD COLUMN "message" TEXT NOT NULL;
