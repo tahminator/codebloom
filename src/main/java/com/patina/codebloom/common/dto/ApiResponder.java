@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Use the generic methods for failure and success as they are simpler to use.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public final class ApiResponder<T> {
+public class ApiResponder<T> {
     private boolean success;
     private T payload;
     private String message;
