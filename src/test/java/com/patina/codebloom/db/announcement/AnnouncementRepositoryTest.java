@@ -18,9 +18,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
+@Slf4j
 public class AnnouncementRepositoryTest {
     private AnnouncementRepository announcementRepository;
     private Announcement testAnnouncement;
@@ -73,6 +76,9 @@ public class AnnouncementRepositoryTest {
             fail("most recent announcement doesn't exist, even though we created a test announcement");
         }
 
+        log.info("testAnnouncement: {}", testAnnouncement.toString());
+        log.info("possibleTestAnnouncement: {}", possibleTestAnnouncement.toString());
+
         /**
          * @note - see method note
          */
@@ -88,6 +94,9 @@ public class AnnouncementRepositoryTest {
         if (possibleTestAnnouncement == null) {
             fail("failed to find announcement by id");
         }
+
+        log.info("testAnnouncement: {}", testAnnouncement.toString());
+        log.info("possibleTestAnnouncement: {}", possibleTestAnnouncement.toString());
 
         if (!testAnnouncement.equals(possibleTestAnnouncement)) {
             fail("the generated test announcement does not match the announcement fetched with get announcement by ID");
@@ -106,6 +115,7 @@ public class AnnouncementRepositoryTest {
             fail("list of all announcements is 0, when it should be atleast 1 from the test announcement");
         }
 
+        log.info(announcementsList.toString());
         if (!announcementsList.contains(testAnnouncement)) {
             fail("test announcement cannot be found in the list of all announcements");
         }
