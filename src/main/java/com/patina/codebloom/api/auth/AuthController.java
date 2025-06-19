@@ -138,10 +138,10 @@ public class AuthController {
                                             .recipientEmail(email)
                                             .subject("Hello from Codebloom!")
                                             .body(String.format("""
-                                            Please click on this link to verify your school email with Codebloom: %s.
+                                                            Please click on this link to verify your school email with Codebloom: %s.
 
-                                            Note: This link will expire in 1 hour. If it expires, you'll need to request a new one.
-                                            """, verificationLink))
+                                                            Note: This link will expire in 1 hour. If it expires, you'll need to request a new one.
+                                                            """, verificationLink))
                                             .build());
             return ResponseEntity.ok().body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", List.of()));
         } catch (EmailException e) {
