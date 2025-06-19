@@ -13,7 +13,6 @@ import com.patina.codebloom.api.announcement.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.common.dto.autogen.UnsafeAnnouncementResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
