@@ -21,7 +21,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private Announcement parseResultSetToTag(ResultSet resultSet) throws SQLException {
+    private Announcement parseResultSetToTag(final ResultSet resultSet) throws SQLException {
         return Announcement.builder()
                         .id(resultSet.getString("id"))
                         .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
@@ -62,7 +62,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
     }
 
     @Override
-    public Announcement getAnnouncementById(String id) {
+    public Announcement getAnnouncementById(final String id) {
         String sql = """
                                             SELECT
                                                 id,
@@ -120,7 +120,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
     }
 
     @Override
-    public boolean createAnnouncement(Announcement announcement) {
+    public boolean createAnnouncement(final Announcement announcement) {
         String sql = """
                            INSERT INTO "Announcement"
                                (id, "expiresAt", "showTimer", "message")
@@ -150,7 +150,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
     }
 
     @Override
-    public boolean deleteAnnouncementById(String id) {
+    public boolean deleteAnnouncementById(final String id) {
         String sql = """
                             DELETE FROM
                                 "Announcement"
