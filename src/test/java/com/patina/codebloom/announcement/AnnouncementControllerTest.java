@@ -28,10 +28,12 @@ import com.patina.codebloom.testconfig.TestProtector;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import(TestProtector.class)
+@Slf4j
 public class AnnouncementControllerTest {
     @LocalServerPort
     private int port;
@@ -131,6 +133,10 @@ public class AnnouncementControllerTest {
         Announcement newlyFetchedAnnouncement = apiResponder.getPayload();
 
         assertTrue(newlyFetchedAnnouncement != null, "expected newlyFetchedAnnouncement to not be null");
+
+        log.info("testAnnouncement: {}", testAnnouncement.toString());
+        log.info("possibleTestAnnouncement: {}", newlyFetchedAnnouncement.toString());
+
         assertTrue(testAnnouncement.equals(newlyFetchedAnnouncement),
                         "expected the previously created test announcement to be equal to the newly fetched announcement");
     }
