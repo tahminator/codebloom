@@ -9,6 +9,11 @@ type ApiSuccess<T> = Prettify<{
 type ApiError = Prettify<{
   success: false;
   message: string;
+  /**
+   * You can confirm if payload is of type `T`
+   * by checking if success is true,
+   */
+  payload: undefined;
 }>;
 
 /**
