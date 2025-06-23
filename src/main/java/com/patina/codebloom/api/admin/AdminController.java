@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
@@ -23,6 +24,7 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
 
+import io.restassured.internal.http.HttpResponseException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -133,6 +135,12 @@ public class AdminController {
                     @Valid @RequestBody final CreateAnnouncementBody createAnnouncementBody,
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
+
+        boolean isInFuture = LocalDateTime.now().isBefore(createAnnouncementBody.getExpiresAt());
+
+        if (!isInFuture) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The expiration date must be in the future.");
+        }
 
         Announcement announcement = Announcement.builder()
                         .expiresAt(createAnnouncementBody.getExpiresAt())
