@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patina.codebloom.api.announcement.body.CreateAnnouncementBody;
+import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
@@ -92,7 +92,7 @@ public class AnnouncementControllerTest {
                         .when()
                         .header("Content-Type", "application/json")
                         .body(builtTestCreateAnnouncementPayload(createAnnouncementBody))
-                        .post("/api/announcement")
+                        .post("/api/admin/announcement/create")
                         .then()
                         .statusCode(200)
                         .extract()

@@ -1,4 +1,4 @@
-package com.patina.codebloom.api.announcement.body;
+package com.patina.codebloom.api.admin.body;
 
 import java.time.LocalDateTime;
 

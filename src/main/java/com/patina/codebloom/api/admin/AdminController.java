@@ -10,16 +10,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
 import com.patina.codebloom.api.admin.body.UpdateAdminBody;
+import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -31,15 +38,18 @@ public class AdminController {
 
     private final UserRepository userRepository;
     private final LeaderboardRepository leaderboardRepository;
+    private final AnnouncementRepository announcementRepository;
     private final Protector protector;
 
     public AdminController(
                     final LeaderboardRepository leaderboardRepository,
                     final Protector protector,
-                    final UserRepository userRepository) {
+                    final UserRepository userRepository,
+                    final AnnouncementRepository announcementRepository) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
         this.userRepository = userRepository;
+        this.announcementRepository = announcementRepository;
     }
 
     @Operation(summary = "Drops current leaderboard and add new one", description = """
@@ -111,5 +121,33 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponder.success("User with Discord name of "
                         + updatedUser.getDiscordName() + " is "
                         + (toggleTo ? "now an admin!" : "no longer an admin."), updatedUser));
+    }
+
+    @Operation(summary = "Create a new announcement (only for admins).", responses = {
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Announcement successfully created"),
+            @ApiResponse(responseCode = "500", description = "Something went wrong", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    })
+    @PostMapping("/announcement/create")
+    public ResponseEntity<ApiResponder<Announcement>> createNewAnnouncement(
+                    @Valid @RequestBody final CreateAnnouncementBody createAnnouncementBody,
+                    final HttpServletRequest request) {
+        protector.validateAdminSession(request);
+
+        Announcement announcement = Announcement.builder()
+                        .expiresAt(createAnnouncementBody.getExpiresAt())
+                        .showTimer(createAnnouncementBody.isShowTimer())
+                        .message(createAnnouncementBody.getMessage())
+                        .build();
+
+        boolean isSuccessful = announcementRepository.createAnnouncement(announcement);
+
+        if (!isSuccessful) {
+            return ResponseEntity
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(ApiResponder.failure("Hmm, something went wrong."));
+        }
+
+        return ResponseEntity.ok(ApiResponder.success("New announcement successfully created!", announcement));
     }
 }
