@@ -22,22 +22,24 @@ export default function Banner({
   const [countdown] = useCountdown(time);
 
   return (
-    <Transition keepMounted mounted={mounted} transition={"scale-y"}>
-      {(style) => (
-        <Flex
-          bg={"green"}
-          ta={"center"}
-          direction={"column"}
-          align={"center"}
-          style={style}
-          justify={"center"}
-          gap={"sm"}
-          p={"10px"}
-        >
-          <Text size={"lg"}>{message}</Text>
-          {counter && <PrettyCounter size={"lg"} time={countdown} />}
-        </Flex>
-      )}
-    </Transition>
+    time > 0 && (
+      <Transition keepMounted mounted={mounted} transition={"scale-y"}>
+        {(style) => (
+          <Flex
+            bg={"green"}
+            ta={"center"}
+            direction={"column"}
+            align={"center"}
+            style={style}
+            justify={"center"}
+            gap={"sm"}
+            p={"10px"}
+          >
+            <Text size={"lg"}>{message}</Text>
+            {counter && <PrettyCounter size={"lg"} time={countdown} />}
+          </Flex>
+        )}
+      </Transition>
+    )
   );
 }
