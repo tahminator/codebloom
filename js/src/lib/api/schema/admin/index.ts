@@ -1,4 +1,3 @@
-import d from "dayjs";
 import { z } from "zod";
 
 export const newAnnouncementSchema = z.object({
