@@ -10,10 +10,15 @@ import * as Sentry from "@sentry/react";
 
 import "./index.css";
 
+import "@mantine/dates/styles.css";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
+
+dayjs.extend(customParseFormat);
 
 if (import.meta.env.PROD) {
   Sentry.init({
