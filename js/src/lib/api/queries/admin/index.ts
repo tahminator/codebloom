@@ -1,5 +1,6 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
+import { Announcement } from "@/lib/api/types/announcement";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { User } from "@/lib/api/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -139,3 +140,42 @@ export const useCreateLeaderboardMutation = () => {
     },
   });
 };
+
+/**
+ * Create a brand new announcement, invalidating the previous announcement.
+ */
+export const useCreateAnnouncementLeaderboardMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createAnnouncement,
+    onSuccess: async (data) => {
+      if (data.success) {
+        await queryClient.invalidateQueries({ queryKey: ["announcement"] });
+      }
+    },
+  });
+};
+
+async function createAnnouncement({
+  message,
+  expiresAt,
+  showTimer,
+}: {
+  message: string;
+  expiresAt: string;
+  showTimer: boolean;
+}) {
+  const response = await fetch("/api/admin/announcement/create", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message,
+      expiresAt,
+      showTimer,
+    }),
+  });
+
+  return (await response.json()) as UnknownApiResponse<Announcement>;
+}
