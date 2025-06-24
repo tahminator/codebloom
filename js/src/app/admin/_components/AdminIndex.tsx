@@ -1,3 +1,4 @@
+import NewAnnouncementModal from "@/app/admin/_components/announcements/NewAnnouncementModal";
 import UserAdminList from "@/app/admin/_components/UserAdminList";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
@@ -32,6 +33,9 @@ export default function AdminIndex() {
       <Title order={1} ta="center">
         Admin Page
       </Title>
+      <Flex w={"100%"} direction={"row"} justify={"center"}>
+        <NewAnnouncementModal />
+      </Flex>
       <Flex w={"100%"} direction={{ base: "column", sm: "row" }}>
         <Flex
           w={{ base: "100%", sm: "50%" }}
