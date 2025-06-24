@@ -12,9 +12,12 @@ export default function Banner({
 }) {
   const mounted = useMounted();
 
+  /**
+   * -1 if not exists, 0 if expired.
+   */
   const time = (() => {
     if (!counter) {
-      return 0;
+      return -1;
     }
 
     return Math.floor((counter.getTime() - Date.now()) / 1000);
@@ -22,7 +25,7 @@ export default function Banner({
   const [countdown] = useCountdown(time);
 
   return (
-    time > 0 && (
+    time != 0 && (
       <Transition keepMounted mounted={mounted} transition={"scale-y"}>
         {(style) => (
           <Flex
