@@ -20,4 +20,4 @@ backend-install:
 	dotenvx run -- mvn install -DskipTests=true
 
 backend-test:
-	dotenvx run -- mvn test -Dspring.profiles.active=ci
+	dotenvx run -- mvn checkstyle:check test -Dspring.profiles.active=ci
