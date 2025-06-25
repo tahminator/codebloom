@@ -151,7 +151,10 @@ public class LeetcodeAuthStealer {
                         // System.out.println(cookie.name + " " + cookie.value);
                         try {
                             LOGGER.info("Cookie found!");
-                            authRepository.createAuth(new Auth(cookie.value));
+                            authRepository.createAuth(Auth
+                                            .builder()
+                                            .token(cookie.value)
+                                            .build());
                             this.cookie = cookie.value;
                         } catch (Exception e) {
                             System.err.println(e);
