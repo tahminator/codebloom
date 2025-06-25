@@ -65,7 +65,7 @@ This document should represent the best practices for writing/creating repositor
         ```
 
     2. **Read/Find**
-
+        - Read functions should indicate the required values in order to find the row to read (e.g. `byId` or `byLeaderboardName`).
         - Read methods should return the database model object, but you should use a private method to standardize the way that the object is read from the ResultSet. Here is an example:
 
             ```java
@@ -98,7 +98,7 @@ This document should represent the best practices for writing/creating repositor
 
     3. **Update**
 
-        - For update functions, you should return a boolean depending on whether or not the operation was successful or not, but you should also refer to the **Create** operation and replace any values on the object if required.
+        - For update functions, you should return a boolean depending on whether or not the operation was successful or not, but you should also refer to the **Create** operation and replace any values on the object if required. The function name should include what the function will use to search for the row to update (e.g. `byId` or `byUserId`), but you should still pass in the entire Object if it may need to be updated.
 
         ```java
         // AgentRepository.java
@@ -118,7 +118,7 @@ This document should represent the best practices for writing/creating repositor
 
     4. **Delete**
 
-        - For delete operations, you should return a boolean depending on whether or not the operation was successful or not.
+        - For delete operations, you should return a boolean depending on whether or not the operation was successful or not. The entire Object is not required to be passed in, just what the function requires to find the row to delete.
 
         ```java
         // AgentRepository.java
