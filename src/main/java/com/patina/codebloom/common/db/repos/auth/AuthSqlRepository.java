@@ -36,7 +36,9 @@ public class AuthSqlRepository implements AuthRepository {
             stmt.setString(2, auth.getToken());
 
             try (ResultSet rs = stmt.executeQuery()) {
-                auth.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                if (rs.next()) {
+                    auth.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create new auth", e);
@@ -54,7 +56,7 @@ public class AuthSqlRepository implements AuthRepository {
                 """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, auth.getToken());
-            stmt.setObject(2, auth.getId());
+            stmt.setObject(2, UUID.fromString(auth.getId()));
 
             int rowsAffected = stmt.executeUpdate();
 
