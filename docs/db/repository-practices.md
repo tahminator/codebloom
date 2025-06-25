@@ -58,7 +58,7 @@ This document should represent the best practices for writing/creating repositor
               * @note - The provided object's methods will
               * be overridden with any returned data from the database.
               */
-            void createAgent(Agent agent)
+            void createAgent(Agent agent);
 
             // ...
         }
@@ -110,7 +110,7 @@ This document should represent the best practices for writing/creating repositor
               * @note - The provided object's methods will
               * be overridden with any returned data from the database.
               */
-            boolean updateAgentById(Agent agent)
+            boolean updateAgentById(Agent agent);
 
             // ...
         }
@@ -126,7 +126,7 @@ This document should represent the best practices for writing/creating repositor
         public interface AgentRepository {
             // ...
 
-            boolean deleteAgentById(Agent agent)
+            boolean deleteAgentById(String id);
 
             // ...
         }
