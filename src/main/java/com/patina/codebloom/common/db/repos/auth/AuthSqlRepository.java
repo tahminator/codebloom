@@ -20,22 +20,24 @@ public class AuthSqlRepository implements AuthRepository {
     }
 
     @Override
-    public Auth createAuth(final Auth auth) {
+    public void createAuth(final Auth auth) {
         String sql = """
-                INSERT INTO "Auth"
-                    (id, token)
-                VALUES
-                    (?, ?)
-                """;
+                        INSERT INTO "Auth"
+                            (id, token)
+                        VALUES
+                            (?, ?)
+                        RETURNING
+                            "createdAt"
+                        """;
         auth.setId(UUID.randomUUID().toString());
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(auth.getId()));
             stmt.setString(2, auth.getToken());
 
-            stmt.executeUpdate();
-
-            return auth;
+            try (ResultSet rs = stmt.executeQuery()) {
+                auth.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create new auth", e);
         }
