@@ -115,4 +115,23 @@ public class AuthSqlRepository implements AuthRepository {
         return null;
     }
 
+    @Override
+    public boolean deleteAuthById(final String id) {
+        String sql = """
+                            DELETE FROM
+                                "Auth"
+                            WHERE
+                                id = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while deleting auth by ID", e);
+        }
+    }
+
 }

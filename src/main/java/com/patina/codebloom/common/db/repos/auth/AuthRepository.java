@@ -14,4 +14,6 @@ public interface AuthRepository {
     Auth getAuthById(String id);
 
     Auth getMostRecentAuth();
+
+    boolean deleteAuthById(String id);
 }
