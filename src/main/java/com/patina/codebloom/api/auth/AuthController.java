@@ -16,6 +16,7 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.common.lag.FakeLag;
+import com.patina.codebloom.common.schools.SchoolEnum;
 import com.patina.codebloom.common.schools.SupportedSchools;
 import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
@@ -44,6 +45,8 @@ import org.springframework.http.HttpStatus;
 
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
+import com.patina.codebloom.common.db.models.usertag.UserTag;
 
 @RestController
 @Tag(name = "Authentication Routes")
@@ -55,16 +58,19 @@ public class AuthController {
     private final UserRepository userRepository;
     private final OfficialCodebloomEmail emailClient;
     private final ServerurlUtils serverurlUtils;
+    private final UserTagRepository userTagRepository;
 
     public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository,
-                    final OfficialCodebloomEmail emailClient, final ServerurlUtils serverurlUtils) {
+                    final OfficialCodebloomEmail emailClient, final ServerurlUtils serverurlUtils, final UserTagRepository userTagRepository) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
         this.jwtClient = jwtClient;
         this.emailClient = emailClient;
         this.serverurlUtils = serverurlUtils;
+        this.userTagRepository = userTagRepository;
     }
+    
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
@@ -153,5 +159,51 @@ public class AuthController {
                             HttpStatus.BAD_REQUEST,
                             "Error processing request: not implemented");
         }
+    }
+
+    @Operation(summary = "Verifies the JWC", description = "Verifies the magic link sent to the user's email. If successful, the user will be enrolled with the school tag.", responses = {
+            @ApiResponse(responseCode = "200", description = "User successfully enrolled with school tag"),
+            @ApiResponse(responseCode = "400", description = "Invalid or expired token"),
+    })
+    @PostMapping("/school/verify") 
+    public ResponseEntity<ApiResponder<Object>> verifySchoolEmail(final HttpServletRequest request, final JWTClient jwtClient, final UserRepository userRepository, final UserTagRepository userTagRepository) {
+          AuthenticationObject authenticationObject = protector.validateSession(request);
+          Session session = authenticationObject.getSession();
+           if (session == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
+           }
+           String token = request.getParameter("state");
+           MagicLink magicLink;
+           try {
+               magicLink = jwtClient.decode(token, MagicLink.class);
+           } catch (Exception e) {
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired token");
+           }
+           String magicLinkId = magicLink.getUserId();
+           String currentUserId = authenticationObject.getUser().getId();
+           if(!magicLinkId.equals(currentUserId)) {
+               throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ID does not match current user");
+           }
+           User user = userRepository.getUserById(magicLinkId);
+           user.setSchoolEmail(magicLink.getEmail());
+           userRepository.updateUser(user);
+         
+           String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
+           
+            SchoolEnum schoolEnum = SupportedSchools.getList().stream()
+            .filter(school -> school.getEmailDomain().equals(emailDomain))
+            .findFirst()
+            .orElse(null);
+            if (schoolEnum == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "School not supported");
+            }
+              UserTag SchoolTag = UserTag.builder()
+                .userId(user.getId())
+                .tag(schoolEnum.getInternalTag())
+                .build();
+                userTagRepository.createTag(SchoolTag);
+            User updatedUser = userRepository.getUserById(user.getId());
+            
+        return ResponseEntity.ok(ApiResponder.success("User successfully enrolled with school tag", updatedUser));
     }
 }
