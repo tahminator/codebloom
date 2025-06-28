@@ -121,7 +121,7 @@ public class UserTagSqlRepository implements UserTagRepository {
     }
 
     @Override
-    public void createTag(UserTag userTag) {
+    public void createTag(final UserTag userTag) {
         userTag.setId(UUID.randomUUID().toString());
         String sql = """
                             INSERT INTO "UserTag"
