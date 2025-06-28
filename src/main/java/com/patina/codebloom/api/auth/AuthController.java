@@ -165,8 +165,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid or expired token"),
     })
     @PostMapping("/school/verify")
-    public ResponseEntity<ApiResponder<Object>> verifySchoolEmail(final HttpServletRequest request, final JWTClient jwtClient, final UserRepository userRepository,
-                    final UserTagRepository userTagRepository) {
+    public ResponseEntity<ApiResponder<Object>> verifySchoolEmail(final HttpServletRequest request) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         Session session = authenticationObject.getSession();
         if (session == null) {
