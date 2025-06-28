@@ -46,7 +46,7 @@ public class AuthSqlRepository implements AuthRepository {
     }
 
     @Override
-    public boolean updateAuth(final Auth auth) {
+    public boolean updateAuthById(final Auth auth) {
         String sql = """
                 UPDATE "Auth"
                 SET
