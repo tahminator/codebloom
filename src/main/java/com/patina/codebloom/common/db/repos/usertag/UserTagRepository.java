@@ -13,9 +13,16 @@ public interface UserTagRepository {
     ArrayList<UserTag> findTagsByUserId(String userId);
 
     /**
-     * Returns the id of the newly created tag.
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     * 
+     * @param userTag - required fields:
+     * <ul>
+     * <li>userId</li>
+     * <li>tag</li>
+     * </ul>
      */
-    String createTagByUserId(String userId, Tag tag);
+    void createTag(UserTag userTag);
 
     boolean deleteTagByTagId(String tagId);
 

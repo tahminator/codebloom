@@ -2,18 +2,24 @@ package com.patina.codebloom.common.db.models.usertag;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Builder
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class UserTag {
     private String id;
     private LocalDateTime createdAt;
     private String userId;
     private Tag tag;
-
-    public UserTag(final String id, final LocalDateTime createdAt, final String userId, final Tag tag) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.userId = userId;
-        this.tag = tag;
-    }
 
     public String getId() {
         return id;
