@@ -121,30 +121,30 @@ public class UserTagSqlRepository implements UserTagRepository {
     }
 
     @Override
-    public String createTagByUserId(final String userId, final Tag tag) {
-        UUID userTagId = UUID.randomUUID();
+    public void createTag(UserTag userTag) {
+        userTag.setId(UUID.randomUUID().toString());
         String sql = """
                             INSERT INTO "UserTag"
                                 (id, "userId", tag)
                             VALUES
                                 (?, ?, ?)
+                            RETURNING
+                                "createdAt"
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, userTagId);
-            stmt.setObject(2, UUID.fromString(userId));
-            stmt.setObject(3, tag.name(), java.sql.Types.OTHER);
+            stmt.setObject(1, UUID.fromString(userTag.getId()));
+            stmt.setObject(2, UUID.fromString(userTag.getUserId()));
+            stmt.setObject(3, userTag.getTag().name(), java.sql.Types.OTHER);
 
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                return userTagId.toString();
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    userTag.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                }
             }
 
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create user tag by user ID", e);
         }
-
-        return null;
 
     }
 
