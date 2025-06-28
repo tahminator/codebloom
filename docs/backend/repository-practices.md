@@ -109,6 +109,7 @@ This document should represent the best practices for writing/creating repositor
     3. **Update**
 
         - For update functions, you should return a boolean depending on whether or not the operation was successful or not, but you should also refer to the **Create** operation and replace any values on the object if required. The function name should include what the function will use to search for the row to update (e.g. `byId` or `byUserId`), but you should still pass in the entire Object if it may need to be updated.
+        - Use Javadoc to indicate what fields will be updated, like in the example below:
 
         ```java
         // AgentRepository.java
@@ -117,9 +118,15 @@ This document should represent the best practices for writing/creating repositor
             // ...
 
             /**
-              * @note - The provided object's methods will
-              * be overridden with any returned data from the database.
-              */
+             * @note - The provided object's methods will be overridden with any returned
+             * data from the database.
+             *
+             * @param agent - overridden fields:
+             * <ul>
+             * <li>name</li>
+             * <li>type</li>
+             * </ul>
+             */
             boolean updateAgentById(Agent agent);
 
             // ...
