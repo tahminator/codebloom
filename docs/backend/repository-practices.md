@@ -46,7 +46,10 @@ This document should represent the best practices for writing/creating repositor
 
     1. **_Create_**
 
-        - The function for creating a new database object should always return void. Instead, the function should accept an input of the database object, and in the implementation, use the setters on the object to update any new values from the database. **NOTE - You should make this specific behavior clear in the interface file for the specific creation method**:
+        - The function for creating a new database object should always return void. Instead, the function should accept an input of the database object, and in the implementation, use the setters on the object to update any new values from the database. **NOTE - You should make this specific behavior clear in the interface file for the specific creation method**
+        - If you accept the object itself as an input (which you almost always should), make sure to leave a note about what fields are required to be
+          set inside of the object.
+        - Below is an example of what it should look like:
 
         ```java
         // AgentRepository.java
@@ -55,9 +58,15 @@ This document should represent the best practices for writing/creating repositor
             // ...
 
             /**
-              * @note - The provided object's methods will
-              * be overridden with any returned data from the database.
-              */
+             * @note - The provided object's methods will be overridden with any returned
+             * data from the database.
+             *
+             * @param agent - required fields:
+             * <ul>
+             * <li>name</li>
+             * <li>type</li>
+             * </ul>
+             */
             void createAgent(Agent agent);
 
             // ...
@@ -65,6 +74,7 @@ This document should represent the best practices for writing/creating repositor
         ```
 
     2. **Read/Find**
+
         - Read functions should indicate the required values in order to find the row to read (e.g. `byId` or `byLeaderboardName`).
         - Read methods should return the database model object, but you should use a private method to standardize the way that the object is read from the ResultSet. Here is an example:
 
