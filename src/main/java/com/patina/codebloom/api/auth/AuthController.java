@@ -70,7 +70,6 @@ public class AuthController {
         this.serverurlUtils = serverurlUtils;
         this.userTagRepository = userTagRepository;
     }
-    
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
@@ -165,45 +164,50 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "User successfully enrolled with school tag"),
             @ApiResponse(responseCode = "400", description = "Invalid or expired token"),
     })
-    @PostMapping("/school/verify") 
-    public ResponseEntity<ApiResponder<Object>> verifySchoolEmail(final HttpServletRequest request, final JWTClient jwtClient, final UserRepository userRepository, final UserTagRepository userTagRepository) {
-          AuthenticationObject authenticationObject = protector.validateSession(request);
-          Session session = authenticationObject.getSession();
-           if (session == null) {
+    @PostMapping("/school/verify")
+    public ResponseEntity<ApiResponder<Object>> verifySchoolEmail(final HttpServletRequest request, final JWTClient jwtClient, final UserRepository userRepository,
+                    final UserTagRepository userTagRepository) {
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+        Session session = authenticationObject.getSession();
+        if (session == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
-           }
-           String token = request.getParameter("state");
-           MagicLink magicLink;
-           try {
-               magicLink = jwtClient.decode(token, MagicLink.class);
-           } catch (Exception e) {
-               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired token");
-           }
-           String magicLinkId = magicLink.getUserId();
-           String currentUserId = authenticationObject.getUser().getId();
-           if(!magicLinkId.equals(currentUserId)) {
-               throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ID does not match current user");
-           }
-           User user = userRepository.getUserById(magicLinkId);
-           user.setSchoolEmail(magicLink.getEmail());
-           userRepository.updateUser(user);
-         
-           String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
-           
-            SchoolEnum schoolEnum = SupportedSchools.getList().stream()
-            .filter(school -> school.getEmailDomain().equals(emailDomain))
-            .findFirst()
-            .orElse(null);
-            if (schoolEnum == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "School not supported");
-            }
-              UserTag SchoolTag = UserTag.builder()
-                .userId(user.getId())
-                .tag(schoolEnum.getInternalTag())
-                .build();
-                userTagRepository.createTag(SchoolTag);
-            User updatedUser = userRepository.getUserById(user.getId());
-            
+        }
+
+        String token = request.getParameter("state");
+        MagicLink magicLink;
+        try {
+            magicLink = jwtClient.decode(token, MagicLink.class);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired token");
+        }
+
+        String magicLinkId = magicLink.getUserId();
+        String currentUserId = authenticationObject.getUser().getId();
+        if (!magicLinkId.equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ID does not match current user");
+        }
+
+        User user = userRepository.getUserById(magicLinkId);
+        user.setSchoolEmail(magicLink.getEmail());
+        userRepository.updateUser(user);
+
+        String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
+
+        SchoolEnum schoolEnum = SupportedSchools.getList().stream()
+                        .filter(school -> school.getEmailDomain().equals(emailDomain))
+                        .findFirst()
+                        .orElse(null);
+        if (schoolEnum == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "School not supported");
+        }
+
+        UserTag schoolTag = UserTag.builder()
+            .userId(user.getId())
+            .tag(schoolEnum.getInternalTag())
+            .build();
+        userTagRepository.createTag(schoolTag);
+        User updatedUser = userRepository.getUserById(user.getId());
+
         return ResponseEntity.ok(ApiResponder.success("User successfully enrolled with school tag", updatedUser));
     }
 }
