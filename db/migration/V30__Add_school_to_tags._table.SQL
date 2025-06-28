@@ -1,0 +1,2 @@
+ALTER TYPE "Tag" ADD VALUE 'Hunter';
+ALTER TYPE "Tag" ADD VALUE 'Nyu';
