@@ -77,7 +77,7 @@ public class AuthRepositoryTest {
     @Test
     void updateAuth() {
         testAuth.setToken("yoooo");
-        boolean isSuccessful = authRepository.updateAuth(testAuth);
+        boolean isSuccessful = authRepository.updateAuthById(testAuth);
 
         if (!isSuccessful) {
             fail("updating test auth has failed");
