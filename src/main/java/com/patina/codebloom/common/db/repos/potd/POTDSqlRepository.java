@@ -61,7 +61,7 @@ public class POTDSqlRepository implements POTDRepository {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, id);
+            stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRowToPOTD(rs);
@@ -79,7 +79,7 @@ public class POTDSqlRepository implements POTDRepository {
     public ArrayList<POTD> getAllPOTDS() {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\"";
         ArrayList<POTD> potdList = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 potdList.add(mapRowToPOTD(rs));
             }
@@ -107,7 +107,7 @@ public class POTDSqlRepository implements POTDRepository {
     public void deletePOTD(final String id) {
         String sql = "DELETE FROM \"POTD\" WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setObject(1, UUID.fromString(id));
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete POTD", e);

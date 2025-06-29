@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,7 +27,7 @@ public class POTDRepositoryTest {
 
     private POTD testPOTD;
 
-    @BeforeAll
+    @BeforeEach
     void setup() {
         POTD potd = POTD.builder()
                         .title("Test Title")
@@ -38,7 +38,7 @@ public class POTDRepositoryTest {
         testPOTD = potdRepository.createPOTD(potd);
     }
 
-    @AfterAll
+    @AfterEach
     void deleteTestPOTD() {
         if (testPOTD != null && testPOTD.getId() != null) {
             potdRepository.deletePOTD(testPOTD.getId());
