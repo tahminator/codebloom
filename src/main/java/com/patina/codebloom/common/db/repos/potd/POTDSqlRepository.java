@@ -34,11 +34,11 @@ public class POTDSqlRepository implements POTDRepository {
     @Override
     public POTD createPOTD(final POTD potd) {
         String sql = """
-                INSERT INTO "POTD"
-                    ("id", "title", "slug", "multiplier", "createdAt")
-                VALUES
-                    (?, ?, ?, ?, ?)
-                """;
+                        INSERT INTO "POTD"
+                            ("id", "title", "slug", "multiplier", "createdAt")
+                        VALUES
+                            (?, ?, ?, ?, ?)
+                        """;
 
         potd.setId(UUID.randomUUID().toString());
 
@@ -61,7 +61,7 @@ public class POTDSqlRepository implements POTDRepository {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, id);
+            stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRowToPOTD(rs);
@@ -79,7 +79,7 @@ public class POTDSqlRepository implements POTDRepository {
     public ArrayList<POTD> getAllPOTDS() {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\"";
         ArrayList<POTD> potdList = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 potdList.add(mapRowToPOTD(rs));
             }
@@ -93,10 +93,10 @@ public class POTDSqlRepository implements POTDRepository {
     public void updatePOTD(final POTD potd) {
         String sql = "UPDATE \"POTD\" SET title = ?, slug = ?, multiplier = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(potd.getId()));
+            stmt.setString(1, potd.getTitle());
             stmt.setString(2, potd.getSlug());
             stmt.setFloat(3, potd.getMultiplier());
-            stmt.setString(4, potd.getId());
+            stmt.setObject(4, UUID.fromString(potd.getId()));
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update POTD", e);
@@ -107,7 +107,7 @@ public class POTDSqlRepository implements POTDRepository {
     public void deletePOTD(final String id) {
         String sql = "DELETE FROM \"POTD\" WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setObject(1, UUID.fromString(id));
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete POTD", e);
@@ -117,11 +117,11 @@ public class POTDSqlRepository implements POTDRepository {
     @Override
     public POTD getCurrentPOTD() {
         String sql = """
-                SELECT "id", "title", "slug", "multiplier", "createdAt"
-                FROM "POTD"
-                ORDER BY "createdAt" DESC
-                LIMIT 1
-                """;
+                        SELECT "id", "title", "slug", "multiplier", "createdAt"
+                        FROM "POTD"
+                        ORDER BY "createdAt" DESC
+                        LIMIT 1
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
