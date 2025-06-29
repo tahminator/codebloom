@@ -67,7 +67,7 @@ public class POTDRepositoryTest {
     void testGetCurrentPOTD() {
         POTD current = potdRepository.getCurrentPOTD();
         assertNotNull(current);
-        assertEquals(testPOTD.getId(), current.getId());
+        assertTrue(testPOTD.equals(current))
     }
 
     @Test
