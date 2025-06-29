@@ -93,10 +93,10 @@ public class POTDSqlRepository implements POTDRepository {
     public void updatePOTD(final POTD potd) {
         String sql = "UPDATE \"POTD\" SET title = ?, slug = ?, multiplier = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(potd.getId()));
+            stmt.setString(1, potd.getTitle());
             stmt.setString(2, potd.getSlug());
             stmt.setFloat(3, potd.getMultiplier());
-            stmt.setString(4, potd.getId());
+            stmt.setObject(4, UUID.fromString(potd.getId()));
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update POTD", e);
