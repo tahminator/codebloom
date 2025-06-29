@@ -75,7 +75,7 @@ public class POTDRepositoryTest {
     void testGetAllPOTDS() {
         ArrayList<POTD> all = potdRepository.getAllPOTDS();
         assertNotNull(all);
-        assertTrue(all.stream().anyMatch(p -> p.getId().equals(testPOTD.getId())));
+        assertTrue(all.contains(testPOTD))
     }
 
     @Test
