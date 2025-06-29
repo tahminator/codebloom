@@ -4,6 +4,9 @@ public class MagicLink {
     private String email;
     private String userId;
 
+    public MagicLink() {
+    }
+
     public MagicLink(final String email, final String userId) {
         this.email = email;
         this.userId = userId;
