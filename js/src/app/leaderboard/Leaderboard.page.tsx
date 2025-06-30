@@ -10,7 +10,7 @@ export default function LeaderboardPage() {
       <Header />
       <div className="flex-grow">
         <Box p={"lg"}>
-          <LeaderboardMetadata showClock />
+          <LeaderboardMetadata showClock showAllLeaderboardButton />
           <Leaderboard />
         </Box>
       </div>

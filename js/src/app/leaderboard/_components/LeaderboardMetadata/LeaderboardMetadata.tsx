@@ -7,12 +7,13 @@ import { Link } from "react-router-dom";
 
 type LeaderboardMetadataOptions = {
   showClock?: boolean;
+  showAllLeaderboardButton?: boolean;
 };
 
 export default function LeaderboardMetadata(
   props: LeaderboardMetadataOptions = {},
 ) {
-  const { showClock = false } = props;
+  const { showClock = false, showAllLeaderboardButton = false } = props;
 
   const { data, status } = useCurrentLeaderboardMetadataQuery();
   const [countdown, reset] = useCountdown(-10);
@@ -90,9 +91,11 @@ export default function LeaderboardMetadata(
         )}
       </Title>
       <Box ta={"center"} mb={"md"}>
-        <Button component={Link} to={"/leaderboard/all"}>
-          View All Leaderboards
-        </Button>
+        {showAllLeaderboardButton && (
+          <Button component={Link} to={"/leaderboard/all"}>
+            View All Leaderboards
+          </Button>
+        )}
       </Box>
     </>
   );
