@@ -92,6 +92,81 @@ export const useCurrentLeaderboardUsersQuery = ({
   };
 };
 
+export const useAllLeaderboardsMetadataQuery = ({
+  initialPage = 1,
+  pageSize = 20,
+  tieToUrl = true,
+}: {
+  initialPage?: number;
+  pageSize?: number;
+  tieToUrl?: boolean;
+}) => {
+  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  /**
+   * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
+   */
+  const [searchQuery, _setSearchQuery, debouncedQuery] = useURLState(
+    "query",
+    "",
+    tieToUrl,
+    true,
+    500,
+  );
+
+  const goBack = useCallback(() => {
+    setPage((old) => Math.max(old - 1, 0));
+  }, [setPage]);
+
+  const goForward = useCallback(() => {
+    setPage((old) => old + 1);
+  }, [setPage]);
+
+  const goTo = useCallback(
+    (pageNumber: number) => {
+      setPage(() => Math.max(pageNumber, 0));
+    },
+    [setPage],
+  );
+
+  /**
+   * Abstracted function so that we can also reset the page back to 1 whenever we update the query.
+   * TODO - Move these side effects within the useURLState function, which will make it easier to deal with.
+   */
+  const setSearchQuery = useCallback(
+    (query: string) => {
+      _setSearchQuery(query);
+      goTo(1);
+    },
+    [_setSearchQuery, goTo],
+  );
+
+  const query = useQuery({
+    queryKey: [
+      "leaderboard",
+      "metadata",
+      "all",
+      page,
+      pageSize,
+      debouncedQuery,
+    ],
+    queryFn: () =>
+      fetchAllLeaderboardsMetadata({ page, pageSize, query: debouncedQuery }),
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    ...query,
+    page,
+    goBack,
+    goForward,
+    goTo,
+    searchQuery,
+    setSearchQuery,
+    debouncedQuery,
+    pageSize,
+  };
+};
+
 /**
  * Fetch the details about a leaderboard (excluding users)
  */
@@ -209,19 +284,25 @@ export async function getMyRecentLeaderboardData({
   return json;
 }
 
-async function fetchAllLeaderboardsMetadata() {
-  const response = await fetch(`/api/leaderboard/all/metadata`, {
-    method: "GET",
-  });
+async function fetchAllLeaderboardsMetadata({
+  page,
+  pageSize,
+  query,
+}: {
+  page: number;
+  query: string;
+  pageSize: number;
+}) {
+  const response = await fetch(
+    `/api/leaderboard/all/metadata?page=${page}&pageSize=${pageSize}&query=${query}`,
+    {
+      method: "GET",
+    },
+  );
 
-  const json = (await response.json()) as UnknownApiResponse<Leaderboard[]>;
+  const json = (await response.json()) as UnknownApiResponse<
+    Page<Leaderboard[]>
+  >;
 
   return json;
 }
-
-export const useAllLeaderboardsMetadataQuery = () => {
-  return useQuery({
-    queryKey: ["leaderboard", "metadata", "all"],
-    queryFn: fetchAllLeaderboardsMetadata,
-  });
-};
