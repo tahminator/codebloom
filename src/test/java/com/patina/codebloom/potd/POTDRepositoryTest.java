@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ public class POTDRepositoryTest {
     void testGetPOTDById() {
         POTD fetched = potdRepository.getPOTDById(testPOTD.getId());
         assertNotNull(fetched);
-        assertTrue(testPOTD.equals(fetched))
+        assertTrue(testPOTD.equals(fetched));
     }
 
     @Test
@@ -67,15 +67,15 @@ public class POTDRepositoryTest {
     void testGetCurrentPOTD() {
         POTD current = potdRepository.getCurrentPOTD();
         assertNotNull(current);
-        assertTrue(testPOTD.equals(current))
+        assertTrue(testPOTD.equals(current));
     }
 
     @Test
     @Order(4)
     void testGetAllPOTDS() {
-        ArrayList<POTD> all = potdRepository.getAllPOTDS();
+        List<POTD> all = potdRepository.getAllPOTDS();
         assertNotNull(all);
-        assertTrue(all.contains(testPOTD))
+        assertTrue(all.contains(testPOTD));
     }
 
     @Test
