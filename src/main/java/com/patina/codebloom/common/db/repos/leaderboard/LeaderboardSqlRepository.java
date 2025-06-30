@@ -440,7 +440,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "shouldExpireBy"
                             FROM "Leaderboard"
                             WHERE name ILIKE ?
-                            ORDER BY id
+                            ORDER BY
+                                "createdAt" DESC
                             LIMIT ? OFFSET ?
                         """;
 
