@@ -11,6 +11,7 @@ import {
   Overlay,
   Table,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -70,8 +71,8 @@ export default function DashboardListView() {
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Name</Table.Th>
-                <Table.Th>Created At</Table.Th>
-                <Table.Th>Ended At</Table.Th>
+                <Table.Th>Created</Table.Th>
+                <Table.Th>Ended</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -97,11 +98,25 @@ export default function DashboardListView() {
                       </Flex>
                     </Table.Td>
                     <Table.Td>
-                      {timeDiff(new Date(leaderboard.createdAt))}
+                      <Tooltip
+                        events={{ hover: true, focus: true, touch: true }}
+                        label={new Date(leaderboard.createdAt).toLocaleString()}
+                      >
+                        <span>{timeDiff(new Date(leaderboard.createdAt))}</span>
+                      </Tooltip>
                     </Table.Td>
                     <Table.Td>
                       {!isCurrentLeaderboard ?
-                        timeDiff(new Date(leaderboard.deletedAt!))
+                        <Tooltip
+                          label={new Date(
+                            leaderboard.deletedAt!,
+                          ).toLocaleString()}
+                          events={{ hover: true, focus: true, touch: true }}
+                        >
+                          <span>
+                            {timeDiff(new Date(leaderboard.deletedAt!))}
+                          </span>
+                        </Tooltip>
                       : "Currently running"}
                     </Table.Td>
                   </Table.Tr>
