@@ -13,7 +13,6 @@ import {
   Title,
 } from "@mantine/core";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function DashboardListView() {
@@ -93,7 +92,6 @@ export default function DashboardListView() {
                         className="group"
                       >
                         <span className="transition-all group-hover:text-blue-500 w-max">
-                          <SiLeetcode style={{ display: "inline" }} />
                           {leaderboard.name}
                         </span>
                       </Flex>
