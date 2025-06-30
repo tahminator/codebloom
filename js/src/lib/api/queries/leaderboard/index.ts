@@ -92,6 +92,10 @@ export const useCurrentLeaderboardUsersQuery = ({
   };
 };
 
+/**
+ * Fetch a list of all leaderboards. This is a super query that
+ * also exposes pagination.
+ */
 export const useAllLeaderboardsMetadataQuery = ({
   initialPage = 1,
   pageSize = 20,
@@ -168,12 +172,119 @@ export const useAllLeaderboardsMetadataQuery = ({
 };
 
 /**
+ * Fetch the users from the given leaderboard ID. This is a super query
+ * that also exposes pagination.
+ */
+export const useLeaderboardUsersByIdQuery = ({
+  initialPage = 1,
+  pageSize = 20,
+  tieToUrl = true,
+  leaderboardId,
+}: {
+  initialPage?: number;
+  pageSize?: number;
+  tieToUrl?: boolean;
+  leaderboardId: string;
+}) => {
+  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+
+  /**
+   * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
+   */
+  const [searchQuery, _setSearchQuery, debouncedQuery] = useURLState(
+    "query",
+    "",
+    tieToUrl,
+    true,
+    500,
+  );
+  const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
+
+  const goBack = useCallback(() => {
+    setPage((old) => Math.max(old - 1, 0));
+  }, [setPage]);
+
+  const goForward = useCallback(() => {
+    setPage((old) => old + 1);
+  }, [setPage]);
+
+  const goTo = useCallback(
+    (pageNumber: number) => {
+      setPage(() => Math.max(pageNumber, 0));
+    },
+    [setPage],
+  );
+
+  /**
+   * Abstracted function so that we can also reset the page back to 1 whenever we update the query.
+   * TODO - Move these side effects within the useURLState function, which will make it easier to deal with.
+   */
+  const setSearchQuery = useCallback(
+    (query: string) => {
+      _setSearchQuery(query);
+      goTo(1);
+    },
+    [_setSearchQuery, goTo],
+  );
+
+  const togglePatina = useCallback(() => {
+    setPatina((prev) => !prev);
+    goTo(1);
+  }, [setPatina, goTo]);
+
+  const query = useQuery({
+    queryKey: [
+      "leaderboard",
+      leaderboardId,
+      "users",
+      page,
+      pageSize,
+      debouncedQuery,
+      patina,
+    ],
+    queryFn: () =>
+      fetchLeaderboardUsersByLeaderboardId({
+        leaderboardId,
+        page,
+        pageSize,
+        patina,
+        query: debouncedQuery,
+      }),
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    ...query,
+    page,
+    patina,
+    goBack,
+    goForward,
+    goTo,
+    searchQuery,
+    setSearchQuery,
+    debouncedQuery,
+    pageSize,
+    togglePatina,
+  };
+};
+
+/**
  * Fetch the details about a leaderboard (excluding users)
  */
 export const useCurrentLeaderboardMetadataQuery = () => {
   return useQuery({
     queryKey: ["leaderboard", "metadata"],
     queryFn: useCurrentLeaderboardMetadata,
+  });
+};
+
+/**
+ * Fetch the details about a leaderboard by ID (excluding users)
+ */
+export const useLeaderboardMetadataByIdQuery = (leaderboardId: string) => {
+  return useQuery({
+    queryKey: ["leaderboard", leaderboardId, "metadata"],
+    queryFn: () => getLeaderboardMetadataById(leaderboardId),
   });
 };
 
@@ -241,8 +352,45 @@ async function fetchLeaderboardUsers({
   return json;
 }
 
+async function fetchLeaderboardUsersByLeaderboardId({
+  page,
+  query,
+  pageSize,
+  patina,
+  leaderboardId,
+}: {
+  page: number;
+  query: string;
+  pageSize: number;
+  patina: boolean;
+  leaderboardId: string;
+}) {
+  const response = await fetch(
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}`,
+    {
+      method: "GET",
+    },
+  );
+
+  const json = (await response.json()) as UnknownApiResponse<
+    Page<UserWithScore[]>
+  >;
+
+  return json;
+}
+
 async function useCurrentLeaderboardMetadata() {
   const response = await fetch(`/api/leaderboard/current/metadata`, {
+    method: "GET",
+  });
+
+  const json = (await response.json()) as UnknownApiResponse<Leaderboard>;
+
+  return json;
+}
+
+async function getLeaderboardMetadataById(leaderboardId: string) {
+  const response = await fetch(`/api/leaderboard/${leaderboardId}/metadata`, {
     method: "GET",
   });
 
