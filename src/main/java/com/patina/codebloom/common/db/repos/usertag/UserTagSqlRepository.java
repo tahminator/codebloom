@@ -34,7 +34,7 @@ public class UserTagSqlRepository implements UserTagRepository {
         String sql = """
                         SELECT
                             id,
-                            createdAt,
+                            "createdAt",
                             "userId",
                             tag
                         FROM

@@ -22,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +33,8 @@ public class UserTagRepositoryTest {
     private UserTagRepository userTagRepository;
     private UserTag testUserTag;
     private UserTag deletableUserTag;
-    private String mockUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
+    private String mockUserId = "dba9600f-c762-4378-8b9a-94015c0121e1";
+    private String mockUserId2 = "4013ce85-0d5c-44d6-9975-118266489a96";
 
     @Autowired
     public UserTagRepositoryTest(final UserTagRepository userTagRepository) {
@@ -44,8 +44,6 @@ public class UserTagRepositoryTest {
     @BeforeAll
     void createUserTag() {
         testUserTag = UserTag.builder()
-                        .id("4cde125a-2069-40b7-a716-ba4f0a55c134")
-                        .createdAt(StandardizedLocalDateTime.now())
                         .userId(mockUserId)
                         .tag(Tag.Patina)
                         .build();
@@ -82,10 +80,9 @@ public class UserTagRepositoryTest {
     @Test
     @Order(3)
     void testDeleteTagByUserIdAndTag() {
+
         deletableUserTag = UserTag.builder()
-                        .id("delete-this")
-                        .createdAt(StandardizedLocalDateTime.now())
-                        .userId(mockUserId)
+                        .userId(mockUserId2)
                         .tag(Tag.Patina)
                         .build();
 
@@ -95,7 +92,7 @@ public class UserTagRepositoryTest {
         assertNotNull(found);
         assertEquals(deletableUserTag.getId(), found.getId());
 
-        boolean deleted = userTagRepository.deleteTagByUserIdAndTag(mockUserId, deletableUserTag.getTag());
+        boolean deleted = userTagRepository.deleteTagByUserIdAndTag(mockUserId2, deletableUserTag.getTag());
         assertTrue(deleted);
     }
 }
