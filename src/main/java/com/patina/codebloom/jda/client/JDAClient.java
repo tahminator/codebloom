@@ -23,6 +23,7 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.JDAInitializer;
+import com.patina.codebloom.jda.client.options.LeaderboardMessageOptions;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -98,6 +99,44 @@ public class JDAClient {
         }
 
         return optionalGuild.get().getMembers();
+    }
+
+    /**
+     * Sends a message with the guild ID and channel ID of your choosing.
+     *
+     * Check LeaderboardMessageOptions for details on what is supported.
+     *
+     * @implNote - Use `LeaderboardMessageOptions.builder()` to create the options
+     * object.
+     */
+    public void sendLeaderboardMessage(final LeaderboardMessageOptions options) {
+        isJdaReadyOrThrow();
+        Guild guild = getGuildById(options.getGuildId());
+        if (guild == null) {
+            LOGGER.error("Guild does not exist to send leaderboard message.");
+            return;
+        }
+        TextChannel channel = guild.getTextChannelById(options.getChannelId());
+        if (channel == null) {
+            LOGGER.error("Channel does not exist on the given guild.");
+            return;
+        }
+
+        MessageEmbed embed = new EmbedBuilder()
+                        .setTitle(options.getTitle())
+                        .setDescription(options.getDescription())
+                        .setFooter(options.getFooterText(), options.getFooterIcon())
+                        .setImage("attachment://leaderboard.png")
+                        .setColor(options.getColor())
+                        .build();
+
+        LOGGER.info("Message has been built, ready to send...");
+
+        channel.sendFiles(FileUpload.fromData(options.getScreenshotBytes(), "leaderboard.png"))
+                        .setEmbeds(embed)
+                        .queue();
+
+        LOGGER.info("Message has been queued");
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.patina.codebloom.scheduled.discord;
+package com.patina.codebloom.api.admin.helper;
 
 import java.awt.Color;
 import java.time.Duration;
@@ -6,9 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Browser.NewContextOptions;
@@ -19,58 +17,35 @@ import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.ScreenshotType;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
-import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
-import com.patina.codebloom.common.db.repos.weekly.WeeklyMessageRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
 import com.patina.codebloom.jda.client.options.LeaderboardMessageOptions;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.utils.FileUpload;
 
-@Component
 @Slf4j
-@Profile("!ci")
-public class WeeklyLeaderboard {
-
-    private final JDAClient jdaClient;
-    private final WeeklyMessageRepository weeklyMessageRepository;
+@Service
+public class PatinaDiscordMessageHelper {
     private final LeaderboardRepository leaderboardRepository;
+    private final JDAClient jdaClient;
 
-    WeeklyLeaderboard(final JDAClient jdaClient,
-                    final WeeklyMessageRepository weeklyMessageRepository,
-                    final LeaderboardRepository leaderboardRepository) {
-        this.jdaClient = jdaClient;
-        this.weeklyMessageRepository = weeklyMessageRepository;
+    public PatinaDiscordMessageHelper(final LeaderboardRepository leaderboardRepository, final JDAClient jdaClient) {
         this.leaderboardRepository = leaderboardRepository;
+        this.jdaClient = jdaClient;
     }
 
-    @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60 * 60)
-    public void sendWeeklyLeaderboard() {
-        WeeklyMessage weeklyMessage = weeklyMessageRepository.getLatestWeeklyMessage();
-
-        if (weeklyMessage != null && !weeklyMessage
-                        .getCreatedAt()
-                        .isBefore(
-                                        LocalDateTime
-                                                        .now()
-                                                        .minusDays(7L))) {
-            log.info("WeeklyLeaderboard skipped.");
-            return;
-        }
-
-        log.info("WeeklyLeaderboard triggered.");
+    /**
+     * Loads the Patina page, takes a screenshot, and sends a final Discord message
+     * with the winners of the leaderboard.
+     */
+    public void sendLatestLeaderboardDiscordMessage() {
         try {
             log.info("Connecting to JDA client...");
             jdaClient.connect();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize JDAClient", e);
         }
-        log.info("JDDA Client should be connected now. Sending leaderboard...");
-
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
             BrowserContext context = browser.newContext(new NewContextOptions()
@@ -101,8 +76,10 @@ public class WeeklyLeaderboard {
             long hoursLeft = remaining.toHours() % 24;
             long minutesLeft = remaining.toMinutes() % 60;
 
+            String title = String.format("🏆🏆🏆 - %s is now complete!", currentLeaderboard.getName());
+
             String description = String.format("""
-                            Hey everyone! Here is a weekly update on the LeetCode leaderboard for our very own Patina members!
+                            CONGRATS ON THE WINNERS FROM THIS LEADERBOARD!
 
                             🥇- <@%s> - %s pts
                             🥈- <@%s> - %s pts
@@ -110,10 +87,7 @@ public class WeeklyLeaderboard {
 
                             To view the rest of the members, visit the website or check out the image embedded in this message!
 
-                            Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
-
-
-                            See you next week!
+                            The new leaderboard just started, so get that head start on these problems!
 
                             Beep boop,
                             Codebloom
@@ -124,27 +98,21 @@ public class WeeklyLeaderboard {
                             users.get(1).getDiscordId(),
                             users.get(1).getTotalScore(),
                             users.get(2).getDiscordId(),
-                            users.get(2).getTotalScore(),
-                            daysLeft,
-                            hoursLeft,
-                            minutesLeft);
+                            users.get(2).getTotalScore());
 
             jdaClient.sendLeaderboardMessage(
                             LeaderboardMessageOptions.builder()
                                             .guildId(jdaClient.getPatinaGuildId())
                                             .channelId(jdaClient.getPatinaLeetcodeChannelId())
                                             .description(description)
-                                            .title("Patina Leaderboard - " + currentLeaderboard.getName())
+                                            .title(title)
                                             .footerText("Codebloom - LeetCode Leaderboard for Patina Network")
                                             .footerIcon("https://codebloom.patinanetwork.org/favicon.ico")
                                             .color(new Color(69, 129, 103))
                                             .screenshotBytes(screenshotBytes)
                                             .build());
-
-            weeklyMessageRepository.createLatestWeeklyMessage();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
 import com.patina.codebloom.api.admin.body.UpdateAdminBody;
+import com.patina.codebloom.api.admin.helper.PatinaDiscordMessageHelper;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.User;
@@ -41,16 +42,19 @@ public class AdminController {
     private final LeaderboardRepository leaderboardRepository;
     private final AnnouncementRepository announcementRepository;
     private final Protector protector;
+    private final PatinaDiscordMessageHelper patinaDiscordMessageHelper;
 
     public AdminController(
                     final LeaderboardRepository leaderboardRepository,
                     final Protector protector,
                     final UserRepository userRepository,
-                    final AnnouncementRepository announcementRepository) {
+                    final AnnouncementRepository announcementRepository,
+                    final PatinaDiscordMessageHelper patinaDiscordMessageHelper) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
         this.userRepository = userRepository;
         this.announcementRepository = announcementRepository;
+        this.patinaDiscordMessageHelper = patinaDiscordMessageHelper;
     }
 
     @Operation(summary = "Drops current leaderboard and add new one", description = """
@@ -74,6 +78,7 @@ public class AdminController {
         // deactivated, not deleted).
         Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
         if (currentLeaderboard != null) {
+            patinaDiscordMessageHelper.sendLatestLeaderboardDiscordMessage();
             leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
         }
 
