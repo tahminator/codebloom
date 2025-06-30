@@ -8,7 +8,11 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 public interface LeaderboardRepository {
     Leaderboard getRecentLeaderboardMetadata();
 
+    Leaderboard getLeaderboardMetadataById(String id);
+
     ArrayList<UserWithScore> getRecentLeaderboardUsers(int page, int pageSize, String query, boolean patina);
+
+    ArrayList<UserWithScore> getLeaderboardUsersById(String id, int page, int pageSize, String query, boolean patina);
 
     boolean disableLeaderboardById(String leaderboardId);
 
@@ -25,6 +29,8 @@ public interface LeaderboardRepository {
     boolean updateUserPointsFromLeaderboard(String leaderboardId, String userId, int totalScore);
 
     int getRecentLeaderboardUserCount(boolean patina, String query);
+
+    int getLeaderboardUserCountById(String id, boolean patina, String query);
 
     int getLeaderboardCount();
 

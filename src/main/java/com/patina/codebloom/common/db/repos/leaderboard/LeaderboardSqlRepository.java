@@ -107,6 +107,52 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
+    public Leaderboard getLeaderboardMetadataById(final String id) {
+        String sql = """
+                        SELECT
+                            id,
+                            name,
+                            "createdAt",
+                            "deletedAt",
+                            "shouldExpireBy"
+                        FROM "Leaderboard"
+                        WHERE
+                            id = ?
+                        ORDER BY "createdAt" DESC
+                        LIMIT 1
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    var leaderboardId = rs.getString("id");
+                    var name = rs.getString("name");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    Timestamp deletedAtTimestamp = rs.getTimestamp("deletedAt");
+                    Timestamp shouldExpireByTimestamp = rs.getTimestamp("shouldExpireBy");
+
+                    LocalDateTime deletedAt = null;
+                    if (deletedAtTimestamp != null) {
+                        deletedAt = deletedAtTimestamp.toLocalDateTime();
+                    }
+
+                    LocalDateTime shouldExpireBy = null;
+                    if (shouldExpireByTimestamp != null) {
+                        shouldExpireBy = shouldExpireByTimestamp.toLocalDateTime();
+                    }
+
+                    return new Leaderboard(leaderboardId, name, createdAt, deletedAt, shouldExpireBy);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch recent leaderboard metadata", e);
+        }
+
+        return null;
+    }
+
+    @Override
     public ArrayList<UserWithScore> getRecentLeaderboardUsers(final int page, final int pageSize, final String query, final boolean patina) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
@@ -158,6 +204,69 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setString(4, "%" + query + "%");
             stmt.setInt(5, pageSize);
             stmt.setInt(6, (page - 1) * pageSize);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var userId = rs.getString("userId");
+                    var leaderboardId = rs.getString("leaderboardId");
+
+                    UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
+
+                    if (user != null) {
+                        users.add(user);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch recent leaderboard users", e);
+        }
+
+        return users;
+    }
+
+    @Override
+    public ArrayList<UserWithScore> getLeaderboardUsersById(final String id, final int page, final int pageSize, final String query, final boolean patina) {
+        ArrayList<UserWithScore> users = new ArrayList<>();
+
+        String sql = """
+                        SELECT
+                            m."userId",
+                            l.id as "leaderboardId"
+                        FROM
+                            "Leaderboard" l
+                        JOIN "Metadata" m ON
+                            m."leaderboardId" = l.id
+                        JOIN "User" u ON
+                            u.id = m."userId"
+                        LEFT JOIN "UserTag" ut
+                            ON ut."userId" = m."userId"
+                        WHERE
+                            l.id = ?
+                        AND
+                            (? = FALSE OR ut.tag = 'Patina')
+                        AND
+                            (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
+                        ORDER BY
+                            m."totalScore" DESC,
+                            -- The following case is used to put users with linked leetcode names before
+                            -- those who don't.
+                            CASE
+                                WHEN m."totalScore" = 0 THEN
+                                    CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
+                                ELSE 0
+                            END,
+                            -- This is the tie breaker if we can't sort them by the above conditions.
+                            m."createdAt" ASC
+                        LIMIT ? OFFSET ?;
+                                                """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+            stmt.setBoolean(2, patina);
+            stmt.setString(3, "%" + query + "%");
+            stmt.setString(4, "%" + query + "%");
+            stmt.setString(5, "%" + query + "%");
+            stmt.setInt(6, pageSize);
+            stmt.setInt(7, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -264,6 +373,49 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean(1, patina);
             stmt.setString(2, "%" + query + "%");
             stmt.setString(3, "%" + query + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve leaderboard users", e);
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int getLeaderboardUserCountById(final String id, final boolean patina, final String query) {
+        String sql = """
+                            SELECT
+                                COUNT(m.id)
+                            FROM
+                                "Leaderboard" l
+                            JOIN
+                                "Metadata" m
+                            ON
+                                m."leaderboardId" = l.id
+                            JOIN
+                                "User" u
+                            ON
+                                u.id = m."userId"
+                            LEFT JOIN
+                                "UserTag" ut
+                            ON
+                                ut."userId" = m."userId"
+                            WHERE
+                                l.id = ?
+                            AND
+                                (? = FALSE OR ut.tag = 'Patina')
+                            AND
+                                (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
+                        """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+            stmt.setBoolean(2, patina);
+            stmt.setString(3, "%" + query + "%");
+            stmt.setString(4, "%" + query + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
