@@ -1,20 +1,21 @@
 import PrettyCounter from "@/components/ui/pretty-counter/PrettyCounter";
-import { useCurrentLeaderboardMetadataQuery } from "@/lib/api/queries/leaderboard";
+import { useLeaderboardMetadataByIdQuery } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import { Box, Button, Center, Skeleton, Title } from "@mantine/core";
+import { Center, Title, Skeleton, Button, Box } from "@mantine/core";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-type LeaderboardMetadataOptions = {
+type LeaderboardWithIdMetadataOptions = {
   showClock?: boolean;
+  leaderboardId: string;
 };
 
-export default function LeaderboardMetadata(
-  props: LeaderboardMetadataOptions = {},
+export default function LeaderboardMetadataWithId(
+  props: LeaderboardWithIdMetadataOptions,
 ) {
-  const { showClock = false } = props;
+  const { showClock = false, leaderboardId } = props;
 
-  const { data, status } = useCurrentLeaderboardMetadataQuery();
+  const { data, status } = useLeaderboardMetadataByIdQuery(leaderboardId);
   const [countdown, reset] = useCountdown(-10);
 
   useEffect(() => {

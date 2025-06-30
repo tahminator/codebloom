@@ -1,6 +1,7 @@
 import AdminPage from "@/app/admin/admin.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import ErrorPage from "@/app/error/Error.page";
+import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
 import AllLeaderboardsPage from "@/app/leaderboard/all/AllLeaderboards.page";
 import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
 import LoginPage from "@/app/login/Login.page";
@@ -34,6 +35,11 @@ export const router = createBrowserRouter([
   {
     path: "/leaderboard/all",
     element: <AllLeaderboardsPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/leaderboard/:leaderboardId",
+    element: <LeaderboardWithIdPage />,
     errorElement: <ErrorPage />,
   },
   {
