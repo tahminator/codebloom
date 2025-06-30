@@ -1,5 +1,6 @@
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
+import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAllLeaderboardsMetadataQuery } from "@/lib/api/queries/leaderboard";
 import { timeDiff } from "@/lib/timeDiff";
 import {
@@ -8,6 +9,7 @@ import {
   Card,
   Center,
   Flex,
+  Loader,
   Overlay,
   Table,
   Title,
@@ -30,11 +32,30 @@ export default function DashboardListView() {
   } = useAllLeaderboardsMetadataQuery({});
 
   if (status === "pending") {
-    return <>Pending</>;
+    return (
+      <Box>
+        <Card withBorder padding={"md"} radius={"md"}>
+          <Flex
+            direction={"row"}
+            justify={"center"}
+            align={"center"}
+            w={"100%"}
+            h={"100%"}
+          >
+            <Loader />
+          </Flex>
+        </Card>
+      </Box>
+    );
   }
 
   if (status === "error") {
-    return <>error</>;
+    return (
+      <ToastWithRedirect
+        to="/"
+        message="Sorry, something went wrong. Please try again later."
+      />
+    );
   }
 
   if (!data.success) {
