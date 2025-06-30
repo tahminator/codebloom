@@ -27,9 +27,6 @@ import com.patina.codebloom.jda.client.JDAClient;
 import com.patina.codebloom.jda.client.options.LeaderboardMessageOptions;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 @Component
 @Slf4j
