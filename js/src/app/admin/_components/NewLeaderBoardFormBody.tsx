@@ -14,7 +14,7 @@ function NewLeaderboardFormBody({
   currentLeaderboardName,
 }: NewLeaderboardFormBodyProps) {
   const [isModalOpen, setModalOpen] = useState(false);
-  const { mutate } = useCreateLeaderboardMutation();
+  const { mutate, status } = useCreateLeaderboardMutation();
   const form = useForm({
     validate: zodResolver(adminSchema(currentLeaderboardName)),
     initialValues: {
@@ -27,6 +27,10 @@ function NewLeaderboardFormBody({
   };
 
   const onSubmit = (values: z.infer<ReturnType<typeof adminSchema>>) => {
+    notifications.show({
+      message: "Please wait, this can take a while...",
+      color: "blue",
+    });
     mutate(
       { name: values.name },
       {
@@ -71,7 +75,8 @@ function NewLeaderboardFormBody({
             size="xs"
             mt="sm"
             variant="outline"
-            disabled={!form.isValid("confirmation")}
+            disabled={!form.isValid("confirmation") || status === "pending"}
+            loading={status === "pending"}
           >
             Submit
           </Button>
