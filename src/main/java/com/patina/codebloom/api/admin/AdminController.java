@@ -81,6 +81,8 @@ public class AdminController {
             leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId())
         }
 
+        hi how are you;
+
         // TODO - Implement the logic to support shouldExpireBy
         Leaderboard newLeaderboard = new Leaderboard(name, null, null);
         newLeaderboard.setId(UUID.randomUUID().toString());
