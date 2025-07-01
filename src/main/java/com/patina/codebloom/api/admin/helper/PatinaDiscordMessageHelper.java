@@ -87,9 +87,9 @@ public class PatinaDiscordMessageHelper {
 
                             To view the rest of the members, visit the website or check out the image embedded in this message!
 
-                            The new leaderboard just started, so get that head start on these problems!
+                            The new leaderboard just started, so best of luck to everyone!
 
-                            Beep boop,
+                            Happy LeetCoding,
                             Codebloom
                             <https://codebloom.patinanetwork.org>
                             """,
