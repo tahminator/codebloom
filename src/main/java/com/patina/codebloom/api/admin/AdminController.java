@@ -78,8 +78,7 @@ public class AdminController {
         // deactivated, not deleted).
         Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
         if (currentLeaderboard != null) {
-            patinaDiscordMessageHelper.sendLatestLeaderboardDiscordMessage();
-            leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
+            leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId())
         }
 
         // TODO - Implement the logic to support shouldExpireBy
