@@ -1,4 +1,4 @@
-package com.patina.codebloom.potd;
+package com.patina.codebloom.db.potd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
