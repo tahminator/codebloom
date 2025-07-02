@@ -58,6 +58,33 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
     }
 
     @Override
+    public WeeklyMessage getWeeklyMessageById(final String id) {
+        String sql = """
+                        SELECT
+                            id,
+                            "createdAt"
+                        FROM
+                            "WeeklyMessage"
+                        WHERE
+                            id = ?
+                        LIMIT 1
+                                            """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetToWeeklyMessage(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get weekly message by ID", e);
+        }
+
+        return null;
+    }
+
+    @Override
     public boolean createLatestWeeklyMessage(final WeeklyMessage message) {
         String sql = """
                             INSERT INTO "WeeklyMessage"
@@ -104,4 +131,22 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
         }
     }
 
+    @Override
+    public boolean deleteWeeklyMessageById(final String id) {
+        String sql = """
+                        DELETE FROM
+                            "WeeklyMessage"
+                        WHERE
+                            id = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete weekly message", e);
+        }
+    }
 }
