@@ -74,14 +74,16 @@
         <dependency>
             <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
             <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>5.0.0</version>
+                <artifactId>rest-assured</artifactId>
+                <version>5.0.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
             <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured-all</artifactId>
-            <version>5.0.0</version>
+                <artifactId>rest-assured-all</artifactId>
+                <version>5.0.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

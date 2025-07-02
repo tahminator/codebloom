@@ -2,12 +2,12 @@ package com.patina.codebloom.common.db.models.weekly;
 
 import java.time.LocalDateTime;
 
-import groovy.transform.EqualsAndHashCode;
-import groovy.transform.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
