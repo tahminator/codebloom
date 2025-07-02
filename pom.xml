@@ -180,7 +180,7 @@
                     <!-- for showing output of sentry-cli -->
                     <debugSentryCli>true</debugSentryCli>
 
-                    <skip>${env.SKIP}</skip>
+                    <skip>${env.SKIP:true}</skip>
                     <!--  Disable source-context -->
                     <skipSourceBundle>false</skipSourceBundle>
                     <!--  Disable auto-install of SDK and Integrations -->
