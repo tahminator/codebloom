@@ -34,4 +34,6 @@ public interface WeeklyMessageRepository {
     boolean createLatestWeeklyMessage();
 
     boolean deleteWeeklyMessageById(String id);
+
+    boolean deleteLatestWeeklyMessage();
 }
