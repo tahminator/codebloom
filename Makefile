@@ -1,14 +1,14 @@
 migrate:
-	dotenvx run -- mvn flyway:migrate -Dflyway.locations=filesystem:./db
+	dotenvx run -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
 migrate-ci:
-	dotenvx run -f .env.ci -- mvn flyway:migrate -Dflyway.locations=filesystem:./db
+	dotenvx run -f .env.ci -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
 migrate-prod:
-	dotenvx run -f .env.production -- mvn flyway:migrate -Dflyway.locations=filesystem:./db/migration
+	dotenvx run -f .env.production -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
 
 java-dev:
-	dotenvx run -- mvn spring-boot:run
+	dotenvx run -- ./mvnw spring-boot:run
 
 js-dev:
 	cd js && pnpm run dev
@@ -17,7 +17,7 @@ dev:
 	pnpm i -g concurrently && concurrently "make java-dev" "make js-dev"
 
 backend-install:
-	dotenvx run -- mvn install -DskipTests=true
+	dotenvx run -- ./mvnw install -DskipTests=true
 
 backend-test:
-	dotenvx run -- mvn checkstyle:check test -Dspring.profiles.active=ci
+	dotenvx run -- ./mvnw checkstyle:check test -Dspring.profiles.active=ci
