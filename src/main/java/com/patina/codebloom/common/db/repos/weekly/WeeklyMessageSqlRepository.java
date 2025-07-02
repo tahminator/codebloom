@@ -149,4 +149,27 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
             throw new RuntimeException("Failed to delete weekly message", e);
         }
     }
+
+    @Override
+    public boolean deleteLatestWeeklyMessage() {
+        String sql = """
+                        WITH to_delete AS (
+                            SELECT *
+                            FROM "WeeklyMessage"
+                            ORDER BY "createdAt" DESC
+                            LIMIT 1
+                        )
+                        DELETE FROM "WeeklyMessage" wm
+                        USING to_delete td
+                        WHERE wm.id = td.id
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete weekly message", e);
+        }
+    }
 }
