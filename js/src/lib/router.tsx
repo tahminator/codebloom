@@ -7,10 +7,13 @@ import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
 import LoginPage from "@/app/login/Login.page";
 import Onboarding from "@/app/onboarding/Onboarding.page";
 import RootPage from "@/app/Root.page";
+import SettingsPage from "@/app/settings/Settings.page";
 import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDetails.page";
 import UserSubmissionsPage from "@/app/user/[userId]/UserProfile.page";
+import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { createBrowserRouter } from "react-router-dom";
 
+const isProduction = process.env.NODE_ENV === "production";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -60,6 +63,19 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/settings",
+    element:
+      isProduction ?
+        <ToastWithRedirect
+          to={"/"}
+          message={
+            "Sorry, this is not available right now. Please try again later."
+          }
+        />
+      : <SettingsPage />,
     errorElement: <ErrorPage />,
   },
 ]);
