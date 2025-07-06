@@ -2,9 +2,16 @@ package com.patina.codebloom.common.db.models.question;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class QuestionWithUser extends Question {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String discordName;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String leetcodeUsername;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String nickname;
 
     public QuestionWithUser(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty, final int questionNumber, final String questionLink,

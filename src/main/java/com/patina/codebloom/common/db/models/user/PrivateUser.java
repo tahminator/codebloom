@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * This should only ever be used to do a verification on a user's Leetcode
  * profile. Do NOT leak the key.
  */
 public class PrivateUser extends User {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final String verifyKey;
 
     public PrivateUser(

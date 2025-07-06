@@ -4,7 +4,10 @@ import java.util.ArrayList;
 
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class UserWithScore extends User {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private int totalScore;
 
     public UserWithScore(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final Boolean admin, final int totalScore,
