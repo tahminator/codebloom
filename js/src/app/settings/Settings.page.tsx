@@ -30,17 +30,19 @@ export default function SettingsPage() {
     );
   }
 
+  const schoolExists = data.user.schoolEmail !== null;
+
   return (
     <>
       <Header />
-      <Box p={"lg}"}>
+      <Box p={"lg"}>
         <Box>
           <Center>
             <Title order={3} p="md">
               Settings
             </Title>
           </Center>
-          <SchoolVerifySettingsCard user={data.user} />
+          <SchoolVerifySettingsCard schoolExists={schoolExists} />
         </Box>
       </Box>
       <Footer />
