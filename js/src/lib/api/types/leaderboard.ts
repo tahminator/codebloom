@@ -1,7 +1,3 @@
-export type Leaderboard = {
-  id: string;
-  name: string;
-  createdAt: string;
-  deletedAt: string | null;
-  shouldExpireBy: string | null;
-};
+import { components } from "@/lib/api/types/autogen/schema";
+
+export type Leaderboard = components["schemas"]["Leaderboard"];
