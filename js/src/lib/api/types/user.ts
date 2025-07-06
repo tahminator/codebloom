@@ -5,6 +5,7 @@ export type User = {
   leetcodeUsername: string | null;
   nickname: string | null;
   admin: boolean;
+  schoolEmail: string | null;
 };
 
 export type UserWithScore = User & { totalScore: number };
