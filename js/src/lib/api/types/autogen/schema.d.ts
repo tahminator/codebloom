@@ -4,1618 +4,1618 @@
  */
 
 export interface paths {
-    "/api/auth/flow/discord": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Start Discord OAuth authentication flow
-         * @description Initiates the OAuth flow by redirecting the user to Discord for authentication. This is a Redirect route that does redirects as responses.
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Redirect to Discord's authentication page */
-                302: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/api/auth/flow/discord": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/auth/flow/callback/discord": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * Start Discord OAuth authentication flow
+     * @description Initiates the OAuth flow by redirecting the user to Discord for authentication. This is a Redirect route that does redirects as responses.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Redirect to Discord's authentication page */
+        302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
-        /**
-         * Discord OAuth authentication flow callback
-         * @description This route is the callback endpoint for the Discord OAuth authentication flow.
-         *     Once the user successfully authenticates with Discord, they are redirected back to this endpoint
-         *     where the server will then handle the authentication logic. This is a Redirect route that does
-         *     redirects as responses.
-         *
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Redirect to `/dashboard` on successful authentication. */
-                302: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Redirect to `/login?success=false&message=This is my message` on unsuccessful authentication. */
-                "302 ": {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/leetcode/set": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Set a Leetcode username for the current user
-         * @description Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add.
-         *     Cannot re-use this endpoint once a name is set.
-         *
-         */
-        post: operations["setLeetcodeUsername"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/flow/callback/discord": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leetcode/check": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * Discord OAuth authentication flow callback
+     * @description This route is the callback endpoint for the Discord OAuth authentication flow.
+     *     Once the user successfully authenticates with Discord, they are redirected back to this endpoint
+     *     where the server will then handle the authentication logic. This is a Redirect route that does
+     *     redirects as responses.
+     *
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Redirect to `/dashboard` on successful authentication. */
+        302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
-        get?: never;
-        put?: never;
-        /**
-         * Check the current user's LeetCode submissions and update leaderboard
-         * @description Protected endpoint that handles the logic of checking the most recent submissions,
-         *     as well as updating the current leaderboard with any new points the user has accumulated.
-         *     There is a rate limit on the route to prevent abuse (currently: 5 minutes).
-         *
-         */
-        post: operations["checkLatestSubmissions"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/school/verify": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+        /** @description Redirect to `/login?success=false&message=This is my message` on unsuccessful authentication. */
+        "302 ": {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
-        get?: never;
-        put?: never;
-        /**
-         * Verifies the JWC
-         * @description Verifies the magic link sent to the user's email. If successful, the user will be enrolled with the school tag.
-         */
-        post: operations["verifySchoolEmail"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/auth/school/enroll": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Enroll with a school email (if supported)
-         * @description Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.
-         *
-         */
-        post: operations["enrollSchool"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leetcode/set": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/user/admin/toggle": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Allows current admin to toggle another user's admin status */
-        post: operations["updateAdmin"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Set a Leetcode username for the current user
+     * @description Protected endpoint that allows a user to submit a JSON with the leetcode username they would like to add.
+     *     Cannot re-use this endpoint once a name is set.
+     *
+     */
+    post: operations["setLeetcodeUsername"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leetcode/check": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/leaderboard/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Drops current leaderboard and add new one
-         * @description     BE SUPER CAREFUL WITH THIS ROUTE!!!!!!! It will drop the current leaderboard and add a new leaderboard based on the given parameters.
-         *
-         */
-        post: operations["createLeaderboard"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Check the current user's LeetCode submissions and update leaderboard
+     * @description Protected endpoint that handles the logic of checking the most recent submissions,
+     *     as well as updating the current leaderboard with any new points the user has accumulated.
+     *     There is a rate limit on the route to prevent abuse (currently: 5 minutes).
+     *
+     */
+    post: operations["checkLatestSubmissions"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/school/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/announcement/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a new announcement (only for admins). */
-        post: operations["createNewAnnouncement"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Verifies the JWC
+     * @description Verifies the magic link sent to the user's email. If successful, the user will be enrolled with the school tag.
+     */
+    post: operations["verifySchoolEmail"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/school/enroll": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Basic metadata about the server */
-        get: operations["apiIndex"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Enroll with a school email (if supported)
+     * @description Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.
+     *
+     */
+    post: operations["enrollSchool"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/admin/user/admin/toggle": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/user/{userId}/submissions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Returns a list of the questions successfully submitted by the user.
-         * @description Protected endpoint that returns the list of questions completed by the user.
-         *     These questions are guaranteed to be completed by the user.
-         *
-         */
-        get: operations["getAllQuestionsForUser"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Allows current admin to toggle another user's admin status */
+    post: operations["updateAdmin"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/admin/leaderboard/create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/user/{userId}/profile": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Public route that returns the given user's profile
-         * @description     Unprotected endpoint that returns the user profile of the user ID that is passed to the endpoint's path.
-         *
-         */
-        get: operations["getUserProfileByUserId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Drops current leaderboard and add new one
+     * @description     BE SUPER CAREFUL WITH THIS ROUTE!!!!!!! It will drop the current leaderboard and add a new leaderboard based on the given parameters.
+     *
+     */
+    post: operations["createLeaderboard"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/admin/announcement/create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/user/all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Public route that returns a list of all the users' metadata.
-         * @description     Unprotected endpoint that returns basic metadata for all users.
-         *
-         */
-        get: operations["getAllUsers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Create a new announcement (only for admins). */
+    post: operations["createNewAnnouncement"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leetcode/submission/{submissionId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Returns submission data.
-         * @description Returns the submission data from any user, as long as the user making the request is authenticated.
-         *     This includes the scraped LeetCode description, which is HTML that has been sanitized by the server,
-         *     so it is safe to use on the frontend.
-         *
-         */
-        get: operations["getSubmissionBySubmissionId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Basic metadata about the server */
+    get: operations["apiIndex"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/user/{userId}/submissions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leetcode/potd": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Returns current problem of the day.
-         * @description Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.
-         *
-         */
-        get: operations["getCurrentPotd"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Returns a list of the questions successfully submitted by the user.
+     * @description Protected endpoint that returns the list of questions completed by the user.
+     *     These questions are guaranteed to be completed by the user.
+     *
+     */
+    get: operations["getAllQuestionsForUser"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/user/{userId}/profile": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leetcode/key": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Returns the currently authenticated user's verification key.
-         * @description         Protected endpoint that returns the currently authenticated user's verification key. In order to set their Leetcode username,
-         *             users must change their About Me in order to pass validation.
-         *
-         */
-        get: operations["getVerificationKey"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Public route that returns the given user's profile
+     * @description     Unprotected endpoint that returns the user profile of the user ID that is passed to the endpoint's path.
+     *
+     */
+    get: operations["getUserProfileByUserId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/user/all": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leaderboard/{leaderboardId}/user/all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Unprotected route that fetches metadata of a leaderboard via leaderboard ID. */
-        get: operations["getLeaderboardUsersById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Public route that returns a list of all the users' metadata.
+     * @description     Unprotected endpoint that returns basic metadata for all users.
+     *
+     */
+    get: operations["getAllUsers"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leetcode/submission/{submissionId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leaderboard/{leaderboardId}/metadata": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Unprotected route that fetches metadata of a leaderboard via leaderboard ID. */
-        get: operations["getLeaderboardMetadataByLeaderboardId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Returns submission data.
+     * @description Returns the submission data from any user, as long as the user making the request is authenticated.
+     *     This includes the scraped LeetCode description, which is HTML that has been sanitized by the server,
+     *     so it is safe to use on the frontend.
+     *
+     */
+    get: operations["getSubmissionBySubmissionId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leetcode/potd": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leaderboard/current/user/{userId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Fetch the specific user data in the currently active leaderboard data. */
-        get: operations["getUserCurrentLeaderboardFull"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Returns current problem of the day.
+     * @description Returns the current problem of the day, as long as there is a problem of the day set and the user hasn't completed the problem already.
+     *
+     */
+    get: operations["getCurrentPotd"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leetcode/key": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leaderboard/current/user/all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Fetch the currently active leaderboard data, attaching the users for each leaderboard. */
-        get: operations["getCurrentLeaderboardUsers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Returns the currently authenticated user's verification key.
+     * @description         Protected endpoint that returns the currently authenticated user's verification key. In order to set their Leetcode username,
+     *             users must change their About Me in order to pass validation.
+     *
+     */
+    get: operations["getVerificationKey"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leaderboard/{leaderboardId}/user/all": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leaderboard/current/metadata": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Unprotected route that fetches the currently active leaderboard data, attaching only the top 5 users for each leaderboard. */
-        get: operations["getCurrentLeaderboardMetadata"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Unprotected route that fetches metadata of a leaderboard via leaderboard ID. */
+    get: operations["getLeaderboardUsersById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leaderboard/{leaderboardId}/metadata": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/leaderboard/all/metadata": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the metadata for all leaderboards. */
-        get: operations["getAllLeaderboardMetadata"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Unprotected route that fetches metadata of a leaderboard via leaderboard ID. */
+    get: operations["getLeaderboardMetadataByLeaderboardId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leaderboard/current/user/{userId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/auth/validate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Validate if the user is authenticated or not. */
-        get: operations["validateAuth"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Fetch the specific user data in the currently active leaderboard data. */
+    get: operations["getUserCurrentLeaderboardFull"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leaderboard/current/user/all": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Logs user out
-         * @description Logs the user out if currently authenticated. This is a Redirect route that does redirects as responses.
-         */
-        get: operations["logout"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Fetch the currently active leaderboard data, attaching the users for each leaderboard. */
+    get: operations["getCurrentLeaderboardUsers"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leaderboard/current/metadata": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/announcement": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Fetches the latest announcement, if available and/or not expired.
-         * @description NOTE - 200 does not mean an announcement was found. The correct way to determine whether there is an announcement or not
-         *     is to use the success key of the payload and check whether it is true (announcement found) or false (no announcement currently)
-         *
-         */
-        get: operations["getLatestAnnouncement"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Unprotected route that fetches the currently active leaderboard data, attaching only the top 5 users for each leaderboard. */
+    get: operations["getCurrentLeaderboardMetadata"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/leaderboard/all/metadata": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /** Returns the metadata for all leaderboards. */
+    get: operations["getAllLeaderboardMetadata"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/validate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Validate if the user is authenticated or not. */
+    get: operations["validateAuth"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/logout": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Logs user out
+     * @description Logs the user out if currently authenticated. This is a Redirect route that does redirects as responses.
+     */
+    get: operations["logout"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/announcement": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Fetches the latest announcement, if available and/or not expired.
+     * @description NOTE - 200 does not mean an announcement was found. The correct way to determine whether there is an announcement or not
+     *     is to use the success key of the payload and check whether it is true (announcement found) or false (no announcement currently)
+     *
+     */
+    get: operations["getLatestAnnouncement"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        UnsafeGenericFailureResponse: {
-            /** @default false */
-            success: boolean;
-            message: string;
-        };
-        UnsafeEmptySuccessResponse: {
-            /** @default true */
-            success: boolean;
-            message: string;
-        };
-        LeetcodeUsernameObject: {
-            leetcodeUsername: string;
-        };
-        UnsafeRateLimitResponse: {
-            /** @default false */
-            success: boolean;
-            /** @default 28 */
-            message: string;
-        };
-        AcceptedSubmission: {
-            title: string;
-            /** Format: int32 */
-            points: number;
-        };
-        ApiResponderArrayListAcceptedSubmission: {
-            success: boolean;
-            payload: components["schemas"]["AcceptedSubmission"][];
-            message: string;
-        };
-        ApiResponderObject: {
-            success: boolean;
-            payload: Record<string, never>;
-            message: string;
-        };
-        EmailBody: {
-            email: string;
-        };
-        UpdateAdminBody: {
-            id: string;
-            toggleTo: boolean;
-        };
-        ApiResponderUser: {
-            success?: boolean;
-            payload: components["schemas"]["User"];
-            message?: string;
-        };
-        User: {
-            id: string;
-            discordId: string;
-            discordName: string;
-            leetcodeUsername: string;
-            nickname: string;
-            admin: boolean;
-            schoolEmail?: string;
-            tags: components["schemas"]["UserTag"][];
-        };
-        UserTag: {
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            userId: string;
-            /** @enum {string} */
-            tag: UserTagTag;
-        };
-        NewLeaderboardBody: {
-            name: string;
-        };
-        ApiResponderVoid: {
-            success: boolean;
-            payload: Record<string, never>;
-            message: string;
-        };
-        CreateAnnouncementBody: {
-            message: string;
-            /** Format: date-time */
-            expiresAt: string;
-            showTimer?: boolean;
-        };
-        Announcement: {
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            expiresAt: string;
-            showTimer: boolean;
-            message: string;
-        };
-        ApiResponderAnnouncement: {
-            success: boolean;
-            payload: components["schemas"]["Announcement"];
-            message: string;
-        };
-        ApiResponderServerMetadataObject: {
-            success: boolean;
-            payload: components["schemas"]["ServerMetadataObject"];
-            message: string;
-        };
-        ServerMetadataObject: {
-            name: string;
-            version: string;
-            description: string;
-            authors: string[];
-        };
-        ApiResponderPageArrayListQuestion: {
-            success: boolean;
-            payload: components["schemas"]["PageArrayListQuestion"];
-            message: string;
-        };
-        PageArrayListQuestion: {
-            hasNextPage: boolean;
-            items: components["schemas"]["Question"][];
-            /** Format: int32 */
-            pages: number;
-            /** Format: int32 */
-            pageSize: number;
-        };
-        Question: {
-            id: string;
-            userId: string;
-            questionSlug: string;
-            questionTitle: string;
-            /** @enum {string} */
-            questionDifficulty: QuestionQuestionDifficulty;
-            /** Format: int32 */
-            questionNumber: number;
-            questionLink: string;
-            description: string;
-            /** Format: int32 */
-            pointsAwarded: number;
-            /** Format: float */
-            acceptanceRate: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            submittedAt: string;
-            runtime: string;
-            memory: string;
-            code: string;
-            language: string;
-            submissionId: string;
-        };
-        ApiResponderPageArrayListUser: {
-            success: boolean;
-            payload: components["schemas"]["PageArrayListUser"];
-            message: string;
-        };
-        PageArrayListUser: {
-            hasNextPage: boolean;
-            items: components["schemas"]["User"][];
-            /** Format: int32 */
-            pages: number;
-            /** Format: int32 */
-            pageSize: number;
-        };
-        ApiResponderQuestion: {
-            success: boolean;
-            payload: components["schemas"]["Question"];
-            message: string;
-        };
-        ApiResponderPOTD: {
-            success: boolean;
-            payload: components["schemas"]["POTD"];
-            message: string;
-        };
-        POTD: {
-            id: string;
-            title: string;
-            slug: string;
-            /** Format: float */
-            multiplier: number;
-            /** Format: date-time */
-            createdAt: string;
-        };
-        ApiResponderString: {
-            success: boolean;
-            payload: string;
-            message: string;
-        };
-        ApiResponderPageListUserWithScore: {
-            success: boolean;
-            payload: components["schemas"]["PageListUserWithScore"];
-            message: string;
-        };
-        PageListUserWithScore: {
-            hasNextPage: boolean;
-            items: components["schemas"]["UserWithScore"][];
-            /** Format: int32 */
-            pages: number;
-            /** Format: int32 */
-            pageSize: number;
-        };
-        UserWithScore: {
-            id: string;
-            discordId: string;
-            discordName: string;
-            leetcodeUsername: string;
-            nickname: string;
-            admin: boolean;
-            schoolEmail?: string;
-            tags: components["schemas"]["UserTag"][];
-            /** Format: int32 */
-            totalScore: number;
-        };
-        ApiResponderLeaderboard: {
-            success: boolean;
-            payload: components["schemas"]["Leaderboard"];
-            message: string;
-        };
-        Leaderboard: {
-            id: string;
-            name: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            deletedAt: string;
-            /** Format: date-time */
-            shouldExpireBy: string;
-        };
-        ApiResponderUserWithScore: {
-            success: boolean;
-            payload: components["schemas"]["UserWithScore"];
-            message: string;
-        };
-        ApiResponderPageArrayListUserWithScore: {
-            success: boolean;
-            payload: components["schemas"]["PageArrayListUserWithScore"];
-            message: string;
-        };
-        PageArrayListUserWithScore: {
-            hasNextPage: boolean;
-            items: components["schemas"]["UserWithScore"][];
-            /** Format: int32 */
-            pages: number;
-            /** Format: int32 */
-            pageSize: number;
-        };
-        ApiResponderPageArrayListLeaderboard: {
-            success: boolean;
-            payload: components["schemas"]["PageArrayListLeaderboard"];
-            message: string;
-        };
-        PageArrayListLeaderboard: {
-            hasNextPage: boolean;
-            items: components["schemas"]["Leaderboard"][];
-            /** Format: int32 */
-            pages: number;
-            /** Format: int32 */
-            pageSize: number;
-        };
-        ApiResponderAuthenticationObject: {
-            success: boolean;
-            payload: components["schemas"]["AuthenticationObject"];
-            message: string;
-        };
-        AuthenticationObject: {
-            user: components["schemas"]["User"];
-            session?: components["schemas"]["Session"];
-        };
-        Session: {
-            id: string;
-            userId: string;
-            /** Format: date-time */
-            expiresAt: string;
-        };
+  schemas: {
+    UnsafeGenericFailureResponse: {
+      /** @default false */
+      success: boolean;
+      message: string;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    UnsafeEmptySuccessResponse: {
+      /** @default true */
+      success: boolean;
+      message: string;
+    };
+    LeetcodeUsernameObject: {
+      leetcodeUsername: string;
+    };
+    UnsafeRateLimitResponse: {
+      /** @default false */
+      success: boolean;
+      /** @default 28 */
+      message: string;
+    };
+    AcceptedSubmission: {
+      title: string;
+      /** Format: int32 */
+      points: number;
+    };
+    ApiResponderArrayListAcceptedSubmission: {
+      success: boolean;
+      payload: components["schemas"]["AcceptedSubmission"][];
+      message: string;
+    };
+    ApiResponderObject: {
+      success: boolean;
+      payload: Record<string, never>;
+      message: string;
+    };
+    EmailBody: {
+      email: string;
+    };
+    UpdateAdminBody: {
+      id: string;
+      toggleTo: boolean;
+    };
+    ApiResponderUser: {
+      success?: boolean;
+      payload: components["schemas"]["User"];
+      message?: string;
+    };
+    User: {
+      id: string;
+      discordId: string;
+      discordName: string;
+      leetcodeUsername: string;
+      nickname: string;
+      admin: boolean;
+      schoolEmail?: string;
+      tags: components["schemas"]["UserTag"][];
+    };
+    UserTag: {
+      id: string;
+      /** Format: date-time */
+      createdAt: string;
+      userId: string;
+      /** @enum {string} */
+      tag: UserTagTag;
+    };
+    NewLeaderboardBody: {
+      name: string;
+    };
+    ApiResponderVoid: {
+      success: boolean;
+      payload: Record<string, never>;
+      message: string;
+    };
+    CreateAnnouncementBody: {
+      message: string;
+      /** Format: date-time */
+      expiresAt: string;
+      showTimer?: boolean;
+    };
+    Announcement: {
+      id: string;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      expiresAt: string;
+      showTimer: boolean;
+      message: string;
+    };
+    ApiResponderAnnouncement: {
+      success: boolean;
+      payload: components["schemas"]["Announcement"];
+      message: string;
+    };
+    ApiResponderServerMetadataObject: {
+      success: boolean;
+      payload: components["schemas"]["ServerMetadataObject"];
+      message: string;
+    };
+    ServerMetadataObject: {
+      name: string;
+      version: string;
+      description: string;
+      authors: string[];
+    };
+    ApiResponderPageArrayListQuestion: {
+      success: boolean;
+      payload: components["schemas"]["PageArrayListQuestion"];
+      message: string;
+    };
+    PageArrayListQuestion: {
+      hasNextPage: boolean;
+      items: components["schemas"]["Question"][];
+      /** Format: int32 */
+      pages: number;
+      /** Format: int32 */
+      pageSize: number;
+    };
+    Question: {
+      id: string;
+      userId: string;
+      questionSlug: string;
+      questionTitle: string;
+      /** @enum {string} */
+      questionDifficulty: QuestionQuestionDifficulty;
+      /** Format: int32 */
+      questionNumber: number;
+      questionLink: string;
+      description: string;
+      /** Format: int32 */
+      pointsAwarded: number;
+      /** Format: float */
+      acceptanceRate: number;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      submittedAt: string;
+      runtime: string;
+      memory: string;
+      code: string;
+      language: string;
+      submissionId: string;
+    };
+    ApiResponderPageArrayListUser: {
+      success: boolean;
+      payload: components["schemas"]["PageArrayListUser"];
+      message: string;
+    };
+    PageArrayListUser: {
+      hasNextPage: boolean;
+      items: components["schemas"]["User"][];
+      /** Format: int32 */
+      pages: number;
+      /** Format: int32 */
+      pageSize: number;
+    };
+    ApiResponderQuestion: {
+      success: boolean;
+      payload: components["schemas"]["Question"];
+      message: string;
+    };
+    ApiResponderPOTD: {
+      success: boolean;
+      payload: components["schemas"]["POTD"];
+      message: string;
+    };
+    POTD: {
+      id: string;
+      title: string;
+      slug: string;
+      /** Format: float */
+      multiplier: number;
+      /** Format: date-time */
+      createdAt: string;
+    };
+    ApiResponderString: {
+      success: boolean;
+      payload: string;
+      message: string;
+    };
+    ApiResponderPageListUserWithScore: {
+      success: boolean;
+      payload: components["schemas"]["PageListUserWithScore"];
+      message: string;
+    };
+    PageListUserWithScore: {
+      hasNextPage: boolean;
+      items: components["schemas"]["UserWithScore"][];
+      /** Format: int32 */
+      pages: number;
+      /** Format: int32 */
+      pageSize: number;
+    };
+    UserWithScore: {
+      id: string;
+      discordId: string;
+      discordName: string;
+      leetcodeUsername: string;
+      nickname: string;
+      admin: boolean;
+      schoolEmail?: string;
+      tags: components["schemas"]["UserTag"][];
+      /** Format: int32 */
+      totalScore: number;
+    };
+    ApiResponderLeaderboard: {
+      success: boolean;
+      payload: components["schemas"]["Leaderboard"];
+      message: string;
+    };
+    Leaderboard: {
+      id: string;
+      name: string;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      deletedAt: string;
+      /** Format: date-time */
+      shouldExpireBy: string;
+    };
+    ApiResponderUserWithScore: {
+      success: boolean;
+      payload: components["schemas"]["UserWithScore"];
+      message: string;
+    };
+    ApiResponderPageArrayListUserWithScore: {
+      success: boolean;
+      payload: components["schemas"]["PageArrayListUserWithScore"];
+      message: string;
+    };
+    PageArrayListUserWithScore: {
+      hasNextPage: boolean;
+      items: components["schemas"]["UserWithScore"][];
+      /** Format: int32 */
+      pages: number;
+      /** Format: int32 */
+      pageSize: number;
+    };
+    ApiResponderPageArrayListLeaderboard: {
+      success: boolean;
+      payload: components["schemas"]["PageArrayListLeaderboard"];
+      message: string;
+    };
+    PageArrayListLeaderboard: {
+      hasNextPage: boolean;
+      items: components["schemas"]["Leaderboard"][];
+      /** Format: int32 */
+      pages: number;
+      /** Format: int32 */
+      pageSize: number;
+    };
+    ApiResponderAuthenticationObject: {
+      success: boolean;
+      payload: components["schemas"]["AuthenticationObject"];
+      message: string;
+    };
+    AuthenticationObject: {
+      user: components["schemas"]["User"];
+      session?: components["schemas"]["Session"];
+    };
+    Session: {
+      id: string;
+      userId: string;
+      /** Format: date-time */
+      expiresAt: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    setLeetcodeUsername: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LeetcodeUsernameObject"];
-            };
-        };
-        responses: {
-            /** @description Name has been set successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeEmptySuccessResponse"];
-                };
-            };
-            /** @description Invalid username */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description Attempt to set name that's already been set */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+  setLeetcodeUsername: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    checkLatestSubmissions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The check was completed successfuly */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderArrayListAcceptedSubmission"];
-                };
-            };
-            /** @description Invalid username */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description Leetcode username hasn't been set */
-            412: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description Rate limited */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeRateLimitResponse"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LeetcodeUsernameObject"];
+      };
     };
-    verifySchoolEmail: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Name has been set successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description User successfully enrolled with school tag */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderObject"];
-                };
-            };
-            /** @description Invalid or expired token */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderObject"];
-                };
-            };
+        content: {
+          "*/*": components["schemas"]["UnsafeEmptySuccessResponse"];
         };
+      };
+      /** @description Invalid username */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description Attempt to set name that's already been set */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
     };
-    enrollSchool: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EmailBody"];
-            };
-        };
-        responses: {
-            /** @description email send successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderObject"];
-                };
-            };
-            /** @description not implemented */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderObject"];
-                };
-            };
-        };
+  };
+  checkLatestSubmissions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    updateAdmin: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description The check was completed successfuly */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateAdminBody"];
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderArrayListAcceptedSubmission"];
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderUser"];
-                };
-            };
+      };
+      /** @description Invalid username */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description Leetcode username hasn't been set */
+      412: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description Rate limited */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeRateLimitResponse"];
+        };
+      };
     };
-    createLeaderboard: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["NewLeaderboardBody"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderVoid"];
-                };
-            };
-        };
+  };
+  verifySchoolEmail: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    createNewAnnouncement: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description User successfully enrolled with school tag */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateAnnouncementBody"];
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderObject"];
         };
-        responses: {
-            /** @description Announcement successfully created */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderAnnouncement"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description Something went wrong */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
+      };
+      /** @description Invalid or expired token */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          "*/*": components["schemas"]["ApiResponderObject"];
+        };
+      };
     };
-    apiIndex: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderServerMetadataObject"];
-                };
-            };
-        };
+  };
+  enrollSchool: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    getAllQuestionsForUser: {
-        parameters: {
-            query?: {
-                /**
-                 * @description Page index
-                 * @example 1
-                 */
-                page?: number;
-                /**
-                 * @description Question Title
-                 * @example Two
-                 */
-                query?: string;
-                /** @description Page size (maximum of 20 */
-                pageSize?: number;
-            };
-            header?: never;
-            path: {
-                userId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderPageArrayListQuestion"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmailBody"];
+      };
     };
-    getUserProfileByUserId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: string;
-            };
-            cookie?: never;
+    responses: {
+      /** @description email send successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description User profile has been found */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderUser"];
-                };
-            };
-            /** @description User profile has not been found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderObject"];
         };
+      };
+      /** @description not implemented */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderObject"];
+        };
+      };
     };
-    getAllUsers: {
-        parameters: {
-            query?: {
-                /**
-                 * @description Page index
-                 * @example 1
-                 */
-                page?: number;
-                /**
-                 * @description Question Title
-                 * @example Two
-                 */
-                query?: string;
-                /** @description Page size (maximum of 20 */
-                pageSize?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description All users' metadata has been found. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderPageArrayListUser"];
-                };
-            };
-            /** @description All users' metadata has not been found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+  };
+  updateAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    getSubmissionBySubmissionId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                submissionId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Question found */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderQuestion"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description Question not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateAdminBody"];
+      };
     };
-    getCurrentPotd: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description POTD found */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderPOTD"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-            /** @description POTD not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderUser"];
         };
+      };
     };
-    getVerificationKey: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successfully retrieved key */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderString"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+  };
+  createLeaderboard: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    getLeaderboardUsersById: {
-        parameters: {
-            query?: {
-                /**
-                 * @description Page index
-                 * @example 1
-                 */
-                page?: number;
-                /** @description Page size (maximum of 20 */
-                pageSize?: number;
-                /**
-                 * @description Discord name
-                 * @example tahmid
-                 */
-                query?: string;
-                /** @description Filter for Patina users */
-                patina?: boolean;
-            };
-            header?: never;
-            path: {
-                leaderboardId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderPageListUserWithScore"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NewLeaderboardBody"];
+      };
     };
-    getLeaderboardMetadataByLeaderboardId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                leaderboardId: string;
-            };
-            cookie?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderLeaderboard"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderVoid"];
         };
+      };
     };
-    getUserCurrentLeaderboardFull: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderUserWithScore"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+  };
+  createNewAnnouncement: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    getCurrentLeaderboardUsers: {
-        parameters: {
-            query?: {
-                /**
-                 * @description Page index
-                 * @example 1
-                 */
-                page?: number;
-                /** @description Page size (maximum of 20 */
-                pageSize?: number;
-                /**
-                 * @description Discord name
-                 * @example tahmid
-                 */
-                query?: string;
-                /** @description Filter for Patina users */
-                patina?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderPageArrayListUserWithScore"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateAnnouncementBody"];
+      };
     };
-    getCurrentLeaderboardMetadata: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Announcement successfully created */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderLeaderboard"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderAnnouncement"];
         };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description Something went wrong */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
     };
-    getAllLeaderboardMetadata: {
-        parameters: {
-            query?: {
-                /**
-                 * @description Page index
-                 * @example 1
-                 */
-                page?: number;
-                /**
-                 * @description Question Title
-                 * @example Two
-                 */
-                query?: string;
-                /** @description Page size (maximum of 20 */
-                pageSize?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderPageArrayListLeaderboard"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
-        };
+  };
+  apiIndex: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    validateAuth: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Authenticated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderAuthenticationObject"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
-                };
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderServerMetadataObject"];
         };
+      };
     };
-    logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Redirect to `/login?success=true&message="Successful logout message here."` on successful authentication. */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  getAllQuestionsForUser: {
+    parameters: {
+      query?: {
+        /**
+         * @description Page index
+         * @example 1
+         */
+        page?: number;
+        /**
+         * @description Question Title
+         * @example Two
+         */
+        query?: string;
+        /** @description Page size (maximum of 20 */
+        pageSize?: number;
+      };
+      header?: never;
+      path: {
+        userId: string;
+      };
+      cookie?: never;
     };
-    getLatestAnnouncement: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful response (may or may not be announcement, check success key) */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponderAnnouncement"];
-                };
-            };
+        content: {
+          "*/*": components["schemas"]["ApiResponderPageArrayListQuestion"];
         };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
     };
+  };
+  getUserProfileByUserId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description User profile has been found */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderUser"];
+        };
+      };
+      /** @description User profile has not been found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getAllUsers: {
+    parameters: {
+      query?: {
+        /**
+         * @description Page index
+         * @example 1
+         */
+        page?: number;
+        /**
+         * @description Question Title
+         * @example Two
+         */
+        query?: string;
+        /** @description Page size (maximum of 20 */
+        pageSize?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description All users' metadata has been found. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderPageArrayListUser"];
+        };
+      };
+      /** @description All users' metadata has not been found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getSubmissionBySubmissionId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        submissionId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Question found */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderQuestion"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description Question not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getCurrentPotd: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description POTD found */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderPOTD"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+      /** @description POTD not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getVerificationKey: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved key */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderString"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getLeaderboardUsersById: {
+    parameters: {
+      query?: {
+        /**
+         * @description Page index
+         * @example 1
+         */
+        page?: number;
+        /** @description Page size (maximum of 20 */
+        pageSize?: number;
+        /**
+         * @description Discord name
+         * @example tahmid
+         */
+        query?: string;
+        /** @description Filter for Patina users */
+        patina?: boolean;
+      };
+      header?: never;
+      path: {
+        leaderboardId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderPageListUserWithScore"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getLeaderboardMetadataByLeaderboardId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        leaderboardId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderLeaderboard"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getUserCurrentLeaderboardFull: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderUserWithScore"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getCurrentLeaderboardUsers: {
+    parameters: {
+      query?: {
+        /**
+         * @description Page index
+         * @example 1
+         */
+        page?: number;
+        /** @description Page size (maximum of 20 */
+        pageSize?: number;
+        /**
+         * @description Discord name
+         * @example tahmid
+         */
+        query?: string;
+        /** @description Filter for Patina users */
+        patina?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderPageArrayListUserWithScore"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getCurrentLeaderboardMetadata: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderLeaderboard"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  getAllLeaderboardMetadata: {
+    parameters: {
+      query?: {
+        /**
+         * @description Page index
+         * @example 1
+         */
+        page?: number;
+        /**
+         * @description Question Title
+         * @example Two
+         */
+        query?: string;
+        /** @description Page size (maximum of 20 */
+        pageSize?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderPageArrayListLeaderboard"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  validateAuth: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Authenticated */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderAuthenticationObject"];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["UnsafeGenericFailureResponse"];
+        };
+      };
+    };
+  };
+  logout: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Redirect to `/login?success=true&message="Successful logout message here."` on successful authentication. */
+      302: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  getLatestAnnouncement: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response (may or may not be announcement, check success key) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ApiResponderAnnouncement"];
+        };
+      };
+    };
+  };
 }
 export enum UserTagTag {
-    Patina = "Patina",
-    Hunter = "Hunter",
-    Nyu = "Nyu"
+  Patina = "Patina",
+  Hunter = "Hunter",
+  Nyu = "Nyu",
 }
 export enum QuestionQuestionDifficulty {
-    Easy = "Easy",
-    Medium = "Medium",
-    Hard = "Hard"
+  Easy = "Easy",
+  Medium = "Medium",
+  Hard = "Hard",
 }
