@@ -5,22 +5,38 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
+import io.micrometer.common.lang.NonNullApi;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(requiredMode = Schema.RequiredMode.REQUIRED)
 public class User {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
     // Even though discord IDs are integers, they are very large so we just use
     // String instead.
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String discordId;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String discordName;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String leetcodeUsername;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String nickname;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private boolean admin;
+
     private String schoolEmail;
 
     /**
      * If you want to update tags in the database, you have to use the
      * {@link com.patina.codebloom.common.db.repos.usertag.UserTagRepository}
      */
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private ArrayList<UserTag> tags;
 
     @JsonCreator

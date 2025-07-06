@@ -2,6 +2,7 @@ package com.patina.codebloom.common.db.models.auth;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -16,7 +17,12 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class Auth {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String token;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createdAt;
 }
