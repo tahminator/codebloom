@@ -1,4 +1,4 @@
-import { Box, Button, Card, Center, Title } from "@mantine/core";
+import { Box, Button, Card, Title, Text } from "@mantine/core";
 import { useState } from "react";
 
 import SchoolEmailModal from "./SchoolEmailModal";
@@ -15,19 +15,20 @@ export default function SchoolVerifySettingsCard({
   return (
     <Box>
       <Card withBorder padding={"md"} radius={"md"}>
-        <Center mb="md">
-          <Title order={3}>Verify School</Title>
-        </Center>
-        {schoolExists ?
-          <Center>
-            <Button disabled onClick={toggleModal}>
-              You are already verified!
+        <Box m={16}>
+          <Title order={3} p={24}>
+            Verify School
+          </Title>
+          <Text pt={48} pl={24}>
+            Verify your school email here for access to our school specific
+            leaderboards.
+          </Text>
+          <Box pt={12} pl={24}>
+            <Button mt="sm" onClick={toggleModal} disabled={schoolExists}>
+              {schoolExists ? "You are already verified!" : "Verify Now"}
             </Button>
-          </Center>
-        : <Center>
-            <Button onClick={toggleModal}>Verify Now</Button>
-          </Center>
-        }
+          </Box>
+        </Box>
         <SchoolEmailModal enabled={modalOpen} toggle={toggleModal} />
       </Card>
     </Box>
