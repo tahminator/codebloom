@@ -2,10 +2,16 @@ package com.patina.codebloom.common.db.models;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class Session {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String userId;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime expiresAt;
 
     public Session(final String id, final String userId, final LocalDateTime expiresAt) {

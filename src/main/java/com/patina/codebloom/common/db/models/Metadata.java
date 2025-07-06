@@ -2,11 +2,22 @@ package com.patina.codebloom.common.db.models;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class Metadata {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String userId;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String leaderboardId;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createdAt;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private int totalScore;
 
     public String getId() {

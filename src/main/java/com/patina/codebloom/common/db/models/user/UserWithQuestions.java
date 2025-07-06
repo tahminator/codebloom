@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class UserWithQuestions extends User {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private ArrayList<Question> questions;
 
     public UserWithQuestions(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final Boolean admin,

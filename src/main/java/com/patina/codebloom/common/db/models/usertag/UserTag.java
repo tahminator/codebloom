@@ -2,6 +2,7 @@ package com.patina.codebloom.common.db.models.usertag;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -16,9 +17,16 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class UserTag {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createdAt;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String userId;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Tag tag;
 
     public String getId() {
