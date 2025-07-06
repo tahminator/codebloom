@@ -16,14 +16,14 @@ export default function SchoolVerifySettingsCard({
     <Box>
       <Card withBorder padding={"md"} radius={"md"}>
         <Box m={16}>
-          <Title order={3} p={24}>
+          <Title order={3} p={20}>
             Verify School
           </Title>
-          <Text pt={48} pl={24}>
+          <Text pt={20} pl={20}>
             Verify your school email here for access to our school specific
             leaderboards.
           </Text>
-          <Box pt={12} pl={24}>
+          <Box pt={12} pl={20}>
             <Button mt="sm" onClick={toggleModal} disabled={schoolExists}>
               {schoolExists ? "You are already verified!" : "Verify Now"}
             </Button>
