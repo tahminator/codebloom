@@ -1,7 +1,3 @@
-export type Announcement = {
-  id: string;
-  createdAt: string;
-  expiresAt: string;
-  showTimer: boolean;
-  message: string;
-};
+import { components } from "@/lib/api/types/autogen/schema";
+
+export type Announcement = components["schemas"]["Announcement"];
