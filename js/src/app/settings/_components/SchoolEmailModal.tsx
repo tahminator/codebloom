@@ -13,7 +13,7 @@ export default function SchoolEmailModal({
     <Modal opened={enabled} onClose={toggle}>
       <Box>
         <Center>
-          <Text>hello</Text>
+          <Text>This is the modal where you will verify yourself.</Text>
         </Center>
       </Box>
     </Modal>
