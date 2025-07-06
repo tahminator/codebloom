@@ -13,7 +13,7 @@ import UserSubmissionsPage from "@/app/user/[userId]/UserProfile.page";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { createBrowserRouter } from "react-router-dom";
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = import.meta.env.PROD;
 export const router = createBrowserRouter([
   {
     path: "/",
