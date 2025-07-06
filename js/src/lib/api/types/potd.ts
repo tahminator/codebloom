@@ -1,7 +1,3 @@
-export type POTD = {
-  id: string;
-  title: string;
-  slug: string;
-  multiplier: number;
-  createdAt: string;
-};
+import { components } from "@/lib/api/types/autogen/schema";
+
+export type POTD = components["schemas"]["POTD"];

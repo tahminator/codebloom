@@ -1,5 +1,3 @@
-export type Session = {
-  id: string;
-  userId: string;
-  expiresAt: string;
-};
+import { components } from "@/lib/api/types/autogen/schema";
+
+export type Session = components["schemas"]["Session"];
