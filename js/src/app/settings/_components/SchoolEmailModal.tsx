@@ -13,7 +13,10 @@ export default function SchoolEmailModal({
     <Modal opened={enabled} onClose={toggle}>
       <Box>
         <Center>
-          <Text>Verify your student email to gain access to school-specific competitions!</Text>
+          <Text>
+            Verify your student email to gain access to school-specific
+            competitions!
+          </Text>
         </Center>
       </Box>
     </Modal>
