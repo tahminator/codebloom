@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
-import io.micrometer.common.lang.NonNullApi;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
