@@ -13,8 +13,11 @@ java-dev:
 js-dev:
 	cd js && pnpm run dev
 
+types-dev:
+	cd js && pnpm run generate:dev
+
 dev:
-	pnpm i -g concurrently && concurrently "make java-dev" "make js-dev"
+	pnpm i -g concurrently && concurrently "make java-dev" "make js-dev" "make types-dev"
 
 backend-install:
 	dotenvx run -- ./mvnw install -DskipTests=true
