@@ -31,7 +31,7 @@ jobs:
 
                   echo "Checking for merge commits between $MERGE_BASE and HEAD..."
 
-                  MERGE_COMMITS=$(git log --merges --pretty=format:"%h %an %ad %s" $MERGE_BASE..HEAD)
+                  MERGE_COMMITS=$(git log --merges --pretty=format:"%h %an %ad %s" $MERGE_BASE..HEAD ^HEAD)
 
                   if [ -n "$MERGE_COMMITS" ]; then
                     echo "Merge commit(s) detected in this diff:"
