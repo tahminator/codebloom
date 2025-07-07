@@ -2,7 +2,7 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
     "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit"
+        "source.fixAll": "explicit"
     },
     "editor.formatOnSave": true,
     "java.checkstyle.configuration": "./checkstyle.xml",
@@ -13,6 +13,11 @@
     "java.checkstyle.version": "10.21.2",
     "gitlens.advanced.blame.customArguments": [
         "--ignore-revs-file",
-        ".git-blame-ignore-revs" 
+        ".git-blame-ignore-revs"
     ],
+    "[makefile]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": false
+    }
 }
+
