@@ -69,6 +69,7 @@ public class WeeklyMessageRepositoryTest {
     }
 
     @Test
+    @Order(2)
     void findWeeklyMessageById() {
         WeeklyMessage latest = weeklyMessageRepository.getLatestWeeklyMessage();
         WeeklyMessage possibleTestWeeklyMessage = weeklyMessageRepository.getWeeklyMessageById(latest.getId());
