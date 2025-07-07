@@ -21,16 +21,21 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # required to access origin/main
 
-            - name: Detect merge commits
+            - name: Detect merge commits in current branch
               run: |
-                  MERGE_COMMITS=$(git rev-list --merges origin/${{ github.event.pull_request.base.ref || github.ref_name }}..HEAD)
+                  BASE_BRANCH="origin/main"
+                  MERGE_BASE=$(git merge-base HEAD $BASE_BRANCH)
+                  MERGE_COMMITS=$(git rev-list --merges $MERGE_BASE..HEAD)
+
                   if [ -n "$MERGE_COMMITS" ]; then
                     echo "Merge commit(s) detected:"
-                    git log --merges --oneline origin/${{ github.event.pull_request.base.ref || github.ref_name }}..HEAD
+                  git log --merges --oneline $MERGE_BASE..HEAD
                     exit 1
                   else
-                    echo "No merge commits found."
+                    echo "No merge commits found in this branch."
                   fi
 
     frontendTests:
