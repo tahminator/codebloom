@@ -9,7 +9,6 @@ return {
         config = function()
             local null_ls = require("null-ls")
 
-            -- Setup null-ls with full override (ignores LazyVim defaults)
             null_ls.setup({
                 debug = true,
                 root_dir = require("null-ls.utils").root_pattern(".null-ls-root", ".neoconf.json", "Makefile", ".git"),
