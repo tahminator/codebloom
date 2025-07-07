@@ -73,14 +73,8 @@ public class WeeklyMessageRepositoryTest {
         WeeklyMessage latest = weeklyMessageRepository.getLatestWeeklyMessage();
         WeeklyMessage possibleTestWeeklyMessage = weeklyMessageRepository.getWeeklyMessageById(latest.getId());
 
-        if (possibleTestWeeklyMessage == null) {
-            fail("Failed to find weekly message by id");
-        }
-
         log.info("testWeeklyMessage: {}", testWeeklyMessage.toString());
-        if (possibleTestWeeklyMessage != null) {
-            log.info("possibleTestWeeklyMessage: {}", possibleTestWeeklyMessage.toString());
-        }
+        log.info("possibleTestWeeklyMessage: {}", possibleTestWeeklyMessage != null ? possibleTestWeeklyMessage.toString() : "null");
 
         assertNotNull(possibleTestWeeklyMessage, "possibleTestWeeklyMessage should not be null");
         assertEquals(latest.getId(), possibleTestWeeklyMessage.getId(), "IDs do not match");
