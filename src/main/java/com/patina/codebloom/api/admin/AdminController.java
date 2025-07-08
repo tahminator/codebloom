@@ -22,6 +22,7 @@ import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
 
@@ -61,7 +62,7 @@ public class AdminController {
                         BE SUPER CAREFUL WITH THIS ROUTE!!!!!!! It will drop the current leaderboard and add a new leaderboard based on the given parameters.
                     """)
     @PostMapping("/leaderboard/create")
-    public ResponseEntity<ApiResponder<Void>> createLeaderboard(
+    public ResponseEntity<ApiResponder<Empty>> createLeaderboard(
                     final HttpServletRequest request,
                     @Valid @RequestBody final NewLeaderboardBody newLeaderboardBody) {
         protector.validateAdminSession(request);
@@ -95,7 +96,7 @@ public class AdminController {
         }
         leaderboardRepository.addAllUsersToLeaderboard(newLeaderboard.getId());
 
-        return ResponseEntity.ok(ApiResponder.success("Leaderboard was created successfully.", null));
+        return ResponseEntity.ok(ApiResponder.success("Leaderboard was created successfully.", Empty.of()));
     }
 
     @Operation(summary = "Allows current admin to toggle another user's admin status", description = """
