@@ -24,6 +24,7 @@ import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
@@ -119,7 +120,7 @@ public class SubmissionController {
             @ApiResponse(responseCode = "409", description = "Attempt to set name that's already been set", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @PostMapping("/set")
-    public ResponseEntity<ApiResponder<Void>> setLeetcodeUsername(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Empty>> setLeetcodeUsername(final HttpServletRequest request,
                     @Valid @RequestBody final LeetcodeUsernameObject leetcodeUsernameObject) {
         FakeLag.sleep(350);
 
@@ -151,7 +152,7 @@ public class SubmissionController {
         user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
         userRepository.updateUser(user);
 
-        return ResponseEntity.ok().body(ApiResponder.success("Leetcode username has been set!", null));
+        return ResponseEntity.ok().body(ApiResponder.success("Leetcode username has been set!", Empty.of()));
 
     }
 
