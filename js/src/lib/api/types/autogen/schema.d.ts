@@ -571,11 +571,12 @@ export interface components {
       payload: components["schemas"]["AcceptedSubmission"][];
       message: string;
     };
-    ApiResponderObject: {
+    ApiResponderEmpty: {
       success: boolean;
-      payload: Record<string, never>;
+      payload: components["schemas"]["Empty"];
       message: string;
     };
+    Empty: Record<string, never>;
     EmailBody: {
       email: string;
     };
@@ -608,11 +609,6 @@ export interface components {
     };
     NewLeaderboardBody: {
       name: string;
-    };
-    ApiResponderVoid: {
-      success: boolean;
-      payload: Record<string, never>;
-      message: string;
     };
     CreateAnnouncementBody: {
       message: string;
@@ -937,7 +933,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "*/*": components["schemas"]["ApiResponderObject"];
+          "*/*": components["schemas"]["ApiResponderEmpty"];
         };
       };
       /** @description Invalid or expired token */
@@ -946,7 +942,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "*/*": components["schemas"]["ApiResponderObject"];
+          "*/*": components["schemas"]["ApiResponderEmpty"];
         };
       };
     };
@@ -970,7 +966,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "*/*": components["schemas"]["ApiResponderObject"];
+          "*/*": components["schemas"]["ApiResponderEmpty"];
         };
       };
       /** @description not implemented */
@@ -979,7 +975,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "*/*": components["schemas"]["ApiResponderObject"];
+          "*/*": components["schemas"]["ApiResponderEmpty"];
         };
       };
     };
@@ -1027,7 +1023,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "*/*": components["schemas"]["ApiResponderVoid"];
+          "*/*": components["schemas"]["ApiResponderEmpty"];
         };
       };
     };
