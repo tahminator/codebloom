@@ -20,7 +20,7 @@ public class SessionSqlRepository implements SessionRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private Session parseResultSetToSession(ResultSet resultSet) throws SQLException {
+    private Session parseResultSetToSession(final ResultSet resultSet) throws SQLException {
         return Session.builder()
                         .id(resultSet.getString("id"))
                         .userId(resultSet.getString("userId"))
@@ -28,7 +28,7 @@ public class SessionSqlRepository implements SessionRepository {
                         .build();
     }
 
-    private void updateSessionWithResultSet(ResultSet resultSet, Session session) throws SQLException {
+    private void updateSessionWithResultSet(final ResultSet resultSet, final Session session) throws SQLException {
         session.setId(resultSet.getString("id"));
     }
 
