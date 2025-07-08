@@ -5,7 +5,10 @@ import java.util.ArrayList;
 
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class LeaderboardWithUsers extends Leaderboard {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private ArrayList<UserWithScore> users;
 
     public LeaderboardWithUsers(final String name, final LocalDateTime createdAt, final ArrayList<UserWithScore> users, final LocalDateTime shouldExpireBy) {

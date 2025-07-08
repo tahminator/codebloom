@@ -1,11 +1,4 @@
-export type User = {
-  id: string;
-  discordId: string;
-  discordName: string;
-  leetcodeUsername: string | null;
-  nickname: string | null;
-  admin: boolean;
-  schoolEmail: string | null;
-};
+import { components } from "@/lib/api/types/autogen/schema";
 
-export type UserWithScore = User & { totalScore: number };
+export type User = components["schemas"]["User"];
+export type UserWithScore = components["schemas"]["UserWithScore"];
