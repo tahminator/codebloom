@@ -8,6 +8,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.Empty;
+
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 
@@ -49,14 +51,14 @@ public class SendEmailTest {
     @Test
     void testNonValidSchoolEmail() throws JsonProcessingException {
         String payload = buildTestEmailPayload("name@example.com ");
-        ApiResponder<Object> apiResponder = RestAssured.given()
+        ApiResponder<Empty> apiResponder = RestAssured.given()
                         .header("Content-Type", "application/json")
                         .body(payload)
                         .post("/api/auth/school/enroll")
                         .then()
                         .statusCode(400)
                         .extract()
-                        .as(new TypeRef<ApiResponder<Object>>() {
+                        .as(new TypeRef<ApiResponder<Empty>>() {
                         });
 
         assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
@@ -68,14 +70,14 @@ public class SendEmailTest {
     void testValidSchoolEmail() throws JsonProcessingException {
         String payload = buildTestEmailPayload("TIMMY.APPLES420@myhunter.cuny.edu");
 
-        ApiResponder<Object> apiResponder = RestAssured.given()
+        ApiResponder<Empty> apiResponder = RestAssured.given()
                         .header("Content-Type", "application/json")
                         .body(payload)
                         .post("/api/auth/school/enroll")
                         .then()
                         .statusCode(200)
                         .extract()
-                        .as(new TypeRef<ApiResponder<Object>>() {
+                        .as(new TypeRef<ApiResponder<Empty>>() {
                         });
 
         assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
