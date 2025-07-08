@@ -20,9 +20,21 @@ public class SessionSqlRepository implements SessionRepository {
         this.conn = dbConnection.getConn();
     }
 
+    private Session parseResultSetToSession(ResultSet resultSet) throws SQLException {
+        return Session.builder()
+                        .id(resultSet.getString("id"))
+                        .userId(resultSet.getString("userId"))
+                        .expiresAt(resultSet.getTimestamp("expiresAt").toLocalDateTime())
+                        .build();
+    }
+
+    private void updateSessionWithResultSet(ResultSet resultSet, Session session) throws SQLException {
+        session.setId(resultSet.getString("id"));
+    }
+
     @Override
-    public Session createSession(final Session session) {
-        String sql = "INSERT INTO \"Session\" (id, \"userId\", \"expiresAt\") VALUES (?, ?, ?)";
+    public void createSession(final Session session) {
+        String sql = "INSERT INTO \"Session\" (id, \"userId\", \"expiresAt\") VALUES (?, ?, ?) RETURNING \"id\"";
         // Don't want dashes inside of the cookie, so better to just remove it from the
         // ID altogether.
         session.setId(UUID.randomUUID().toString().replace("-", ""));
@@ -32,12 +44,10 @@ public class SessionSqlRepository implements SessionRepository {
             stmt.setObject(2, UUID.fromString(session.getUserId()));
             stmt.setObject(3, session.getExpiresAt());
 
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                return getSessionById(session.getId());
-            } else {
-                throw new RuntimeException("Something went wrong.");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    updateSessionWithResultSet(rs, session);
+                }
             }
 
         } catch (SQLException e) {
@@ -54,11 +64,7 @@ public class SessionSqlRepository implements SessionRepository {
             stmt.setString(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var sessionId = rs.getString("id");
-                    var userId = rs.getString("userId");
-                    var expiresAt = rs.getTimestamp("expiresAt").toLocalDateTime();
-                    session = new Session(sessionId, userId, expiresAt);
-                    return session;
+                    return parseResultSetToSession(rs);
                 }
             }
         } catch (SQLException e) {
@@ -77,10 +83,7 @@ public class SessionSqlRepository implements SessionRepository {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    var sessionId = rs.getString("id");
-                    var userId = rs.getString("userId");
-                    var expiresAt = rs.getTimestamp("expiresAt").toLocalDateTime();
-                    sessions.add(new Session(sessionId, userId, expiresAt));
+                    sessions.add(parseResultSetToSession(rs));
                 }
             }
         } catch (SQLException e) {
