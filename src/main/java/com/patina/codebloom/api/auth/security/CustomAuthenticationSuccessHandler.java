@@ -134,10 +134,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
             LocalDateTime expirationTime = StandardizedLocalDateTime.now().plusSeconds(maxAgeSeconds);
 
-            Session session = new Session(existingUser.getId(), expirationTime);
-            session = sessionRepository.createSession(session);
+            Session session = Session.builder()
+                            .userId(existingUser.getId())
+                            .expiresAt(expirationTime)
+                            .build();
+            sessionRepository.createSession(session);
 
-            if (session == null) {
+            if (session == null || session.getId() == null) {
                 response.sendRedirect("/login?success=false&message=Failed to log in.");
                 throw new RuntimeException("Failed to create new session.");
             }
