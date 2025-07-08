@@ -9,7 +9,7 @@ public interface SessionRepository {
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
-     * @param agent - required fields:
+     * @param session - required fields:
      * <ul>
      * <li>userId</li>
      * <li>expiresAt</li>
