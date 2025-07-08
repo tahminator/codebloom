@@ -1,4 +1,4 @@
-package com.patina.codebloom.message;
+package com.patina.codebloom.db.weekly;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
