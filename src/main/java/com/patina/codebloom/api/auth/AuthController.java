@@ -13,6 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.common.lag.FakeLag;
@@ -115,7 +116,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "not implemented")
     })
     @PostMapping("/school/enroll")
-    public ResponseEntity<ApiResponder<Object>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Empty>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         String email = emailBody.getEmail();
         String domain = email.substring(email.indexOf("@")).toLowerCase();
@@ -148,7 +149,7 @@ public class AuthController {
                                                             Note: This link will expire in 1 hour. If it expires, you'll need to request a new one.
                                                             """, verificationLink))
                                             .build());
-            return ResponseEntity.ok().body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", List.of()));
+            return ResponseEntity.ok().body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", Empty.of()));
         } catch (EmailException e) {
             throw new ResponseStatusException(
                             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -165,7 +166,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid or expired token"),
     })
     @PostMapping("/school/verify")
-    public ResponseEntity<ApiResponder<Object>> verifySchoolEmail(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Empty>> verifySchoolEmail(final HttpServletRequest request) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         Session session = authenticationObject.getSession();
         if (session == null) {
@@ -201,12 +202,12 @@ public class AuthController {
         }
 
         UserTag schoolTag = UserTag.builder()
-            .userId(user.getId())
-            .tag(schoolEnum.getInternalTag())
-            .build();
+                        .userId(user.getId())
+                        .tag(schoolEnum.getInternalTag())
+                        .build();
         userTagRepository.createTag(schoolTag);
         User updatedUser = userRepository.getUserById(user.getId());
 
-        return ResponseEntity.ok(ApiResponder.success("User successfully enrolled with school tag", updatedUser));
+        return ResponseEntity.ok(ApiResponder.success("User successfully enrolled with school tag", Empty.of()));
     }
 }
