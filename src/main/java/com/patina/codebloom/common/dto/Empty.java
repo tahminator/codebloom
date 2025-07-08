@@ -1,9 +1,5 @@
 package com.patina.codebloom.common.dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
 /**
  * Use {@code Empty.of()} when you want to return a successful response, but
  * have no data to send back to the client.
