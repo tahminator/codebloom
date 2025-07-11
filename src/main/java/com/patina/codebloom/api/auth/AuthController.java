@@ -162,15 +162,20 @@ public class AuthController {
     }
 
     @Operation(summary = "Verifies the JWC", description = "Verifies the magic link sent to the user's email. If successful, the user will be enrolled with the school tag.", responses = {
-            @ApiResponse(responseCode = "200", description = "User successfully enrolled with school tag"),
-            @ApiResponse(responseCode = "400", description = "Invalid or expired token"),
+            @ApiResponse(responseCode = "302", description = "Redirect to /settings with success or error message"),
     })
     @PostMapping("/school/verify")
-    public ResponseEntity<ApiResponder<Empty>> verifySchoolEmail(final HttpServletRequest request) {
-        AuthenticationObject authenticationObject = protector.validateSession(request);
-        Session session = authenticationObject.getSession();
+    public RedirectView verifySchoolEmail(final HttpServletRequest request) {
+        AuthenticationObject authenticationObject;
+        Session session;
+        try {
+            authenticationObject = protector.validateSession(request);
+            session = authenticationObject.getSession();
+        } catch (Exception e) {
+            return new RedirectView("/login?success=false&message=You are not logged in.");
+        }
         if (session == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
+            return new RedirectView("/settings?success=false&message=You are not logged in");
         }
 
         String token = request.getParameter("state");
@@ -178,13 +183,13 @@ public class AuthController {
         try {
             magicLink = jwtClient.decode(token, MagicLink.class);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired token");
+            return new RedirectView("/settings?success=false&message=Invalid or expired token");
         }
 
         String magicLinkId = magicLink.getUserId();
         String currentUserId = authenticationObject.getUser().getId();
         if (!magicLinkId.equals(currentUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ID does not match current user");
+            return new RedirectView("/settings?success=false&message=ID does not match current user");
         }
 
         User user = userRepository.getUserById(magicLinkId);
@@ -198,7 +203,7 @@ public class AuthController {
                         .findFirst()
                         .orElse(null);
         if (schoolEnum == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "School not supported");
+            return new RedirectView("/settings?success=false&message=This email is not supported");
         }
 
         UserTag schoolTag = UserTag.builder()
@@ -206,8 +211,8 @@ public class AuthController {
                         .tag(schoolEnum.getInternalTag())
                         .build();
         userTagRepository.createTag(schoolTag);
-        User updatedUser = userRepository.getUserById(user.getId());
+        userRepository.getUserById(user.getId());
 
-        return ResponseEntity.ok(ApiResponder.success("User successfully enrolled with school tag", Empty.of()));
+        return new RedirectView("/settings?success=true&message=The email has been verified!");
     }
 }
