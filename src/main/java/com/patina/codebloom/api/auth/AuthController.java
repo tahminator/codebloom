@@ -18,7 +18,6 @@ import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.schools.SchoolEnum;
-import com.patina.codebloom.common.schools.SupportedSchools;
 import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
@@ -194,7 +193,7 @@ public class AuthController {
 
         String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
 
-        SchoolEnum schoolEnum = SupportedSchools.getList().stream()
+        SchoolEnum schoolEnum = Stream.of(SchoolEnum.values())
                         .filter(school -> school.getEmailDomain().equals(emailDomain))
                         .findFirst()
                         .orElse(null);
