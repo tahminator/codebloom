@@ -105,7 +105,12 @@ public class SubmissionsHandler {
 
             questionRepository.createQuestion(newQuestion);
 
-            acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
+            acceptedSubmissions.add(
+                            AcceptedSubmission
+                                            .builder()
+                                            .title(question.getQuestionTitle())
+                                            .points(points)
+                                            .build());
 
             UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(user.getId(), recentLeaderboard.getId());
 

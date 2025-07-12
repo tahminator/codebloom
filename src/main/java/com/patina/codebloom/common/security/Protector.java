@@ -49,7 +49,11 @@ public class Protector {
                 if (user == null) {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
-                return new AuthenticationObject(user, session);
+                return AuthenticationObject
+                                .builder()
+                                .user(user)
+                                .session(session)
+                                .build();
             }
         }
 

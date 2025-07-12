@@ -84,7 +84,13 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<List<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, LEADERBOARD_PAGE_SIZE);
+        Page<List<UserWithScore>> createdPage = Page
+                        .<List<UserWithScore>>builder()
+                        .hasNextPage(hasNextPage)
+                        .items(leaderboardData)
+                        .pages(totalPages)
+                        .pageSize(parsedPageSize)
+                        .build();
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -121,7 +127,13 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, LEADERBOARD_PAGE_SIZE);
+        Page<ArrayList<UserWithScore>> createdPage = Page
+                        .<ArrayList<UserWithScore>>builder()
+                        .hasNextPage(hasNextPage)
+                        .items(leaderboardData)
+                        .pages(totalPages)
+                        .pageSize(parsedPageSize)
+                        .build();
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -163,7 +175,13 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalLeaderboards / LEADERBOARD_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<Leaderboard>> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);
+        Page<ArrayList<Leaderboard>> createdPage = Page
+                        .<ArrayList<Leaderboard>>builder()
+                        .items(leaderboardMetaData)
+                        .hasNextPage(hasNextPage)
+                        .pages(totalPages)
+                        .pageSize(parsedPageSize)
+                        .build();
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboard metadatas have been found!", createdPage));
     }

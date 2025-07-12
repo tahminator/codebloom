@@ -64,7 +64,13 @@ public class GithubOAuthEmail extends Email {
                         }
                         content = sb.toString();
                     }
-                    messages.add(new Message(m.getSubject(), content, m.getReceivedDate()));
+                    messages.add(
+                                    Message
+                                                    .builder()
+                                                    .subject(m.getSubject())
+                                                    .message(content)
+                                                    .sentAt(m.getReceivedDate())
+                                                    .build());
                 } catch (Exception e) {
                     System.err.println(e);
                 }
