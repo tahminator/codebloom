@@ -40,6 +40,8 @@ import jakarta.validation.Valid;
 import java.time.Duration;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
@@ -119,7 +121,7 @@ public class AuthController {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         String email = emailBody.getEmail();
         String domain = email.substring(email.indexOf("@")).toLowerCase();
-        Set<String> supportedDomains = SupportedSchools.getList().stream()
+        Set<String> supportedDomains = Stream.of(SchoolEnum.values())
                         .map(school -> school.getEmailDomain())
                         .collect(Collectors.toSet());
 
