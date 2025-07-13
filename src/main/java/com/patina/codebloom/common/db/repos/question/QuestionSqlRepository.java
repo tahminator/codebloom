@@ -22,7 +22,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     private Connection conn;
     private final UserRepository userRepository;
 
-    private Question mapResultSetToQuestion(ResultSet rs) throws SQLException {
+    private Question mapResultSetToQuestion(final ResultSet rs) throws SQLException {
     var questionId = rs.getString("id");
     var userId = rs.getString("userId");
     var questionSlug = rs.getString("questionSlug");
