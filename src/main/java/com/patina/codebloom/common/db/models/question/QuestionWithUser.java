@@ -18,12 +18,12 @@ public class QuestionWithUser extends Question {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String nickname;
 
-    public QuestionWithUser(final String id, final String userId, final String questionSlug, final QuestionDifficulty questionDifficulty, final int questionNumber, final String questionLink,
-                    final Integer pointsAwarded, final String questionTitle, final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt,
-                    final String discordName, final String leetcodeUsername, final String runtime, final String memory, final String code, final String language, final String nickname,
-                    final String submissionId) {
-        super(id, userId, questionSlug, questionTitle, questionDifficulty, questionNumber, questionLink, description, pointsAwarded, acceptanceRate, createdAt, submittedAt, runtime, memory, code,
-                        language, submissionId);
+    public QuestionWithUser(final String id, final String userId, final String questionSlug, final String questionTitle, final QuestionDifficulty questionDifficulty,
+                    final int questionNumber, final String questionLink, final String description, final Integer pointsAwarded, final float acceptanceRate, final LocalDateTime createdAt,
+                    final LocalDateTime submittedAt, final String runtime, final String memory, final String code, final String language, final String submissionId,
+                    final String discordName, final String leetcodeUsername, final String nickname) {
+        super(id, userId, questionSlug, questionTitle, questionDifficulty, questionNumber, questionLink, description, pointsAwarded, acceptanceRate, createdAt,
+                        submittedAt, runtime, memory, code, language, submissionId);
         this.discordName = discordName;
         this.leetcodeUsername = leetcodeUsername;
         this.nickname = nickname;
