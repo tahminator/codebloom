@@ -6,13 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @EqualsAndHashCode
 @ToString
 public class Question {
