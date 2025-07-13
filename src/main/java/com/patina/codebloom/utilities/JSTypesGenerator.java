@@ -1,0 +1,26 @@
+package com.patina.codebloom.utilities;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Profile("dev")
+@Component
+@Slf4j
+public class JSTypesGenerator implements CommandLineRunner {
+    @Override
+    public void run(String... args) throws Exception {
+        log.info("Type generation command starting...");
+        Process process = new ProcessBuilder("make", "types-dev")
+                        .inheritIO()
+                        .start();
+        int exitCode = process.waitFor();
+        if (exitCode == 0) {
+            log.info("Type generation command completed successfully.");
+        } else {
+            log.error("Type generation command failed with exit code {}", exitCode);
+        }
+    }
+}
