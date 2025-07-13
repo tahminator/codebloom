@@ -158,7 +158,7 @@ public class QuestionSqlRepositoryTest {
         assertEquals(testQuestion.getQuestionSlug(), foundQuestion.getQuestionSlug(), "Question slugs should match");
         assertEquals(testQuestion.getUserId(), foundQuestion.getUserId(), "User IDs should match");
 
-        log.info("Successfully found question by slug '{}' and user ID", testQuestion.getQuestionSlug());
+        log.info("Successfully found question by slug '{}' and user ID '{}'", testQuestion.getQuestionSlug(), testQuestion.getUserId());
     }
 
     @Test
