@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Jacksonized
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@ToString
+@ToString(callSuper = true)
 public class QuestionWithUser extends Question {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String discordName;
