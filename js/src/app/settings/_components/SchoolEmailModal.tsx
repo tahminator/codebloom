@@ -76,7 +76,7 @@ export default function SchoolEmailModal({
             type="submit"
             size="xs"
             ml="md"
-            disabled={!form.isValid("confirmation") || status === "pending"}
+            disabled={!form.isValid("email") || status === "pending"}
             loading={status === "pending"}
           >
             Submit
