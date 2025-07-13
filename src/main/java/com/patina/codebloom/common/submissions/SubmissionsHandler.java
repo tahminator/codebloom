@@ -97,11 +97,23 @@ public class SubmissionsHandler {
                 points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
             }
 
-            Question newQuestion = new Question(user.getId(), leetcodeQuestion.getTitleSlug(), QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getQuestionId(),
-                            "https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getQuestion(), points,
-                            leetcodeQuestion.getAcceptanceRate(), leetcodeSubmission.getTimestamp(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(),
-                            detailedQuestion.getCode(),
-                            detailedQuestion.getLang().getName(), String.valueOf(leetcodeSubmission.getId()));
+            Question newQuestion = Question.builder()
+                            .userId(user.getId())
+                            .questionSlug(leetcodeQuestion.getTitleSlug())
+                            .questionDifficulty(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()))
+                            .questionNumber(leetcodeQuestion.getQuestionId())
+                            .questionLink("https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug())
+                            .questionTitle(leetcodeQuestion.getQuestionTitle())
+                            .description(leetcodeQuestion.getQuestion())
+                            .pointsAwarded(points)
+                            .acceptanceRate(leetcodeQuestion.getAcceptanceRate())
+                            .submittedAt(leetcodeSubmission.getTimestamp())
+                            .runtime(detailedQuestion.getRuntimeDisplay())
+                            .memory(detailedQuestion.getMemoryDisplay())
+                            .code(detailedQuestion.getCode())
+                            .language(detailedQuestion.getLang().getName())
+                            .submissionId(String.valueOf(leetcodeSubmission.getId()))
+                            .build();
 
             questionRepository.createQuestion(newQuestion);
 
@@ -144,10 +156,25 @@ public class SubmissionsHandler {
 
                 System.out.println("Attempting to update User ID" + user.getId() + " with question of " + question.getQuestionSlug());
 
-                Question newQuestion = new Question(question.getId(), question.getUserId(), question.getQuestionSlug(), question.getQuestionDifficulty(), question.getQuestionNumber(),
-                                question.getQuestionLink(), question.getPointsAwarded(), question.getQuestionTitle(), question.getDescription(), question.getAcceptanceRate(), question.getCreatedAt(),
-                                question.getSubmittedAt(), detailedQuestion.getRuntimeDisplay(), detailedQuestion.getMemoryDisplay(), detailedQuestion.getCode(), detailedQuestion.getLang().getName(),
-                                String.valueOf(leetcodeSubmission.getId()));
+                Question newQuestion = Question.builder()
+                                .id(question.getId())
+                                .userId(question.getUserId())
+                                .questionSlug(question.getQuestionSlug())
+                                .questionDifficulty(question.getQuestionDifficulty())
+                                .questionNumber(question.getQuestionNumber())
+                                .questionLink(question.getQuestionLink())
+                                .pointsAwarded(question.getPointsAwarded())
+                                .questionTitle(question.getQuestionTitle())
+                                .description(question.getDescription())
+                                .acceptanceRate(question.getAcceptanceRate())
+                                .createdAt(question.getCreatedAt())
+                                .submittedAt(question.getSubmittedAt())
+                                .runtime(detailedQuestion.getRuntimeDisplay())
+                                .memory(detailedQuestion.getMemoryDisplay())
+                                .code(detailedQuestion.getCode())
+                                .language(detailedQuestion.getLang().getName())
+                                .submissionId(String.valueOf(leetcodeSubmission.getId()))
+                                .build();
 
                 questionRepository.updateQuestion(newQuestion);
             }
