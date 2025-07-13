@@ -147,9 +147,25 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
-
-                    question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                                    submittedAt, runtime, memory, code, language, submissionId);
+                    question = Question.builder()
+                                    .id(questionId)
+                                    .userId(userId)
+                                    .questionSlug(questionSlug)
+                                    .questionDifficulty(questionDifficulty)
+                                    .questionNumber(questionNumber)
+                                    .questionLink(questionLink)
+                                    .pointsAwarded(pointsAwarded)
+                                    .questionTitle(questionTitle)
+                                    .description(description)
+                                    .acceptanceRate(acceptanceRate)
+                                    .createdAt(createdAt)
+                                    .submittedAt(submittedAt)
+                                    .runtime(runtime)
+                                    .memory(memory)
+                                    .code(code)
+                                    .language(language)
+                                    .submissionId(submissionId)
+                                    .build();
                     return question;
                 }
             }
@@ -215,8 +231,10 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var submissionId = rs.getString("submissionId");
 
                     User user = userRepository.getUserById(userId);
+
                     question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
                                     createdAt, submittedAt, user.getDiscordName(), user.getLeetcodeUsername(), runtime, memory, code, language, user.getNickname(), submissionId);
+
                     return question;
                 }
             }
@@ -266,7 +284,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
             stmt.setInt(3, pageSize);
-            stmt.setInt(4, (page - 1) * pageSize);
+            stmt.setInt(4, page * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
@@ -291,8 +309,25 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
-                    Question question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
-                                    createdAt, submittedAt, runtime, memory, code, language, submissionId);
+                    Question question = Question.builder()
+                                    .id(questionId)
+                                    .userId(userId)
+                                    .questionSlug(questionSlug)
+                                    .questionDifficulty(questionDifficulty)
+                                    .questionNumber(questionNumber)
+                                    .questionLink(questionLink)
+                                    .pointsAwarded(pointsAwarded)
+                                    .questionTitle(questionTitle)
+                                    .description(description)
+                                    .acceptanceRate(acceptanceRate)
+                                    .createdAt(createdAt)
+                                    .submittedAt(submittedAt)
+                                    .runtime(runtime)
+                                    .memory(memory)
+                                    .code(code)
+                                    .language(language)
+                                    .submissionId(submissionId)
+                                    .build();
                     questions.add(question);
                 }
             }
@@ -347,8 +382,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(12, inputQuestion.getMemory());
             stmt.setString(13, inputQuestion.getCode());
             stmt.setString(14, inputQuestion.getLanguage());
-            stmt.setObject(15, UUID.fromString(inputQuestion.getId()));
-            stmt.setString(16, inputQuestion.getSubmissionId());
+            stmt.setString(15, inputQuestion.getSubmissionId());
+            stmt.setObject(16, UUID.fromString(inputQuestion.getId()));
 
             stmt.executeUpdate();
 
@@ -432,8 +467,25 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
-                    question = new Question(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt,
-                                    submittedAt, runtime, memory, code, language, submissionId);
+                    question = Question.builder()
+                                    .id(questionId)
+                                    .userId(userId)
+                                    .questionSlug(questionSlug)
+                                    .questionDifficulty(questionDifficulty)
+                                    .questionNumber(questionNumber)
+                                    .questionLink(questionLink)
+                                    .pointsAwarded(pointsAwarded)
+                                    .questionTitle(questionTitle)
+                                    .description(description)
+                                    .acceptanceRate(acceptanceRate)
+                                    .createdAt(createdAt)
+                                    .submittedAt(submittedAt)
+                                    .runtime(runtime)
+                                    .memory(memory)
+                                    .code(code)
+                                    .language(language)
+                                    .submissionId(submissionId)
+                                    .build();
                     return question;
                 }
             }
