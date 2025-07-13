@@ -110,7 +110,7 @@ public class QuestionSqlRepositoryTest {
     @Order(3)
     void testGetQuestionsByUserId() {
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
-                        testQuestion.getUserId(), 0, 20, "");
+                        testQuestion.getUserId(), 1, 20, "");
 
         assertNotNull(questions, "Questions list should not be null");
         assertTrue(questions.size() > 0, "Questions list should contain at least one question");
@@ -174,7 +174,6 @@ public class QuestionSqlRepositoryTest {
     }
 
     @Test
-    @Order(7)
     void testQuestionExistsBySubmissionId() {
         boolean exists = questionRepository.questionExistsBySubmissionId(testQuestion.getSubmissionId());
 
