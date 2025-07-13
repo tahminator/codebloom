@@ -164,7 +164,7 @@ public class AuthController {
     @Operation(summary = "Verifies the JWT", description = "Verifies the magic link sent to the user's email. If successful, the user will be enrolled with the school tag.", responses = {
             @ApiResponse(responseCode = "302", description = "Redirect to /settings with success or error message"),
     })
-    @PostMapping("/school/verify")
+    @GetMapping("/school/verify")
     public RedirectView verifySchoolEmail(final HttpServletRequest request) {
         AuthenticationObject authenticationObject;
         Session session;
@@ -211,7 +211,6 @@ public class AuthController {
                         .tag(schoolEnum.getInternalTag())
                         .build();
         userTagRepository.createTag(schoolTag);
-        userRepository.getUserById(user.getId());
 
         return new RedirectView("/settings?success=true&message=The email has been verified!");
     }
