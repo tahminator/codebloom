@@ -2,7 +2,7 @@ package com.patina.codebloom.common.db.models.question;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.AllArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@Jacksonized
 @SuperBuilder
 @EqualsAndHashCode
 @ToString

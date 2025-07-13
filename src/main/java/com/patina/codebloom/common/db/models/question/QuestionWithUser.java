@@ -5,10 +5,12 @@ import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
 @Setter
+@Jacksonized
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString
