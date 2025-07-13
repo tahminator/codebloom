@@ -22,6 +22,48 @@ public class QuestionSqlRepository implements QuestionRepository {
     private Connection conn;
     private final UserRepository userRepository;
 
+    private Question mapResultSetToQuestion(ResultSet rs) throws SQLException {
+    var questionId = rs.getString("id");
+    var userId = rs.getString("userId");
+    var questionSlug = rs.getString("questionSlug");
+    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
+    var questionNumber = rs.getInt("questionNumber");
+    var questionLink = rs.getString("questionLink");
+    int points = rs.getInt("pointsAwarded");
+    Integer pointsAwarded = rs.wasNull() ? null : points;
+    var questionTitle = rs.getString("questionTitle");
+    var description = rs.getString("description");
+    var acceptanceRate = rs.getFloat("acceptanceRate");
+    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+    var runtime = rs.getString("runtime");
+    var memory = rs.getString("memory");
+    var code = rs.getString("code");
+    var language = rs.getString("language");
+    var submissionId = rs.getString("submissionId");
+
+    return Question.builder()
+        .id(questionId)
+        .userId(userId)
+        .questionSlug(questionSlug)
+        .questionDifficulty(questionDifficulty)
+        .questionNumber(questionNumber)
+        .questionLink(questionLink)
+        .pointsAwarded(pointsAwarded)
+        .questionTitle(questionTitle)
+        .description(description)
+        .acceptanceRate(acceptanceRate)
+        .createdAt(createdAt)
+        .submittedAt(submittedAt)
+        .runtime(runtime)
+        .memory(memory)
+        .code(code)
+        .language(language)
+        .submissionId(submissionId)
+        .build();
+}
+
+
     public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository) {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
@@ -147,25 +189,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
-                    question = Question.builder()
-                                    .id(questionId)
-                                    .userId(userId)
-                                    .questionSlug(questionSlug)
-                                    .questionDifficulty(questionDifficulty)
-                                    .questionNumber(questionNumber)
-                                    .questionLink(questionLink)
-                                    .pointsAwarded(pointsAwarded)
-                                    .questionTitle(questionTitle)
-                                    .description(description)
-                                    .acceptanceRate(acceptanceRate)
-                                    .createdAt(createdAt)
-                                    .submittedAt(submittedAt)
-                                    .runtime(runtime)
-                                    .memory(memory)
-                                    .code(code)
-                                    .language(language)
-                                    .submissionId(submissionId)
-                                    .build();
+                    question = mapResultSetToQuestion(rs);
                     return question;
                 }
             }
@@ -309,25 +333,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
-                    Question question = Question.builder()
-                                    .id(questionId)
-                                    .userId(userId)
-                                    .questionSlug(questionSlug)
-                                    .questionDifficulty(questionDifficulty)
-                                    .questionNumber(questionNumber)
-                                    .questionLink(questionLink)
-                                    .pointsAwarded(pointsAwarded)
-                                    .questionTitle(questionTitle)
-                                    .description(description)
-                                    .acceptanceRate(acceptanceRate)
-                                    .createdAt(createdAt)
-                                    .submittedAt(submittedAt)
-                                    .runtime(runtime)
-                                    .memory(memory)
-                                    .code(code)
-                                    .language(language)
-                                    .submissionId(submissionId)
-                                    .build();
+                    Question question = mapResultSetToQuestion(rs);
                     questions.add(question);
                 }
             }
@@ -467,25 +473,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
-                    question = Question.builder()
-                                    .id(questionId)
-                                    .userId(userId)
-                                    .questionSlug(questionSlug)
-                                    .questionDifficulty(questionDifficulty)
-                                    .questionNumber(questionNumber)
-                                    .questionLink(questionLink)
-                                    .pointsAwarded(pointsAwarded)
-                                    .questionTitle(questionTitle)
-                                    .description(description)
-                                    .acceptanceRate(acceptanceRate)
-                                    .createdAt(createdAt)
-                                    .submittedAt(submittedAt)
-                                    .runtime(runtime)
-                                    .memory(memory)
-                                    .code(code)
-                                    .language(language)
-                                    .submissionId(submissionId)
-                                    .build();
+                    question =  mapResultSetToQuestion(rs);
                     return question;
                 }
             }
