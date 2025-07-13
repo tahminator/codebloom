@@ -1,4 +1,4 @@
-package com.patina.codebloom.testconfig;
+package com.patina.codebloom.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ public class TestProtector {
 
     @Bean
     public Protector protector() {
-        return new Protector(null, userRepository) {
+        return new Protector(sesssionRepository, userRepository) {
             @Override
             public AuthenticationObject validateSession(final HttpServletRequest request) {
                 User mockAdminUser = userRepository.getUserById("ed3bfe18-e42a-467f-b4fa-07e8da4d2555");
