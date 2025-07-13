@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JSTypesGenerator implements CommandLineRunner {
     @Override
-    public void run(String... args) throws Exception {
+    public void run(final String... args) throws Exception {
         log.info("Type generation command starting...");
         Process process = new ProcessBuilder("make", "types-dev")
                         .inheritIO()
