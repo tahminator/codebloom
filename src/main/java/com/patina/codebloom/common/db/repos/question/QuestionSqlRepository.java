@@ -255,28 +255,9 @@ public class QuestionSqlRepository implements QuestionRepository {
 
                     User user = userRepository.getUserById(userId);
 
-                    question = new QuestionWithUser(
-                                    questionId,
-                                    userId,
-                                    questionSlug,
-                                    questionTitle,
-                                    questionDifficulty,
-                                    questionNumber,
-                                    questionLink,
-                                    description,
-                                    pointsAwarded,
-                                    acceptanceRate,
-                                    createdAt,
-                                    submittedAt,
-                                    runtime,
-                                    memory,
-                                    code,
-                                    language,
-                                    submissionId,
-                                    user.getDiscordName(),
-                                    user.getLeetcodeUsername(),
-                                    user.getNickname());
-
+                    question = new QuestionWithUser(questionId,userId,questionSlug,questionTitle,questionDifficulty,questionNumber,questionLink,description,pointsAwarded,acceptanceRate,
+                    createdAt,submittedAt,runtime,memory,code,language,submissionId,user.getDiscordName(),user.getLeetcodeUsername(),user.getNickname());
+                    
                     return question;
                 }
             }
