@@ -161,7 +161,7 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Verifies the JWC", description = "Verifies the magic link sent to the user's email. If successful, the user will be enrolled with the school tag.", responses = {
+    @Operation(summary = "Verifies the JWT", description = "Verifies the magic link sent to the user's email. If successful, the user will be enrolled with the school tag.", responses = {
             @ApiResponse(responseCode = "302", description = "Redirect to /settings with success or error message"),
     })
     @PostMapping("/school/verify")
