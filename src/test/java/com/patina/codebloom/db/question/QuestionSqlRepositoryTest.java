@@ -61,8 +61,6 @@ public class QuestionSqlRepositoryTest {
         assertNotNull(testQuestion.getCreatedAt(), "Question createdAt should be set");
 
         log.info("Created test question with ID: {}", testQuestion.getId());
-
-        log.info("Created test question with ID: {}", testQuestion.getId());
     }
 
     @AfterAll
