@@ -3,7 +3,11 @@ package com.patina.codebloom.common.db.models.question;
 import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class QuestionWithUser extends Question {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String discordName;
@@ -18,7 +22,7 @@ public class QuestionWithUser extends Question {
                     final Integer pointsAwarded, final String questionTitle, final String description, final float acceptanceRate, final LocalDateTime createdAt, final LocalDateTime submittedAt,
                     final String discordName, final String leetcodeUsername, final String runtime, final String memory, final String code, final String language, final String nickname,
                     final String submissionId) {
-        super(id, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate, createdAt, submittedAt, runtime, memory, code,
+        super(id, userId, questionSlug, questionTitle, questionDifficulty, questionNumber, questionLink, description, pointsAwarded, acceptanceRate, createdAt, submittedAt, runtime, memory, code,
                         language, submissionId);
         this.discordName = discordName;
         this.leetcodeUsername = leetcodeUsername;
