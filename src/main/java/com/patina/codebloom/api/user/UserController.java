@@ -83,7 +83,13 @@ public class UserController {
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<Question>> createdPage = new Page<>(hasNextPage, questions, totalPages, parsedPageSize);
+        Page<ArrayList<Question>> createdPage = Page
+                        .<ArrayList<Question>>builder()
+                        .hasNextPage(hasNextPage)
+                        .items(questions)
+                        .pages(totalPages)
+                        .pageSize(parsedPageSize)
+                        .build();
 
         return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
     }
@@ -109,7 +115,13 @@ public class UserController {
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<User>> createdPage = new Page<>(hasNextPage, users, totalPages, parsedPageSize);
+        Page<ArrayList<User>> createdPage = Page
+                        .<ArrayList<User>>builder()
+                        .hasNextPage(hasNextPage)
+                        .items(users)
+                        .pages(totalPages)
+                        .pageSize(parsedPageSize)
+                        .build();
 
         return ResponseEntity.ok().body(ApiResponder.success("All users have been successfully fetched!", createdPage));
     }

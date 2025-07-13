@@ -40,7 +40,11 @@ public class TestProtector {
                 Session fakeSession = Session.builder()
                                 .userId("ed3bfe18-e42a-467f-b4fa-07e8da4d2555")
                                 .expiresAt(StandardizedLocalDateTime.now().plusYears(10L)).build();
-                return new AuthenticationObject(mockAdminUser, fakeSession);
+                return AuthenticationObject
+                .builder()
+                .user(mockAdminUser)
+                .session(fakeSession)
+                .build();
             }
 
             // User is an admin, so just send the same thing.

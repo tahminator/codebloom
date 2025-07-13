@@ -152,7 +152,15 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             String acRateString = stats.get("acRate").getAsString();
             float acRate = Float.parseFloat(acRateString.replace("%", "")) / 100f;
 
-            return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question, acRate);
+            return LeetcodeQuestion.builder()
+                            .link(link)
+                            .questionId(questionId)
+                            .questionTitle(questionTitle)
+                            .question(question)
+                            .titleSlug(titleSlug)
+                            .difficulty(difficulty)
+                            .acceptanceRate(acRate)
+                            .build();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
@@ -210,8 +218,14 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
 
                     LocalDateTime timestamp = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
                     String statusDisplay = submission.path("statusDisplay").asText();
-                    submissions.add(new LeetcodeSubmission(id, title, titleSlug, timestamp, statusDisplay));
-
+                    submissions.add(LeetcodeSubmission
+                                    .builder()
+                                    .id(id)
+                                    .title(title)
+                                    .titleSlug(titleSlug)
+                                    .timestamp(timestamp)
+                                    .statusDisplay(statusDisplay)
+                                    .build());
                 }
             }
 
@@ -265,11 +279,25 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             String code = baseNode.path("code").asText();
             String langName = baseNode.path("lang").path("name").asText();
             String langVerboseName = baseNode.path("lang").path("verboseName").asText();
-            Lang lang = (langName != null && langVerboseName != null) ? new Lang(langName, langVerboseName) : null;
+            Lang lang = null;
+            if (langName != null && langVerboseName != null) {
+                lang = Lang.builder()
+                                .name(langName)
+                                .verboseName(langVerboseName)
+                                .build();
+            }
 
-            LeetcodeDetailedQuestion question = new LeetcodeDetailedQuestion(runtime, runtimeDisplay, runtimePercentile, memory, memoryDisplay, memoryPercentile, code, lang);
-
-            return question;
+            return LeetcodeDetailedQuestion
+                            .builder()
+                            .runtime(runtime)
+                            .runtimeDisplay(runtimeDisplay)
+                            .runtimePercentile(runtimePercentile)
+                            .memory(memory)
+                            .memoryDisplay(memoryDisplay)
+                            .memoryPercentile(memoryPercentile)
+                            .code(code)
+                            .lang(lang)
+                            .build();
 
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
@@ -314,7 +342,11 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             String title = baseNode.path("title").asText();
             var difficulty = QuestionDifficulty.valueOf(baseNode.path("difficulty").asText());
 
-            return new POTD(title, titleSlug, difficulty);
+            return POTD.builder()
+                            .title(title)
+                            .titleSlug(titleSlug)
+                            .difficulty(difficulty)
+                            .build();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
@@ -360,7 +392,13 @@ public class DefaultLeetcodeApiHandler implements LeetcodeApiHandler {
             var realName = baseNode.path("profile").path("realName").asText();
             var aboutMe = baseNode.path("profile").path("aboutMe").asText().trim();
 
-            return new UserProfile(returnedUsername, ranking, userAvatar, realName, aboutMe);
+            return UserProfile.builder()
+                            .username(returnedUsername)
+                            .ranking(ranking)
+                            .userAvatar(userAvatar)
+                            .realName(realName)
+                            .aboutMe(aboutMe)
+                            .build();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
