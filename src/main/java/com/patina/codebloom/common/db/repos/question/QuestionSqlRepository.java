@@ -23,46 +23,45 @@ public class QuestionSqlRepository implements QuestionRepository {
     private final UserRepository userRepository;
 
     private Question mapResultSetToQuestion(final ResultSet rs) throws SQLException {
-    var questionId = rs.getString("id");
-    var userId = rs.getString("userId");
-    var questionSlug = rs.getString("questionSlug");
-    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
-    var questionNumber = rs.getInt("questionNumber");
-    var questionLink = rs.getString("questionLink");
-    int points = rs.getInt("pointsAwarded");
-    Integer pointsAwarded = rs.wasNull() ? null : points;
-    var questionTitle = rs.getString("questionTitle");
-    var description = rs.getString("description");
-    var acceptanceRate = rs.getFloat("acceptanceRate");
-    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-    var runtime = rs.getString("runtime");
-    var memory = rs.getString("memory");
-    var code = rs.getString("code");
-    var language = rs.getString("language");
-    var submissionId = rs.getString("submissionId");
+        var questionId = rs.getString("id");
+        var userId = rs.getString("userId");
+        var questionSlug = rs.getString("questionSlug");
+        var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
+        var questionNumber = rs.getInt("questionNumber");
+        var questionLink = rs.getString("questionLink");
+        int points = rs.getInt("pointsAwarded");
+        Integer pointsAwarded = rs.wasNull() ? null : points;
+        var questionTitle = rs.getString("questionTitle");
+        var description = rs.getString("description");
+        var acceptanceRate = rs.getFloat("acceptanceRate");
+        var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+        var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+        var runtime = rs.getString("runtime");
+        var memory = rs.getString("memory");
+        var code = rs.getString("code");
+        var language = rs.getString("language");
+        var submissionId = rs.getString("submissionId");
 
-    return Question.builder()
-        .id(questionId)
-        .userId(userId)
-        .questionSlug(questionSlug)
-        .questionDifficulty(questionDifficulty)
-        .questionNumber(questionNumber)
-        .questionLink(questionLink)
-        .pointsAwarded(pointsAwarded)
-        .questionTitle(questionTitle)
-        .description(description)
-        .acceptanceRate(acceptanceRate)
-        .createdAt(createdAt)
-        .submittedAt(submittedAt)
-        .runtime(runtime)
-        .memory(memory)
-        .code(code)
-        .language(language)
-        .submissionId(submissionId)
-        .build();
-}
-
+        return Question.builder()
+                        .id(questionId)
+                        .userId(userId)
+                        .questionSlug(questionSlug)
+                        .questionDifficulty(questionDifficulty)
+                        .questionNumber(questionNumber)
+                        .questionLink(questionLink)
+                        .pointsAwarded(pointsAwarded)
+                        .questionTitle(questionTitle)
+                        .description(description)
+                        .acceptanceRate(acceptanceRate)
+                        .createdAt(createdAt)
+                        .submittedAt(submittedAt)
+                        .runtime(runtime)
+                        .memory(memory)
+                        .code(code)
+                        .language(language)
+                        .submissionId(submissionId)
+                        .build();
+    }
 
     public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository) {
         this.conn = dbConnection.getConn();
@@ -256,8 +255,27 @@ public class QuestionSqlRepository implements QuestionRepository {
 
                     User user = userRepository.getUserById(userId);
 
-                    question = new QuestionWithUser(questionId, userId, questionSlug, questionDifficulty, questionNumber, questionLink, pointsAwarded, questionTitle, description, acceptanceRate,
-                                    createdAt, submittedAt, user.getDiscordName(), user.getLeetcodeUsername(), runtime, memory, code, language, user.getNickname(), submissionId);
+                    question = new QuestionWithUser(
+                                    questionId,
+                                    userId,
+                                    questionSlug,
+                                    questionTitle,
+                                    questionDifficulty,
+                                    questionNumber,
+                                    questionLink,
+                                    description,
+                                    pointsAwarded,
+                                    acceptanceRate,
+                                    createdAt,
+                                    submittedAt,
+                                    runtime,
+                                    memory,
+                                    code,
+                                    language,
+                                    submissionId,
+                                    user.getDiscordName(),
+                                    user.getLeetcodeUsername(),
+                                    user.getNickname());
 
                     return question;
                 }
@@ -308,7 +326,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
             stmt.setInt(3, pageSize);
-             stmt.setInt(4, (page - 1) * pageSize);
+            stmt.setInt(4, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
@@ -473,7 +491,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                     var code = rs.getString("code");
                     var language = rs.getString("language");
                     var submissionId = rs.getString("submissionId");
-                    question =  mapResultSetToQuestion(rs);
+                    question = mapResultSetToQuestion(rs);
                     return question;
                 }
             }
