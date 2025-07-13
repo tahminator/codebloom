@@ -1,6 +1,11 @@
 package com.patina.codebloom.common.db.models.question;
-import java.util.UUID;
-import lombok.*;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 
