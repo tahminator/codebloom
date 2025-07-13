@@ -1,8 +1,10 @@
 import { useVerifySchoolMutation } from "@/lib/api/queries/auth/school";
 import { schoolVerificationForm } from "@/lib/api/schema/school";
+import { useBackendCallbackParams } from "@/lib/hooks/useBackendCallbackParams";
 import { Box, Button, Modal, Text, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { useEffect } from "react";
 import { z } from "zod";
 
 type SchoolModalProps = {
@@ -14,6 +16,17 @@ export default function SchoolEmailModal({
   enabled,
   toggle,
 }: SchoolModalProps) {
+  const { success, message } = useBackendCallbackParams();
+
+  useEffect(() => {
+    if (typeof success === "boolean" && message) {
+      notifications.show({
+        message,
+        color: success ? "green" : "red",
+      });
+    }
+  }, [message, success]);
+
   const { mutate, status } = useVerifySchoolMutation();
   const form = useForm({
     validate: zodResolver(schoolVerificationForm),
