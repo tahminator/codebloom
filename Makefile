@@ -8,16 +8,16 @@ migrate-prod:
 	dotenvx run -f .env.production -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
 
 java-dev:
-	dotenvx run -- ./mvnw spring-boot:run
+	dotenvx run -- ./mvnw -Dspring-boot.run.profiles=dev spring-boot:run
 
 js-dev:
 	cd js && pnpm run dev
 
 types-dev:
-	cd js && pnpm run generate:dev
+	cd js && pnpm run generate
 
 dev:
-	pnpm i -g concurrently && concurrently "make java-dev" "make js-dev" "make types-dev"
+	pnpm i -g concurrently && concurrently "make java-dev" "make js-dev"
 
 backend-install:
 	dotenvx run -- ./mvnw install -DskipTests=true
