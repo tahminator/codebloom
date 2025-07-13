@@ -29,15 +29,15 @@ import java.util.ArrayList;
 public class QuestionSqlRepositoryTest {
     private QuestionRepository questionRepository;
     private Question testQuestion;
+    private String mockSuperUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
 
     @Autowired
     public QuestionSqlRepositoryTest(final QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
     }
-
     @BeforeAll
     void createQuestion() {
-                String mockSuperUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
+                
         testQuestion = Question.builder()
                         .userId(mockSuperUserId)
                         .questionSlug("test-question-slug-123")
