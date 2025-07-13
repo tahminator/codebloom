@@ -284,7 +284,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
             stmt.setInt(3, pageSize);
-            stmt.setInt(4, page * pageSize);
+             stmt.setInt(4, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
