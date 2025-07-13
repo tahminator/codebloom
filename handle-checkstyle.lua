@@ -34,8 +34,6 @@ local function parse_checkstyle_errors(params, output)
 end
 
 -- original: https://github.com/nvimtools/none-ls.nvim/blob/main/lua/null-ls/builtins/diagnostics/checkstyle.lua
--- override the uri value to remove the `file:/` from the artifactLocation uri,
--- which fixes Neovim
 --- @param params any
 --- @return table
 function handle_checkstyle_output(params)
