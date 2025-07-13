@@ -9,6 +9,7 @@ export async function verifySchool(email: { email: string }) {
   });
 
   const json = (await response.json()) as UnknownApiResponse<string>;
+
   return json;
 }
 
