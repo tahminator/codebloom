@@ -70,40 +70,9 @@ public class Question {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String language;
 
-     // Not every submission will have this.
+    // Not every submission will have this.
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String submissionId;
 
-    /*
-     * // constructors commented out to be refactored: 
-     * public Question(final String
-     * userId, final String questionSlug, final QuestionDifficulty
-     * questionDifficulty, final int questionNumber, final String questionLink,
-     * final String questionTitle, final String description, final Integer
-     * pointsAwarded, final float acceptanceRate, final LocalDateTime submittedAt) {
-     * // ... }
-     * 
-     * public Question(final String userId, final String questionSlug, final
-     * QuestionDifficulty questionDifficulty, final int questionNumber, final String
-     * questionLink, final String questionTitle, final String description, final
-     * Integer pointsAwarded, final float acceptanceRate, final LocalDateTime
-     * submittedAt, final String runtime, final String memory, final String code,
-     * final String language, final String submissionId) { // ... }
-     * 
-     * public Question(final String id, final String userId, final String
-     * questionSlug, final QuestionDifficulty questionDifficulty, final int
-     * questionNumber, final String questionLink, final Integer pointsAwarded, final
-     * String questionTitle, final String description, final float acceptanceRate,
-     * final LocalDateTime createdAt, final LocalDateTime submittedAt, final String
-     * runtime, final String memory, final String code, final String language, final
-     * String submissionId) { // ... }
-     * 
-     * public Question(final String id, final String userId, final String
-     * questionSlug, final QuestionDifficulty questionDifficulty, final int
-     * questionNumber, final String questionLink, final Integer pointsAwarded, final
-     * String questionTitle, final String description, final float acceptanceRate,
-     * final LocalDateTime createdAt, final LocalDateTime submittedAt, final String
-     * submissionId) { // ... }
-     */
 }
