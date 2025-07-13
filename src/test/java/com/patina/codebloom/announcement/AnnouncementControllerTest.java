@@ -24,7 +24,7 @@ import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
-import com.patina.codebloom.testconfig.TestProtector;
+import com.patina.codebloom.config.TestProtector;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
