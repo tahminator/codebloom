@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.testconfig.TestProtector;
+import com.patina.codebloom.config.TestProtector;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
