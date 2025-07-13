@@ -71,7 +71,8 @@ public class Question {
     private String submissionId;
 
     /*
-     * // Constructors commented out to be refactored: public Question(final String
+     * // constructors commented out to be refactored: 
+     * public Question(final String
      * userId, final String questionSlug, final QuestionDifficulty
      * questionDifficulty, final int questionNumber, final String questionLink,
      * final String questionTitle, final String description, final Integer
