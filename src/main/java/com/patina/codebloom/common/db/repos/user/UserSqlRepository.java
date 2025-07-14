@@ -358,4 +358,22 @@ public class UserSqlRepository implements UserRepository {
         return 0;
     }
 
+    @Override
+    public boolean deleteUserById(final String id) {
+        String sql = """
+                            DELETE FROM "User"
+                            WHERE
+                                id = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete user by id", e);
+        }
+    }
 }

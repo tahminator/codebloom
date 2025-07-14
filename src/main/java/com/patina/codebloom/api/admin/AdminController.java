@@ -84,16 +84,14 @@ public class AdminController {
         }
 
         // TODO - Implement the logic to support shouldExpireBy
-        Leaderboard newLeaderboard = new Leaderboard(name, null, null);
+        Leaderboard newLeaderboard = Leaderboard.builder()
+                        .name(name)
+                        .build();
         newLeaderboard.setId(UUID.randomUUID().toString());
         newLeaderboard.setName(name);
         newLeaderboard.setCreatedAt(LocalDateTime.now());
 
-        boolean success = leaderboardRepository.addNewLeaderboard(newLeaderboard);
-        if (!success) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(ApiResponder.failure("Failed to create leaderboard due to an internal error."));
-        }
+        leaderboardRepository.addNewLeaderboard(newLeaderboard);
         leaderboardRepository.addAllUsersToLeaderboard(newLeaderboard.getId());
 
         return ResponseEntity.ok(ApiResponder.success("Leaderboard was created successfully.", Empty.of()));
