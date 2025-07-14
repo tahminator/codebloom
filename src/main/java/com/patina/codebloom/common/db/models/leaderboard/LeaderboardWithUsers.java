@@ -22,19 +22,6 @@ public class LeaderboardWithUsers extends Leaderboard {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private ArrayList<UserWithScore> users;
 
-    // public LeaderboardWithUsers(final String name, final LocalDateTime createdAt,
-    // final ArrayList<UserWithScore> users, final LocalDateTime shouldExpireBy) {
-    // super(name, createdAt, shouldExpireBy);
-    // this.users = users;
-    // }
-    //
-    // public LeaderboardWithUsers(final String id, final String name, final
-    // LocalDateTime createdAt, final LocalDateTime deletedAt,
-    // final ArrayList<UserWithScore> users, final LocalDateTime shouldExpireBy) {
-    // super(id, name, createdAt, deletedAt, shouldExpireBy);
-    // this.users = users;
-    // }
-
     public void addUser(final UserWithScore user) {
         this.users.add(user);
     }
