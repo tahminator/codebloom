@@ -28,4 +28,6 @@ public interface UserRepository {
     PrivateUser getPrivateUserById(String id);
 
     boolean userExistsByLeetcodeUsername(String leetcodeUsername);
+
+    boolean deleteUserById(String id);
 }

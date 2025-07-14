@@ -16,11 +16,30 @@ public interface LeaderboardRepository {
 
     boolean disableLeaderboardById(String leaderboardId);
 
-    boolean addNewLeaderboard(Leaderboard leaderboard);
+    /**
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     *
+     * @param leaderboard - required fields:
+     * <ul>
+     * <li>name</li>
+     * </ul>
+     */
+    void addNewLeaderboard(Leaderboard leaderboard);
 
     /**
-     * @implNote If you want to update the users in a leaderboard, use
+     * @note If you want to update the users in a leaderboard, use
      * updateUserFromLeaderboard instead.
+     *
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     *
+     * @param leaderboard - overridden fields:
+     * <ul>
+     * <li>name</li>
+     * <li>createdAt</li>
+     * <li>deletedAt</li>
+     * </ul>
      */
     boolean updateLeaderboard(Leaderboard leaderboard);
 
