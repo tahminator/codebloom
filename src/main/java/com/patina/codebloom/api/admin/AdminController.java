@@ -87,9 +87,6 @@ public class AdminController {
         Leaderboard newLeaderboard = Leaderboard.builder()
                         .name(name)
                         .build();
-        newLeaderboard.setId(UUID.randomUUID().toString());
-        newLeaderboard.setName(name);
-        newLeaderboard.setCreatedAt(LocalDateTime.now());
 
         leaderboardRepository.addNewLeaderboard(newLeaderboard);
         leaderboardRepository.addAllUsersToLeaderboard(newLeaderboard.getId());
