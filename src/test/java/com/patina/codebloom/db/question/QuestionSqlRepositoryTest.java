@@ -17,7 +17,6 @@ import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
-import com.patina.codebloom.testconfig.TestProtector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -35,9 +34,10 @@ public class QuestionSqlRepositoryTest {
     public QuestionSqlRepositoryTest(final QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
     }
+
     @BeforeAll
     void createQuestion() {
-                
+
         testQuestion = Question.builder()
                         .userId(mockSuperUserId)
                         .questionSlug("test-question-slug-123")
@@ -96,7 +96,6 @@ public class QuestionSqlRepositoryTest {
         assertEquals(testQuestion.getId(), questionWithUser.getId(), "Question IDs should match");
         assertEquals(testQuestion.getUserId(), questionWithUser.getUserId(), "User IDs should match");
 
-
         assertNotNull(questionWithUser.getDiscordName(), "Discord name should be populated");
         assertNotNull(questionWithUser.getLeetcodeUsername(), "Leetcode username should be populated");
         assertNotNull(questionWithUser.getNickname(), "Nickname should be populated");
@@ -126,7 +125,6 @@ public class QuestionSqlRepositoryTest {
         String originalCode = testQuestion.getCode();
         String originalRuntime = testQuestion.getRuntime();
 
-
         testQuestion.setCode("def twoSum(self, nums, target): # updated test code");
         testQuestion.setRuntime("2 ms");
 
@@ -141,7 +139,6 @@ public class QuestionSqlRepositoryTest {
         assertEquals("2 ms", updatedQuestion.getRuntime(), "Runtime should be updated");
 
         log.info("Successfully updated question with ID: {}", testQuestion.getId());
-
 
         testQuestion.setCode(originalCode);
         testQuestion.setRuntime(originalRuntime);
