@@ -31,21 +31,4 @@ public class Leaderboard {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private LocalDateTime shouldExpireBy;
-
-    // public Leaderboard(final String name, final LocalDateTime createdAt, final
-    // LocalDateTime shouldExpireBy) {
-    // this.name = name;
-    // this.createdAt = createdAt;
-    // this.shouldExpireBy = shouldExpireBy;
-    // }
-    //
-    // public Leaderboard(final String id, final String name, final LocalDateTime
-    // createdAt, final LocalDateTime deletedAt, final LocalDateTime shouldExpireBy)
-    // {
-    // this.id = id;
-    // this.name = name;
-    // this.createdAt = createdAt;
-    // this.deletedAt = deletedAt;
-    // this.shouldExpireBy = shouldExpireBy;
-    // }
 }
