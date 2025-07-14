@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -27,9 +27,33 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         this.userRepository = userRepository;
     }
 
+    private Leaderboard parseResultSetToLeaderboard(final ResultSet resultSet) throws SQLException {
+        return Leaderboard.builder()
+                        .id(resultSet.getString("id"))
+                        .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
+                        .deletedAt(
+                                        Optional.ofNullable(
+                                                        resultSet.getTimestamp("deletedAt"))
+                                                        .map(Timestamp::toLocalDateTime)
+                                                        .orElse(null))
+                        .name(resultSet.getString("name"))
+                        .shouldExpireBy(
+                                        Optional.ofNullable(
+                                                        resultSet.getTimestamp("shouldExpireBy"))
+                                                        .map(Timestamp::toLocalDateTime)
+                                                        .orElse(null))
+                        .build();
+    }
+
     @Override
     public boolean disableLeaderboardById(final String leaderboardId) {
-        String sql = "UPDATE \"Leaderboard\" SET \"deletedAt\" = NOW() WHERE id = ?";
+        String sql = """
+                        UPDATE "Leaderboard"
+                        SET
+                            "deletedAt" = NOW()
+                        WHERE
+                            id = ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(leaderboardId));
@@ -42,8 +66,15 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public boolean addNewLeaderboard(final Leaderboard leaderboard) {
-        String sql = "INSERT INTO \"Leaderboard\" (id, name) VALUES (?, ?) RETURNING \"createdAt\"";
+    public void addNewLeaderboard(final Leaderboard leaderboard) {
+        String sql = """
+                        INSERT INTO "Leaderboard"
+                            (id, name)
+                        VALUES
+                            (?, ?)
+                        RETURNING
+                            "createdAt"
+                        """;
         leaderboard.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(leaderboard.getId()));
@@ -52,10 +83,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 if (rs.next()) {
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     leaderboard.setCreatedAt(createdAt);
-                    return true;
                 }
             }
-            return false;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create new leaderboard", e);
         }
@@ -80,23 +109,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var name = rs.getString("name");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    Timestamp deletedAtTimestamp = rs.getTimestamp("deletedAt");
-                    Timestamp shouldExpireByTimestamp = rs.getTimestamp("shouldExpireBy");
-
-                    LocalDateTime deletedAt = null;
-                    if (deletedAtTimestamp != null) {
-                        deletedAt = deletedAtTimestamp.toLocalDateTime();
-                    }
-
-                    LocalDateTime shouldExpireBy = null;
-                    if (shouldExpireByTimestamp != null) {
-                        shouldExpireBy = shouldExpireByTimestamp.toLocalDateTime();
-                    }
-
-                    return new Leaderboard(id, name, createdAt, deletedAt, shouldExpireBy);
+                    return parseResultSetToLeaderboard(rs);
                 }
             }
         } catch (SQLException e) {
@@ -118,31 +131,13 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         FROM "Leaderboard"
                         WHERE
                             id = ?
-                        ORDER BY "createdAt" DESC
-                        LIMIT 1
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var leaderboardId = rs.getString("id");
-                    var name = rs.getString("name");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    Timestamp deletedAtTimestamp = rs.getTimestamp("deletedAt");
-                    Timestamp shouldExpireByTimestamp = rs.getTimestamp("shouldExpireBy");
-
-                    LocalDateTime deletedAt = null;
-                    if (deletedAtTimestamp != null) {
-                        deletedAt = deletedAtTimestamp.toLocalDateTime();
-                    }
-
-                    LocalDateTime shouldExpireBy = null;
-                    if (shouldExpireByTimestamp != null) {
-                        shouldExpireBy = shouldExpireByTimestamp.toLocalDateTime();
-                    }
-
-                    return new Leaderboard(leaderboardId, name, createdAt, deletedAt, shouldExpireBy);
+                    return parseResultSetToLeaderboard(rs);
                 }
             }
         } catch (SQLException e) {
@@ -288,7 +283,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public boolean updateLeaderboard(final Leaderboard leaderboard) {
-        String sql = "UPDATE \"Leaderboard\" SET name = ?, \"createdAt\" = ?, \"deletedAt\" = ?, WHERE id = ?";
+        String sql = """
+                        UPDATE "Leaderboard"
+                        SET
+                            name = ?,
+                            "createdAt" = ?,
+                            "deletedAt" = ?
+                        WHERE id = ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, leaderboard.getName());
@@ -306,7 +308,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public boolean addUserToLeaderboard(final String userId, final String leaderboardId) {
-        String sql = "INSERT INTO \"Metadata\" (id, \"userId\", \"leaderboardId\") VALUES (?, ?, ?)";
+        String sql = """
+                        INSERT INTO "Metadata"
+                            (id, "userId", "leaderboardId")
+                        VALUES
+                            (?, ?, ?)
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.randomUUID());
@@ -322,7 +329,15 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public boolean updateUserPointsFromLeaderboard(final String leaderboardId, final String userId, final int totalScore) {
-        String sql = "UPDATE \"Metadata\" SET \"totalScore\" = ? WHERE \"userId\" = ? AND \"leaderboardId\" = ?";
+        String sql = """
+                        UPDATE "Metadata"
+                        SET
+                            "totalScore" = ?
+                        WHERE
+                            "userId" = ?
+                        AND
+                            "leaderboardId" = ?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, totalScore);
@@ -452,15 +467,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    var id = rs.getString("id");
-                    var name = rs.getString("name");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    Timestamp tsDeletedAt = rs.getTimestamp("deletedAt");
-                    Timestamp tsShouldExpireBy = rs.getTimestamp("shouldExpireBy");
-                    LocalDateTime deletedAt = (tsDeletedAt != null) ? tsDeletedAt.toLocalDateTime() : null;
-                    LocalDateTime shouldExpireBy = (tsShouldExpireBy != null) ? tsShouldExpireBy.toLocalDateTime() : null;
-
-                    leaderboards.add(new Leaderboard(id, name, createdAt, deletedAt, shouldExpireBy));
+                    leaderboards.add(parseResultSetToLeaderboard(rs));
                 }
             }
         } catch (SQLException e) {
@@ -473,7 +480,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     @Override
     public boolean addAllUsersToLeaderboard(final String leaderboardId) {
         var users = userRepository.getAllUsers();
-        String sql = "INSERT INTO \"Metadata\" (id, \"userId\", \"leaderboardId\") VALUES (?, ?, ?)";
+        String sql = """
+                        INSERT INTO "Metadata"
+                            (id, "userId", "leaderboardId")
+                        VALUES
+                            (?, ?, ?)
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             for (var user : users) {
@@ -494,7 +506,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public int getLeaderboardCount() {
-        String sql = "SELECT COUNT(*) FROM \"Leaderboard\"";
+        String sql = """
+                        SELECT
+                            COUNT(*)
+                        FROM
+                            "Leaderboard"
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
@@ -505,5 +522,52 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         }
 
         return 0;
+    }
+
+    /**
+     * Internal use only. Intended for testing use cases (access via reflection).
+     */
+    private boolean deleteLeaderboardById(final String id) {
+        String sql = """
+                            DELETE FROM "Leaderboard"
+                            WHERE
+                                id = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete leaderboard by id", e);
+        }
+    }
+
+    /**
+     * Internal use only. Intended for testing use cases (access via reflection).
+     *
+     * @note This will only re-activate a leaderboard if it's the most recent
+     * leaderboard entry.
+     */
+    private boolean enableLeaderboardById(final String id) {
+        String sql = """
+                            UPDATE "Leaderboard"
+                            SET
+                                "deletedAt" = NULL
+                            WHERE
+                                id = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to enable leaderboard by id", e);
+        }
     }
 }
