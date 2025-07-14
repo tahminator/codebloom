@@ -1,7 +1,6 @@
 package com.patina.codebloom.api.admin;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
