@@ -79,11 +79,15 @@ export const useUserSubmissionsQuery = ({
   };
 };
 
-export const useGetAllUsersQuery = ({
-  tieToUrl = false,
-}: {
-  tieToUrl?: boolean;
-}) => {
+export const useGetAllUsersQuery = (
+  {
+    tieToUrl = false,
+  }: {
+    tieToUrl?: boolean;
+  } = {
+    tieToUrl: false,
+  },
+) => {
   const initialPage = 1;
   const pageSize = 5;
 

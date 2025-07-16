@@ -35,7 +35,7 @@ export default function LeaderboardIndex() {
     patina,
     togglePatina,
     isPlaceholderData,
-  } = useCurrentLeaderboardUsersQuery({});
+  } = useCurrentLeaderboardUsersQuery();
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;

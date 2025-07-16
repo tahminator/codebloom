@@ -26,7 +26,7 @@ export default function UserAdminList() {
     searchQuery,
     setSearchQuery,
     debouncedQuery,
-  } = useGetAllUsersQuery({});
+  } = useGetAllUsersQuery();
 
   const { mutate } = useToggleAdminMutation();
 
