@@ -15,15 +15,21 @@ import { useCallback } from "react";
  * Fetch the users on the current leaderboard. This is a super query
  * that also exposes pagination.
  */
-export const useCurrentLeaderboardUsersQuery = ({
-  initialPage = 1,
-  pageSize = 20,
-  tieToUrl = true,
-}: {
-  initialPage?: number;
-  pageSize?: number;
-  tieToUrl?: boolean;
-}) => {
+export const useCurrentLeaderboardUsersQuery = (
+  {
+    initialPage = 1,
+    pageSize = 20,
+    tieToUrl = true,
+  }: {
+    initialPage?: number;
+    pageSize?: number;
+    tieToUrl?: boolean;
+  } = {
+    initialPage: 1,
+    pageSize: 20,
+    tieToUrl: true,
+  },
+) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
 
   /**
