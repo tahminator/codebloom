@@ -50,7 +50,7 @@ function NewLeaderboardFormBody({
 
   return (
     <>
-      <Button variant="outline" onClick={toggleModal} top={12}>
+      <Button variant="outline" onClick={toggleModal} mt={"auto"}>
         Create
       </Button>
       <Modal
