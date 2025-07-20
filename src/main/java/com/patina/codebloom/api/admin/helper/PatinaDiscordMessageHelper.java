@@ -64,8 +64,8 @@ public class PatinaDiscordMessageHelper {
 
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                                 .page(1)
-                                .pageSize(5).
-                                query("")
+                                .pageSize(5)
+                                .query("")
                                 .patina(true)
                                 .build();
 
