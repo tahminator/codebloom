@@ -22,7 +22,6 @@ import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,7 +38,6 @@ public class LeaderboardController {
 
     private final LeaderboardRepository leaderboardRepository;
     private final UserRepository userRepository;
-
 
     public LeaderboardController(final LeaderboardRepository leaderboardRepository, final UserRepository userRepository) {
         this.leaderboardRepository = leaderboardRepository;
@@ -82,12 +80,12 @@ public class LeaderboardController {
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .id(leaderboardId)
-        .page(page)
-        .pageSize(parsedPageSize)
-        .query(query)
-        .patina(patina)
-        .build();
+                        .id(leaderboardId)
+                        .page(page)
+                        .pageSize(parsedPageSize)
+                        .query(query)
+                        .patina(patina)
+                        .build();
 
         List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(options);
 
@@ -127,11 +125,11 @@ public class LeaderboardController {
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(page)
-        .pageSize(parsedPageSize)
-        .query(query)
-        .patina(patina)
-        .build();
+                        .page(page)
+                        .pageSize(parsedPageSize)
+                        .query(query)
+                        .patina(patina)
+                        .build();
 
         ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(options);
 
@@ -176,10 +174,10 @@ public class LeaderboardController {
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(page)
-        .pageSize(parsedPageSize)
-        .query(query)
-        .build();
+                        .page(page)
+                        .pageSize(parsedPageSize)
+                        .query(query)
+                        .build();
 
         ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(options);
 
