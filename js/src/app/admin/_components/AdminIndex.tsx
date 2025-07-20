@@ -5,7 +5,8 @@ import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Flex, Loader, Title } from "@mantine/core";
 
-import NewLeaderboardForm from "./NewLeaderboardForm";
+// import NewLeaderboardForm from "./NewLeaderboardForm";
+import AllLeaderboardsPage from "./AllLeaderboardAdmin";
 
 export default function AdminIndex() {
   const { data, status } = useAuthQuery();
@@ -44,7 +45,7 @@ export default function AdminIndex() {
           m={"sm"}
         >
           <Title order={4}>Leaderboards</Title>
-          <NewLeaderboardForm />
+          <AllLeaderboardsPage />
         </Flex>
         <Flex
           w={{ base: "100%", sm: "50%" }}
