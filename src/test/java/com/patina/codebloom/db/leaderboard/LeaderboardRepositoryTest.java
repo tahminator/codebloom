@@ -227,7 +227,6 @@ public class LeaderboardRepositoryTest {
     void testLeaderboardUserCountById() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
         .id(mockLeaderboard.getId())
-        .page(1)
         .query("")
         .patina(false)
         .build();
