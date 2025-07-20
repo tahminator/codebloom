@@ -23,6 +23,7 @@ import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +82,7 @@ public class LeaderboardRepositoryTest {
 
         if (possiblyMockLeaderboard == null || !mockLeaderboard.equals(possiblyMockLeaderboard)) {
             log.info("[DEBUG] - mockLeaderboard: {}", mockLeaderboard.toString());
-            log.info("[DEBUG] - possiblyMockLeaderboard: {}", possiblyMockLeaderboard.toString());
+            log.info("[DEBUG] - possiblyMockLeaderboard: {}", possiblyMockLeaderboard == null ? "null" : possiblyMockLeaderboard.toString());
             fail("most recent leaderboard metadata did not return mock leaderboard");
         }
     }
@@ -93,7 +94,7 @@ public class LeaderboardRepositoryTest {
 
         if (possiblyMockLeaderboard == null || !mockLeaderboard.equals(possiblyMockLeaderboard)) {
             log.info("[DEBUG] - mockLeaderboard: {}", mockLeaderboard.toString());
-            log.info("[DEBUG] - possiblyMockLeaderboard: {}", possiblyMockLeaderboard.toString());
+            log.info("[DEBUG] - possiblyMockLeaderboard: {}", possiblyMockLeaderboard == null ? "null" : possiblyMockLeaderboard.toString());
             fail("most recent leaderboard metadata did not return mock leaderboard");
         }
     }
@@ -110,7 +111,7 @@ public class LeaderboardRepositoryTest {
 
         if (possiblyMockLeaderboard == null || !mockLeaderboard.equals(possiblyMockLeaderboard)) {
             log.info("[DEBUG] - mockLeaderboard: {}", mockLeaderboard.toString());
-            log.info("[DEBUG] - possiblyMockLeaderboard: {}", possiblyMockLeaderboard.toString());
+            log.info("[DEBUG] - possiblyMockLeaderboard: {}", possiblyMockLeaderboard == null ? "null" : possiblyMockLeaderboard.toString());
             fail("most recent leaderboard metadata did not return mock leaderboard");
         }
     }
@@ -126,15 +127,27 @@ public class LeaderboardRepositoryTest {
     @Order(5)
     @Test
     void testGetRecentLeaderboardUserCount() {
-        int leaderboardUsersCount = leaderboardRepository.getRecentLeaderboardUserCount(false, "");
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .query("")
+        .patina(false)
+        .build();
+
+        int leaderboardUsersCount = leaderboardRepository.getRecentLeaderboardUserCount(options);
         assertTrue(leaderboardUsersCount > 0);
     }
 
     @Order(6)
     @Test
     void testLeaderboardUsersByIdEqualsRecentLeaderboardUsers() {
-        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), 1, PAGE_SIZE, "", false);
-        List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(1, PAGE_SIZE, "", false);
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .id(mockLeaderboard.getId())
+        .page(1)
+        .pageSize(PAGE_SIZE)
+        .query("")
+        .patina(false)
+        .build();
+        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(options);
+        List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(options);
 
         IntStream.range(0, allLeaderboardUsersById.size())
                         .forEach(i -> {
@@ -150,7 +163,16 @@ public class LeaderboardRepositoryTest {
     @Test
     void testUsersInMockLeaderboardToAllUsers() {
         List<User> allUsers = userRepository.getAllUsers();
-        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), 1, allUsers.size(), "", false);
+
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .id(mockLeaderboard.getId())
+        .page(1)
+        .pageSize(allUsers.size())
+        .query("")
+        .patina(false)
+        .build();
+
+        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(options);
 
         assertTrue(allUsers != null);
         assertTrue(allLeaderboardUsers != null);
@@ -203,7 +225,12 @@ public class LeaderboardRepositoryTest {
 
     @Test
     void testLeaderboardUserCountById() {
-        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(mockLeaderboard.getId(), false, "");
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .id(mockLeaderboard.getId())
+        .page(1)
+        .query("")
+        .build();
+        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(options);
         assertTrue(leaderboardUsersCount > 0);
     }
 
@@ -215,7 +242,13 @@ public class LeaderboardRepositoryTest {
 
     @Test
     void testGetAllLeaderboards() {
-        var leaderboards = leaderboardRepository.getAllLeaderboardsShallow(1, 9999999, "");
+
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .page(1)
+        .pageSize(PAGE_SIZE)
+        .query("")
+        .build();
+        var leaderboards = leaderboardRepository.getAllLeaderboardsShallow(options);
         assertTrue(leaderboards != null);
         assertTrue(leaderboards.size() > 0);
     }
