@@ -44,9 +44,9 @@ export default function AllLeaderboardsPage() {
             query={searchQuery}
             onChange={(event) => setSearchQuery(event.currentTarget.value)}
             placeholder="Search for leaderboard"
-			mt={"lg"}
+            mt={"lg"}
             pt={10}
-			pr={10}
+            pr={10}
             style={{
               width: "85%",
             }}
@@ -62,7 +62,6 @@ export default function AllLeaderboardsPage() {
           withRowBorders={false}
           striped
           my={"sm"}
-		  
           pos={"relative"}
         >
           {isPlaceholderData && (
