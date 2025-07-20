@@ -16,6 +16,7 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 
 @Component
 public class LeaderboardSqlRepository implements LeaderboardRepository {
@@ -26,6 +27,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
     }
+    
 
     private Leaderboard parseResultSetToLeaderboard(final ResultSet resultSet) throws SQLException {
         return Leaderboard.builder()
@@ -148,7 +150,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<UserWithScore> getRecentLeaderboardUsers(final int page, final int pageSize, final String query, final boolean patina) {
+    public ArrayList<UserWithScore> getRecentLeaderboardUsers(final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -180,25 +182,22 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
                             m."totalScore" DESC,
-                            -- The following case is used to put users with linked leetcode names before
-                            -- those who don't.
                             CASE
                                 WHEN m."totalScore" = 0 THEN
                                     CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
                                 ELSE 0
                             END,
-                            -- This is the tie breaker if we can't sort them by the above conditions.
                             m."createdAt" ASC
                         LIMIT ? OFFSET ?;
-                                                """;
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setBoolean(1, patina);
-            stmt.setString(2, "%" + query + "%");
-            stmt.setString(3, "%" + query + "%");
-            stmt.setString(4, "%" + query + "%");
-            stmt.setInt(5, pageSize);
-            stmt.setInt(6, (page - 1) * pageSize);
+            stmt.setBoolean(1, options.isPatina());
+            stmt.setString(2, "%" + options.getQuery() + "%");
+            stmt.setString(3, "%" + options.getQuery() + "%");
+            stmt.setString(4, "%" + options.getQuery() + "%");
+            stmt.setInt(5, options.getPageSize());
+            stmt.setInt(6, (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -219,7 +218,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<UserWithScore> getLeaderboardUsersById(final String id, final int page, final int pageSize, final String query, final boolean patina) {
+    public ArrayList<UserWithScore> getLeaderboardUsersById(final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -242,26 +241,23 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
                             m."totalScore" DESC,
-                            -- The following case is used to put users with linked leetcode names before
-                            -- those who don't.
                             CASE
                                 WHEN m."totalScore" = 0 THEN
                                     CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
                                 ELSE 0
                             END,
-                            -- This is the tie breaker if we can't sort them by the above conditions.
                             m."createdAt" ASC
                         LIMIT ? OFFSET ?;
-                                                """;
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
-            stmt.setBoolean(2, patina);
-            stmt.setString(3, "%" + query + "%");
-            stmt.setString(4, "%" + query + "%");
-            stmt.setString(5, "%" + query + "%");
-            stmt.setInt(6, pageSize);
-            stmt.setInt(7, (page - 1) * pageSize);
+            stmt.setObject(1, UUID.fromString(options.getId()));
+            stmt.setBoolean(2, options.isPatina());
+            stmt.setString(3, "%" + options.getQuery() + "%");
+            stmt.setString(4, "%" + options.getQuery() + "%");
+            stmt.setString(5, "%" + options.getQuery() + "%");
+            stmt.setInt(6, options.getPageSize());
+            stmt.setInt(7, (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -353,7 +349,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public int getRecentLeaderboardUserCount(final boolean patina, final String query) {
+    public int getRecentLeaderboardUserCount(final LeaderboardFilterOptions options) {
         String sql = """
                             WITH latest_leaderboard AS (
                                 SELECT id
@@ -385,9 +381,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setBoolean(1, patina);
-            stmt.setString(2, "%" + query + "%");
-            stmt.setString(3, "%" + query + "%");
+            stmt.setBoolean(1, options.isPatina());
+            stmt.setString(2, "%" + options.getQuery() + "%");
+            stmt.setString(3, "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -401,7 +397,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public int getLeaderboardUserCountById(final String id, final boolean patina, final String query) {
+    public int getLeaderboardUserCountById(final LeaderboardFilterOptions options) {
         String sql = """
                             SELECT
                                 COUNT(m.id)
@@ -427,10 +423,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
-            stmt.setBoolean(2, patina);
-            stmt.setString(3, "%" + query + "%");
-            stmt.setString(4, "%" + query + "%");
+            stmt.setObject(1, UUID.fromString(options.getId()));
+            stmt.setBoolean(2, options.isPatina());
+            stmt.setString(3, "%" + options.getQuery() + "%");
+            stmt.setString(4, "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -444,7 +440,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<Leaderboard> getAllLeaderboardsShallow(final int page, final int pageSize, final String query) {
+    public ArrayList<Leaderboard> getAllLeaderboardsShallow(final LeaderboardFilterOptions options) {
         ArrayList<Leaderboard> leaderboards = new ArrayList<>();
         String sql = """
                             SELECT
@@ -461,9 +457,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "%" + query + "%");
-            stmt.setInt(2, pageSize);
-            stmt.setInt(3, (page - 1) * pageSize);
+            stmt.setString(1, "%" + options.getQuery() + "%");
+            stmt.setInt(2, options.getPageSize());
+            stmt.setInt(3, (options.getPage() - 1) * options.getPageSize());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -569,5 +565,5 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to enable leaderboard by id", e);
         }
-    }
+}
 }
