@@ -173,8 +173,8 @@ public class JDAClient {
                             new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                                 .page(1)
-                                .pageSize(5).
-                                query("")
+                                .pageSize(5)
+                                .query("")
                                 .patina(true)
                                 .build();
 
