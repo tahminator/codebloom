@@ -18,7 +18,7 @@ export default function AllLeaderboardsPage() {
     setSearchQuery,
     searchQuery,
     isPlaceholderData,
-  } = useAllLeaderboardsMetadataQuery({pageSize: 5});
+  } = useAllLeaderboardsMetadataQuery({ pageSize: 5 });
 
   if (status === "pending") {
     return <UserAdminListSkeleton />;
@@ -75,54 +75,53 @@ export default function AllLeaderboardsPage() {
               </Table.Tr>
             )}
             {pageData.items.map((leaderboard, index) => {
-				const isCurrentLeaderboard = leaderboard.deletedAt === null;
-
+              const isCurrentLeaderboard = leaderboard.deletedAt === null;
 
               return (
-                  <Table.Tr key={index}>
-                    <Table.Td>
-                      <Flex
-                        direction={"column"}
-                        component={Link}
-                        to={
-                          isCurrentLeaderboard ? "/leaderboard" : (
-                            `/leaderboard/${leaderboard.id}`
-                          )
-                        }
-                        className="group"
+                <Table.Tr key={index}>
+                  <Table.Td>
+                    <Flex
+                      direction={"column"}
+                      component={Link}
+                      to={
+                        isCurrentLeaderboard ? "/leaderboard" : (
+                          `/leaderboard/${leaderboard.id}`
+                        )
+                      }
+                      className="group"
+                    >
+                      <Text
+                        ta="center"
+                        className="transition-all group-hover:text-blue-500 w-max"
                       >
-                        <Text 
-						  ta="center"
-						  className="transition-all group-hover:text-blue-500 w-max"
-						>
-                          {leaderboard.name}
-                        </Text>
-                      </Flex>
-                    </Table.Td>
-                    <Table.Td>
+                        {leaderboard.name}
+                      </Text>
+                    </Flex>
+                  </Table.Td>
+                  <Table.Td>
+                    <Tooltip
+                      events={{ hover: true, focus: true, touch: true }}
+                      label={new Date(leaderboard.createdAt).toLocaleString()}
+                    >
+                      <span>{timeDiff(new Date(leaderboard.createdAt))}</span>
+                    </Tooltip>
+                  </Table.Td>
+                  <Table.Td>
+                    {!isCurrentLeaderboard ?
                       <Tooltip
+                        label={new Date(
+                          leaderboard.deletedAt!,
+                        ).toLocaleString()}
                         events={{ hover: true, focus: true, touch: true }}
-                        label={new Date(leaderboard.createdAt).toLocaleString()}
                       >
-                        <span>{timeDiff(new Date(leaderboard.createdAt))}</span>
+                        <span>
+                          {timeDiff(new Date(leaderboard.deletedAt!))}
+                        </span>
                       </Tooltip>
-                    </Table.Td>
-                    <Table.Td>
-                      {!isCurrentLeaderboard ?
-                        <Tooltip
-                          label={new Date(
-                            leaderboard.deletedAt!,
-                          ).toLocaleString()}
-                          events={{ hover: true, focus: true, touch: true }}
-                        >
-                          <span>
-                            {timeDiff(new Date(leaderboard.deletedAt!))}
-                          </span>
-                        </Tooltip>
-                      : "Currently running"}
-                    </Table.Td>
-                  </Table.Tr>
-                );
+                    : "Currently running"}
+                  </Table.Td>
+                </Table.Tr>
+              );
             })}
           </Table.Tbody>
         </Table>
