@@ -82,6 +82,7 @@ public class LeaderboardController {
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .id(leaderboardId)
         .page(page)
         .pageSize(parsedPageSize)
         .query(query)
