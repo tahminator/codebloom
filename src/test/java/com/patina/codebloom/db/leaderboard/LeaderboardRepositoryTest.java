@@ -229,6 +229,7 @@ public class LeaderboardRepositoryTest {
         .id(mockLeaderboard.getId())
         .page(1)
         .query("")
+        .patina(false)
         .build();
         int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(options);
         assertTrue(leaderboardUsersCount > 0);
