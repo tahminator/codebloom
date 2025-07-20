@@ -5,6 +5,7 @@ import { timeDiff } from "@/lib/timeDiff";
 import { Box, Flex, Overlay, Table, Text, Tooltip } from "@mantine/core";
 import { Link } from "react-router-dom";
 
+import NewLeaderboardForm from "./NewLeaderboardForm";
 import UserAdminListSkeleton from "./UserAdminListSkeleton";
 
 export default function AllLeaderboardsPage() {
@@ -36,22 +37,32 @@ export default function AllLeaderboardsPage() {
 
   return (
     <>
-      <SearchBox
-        query={searchQuery}
-        onChange={(event) => {
-          setSearchQuery(event.currentTarget.value);
-        }}
-        placeholder={"Search for leaderboard"}
-        m={"lg"}
-        mb={0}
-      />
-      <Box style={{ overflowX: "auto" }} m={"lg"} mt={0}>
+      <Box w="100%" px="lg">
+        {" "}
+        <Flex>
+          <SearchBox
+            query={searchQuery}
+            onChange={(event) => setSearchQuery(event.currentTarget.value)}
+            placeholder="Search for leaderboard"
+			mt={"lg"}
+            pt={10}
+			pr={10}
+            style={{
+              width: "85%",
+            }}
+          />
+
+          <NewLeaderboardForm />
+        </Flex>
+      </Box>
+      <Box style={{ overflowX: "auto" }} m={"lg"} mt={0} pt={0}>
         <Table
           verticalSpacing={"lg"}
           horizontalSpacing={"xs"}
           withRowBorders={false}
           striped
           my={"sm"}
+		  
           pos={"relative"}
         >
           {isPlaceholderData && (
