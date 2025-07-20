@@ -21,6 +21,7 @@ import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.db.repos.weekly.WeeklyMessageRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
@@ -82,8 +83,14 @@ public class WeeklyLeaderboard {
 
             byte[] screenshotBytes = page.screenshot(
                             new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
-
-            List<UserWithScore> users = leaderboardRepository.getRecentLeaderboardUsers(1, 5, "", true);
+            LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+                                .page(1)
+                                .pageSize(5).
+                                query("")
+                                .patina(true)
+                                .build();
+                                
+            List<UserWithScore> users = leaderboardRepository.getRecentLeaderboardUsers(options);
 
             browser.close();
 

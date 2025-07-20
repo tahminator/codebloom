@@ -182,14 +182,17 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
                             m."totalScore" DESC,
+                            -- The following case is used to put users with linked leetcode names before
+                            -- those who don't.
                             CASE
                                 WHEN m."totalScore" = 0 THEN
                                     CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
                                 ELSE 0
                             END,
+                            -- This is the tie breaker if we can't sort them by the above conditions.
                             m."createdAt" ASC
                         LIMIT ? OFFSET ?;
-                        """;
+                                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setBoolean(1, options.isPatina());
@@ -241,14 +244,17 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
                             m."totalScore" DESC,
+                            -- The following case is used to put users with linked leetcode names before
+                            -- those who don't.
                             CASE
                                 WHEN m."totalScore" = 0 THEN
                                     CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
                                 ELSE 0
                             END,
+                             -- This is the tie breaker if we can't sort them by the above conditions.
                             m."createdAt" ASC
                         LIMIT ? OFFSET ?;
-                        """;
+                                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(options.getId()));
