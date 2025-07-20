@@ -84,12 +84,12 @@ public class WeeklyLeaderboard {
             byte[] screenshotBytes = page.screenshot(
                             new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-                                .page(1)
-                                .pageSize(5)
-                                .query("")
-                                .patina(true)
-                                .build();
-                                
+                            .page(1)
+                            .pageSize(5)
+                            .query("")
+                            .patina(true)
+                            .build();
+
             List<UserWithScore> users = leaderboardRepository.getRecentLeaderboardUsers(options);
 
             browser.close();
