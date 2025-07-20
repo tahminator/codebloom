@@ -15,11 +15,13 @@ import org.springframework.web.server.ResponseStatusException;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
+
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +39,7 @@ public class LeaderboardController {
 
     private final LeaderboardRepository leaderboardRepository;
     private final UserRepository userRepository;
+
 
     public LeaderboardController(final LeaderboardRepository leaderboardRepository, final UserRepository userRepository) {
         this.leaderboardRepository = leaderboardRepository;
@@ -78,9 +81,16 @@ public class LeaderboardController {
 
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
-        List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(leaderboardId, page, parsedPageSize, query, patina);
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .page(page)
+        .pageSize(parsedPageSize)
+        .query(query)
+        .patina(patina)
+        .build();
 
-        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(leaderboardId, patina, query);
+        List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(options);
+
+        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
@@ -115,9 +125,16 @@ public class LeaderboardController {
 
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
-        ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(page, parsedPageSize, query, patina);
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .page(page)
+        .pageSize(parsedPageSize)
+        .query(query)
+        .patina(patina)
+        .build();
 
-        int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount(patina, query);
+        ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(options);
+
+        int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount(options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
@@ -157,7 +174,13 @@ public class LeaderboardController {
 
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
-        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(page, parsedPageSize, query);
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .page(page)
+        .pageSize(parsedPageSize)
+        .query(query)
+        .build();
+
+        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(options);
 
         int totalLeaderboards = leaderboardRepository.getLeaderboardCount();
         int totalPages = (int) Math.ceil((double) totalLeaderboards / LEADERBOARD_PAGE_SIZE);
