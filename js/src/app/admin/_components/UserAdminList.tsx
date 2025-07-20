@@ -91,7 +91,6 @@ export default function UserAdminList() {
           horizontalSpacing={"xs"}
           withRowBorders={false}
           striped
-          my={"sm"}
           pos={"relative"}
         >
           {isPlaceholderData && (
