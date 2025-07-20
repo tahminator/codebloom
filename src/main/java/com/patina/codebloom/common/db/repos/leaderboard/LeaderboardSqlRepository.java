@@ -27,7 +27,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
     }
-    
 
     private Leaderboard parseResultSetToLeaderboard(final ResultSet resultSet) throws SQLException {
         return Leaderboard.builder()
@@ -571,5 +570,5 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to enable leaderboard by id", e);
         }
-}
+    }
 }
