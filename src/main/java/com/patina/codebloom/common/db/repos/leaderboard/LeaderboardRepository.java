@@ -4,15 +4,16 @@ import java.util.ArrayList;
 
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
+import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 
 public interface LeaderboardRepository {
     Leaderboard getRecentLeaderboardMetadata();
 
     Leaderboard getLeaderboardMetadataById(String id);
 
-    ArrayList<UserWithScore> getRecentLeaderboardUsers(int page, int pageSize, String query, boolean patina);
+    ArrayList<UserWithScore> getRecentLeaderboardUsers(LeaderboardFilterOptions options);
 
-    ArrayList<UserWithScore> getLeaderboardUsersById(String id, int page, int pageSize, String query, boolean patina);
+    ArrayList<UserWithScore> getLeaderboardUsersById(LeaderboardFilterOptions options);
 
     boolean disableLeaderboardById(String leaderboardId);
 
@@ -47,13 +48,13 @@ public interface LeaderboardRepository {
 
     boolean updateUserPointsFromLeaderboard(String leaderboardId, String userId, int totalScore);
 
-    int getRecentLeaderboardUserCount(boolean patina, String query);
+    int getRecentLeaderboardUserCount(LeaderboardFilterOptions options);
 
-    int getLeaderboardUserCountById(String id, boolean patina, String query);
+    int getLeaderboardUserCountById(LeaderboardFilterOptions options);
 
     int getLeaderboardCount();
 
-    ArrayList<Leaderboard> getAllLeaderboardsShallow(int page, int pageSize, String query);
+    ArrayList<Leaderboard> getAllLeaderboardsShallow(LeaderboardFilterOptions options);
 
     boolean addAllUsersToLeaderboard(String leaderboardId);
 }
