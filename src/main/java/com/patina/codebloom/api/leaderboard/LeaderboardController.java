@@ -181,7 +181,7 @@ public class LeaderboardController {
         ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(options);
 
         int totalLeaderboards = leaderboardRepository.getLeaderboardCount();
-        int totalPages = (int) Math.ceil((double) totalLeaderboards / LEADERBOARD_PAGE_SIZE);
+        int totalPages = (int) Math.ceil((double) totalLeaderboards / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
         Page<ArrayList<Leaderboard>> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);

@@ -1,11 +1,11 @@
 import NewAnnouncementModal from "@/app/admin/_components/announcements/NewAnnouncementModal";
-import UserAdminList from "@/app/admin/_components/UserAdminList";
+import UserAdminList from "@/app/admin/_components/users/UserAdminList";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Flex, Loader, Title } from "@mantine/core";
 
-import AllLeaderboardsPage from "./AllLeaderboardAdmin";
+import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
 
 export default function AdminIndex() {
   const { data, status } = useAuthQuery();
