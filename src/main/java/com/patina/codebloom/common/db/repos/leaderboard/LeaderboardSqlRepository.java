@@ -218,7 +218,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
         return users;
     }
-    
+
     @Override
     public ArrayList<UserWithScore> getLeaderboardUsersById(final String id, final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
@@ -402,7 +402,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public int getLeaderboardUserCountById(final String id,final LeaderboardFilterOptions options) {
+    public int getLeaderboardUserCountById(final String id, final LeaderboardFilterOptions options) {
         String sql = """
                             SELECT
                                 COUNT(m.id)

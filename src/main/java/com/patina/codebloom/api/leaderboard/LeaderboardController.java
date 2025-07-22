@@ -86,9 +86,9 @@ public class LeaderboardController {
                         .patina(patina)
                         .build();
 
-        List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(leaderboardId,options);
+        List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(leaderboardId, options);
 
-        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(leaderboardId,options);
+        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(leaderboardId, options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
