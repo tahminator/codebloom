@@ -2,6 +2,7 @@ package com.patina.codebloom.common.db.models.user;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,10 @@ public class PrivateUser extends User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final String verifyKey;
 
+    @JsonProperty
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private String schoolEmail;
+
     public PrivateUser(
                     final String id,
                     final String discordId,
@@ -24,11 +29,20 @@ public class PrivateUser extends User {
                     final String schoolEmail,
                     final String verifyKey,
                     final ArrayList<UserTag> tags) {
-        super(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
+        super(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
         this.verifyKey = verifyKey;
+        this.schoolEmail = schoolEmail;
     }
 
     public String getVerifyKey() {
         return verifyKey;
+    }
+
+    public String getSchoolEmail() {
+        return schoolEmail;
+    }
+
+    public void setSchoolEmail(final String schoolEmail) {
+        this.schoolEmail = schoolEmail;
     }
 }
