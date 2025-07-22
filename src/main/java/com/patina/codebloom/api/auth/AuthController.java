@@ -213,7 +213,7 @@ public class AuthController {
                         user.getNickname(),
                         user.isAdmin(),
                         magicLink.getEmail(),
-                        "", 
+                        EMPTY_VERIFY_KEY, // The verifyKey is intentionally left empty as it is not required in this context.
                         user.getTags()); 
         userRepository.updateUser(privateUser);
 
