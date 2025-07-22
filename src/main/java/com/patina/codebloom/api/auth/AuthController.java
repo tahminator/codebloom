@@ -82,16 +82,15 @@ public class AuthController {
         User u = auth.getUser();
         String verifyKey = (u instanceof PrivateUser) ? ((PrivateUser) u).getVerifyKey() : null;
         PrivateUser pu = new PrivateUser(
-            u.getId(),
-            u.getDiscordId(),
-            u.getDiscordName(),
-            u.getLeetcodeUsername(),
-            u.getNickname(),
-            u.isAdmin(),
-            u.getSchoolEmail(),
-            verifyKey,
-            u.getTags()
-        );
+                        u.getId(),
+                        u.getDiscordId(),
+                        u.getDiscordName(),
+                        u.getLeetcodeUsername(),
+                        u.getNickname(),
+                        u.isAdmin(),
+                        u.getSchoolEmail(),
+                        verifyKey,
+                        u.getTags());
         return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!", pu));
     }
 
@@ -213,8 +212,8 @@ public class AuthController {
                         user.getNickname(),
                         user.isAdmin(),
                         magicLink.getEmail(),
-                        null, 
-                        user.getTags()); 
+                        null,
+                        user.getTags());
         userRepository.updateUser(privateUser);
 
         String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
