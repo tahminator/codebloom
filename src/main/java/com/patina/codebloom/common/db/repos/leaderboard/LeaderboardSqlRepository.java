@@ -218,9 +218,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
         return users;
     }
-
+    
     @Override
-    public ArrayList<UserWithScore> getLeaderboardUsersById(final LeaderboardFilterOptions options) {
+    public ArrayList<UserWithScore> getLeaderboardUsersById(final String id, final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -256,7 +256,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(options.getId()));
+            stmt.setObject(1, UUID.fromString(id));
             stmt.setBoolean(2, options.isPatina());
             stmt.setString(3, "%" + options.getQuery() + "%");
             stmt.setString(4, "%" + options.getQuery() + "%");
@@ -402,7 +402,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public int getLeaderboardUserCountById(final LeaderboardFilterOptions options) {
+    public int getLeaderboardUserCountById(final String id,final LeaderboardFilterOptions options) {
         String sql = """
                             SELECT
                                 COUNT(m.id)
@@ -428,7 +428,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(options.getId()));
+            stmt.setObject(1, UUID.fromString(id));
             stmt.setBoolean(2, options.isPatina());
             stmt.setString(3, "%" + options.getQuery() + "%");
             stmt.setString(4, "%" + options.getQuery() + "%");

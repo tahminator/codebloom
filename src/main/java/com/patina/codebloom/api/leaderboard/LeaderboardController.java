@@ -80,16 +80,15 @@ public class LeaderboardController {
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-                        .id(leaderboardId)
                         .page(page)
                         .pageSize(parsedPageSize)
                         .query(query)
                         .patina(patina)
                         .build();
 
-        List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(options);
+        List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(leaderboardId,options);
 
-        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(options);
+        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(leaderboardId,options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 

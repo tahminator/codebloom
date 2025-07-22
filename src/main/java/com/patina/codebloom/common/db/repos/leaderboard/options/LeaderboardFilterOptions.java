@@ -13,8 +13,6 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 public class LeaderboardFilterOptions {
     @Builder.Default
-    private final String id = "";
-    @Builder.Default
     private final int page = 1;
     @Builder.Default
     private final int pageSize = 20;
