@@ -13,7 +13,7 @@ public interface LeaderboardRepository {
 
     ArrayList<UserWithScore> getRecentLeaderboardUsers(LeaderboardFilterOptions options);
 
-    ArrayList<UserWithScore> getLeaderboardUsersById(String id ,LeaderboardFilterOptions options);
+    ArrayList<UserWithScore> getLeaderboardUsersById(String id, LeaderboardFilterOptions options);
 
     boolean disableLeaderboardById(String leaderboardId);
 
@@ -50,7 +50,7 @@ public interface LeaderboardRepository {
 
     int getRecentLeaderboardUserCount(LeaderboardFilterOptions options);
 
-    int getLeaderboardUserCountById(String id,LeaderboardFilterOptions options);
+    int getLeaderboardUserCountById(String id, LeaderboardFilterOptions options);
 
     int getLeaderboardCount();
 
