@@ -80,7 +80,7 @@ public class AuthController {
         FakeLag.sleep(350);
         AuthenticationObject auth = protector.validateSession(request);
         User u = auth.getUser();
-        String verifyKey = (u instanceof PrivateUser) ? ((PrivateUser) u).getVerifyKey() : "";
+        String verifyKey = (u instanceof PrivateUser) ? ((PrivateUser) u).getVerifyKey() : null;
         PrivateUser pu = new PrivateUser(
             u.getId(),
             u.getDiscordId(),
