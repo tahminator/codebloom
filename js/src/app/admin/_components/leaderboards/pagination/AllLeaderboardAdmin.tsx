@@ -5,8 +5,8 @@ import { timeDiff } from "@/lib/timeDiff";
 import { Box, Flex, Overlay, Table, Text, Tooltip } from "@mantine/core";
 import { Link } from "react-router-dom";
 
-import NewLeaderboardForm from "./NewLeaderboardForm";
-import UserAdminListSkeleton from "./UserAdminListSkeleton";
+import NewLeaderboardForm from "../new-leaderboard/NewLeaderboardForm";
+import AllLeaderboardAdminSkeleton from "./AllLeaderboardAdminSkeleton";
 
 export default function AllLeaderboardsPage() {
   const {
@@ -22,7 +22,7 @@ export default function AllLeaderboardsPage() {
   } = useAllLeaderboardsMetadataQuery({ pageSize: 5 });
 
   if (status === "pending") {
-    return <UserAdminListSkeleton />;
+    return <AllLeaderboardAdminSkeleton />;
   }
 
   if (status === "error") {
