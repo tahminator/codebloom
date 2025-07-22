@@ -48,6 +48,7 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
+import com.patina.codebloom.common.db.models.user.PrivateUser;
 
 @RestController
 @Tag(name = "Authentication Routes")
@@ -75,12 +76,23 @@ public class AuthController {
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/validate")
-    public ResponseEntity<ApiResponder<AuthenticationObject>> validateAuth(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<PrivateUser>> validateAuth(final HttpServletRequest request) {
         FakeLag.sleep(350);
-
-        AuthenticationObject authenticationObject = protector.validateSession(request);
-
-        return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!", authenticationObject));
+        AuthenticationObject auth = protector.validateSession(request);
+        User u = auth.getUser();
+        String verifyKey = (u instanceof PrivateUser) ? ((PrivateUser) u).getVerifyKey() : "";
+        PrivateUser pu = new PrivateUser(
+            u.getId(),
+            u.getDiscordId(),
+            u.getDiscordName(),
+            u.getLeetcodeUsername(),
+            u.getNickname(),
+            u.isAdmin(),
+            u.getSchoolEmail(),
+            verifyKey,
+            u.getTags()
+        );
+        return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!", pu));
     }
 
     // Decided to make this redirect to routes, with a message query if needed,
@@ -193,8 +205,17 @@ public class AuthController {
         }
 
         User user = userRepository.getUserById(magicLinkId);
-        user.setSchoolEmail(magicLink.getEmail());
-        userRepository.updateUser(user);
+        PrivateUser privateUser = new PrivateUser(
+                        user.getId(),
+                        user.getDiscordId(),
+                        user.getDiscordName(),
+                        user.getLeetcodeUsername(),
+                        user.getNickname(),
+                        user.isAdmin(),
+                        magicLink.getEmail(),
+                        "", 
+                        user.getTags()); 
+        userRepository.updateUser(privateUser);
 
         String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
 
@@ -207,7 +228,7 @@ public class AuthController {
         }
 
         UserTag schoolTag = UserTag.builder()
-                        .userId(user.getId())
+                        .userId(privateUser.getId())
                         .tag(schoolEnum.getInternalTag())
                         .build();
         userTagRepository.createTag(schoolTag);
