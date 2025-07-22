@@ -140,13 +140,12 @@ public class LeaderboardRepositoryTest {
     @Test
     void testLeaderboardUsersByIdEqualsRecentLeaderboardUsers() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .id(mockLeaderboard.getId())
         .page(1)
         .pageSize(PAGE_SIZE)
         .query("")
         .patina(false)
         .build();
-        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(options);
+        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(),options);
         List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(options);
 
         IntStream.range(0, allLeaderboardUsersById.size())
@@ -165,14 +164,13 @@ public class LeaderboardRepositoryTest {
         List<User> allUsers = userRepository.getAllUsers();
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .id(mockLeaderboard.getId())
         .page(1)
         .pageSize(allUsers.size())
         .query("")
         .patina(false)
         .build();
 
-        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(options);
+        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(),options);
 
         assertTrue(allUsers != null);
         assertTrue(allLeaderboardUsers != null);
@@ -226,11 +224,10 @@ public class LeaderboardRepositoryTest {
     @Test
     void testLeaderboardUserCountById() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .id(mockLeaderboard.getId())
         .query("")
         .patina(false)
         .build();
-        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(options);
+        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(mockLeaderboard.getId(),options);
         assertTrue(leaderboardUsersCount > 0);
     }
 
