@@ -29,9 +29,9 @@ public class PrivateUser extends User {
                     final String schoolEmail,
                     final String verifyKey,
                     final ArrayList<UserTag> tags) {
-        super(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
+        super(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
         this.verifyKey = verifyKey;
-        this.schoolEmail = schoolEmail;
+        // schoolEmail is now initialized in the parent class
     }
 
     public String getVerifyKey() {
