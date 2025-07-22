@@ -3,6 +3,7 @@ package com.patina.codebloom.common.db.models.user;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,6 +30,7 @@ public class User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private boolean admin;
 
+    
     private String schoolEmail;
 
     /**
