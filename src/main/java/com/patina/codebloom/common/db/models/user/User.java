@@ -53,10 +53,7 @@ public class User {
         this.admin = admin;
         this.tags = tags;
     }
-    /*
-     * This constructor is used when the user does not have a school email.
-     */
-
+    
     /**
      * A new user should not have any tags to begin with.
      */

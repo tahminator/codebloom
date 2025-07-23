@@ -41,6 +41,9 @@ public class UserSqlRepository implements UserRepository {
             stmt.setNull(4, java.sql.Types.VARCHAR);
             stmt.setString(5, user.getNickname());
             stmt.setNull(6, java.sql.Types.VARCHAR);
+            // We don't care what this actually returns, it can never be more than 1 anyways
+            // because id is UNIQUE. Just return the new user every time if we want to do
+            // any work on it.
 
             stmt.executeUpdate();
 
@@ -134,6 +137,9 @@ public class UserSqlRepository implements UserRepository {
             stmt.setBoolean(5, inputUser.isAdmin());
             stmt.setNull(6, java.sql.Types.VARCHAR);
             stmt.setObject(7, UUID.fromString(inputUser.getId()));
+            // We don't care what this actually returns, it can never be more than 1 anyways
+            // because id is UNIQUE. Just return the new user every time if we want to do
+            // any work on it.
 
             stmt.executeUpdate();
 
