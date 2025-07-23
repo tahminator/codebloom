@@ -29,8 +29,6 @@ public class User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private boolean admin;
 
-    private String schoolEmail;
-
     /**
      * If you want to update tags in the database, you have to use the
      * {@link com.patina.codebloom.common.db.repos.usertag.UserTagRepository}
@@ -46,7 +44,6 @@ public class User {
                     final String leetcodeUsername,
                     final String nickname,
                     final boolean admin,
-                    final String schoolEmail,
                     final ArrayList<UserTag> tags) {
         this.id = id;
         this.discordId = discordId;
@@ -54,16 +51,11 @@ public class User {
         this.leetcodeUsername = leetcodeUsername;
         this.nickname = nickname;
         this.admin = admin;
-        this.schoolEmail = schoolEmail;
         this.tags = tags;
     }
     /*
      * This constructor is used when the user does not have a school email.
      */
-
-    public User(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final boolean admin, final ArrayList<UserTag> tags) {
-        this(id, discordId, discordName, leetcodeUsername, nickname, admin, null, tags);
-    }
 
     /**
      * A new user should not have any tags to begin with.
@@ -121,14 +113,6 @@ public class User {
         this.admin = admin;
     }
 
-    public void setSchoolEmail(final String schoolEmail) {
-        this.schoolEmail = schoolEmail;
-    }
-
-    public String getSchoolEmail() {
-        return schoolEmail;
-    }
-
     public ArrayList<UserTag> getTags() {
         return tags;
     }
@@ -147,7 +131,7 @@ public class User {
         if (tag == null) {
             return;
         }
-
         tags.add(tag);
     }
 }
+
