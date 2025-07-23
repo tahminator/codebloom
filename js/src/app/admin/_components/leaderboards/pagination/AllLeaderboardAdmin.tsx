@@ -5,8 +5,8 @@ import { timeDiff } from "@/lib/timeDiff";
 import { Box, Flex, Overlay, Table, Text, Tooltip } from "@mantine/core";
 import { Link } from "react-router-dom";
 
-import NewLeaderboardForm from "../new-leaderboard/NewLeaderboardForm";
 import AllLeaderboardAdminSkeleton from "./AllLeaderboardAdminSkeleton";
+import NewLeaderboardForm from "./new-leaderboard/NewLeaderBoardFormBody";
 
 export default function AllLeaderboardsPage() {
   const {
@@ -34,6 +34,7 @@ export default function AllLeaderboardsPage() {
   }
 
   const pageData = data.payload;
+  const currentLeaderboard = pageData.items[0];
 
   return (
     <>
@@ -52,7 +53,9 @@ export default function AllLeaderboardsPage() {
             }}
           />
 
-          <NewLeaderboardForm />
+          <NewLeaderboardForm
+            currentLeaderboardName={currentLeaderboard.name}
+          />
         </Flex>
       </Box>
       <Box style={{ overflowX: "auto" }} m={"lg"} mt={0} pt={0}>

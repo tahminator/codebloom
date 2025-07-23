@@ -6,13 +6,13 @@ import { notifications } from "@mantine/notifications";
 import { useState } from "react";
 import { z } from "zod";
 
-interface NewLeaderboardFormBodyProps {
+interface NewLeaderboardFormProps {
   currentLeaderboardName: string;
 }
 
-function NewLeaderboardFormBody({
+function NewLeaderboardForm({
   currentLeaderboardName,
-}: NewLeaderboardFormBodyProps) {
+}: NewLeaderboardFormProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const { mutate, status } = useCreateLeaderboardMutation();
   const form = useForm({
@@ -86,4 +86,4 @@ function NewLeaderboardFormBody({
   );
 }
 
-export default NewLeaderboardFormBody;
+export default NewLeaderboardForm;
