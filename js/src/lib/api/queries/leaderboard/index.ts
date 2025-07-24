@@ -79,19 +79,35 @@ export const useCurrentLeaderboardUsersQuery = (
   }, [setPatina, goTo]);
 
   const toggleHunter = useCallback(() => {
-    setHunter(prev => !prev);
+    setHunter((prev) => !prev);
     goTo(1);
   }, [setHunter, goTo]);
 
   const toggleNyu = useCallback(() => {
-    setNyu(prev => !prev);
+    setNyu((prev) => !prev);
     goTo(1);
   }, [setNyu, goTo]);
 
   const query = useQuery({
-    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, patina, hunter, nyu],
+    queryKey: [
+      "leaderboard",
+      "users",
+      page,
+      pageSize,
+      debouncedQuery,
+      patina,
+      hunter,
+      nyu,
+    ],
     queryFn: () =>
-      fetchLeaderboardUsers({ page, pageSize, patina, hunter, nyu, query: debouncedQuery }),
+      fetchLeaderboardUsers({
+        page,
+        pageSize,
+        patina,
+        hunter,
+        nyu,
+        query: debouncedQuery,
+      }),
     placeholderData: keepPreviousData,
   });
 
@@ -223,7 +239,7 @@ export const useLeaderboardUsersByIdQuery = ({
   const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
   const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
-  
+
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
   }, [setPage]);
@@ -257,12 +273,12 @@ export const useLeaderboardUsersByIdQuery = ({
   }, [setPatina, goTo]);
 
   const toggleHunter = useCallback(() => {
-    setHunter(prev => !prev);
+    setHunter((prev) => !prev);
     goTo(1);
   }, [setHunter, goTo]);
 
   const toggleNyu = useCallback(() => {
-    setNyu(prev => !prev);
+    setNyu((prev) => !prev);
     goTo(1);
   }, [setNyu, goTo]);
 
