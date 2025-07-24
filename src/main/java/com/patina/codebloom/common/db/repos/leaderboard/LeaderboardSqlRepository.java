@@ -176,7 +176,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         LEFT JOIN "UserTag" ut
                             ON ut."userId" = m."userId"
                         WHERE
-                            (? = FALSE OR ut.tag = 'Patina')
+                            (
+                                (? = TRUE AND ut.tag = 'Patina')
+                                OR (? = TRUE AND ut.tag = 'Hunter')
+                                OR (? = TRUE AND ut.tag = 'Nyu')
+                                OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                            )
                         AND
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
@@ -196,11 +201,16 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setBoolean(1, options.isPatina());
-            stmt.setString(2, "%" + options.getQuery() + "%");
-            stmt.setString(3, "%" + options.getQuery() + "%");
-            stmt.setString(4, "%" + options.getQuery() + "%");
-            stmt.setInt(5, options.getPageSize());
-            stmt.setInt(6, (options.getPage() - 1) * options.getPageSize());
+            stmt.setBoolean(2, options.isHunter());
+            stmt.setBoolean(3, options.isNyu());
+            stmt.setBoolean(4, options.isPatina());
+            stmt.setBoolean(5, options.isHunter());
+            stmt.setBoolean(6, options.isNyu());
+            stmt.setString(7, "%" + options.getQuery() + "%");
+            stmt.setString(8, "%" + options.getQuery() + "%");
+            stmt.setString(9, "%" + options.getQuery() + "%");
+            stmt.setInt(10, options.getPageSize());
+            stmt.setInt(11, (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -239,7 +249,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         WHERE
                             l.id = ?
                         AND
-                            (? = FALSE OR ut.tag = 'Patina')
+                            (
+                                (? = TRUE AND ut.tag = 'Patina')
+                                OR (? = TRUE AND ut.tag = 'Hunter')
+                                OR (? = TRUE AND ut.tag = 'Nyu')
+                                OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                            )
                         AND
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
@@ -260,11 +275,16 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             stmt.setBoolean(2, options.isPatina());
-            stmt.setString(3, "%" + options.getQuery() + "%");
-            stmt.setString(4, "%" + options.getQuery() + "%");
-            stmt.setString(5, "%" + options.getQuery() + "%");
-            stmt.setInt(6, options.getPageSize());
-            stmt.setInt(7, (options.getPage() - 1) * options.getPageSize());
+            stmt.setBoolean(3, options.isHunter());
+            stmt.setBoolean(4, options.isNyu());
+            stmt.setBoolean(5, options.isPatina());
+            stmt.setBoolean(6, options.isHunter());
+            stmt.setBoolean(7, options.isNyu());
+            stmt.setString(8, "%" + options.getQuery() + "%");
+            stmt.setString(9, "%" + options.getQuery() + "%");
+            stmt.setString(10, "%" + options.getQuery() + "%");
+            stmt.setInt(11, options.getPageSize());
+            stmt.setInt(12, (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -383,14 +403,24 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             ON
                                 ut."userId" = m."userId"
                             WHERE
-                                (? = FALSE OR ut.tag = 'Patina')
+                                (
+                                    (? = TRUE AND ut.tag = 'Patina')
+                                    OR (? = TRUE AND ut.tag = 'Hunter')
+                                    OR (? = TRUE AND ut.tag = 'Nyu')
+                                    OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                                )
                             AND
                                 (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setBoolean(1, options.isPatina());
-            stmt.setString(2, "%" + options.getQuery() + "%");
-            stmt.setString(3, "%" + options.getQuery() + "%");
+            stmt.setBoolean(2, options.isHunter());
+            stmt.setBoolean(3, options.isNyu());
+            stmt.setBoolean(4, options.isPatina());
+            stmt.setBoolean(5, options.isHunter());
+            stmt.setBoolean(6, options.isNyu());
+            stmt.setString(7, "%" + options.getQuery() + "%");
+            stmt.setString(8, "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -425,15 +455,25 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             WHERE
                                 l.id = ?
                             AND
-                                (? = FALSE OR ut.tag = 'Patina')
+                                (
+                                    (? = TRUE AND ut.tag = 'Patina')
+                                    OR (? = TRUE AND ut.tag = 'Hunter')
+                                    OR (? = TRUE AND ut.tag = 'Nyu')
+                                    OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                                )
                             AND
                                 (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
                         """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             stmt.setBoolean(2, options.isPatina());
-            stmt.setString(3, "%" + options.getQuery() + "%");
-            stmt.setString(4, "%" + options.getQuery() + "%");
+            stmt.setBoolean(3, options.isHunter());
+            stmt.setBoolean(4, options.isNyu());
+            stmt.setBoolean(5, options.isPatina());
+            stmt.setBoolean(6, options.isHunter());
+            stmt.setBoolean(7, options.isNyu());
+            stmt.setString(8, "%" + options.getQuery() + "%");
+            stmt.setString(9, "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
