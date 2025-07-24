@@ -113,11 +113,7 @@ export default function LeaderboardIndex() {
           toggle={() => toggleHunter()}
           name="Hunter"
         />
-        <FilterDropdownItem
-          value={nyu}
-          toggle={() => toggleNyu()}
-          name="NYU"
-        />
+        <FilterDropdownItem value={nyu} toggle={() => toggleNyu()} name="NYU" />
       </FilterDropdown>
       <SearchBox
         query={searchQuery}
