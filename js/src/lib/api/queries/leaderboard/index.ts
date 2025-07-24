@@ -79,22 +79,14 @@ export const useCurrentLeaderboardUsersQuery = (
   }, [setPatina, goTo]);
 
   const toggleHunter = useCallback(() => {
-    setHunter(prev => {
-      const next = !prev;
-      if (next) setNyu(false);
-      return next;
-    });
+    setHunter(prev => !prev);
     goTo(1);
-  }, [setHunter, setNyu, goTo]);
+  }, [setHunter, goTo]);
 
   const toggleNyu = useCallback(() => {
-    setNyu(prev => {
-      const next = !prev;
-      if (next) setHunter(false);
-      return next;
-    });
+    setNyu(prev => !prev);
     goTo(1);
-  }, [setNyu, setHunter, goTo]);
+  }, [setNyu, goTo]);
 
   const query = useQuery({
     queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, patina, hunter, nyu],
@@ -265,22 +257,14 @@ export const useLeaderboardUsersByIdQuery = ({
   }, [setPatina, goTo]);
 
   const toggleHunter = useCallback(() => {
-    setHunter(prev => {
-      const next = !prev;
-      if (next) setNyu(false);
-      return next;
-    });
+    setHunter(prev => !prev);
     goTo(1);
-  }, [setHunter, setNyu, goTo]);
+  }, [setHunter, goTo]);
 
   const toggleNyu = useCallback(() => {
-    setNyu(prev => {
-      const next = !prev;
-      if (next) setHunter(false);
-      return next;
-    });
+    setNyu(prev => !prev);
     goTo(1);
-  }, [setNyu, setHunter, goTo]);
+  }, [setNyu, goTo]);
 
   const query = useQuery({
     queryKey: [
