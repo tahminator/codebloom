@@ -164,7 +164,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "createdAt" DESC
                             LIMIT 1
                         )
-                        SELECT
+                        SELECT DISTINCT
                             m."userId",
                             ll.id as "leaderboardId"
                         FROM
@@ -224,7 +224,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
-                        SELECT
+                        SELECT DISTINCT
                             m."userId",
                             l.id as "leaderboardId"
                         FROM
@@ -364,7 +364,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 LIMIT 1
                             )
                             SELECT
-                                COUNT(m.id)
+                                COUNT(DISTINCT m.id)
                             FROM
                                 "Leaderboard" l
                             INNER JOIN latest_leaderboard ON latest_leaderboard.id = l.id
@@ -405,7 +405,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     public int getLeaderboardUserCountById(final String id, final LeaderboardFilterOptions options) {
         String sql = """
                             SELECT
-                                COUNT(m.id)
+                                COUNT(DISTINCT m.id)
                             FROM
                                 "Leaderboard" l
                             JOIN
