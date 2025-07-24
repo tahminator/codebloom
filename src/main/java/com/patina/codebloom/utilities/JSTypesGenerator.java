@@ -27,7 +27,8 @@ public class JSTypesGenerator implements CommandLineRunner {
             log.info("Type generation command completed successfully.");
         } else {
             log.error("Type generation command failed with exit code {}", exitCode);
-            SpringApplication.exit(applicationContext, () -> exitCode);
+            int springExitCode = SpringApplication.exit(applicationContext, () -> exitCode);
+            System.exit(springExitCode);
         }
     }
 }
