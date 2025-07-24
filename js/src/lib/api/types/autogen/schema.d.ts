@@ -815,10 +815,10 @@ export interface components {
       parent: components["schemas"]["ApplicationContext"];
       id: string;
       displayName: string;
+      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       /** Format: int64 */
       startupDate: number;
       applicationName: string;
-      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       environment: components["schemas"]["Environment"];
       /** Format: int32 */
       beanDefinitionCount: number;
@@ -948,18 +948,18 @@ export interface components {
     };
     JspPropertyGroupDescriptor: {
       buffer: string;
+      deferredSyntaxAllowedAsLiteral: string;
+      trimDirectiveWhitespaces: string;
+      errorOnUndeclaredNamespace: string;
+      urlPatterns: string[];
       elIgnored: string;
       isXml: string;
-      urlPatterns: string[];
-      defaultContentType: string;
       errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
       includePreludes: string[];
       includeCodas: string[];
-      trimDirectiveWhitespaces: string;
-      errorOnUndeclaredNamespace: string;
-      deferredSyntaxAllowedAsLiteral: string;
+      defaultContentType: string;
     };
     RedirectView: {
       applicationContext: components["schemas"]["ApplicationContext"];
@@ -982,15 +982,15 @@ export interface components {
       expandUriTemplateVariables: boolean;
       propagateQueryParams: boolean;
       hosts: string[];
-      redirectView: boolean;
       propagateQueryProperties: boolean;
+      redirectView: boolean;
       attributes: {
         [key: string]: string;
       };
+      attributesCSV: string;
       attributesMap: {
         [key: string]: Record<string, never>;
       };
-      attributesCSV: string;
     };
     ServletContext: {
       classLoader: {
@@ -1014,6 +1014,18 @@ export interface components {
       majorVersion: number;
       /** Format: int32 */
       minorVersion: number;
+      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
+      /** Format: int32 */
+      effectiveMajorVersion: number;
+      /** Format: int32 */
+      effectiveMinorVersion: number;
+      servletRegistrations: {
+        [key: string]: components["schemas"]["ServletRegistration"];
+      };
+      sessionTrackingModes: ServletContextSessionTrackingModes[];
+      defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
+      requestCharacterEncoding: string;
+      responseCharacterEncoding: string;
       contextPath: string;
       serverInfo: string;
       attributeNames: Record<string, never>;
@@ -1027,22 +1039,10 @@ export interface components {
       virtualServerName: string;
       /** Format: int32 */
       sessionTimeout: number;
-      /** Format: int32 */
-      effectiveMajorVersion: number;
-      /** Format: int32 */
-      effectiveMinorVersion: number;
-      servletRegistrations: {
-        [key: string]: components["schemas"]["ServletRegistration"];
-      };
-      sessionTrackingModes: ServletContextSessionTrackingModes[];
-      defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
-      requestCharacterEncoding: string;
-      responseCharacterEncoding: string;
-      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
     };
     ServletRegistration: {
-      mappings: string[];
       runAsRole: string;
+      mappings: string[];
       name: string;
       className: string;
       initParameters: {
@@ -1567,6 +1567,10 @@ export interface operations {
         query?: string;
         /** @description Filter for Patina users */
         patina?: boolean;
+        /** @description Filter for Hunter College users */
+        hunter?: boolean;
+        /** @description Filter for NYU users */
+        nyu?: boolean;
       };
       header?: never;
       path: {
@@ -1675,6 +1679,10 @@ export interface operations {
         query?: string;
         /** @description Filter for Patina users */
         patina?: boolean;
+        /** @description Filter for Hunter College users */
+        hunter?: boolean;
+        /** @description Filter for NYU users */
+        nyu?: boolean;
       };
       header?: never;
       path?: never;
@@ -1871,17 +1879,17 @@ export enum QuestionQuestionDifficulty {
   Medium = "Medium",
   Hard = "Hard",
 }
+export enum ServletContextEffectiveSessionTrackingModes {
+  COOKIE = "COOKIE",
+  URL = "URL",
+  SSL = "SSL",
+}
 export enum ServletContextSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
 }
 export enum ServletContextDefaultSessionTrackingModes {
-  COOKIE = "COOKIE",
-  URL = "URL",
-  SSL = "SSL",
-}
-export enum ServletContextEffectiveSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
