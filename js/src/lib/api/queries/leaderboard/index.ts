@@ -43,6 +43,8 @@ export const useCurrentLeaderboardUsersQuery = (
     500,
   );
   const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
+  const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
+  const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
@@ -76,10 +78,28 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [setPatina, goTo]);
 
+  const toggleHunter = useCallback(() => {
+    setHunter(prev => {
+      const next = !prev;
+      if (next) setNyu(false);
+      return next;
+    });
+    goTo(1);
+  }, [setHunter, setNyu, goTo]);
+
+  const toggleNyu = useCallback(() => {
+    setNyu(prev => {
+      const next = !prev;
+      if (next) setHunter(false);
+      return next;
+    });
+    goTo(1);
+  }, [setNyu, setHunter, goTo]);
+
   const query = useQuery({
-    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, patina],
+    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, patina, hunter, nyu],
     queryFn: () =>
-      fetchLeaderboardUsers({ page, pageSize, patina, query: debouncedQuery }),
+      fetchLeaderboardUsers({ page, pageSize, patina, hunter, nyu, query: debouncedQuery }),
     placeholderData: keepPreviousData,
   });
 
@@ -87,6 +107,8 @@ export const useCurrentLeaderboardUsersQuery = (
     ...query,
     page,
     patina,
+    hunter,
+    nyu,
     goBack,
     goForward,
     goTo,
@@ -95,6 +117,8 @@ export const useCurrentLeaderboardUsersQuery = (
     debouncedQuery,
     pageSize,
     togglePatina,
+    toggleHunter,
+    toggleNyu,
   };
 };
 
@@ -205,7 +229,9 @@ export const useLeaderboardUsersByIdQuery = ({
     500,
   );
   const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
-
+  const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
+  const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
+  
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
   }, [setPage]);
@@ -238,6 +264,24 @@ export const useLeaderboardUsersByIdQuery = ({
     goTo(1);
   }, [setPatina, goTo]);
 
+  const toggleHunter = useCallback(() => {
+    setHunter(prev => {
+      const next = !prev;
+      if (next) setNyu(false);
+      return next;
+    });
+    goTo(1);
+  }, [setHunter, setNyu, goTo]);
+
+  const toggleNyu = useCallback(() => {
+    setNyu(prev => {
+      const next = !prev;
+      if (next) setHunter(false);
+      return next;
+    });
+    goTo(1);
+  }, [setNyu, setHunter, goTo]);
+
   const query = useQuery({
     queryKey: [
       "leaderboard",
@@ -247,6 +291,8 @@ export const useLeaderboardUsersByIdQuery = ({
       pageSize,
       debouncedQuery,
       patina,
+      hunter,
+      nyu,
     ],
     queryFn: () =>
       fetchLeaderboardUsersByLeaderboardId({
@@ -254,6 +300,8 @@ export const useLeaderboardUsersByIdQuery = ({
         page,
         pageSize,
         patina,
+        hunter,
+        nyu,
         query: debouncedQuery,
       }),
     placeholderData: keepPreviousData,
@@ -263,6 +311,8 @@ export const useLeaderboardUsersByIdQuery = ({
     ...query,
     page,
     patina,
+    hunter,
+    nyu,
     goBack,
     goForward,
     goTo,
@@ -271,6 +321,8 @@ export const useLeaderboardUsersByIdQuery = ({
     debouncedQuery,
     pageSize,
     togglePatina,
+    toggleHunter,
+    toggleNyu,
   };
 };
 
@@ -338,14 +390,18 @@ async function fetchLeaderboardUsers({
   query,
   pageSize,
   patina,
+  hunter,
+  nyu,
 }: {
   page: number;
   query: string;
   pageSize: number;
   patina: boolean;
+  hunter: boolean;
+  nyu: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}`,
     {
       method: "GET",
     },
@@ -363,16 +419,20 @@ async function fetchLeaderboardUsersByLeaderboardId({
   query,
   pageSize,
   patina,
+  hunter,
+  nyu,
   leaderboardId,
 }: {
   page: number;
   query: string;
   pageSize: number;
   patina: boolean;
+  hunter: boolean;
+  nyu: boolean;
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}`,
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}`,
     {
       method: "GET",
     },

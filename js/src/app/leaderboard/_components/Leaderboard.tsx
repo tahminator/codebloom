@@ -34,6 +34,10 @@ export default function LeaderboardIndex() {
     debouncedQuery,
     patina,
     togglePatina,
+    hunter,
+    toggleHunter,
+    nyu,
+    toggleNyu,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery();
 
@@ -103,6 +107,16 @@ export default function LeaderboardIndex() {
           value={patina}
           toggle={() => togglePatina()}
           name="Patina"
+        />
+        <FilterDropdownItem
+          value={hunter}
+          toggle={() => toggleHunter()}
+          name="Hunter"
+        />
+        <FilterDropdownItem
+          value={nyu}
+          toggle={() => toggleNyu()}
+          name="NYU"
         />
       </FilterDropdown>
       <SearchBox
