@@ -164,7 +164,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "createdAt" DESC
                             LIMIT 1
                         )
-                        SELECT DISTINCT
+                        SELECT DISTINCT ON (m."userId")
                             m."userId",
                             ll.id as "leaderboardId"
                         FROM
@@ -180,6 +180,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         AND
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
+                            m."userId", -- required for SELECT DISTINCT ON (m."userId")
                             m."totalScore" DESC,
                             -- The following case is used to put users with linked leetcode names before
                             -- those who don't.
@@ -224,7 +225,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
-                        SELECT DISTINCT
+                        SELECT DISTINCT ON (m."userId")
                             m."userId",
                             l.id as "leaderboardId"
                         FROM
@@ -242,6 +243,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         AND
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
+                            m."userId", -- required for SELECT DISTINCT ON (m."userId")
                             m."totalScore" DESC,
                             -- The following case is used to put users with linked leetcode names before
                             -- those who don't.
