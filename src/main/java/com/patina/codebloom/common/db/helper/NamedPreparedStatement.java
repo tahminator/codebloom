@@ -73,7 +73,7 @@ public class NamedPreparedStatement implements AutoCloseable {
         // ignoring
         // parameter-like strings inside quotes.
         int length = query.length();
-        StringBuffer parsedQuery = new StringBuffer(length);
+        StringBuilder parsedQuery = new StringBuilder(length);
         boolean inSingleQuote = false;
         boolean inDoubleQuote = false;
         int index = 1;
@@ -105,7 +105,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
                     List<Integer> indexList = indexes.get(name);
                     if (indexList == null) {
-                        indexList = new LinkedList<Integer>();
+                        indexList = new ArrayList<Integer>();
                         indexes.put(name, indexList);
                     }
                     indexList.add(Integer.valueOf(index));
