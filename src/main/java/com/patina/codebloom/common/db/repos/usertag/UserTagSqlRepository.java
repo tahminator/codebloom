@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.repos.usertag;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
@@ -40,11 +40,11 @@ public class UserTagSqlRepository implements UserTagRepository {
                         FROM
                             "UserTag"
                         WHERE
-                            id = ?
+                            id = :id
                                 """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(tagId));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(tagId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToTag(rs);
@@ -68,14 +68,14 @@ public class UserTagSqlRepository implements UserTagRepository {
                         FROM
                             "UserTag"
                         WHERE
-                            tag = ?
+                            tag = :tag
                             AND
-                            "userId" = ?
+                            "userId" = :userId
                                 """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, tag.name(), java.sql.Types.OTHER);
-            stmt.setObject(2, UUID.fromString(userId));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("tag", tag.name(), java.sql.Types.OTHER);
+            stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToTag(rs);
@@ -100,11 +100,11 @@ public class UserTagSqlRepository implements UserTagRepository {
                         FROM
                             "UserTag"
                         WHERE
-                            "userId" = ?
+                            "userId" = :userId
                                 """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var tag = parseResultSetToTag(rs);
@@ -127,14 +127,14 @@ public class UserTagSqlRepository implements UserTagRepository {
                             INSERT INTO "UserTag"
                                 (id, "userId", tag)
                             VALUES
-                                (?, ?, ?)
+                                (:id, :userId, :tag)
                             RETURNING
                                 "createdAt"
                         """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userTag.getId()));
-            stmt.setObject(2, UUID.fromString(userTag.getUserId()));
-            stmt.setObject(3, userTag.getTag().name(), java.sql.Types.OTHER);
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(userTag.getId()));
+            stmt.setObject("userId", UUID.fromString(userTag.getUserId()));
+            stmt.setObject("tag", userTag.getTag().name(), java.sql.Types.OTHER);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -154,11 +154,11 @@ public class UserTagSqlRepository implements UserTagRepository {
                         DELETE FROM
                             "UserTag"
                         WHERE
-                            id = ?
+                            id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(tagId));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(tagId));
             int rowsAffected = stmt.executeUpdate();
 
             return rowsAffected > 0;
@@ -174,14 +174,14 @@ public class UserTagSqlRepository implements UserTagRepository {
                             DELETE FROM
                                 "UserTag"
                             WHERE
-                                "userId" = ?
+                                "userId" = :userId
                                 AND
-                                tag = ?
+                                tag = :tag
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
-            stmt.setObject(2, tag.name(), java.sql.Types.OTHER);
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("userId", UUID.fromString(userId));
+            stmt.setObject("tag", tag.name(), java.sql.Types.OTHER);
 
             int rowsAffected = stmt.executeUpdate();
 
