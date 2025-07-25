@@ -77,7 +77,7 @@ public class NamedPreparedStatement implements AutoCloseable {
         boolean inSingleQuote = false;
         boolean inDoubleQuote = false;
         int index = 1;
-        HashMap<String, List<Integer>> indexes = new HashMap<String, List<Integer>>(10);
+        HashMap<String, List<Integer>> indexes = new HashMap<String, List<Integer>>();
 
         for (int i = 0; i < length; i++) {
             char c = query.charAt(i);
