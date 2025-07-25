@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLType;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,9 +69,6 @@ public class NamedPreparedStatement implements AutoCloseable {
      * @return the parsed query
      */
     final String parse(final String query) {
-        // I was originally using regular expressions, but they didn't work well for
-        // ignoring
-        // parameter-like strings inside quotes.
         int length = query.length();
         StringBuilder parsedQuery = new StringBuilder(length);
         boolean inSingleQuote = false;
