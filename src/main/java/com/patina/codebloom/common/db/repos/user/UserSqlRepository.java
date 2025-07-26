@@ -318,7 +318,6 @@ public class UserSqlRepository implements UserRepository {
                     var tags = userTagRepository.findTagsByUserId(id);
 
                     var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, admin, totalScore, tags);
-                    System.out.println(userWithScore.getDiscordId());
                     return userWithScore;
                 }
             }
