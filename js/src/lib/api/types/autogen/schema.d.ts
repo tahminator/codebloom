@@ -815,10 +815,10 @@ export interface components {
       parent: components["schemas"]["ApplicationContext"];
       id: string;
       displayName: string;
-      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       /** Format: int64 */
       startupDate: number;
       applicationName: string;
+      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       environment: components["schemas"]["Environment"];
       /** Format: int32 */
       beanDefinitionCount: number;
@@ -948,18 +948,18 @@ export interface components {
     };
     JspPropertyGroupDescriptor: {
       buffer: string;
-      deferredSyntaxAllowedAsLiteral: string;
-      trimDirectiveWhitespaces: string;
-      errorOnUndeclaredNamespace: string;
       urlPatterns: string[];
       elIgnored: string;
       isXml: string;
+      defaultContentType: string;
       errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
       includePreludes: string[];
       includeCodas: string[];
-      defaultContentType: string;
+      trimDirectiveWhitespaces: string;
+      errorOnUndeclaredNamespace: string;
+      deferredSyntaxAllowedAsLiteral: string;
     };
     RedirectView: {
       applicationContext: components["schemas"]["ApplicationContext"];
@@ -982,15 +982,15 @@ export interface components {
       expandUriTemplateVariables: boolean;
       propagateQueryParams: boolean;
       hosts: string[];
-      propagateQueryProperties: boolean;
       redirectView: boolean;
+      propagateQueryProperties: boolean;
       attributes: {
         [key: string]: string;
       };
-      attributesCSV: string;
       attributesMap: {
         [key: string]: Record<string, never>;
       };
+      attributesCSV: string;
     };
     ServletContext: {
       classLoader: {
@@ -1014,7 +1014,19 @@ export interface components {
       majorVersion: number;
       /** Format: int32 */
       minorVersion: number;
-      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
+      serverInfo: string;
+      contextPath: string;
+      initParameterNames: Record<string, never>;
+      servletContextName: string;
+      filterRegistrations: {
+        [key: string]: components["schemas"]["FilterRegistration"];
+      };
+      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
+      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
+      virtualServerName: string;
+      /** Format: int32 */
+      sessionTimeout: number;
+      attributeNames: Record<string, never>;
       /** Format: int32 */
       effectiveMajorVersion: number;
       /** Format: int32 */
@@ -1026,19 +1038,7 @@ export interface components {
       defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
       requestCharacterEncoding: string;
       responseCharacterEncoding: string;
-      contextPath: string;
-      serverInfo: string;
-      attributeNames: Record<string, never>;
-      initParameterNames: Record<string, never>;
-      servletContextName: string;
-      filterRegistrations: {
-        [key: string]: components["schemas"]["FilterRegistration"];
-      };
-      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
-      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
-      virtualServerName: string;
-      /** Format: int32 */
-      sessionTimeout: number;
+      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
     };
     ServletRegistration: {
       runAsRole: string;
@@ -1879,17 +1879,17 @@ export enum QuestionQuestionDifficulty {
   Medium = "Medium",
   Hard = "Hard",
 }
-export enum ServletContextEffectiveSessionTrackingModes {
-  COOKIE = "COOKIE",
-  URL = "URL",
-  SSL = "SSL",
-}
 export enum ServletContextSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
 }
 export enum ServletContextDefaultSessionTrackingModes {
+  COOKIE = "COOKIE",
+  URL = "URL",
+  SSL = "SSL",
+}
+export enum ServletContextEffectiveSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
