@@ -1,18 +1,18 @@
 package com.patina.codebloom.common.security;
 
 import com.patina.codebloom.common.db.models.Session;
-import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.models.user.PrivateUser;
 
 public class AuthenticationObject {
-    private User user;
+    private PrivateUser user;
     private Session session;
 
-    public AuthenticationObject(final User user, final Session session) {
+    public AuthenticationObject(final PrivateUser user, final Session session) {
         this.user = user;
         this.session = session;
     }
 
-    public User getUser() {
+    public PrivateUser getUser() {
         return user;
     }
 
