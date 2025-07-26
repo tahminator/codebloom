@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class PrivateUser extends User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final String verifyKey;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private final String schoolEmail;
 
     public PrivateUser(
                     final String id,
@@ -24,11 +26,15 @@ public class PrivateUser extends User {
                     final String schoolEmail,
                     final String verifyKey,
                     final ArrayList<UserTag> tags) {
-        super(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
+        super(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
         this.verifyKey = verifyKey;
+        this.schoolEmail = schoolEmail;
     }
 
     public String getVerifyKey() {
         return verifyKey;
+    }
+    public String getschoolEmail() {
+        return schoolEmail;
     }
 }
