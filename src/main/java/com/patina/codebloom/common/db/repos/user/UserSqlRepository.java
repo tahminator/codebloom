@@ -42,7 +42,7 @@ public class UserSqlRepository implements UserRepository {
             // user authentication.
             stmt.setNull(4, java.sql.Types.VARCHAR);
             stmt.setString(5, user.getNickname());
-            stmt.setString(6, user.getSchoolEmail());
+            stmt.setNull(6, java.sql.Types.VARCHAR); 
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
@@ -71,10 +71,9 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
-                    var schoolEmail = rs.getString("schoolEmail");
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
                     return user;
                 }
             }
@@ -100,11 +99,10 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
-                    var schoolEmail = rs.getString("schoolEmail");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags);
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
                     return user;
                 }
             }
@@ -140,7 +138,7 @@ public class UserSqlRepository implements UserRepository {
             stmt.setString(3, inputUser.getLeetcodeUsername());
             stmt.setString(4, inputUser.getNickname());
             stmt.setBoolean(5, inputUser.isAdmin());
-            stmt.setString(6, inputUser.getSchoolEmail());
+            stmt.setNull(6, java.sql.Types.VARCHAR); 
             stmt.setObject(7, UUID.fromString(inputUser.getId()));
 
             // We don't care what this actually returns, it can never be more than 1 anyways
@@ -168,11 +166,10 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
-                    var schoolEmail = rs.getString("schoolEmail");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags));
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags));
                 }
             }
         } catch (SQLException e) {
@@ -209,11 +206,10 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
-                    var schoolEmail = rs.getString("schoolEmail");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, schoolEmail, tags));
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, tags));
                 }
             }
         } catch (SQLException e) {
