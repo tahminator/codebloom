@@ -596,7 +596,6 @@ export interface components {
       leetcodeUsername: string;
       nickname: string;
       admin: boolean;
-      schoolEmail?: string;
       tags: components["schemas"]["UserTag"][];
     };
     UserTag: {
@@ -736,7 +735,6 @@ export interface components {
       leetcodeUsername: string;
       nickname: string;
       admin: boolean;
-      schoolEmail?: string;
       tags: components["schemas"]["UserTag"][];
       /** Format: int32 */
       totalScore: number;
@@ -793,8 +791,19 @@ export interface components {
       message: string;
     };
     AuthenticationObject: {
-      user: components["schemas"]["User"];
-      session?: components["schemas"]["Session"];
+      user: components["schemas"]["PrivateUser"];
+      session: components["schemas"]["Session"];
+    };
+    PrivateUser: {
+      id: string;
+      discordId: string;
+      discordName: string;
+      leetcodeUsername: string;
+      nickname: string;
+      admin: boolean;
+      tags: components["schemas"]["UserTag"][];
+      verifyKey: string;
+      schoolEmail: string;
     };
     Session: {
       id: string;
@@ -806,10 +815,10 @@ export interface components {
       parent: components["schemas"]["ApplicationContext"];
       id: string;
       displayName: string;
-      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
+      applicationName: string;
       /** Format: int64 */
       startupDate: number;
-      applicationName: string;
+      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       environment: components["schemas"]["Environment"];
       /** Format: int32 */
       beanDefinitionCount: number;
@@ -927,30 +936,30 @@ export interface components {
     };
     HttpStatusCode: {
       error: boolean;
-      is4xxClientError: boolean;
-      is5xxServerError: boolean;
       is1xxInformational: boolean;
       is2xxSuccessful: boolean;
       is3xxRedirection: boolean;
+      is4xxClientError: boolean;
+      is5xxServerError: boolean;
     };
     JspConfigDescriptor: {
-      taglibs: components["schemas"]["TaglibDescriptor"][];
       jspPropertyGroups: components["schemas"]["JspPropertyGroupDescriptor"][];
+      taglibs: components["schemas"]["TaglibDescriptor"][];
     };
     JspPropertyGroupDescriptor: {
       buffer: string;
-      trimDirectiveWhitespaces: string;
-      errorOnUndeclaredNamespace: string;
-      deferredSyntaxAllowedAsLiteral: string;
-      elIgnored: string;
-      isXml: string;
-      urlPatterns: string[];
+      defaultContentType: string;
       errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
       includePreludes: string[];
       includeCodas: string[];
-      defaultContentType: string;
+      urlPatterns: string[];
+      isXml: string;
+      elIgnored: string;
+      trimDirectiveWhitespaces: string;
+      errorOnUndeclaredNamespace: string;
+      deferredSyntaxAllowedAsLiteral: string;
     };
     RedirectView: {
       applicationContext: components["schemas"]["ApplicationContext"];
@@ -973,15 +982,15 @@ export interface components {
       expandUriTemplateVariables: boolean;
       propagateQueryParams: boolean;
       hosts: string[];
-      propagateQueryProperties: boolean;
       redirectView: boolean;
+      propagateQueryProperties: boolean;
       attributes: {
         [key: string]: string;
       };
-      attributesCSV: string;
       attributesMap: {
         [key: string]: Record<string, never>;
       };
+      attributesCSV: string;
     };
     ServletContext: {
       classLoader: {
@@ -1005,6 +1014,19 @@ export interface components {
       majorVersion: number;
       /** Format: int32 */
       minorVersion: number;
+      initParameterNames: Record<string, never>;
+      servletContextName: string;
+      filterRegistrations: {
+        [key: string]: components["schemas"]["FilterRegistration"];
+      };
+      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
+      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
+      virtualServerName: string;
+      /** Format: int32 */
+      sessionTimeout: number;
+      attributeNames: Record<string, never>;
+      serverInfo: string;
+      contextPath: string;
       /** Format: int32 */
       effectiveMajorVersion: number;
       /** Format: int32 */
@@ -1017,23 +1039,10 @@ export interface components {
       requestCharacterEncoding: string;
       responseCharacterEncoding: string;
       effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
-      contextPath: string;
-      serverInfo: string;
-      attributeNames: Record<string, never>;
-      initParameterNames: Record<string, never>;
-      servletContextName: string;
-      filterRegistrations: {
-        [key: string]: components["schemas"]["FilterRegistration"];
-      };
-      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
-      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
-      virtualServerName: string;
-      /** Format: int32 */
-      sessionTimeout: number;
     };
     ServletRegistration: {
-      mappings: string[];
       runAsRole: string;
+      mappings: string[];
       name: string;
       className: string;
       initParameters: {
@@ -1055,8 +1064,8 @@ export interface components {
       secure: boolean;
     };
     TaglibDescriptor: {
-      taglibURI: string;
       taglibLocation: string;
+      taglibURI: string;
     };
   };
   responses: never;
