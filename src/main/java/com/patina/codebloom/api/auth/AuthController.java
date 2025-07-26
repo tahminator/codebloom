@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
-import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
@@ -131,7 +131,7 @@ public class AuthController {
                             "The email is not part of our supported schools domains: " + supportedSchools);
         }
 
-        User user = authenticationObject.getUser();
+        PrivateUser user = authenticationObject.getUser(); 
         String userId = user.getId();
 
         MagicLink magicLink = new MagicLink(email, userId);
@@ -187,14 +187,14 @@ public class AuthController {
         }
 
         String magicLinkId = magicLink.getUserId();
-        String currentUserId = authenticationObject.getUser().getId();
+        String currentUserId = authenticationObject.getUser().getId(); 
         if (!magicLinkId.equals(currentUserId)) {
             return new RedirectView("/settings?success=false&message=ID does not match current user");
         }
 
-        User user = userRepository.getUserById(magicLinkId);
+        PrivateUser user = userRepository.getPrivateUserById(magicLinkId); 
         user.setSchoolEmail(magicLink.getEmail());
-        userRepository.updateUser(user);
+        userRepository.updateUser(user); 
 
         String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
 
