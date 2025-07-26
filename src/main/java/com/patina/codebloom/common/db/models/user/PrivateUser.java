@@ -14,7 +14,7 @@ public class PrivateUser extends User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final String verifyKey;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private String schoolEmail; // remove final
+    private String schoolEmail;
 
     public PrivateUser(
                     final String id,
