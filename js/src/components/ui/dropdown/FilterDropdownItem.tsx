@@ -1,9 +1,10 @@
 import { Checkbox, Menu, MenuItemProps } from "@mantine/core";
+import { ReactNode } from "react";
 
 interface FilterDropdownItemProps extends MenuItemProps {
   value: boolean;
   toggle: () => void;
-  name: string;
+  name: ReactNode;
 }
 
 /**
