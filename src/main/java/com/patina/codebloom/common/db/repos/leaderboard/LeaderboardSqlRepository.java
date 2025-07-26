@@ -164,7 +164,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "createdAt" DESC
                             LIMIT 1
                         )
-                        SELECT DISTINCT ON (m."userId")
+                        SELECT
                             m."userId",
                             ll.id as "leaderboardId"
                         FROM
@@ -173,19 +173,21 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             m."leaderboardId" = ll.id
                         JOIN "User" u ON
                             u.id = m."userId"
-                        LEFT JOIN "UserTag" ut
-                            ON ut."userId" = m."userId"
-                        WHERE
-                            (
-                                (? = TRUE AND ut.tag = 'Patina')
-                                OR (? = TRUE AND ut.tag = 'Hunter')
-                                OR (? = TRUE AND ut.tag = 'Nyu')
-                                OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                        WHERE (
+                            EXISTS (
+                                SELECT 1 FROM "UserTag" ut
+                                WHERE ut."userId" = m."userId"
+                                AND (
+                                    (? = TRUE AND ut.tag = 'Patina') OR
+                                    (? = TRUE AND ut.tag = 'Hunter') OR
+                                    (? = TRUE AND ut.tag = 'Nyu')
+                                )
                             )
+                            OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                        )
                         AND
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
-                            m."userId", -- required for SELECT DISTINCT ON (m."userId")
                             m."totalScore" DESC,
                             -- The following case is used to put users with linked leetcode names before
                             -- those who don't.
@@ -235,7 +237,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
-                        SELECT DISTINCT ON (m."userId")
+                        SELECT
                             m."userId",
                             l.id as "leaderboardId"
                         FROM
@@ -244,21 +246,23 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             m."leaderboardId" = l.id
                         JOIN "User" u ON
                             u.id = m."userId"
-                        LEFT JOIN "UserTag" ut
-                            ON ut."userId" = m."userId"
                         WHERE
                             l.id = ?
-                        AND
-                            (
-                                (? = TRUE AND ut.tag = 'Patina')
-                                OR (? = TRUE AND ut.tag = 'Hunter')
-                                OR (? = TRUE AND ut.tag = 'Nyu')
-                                OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                        AND (
+                            EXISTS (
+                                SELECT 1 FROM "UserTag" ut
+                                WHERE ut."userId" = m."userId"
+                                AND (
+                                    (? = TRUE AND ut.tag = 'Patina') OR
+                                    (? = TRUE AND ut.tag = 'Hunter') OR
+                                    (? = TRUE AND ut.tag = 'Nyu')
+                                )
                             )
+                            OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                        )
                         AND
                             (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
                         ORDER BY
-                            m."userId", -- required for SELECT DISTINCT ON (m."userId")
                             m."totalScore" DESC,
                             -- The following case is used to put users with linked leetcode names before
                             -- those who don't.
@@ -386,7 +390,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 LIMIT 1
                             )
                             SELECT
-                                COUNT(DISTINCT m.id)
+                                COUNT(m.id)
                             FROM
                                 "Leaderboard" l
                             INNER JOIN latest_leaderboard ON latest_leaderboard.id = l.id
@@ -398,17 +402,18 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "User" u
                             ON
                                 u.id = m."userId"
-                            LEFT JOIN
-                                "UserTag" ut
-                            ON
-                                ut."userId" = m."userId"
-                            WHERE
-                                (
-                                    (? = TRUE AND ut.tag = 'Patina')
-                                    OR (? = TRUE AND ut.tag = 'Hunter')
-                                    OR (? = TRUE AND ut.tag = 'Nyu')
-                                    OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                            WHERE (
+                                EXISTS (
+                                    SELECT 1 FROM "UserTag" ut
+                                    WHERE ut."userId" = m."userId"
+                                    AND (
+                                        (? = TRUE AND ut.tag = 'Patina') OR
+                                        (? = TRUE AND ut.tag = 'Hunter') OR
+                                        (? = TRUE AND ut.tag = 'Nyu')
+                                    )
                                 )
+                                OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                            )
                             AND
                                 (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
                         """;
@@ -437,7 +442,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     public int getLeaderboardUserCountById(final String id, final LeaderboardFilterOptions options) {
         String sql = """
                             SELECT
-                                COUNT(DISTINCT m.id)
+                                COUNT(m.id)
                             FROM
                                 "Leaderboard" l
                             JOIN
@@ -448,19 +453,20 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "User" u
                             ON
                                 u.id = m."userId"
-                            LEFT JOIN
-                                "UserTag" ut
-                            ON
-                                ut."userId" = m."userId"
                             WHERE
                                 l.id = ?
-                            AND
-                                (
-                                    (? = TRUE AND ut.tag = 'Patina')
-                                    OR (? = TRUE AND ut.tag = 'Hunter')
-                                    OR (? = TRUE AND ut.tag = 'Nyu')
-                                    OR (? = FALSE AND ? = FALSE AND ? = FALSE) -- return all if no tags are selected
+                            AND (
+                                EXISTS (
+                                    SELECT 1 FROM "UserTag" ut
+                                    WHERE ut."userId" = m."userId"
+                                    AND (
+                                        (? = TRUE AND ut.tag = 'Patina') OR
+                                        (? = TRUE AND ut.tag = 'Hunter') OR
+                                        (? = TRUE AND ut.tag = 'Nyu')
+                                    )
                                 )
+                                OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                            )
                             AND
                                 (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
                         """;
