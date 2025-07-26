@@ -34,6 +34,10 @@ export default function LeaderboardIndex() {
     debouncedQuery,
     patina,
     togglePatina,
+    hunter,
+    toggleHunter,
+    nyu,
+    toggleNyu,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery();
 
@@ -102,7 +106,38 @@ export default function LeaderboardIndex() {
         <FilterDropdownItem
           value={patina}
           toggle={() => togglePatina()}
-          name="Patina"
+          name={
+            <div
+              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+            >
+              Patina
+              <img src="/Patina_Logo.png" style={{ maxHeight: "2em" }} />
+            </div>
+          }
+        />
+        <FilterDropdownItem
+          value={hunter}
+          toggle={() => toggleHunter()}
+          name={
+            <div
+              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+            >
+              Hunter
+              <img src="/Hunter_Logo.jpeg" style={{ maxHeight: "2em" }} />
+            </div>
+          }
+        />
+        <FilterDropdownItem
+          value={nyu}
+          toggle={() => toggleNyu()}
+          name={
+            <div
+              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+            >
+              NYU
+              <img src="/NYU_Logo.jpeg" style={{ maxHeight: "2em" }} />
+            </div>
+          }
         />
       </FilterDropdown>
       <SearchBox
