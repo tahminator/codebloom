@@ -14,7 +14,7 @@ public class PrivateUser extends User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final String verifyKey;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private final String schoolEmail;
+    private String schoolEmail; // remove final
 
     public PrivateUser(
                     final String id,
@@ -34,7 +34,12 @@ public class PrivateUser extends User {
     public String getVerifyKey() {
         return verifyKey;
     }
-    public String getschoolEmail() {
+
+    public String getSchoolEmail() {
         return schoolEmail;
+    }
+
+    public void setSchoolEmail(final String schoolEmail) {
+        this.schoolEmail = schoolEmail;
     }
 }
