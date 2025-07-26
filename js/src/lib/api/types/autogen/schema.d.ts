@@ -940,11 +940,11 @@ export interface components {
     JspPropertyGroupDescriptor: {
       defaultContentType: string;
       urlPatterns: string[];
-      errorOnELNotFound: string;
-      isXml: string;
       elIgnored: string;
+      errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
+      isXml: string;
       includePreludes: string[];
       includeCodas: string[];
       deferredSyntaxAllowedAsLiteral: string;
@@ -984,8 +984,6 @@ export interface components {
       };
     };
     ServletContext: {
-      contextPath: string;
-      attributeNames: Record<string, never>;
       initParameterNames: Record<string, never>;
       /** Format: int32 */
       effectiveMajorVersion: number;
@@ -1009,6 +1007,8 @@ export interface components {
       sessionTimeout: number;
       requestCharacterEncoding: string;
       responseCharacterEncoding: string;
+      contextPath: string;
+      attributeNames: Record<string, never>;
       classLoader: {
         name: string;
         registeredAsParallelCapable: boolean;
@@ -1041,12 +1041,12 @@ export interface components {
       className: string;
     };
     SessionCookieConfig: {
-      domain: string;
       path: string;
       /** Format: int32 */
       maxAge: number;
       httpOnly: boolean;
       secure: boolean;
+      domain: string;
       name: string;
       attributes: {
         [key: string]: string;
