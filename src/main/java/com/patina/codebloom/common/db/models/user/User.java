@@ -29,6 +29,8 @@ public class User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private boolean admin;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private String profileUrl;
 
     /**
      * If you want to update tags in the database, you have to use the
@@ -45,6 +47,7 @@ public class User {
                     final String leetcodeUsername,
                     final String nickname,
                     final boolean admin,
+                    final String profileUrl,
                     final ArrayList<UserTag> tags) {
         this.id = id;
         this.discordId = discordId;
@@ -52,8 +55,10 @@ public class User {
         this.leetcodeUsername = leetcodeUsername;
         this.nickname = nickname;
         this.admin = admin;
+        this.profileUrl = profileUrl;
         this.tags = tags;
     }
+
     /**
      * A new user should not have any tags to begin with.
      */
@@ -108,6 +113,14 @@ public class User {
 
     public void setAdmin(final Boolean admin) {
         this.admin = admin;
+    }
+
+    public void setProfileUrl(final String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
     public ArrayList<UserTag> getTags() {

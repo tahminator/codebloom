@@ -12,8 +12,8 @@ public class UserWithQuestions extends User {
     private ArrayList<Question> questions;
 
     public UserWithQuestions(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final Boolean admin,
-                    final ArrayList<UserTag> tags) {
-        super(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
+                    final String profileUrl, final ArrayList<UserTag> tags) {
+        super(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags);
         this.questions = new ArrayList<>();
     }
 

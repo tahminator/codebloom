@@ -10,9 +10,10 @@ public class UserWithScore extends User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private int totalScore;
 
-    public UserWithScore(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final Boolean admin, final int totalScore,
+    public UserWithScore(final String id, final String discordId, final String discordName, final String leetcodeUsername, final String nickname, final Boolean admin, final String profileUrl,
+                    final int totalScore,
                     final ArrayList<UserTag> tags) {
-        super(id, discordId, discordName, leetcodeUsername, nickname, admin, tags);
+        super(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags);
         this.totalScore = totalScore;
     }
 
