@@ -815,9 +815,9 @@ export interface components {
       parent: components["schemas"]["ApplicationContext"];
       id: string;
       displayName: string;
+      applicationName: string;
       /** Format: int64 */
       startupDate: number;
-      applicationName: string;
       autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       environment: components["schemas"]["Environment"];
       /** Format: int32 */
@@ -943,23 +943,23 @@ export interface components {
       is3xxRedirection: boolean;
     };
     JspConfigDescriptor: {
-      taglibs: components["schemas"]["TaglibDescriptor"][];
       jspPropertyGroups: components["schemas"]["JspPropertyGroupDescriptor"][];
+      taglibs: components["schemas"]["TaglibDescriptor"][];
     };
     JspPropertyGroupDescriptor: {
       buffer: string;
-      urlPatterns: string[];
-      elIgnored: string;
-      isXml: string;
-      defaultContentType: string;
       errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
       includePreludes: string[];
       includeCodas: string[];
+      defaultContentType: string;
+      elIgnored: string;
+      isXml: string;
+      urlPatterns: string[];
+      deferredSyntaxAllowedAsLiteral: string;
       trimDirectiveWhitespaces: string;
       errorOnUndeclaredNamespace: string;
-      deferredSyntaxAllowedAsLiteral: string;
     };
     RedirectView: {
       applicationContext: components["schemas"]["ApplicationContext"];
@@ -987,10 +987,10 @@ export interface components {
       attributes: {
         [key: string]: string;
       };
+      attributesCSV: string;
       attributesMap: {
         [key: string]: Record<string, never>;
       };
-      attributesCSV: string;
     };
     ServletContext: {
       classLoader: {
@@ -1014,8 +1014,7 @@ export interface components {
       majorVersion: number;
       /** Format: int32 */
       minorVersion: number;
-      serverInfo: string;
-      contextPath: string;
+      attributeNames: Record<string, never>;
       initParameterNames: Record<string, never>;
       servletContextName: string;
       filterRegistrations: {
@@ -1026,7 +1025,9 @@ export interface components {
       virtualServerName: string;
       /** Format: int32 */
       sessionTimeout: number;
-      attributeNames: Record<string, never>;
+      contextPath: string;
+      serverInfo: string;
+      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
       /** Format: int32 */
       effectiveMajorVersion: number;
       /** Format: int32 */
@@ -1038,11 +1039,10 @@ export interface components {
       defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
       requestCharacterEncoding: string;
       responseCharacterEncoding: string;
-      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
     };
     ServletRegistration: {
-      runAsRole: string;
       mappings: string[];
+      runAsRole: string;
       name: string;
       className: string;
       initParameters: {
@@ -1058,14 +1058,14 @@ export interface components {
       };
       /** @deprecated */
       comment: string;
+      secure: boolean;
       /** Format: int32 */
       maxAge: number;
       httpOnly: boolean;
-      secure: boolean;
     };
     TaglibDescriptor: {
-      taglibURI: string;
       taglibLocation: string;
+      taglibURI: string;
     };
   };
   responses: never;
@@ -1879,17 +1879,17 @@ export enum QuestionQuestionDifficulty {
   Medium = "Medium",
   Hard = "Hard",
 }
+export enum ServletContextEffectiveSessionTrackingModes {
+  COOKIE = "COOKIE",
+  URL = "URL",
+  SSL = "SSL",
+}
 export enum ServletContextSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
 }
 export enum ServletContextDefaultSessionTrackingModes {
-  COOKIE = "COOKIE",
-  URL = "URL",
-  SSL = "SSL",
-}
-export enum ServletContextEffectiveSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",

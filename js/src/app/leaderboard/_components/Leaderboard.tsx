@@ -115,30 +115,42 @@ export default function LeaderboardIndex() {
             </div>
           }
         />
-        <FilterDropdownItem
-          value={hunter}
-          toggle={() => toggleHunter()}
-          name={
-            <div
-              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-            >
-              Hunter
-              <img src="/Hunter_Logo.jpeg" style={{ maxHeight: "2em" }} />
-            </div>
-          }
-        />
-        <FilterDropdownItem
-          value={nyu}
-          toggle={() => toggleNyu()}
-          name={
-            <div
-              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-            >
-              NYU
-              <img src="/NYU_Logo.jpeg" style={{ maxHeight: "2em" }} />
-            </div>
-          }
-        />
+        {!import.meta.env.PROD && (
+          <>
+            <FilterDropdownItem
+              value={hunter}
+              toggle={() => toggleHunter()}
+              name={
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Hunter
+                  <img src="/Hunter_Logo.jpeg" style={{ maxHeight: "2em" }} />
+                </div>
+              }
+            />
+            <FilterDropdownItem
+              value={nyu}
+              toggle={() => toggleNyu()}
+              name={
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  NYU
+                  <img src="/NYU_Logo.jpeg" style={{ maxHeight: "2em" }} />
+                </div>
+              }
+            />
+          </>
+        )}
       </FilterDropdown>
       <SearchBox
         query={searchQuery}
