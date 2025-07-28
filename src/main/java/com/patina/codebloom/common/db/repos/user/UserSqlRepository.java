@@ -90,7 +90,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserByDiscordId(final String inputDiscordId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\",admin,profileUrl FROM \"User\" WHERE \"discordId\"=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\", admin, \"profileUrl\" FROM \"User\" WHERE \"discordId\"=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputDiscordId);
@@ -243,6 +243,7 @@ public class UserSqlRepository implements UserRepository {
                             "nickname",
                             "admin",
                             "schoolEmail",
+                            "profileUrl",
                             "verifyKey"
                         FROM "User"
                         WHERE id = ?
@@ -305,7 +306,7 @@ public class UserSqlRepository implements UserRepository {
                                 u."leetcodeUsername",
                                 u.nickname,
                                 u.admin,
-                                u.profileUrl,
+                                u."profileUrl",
                                 m."totalScore"
                             FROM
                                 "User" u
