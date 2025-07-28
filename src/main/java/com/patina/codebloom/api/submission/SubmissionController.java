@@ -150,6 +150,7 @@ public class SubmissionController {
         }
 
         user.setLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername());
+        user.setProfileUrl(leetcodeUserProfile.getUserAvatar());
         userRepository.updateUser(user);
 
         return ResponseEntity.ok().body(ApiResponder.success("Leetcode username has been set!", Empty.of()));
