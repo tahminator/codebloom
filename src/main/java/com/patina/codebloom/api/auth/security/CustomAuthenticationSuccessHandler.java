@@ -20,6 +20,8 @@ import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
+import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
+import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.JDAInitializer;
 
@@ -50,16 +52,18 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final UserTagRepository userTagRepository;
     private final JDAInitializer jdaInitializer;
     private final JDA jda;
+    private final LeetcodeApiHandler leetcodeApiHandler;
 
     public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
                     final LeaderboardRepository leaderboardRepository,
-                    final JDAInitializer jdaInitializer, final UserTagRepository userTagRepository) {
+                    final JDAInitializer jdaInitializer, final UserTagRepository userTagRepository, final LeetcodeApiHandler leetcodeApiHandler) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
         this.jdaInitializer = jdaInitializer;
         this.jda = initializeJda(jdaInitializer);
         this.userTagRepository = userTagRepository;
+        this.leetcodeApiHandler = leetcodeApiHandler;
     }
 
     private JDA initializeJda(final JDAInitializer jdaInitializer) {
@@ -87,6 +91,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
             if (existingUser != null) {
                 existingUser.setDiscordName(discordName);
+                if (existingUser.getLeetcodeUsername() != null) {
+                    UserProfile leetcodeUserProfile = leetcodeApiHandler.getUserProfile(existingUser.getLeetcodeUsername());
+                    existingUser.setProfileUrl(leetcodeUserProfile.getUserAvatar());
+                }
                 userRepository.updateUser(existingUser);
             } else {
                 User newUser = new User(discordId, discordName);
