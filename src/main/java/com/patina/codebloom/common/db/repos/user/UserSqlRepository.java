@@ -32,7 +32,7 @@ public class UserSqlRepository implements UserRepository {
      */
     @Override
     public User createNewUser(final User user) {
-        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\", \"profileUrl\") VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\", \"profileUrl\") VALUES (?, ?, ?, ?, ?, ?, ?)";
         user.setId(UUID.randomUUID().toString());
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(user.getId()));
@@ -102,11 +102,11 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
-                    var profielUrl = rs.getString("profileUrl");
+                    var profileUrl = rs.getString("profileUrl");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profielUrl, tags);
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags);
                     return user;
                 }
             }
@@ -176,11 +176,11 @@ public class UserSqlRepository implements UserRepository {
                     var leetcodeUsername = rs.getString("leetcodeUsername");
                     var nickname = rs.getString("nickname");
                     var admin = rs.getBoolean("admin");
-                    var profielUrl = rs.getString("profileUrl");
+                    var profileUrl = rs.getString("profileUrl");
 
                     var tags = userTagRepository.findTagsByUserId(id);
 
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profielUrl, tags));
+                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags));
                 }
             }
         } catch (SQLException e) {
