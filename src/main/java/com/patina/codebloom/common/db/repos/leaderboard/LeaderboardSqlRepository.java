@@ -168,7 +168,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             m."userId",
                             ll.id as "leaderboardId"
                         FROM
+                            "Leaderboard" l
+                        JOIN
                             latest_leaderboard ll
+                        ON
+                            ll.id = l.id
                         JOIN "Metadata" m ON
                             m."leaderboardId" = ll.id
                         JOIN "User" u ON
@@ -181,6 +185,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (? = TRUE AND ut.tag = 'Patina') OR
                                     (? = TRUE AND ut.tag = 'Hunter') OR
                                     (? = TRUE AND ut.tag = 'Nyu')
+                                )
+                                AND (
+                                    -- Any tag is valid for current leaderboard
+                                    (l."deletedAt" IS NULL)
+                                    OR
+                                    -- Tag is only valid for previous leaderboards if it was created before
+                                    -- leaderboard started, or during the lifespan of leaderboard.
+                                    (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
                             OR (? = FALSE AND ? = FALSE AND ? = FALSE)
@@ -256,6 +268,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (? = TRUE AND ut.tag = 'Patina') OR
                                     (? = TRUE AND ut.tag = 'Hunter') OR
                                     (? = TRUE AND ut.tag = 'Nyu')
+                                )
+                                AND (
+                                    -- Any tag is valid for current leaderboard
+                                    (l."deletedAt" IS NULL)
+                                    OR
+                                    -- Tag is only valid for previous leaderboards if it was created before
+                                    -- leaderboard started, or during the lifespan of leaderboard.
+                                    (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
                             OR (? = FALSE AND ? = FALSE AND ? = FALSE)
@@ -411,6 +431,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (? = TRUE AND ut.tag = 'Hunter') OR
                                         (? = TRUE AND ut.tag = 'Nyu')
                                     )
+                                    AND (
+                                        -- Any tag is valid for current leaderboard
+                                        (l."deletedAt" IS NULL)
+                                        OR
+                                        -- Tag is only valid for previous leaderboards if it was created before
+                                        -- leaderboard started, or during the lifespan of leaderboard.
+                                        (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
+                                    )
                                 )
                                 OR (? = FALSE AND ? = FALSE AND ? = FALSE)
                             )
@@ -463,6 +491,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (? = TRUE AND ut.tag = 'Patina') OR
                                         (? = TRUE AND ut.tag = 'Hunter') OR
                                         (? = TRUE AND ut.tag = 'Nyu')
+                                    )
+                                    AND (
+                                        -- Any tag is valid for current leaderboard
+                                        (l."deletedAt" IS NULL)
+                                        OR
+                                        -- Tag is only valid for previous leaderboards if it was created before
+                                        -- leaderboard started, or during the lifespan of leaderboard.
+                                        (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
                                 OR (? = FALSE AND ? = FALSE AND ? = FALSE)
