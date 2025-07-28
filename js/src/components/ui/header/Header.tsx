@@ -1,4 +1,3 @@
-import LogoutButton from "@/components/ui/auth/LogoutButton";
 import SkeletonButton from "@/components/ui/auth/SkeletonButton";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import {
@@ -14,6 +13,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
+import AvatarButton from "../auth/AvatarButton";
 import classes from "./Header.module.css";
 
 export default function Header() {
@@ -31,7 +31,10 @@ export default function Header() {
     }
 
     if (data?.user && data?.session) {
-      return <LogoutButton className={className} />;
+      const profileUrl = data.user.profileUrl;
+      const initial =
+        data.user.nickname ? data.user.nickname.charAt(0).toUpperCase() : "?";
+      return <AvatarButton src={profileUrl} initial={initial} />;
     }
 
     return (
