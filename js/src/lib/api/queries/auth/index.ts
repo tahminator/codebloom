@@ -1,6 +1,6 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Session } from "@/lib/api/types/session";
-import { User } from "@/lib/api/types/user";
+import { PrivateUser } from "@/lib/api/types/user";
 import { useQuery } from "@tanstack/react-query";
 
 /**
@@ -19,7 +19,7 @@ async function validateAuthentication() {
   });
 
   const json = (await response.json()) as UnknownApiResponse<{
-    user: User;
+    user: PrivateUser;
     session: Session;
   }>;
   if (json.success) {
