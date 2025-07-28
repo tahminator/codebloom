@@ -596,7 +596,6 @@ export interface components {
       leetcodeUsername: string;
       nickname: string;
       admin: boolean;
-      schoolEmail?: string;
       tags: components["schemas"]["UserTag"][];
     };
     UserTag: {
@@ -736,7 +735,6 @@ export interface components {
       leetcodeUsername: string;
       nickname: string;
       admin: boolean;
-      schoolEmail?: string;
       tags: components["schemas"]["UserTag"][];
       /** Format: int32 */
       totalScore: number;
@@ -793,8 +791,19 @@ export interface components {
       message: string;
     };
     AuthenticationObject: {
-      user: components["schemas"]["User"];
-      session?: components["schemas"]["Session"];
+      user: components["schemas"]["PrivateUser"];
+      session: components["schemas"]["Session"];
+    };
+    PrivateUser: {
+      id: string;
+      discordId: string;
+      discordName: string;
+      leetcodeUsername: string;
+      nickname: string;
+      admin: boolean;
+      tags: components["schemas"]["UserTag"][];
+      verifyKey: string;
+      schoolEmail: string;
     };
     Session: {
       id: string;
@@ -806,10 +815,10 @@ export interface components {
       parent: components["schemas"]["ApplicationContext"];
       id: string;
       displayName: string;
-      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       /** Format: int64 */
       startupDate: number;
       applicationName: string;
+      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       environment: components["schemas"]["Environment"];
       /** Format: int32 */
       beanDefinitionCount: number;
@@ -939,18 +948,18 @@ export interface components {
     };
     JspPropertyGroupDescriptor: {
       buffer: string;
-      trimDirectiveWhitespaces: string;
-      errorOnUndeclaredNamespace: string;
-      deferredSyntaxAllowedAsLiteral: string;
       elIgnored: string;
       isXml: string;
       urlPatterns: string[];
+      defaultContentType: string;
       errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
       includePreludes: string[];
       includeCodas: string[];
-      defaultContentType: string;
+      trimDirectiveWhitespaces: string;
+      errorOnUndeclaredNamespace: string;
+      deferredSyntaxAllowedAsLiteral: string;
     };
     RedirectView: {
       applicationContext: components["schemas"]["ApplicationContext"];
@@ -973,15 +982,15 @@ export interface components {
       expandUriTemplateVariables: boolean;
       propagateQueryParams: boolean;
       hosts: string[];
-      propagateQueryProperties: boolean;
       redirectView: boolean;
+      propagateQueryProperties: boolean;
       attributes: {
         [key: string]: string;
       };
-      attributesCSV: string;
       attributesMap: {
         [key: string]: Record<string, never>;
       };
+      attributesCSV: string;
     };
     ServletContext: {
       classLoader: {
@@ -1005,18 +1014,6 @@ export interface components {
       majorVersion: number;
       /** Format: int32 */
       minorVersion: number;
-      /** Format: int32 */
-      effectiveMajorVersion: number;
-      /** Format: int32 */
-      effectiveMinorVersion: number;
-      servletRegistrations: {
-        [key: string]: components["schemas"]["ServletRegistration"];
-      };
-      sessionTrackingModes: ServletContextSessionTrackingModes[];
-      defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
-      requestCharacterEncoding: string;
-      responseCharacterEncoding: string;
-      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
       contextPath: string;
       serverInfo: string;
       attributeNames: Record<string, never>;
@@ -1030,6 +1027,18 @@ export interface components {
       virtualServerName: string;
       /** Format: int32 */
       sessionTimeout: number;
+      /** Format: int32 */
+      effectiveMajorVersion: number;
+      /** Format: int32 */
+      effectiveMinorVersion: number;
+      servletRegistrations: {
+        [key: string]: components["schemas"]["ServletRegistration"];
+      };
+      sessionTrackingModes: ServletContextSessionTrackingModes[];
+      defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
+      requestCharacterEncoding: string;
+      responseCharacterEncoding: string;
+      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
     };
     ServletRegistration: {
       mappings: string[];
