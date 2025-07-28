@@ -61,7 +61,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserById(final String inputId) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\",admin,profileUrl FROM \"User\" WHERE id=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\", admin, \"profileUrl\" FROM \"User\" WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputId));
@@ -165,7 +165,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\", admin, profileUrl FROM \"User\"";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\", admin, \"profileUrl\" FROM \"User\"";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -194,7 +194,7 @@ public class UserSqlRepository implements UserRepository {
     public ArrayList<User> getAllUsers(final int page, final int pageSize, final String query) {
         ArrayList<User> users = new ArrayList<>();
         String sql = """
-                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", "schoolEmail", admin, profileUrl
+                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", "schoolEmail", admin, "profileUrl"
                             FROM "User"
                             WHERE
                                 ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
