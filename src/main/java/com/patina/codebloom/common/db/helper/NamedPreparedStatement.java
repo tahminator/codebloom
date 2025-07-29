@@ -217,7 +217,7 @@ public class NamedPreparedStatement implements AutoCloseable {
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
-     * @see PreparedStatement#setString(int, java.lang.String)
+     * @see PreparedStatement#setBoolean(int, java.lang.String)
      */
     public void setBoolean(final String name, final Boolean value) throws SQLException {
         int[] indexes = getIndexes(name);
