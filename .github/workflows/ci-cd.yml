@@ -12,35 +12,9 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    frontendTests:
-        name: Frontend Tests
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Fix a bug with corepack by installing corepack globally
-              run: npm i -g corepack@latest
-              working-directory: js
-
-            - name: Install Dependencies
-              run: corepack enable pnpm && pnpm i --frozen-lockfile
-              working-directory: js
-
-            - name: Run full suite of tests + linters + autoformatters
-              run: pnpm run test
-              working-directory: js
-
     backendTests:
         name: Backend Tests
         runs-on: ubuntu-latest
-        needs: frontendTests
 
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
@@ -110,10 +84,112 @@ jobs:
             - name: Run Tests
               run: ./mvnw test -Denv.SKIP=true -Dspring.profiles.active=ci
 
+
+    frontendTests:
+        name: Frontend Tests
+        runs-on: ubuntu-latest
+        needs: backendTests
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Set up OpenJDK 21
+              run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
+
+            - name: Set JAVA_HOME to Java 21
+              run: |
+                  echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
+                  echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
+
+            - name: Verify Java version
+              run: |
+                  java -version
+                  javac -version
+                  echo "JAVA_HOME=$JAVA_HOME"
+
+            - name: Start backend instance
+              run: |
+                   ./mvnw -Dspring-boot.run.profiles=ci spring-boot:run
+              env:
+                  DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+                  DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+                  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+                  DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+                  DATABASE_USER: ${{ secrets.DATABASE_USER }}
+                  DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+                  DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+                  DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+                  ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
+                  GH_USERNAME: ${{ secrets.GH_USERNAME }}
+                  GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
+                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+                  DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+                  GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
+                  GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
+                  GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
+                  GH_EMAIL_USERNAME: ${{ secrets.GH_EMAIL_USERNAME }}
+                  GH_EMAIL_PASSWORD: ${{ secrets.GH_EMAIL_PASSWORD }}
+                  CODEBLOOM_EMAIL_HOST: ${{ secrets.CODEBLOOM_EMAIL_HOST }}
+                  CODEBLOOM_EMAIL_PORT: ${{ secrets.CODEBLOOM_EMAIL_PORT }}
+                  CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
+                  CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
+                  CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
+                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+                  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+                  SKIP: ${{ secrets.SKIP }}
+                  VITE_DSN: ${{ secrets.VITE_DSN }}
+                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+                  SERVER_URL: ${{ secrets.SERVER_URL }}
+
+            - name: Wait for backend to start
+              run: |
+                   for i in {1..30}; do
+                      if curl -s http://localhost:8080/api | grep -q '"success":true'; then
+                         echo "Backend is up!";
+                         exit 0
+                      fi;
+                         echo "Waiting for backend... ($i/30)";
+                      sleep 2;
+                   done
+                   echo "Backend failed to start in time."
+                   cat spring_pid.txt | xargs -r kill || true
+                   exit 1
+
+            - name: Fix a bug with corepack by installing corepack globally
+              run: npm i -g corepack@latest
+              working-directory: js
+
+            - name: Install Dependencies
+              run: corepack enable pnpm && pnpm i --frozen-lockfile
+              working-directory: js
+
+            - name: Generate types
+              run: pnpm run db:generate
+              working-directory: js
+
+            - name: Run full suite of tests + linters + autoformatters
+              run: pnpm run test
+              working-directory: js
+
+            - name: Stop backend server
+              if: always()
+              run: |
+                   if kill $(cat spring_pid.txt) > /dev/null 2>&1; then
+                       echo "Backend process killed successfully."
+                   else
+                       echo "Backend was not running or already stopped."
+                   fi
+
     buildImage:
         name: Build Docker Image & Upload to Registry
         runs-on: ubuntu-latest
-        needs: backendTests
+        needs: frontendTests
 
         if: github.ref_name == 'main'
 
