@@ -171,7 +171,7 @@ jobs:
               working-directory: js
 
             - name: Generate types
-              run: pnpm run db:generate
+              run: pnpm run generate
               working-directory: js
 
             - name: Run full suite of tests + linters + autoformatters
