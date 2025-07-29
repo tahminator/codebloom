@@ -12,6 +12,7 @@ import {
   Button,
   Center,
   Flex,
+  Image,
   Overlay,
   Table,
   Tooltip,
@@ -107,12 +108,12 @@ export default function LeaderboardIndex() {
           value={patina}
           toggle={() => togglePatina()}
           name={
-            <div
+            <Box
               style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
             >
               Patina
-              <img src="/Patina_Logo.png" style={{ maxHeight: "2em" }} />
-            </div>
+              <Image src="/Patina_Logo.png" style={{ maxHeight: "2em" }} />
+            </Box>
           }
         />
         {!import.meta.env.PROD && (
@@ -121,7 +122,7 @@ export default function LeaderboardIndex() {
               value={hunter}
               toggle={() => toggleHunter()}
               name={
-                <div
+                <Box
                   style={{
                     display: "flex",
                     gap: "0.5rem",
@@ -129,15 +130,15 @@ export default function LeaderboardIndex() {
                   }}
                 >
                   Hunter
-                  <img src="/Hunter_Logo.jpeg" style={{ maxHeight: "2em" }} />
-                </div>
+                  <Image src="/Hunter_Logo.jpeg" style={{ maxHeight: "2em" }} />
+                </Box>
               }
             />
             <FilterDropdownItem
               value={nyu}
               toggle={() => toggleNyu()}
               name={
-                <div
+                <Box
                   style={{
                     display: "flex",
                     gap: "0.5rem",
@@ -145,8 +146,8 @@ export default function LeaderboardIndex() {
                   }}
                 >
                   NYU
-                  <img src="/NYU_Logo.jpeg" style={{ maxHeight: "2em" }} />
-                </div>
+                  <Image src="/NYU_Logo.jpeg" style={{ maxHeight: "2em" }} />
+                </Box>
               }
             />
           </>

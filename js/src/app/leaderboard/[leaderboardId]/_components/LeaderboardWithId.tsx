@@ -15,6 +15,7 @@ import {
   Tooltip,
   Center,
   Button,
+  Image,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord, FaArrowLeft, FaArrowRight } from "react-icons/fa";
@@ -110,12 +111,12 @@ export default function LeaderboardWithId({
           value={patina}
           toggle={() => togglePatina()}
           name={
-            <div
+            <Box
               style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
             >
               Patina
-              <img src="/Patina_Logo.png" style={{ maxHeight: "2em" }} />
-            </div>
+              <Image src="/Patina_Logo.png" style={{ maxHeight: "2em" }} />
+            </Box>
           }
         />
         {!import.meta.env.PROD && (
@@ -124,7 +125,7 @@ export default function LeaderboardWithId({
               value={hunter}
               toggle={() => toggleHunter()}
               name={
-                <div
+                <Box
                   style={{
                     display: "flex",
                     gap: "0.5rem",
@@ -132,15 +133,15 @@ export default function LeaderboardWithId({
                   }}
                 >
                   Hunter
-                  <img src="/Hunter_Logo.jpeg" style={{ maxHeight: "2em" }} />
-                </div>
+                  <Image src="/Hunter_Logo.jpeg" style={{ maxHeight: "2em" }} />
+                </Box>
               }
             />
             <FilterDropdownItem
               value={nyu}
               toggle={() => toggleNyu()}
               name={
-                <div
+                <Box
                   style={{
                     display: "flex",
                     gap: "0.5rem",
@@ -148,8 +149,8 @@ export default function LeaderboardWithId({
                   }}
                 >
                   NYU
-                  <img src="/NYU_Logo.jpeg" style={{ maxHeight: "2em" }} />
-                </div>
+                  <Image src="/NYU_Logo.jpeg" style={{ maxHeight: "2em" }} />
+                </Box>
               }
             />
           </>

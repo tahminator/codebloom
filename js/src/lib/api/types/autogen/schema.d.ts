@@ -812,13 +812,13 @@ export interface components {
       expiresAt: string;
     };
     ApplicationContext: {
+      /** Format: int64 */
+      startupDate: number;
+      applicationName: string;
+      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       parent: components["schemas"]["ApplicationContext"];
       id: string;
       displayName: string;
-      applicationName: string;
-      /** Format: int64 */
-      startupDate: number;
-      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       environment: components["schemas"]["Environment"];
       /** Format: int32 */
       beanDefinitionCount: number;
@@ -837,9 +837,9 @@ export interface components {
               registeredAsParallelCapable: boolean;
               definedPackages: {
                 name: string;
+                sealed: boolean;
                 annotations: Record<string, never>[];
                 declaredAnnotations: Record<string, never>[];
-                sealed: boolean;
                 specificationTitle: string;
                 specificationVersion: string;
                 specificationVendor: string;
@@ -862,9 +862,9 @@ export interface components {
           };
           definedPackages: {
             name: string;
+            sealed: boolean;
             annotations: Record<string, never>[];
             declaredAnnotations: Record<string, never>[];
-            sealed: boolean;
             specificationTitle: string;
             specificationVersion: string;
             specificationVendor: string;
@@ -881,9 +881,9 @@ export interface components {
             registeredAsParallelCapable: boolean;
             definedPackages: {
               name: string;
+              sealed: boolean;
               annotations: Record<string, never>[];
               declaredAnnotations: Record<string, never>[];
-              sealed: boolean;
               specificationTitle: string;
               specificationVersion: string;
               specificationVendor: string;
@@ -906,9 +906,9 @@ export interface components {
         };
         definedPackages: {
           name: string;
+          sealed: boolean;
           annotations: Record<string, never>[];
           declaredAnnotations: Record<string, never>[];
-          sealed: boolean;
           specificationTitle: string;
           specificationVersion: string;
           specificationVendor: string;
@@ -928,38 +928,38 @@ export interface components {
     FilterRegistration: {
       servletNameMappings: string[];
       urlPatternMappings: string[];
-      name: string;
-      className: string;
       initParameters: {
         [key: string]: string;
       };
+      name: string;
+      className: string;
     };
     HttpStatusCode: {
-      error: boolean;
       is4xxClientError: boolean;
       is5xxServerError: boolean;
       is1xxInformational: boolean;
       is2xxSuccessful: boolean;
       is3xxRedirection: boolean;
+      error: boolean;
     };
     JspConfigDescriptor: {
-      jspPropertyGroups: components["schemas"]["JspPropertyGroupDescriptor"][];
       taglibs: components["schemas"]["TaglibDescriptor"][];
+      jspPropertyGroups: components["schemas"]["JspPropertyGroupDescriptor"][];
     };
     JspPropertyGroupDescriptor: {
-      buffer: string;
+      elIgnored: string;
       errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
+      isXml: string;
       includePreludes: string[];
       includeCodas: string[];
-      defaultContentType: string;
-      elIgnored: string;
-      isXml: string;
-      urlPatterns: string[];
       deferredSyntaxAllowedAsLiteral: string;
       trimDirectiveWhitespaces: string;
       errorOnUndeclaredNamespace: string;
+      defaultContentType: string;
+      urlPatterns: string[];
+      buffer: string;
     };
     RedirectView: {
       applicationContext: components["schemas"]["ApplicationContext"];
@@ -984,23 +984,48 @@ export interface components {
       hosts: string[];
       redirectView: boolean;
       propagateQueryProperties: boolean;
-      attributes: {
-        [key: string]: string;
-      };
-      attributesCSV: string;
       attributesMap: {
         [key: string]: Record<string, never>;
       };
+      attributesCSV: string;
+      attributes: {
+        [key: string]: string;
+      };
     };
     ServletContext: {
+      initParameterNames: Record<string, never>;
+      /** Format: int32 */
+      effectiveMajorVersion: number;
+      /** Format: int32 */
+      effectiveMinorVersion: number;
+      serverInfo: string;
+      servletContextName: string;
+      servletRegistrations: {
+        [key: string]: components["schemas"]["ServletRegistration"];
+      };
+      filterRegistrations: {
+        [key: string]: components["schemas"]["FilterRegistration"];
+      };
+      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
+      sessionTrackingModes: ServletContextSessionTrackingModes[];
+      defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
+      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
+      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
+      virtualServerName: string;
+      /** Format: int32 */
+      sessionTimeout: number;
+      requestCharacterEncoding: string;
+      responseCharacterEncoding: string;
+      contextPath: string;
+      attributeNames: Record<string, never>;
       classLoader: {
         name: string;
         registeredAsParallelCapable: boolean;
         definedPackages: {
           name: string;
+          sealed: boolean;
           annotations: Record<string, never>[];
           declaredAnnotations: Record<string, never>[];
-          sealed: boolean;
           specificationTitle: string;
           specificationVersion: string;
           specificationVendor: string;
@@ -1014,58 +1039,33 @@ export interface components {
       majorVersion: number;
       /** Format: int32 */
       minorVersion: number;
-      initParameterNames: Record<string, never>;
-      servletContextName: string;
-      filterRegistrations: {
-        [key: string]: components["schemas"]["FilterRegistration"];
-      };
-      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
-      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
-      virtualServerName: string;
-      /** Format: int32 */
-      sessionTimeout: number;
-      attributeNames: Record<string, never>;
-      serverInfo: string;
-      contextPath: string;
-      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
-      /** Format: int32 */
-      effectiveMajorVersion: number;
-      /** Format: int32 */
-      effectiveMinorVersion: number;
-      servletRegistrations: {
-        [key: string]: components["schemas"]["ServletRegistration"];
-      };
-      sessionTrackingModes: ServletContextSessionTrackingModes[];
-      defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
-      requestCharacterEncoding: string;
-      responseCharacterEncoding: string;
     };
     ServletRegistration: {
       runAsRole: string;
       mappings: string[];
-      name: string;
-      className: string;
       initParameters: {
         [key: string]: string;
       };
+      name: string;
+      className: string;
     };
     SessionCookieConfig: {
+      path: string;
+      /** Format: int32 */
+      maxAge: number;
+      httpOnly: boolean;
+      secure: boolean;
       domain: string;
       name: string;
-      path: string;
       attributes: {
         [key: string]: string;
       };
       /** @deprecated */
       comment: string;
-      /** Format: int32 */
-      maxAge: number;
-      httpOnly: boolean;
-      secure: boolean;
     };
     TaglibDescriptor: {
-      taglibLocation: string;
       taglibURI: string;
+      taglibLocation: string;
     };
   };
   responses: never;
@@ -1879,17 +1879,17 @@ export enum QuestionQuestionDifficulty {
   Medium = "Medium",
   Hard = "Hard",
 }
-export enum ServletContextEffectiveSessionTrackingModes {
-  COOKIE = "COOKIE",
-  URL = "URL",
-  SSL = "SSL",
-}
 export enum ServletContextSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
 }
 export enum ServletContextDefaultSessionTrackingModes {
+  COOKIE = "COOKIE",
+  URL = "URL",
+  SSL = "SSL",
+}
+export enum ServletContextEffectiveSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
