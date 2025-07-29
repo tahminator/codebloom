@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsc -b && vite build",
+        "build": "vite build",
         "typecheck": "tsc --noEmit",
         "test": "pnpm run typecheck && pnpm run prettier && pnpm run lint && pnpm run build",
         "lint": "pnpm run eslint && pnpm run stylelint",
