@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
@@ -53,11 +54,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         SET
                             "deletedAt" = NOW()
                         WHERE
-                            id = ?
+                            id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(leaderboardId));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(leaderboardId));
             int rowsAffected = stmt.executeUpdate();
 
             return rowsAffected > 0;
@@ -72,14 +73,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         INSERT INTO "Leaderboard"
                             (id, name)
                         VALUES
-                            (?, ?)
+                            (:id, :name)
                         RETURNING
                             "createdAt"
                         """;
         leaderboard.setId(UUID.randomUUID().toString());
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(leaderboard.getId()));
-            stmt.setString(2, leaderboard.getName());
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(leaderboard.getId()));
+            stmt.setString("name", leaderboard.getName());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
@@ -131,11 +132,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             "shouldExpireBy"
                         FROM "Leaderboard"
                         WHERE
-                            id = ?
+                            id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToLeaderboard(rs);
@@ -182,9 +183,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 SELECT 1 FROM "UserTag" ut
                                 WHERE ut."userId" = m."userId"
                                 AND (
-                                    (? = TRUE AND ut.tag = 'Patina') OR
-                                    (? = TRUE AND ut.tag = 'Hunter') OR
-                                    (? = TRUE AND ut.tag = 'Nyu')
+                                    (:patina = TRUE AND ut.tag = 'Patina') OR
+                                    (:hunter = TRUE AND ut.tag = 'Hunter') OR
+                                    (:nyu = TRUE AND ut.tag = 'Nyu')
                                 )
                                 AND (
                                     -- Any tag is valid for current leaderboard
@@ -195,10 +196,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
-                            OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE)
                         )
                         AND
-                            (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
+                            (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
                         ORDER BY
                             m."totalScore" DESC,
                             -- The following case is used to put users with linked leetcode names before
@@ -210,21 +211,18 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             END,
                             -- This is the tie breaker if we can't sort them by the above conditions.
                             m."createdAt" ASC
-                        LIMIT ? OFFSET ?;
+                        LIMIT :pageSize OFFSET :pageNumber;
                                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setBoolean(1, options.isPatina());
-            stmt.setBoolean(2, options.isHunter());
-            stmt.setBoolean(3, options.isNyu());
-            stmt.setBoolean(4, options.isPatina());
-            stmt.setBoolean(5, options.isHunter());
-            stmt.setBoolean(6, options.isNyu());
-            stmt.setString(7, "%" + options.getQuery() + "%");
-            stmt.setString(8, "%" + options.getQuery() + "%");
-            stmt.setString(9, "%" + options.getQuery() + "%");
-            stmt.setInt(10, options.getPageSize());
-            stmt.setInt(11, (options.getPage() - 1) * options.getPageSize());
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setBoolean("patina", options.isPatina());
+            stmt.setBoolean("hunter", options.isHunter());
+            stmt.setBoolean("nyu", options.isNyu());
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setInt("pageSize", options.getPageSize());
+            stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -259,15 +257,15 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         JOIN "User" u ON
                             u.id = m."userId"
                         WHERE
-                            l.id = ?
+                            l.id = :leaderboardId
                         AND (
                             EXISTS (
                                 SELECT 1 FROM "UserTag" ut
                                 WHERE ut."userId" = m."userId"
                                 AND (
-                                    (? = TRUE AND ut.tag = 'Patina') OR
-                                    (? = TRUE AND ut.tag = 'Hunter') OR
-                                    (? = TRUE AND ut.tag = 'Nyu')
+                                    (:patina = TRUE AND ut.tag = 'Patina') OR
+                                    (:hunter = TRUE AND ut.tag = 'Hunter') OR
+                                    (:nyu = TRUE AND ut.tag = 'Nyu')
                                 )
                                 AND (
                                     -- Any tag is valid for current leaderboard
@@ -278,10 +276,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
-                            OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE)
                         )
                         AND
-                            (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ? OR u."nickname" ILIKE ?)
+                            (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
                         ORDER BY
                             m."totalScore" DESC,
                             -- The following case is used to put users with linked leetcode names before
@@ -293,22 +291,19 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             END,
                              -- This is the tie breaker if we can't sort them by the above conditions.
                             m."createdAt" ASC
-                        LIMIT ? OFFSET ?;
+                        LIMIT :pageSize OFFSET :pageNumber;
                                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
-            stmt.setBoolean(2, options.isPatina());
-            stmt.setBoolean(3, options.isHunter());
-            stmt.setBoolean(4, options.isNyu());
-            stmt.setBoolean(5, options.isPatina());
-            stmt.setBoolean(6, options.isHunter());
-            stmt.setBoolean(7, options.isNyu());
-            stmt.setString(8, "%" + options.getQuery() + "%");
-            stmt.setString(9, "%" + options.getQuery() + "%");
-            stmt.setString(10, "%" + options.getQuery() + "%");
-            stmt.setInt(11, options.getPageSize());
-            stmt.setInt(12, (options.getPage() - 1) * options.getPageSize());
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("leaderboardId", UUID.fromString(id));
+            stmt.setBoolean("patina", options.isPatina());
+            stmt.setBoolean("hunter", options.isHunter());
+            stmt.setBoolean("nyu", options.isNyu());
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setInt("pageSize", options.getPageSize());
+            stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -333,17 +328,17 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         String sql = """
                         UPDATE "Leaderboard"
                         SET
-                            name = ?,
-                            "createdAt" = ?,
-                            "deletedAt" = ?
-                        WHERE id = ?
+                            name = :name,
+                            "createdAt" = :createdAt,
+                            "deletedAt" = :deletedAt
+                        WHERE id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, leaderboard.getName());
-            stmt.setObject(2, leaderboard.getCreatedAt());
-            stmt.setObject(3, leaderboard.getDeletedAt());
-            stmt.setObject(4, UUID.fromString(leaderboard.getId()));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("name", leaderboard.getName());
+            stmt.setObject("createdAt", leaderboard.getCreatedAt());
+            stmt.setObject("deletedAt", leaderboard.getDeletedAt());
+            stmt.setObject("id", UUID.fromString(leaderboard.getId()));
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -359,13 +354,13 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         INSERT INTO "Metadata"
                             (id, "userId", "leaderboardId")
                         VALUES
-                            (?, ?, ?)
+                            (:id, :userId, :leaderboardId)
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.randomUUID());
-            stmt.setObject(2, UUID.fromString(userId));
-            stmt.setObject(3, UUID.fromString(leaderboardId));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.randomUUID());
+            stmt.setObject("userId", UUID.fromString(userId));
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -379,17 +374,17 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         String sql = """
                         UPDATE "Metadata"
                         SET
-                            "totalScore" = ?
+                            "totalScore" = :totalScore
                         WHERE
-                            "userId" = ?
+                            "userId" = :userId
                         AND
-                            "leaderboardId" = ?
+                            "leaderboardId" = :leaderboardId
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, totalScore);
-            stmt.setObject(2, UUID.fromString(userId));
-            stmt.setObject(3, UUID.fromString(leaderboardId));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setInt("totalScore", totalScore);
+            stmt.setObject("userId", UUID.fromString(userId));
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -427,9 +422,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     SELECT 1 FROM "UserTag" ut
                                     WHERE ut."userId" = m."userId"
                                     AND (
-                                        (? = TRUE AND ut.tag = 'Patina') OR
-                                        (? = TRUE AND ut.tag = 'Hunter') OR
-                                        (? = TRUE AND ut.tag = 'Nyu')
+                                        (:patina = TRUE AND ut.tag = 'Patina') OR
+                                        (:hunter = TRUE AND ut.tag = 'Hunter') OR
+                                        (:nyu = TRUE AND ut.tag = 'Nyu')
                                     )
                                     AND (
                                         -- Any tag is valid for current leaderboard
@@ -440,20 +435,17 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE)
                             )
                             AND
-                                (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
+                                (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
                         """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setBoolean(1, options.isPatina());
-            stmt.setBoolean(2, options.isHunter());
-            stmt.setBoolean(3, options.isNyu());
-            stmt.setBoolean(4, options.isPatina());
-            stmt.setBoolean(5, options.isHunter());
-            stmt.setBoolean(6, options.isNyu());
-            stmt.setString(7, "%" + options.getQuery() + "%");
-            stmt.setString(8, "%" + options.getQuery() + "%");
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setBoolean("patina", options.isPatina());
+            stmt.setBoolean("hunter", options.isHunter());
+            stmt.setBoolean("nyu", options.isNyu());
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -482,15 +474,15 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             ON
                                 u.id = m."userId"
                             WHERE
-                                l.id = ?
+                                l.id = :leaderboardId
                             AND (
                                 EXISTS (
                                     SELECT 1 FROM "UserTag" ut
                                     WHERE ut."userId" = m."userId"
                                     AND (
-                                        (? = TRUE AND ut.tag = 'Patina') OR
-                                        (? = TRUE AND ut.tag = 'Hunter') OR
-                                        (? = TRUE AND ut.tag = 'Nyu')
+                                        (:patina = TRUE AND ut.tag = 'Patina') OR
+                                        (:hunter = TRUE AND ut.tag = 'Hunter') OR
+                                        (:nyu = TRUE AND ut.tag = 'Nyu')
                                     )
                                     AND (
                                         -- Any tag is valid for current leaderboard
@@ -501,21 +493,18 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (? = FALSE AND ? = FALSE AND ? = FALSE)
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE)
                             )
                             AND
-                                (u."discordName" ILIKE ? OR u."leetcodeUsername" ILIKE ?)
+                                (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
                         """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
-            stmt.setBoolean(2, options.isPatina());
-            stmt.setBoolean(3, options.isHunter());
-            stmt.setBoolean(4, options.isNyu());
-            stmt.setBoolean(5, options.isPatina());
-            stmt.setBoolean(6, options.isHunter());
-            stmt.setBoolean(7, options.isNyu());
-            stmt.setString(8, "%" + options.getQuery() + "%");
-            stmt.setString(9, "%" + options.getQuery() + "%");
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("leaderboardId", UUID.fromString(id));
+            stmt.setBoolean("patina", options.isPatina());
+            stmt.setBoolean("hunter", options.isHunter());
+            stmt.setBoolean("nyu", options.isNyu());
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -539,16 +528,16 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 "deletedAt",
                                 "shouldExpireBy"
                             FROM "Leaderboard"
-                            WHERE name ILIKE ?
+                            WHERE name ILIKE :searchQuery
                             ORDER BY
                                 "createdAt" DESC
-                            LIMIT ? OFFSET ?
+                            LIMIT :pageSize OFFSET :pageNumber
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "%" + options.getQuery() + "%");
-            stmt.setInt(2, options.getPageSize());
-            stmt.setInt(3, (options.getPage() - 1) * options.getPageSize());
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
+            stmt.setInt("pageSize", options.getPageSize());
+            stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -569,15 +558,15 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         INSERT INTO "Metadata"
                             (id, "userId", "leaderboardId")
                         VALUES
-                            (?, ?, ?)
+                            (:id, :userId, :leaderboardId)
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             for (var user : users) {
                 String userMetaId = UUID.randomUUID().toString();
-                stmt.setObject(1, UUID.fromString(userMetaId));
-                stmt.setObject(2, UUID.fromString(user.getId()));
-                stmt.setObject(3, UUID.fromString(leaderboardId));
+                stmt.setObject("id", UUID.fromString(userMetaId));
+                stmt.setObject("userId", UUID.fromString(user.getId()));
+                stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
                 stmt.addBatch();
             }
 
@@ -616,11 +605,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         String sql = """
                             DELETE FROM "Leaderboard"
                             WHERE
-                                id = ?
+                                id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -642,11 +631,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             SET
                                 "deletedAt" = NULL
                             WHERE
-                                id = ?
+                                id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
 
