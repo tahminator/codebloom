@@ -87,6 +87,7 @@ public class LeaderboardController {
                         .query(query)
                         .patina(patina)
                         .hunter(hunter)
+                        .nyu(nyu)
                         .build();
 
         List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(leaderboardId, options);

@@ -815,14 +815,14 @@ export interface components {
       parent: components["schemas"]["ApplicationContext"];
       id: string;
       displayName: string;
-      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
+      applicationName: string;
       /** Format: int64 */
       startupDate: number;
-      applicationName: string;
+      autowireCapableBeanFactory: components["schemas"]["AutowireCapableBeanFactory"];
       environment: components["schemas"]["Environment"];
-      beanDefinitionNames: string[];
       /** Format: int32 */
       beanDefinitionCount: number;
+      beanDefinitionNames: string[];
       parentBeanFactory: components["schemas"]["BeanFactory"];
       classLoader: {
         name: string;
@@ -943,23 +943,23 @@ export interface components {
       is3xxRedirection: boolean;
     };
     JspConfigDescriptor: {
-      taglibs: components["schemas"]["TaglibDescriptor"][];
       jspPropertyGroups: components["schemas"]["JspPropertyGroupDescriptor"][];
+      taglibs: components["schemas"]["TaglibDescriptor"][];
     };
     JspPropertyGroupDescriptor: {
       buffer: string;
-      trimDirectiveWhitespaces: string;
-      errorOnUndeclaredNamespace: string;
-      deferredSyntaxAllowedAsLiteral: string;
-      elIgnored: string;
-      isXml: string;
-      urlPatterns: string[];
-      defaultContentType: string;
       errorOnELNotFound: string;
       pageEncoding: string;
       scriptingInvalid: string;
       includePreludes: string[];
       includeCodas: string[];
+      defaultContentType: string;
+      elIgnored: string;
+      isXml: string;
+      urlPatterns: string[];
+      deferredSyntaxAllowedAsLiteral: string;
+      trimDirectiveWhitespaces: string;
+      errorOnUndeclaredNamespace: string;
     };
     RedirectView: {
       applicationContext: components["schemas"]["ApplicationContext"];
@@ -982,15 +982,15 @@ export interface components {
       expandUriTemplateVariables: boolean;
       propagateQueryParams: boolean;
       hosts: string[];
-      propagateQueryProperties: boolean;
       redirectView: boolean;
+      propagateQueryProperties: boolean;
       attributes: {
         [key: string]: string;
       };
+      attributesCSV: string;
       attributesMap: {
         [key: string]: Record<string, never>;
       };
-      attributesCSV: string;
     };
     ServletContext: {
       classLoader: {
@@ -1014,6 +1014,20 @@ export interface components {
       majorVersion: number;
       /** Format: int32 */
       minorVersion: number;
+      initParameterNames: Record<string, never>;
+      servletContextName: string;
+      filterRegistrations: {
+        [key: string]: components["schemas"]["FilterRegistration"];
+      };
+      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
+      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
+      virtualServerName: string;
+      /** Format: int32 */
+      sessionTimeout: number;
+      attributeNames: Record<string, never>;
+      serverInfo: string;
+      contextPath: string;
+      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
       /** Format: int32 */
       effectiveMajorVersion: number;
       /** Format: int32 */
@@ -1025,24 +1039,10 @@ export interface components {
       defaultSessionTrackingModes: ServletContextDefaultSessionTrackingModes[];
       requestCharacterEncoding: string;
       responseCharacterEncoding: string;
-      effectiveSessionTrackingModes: ServletContextEffectiveSessionTrackingModes[];
-      contextPath: string;
-      serverInfo: string;
-      attributeNames: Record<string, never>;
-      initParameterNames: Record<string, never>;
-      servletContextName: string;
-      filterRegistrations: {
-        [key: string]: components["schemas"]["FilterRegistration"];
-      };
-      sessionCookieConfig: components["schemas"]["SessionCookieConfig"];
-      jspConfigDescriptor: components["schemas"]["JspConfigDescriptor"];
-      virtualServerName: string;
-      /** Format: int32 */
-      sessionTimeout: number;
     };
     ServletRegistration: {
-      mappings: string[];
       runAsRole: string;
+      mappings: string[];
       name: string;
       className: string;
       initParameters: {
@@ -1064,8 +1064,8 @@ export interface components {
       secure: boolean;
     };
     TaglibDescriptor: {
-      taglibURI: string;
       taglibLocation: string;
+      taglibURI: string;
     };
   };
   responses: never;
@@ -1879,17 +1879,17 @@ export enum QuestionQuestionDifficulty {
   Medium = "Medium",
   Hard = "Hard",
 }
+export enum ServletContextEffectiveSessionTrackingModes {
+  COOKIE = "COOKIE",
+  URL = "URL",
+  SSL = "SSL",
+}
 export enum ServletContextSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
 }
 export enum ServletContextDefaultSessionTrackingModes {
-  COOKIE = "COOKIE",
-  URL = "URL",
-  SSL = "SSL",
-}
-export enum ServletContextEffectiveSessionTrackingModes {
   COOKIE = "COOKIE",
   URL = "URL",
   SSL = "SSL",
