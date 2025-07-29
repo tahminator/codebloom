@@ -74,6 +74,8 @@ public class LeaderboardController {
                     @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize,
                     @Parameter(description = "Discord name", example = "tahmid") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
+                    @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
+                    @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
                     final HttpServletRequest request) {
         FakeLag.sleep(800);
 
@@ -84,6 +86,8 @@ public class LeaderboardController {
                         .pageSize(parsedPageSize)
                         .query(query)
                         .patina(patina)
+                        .hunter(hunter)
+                        .nyu(nyu)
                         .build();
 
         List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(leaderboardId, options);
@@ -118,7 +122,9 @@ public class LeaderboardController {
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize,
                     @Parameter(description = "Discord name", example = "tahmid") @RequestParam(required = false, defaultValue = "") final String query,
-                    @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina) {
+                    @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
+                    @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
+                    @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu) {
         FakeLag.sleep(800);
 
         final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
@@ -128,6 +134,8 @@ public class LeaderboardController {
                         .pageSize(parsedPageSize)
                         .query(query)
                         .patina(patina)
+                        .hunter(hunter)
+                        .nyu(nyu)
                         .build();
 
         ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(options);

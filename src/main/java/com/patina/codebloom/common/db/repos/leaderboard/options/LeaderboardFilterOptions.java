@@ -20,4 +20,9 @@ public class LeaderboardFilterOptions {
     private final String query = "";
     @Builder.Default
     private final boolean patina = false;
+    @Builder.Default
+    private final boolean hunter = false;
+    @Builder.Default
+    private final boolean nyu = false;
+
 }
