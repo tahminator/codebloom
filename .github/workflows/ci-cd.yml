@@ -115,7 +115,8 @@ jobs:
 
             - name: Start backend instance
               run: |
-                   ./mvnw -Dspring-boot.run.profiles=ci spring-boot:run
+                   ./mvnw -Dspring-boot.run.profiles=ci spring-boot:run > backend.log 2>&1 &
+                   echo $! > spring_pid.txt
               env:
                   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
                   DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
