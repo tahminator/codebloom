@@ -219,8 +219,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
-            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
-            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
             stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
@@ -299,8 +297,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
-            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
-            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
             stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
@@ -445,7 +441,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
-            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -503,7 +498,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
-            stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
