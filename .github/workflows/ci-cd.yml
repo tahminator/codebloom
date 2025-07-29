@@ -52,12 +52,10 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Set up OpenJDK 21
-              run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
-
-            - name: Set JAVA_HOME to Java 21
-              run: |
-                  echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
-                  echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
+              uses: actions/setup-java@v4
+              with:
+                distribution: 'temurin'
+                java-version: '21'
 
             - name: Verify Java version
               run: |
@@ -100,12 +98,10 @@ jobs:
                   node-version: 20
 
             - name: Set up OpenJDK 21
-              run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
-
-            - name: Set JAVA_HOME to Java 21
-              run: |
-                  echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> $GITHUB_ENV
-                  echo "/usr/lib/jvm/java-21-openjdk-amd64/bin" >> $GITHUB_PATH
+              uses: actions/setup-java@v4
+              with:
+                distribution: 'temurin'
+                java-version: '21'
 
             - name: Verify Java version
               run: |
