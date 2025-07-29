@@ -1,7 +1,5 @@
-import { Menu, Avatar, Divider } from "@mantine/core";
-
-import LogoutButton from "./LogoutButton";
-import SettingsButton from "./SettingsButton";
+import { Menu, Avatar, Button } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 export default function AvatarDropdown({
   src,
@@ -27,14 +25,26 @@ export default function AvatarDropdown({
       <Menu.Dropdown>
         {!isProduction && (
           <>
-            <Menu.Item>
-              <SettingsButton />
+            <Menu.Item component={Link} to={"/settings"} w-full>
+              <Button
+                fullWidth
+                className="bg-slate-500 hover:bg-slate-600 text-white hover:text-white"
+              >
+                Settings
+              </Button>
             </Menu.Item>
-            <Divider />
+            <Menu.Divider />
           </>
         )}
-        <Menu.Item>
-          <LogoutButton />
+        <Menu.Item
+          component={Link}
+          to={"/api/auth/logout"}
+          reloadDocument
+          w-full
+        >
+          <Button fullWidth color="red">
+            Logout
+          </Button>
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>
