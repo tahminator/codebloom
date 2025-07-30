@@ -7,8 +7,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -17,6 +21,7 @@ import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.page.Indexed;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 
 @Component
@@ -150,7 +155,73 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<UserWithScore> getRecentLeaderboardUsers(final LeaderboardFilterOptions options) {
+    public List<Indexed<UserWithScore>> getRankedLeaderboardUsersById(final List<UserWithScore> users, final String leaderboardId) {
+        Map<String, UserWithScore> userIdToUserMap = users.stream()
+                        .collect(
+                                        Collectors.toMap(
+                                                        user -> user.getId(),
+                                                        Function.identity()));
+        List<Indexed<UserWithScore>> result = new ArrayList<>();
+
+        String sql = """
+                            WITH ranks AS (
+                                SELECT
+                                    m."userId",
+                                    ROW_NUMBER() OVER (
+                                        ORDER BY
+                                            m."totalScore" DESC,
+                                            -- The following case is used to put users with linked leetcode names before
+                                            -- those who don't.
+                                            CASE
+                                                WHEN m."totalScore" = 0 THEN
+                                                    CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
+                                                ELSE 0
+                                            END,
+                                            -- This is the tie breaker if we can't sort them by the above conditions.
+                                            m."createdAt" ASC,
+                                            -- This is extremely rare, but if the createdAt time is somehow not unique,
+                                            -- this serves to be the final tiebreaker.
+                                            m."userId"
+                                    ) AS rank
+                                FROM "Metadata" m
+                                JOIN "User" u ON u.id = m."userId"
+                                WHERE m."leaderboardId" = :leaderboardId
+                            )
+                            SELECT
+                                r."userId",
+                                r.rank
+                            FROM
+                                ranks r
+                            WHERE
+                                r."userId" = ANY(:userIds)
+                            ORDER BY
+                                r.rank ASC
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            UUID[] userIds = users.stream()
+                            .map(user -> UUID.fromString(user.getId()))
+                            .toArray(size -> new UUID[size]);
+
+            stmt.setArray("userIds", conn.createArrayOf("UUID", userIds));
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var userId = rs.getString("userId");
+                    var rank = rs.getInt("rank");
+                    result.add(Indexed.of(userIdToUserMap.get(userId), rank));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get ranks for leaderboard users", e);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UserWithScore> getRecentLeaderboardUsers(final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -210,7 +281,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 ELSE 0
                             END,
                             -- This is the tie breaker if we can't sort them by the above conditions.
-                            m."createdAt" ASC
+                            m."createdAt" ASC,
+                            -- This is extremely rare, but if the createdAt time is somehow not unique,
+                            -- this serves to be the final tiebreaker.
+                            m."userId"
                         LIMIT :pageSize OFFSET :pageNumber;
                                         """;
 
@@ -241,7 +315,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<UserWithScore> getLeaderboardUsersById(final String id, final LeaderboardFilterOptions options) {
+    public List<UserWithScore> getLeaderboardUsersById(final String id, final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -512,7 +586,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public ArrayList<Leaderboard> getAllLeaderboardsShallow(final LeaderboardFilterOptions options) {
+    public List<Leaderboard> getAllLeaderboardsShallow(final LeaderboardFilterOptions options) {
         ArrayList<Leaderboard> leaderboards = new ArrayList<>();
         String sql = """
                             SELECT
