@@ -1,5 +1,6 @@
 package com.patina.codebloom.common.db.helper;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -217,12 +218,28 @@ public class NamedPreparedStatement implements AutoCloseable {
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
-     * @see PreparedStatement#setBoolean(int, java.lang.String)
+     * @see PreparedStatement#setBoolean(int, java.lang.Boolean)
      */
     public void setBoolean(final String name, final Boolean value) throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setBoolean(indexes[i], value);
+        }
+    }
+
+    /**
+     * Sets a parameter.
+     * 
+     * @param name parameter name
+     * @param value parameter value
+     * @throws SQLException if an error occurred
+     * @throws IllegalArgumentException if the parameter does not exist
+     * @see PreparedStatement#setArray(int, java.sql.Array)
+     */
+    public void setArray(final String name, final Array value) throws SQLException {
+        int[] indexes = getIndexes(name);
+        for (int i = 0; i < indexes.length; i++) {
+            statement.setArray(indexes[i], value);
         }
     }
 
