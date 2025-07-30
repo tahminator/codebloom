@@ -145,7 +145,7 @@ public class LeaderboardRepositoryTest {
         .query("")
         .patina(false)
         .build();
-        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(),options);
+        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), options);
         List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(options);
 
         IntStream.range(0, allLeaderboardUsersById.size())
@@ -170,7 +170,7 @@ public class LeaderboardRepositoryTest {
         .patina(false)
         .build();
 
-        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(),options);
+        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), options);
 
         assertTrue(allUsers != null);
         assertTrue(allLeaderboardUsers != null);
@@ -221,13 +221,33 @@ public class LeaderboardRepositoryTest {
         assertEquals(newPoints, superUser.getTotalScore());
     }
 
+    @Order(10)
+    @Test
+    void testGettingLeaderboardRanks() {
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+        .page(1)
+        .pageSize(PAGE_SIZE)
+        .query("")
+        .patina(false)
+        .build();
+
+        List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(options);
+        try {
+            leaderboardRepository.getRankedLeaderboardUsersById(allRecentLeaderboardUsers, mockLeaderboard.getId());
+        } catch (Exception e) {
+            fail(e);
+        }
+
+        // TODO - Write more tests for this function.
+    }
+
     @Test
     void testLeaderboardUserCountById() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
         .query("")
         .patina(false)
         .build();
-        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(mockLeaderboard.getId(),options);
+        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(mockLeaderboard.getId(), options);
         assertTrue(leaderboardUsersCount > 0);
     }
 
