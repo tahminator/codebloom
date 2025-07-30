@@ -1,6 +1,5 @@
 package com.patina.codebloom.api.leaderboard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,7 @@ import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
+import com.patina.codebloom.common.page.Indexed;
 import com.patina.codebloom.common.page.Page;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +34,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api/leaderboard")
 @Tag(name = "Leaderboard routes")
 public class LeaderboardController {
-    private static final int LEADERBOARD_PAGE_SIZE = 20;
+    private static final int MAX_LEADERBOARD_PAGE_SIZE = 20;
 
     private final LeaderboardRepository leaderboardRepository;
     private final UserRepository userRepository;
@@ -71,7 +71,7 @@ public class LeaderboardController {
     public ResponseEntity<ApiResponder<Page<List<UserWithScore>>>> getLeaderboardUsersById(
                     @PathVariable final String leaderboardId,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
-                    @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize,
+                    @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize,
                     @Parameter(description = "Discord name", example = "tahmid") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
                     @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
@@ -79,7 +79,7 @@ public class LeaderboardController {
                     final HttpServletRequest request) {
         FakeLag.sleep(800);
 
-        final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
+        final int parsedPageSize = Math.min(pageSize, MAX_LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                         .page(page)
@@ -96,7 +96,7 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<List<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, LEADERBOARD_PAGE_SIZE);
+        Page<List<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -118,16 +118,17 @@ public class LeaderboardController {
     @Operation(summary = "Fetch the currently active leaderboard data, attaching the users for each leaderboard.", responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<Page<ArrayList<UserWithScore>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<List<Indexed<UserWithScore>>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
-                    @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize,
+                    @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize,
                     @Parameter(description = "Discord name", example = "tahmid") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
                     @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
-                    @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu) {
+                    @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
+                    @Parameter(description = "Enable global leaderboard index") @RequestParam(required = false, defaultValue = "false") final boolean globalIndex) {
         FakeLag.sleep(800);
 
-        final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
+        final int parsedPageSize = Math.min(pageSize, MAX_LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                         .page(page)
@@ -138,13 +139,23 @@ public class LeaderboardController {
                         .nyu(nyu)
                         .build();
 
-        ArrayList<UserWithScore> leaderboardData = leaderboardRepository.getRecentLeaderboardUsers(options);
-
         int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount(options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, LEADERBOARD_PAGE_SIZE);
+        List<Indexed<UserWithScore>> leaderboardData;
+        // don't use globalIndex when there are no filters enabled.
+        if (globalIndex && (patina || nyu || hunter)) {
+            String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
+            leaderboardData = leaderboardRepository.getRankedLeaderboardUsersById(
+                            leaderboardRepository.getRecentLeaderboardUsers(options),
+                            currentLeaderboardId);
+        } else {
+            int startIndex = (page - 1) * parsedPageSize + 1;
+            leaderboardData = Indexed.ofDefaultList(leaderboardRepository.getRecentLeaderboardUsers(options), startIndex);
+        }
+
+        Page<List<Indexed<UserWithScore>>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -172,13 +183,13 @@ public class LeaderboardController {
     @GetMapping("/all/metadata")
     @Operation(summary = "Returns the metadata for all leaderboards.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<Page<ArrayList<Leaderboard>>>> getAllLeaderboardMetadata(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<List<Leaderboard>>>> getAllLeaderboardMetadata(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
-                    @Parameter(description = "Page size (maximum of " + LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + LEADERBOARD_PAGE_SIZE) final int pageSize) {
+                    @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize) {
         FakeLag.sleep(650);
 
-        final int parsedPageSize = Math.min(pageSize, LEADERBOARD_PAGE_SIZE);
+        final int parsedPageSize = Math.min(pageSize, MAX_LEADERBOARD_PAGE_SIZE);
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                         .page(page)
@@ -186,13 +197,13 @@ public class LeaderboardController {
                         .query(query)
                         .build();
 
-        ArrayList<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(options);
+        List<Leaderboard> leaderboardMetaData = leaderboardRepository.getAllLeaderboardsShallow(options);
 
         int totalLeaderboards = leaderboardRepository.getLeaderboardCount();
         int totalPages = (int) Math.ceil((double) totalLeaderboards / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<ArrayList<Leaderboard>> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);
+        Page<List<Leaderboard>> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboard metadatas have been found!", createdPage));
     }
