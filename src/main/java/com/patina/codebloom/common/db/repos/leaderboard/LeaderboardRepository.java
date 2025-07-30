@@ -1,19 +1,23 @@
 package com.patina.codebloom.common.db.repos.leaderboard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
+import com.patina.codebloom.common.page.Indexed;
 
 public interface LeaderboardRepository {
     Leaderboard getRecentLeaderboardMetadata();
 
     Leaderboard getLeaderboardMetadataById(String id);
 
-    ArrayList<UserWithScore> getRecentLeaderboardUsers(LeaderboardFilterOptions options);
+    List<UserWithScore> getRecentLeaderboardUsers(LeaderboardFilterOptions options);
 
-    ArrayList<UserWithScore> getLeaderboardUsersById(String id, LeaderboardFilterOptions options);
+    List<UserWithScore> getLeaderboardUsersById(String id, LeaderboardFilterOptions options);
+
+    List<Indexed<UserWithScore>> getRankedLeaderboardUsersById(List<UserWithScore> users, String leaderboardId);
 
     boolean disableLeaderboardById(String leaderboardId);
 
@@ -54,7 +58,7 @@ public interface LeaderboardRepository {
 
     int getLeaderboardCount();
 
-    ArrayList<Leaderboard> getAllLeaderboardsShallow(LeaderboardFilterOptions options);
+    List<Leaderboard> getAllLeaderboardsShallow(LeaderboardFilterOptions options);
 
     boolean addAllUsersToLeaderboard(String leaderboardId);
 }
