@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.leaderboard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
@@ -17,7 +16,33 @@ public interface LeaderboardRepository {
 
     List<UserWithScore> getLeaderboardUsersById(String id, LeaderboardFilterOptions options);
 
-    List<Indexed<UserWithScore>> getRankedLeaderboardUsersById(List<UserWithScore> users, String leaderboardId);
+    /**
+     * Returns an ordered list of {@code UserWithScore} wrapped in {@code Indexed},
+     * ranked by their global position on the specified leaderboard.
+     *
+     * <p>
+     * This internally calls {@code getLeaderboardUsersById}, but the result is
+     * globally ranked—filter options are ignored for index calculation.
+     * </p>
+     *
+     * @implNote Filter options are passed to {@code getLeaderboardUsersById} only
+     * to fetch the users, not to determine their global rank.
+     */
+    List<Indexed<UserWithScore>> getGlobalRankedIndexedLeaderboardUsersById(String leaderboardId, LeaderboardFilterOptions options);
+
+    /**
+     * Returns an ordered list of {@code UserWithScore} wrapped in {@code Indexed},
+     * ranked by their position on the specified leaderboard using the provided
+     * filter options.
+     *
+     * <p>
+     * This internally calls {@code getLeaderboardUsersById} and ranks the users
+     * according to the filtered context.
+     * </p>
+     *
+     * @implNote All filter options are used to calculate index, excluding search.
+     */
+    List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(String leaderboardId, LeaderboardFilterOptions options);
 
     boolean disableLeaderboardById(String leaderboardId);
 

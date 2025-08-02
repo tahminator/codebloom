@@ -143,16 +143,15 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
+        String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
         if (globalIndex && (patina || nyu || hunter)) {
-            String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
-            leaderboardData = leaderboardRepository.getRankedLeaderboardUsersById(
-                            leaderboardRepository.getRecentLeaderboardUsers(options),
-                            currentLeaderboardId);
+            leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
+                            currentLeaderboardId, options);
         } else {
-            int startIndex = (page - 1) * parsedPageSize + 1;
-            leaderboardData = Indexed.ofDefaultList(leaderboardRepository.getRecentLeaderboardUsers(options), startIndex);
+            leaderboardData = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                            currentLeaderboardId, options);
         }
 
         Page<List<Indexed<UserWithScore>>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
