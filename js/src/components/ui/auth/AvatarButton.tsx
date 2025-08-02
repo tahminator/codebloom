@@ -1,5 +1,9 @@
+import { schoolFF } from "@/lib/ff";
 import { Menu, Avatar } from "@mantine/core";
 import { Link } from "react-router-dom";
+
+const DEFAULT_AVATAR_URL =
+  "https://assets.leetcode.com/users/default_avatar.jpg";
 
 export default function AvatarDropdown({
   src,
@@ -8,10 +12,8 @@ export default function AvatarDropdown({
   src: string;
   initial?: string;
 }) {
-  // if you don't set an avatar, this is your avatar link
-  const showInitial =
-    !src || src === "https://assets.leetcode.com/users/default_avatar.jpg";
-  const isProduction = import.meta.env.PROD;
+  const showInitial = !src || src === DEFAULT_AVATAR_URL;
+
   return (
     <Menu shadow="md" width={"xl"}>
       <Menu.Target>
@@ -23,7 +25,7 @@ export default function AvatarDropdown({
       </Menu.Target>
 
       <Menu.Dropdown>
-        {!isProduction && (
+        {schoolFF && (
           <>
             <Menu.Item component={Link} to={"/settings"} w-full>
               Settings
