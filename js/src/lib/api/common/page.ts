@@ -4,3 +4,7 @@ export type Page<T> = {
   pages: number;
   pageSize: number;
 };
+
+export type Indexed<T extends object> = {
+  index: number;
+} & T;
