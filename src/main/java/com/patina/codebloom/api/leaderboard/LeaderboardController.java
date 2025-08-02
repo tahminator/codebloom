@@ -68,7 +68,7 @@ public class LeaderboardController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
 
-    public ResponseEntity<ApiResponder<Page<List<UserWithScore>>>> getLeaderboardUsersById(
+    public ResponseEntity<ApiResponder<Page<List<Indexed<UserWithScore>>>>> getLeaderboardUsersById(
                     @PathVariable final String leaderboardId,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize,
@@ -76,6 +76,7 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
                     @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
                     @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
+                    @Parameter(description = "Enable global leaderboard index") @RequestParam(required = false, defaultValue = "false") final boolean globalIndex,
                     final HttpServletRequest request) {
         FakeLag.sleep(800);
 
@@ -90,13 +91,21 @@ public class LeaderboardController {
                         .nyu(nyu)
                         .build();
 
-        List<UserWithScore> leaderboardData = leaderboardRepository.getLeaderboardUsersById(leaderboardId, options);
+        List<Indexed<UserWithScore>> leaderboardData;
+        // don't use globalIndex when there are no filters enabled.
+        if (globalIndex && (patina || nyu || hunter)) {
+            leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
+                            leaderboardId, options);
+        } else {
+            leaderboardData = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                            leaderboardId, options);
+        }
 
         int totalUsers = leaderboardRepository.getLeaderboardUserCountById(leaderboardId, options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<List<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
+        Page<List<Indexed<UserWithScore>>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
