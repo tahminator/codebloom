@@ -128,9 +128,9 @@ public class LeaderboardRepositoryTest {
     @Test
     void testGetRecentLeaderboardUserCount() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .query("")
-        .patina(false)
-        .build();
+                        .query("")
+                        .patina(false)
+                        .build();
 
         int leaderboardUsersCount = leaderboardRepository.getRecentLeaderboardUserCount(options);
         assertTrue(leaderboardUsersCount > 0);
@@ -140,11 +140,11 @@ public class LeaderboardRepositoryTest {
     @Test
     void testLeaderboardUsersByIdEqualsRecentLeaderboardUsers() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(1)
-        .pageSize(PAGE_SIZE)
-        .query("")
-        .patina(false)
-        .build();
+                        .page(1)
+                        .pageSize(PAGE_SIZE)
+                        .query("")
+                        .patina(false)
+                        .build();
         List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), options);
         List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(options);
 
@@ -164,11 +164,11 @@ public class LeaderboardRepositoryTest {
         List<User> allUsers = userRepository.getAllUsers();
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(1)
-        .pageSize(allUsers.size())
-        .query("")
-        .patina(false)
-        .build();
+                        .page(1)
+                        .pageSize(allUsers.size())
+                        .query("")
+                        .patina(false)
+                        .build();
 
         List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), options);
 
@@ -225,15 +225,14 @@ public class LeaderboardRepositoryTest {
     @Test
     void testGettingLeaderboardRanks() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(1)
-        .pageSize(PAGE_SIZE)
-        .query("")
-        .patina(false)
-        .build();
+                        .page(1)
+                        .pageSize(PAGE_SIZE)
+                        .query("")
+                        .patina(false)
+                        .build();
 
-        List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(options);
         try {
-            leaderboardRepository.getRankedLeaderboardUsersById(allRecentLeaderboardUsers, mockLeaderboard.getId());
+            leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(mockLeaderboard.getId(), options);
         } catch (Exception e) {
             fail(e);
         }
@@ -244,9 +243,9 @@ public class LeaderboardRepositoryTest {
     @Test
     void testLeaderboardUserCountById() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .query("")
-        .patina(false)
-        .build();
+                        .query("")
+                        .patina(false)
+                        .build();
         int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(mockLeaderboard.getId(), options);
         assertTrue(leaderboardUsersCount > 0);
     }
@@ -261,10 +260,10 @@ public class LeaderboardRepositoryTest {
     void testGetAllLeaderboards() {
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(1)
-        .pageSize(PAGE_SIZE)
-        .query("")
-        .build();
+                        .page(1)
+                        .pageSize(PAGE_SIZE)
+                        .query("")
+                        .build();
         var leaderboards = leaderboardRepository.getAllLeaderboardsShallow(options);
         assertTrue(leaderboards != null);
         assertTrue(leaderboards.size() > 0);
