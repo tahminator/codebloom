@@ -28,7 +28,8 @@ export default function SchoolVerifySettingsCard({
             Supported schools:
             <List>
               {Object.entries(SupportedSchools).map(([, v]) => (
-                <List.Item>{v}</List.Item>
+              {Object.entries(SupportedSchools).map(([k, v]) => (
+                <List.Item key={k}>{v}</List.Item>
               ))}
             </List>
           </Text>
