@@ -11,9 +11,9 @@ import SettingsPage from "@/app/settings/Settings.page";
 import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDetails.page";
 import UserSubmissionsPage from "@/app/user/[userId]/UserProfile.page";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { schoolFF } from "@/lib/ff";
 import { createBrowserRouter } from "react-router-dom";
 
-const isProduction = import.meta.env.PROD;
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
   {
     path: "/settings",
     element:
-      isProduction ?
+      !schoolFF ?
         <ToastWithRedirect
           to={"/"}
           message={
