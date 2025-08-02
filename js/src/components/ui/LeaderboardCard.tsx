@@ -1,3 +1,4 @@
+import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import { Card, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
@@ -10,12 +11,14 @@ export default function LeaderboardCard({
   placeString,
   discordName,
   leetcodeUsername,
+  sizeOrder,
   totalScore,
   width,
   userId,
   nickname,
 }: {
-  placeString: "First" | "Second" | "Third";
+  placeString: OrdinalString;
+  sizeOrder: 1 | 2 | 3;
   discordName: string;
   leetcodeUsername: string | null;
   totalScore: number;
@@ -24,15 +27,20 @@ export default function LeaderboardCard({
   nickname: string | null;
 }) {
   const borderColor = (() => {
-    if (placeString === "First") return "border-yellow-300";
-    if (placeString === "Second") return "border-gray-400";
-    if (placeString === "Third") return "border-yellow-800";
+    if (placeString === "1st") return "border-yellow-300";
+    if (placeString === "2nd") return "border-gray-400";
+    if (placeString === "3rd") return "border-yellow-800";
   })();
 
   const height = (() => {
-    if (placeString === "First") return "210px";
-    if (placeString === "Second") return "185px";
-    if (placeString === "Third") return "170px";
+    switch (sizeOrder) {
+      case 1:
+        return "210px";
+      case 2:
+        return "185px";
+      case 3:
+        return "170px";
+    }
   })();
 
   return (

@@ -6,6 +6,7 @@ import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useLeaderboardUsersByIdQuery } from "@/lib/api/queries/leaderboard";
+import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
   Box,
@@ -42,6 +43,8 @@ export default function LeaderboardWithId({
     toggleHunter,
     nyu,
     toggleNyu,
+    globalIndex,
+    toggleGlobalIndex,
     isPlaceholderData,
   } = useLeaderboardUsersByIdQuery({ leaderboardId });
 
@@ -68,7 +71,8 @@ export default function LeaderboardWithId({
       >
         {page === 1 && second && !debouncedQuery && (
           <LeaderboardCard
-            placeString={"Second"}
+            placeString={getOrdinal(second.index)}
+            sizeOrder={2}
             discordName={second.discordName}
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
@@ -79,7 +83,8 @@ export default function LeaderboardWithId({
         )}
         {page === 1 && first && !debouncedQuery && (
           <LeaderboardCard
-            placeString={"First"}
+            placeString={getOrdinal(first.index)}
+            sizeOrder={1}
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
@@ -90,7 +95,8 @@ export default function LeaderboardWithId({
         )}
         {page === 1 && third && !debouncedQuery && (
           <LeaderboardCard
-            placeString={"Third"}
+            placeString={getOrdinal(third.index)}
+            sizeOrder={3}
             discordName={third.discordName}
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
@@ -155,6 +161,19 @@ export default function LeaderboardWithId({
             />
           </>
         )}
+        <FilterDropdownItem
+          value={globalIndex}
+          toggle={toggleGlobalIndex}
+          disabled={!nyu && !hunter && !patina}
+          switchMode
+          name={
+            <Box
+              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+            >
+              Toggle Global Rank
+            </Box>
+          }
+        />
       </FilterDropdown>
       <SearchBox
         query={searchQuery}
@@ -183,14 +202,12 @@ export default function LeaderboardWithId({
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {pageData.items.map((entry, index) => {
+            {pageData.items.map(({ index: rank, ...entry }, index) => {
               if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index))
                 return null;
               return (
                 <Table.Tr key={index}>
-                  <Table.Td>
-                    {index + 1 + (page - 1) * pageData.pageSize}
-                  </Table.Td>
+                  <Table.Td>{rank}</Table.Td>
                   <Table.Td>
                     <Tooltip
                       label={
