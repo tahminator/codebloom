@@ -25,4 +25,6 @@ public class LeaderboardFilterOptions {
     @Builder.Default
     private final boolean nyu = false;
 
+    public static final LeaderboardFilterOptions DEFAULT = LeaderboardFilterOptions.builder()
+                    .build();
 }

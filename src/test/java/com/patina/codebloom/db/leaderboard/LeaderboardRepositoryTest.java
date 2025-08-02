@@ -128,9 +128,9 @@ public class LeaderboardRepositoryTest {
     @Test
     void testGetRecentLeaderboardUserCount() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .query("")
-        .patina(false)
-        .build();
+                        .query("")
+                        .patina(false)
+                        .build();
 
         int leaderboardUsersCount = leaderboardRepository.getRecentLeaderboardUserCount(options);
         assertTrue(leaderboardUsersCount > 0);
@@ -140,12 +140,12 @@ public class LeaderboardRepositoryTest {
     @Test
     void testLeaderboardUsersByIdEqualsRecentLeaderboardUsers() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(1)
-        .pageSize(PAGE_SIZE)
-        .query("")
-        .patina(false)
-        .build();
-        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(),options);
+                        .page(1)
+                        .pageSize(PAGE_SIZE)
+                        .query("")
+                        .patina(false)
+                        .build();
+        List<UserWithScore> allLeaderboardUsersById = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), options);
         List<UserWithScore> allRecentLeaderboardUsers = leaderboardRepository.getRecentLeaderboardUsers(options);
 
         IntStream.range(0, allLeaderboardUsersById.size())
@@ -164,13 +164,13 @@ public class LeaderboardRepositoryTest {
         List<User> allUsers = userRepository.getAllUsers();
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(1)
-        .pageSize(allUsers.size())
-        .query("")
-        .patina(false)
-        .build();
+                        .page(1)
+                        .pageSize(allUsers.size())
+                        .query("")
+                        .patina(false)
+                        .build();
 
-        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(),options);
+        List<UserWithScore> allLeaderboardUsers = leaderboardRepository.getLeaderboardUsersById(mockLeaderboard.getId(), options);
 
         assertTrue(allUsers != null);
         assertTrue(allLeaderboardUsers != null);
@@ -221,13 +221,32 @@ public class LeaderboardRepositoryTest {
         assertEquals(newPoints, superUser.getTotalScore());
     }
 
+    @Order(10)
+    @Test
+    void testGettingLeaderboardRanks() {
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+                        .page(1)
+                        .pageSize(PAGE_SIZE)
+                        .query("")
+                        .patina(false)
+                        .build();
+
+        try {
+            leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(mockLeaderboard.getId(), options);
+        } catch (Exception e) {
+            fail(e);
+        }
+
+        // TODO - Write more tests for this function.
+    }
+
     @Test
     void testLeaderboardUserCountById() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .query("")
-        .patina(false)
-        .build();
-        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(mockLeaderboard.getId(),options);
+                        .query("")
+                        .patina(false)
+                        .build();
+        int leaderboardUsersCount = leaderboardRepository.getLeaderboardUserCountById(mockLeaderboard.getId(), options);
         assertTrue(leaderboardUsersCount > 0);
     }
 
@@ -241,10 +260,10 @@ public class LeaderboardRepositoryTest {
     void testGetAllLeaderboards() {
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-        .page(1)
-        .pageSize(PAGE_SIZE)
-        .query("")
-        .build();
+                        .page(1)
+                        .pageSize(PAGE_SIZE)
+                        .query("")
+                        .build();
         var leaderboards = leaderboardRepository.getAllLeaderboardsShallow(options);
         assertTrue(leaderboards != null);
         assertTrue(leaderboards.size() > 0);
