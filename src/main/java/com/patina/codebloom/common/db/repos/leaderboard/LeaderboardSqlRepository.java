@@ -155,7 +155,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public List<Indexed<UserWithScore>> getRankedLeaderboardUsersById(final List<UserWithScore> users, final String leaderboardId) {
+    public List<Indexed<UserWithScore>> getGlobalRankedIndexedLeaderboardUsersById(final String leaderboardId, final LeaderboardFilterOptions options) {
+        List<UserWithScore> users = this.getLeaderboardUsersById(leaderboardId, options);
         Map<String, UserWithScore> userIdToUserMap = users.stream()
                         .collect(
                                         Collectors.toMap(
@@ -205,6 +206,101 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
             stmt.setArray("userIds", conn.createArrayOf("UUID", userIds));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var userId = rs.getString("userId");
+                    var rank = rs.getInt("rank");
+                    result.add(Indexed.of(userIdToUserMap.get(userId), rank));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get ranks for leaderboard users", e);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(final String leaderboardId, final LeaderboardFilterOptions options) {
+        List<UserWithScore> users = this.getLeaderboardUsersById(leaderboardId, options);
+        Map<String, UserWithScore> userIdToUserMap = users.stream()
+                        .collect(
+                                        Collectors.toMap(
+                                                        user -> user.getId(),
+                                                        Function.identity()));
+        List<Indexed<UserWithScore>> result = new ArrayList<>();
+
+        String sql = """
+                        WITH ranks AS (
+                            SELECT
+                                m."userId",
+                                ROW_NUMBER() OVER (
+                                    ORDER BY
+                                        m."totalScore" DESC,
+                                        CASE
+                                            WHEN m."totalScore" = 0 THEN
+                                                CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
+                                            ELSE 0
+                                        END,
+                                        m."createdAt" ASC,
+                                        m."userId"
+                                ) AS rank
+                            FROM
+                                "Metadata" m
+                            JOIN
+                                "User" u
+                            ON
+                                u.id = m."userId"
+                            JOIN
+                                "Leaderboard" l
+                            ON
+                                m."leaderboardId" = l.id
+                            WHERE
+                                m."leaderboardId" = :leaderboardId
+                            AND (
+                                EXISTS (
+                                    SELECT 1 FROM "UserTag" ut
+                                    WHERE ut."userId" = m."userId"
+                                    AND (
+                                        (:patina = TRUE AND ut.tag = 'Patina') OR
+                                        (:hunter = TRUE AND ut.tag = 'Hunter') OR
+                                        (:nyu = TRUE AND ut.tag = 'Nyu')
+                                    )
+                                    AND (
+                                        -- Any tag is valid for current leaderboard
+                                        (l."deletedAt" IS NULL)
+                                        OR
+                                        -- Tag is only valid for previous leaderboards if it was created before
+                                        -- leaderboard started, or during the lifespan of leaderboard.
+                                        (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
+                                    )
+                                )
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE)
+                            )
+                        )
+                        SELECT
+                            r."userId",
+                            r.rank
+                        FROM
+                            ranks r
+                        WHERE
+                            r."userId" = ANY(:userIds)
+                        ORDER BY
+                            r.rank ASC
+                                                """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            UUID[] userIds = users.stream()
+                            .map(user -> UUID.fromString(user.getId()))
+                            .toArray(size -> new UUID[size]);
+
+            stmt.setArray("userIds", conn.createArrayOf("UUID", userIds));
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
+
+            stmt.setBoolean("patina", options.isPatina());
+            stmt.setBoolean("hunter", options.isHunter());
+            stmt.setBoolean("nyu", options.isNyu());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
