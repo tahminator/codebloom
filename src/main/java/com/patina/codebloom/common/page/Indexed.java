@@ -5,6 +5,7 @@ import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,7 +29,9 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @EqualsAndHashCode
 public class Indexed<T> {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final int index;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonUnwrapped
     private final T item;
 
