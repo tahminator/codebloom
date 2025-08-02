@@ -1,5 +1,5 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
-import { Page } from "@/lib/api/common/page";
+import { Indexed, Page } from "@/lib/api/common/page";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { User, UserWithScore } from "@/lib/api/types/user";
 import { useURLState } from "@/lib/hooks/useUrlState";
@@ -45,6 +45,13 @@ export const useCurrentLeaderboardUsersQuery = (
   const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
   const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
+  const [globalIndex, setGlobalIndex] = useURLState(
+    "globalIndex",
+    false,
+    tieToUrl,
+    true,
+    100,
+  );
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
@@ -88,6 +95,11 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [setNyu, goTo]);
 
+  const toggleGlobalIndex = useCallback(() => {
+    setGlobalIndex((prev) => !prev);
+    goTo(1);
+  }, [goTo, setGlobalIndex]);
+
   const query = useQuery({
     queryKey: [
       "leaderboard",
@@ -98,6 +110,7 @@ export const useCurrentLeaderboardUsersQuery = (
       patina,
       hunter,
       nyu,
+      globalIndex,
     ],
     queryFn: () =>
       fetchLeaderboardUsers({
@@ -106,6 +119,7 @@ export const useCurrentLeaderboardUsersQuery = (
         patina,
         hunter,
         nyu,
+        globalIndex,
         query: debouncedQuery,
       }),
     placeholderData: keepPreviousData,
@@ -117,6 +131,7 @@ export const useCurrentLeaderboardUsersQuery = (
     patina,
     hunter,
     nyu,
+    globalIndex,
     goBack,
     goForward,
     goTo,
@@ -127,6 +142,7 @@ export const useCurrentLeaderboardUsersQuery = (
     togglePatina,
     toggleHunter,
     toggleNyu,
+    toggleGlobalIndex,
   };
 };
 
@@ -239,6 +255,13 @@ export const useLeaderboardUsersByIdQuery = ({
   const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
   const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
+  const [globalIndex, setGlobalIndex] = useURLState(
+    "globalIndex",
+    false,
+    tieToUrl,
+    true,
+    100,
+  );
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
@@ -282,6 +305,11 @@ export const useLeaderboardUsersByIdQuery = ({
     goTo(1);
   }, [setNyu, goTo]);
 
+  const toggleGlobalIndex = useCallback(() => {
+    setGlobalIndex((prev) => !prev);
+    goTo(1);
+  }, [goTo, setGlobalIndex]);
+
   const query = useQuery({
     queryKey: [
       "leaderboard",
@@ -293,6 +321,7 @@ export const useLeaderboardUsersByIdQuery = ({
       patina,
       hunter,
       nyu,
+      globalIndex,
     ],
     queryFn: () =>
       fetchLeaderboardUsersByLeaderboardId({
@@ -302,6 +331,7 @@ export const useLeaderboardUsersByIdQuery = ({
         patina,
         hunter,
         nyu,
+        globalIndex,
         query: debouncedQuery,
       }),
     placeholderData: keepPreviousData,
@@ -313,6 +343,7 @@ export const useLeaderboardUsersByIdQuery = ({
     patina,
     hunter,
     nyu,
+    globalIndex,
     goBack,
     goForward,
     goTo,
@@ -323,6 +354,7 @@ export const useLeaderboardUsersByIdQuery = ({
     togglePatina,
     toggleHunter,
     toggleNyu,
+    toggleGlobalIndex,
   };
 };
 
@@ -392,6 +424,7 @@ async function fetchLeaderboardUsers({
   patina,
   hunter,
   nyu,
+  globalIndex,
 }: {
   page: number;
   query: string;
@@ -399,16 +432,17 @@ async function fetchLeaderboardUsers({
   patina: boolean;
   hunter: boolean;
   nyu: boolean;
+  globalIndex: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
   );
 
   const json = (await response.json()) as UnknownApiResponse<
-    Page<UserWithScore[]>
+    Page<Indexed<UserWithScore>[]>
   >;
 
   return json;
@@ -421,6 +455,7 @@ async function fetchLeaderboardUsersByLeaderboardId({
   patina,
   hunter,
   nyu,
+  globalIndex,
   leaderboardId,
 }: {
   page: number;
@@ -429,17 +464,18 @@ async function fetchLeaderboardUsersByLeaderboardId({
   patina: boolean;
   hunter: boolean;
   nyu: boolean;
+  globalIndex: boolean;
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}`,
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
   );
 
   const json = (await response.json()) as UnknownApiResponse<
-    Page<UserWithScore[]>
+    Page<Indexed<UserWithScore>[]>
   >;
 
   return json;
