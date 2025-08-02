@@ -1,4 +1,5 @@
-import { Box, Button, Card, Title, Text } from "@mantine/core";
+import { SupportedSchools } from "@/lib/api/common/school";
+import { Box, Button, Card, Title, Text, List } from "@mantine/core";
 import { useState } from "react";
 
 import SchoolEmailModal from "./SchoolEmailModal";
@@ -22,6 +23,14 @@ export default function SchoolVerifySettingsCard({
           <Text pt={"md"} pl={"md"}>
             Verify your school email here for access to our school specific
             leaderboards.
+          </Text>
+          <Text pt={"md"} pl={"md"}>
+            Supported schools:
+            <List>
+              {Object.entries(SupportedSchools).map(([, v]) => (
+                <List.Item>{v}</List.Item>
+              ))}
+            </List>
           </Text>
           <Box pt={"sm"} pl={"md"}>
             <Button mt="sm" onClick={toggleModal} disabled={schoolExists}>
