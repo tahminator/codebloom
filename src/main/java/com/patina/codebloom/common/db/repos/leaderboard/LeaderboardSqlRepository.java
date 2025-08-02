@@ -458,7 +458,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 ELSE 0
                             END,
                              -- This is the tie breaker if we can't sort them by the above conditions.
-                            m."createdAt" ASC
+                            m."createdAt" ASC,
+                            -- This is extremely rare, but if the createdAt time is somehow not unique,
+                            -- this serves to be the final tiebreaker.
+                            m."userId"
                         LIMIT :pageSize OFFSET :pageNumber;
                                         """;
 
