@@ -44,9 +44,17 @@ public class Indexed<T> {
      * For example, if we had <code>Indexed<User></code>:
      * 
      * <pre>
-     * <code> { // index applied from Indexed class "index": 5, // rest of the
-     * properties from the User class "id": "32f78d37-8833-42e5-921d-7e57ad5ff3f3",
-     * "name": "John Doe", // ... }
+     * <code>
+     * {
+     *   // index applied from Indexed class
+     *   "index": 5,
+     *   // rest of the properties from the User class
+     *   "id": "32f78d37-8833-42e5-921d-7e57ad5ff3f3",
+     *   "name": "John Doe"
+     *   // ...
+     * }
+     * </code>
+     * </pre>
      *
      * @param item - The item object
      * @param index - Index of said object
