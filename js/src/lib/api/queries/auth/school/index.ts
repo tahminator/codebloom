@@ -19,6 +19,9 @@ export const useVerifySchoolMutation = () => {
     mutationFn: verifySchool,
     onSuccess: async (data) => {
       if (data.success) {
+        /**
+         * https://github.com/tahminator/codebloom/pull/256#issue-3286903003
+         */
         setTimeout(async () => {
           await queryClient.invalidateQueries();
         }, 100);
