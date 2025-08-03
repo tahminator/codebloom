@@ -27,7 +27,6 @@ export default function SchoolVerifySettingsCard({
           <Text pt={"md"} pl={"md"}>
             Supported schools:
             <List>
-              {Object.entries(SupportedSchools).map(([, v]) => (
               {Object.entries(SupportedSchools).map(([k, v]) => (
                 <List.Item key={k}>{v}</List.Item>
               ))}
