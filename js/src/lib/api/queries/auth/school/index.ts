@@ -15,10 +15,10 @@ export async function verifySchool(email: { email: string }) {
 
 export const useVerifySchoolMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation<UnknownApiResponse<string>, Error, { email: string }>({
+  return useMutation({
     mutationFn: verifySchool,
     onSuccess: async (data) => {
-      if (data) {
+      if (data.success) {
         await queryClient.invalidateQueries();
       }
     },
