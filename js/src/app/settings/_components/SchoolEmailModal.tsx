@@ -38,6 +38,7 @@ export default function SchoolEmailModal({
           });
           if (data.success) {
             form.reset();
+            toggle();
           }
         },
       },
