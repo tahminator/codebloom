@@ -25,7 +25,7 @@ import com.patina.codebloom.common.email.options.SendEmailOptions;
 import com.patina.codebloom.api.auth.body.EmailBody;
 import com.patina.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
 import com.patina.codebloom.common.email.error.EmailException;
-import com.patina.codebloom.common.url.ServerurlUtils;
+import com.patina.codebloom.common.url.ServerUrlUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -58,17 +58,17 @@ public class AuthController {
     private final JWTClient jwtClient;
     private final UserRepository userRepository;
     private final OfficialCodebloomEmail emailClient;
-    private final ServerurlUtils serverurlUtils;
+    private final ServerUrlUtils serverUrlUtils;
     private final UserTagRepository userTagRepository;
 
     public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository,
-                    final OfficialCodebloomEmail emailClient, final ServerurlUtils serverurlUtils, final UserTagRepository userTagRepository) {
+                    final OfficialCodebloomEmail emailClient, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
         this.jwtClient = jwtClient;
         this.emailClient = emailClient;
-        this.serverurlUtils = serverurlUtils;
+        this.serverUrlUtils = serverUrlUtils;
         this.userTagRepository = userTagRepository;
     }
 
@@ -137,7 +137,7 @@ public class AuthController {
         MagicLink magicLink = new MagicLink(email, userId);
         try {
             String token = jwtClient.encode(magicLink, Duration.ofHours(1));
-            String verificationLink = serverurlUtils.getUrl()
+            String verificationLink = serverUrlUtils.getUrl()
                             + "/api/auth/school/verify?state=" + token;
             emailClient.sendMessage(
                             SendEmailOptions.builder()
