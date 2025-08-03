@@ -6,6 +6,7 @@ import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import { schoolFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -122,7 +123,7 @@ export default function LeaderboardIndex() {
             </Box>
           }
         />
-        {!import.meta.env.PROD && (
+        {schoolFF && (
           <>
             <FilterDropdownItem
               value={hunter}
