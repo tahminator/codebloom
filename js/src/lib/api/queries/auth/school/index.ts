@@ -19,7 +19,9 @@ export const useVerifySchoolMutation = () => {
     mutationFn: verifySchool,
     onSuccess: async (data) => {
       if (data.success) {
-        await queryClient.invalidateQueries();
+        setTimeout(async () => {
+          await queryClient.invalidateQueries();
+        }, 100);
       }
     },
   });
