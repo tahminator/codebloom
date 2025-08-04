@@ -14,8 +14,8 @@ public class Env {
         this.environment = environment;
     }
 
-    public boolean isProfileActive(final String... profiles) {
-        return environment.acceptsProfiles(Profiles.of(profiles));
+    public boolean isProfileActive(final String profile) {
+        return environment.acceptsProfiles(Profiles.of(profile));
     }
 
     public boolean isProd() {
