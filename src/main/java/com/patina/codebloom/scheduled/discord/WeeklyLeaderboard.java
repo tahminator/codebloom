@@ -25,7 +25,7 @@ import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilte
 import com.patina.codebloom.common.db.repos.weekly.WeeklyMessageRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
-import com.patina.codebloom.jda.client.options.LeaderboardMessageOptions;
+import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -133,16 +133,17 @@ public class WeeklyLeaderboard {
                             hoursLeft,
                             minutesLeft);
 
-            jdaClient.sendLeaderboardMessage(
-                            LeaderboardMessageOptions.builder()
-                                            .guildId(jdaClient.getPatinaGuildId())
-                                            .channelId(jdaClient.getPatinaLeetcodeChannelId())
+            jdaClient.sendEmbedWithImage(
+                            EmbeddedMessageOptions.builder()
+                                            .guildId(jdaClient.getJdaPatinaProperties().getGuildId())
+                                            .channelId(jdaClient.getJdaPatinaProperties().getLeetcodeChannelId())
                                             .description(description)
                                             .title("Patina Leaderboard - " + currentLeaderboard.getName())
                                             .footerText("Codebloom - LeetCode Leaderboard for Patina Network")
                                             .footerIcon("https://codebloom.patinanetwork.org/favicon.ico")
                                             .color(new Color(69, 129, 103))
-                                            .screenshotBytes(screenshotBytes)
+                                            .fileBytes(screenshotBytes)
+                                            .fileName("leaderboard.png")
                                             .build());
 
             weeklyMessageRepository.createLatestWeeklyMessage();
