@@ -1,7 +1,5 @@
 package com.patina.codebloom.api.reporter;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,8 +12,6 @@ import com.patina.codebloom.api.reporter.body.IngestErrorsBody;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.reporter.ErrorReporter;
-import com.patina.codebloom.common.reporter.report.Report;
-import com.patina.codebloom.common.reporter.report.location.Location;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 

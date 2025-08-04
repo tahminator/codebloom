@@ -1,6 +1,5 @@
 package com.patina.codebloom.utilities;
 
-import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -16,8 +15,6 @@ import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.reporter.ErrorReporter;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.report.location.Location;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
-import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
