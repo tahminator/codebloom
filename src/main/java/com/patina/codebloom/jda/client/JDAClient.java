@@ -58,8 +58,16 @@ public class JDAClient {
         }
     }
 
-    public void connect() throws InterruptedException {
-        jda = jdaInitializer.initializeJda();
+    /**
+     * Initializes the JDAClient. Returns the client object on completion.
+     */
+    public JDAClient connect() {
+        try {
+            jda = jdaInitializer.initializeJda();
+            return this;
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Failed to initialize JDA client", e);
+        }
     }
 
     public List<Guild> getGuilds() {

@@ -55,12 +55,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
                     final LeaderboardRepository leaderboardRepository,
                     final JDAClient jdaClient,
-                    final UserTagRepository userTagRepository, final LeetcodeApiHandler leetcodeApiHandler) throws InterruptedException {
+                    final UserTagRepository userTagRepository, final LeetcodeApiHandler leetcodeApiHandler) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
-        this.jdaClient = jdaClient;
-        jdaClient.connect();
+        this.jdaClient = jdaClient.connect();
         this.userTagRepository = userTagRepository;
         this.leetcodeApiHandler = leetcodeApiHandler;
     }
