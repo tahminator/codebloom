@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
 
         if (env.isProd()) {
             String description = String.format("""
-                            An error occured in Codebloom.
+                            An error occurred in Codebloom.
 
                             Active profile(s): %s
                             Current Time: %s

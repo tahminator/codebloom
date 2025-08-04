@@ -98,7 +98,7 @@ public class JDAClient {
      * Send a Rich Embed message with a file to the guild ID and channel ID of your
      * choosing.
      *
-     * Check LeaderboardMessageOptions for details on what is supported.
+     * Check EmbeddedMessageOptions for details on what is supported.
      */
     public void sendEmbedWithImage(final EmbeddedMessageOptions options) {
         isJdaReadyOrThrow();
