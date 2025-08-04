@@ -61,12 +61,8 @@ public class WeeklyLeaderboard {
         }
 
         log.info("WeeklyLeaderboard triggered.");
-        try {
-            log.info("Connecting to JDA client...");
-            jdaClient.connect();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize JDAClient", e);
-        }
+        log.info("Connecting to JDA client...");
+        jdaClient.connect();
         log.info("JDDA Client should be connected now. Sending leaderboard...");
 
         try (Playwright playwright = Playwright.create()) {

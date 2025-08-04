@@ -41,12 +41,8 @@ public class PatinaDiscordMessageHelper {
      * with the winners of the leaderboard.
      */
     public void sendLatestLeaderboardDiscordMessage() {
-        try {
-            log.info("Connecting to JDA client...");
-            jdaClient.connect();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize JDAClient", e);
-        }
+        log.info("Connecting to JDA client...");
+        jdaClient.connect();
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
             BrowserContext context = browser.newContext(new NewContextOptions()
