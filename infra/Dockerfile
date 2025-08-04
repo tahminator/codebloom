@@ -69,4 +69,4 @@ RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.a
 EXPOSE 8080
 
 # Start the application
-ENTRYPOINT ["java", "-Dspring.profiles.active=prod",  "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
