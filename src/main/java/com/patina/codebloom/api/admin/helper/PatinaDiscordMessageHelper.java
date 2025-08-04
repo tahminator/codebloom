@@ -21,7 +21,7 @@ import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
-import com.patina.codebloom.jda.client.options.LeaderboardMessageOptions;
+import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,11 +63,11 @@ public class PatinaDiscordMessageHelper {
                             new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
 
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-                                .page(1)
-                                .pageSize(5)
-                                .query("")
-                                .patina(true)
-                                .build();
+                            .page(1)
+                            .pageSize(5)
+                            .query("")
+                            .patina(true)
+                            .build();
 
             List<UserWithScore> users = leaderboardRepository.getRecentLeaderboardUsers(options);
 
@@ -108,16 +108,17 @@ public class PatinaDiscordMessageHelper {
                             users.get(2).getDiscordId(),
                             users.get(2).getTotalScore());
 
-            jdaClient.sendLeaderboardMessage(
-                            LeaderboardMessageOptions.builder()
-                                            .guildId(jdaClient.getPatinaGuildId())
-                                            .channelId(jdaClient.getPatinaLeetcodeChannelId())
+            jdaClient.sendEmbedWithImage(
+                            EmbeddedMessageOptions.builder()
+                                            .guildId(jdaClient.getJdaPatinaProperties().getGuildId())
+                                            .channelId(jdaClient.getJdaPatinaProperties().getLeetcodeChannelId())
                                             .description(description)
                                             .title(title)
                                             .footerText("Codebloom - LeetCode Leaderboard for Patina Network")
                                             .footerIcon("https://codebloom.patinanetwork.org/favicon.ico")
                                             .color(new Color(69, 129, 103))
-                                            .screenshotBytes(screenshotBytes)
+                                            .fileBytes(screenshotBytes)
+                                            .fileName("leaderboard.png")
                                             .build());
         } catch (Exception e) {
             e.printStackTrace();

@@ -23,13 +23,12 @@ import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
-import com.patina.codebloom.jda.JDAInitializer;
+import com.patina.codebloom.jda.client.JDAClient;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -50,28 +49,20 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final SessionRepository sessionRepository;
     private final LeaderboardRepository leaderboardRepository;
     private final UserTagRepository userTagRepository;
-    private final JDAInitializer jdaInitializer;
-    private final JDA jda;
+    private final JDAClient jdaClient;
     private final LeetcodeApiHandler leetcodeApiHandler;
 
     public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
                     final LeaderboardRepository leaderboardRepository,
-                    final JDAInitializer jdaInitializer, final UserTagRepository userTagRepository, final LeetcodeApiHandler leetcodeApiHandler) {
+                    final JDAClient jdaClient,
+                    final UserTagRepository userTagRepository, final LeetcodeApiHandler leetcodeApiHandler) throws InterruptedException {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
-        this.jdaInitializer = jdaInitializer;
-        this.jda = initializeJda(jdaInitializer);
+        this.jdaClient = jdaClient;
+        jdaClient.connect();
         this.userTagRepository = userTagRepository;
         this.leetcodeApiHandler = leetcodeApiHandler;
-    }
-
-    private JDA initializeJda(final JDAInitializer jdaInitializer) {
-        try {
-            return jdaInitializer.jda();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize JDA", e);
-        }
     }
 
     @Override
@@ -103,13 +94,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 leaderboardRepository.addUserToLeaderboard(existingUser.getId(), leaderboard.getId());
             }
 
-            List<Guild> guilds = jda.getGuilds();
+            List<Guild> guilds = jdaClient.getGuilds();
+            String patinaGuildId = String.valueOf(jdaClient.getJdaPatinaProperties().getGuildId());
 
             Guild foundGuild = null;
             for (Guild g : guilds) {
                 // System.out.println(g.getId() + "=" +
                 // jdaInitializer.getJdaProperties().getId());
-                if (g.getId().equals(jdaInitializer.getJdaProperties().getId())) {
+                if (g.getId().equals(patinaGuildId)) {
                     foundGuild = g;
                     break;
                 }
