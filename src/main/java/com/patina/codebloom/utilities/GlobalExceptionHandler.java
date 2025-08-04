@@ -13,17 +13,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.reporter.ErrorReporter;
+import com.patina.codebloom.common.reporter.report.Report;
+import com.patina.codebloom.common.reporter.report.location.Location;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
-import com.patina.codebloom.jda.client.JDAClient;
 import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    private final JDAClient jdaClient;
+    private final ErrorReporter errorReporter;
     private final Env env;
 
-    public GlobalExceptionHandler(final JDAClient jdaClient, final Env env) {
-        this.jdaClient = jdaClient;
+    public GlobalExceptionHandler(final ErrorReporter errorReporter, final Env env) {
+        this.errorReporter = errorReporter;
         this.env = env;
     }
 
@@ -48,25 +50,11 @@ public class GlobalExceptionHandler {
         rx.printStackTrace();
 
         if (env.isProd()) {
-            String description = String.format("""
-                            An error occurred in Codebloom.
-
-                            Active profile(s): %s
-                            Current Time: %s
-
-                            Check attachment for stack trace.""",
-                            env.getActiveProfiles(),
-                            StandardizedLocalDateTime.now().toString());
-            jdaClient.sendEmbedWithImage(
-                            EmbeddedMessageOptions.builder()
-                                            .guildId(jdaClient.getJdaReportingProperties().getGuildId())
-                                            .channelId(jdaClient.getJdaReportingProperties().getChannelId())
-                                            .title("Something went wrong!")
-                                            .description(description)
-                                            .color(Color.RED)
-                                            .fileName("stacktrace.txt")
-                                            .fileBytes(getStackTraceAsBytes(rx))
-                                            .build());
+            errorReporter.report(Report.builder()
+                            .environments(env.getActiveProfiles())
+                            .location(Location.BACKEND)
+                            .stackTrace(getStackTraceAsBytes(rx))
+                            .build());
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponder.failure(rx.getMessage()));
