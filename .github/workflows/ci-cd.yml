@@ -24,12 +24,14 @@ jobs:
             DATABASE_USER: ${{ secrets.DATABASE_USER }}
             DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
             DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-            DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+            DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
             ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
             GH_USERNAME: ${{ secrets.GH_USERNAME }}
             GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-            DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-            DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+            DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
+            DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
+            DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
+            DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
             GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
             GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
             GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
@@ -54,8 +56,8 @@ jobs:
             - name: Set up OpenJDK 21
               uses: actions/setup-java@v4
               with:
-                distribution: 'temurin'
-                java-version: '21'
+                  distribution: "temurin"
+                  java-version: "21"
 
             - name: Verify Java version
               run: |
@@ -82,7 +84,6 @@ jobs:
             - name: Run Tests
               run: ./mvnw test -Denv.SKIP=true -Dspring.profiles.active=ci
 
-
     frontendTests:
         name: Frontend Tests
         runs-on: ubuntu-latest
@@ -100,8 +101,8 @@ jobs:
             - name: Set up OpenJDK 21
               uses: actions/setup-java@v4
               with:
-                distribution: 'temurin'
-                java-version: '21'
+                  distribution: "temurin"
+                  java-version: "21"
 
             - name: Verify Java version
               run: |
@@ -111,8 +112,8 @@ jobs:
 
             - name: Start backend instance
               run: |
-                   ./mvnw -Dspring-boot.run.profiles=ci spring-boot:run > backend.log 2>&1 &
-                   echo $! > spring_pid.txt
+                  ./mvnw -Dspring-boot.run.profiles=ci spring-boot:run > backend.log 2>&1 &
+                  echo $! > spring_pid.txt
               env:
                   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
                   DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
@@ -121,12 +122,14 @@ jobs:
                   DATABASE_USER: ${{ secrets.DATABASE_USER }}
                   DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
                   DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
                   ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
                   GH_USERNAME: ${{ secrets.GH_USERNAME }}
                   GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-                  DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+                  DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
+                  DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
+                  DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
+                  DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
                   GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
                   GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
                   GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
@@ -146,17 +149,17 @@ jobs:
 
             - name: Wait for backend to start
               run: |
-                   for i in {1..30}; do
-                      if curl -s http://localhost:8080/api | grep -q '"success":true'; then
-                         echo "Backend is up!";
-                         exit 0
-                      fi;
-                         echo "Waiting for backend... ($i/30)";
-                      sleep 2;
-                   done
-                   echo "Backend failed to start in time."
-                   cat spring_pid.txt | xargs -r kill || true
-                   exit 1
+                  for i in {1..30}; do
+                     if curl -s http://localhost:8080/api | grep -q '"success":true'; then
+                        echo "Backend is up!";
+                        exit 0
+                     fi;
+                        echo "Waiting for backend... ($i/30)";
+                     sleep 2;
+                  done
+                  echo "Backend failed to start in time."
+                  cat spring_pid.txt | xargs -r kill || true
+                  exit 1
 
             - name: Fix a bug with corepack by installing corepack globally
               run: npm i -g corepack@latest
@@ -177,11 +180,11 @@ jobs:
             - name: Stop backend server
               if: always()
               run: |
-                   if kill $(cat spring_pid.txt) > /dev/null 2>&1; then
-                       echo "Backend process killed successfully."
-                   else
-                       echo "Backend was not running or already stopped."
-                   fi
+                  if kill $(cat spring_pid.txt) > /dev/null 2>&1; then
+                      echo "Backend process killed successfully."
+                  else
+                      echo "Backend was not running or already stopped."
+                  fi
 
     buildImage:
         name: Build Docker Image & Upload to Registry
