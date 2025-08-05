@@ -2,7 +2,7 @@ import UserProfileHeaderSkeleton from "@/app/user/[userId]/_components/UserProfi
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { theme } from "@/lib/theme";
-import { Flex, Group, Title, Tooltip } from "@mantine/core";
+import { Flex, Group, Stack, Title, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
@@ -28,7 +28,7 @@ export default function UserProfileHeader({ userId }: { userId?: string }) {
   const userProfile = data.payload;
   return (
     <Flex direction={"row"} gap="xs" wrap={"wrap"} mb={"xs"}>
-      <Group wrap="wrap" justify="center" gap="xs">
+      <Stack justify="center" gap="xs">
         {userProfile.nickname ?
           <>
             <Tooltip
@@ -49,15 +49,18 @@ export default function UserProfileHeader({ userId }: { userId?: string }) {
             </Tooltip>
           </>
         : <>
-            <FaDiscord
-              style={{
-                color: "var(--mantine-color-blue-5)",
-                fontSize: "1.5rem",
-              }}
-            />
-            <Title size="h4" c="blue.5">
-              {userProfile.discordName}
-            </Title>
+            <Group gap="2px">
+                <FaDiscord
+                style={{
+                    color: "var(--mantine-color-blue-5)",
+                    fontSize: "1.5rem",
+                    paddingRight: "0"
+                }}
+                />
+                <Title size="h4" c="blue.5">
+                {userProfile.discordName}
+                </Title>
+            </Group>
           </>
         }
         <Link
@@ -75,7 +78,7 @@ export default function UserProfileHeader({ userId }: { userId?: string }) {
             {userProfile.leetcodeUsername}
           </Title>
         </Link>
-      </Group>
+      </Stack>
     </Flex>
   );
 }

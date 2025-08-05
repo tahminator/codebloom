@@ -25,10 +25,12 @@ export const useUserSubmissionsQuery = ({
   userId,
   initialPage = 1,
   tieToUrl = false,
+  pageSize = 20
 }: {
   userId?: string;
   initialPage?: number;
   tieToUrl?: boolean;
+  pageSize?: number;
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
@@ -38,7 +40,6 @@ export const useUserSubmissionsQuery = ({
     true,
     500,
   );
-  const pageSize = 20;
 
   const goBack = useCallback(() => {
     setPage((old) => Math.max(old - 1, 0));
@@ -63,7 +64,7 @@ export const useUserSubmissionsQuery = ({
     queryKey: ["submission", "user", userId, page, debouncedQuery],
     queryFn: () =>
       fetchUserSubmissions({ page, userId, query: debouncedQuery, pageSize }),
-    placeholderData: keepPreviousData,
+    placeholderData: undefined,
   });
 
   return {
