@@ -1,7 +1,7 @@
 import { Box, Center, Skeleton, Table } from "@mantine/core";
 
 // TODO - Make this nicer
-export default function UserSubmissionsSkeleton() {
+export default function MiniUserSubmissionsSkeleton() {
   // <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
   return (
     <>
@@ -27,24 +27,24 @@ export default function UserSubmissionsSkeleton() {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
+                <Skeleton visible width={"0.5rem"} height={"0.75rem"} />
               </Table.Th>
               <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
+                <Skeleton visible width={"0.5rem"} height={"0.75rem"} />
               </Table.Th>
               <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
+                <Skeleton visible width={"0.5rem"} height={"0.75rem"} />
               </Table.Th>
               <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
+                <Skeleton visible width={"0.5rem"} height={"0.75rem"} />
               </Table.Th>
               <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
+                <Skeleton visible width={"0.5rem"} height={"0.75rem"} />
               </Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {Array(20)
+            {Array(5)
               .fill(0)
               .map((_, index) => (
                 <Table.Tr key={index}>
@@ -52,16 +52,16 @@ export default function UserSubmissionsSkeleton() {
                     <Skeleton visible width={"1rem"} height={"1rem"} />
                   </Table.Td>
                   <Table.Td>
-                    <Skeleton visible width={"8rem"} height={"1.75rem"} />
+                    <Skeleton visible width={"8rem"} height={"0.5rem"} />
                   </Table.Td>
                   <Table.Td>
                     <Skeleton visible width={"2rem"} height={"1rem"} />
                   </Table.Td>
                   <Table.Td>
-                    <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
+                    <Skeleton visible width={"0.5rem"} height={"0.75rem"} />
                   </Table.Td>
                   <Table.Td>
-                    <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
+                    <Skeleton visible width={"0.5rem"} height={"0.75rem"} />
                   </Table.Td>
                 </Table.Tr>
               ))}
