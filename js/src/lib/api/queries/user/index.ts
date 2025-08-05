@@ -61,10 +61,9 @@ export const useUserSubmissionsQuery = ({
   }, [searchQuery, goTo]);
 
   const query = useQuery({
-    queryKey: ["submission", "user", userId, page, debouncedQuery],
+    queryKey: ["submission", "user", userId, page, debouncedQuery, pageSize],
     queryFn: () =>
       fetchUserSubmissions({ page, userId, query: debouncedQuery, pageSize }),
-    placeholderData: undefined,
   });
 
   return {
@@ -79,6 +78,9 @@ export const useUserSubmissionsQuery = ({
     pageSize,
   };
 };
+
+export const useMiniSubmissionsQuery = ({
+})
 
 export const useGetAllUsersQuery = (
   {
