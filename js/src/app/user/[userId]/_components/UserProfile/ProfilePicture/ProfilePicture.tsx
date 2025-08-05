@@ -26,7 +26,7 @@ export default function ProfilePicture() {
     const user = data.payload;
     
     const initial =
-    user.nickname ? user.nickname.charAt(0).toUpperCase() : null;
+    user.nickname ? user.nickname.charAt(0).toUpperCase() : user.discordName.charAt(0).toUpperCase();
     
 
     return user.profileUrl ? (  
