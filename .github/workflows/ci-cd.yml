@@ -8,8 +8,8 @@ on:
     pull_request:
 
 concurrency:
-    group: repo-wide-serial
-    cancel-in-progress: false
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     backendTests:
