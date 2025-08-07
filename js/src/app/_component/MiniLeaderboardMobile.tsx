@@ -2,6 +2,7 @@ import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeader
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -67,7 +68,8 @@ export default function MiniLeaderboardMobile() {
         >
           {first && (
             <LeaderboardCard
-              placeString={"First"}
+              placeString={getOrdinal(first.index)}
+              sizeOrder={1}
               discordName={first.discordName}
               leetcodeUsername={first.leetcodeUsername}
               nickname={first.nickname}
@@ -78,7 +80,8 @@ export default function MiniLeaderboardMobile() {
           )}
           {second && (
             <LeaderboardCard
-              placeString={"Second"}
+              placeString={getOrdinal(second.index)}
+              sizeOrder={2}
               discordName={second.discordName}
               leetcodeUsername={second.leetcodeUsername}
               nickname={second.nickname}
@@ -89,7 +92,8 @@ export default function MiniLeaderboardMobile() {
           )}
           {third && (
             <LeaderboardCard
-              placeString={"Third"}
+              placeString={getOrdinal(third.index)}
+              sizeOrder={3}
               discordName={third.discordName}
               leetcodeUsername={third.leetcodeUsername}
               nickname={third.nickname}
