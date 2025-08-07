@@ -212,23 +212,33 @@ export default function SubmissionDetailsContent({
           </Card>
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">
             <Flex direction={"column"} gap={"md"} align={"center"}>
-              <Title order={3}>
-                {language[0].toUpperCase() + language.slice(1)}
-              </Title>
-              <Text>Runtime: {runtime}</Text>
-              <Text>Memory: {memory}</Text>
+              {language ?
+                <Title order={3}>
+                  {language[0].toUpperCase() + language.slice(1)}
+                </Title>
+              : <Title>N/A</Title>}
+
+              {runtime ?
+                <Text>Runtime: {runtime}</Text>
+              : <Text>Not available</Text>}
+
+              {runtime ?
+                <Text>Memory: {memory}</Text>
+              : <Text>Not available</Text>}
             </Flex>
-            <SyntaxHighlighter
-              style={gruvboxDark}
-              customStyle={{
-                overflow: "auto",
-                minWidth: 0,
-                borderRadius: "8px",
-              }}
-              language={language === "python3" ? "python" : language}
-            >
-              {code}
-            </SyntaxHighlighter>
+            {code ?
+              <SyntaxHighlighter
+                style={gruvboxDark}
+                customStyle={{
+                  overflow: "auto",
+                  minWidth: 0,
+                  borderRadius: "8px",
+                }}
+                language={language === "python3" ? "python" : language}
+              >
+                {code}
+              </SyntaxHighlighter>
+            : <Title>Not available</Title>}
           </Card>
         </div>
       </Box>

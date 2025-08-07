@@ -59,16 +59,16 @@ public class Question {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime submittedAt;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private String runtime;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private String memory;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private String code;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private String language;
 
     // Not every submission will have this.
