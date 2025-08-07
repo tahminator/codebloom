@@ -2,6 +2,7 @@ import MiniLeaderboardSkeleton from "@/app/_component/skeletons/MiniLeaderboardS
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -70,7 +71,8 @@ export default function MiniLeaderboardDesktop() {
         >
           {second && (
             <LeaderboardCard
-              placeString={"Second"}
+              placeString={getOrdinal(second.index)}
+              sizeOrder={2}
               discordName={second.discordName}
               leetcodeUsername={second.leetcodeUsername}
               totalScore={second.totalScore}
@@ -81,7 +83,8 @@ export default function MiniLeaderboardDesktop() {
           )}
           {first && (
             <LeaderboardCard
-              placeString={"First"}
+              placeString={getOrdinal(first.index)}
+              sizeOrder={1}
               discordName={first.discordName}
               leetcodeUsername={first.leetcodeUsername}
               totalScore={first.totalScore}
@@ -92,7 +95,8 @@ export default function MiniLeaderboardDesktop() {
           )}
           {third && (
             <LeaderboardCard
-              placeString={"Third"}
+              placeString={getOrdinal(third.index)}
+              sizeOrder={3}
               discordName={third.discordName}
               leetcodeUsername={third.leetcodeUsername}
               totalScore={third.totalScore}
