@@ -445,6 +445,10 @@ async function fetchLeaderboardUsers({
     Page<Indexed<UserWithScore>[]>
   >;
 
+  return { success: true } as unknown as UnknownApiResponse<
+    Page<Indexed<User>>
+  >;
+
   return json;
 }
 

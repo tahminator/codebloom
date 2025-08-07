@@ -1,20 +1,21 @@
 import BannerParent from "@/components/ui/banner/BannerParent";
 import ReactQueryProvider from "@/lib/queryProvider";
 import "@mantine/core/styles.css";
+import ErrorReporter from "@/lib/reporting/ErrorReporter";
 import { router } from "@/lib/router";
-import { themeOverride } from "@/lib/theme";
 import "@mantine/notifications/styles.css";
+import { themeOverride } from "@/lib/theme";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import * as Sentry from "@sentry/react";
 
 import "./index.css";
 
 import "@mantine/dates/styles.css";
+import * as Sentry from "@sentry/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { StrictMode } from "react";
+import { Fragment, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 
@@ -31,13 +32,15 @@ if (import.meta.env.PROD) {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ReactQueryProvider>
-      <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
-        <BannerParent />
-        <RouterProvider router={router} />
-        <Notifications />
-      </MantineProvider>
-      <ReactQueryDevtools />
-    </ReactQueryProvider>
+    <Fragment>
+      <ReactQueryProvider>
+        <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
+          <BannerParent />
+          <RouterProvider router={router} />
+          <Notifications />
+        </MantineProvider>
+        <ReactQueryDevtools />
+      </ReactQueryProvider>
+    </Fragment>
   </StrictMode>,
 );

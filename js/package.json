@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "typecheck": "tsc --noEmit",
+        "typecheck": "tsc -b --noEmit",
         "test": "pnpm run typecheck && pnpm run prettier && pnpm run lint && pnpm run build",
         "lint": "pnpm run eslint && pnpm run stylelint",
         "generate": "openapi-typescript http://localhost:8080/v3/api-docs -o src/lib/api/types/autogen/schema.d.ts --properties-required-by-default --enum && prettier --write \"src/lib/api/types/autogen/schema.d.ts\"",
@@ -31,6 +31,7 @@
         "@tanstack/react-query-devtools": "^5.64.2",
         "clsx": "^2.1.1",
         "dayjs": "^1.11.13",
+        "error-stack-parser": "^2.1.4",
         "motion": "^12.4.7",
         "prettier": "^3.5.0",
         "react": "^18.3.1",
@@ -40,6 +41,8 @@
         "react-router-dom": "6",
         "react-syntax-highlighter": "^15.6.1",
         "sass": "^1.83.1",
+        "stacktrace-gps": "^3.1.2",
+        "stacktrace-js": "^2.0.2",
         "use-debounce": "^10.0.4",
         "vite-tsconfig-paths": "^5.1.4",
         "zod": "^3.24.4"
