@@ -115,7 +115,10 @@ export default function LeaderboardWithId({
               style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
             >
               Patina
-              <Image src="/Patina_Logo.jpeg" style={{ height: "2em", width: "auto" }} />
+              <Image
+                src="/Patina_Logo.jpeg"
+                style={{ height: "2em", width: "auto" }}
+              />
             </Box>
           }
         />
@@ -133,7 +136,10 @@ export default function LeaderboardWithId({
                   }}
                 >
                   Hunter
-                  <Image src="/Hunter_Logo.jpeg" style={{ height: "2em", width: "auto" }} />
+                  <Image
+                    src="/Hunter_Logo.jpeg"
+                    style={{ height: "2em", width: "auto" }}
+                  />
                 </Box>
               }
             />
@@ -149,7 +155,10 @@ export default function LeaderboardWithId({
                   }}
                 >
                   NYU
-                  <Image src="/NYU_Logo.jpeg" style={{ height: "2em", width: "auto" }} />
+                  <Image
+                    src="/NYU_Logo.jpeg"
+                    style={{ height: "2em", width: "auto" }}
+                  />
                 </Box>
               }
             />
