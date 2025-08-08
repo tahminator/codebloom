@@ -27,7 +27,7 @@ public class AchievementSqlRepository {
                             INSERT INTO achievement
                                 (id, user_id, icon_url, title, description, is_active, created_at, deleted_at)
                             VALUES
-                                (:id, :user_id, :icon_url, :title, :description, :is_active, :created_at, :deleted_at)
+                               (?, ?, ?, ?, ?, ?,?, ?)
                             RETURNING created_at
                         """;
         achievement.setId(UUID.randomUUID().toString());
@@ -54,13 +54,13 @@ public class AchievementSqlRepository {
         String sql = """
                             UPDATE achievement
                             SET
-                                icon_url = :icon_url,
-                                title = :title,
-                                description = :description,
-                                is_active = :is_active,
-                                deleted_at = :deleted_at
+                                icon_url = ?,
+                                title = ?,
+                                description = ?,
+                                is_active = ?,
+                                deleted_at = ?,
                             WHERE
-                                id = :id
+                                id = ?
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("icon_url", achievement.getIconUrl());
@@ -78,9 +78,17 @@ public class AchievementSqlRepository {
 
     public Achievement getAchievementById(final String id) {
         String sql = """
-                            SELECT *
-                            FROM achievement
-                            WHERE id = :id
+                            SELECT
+                                id,
+                                user_id,
+                                icon_url,
+                                title,
+                                description,
+                                is_active,
+                                created_at,
+                                deleted_at
+                            FROM Achievement
+                            WHERE id = ?
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
@@ -97,9 +105,17 @@ public class AchievementSqlRepository {
 
     public List<Achievement> getAchievementsByUserId(final String userId) {
         String sql = """
-                            SELECT *
-                            FROM achievement
-                            WHERE user_id = :user_id AND deleted_at IS NULL
+                            SELECT
+                                id,
+                                user_id,
+                                icon_url,
+                                title,
+                                description,
+                                is_active,
+                                created_at,
+                                deleted_at
+                            FROM Achievement a
+                            WHERE a.id = ?
                         """;
         List<Achievement> achievements = new ArrayList<>();
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -116,10 +132,11 @@ public class AchievementSqlRepository {
     }
 
     public boolean deleteAchievementById(final String id) {
-        String sql = """
-                            UPDATE achievement
-                            SET deleted_at = NOW()
-                            WHERE id = :id
+               String sql = """
+                            DELETE FROM
+                                "Achievement"
+                            WHERE
+                                id = ?
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
