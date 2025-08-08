@@ -25,7 +25,7 @@ export const useUserSubmissionsQuery = ({
   userId,
   initialPage = 1,
   tieToUrl = false,
-  pageSize = 20
+  pageSize = 20,
 }: {
   userId?: string;
   initialPage?: number;
@@ -79,8 +79,7 @@ export const useUserSubmissionsQuery = ({
   };
 };
 
-export const useMiniSubmissionsQuery = ({
-})
+export const useMiniSubmissionsQuery = {};
 
 export const useGetAllUsersQuery = (
   {
