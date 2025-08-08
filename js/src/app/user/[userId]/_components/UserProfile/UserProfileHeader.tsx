@@ -50,16 +50,16 @@ export default function UserProfileHeader({ userId }: { userId?: string }) {
           </>
         : <>
             <Group gap="2px">
-                <FaDiscord
+              <FaDiscord
                 style={{
-                    color: "var(--mantine-color-blue-5)",
-                    fontSize: "1.5rem",
-                    paddingRight: "0"
+                  color: "var(--mantine-color-blue-5)",
+                  fontSize: "1.5rem",
+                  paddingRight: "0",
                 }}
-                />
-                <Title size="h4" c="blue.5">
+              />
+              <Title size="h4" c="blue.5">
                 {userProfile.discordName}
-                </Title>
+              </Title>
             </Group>
           </>
         }
