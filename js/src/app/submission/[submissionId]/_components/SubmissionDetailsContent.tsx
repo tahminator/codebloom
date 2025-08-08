@@ -206,7 +206,7 @@ export default function SubmissionDetailsContent({
           </Center>
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">
             <div
-              dangerouslySetInnerHTML={{ __html: description ?? "" }}
+              dangerouslySetInnerHTML={{ __html: description ?? "No available description found." }}
               style={{
                 overflow: "auto",
                 minWidth: 0,
