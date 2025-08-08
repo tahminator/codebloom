@@ -81,7 +81,7 @@ jobs:
             - name: Ensure browsers are installed
               run: ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps" -Denv.SKIP=true
 
-            - name: Clean CI DBand run migration
+            - name: Clean CI DB and run migration
               run: make migrate-ci-no-env
 
             - name: Run Tests
