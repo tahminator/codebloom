@@ -73,7 +73,7 @@ export default function SubmissionDetails() {
           <Text size="lg">{acceptanceRate * 100}%</Text>
         </div>
         <Card shadow="xs" padding="lg" radius="lg" mt="xl">
-          <div dangerouslySetInnerHTML={{ __html: description }}></div>
+          <div dangerouslySetInnerHTML={{ __html: description ?? "" }}></div>
         </Card>
       </div>
       <Footer />
