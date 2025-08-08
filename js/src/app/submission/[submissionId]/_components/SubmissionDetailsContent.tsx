@@ -229,7 +229,7 @@ export default function SubmissionDetailsContent({
                 (language ?? "") === "python3" ? "python" : (language ?? "")
               }
             >
-              {code ?? ""}
+              {code ?? "No code available."}
             </SyntaxHighlighter>
           </Card>
         </div>
