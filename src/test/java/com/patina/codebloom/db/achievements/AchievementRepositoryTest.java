@@ -35,7 +35,7 @@ public class AchievementRepositoryTest {
     void createAchievement() {
         testAchievement = Achievement.builder()
                         .userId(mockUserId)
-                        .iconUrl("https://test.com/icon.png")
+                        .iconUrl("")
                         .title("Test Achievement")
                         .description("Integration test achievement")
                         .isActive(true)
