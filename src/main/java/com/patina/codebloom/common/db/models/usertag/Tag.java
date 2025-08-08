@@ -7,4 +7,7 @@ public enum Tag {
     Patina,
     Hunter,
     Nyu,
+    Baruch,
+    Rpi,
 }
+
