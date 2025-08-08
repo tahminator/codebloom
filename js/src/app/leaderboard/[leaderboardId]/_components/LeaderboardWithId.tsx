@@ -123,7 +123,7 @@ export default function LeaderboardWithId({
             >
               Patina
               <Image
-                src="/Patina_Logo.jpeg"
+                src="/Patina_Logo.png"
                 style={{ height: "2em", width: "auto" }}
               />
             </Box>
