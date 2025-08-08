@@ -36,31 +36,31 @@ V{version}__{description}.sql
 
 Examples:
 
-- `V1__create_users_table.sql`
-- `V2__add_email_column_to_users.sql`
-- `V3__create_posts_table.sql`
+-   `V1__create_users_table.sql`
+-   `V2__add_email_column_to_users.sql`
+-   `V3__create_posts_table.sql`
 
 ### Naming Requirements
 
-- Version numbers must be sequential and unique
-- Double underscores (`__`) separate the version from the description
-- Use underscores (`_`) instead of spaces in descriptions
-- Files must have `.sql` extension
+-   Version numbers must be sequential and unique
+-   Double underscores (`__`) separate the version from the description
+-   Use underscores (`_`) instead of spaces in descriptions
+-   Files must have `.sql` extension
 
 ## Types of Migrations
 
 ### Version Migrations (V)
 
-- Standard version migration
-- Runs exactly once
+-   Standard version migration
+-   Runs exactly once
 
 ### Repeatable Migrations (R)
 
-- TODO(Tahmid)
+-   TODO(Tahmid)
 
 ### Undo Migrations (U)
 
-- Revert from the standard version migrations if needed
+-   Revert from the standard version migrations if needed
 
 ## Best Practices
 
