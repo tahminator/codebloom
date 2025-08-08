@@ -202,7 +202,7 @@ export default function SubmissionDetailsContent({
           </Center>
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">
             <div
-              dangerouslySetInnerHTML={{ __html: description }}
+              dangerouslySetInnerHTML={{ __html: description ?? "" }}
               style={{
                 overflow: "auto",
                 minWidth: 0,
@@ -213,10 +213,10 @@ export default function SubmissionDetailsContent({
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">
             <Flex direction={"column"} gap={"md"} align={"center"}>
               <Title order={3}>
-                {language[0].toUpperCase() + language.slice(1)}
+                {(language ?? "")[0]?.toUpperCase() + (language ?? "").slice(1)}
               </Title>
-              <Text>Runtime: {runtime}</Text>
-              <Text>Memory: {memory}</Text>
+              <Text>Runtime: {runtime ?? ""}</Text>
+              <Text>Memory: {memory ?? ""}</Text>
             </Flex>
             <SyntaxHighlighter
               style={gruvboxDark}
@@ -225,9 +225,9 @@ export default function SubmissionDetailsContent({
                 minWidth: 0,
                 borderRadius: "8px",
               }}
-              language={language === "python3" ? "python" : language}
+              language={(language ?? "") === "python3" ? "python" : (language ?? "")}
             >
-              {code}
+              {code ?? ""}
             </SyntaxHighlighter>
           </Card>
         </div>
