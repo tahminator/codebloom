@@ -93,10 +93,11 @@ export default function SubmissionDetailsContent({
     }
     return undefined;
   })();
-  function getLanguage(lang: string): string {
-    return lang === "python3" ? "python" : lang;
-  }
 
+  const parsedLanguage = (() => {
+    if (!language) return undefined;
+    return language === "python3" ? "python" : language;
+  })();
   return (
     <>
       <Header />
@@ -206,7 +207,9 @@ export default function SubmissionDetailsContent({
           </Center>
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">
             <div
-              dangerouslySetInnerHTML={{ __html: description ?? "No available description found." }}
+              dangerouslySetInnerHTML={{
+                __html: description ?? "No available description found.",
+              }}
               style={{
                 overflow: "auto",
                 minWidth: 0,
@@ -227,7 +230,7 @@ export default function SubmissionDetailsContent({
                 minWidth: 0,
                 borderRadius: "8px",
               }}
-              language={getLanguage(language ?? "Unknown")}
+              language={parsedLanguage}
             >
               {code ?? "No code available."}
             </SyntaxHighlighter>
