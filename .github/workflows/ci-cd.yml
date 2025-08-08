@@ -279,9 +279,10 @@ jobs:
                   CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
                   CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
                   CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
+                  TZ: ${{ secrets.TZ }}
+                  SKIP: ${{ secrets.SKIP }}
                   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
                   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-                  SKIP: ${{ secrets.SKIP }}
                   VITE_DSN: ${{ secrets.VITE_DSN }}
                   SECRET_KEY: ${{ secrets.SECRET_KEY }}
                   SERVER_URL: ${{ secrets.SERVER_URL }}
