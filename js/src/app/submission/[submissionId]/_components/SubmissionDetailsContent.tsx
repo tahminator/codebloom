@@ -3,7 +3,7 @@ import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useSubmissionDetailsQuery } from "@/lib/api/queries/submissions";
-import { capitalize } from "@/lib/helpers/capitalize";
+import { capitalize } from "@/lib/helper/capitalize";
 import {
   Badge,
   Box,
