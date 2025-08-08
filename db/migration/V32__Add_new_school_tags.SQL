@@ -1,2 +1,2 @@
-ALTER TYPE "Tag" ADD VALUE 'Baruch';
 ALTER TYPE "Tag" ADD VALUE 'Rpi';
+ALTER TYPE "Tag" ADD VALUE 'Baruch';
