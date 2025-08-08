@@ -5,16 +5,7 @@ migrate-ci:
 	dotenvx run -f .env.ci -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
 migrate-ci-no-env:
-	./mvnw flyway:clean \
-		-Dflyway.cleanDisabled=false \
-		-Dflyway.url=jdbc:postgresql://$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME) \
-		-Dflyway.user=$(DATABASE_USER) \
-		-Dflyway.password=$(DATABASE_PASSWORD) \
-	&& ./mvnw flyway:migrate \
-		-Dflyway.url=jdbc:postgresql://$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME) \
-		-Dflyway.user=$(DATABASE_USER) \
-		-Dflyway.password=$(DATABASE_PASSWORD) \
-		-Dflyway.locations=filesystem:./db
+	./mvnw flyway:clean -Dflyway.cleanDisabled=false ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
 migrate-prod:
 	dotenvx run -f .env.production -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
