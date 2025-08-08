@@ -24,7 +24,10 @@ public class LeaderboardFilterOptions {
     private final boolean hunter = false;
     @Builder.Default
     private final boolean nyu = false;
-
+    @Builder.Default
+    private final boolean baruch = false;
+    @Builder.Default
+    private final boolean rpi = false;
     public static final LeaderboardFilterOptions DEFAULT = LeaderboardFilterOptions.builder()
                     .build();
 }
