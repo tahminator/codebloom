@@ -251,6 +251,21 @@ jobs:
         if: github.ref_name == 'main'
 
         steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Set up OpenJDK 21
+              uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
+
+            - name: Verify Java version
+              run: |
+                  java -version
+                  javac -version
+                  echo "JAVA_HOME=$JAVA_HOME"
+
             - name: Migrate Production DB
               run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
               env:
