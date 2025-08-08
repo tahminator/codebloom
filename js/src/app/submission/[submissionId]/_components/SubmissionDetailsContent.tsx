@@ -225,7 +225,9 @@ export default function SubmissionDetailsContent({
                 minWidth: 0,
                 borderRadius: "8px",
               }}
-              language={(language ?? "") === "python3" ? "python" : (language ?? "")}
+              language={
+                (language ?? "") === "python3" ? "python" : (language ?? "")
+              }
             >
               {code ?? ""}
             </SyntaxHighlighter>
