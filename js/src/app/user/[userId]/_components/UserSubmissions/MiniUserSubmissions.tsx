@@ -11,39 +11,35 @@ import { Link } from "react-router-dom";
 import MiniUserSubmissionsSkeleton from "./MiniUserSubmissionsSkeleton";
 
 export default function MiniUserSubmissions({ userId }: { userId?: string }) {
-    const {
-        data,
-        status,
-        isPlaceholderData,
-    } = useUserSubmissionsQuery({
-        userId,
-        tieToUrl: true,
-        pageSize: 5,
-    });
+  const { data, status, isPlaceholderData } = useUserSubmissionsQuery({
+    userId,
+    tieToUrl: true,
+    pageSize: 5,
+  });
 
-    if (status === "pending") {
-      return (
-        <>
-          <MiniUserSubmissionsSkeleton />
-        </>
-      );
-    }
-
-    if (status === "error") {
-      return (
-        <Toast message="Sorry, something went wrong when trying to fetch user's submissions. Please try again later." />
-      );
-    }
-
-    if (!data.success) {
-        return <>{data.message}</>;
-    }
-    
-    const pageData = data.payload;
-
+  if (status === "pending") {
     return (
-        <>
-        <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
+      <>
+        <MiniUserSubmissionsSkeleton />
+      </>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <Toast message="Sorry, something went wrong when trying to fetch user's submissions. Please try again later." />
+    );
+  }
+
+  if (!data.success) {
+    return <>{data.message}</>;
+  }
+
+  const pageData = data.payload;
+
+  return (
+    <>
+      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
         <Table
           verticalSpacing={"lg"}
           horizontalSpacing={"xs"}
@@ -161,6 +157,6 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
           </Table.Tbody>
         </Table>
       </Box>
-        </>
-    )
+    </>
+  );
 }

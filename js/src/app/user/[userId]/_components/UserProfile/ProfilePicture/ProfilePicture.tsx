@@ -6,47 +6,37 @@ import { useParams } from "react-router";
 import ProfilePictureSkeleton from "./ProfilePictureSkeleton";
 
 export default function ProfilePicture() {
-    const { userId } = useParams();
-    const { data, status } = useUserProfileQuery({ userId });
-    
-    if (status === "pending") {
+  const { userId } = useParams();
+  const { data, status } = useUserProfileQuery({ userId });
+
+  if (status === "pending") {
     return <ProfilePictureSkeleton />;
-    }
+  }
 
-    if (status === "error") {
+  if (status === "error") {
     return (
-        <Toast message="Sorry, something went wrong. Please try again later." />
+      <Toast message="Sorry, something went wrong. Please try again later." />
     );
-    }
+  }
 
-    if (!data.success) {
+  if (!data.success) {
     return <Toast message={data.message} />;
-    }
+  }
 
-    const user = data.payload;
-    
-    const initial =
-    user.nickname ? user.nickname.charAt(0).toUpperCase() : user.discordName.charAt(0).toUpperCase();
-    
+  const user = data.payload;
 
-    return user.profileUrl ? (  
-    <Center>
-        <Avatar
-            size={150}
-            src={user.profileUrl}
-            radius="sm"
-            alt="avatar"
-        />
-    </Center>
-    ) : (
-    <Center>
-        <Avatar
-            size={150}
-            radius="md"
-            alt="avatar"
-        >
-            {initial}
+  const initial =
+    user.nickname ?
+      user.nickname.charAt(0).toUpperCase()
+    : user.discordName.charAt(0).toUpperCase();
+
+  return user.profileUrl ?
+      <Center>
+        <Avatar size={150} src={user.profileUrl} radius="sm" alt="avatar" />
+      </Center>
+    : <Center>
+        <Avatar size={150} radius="md" alt="avatar">
+          {initial}
         </Avatar>
-    </Center>
-        );
+      </Center>;
 }
