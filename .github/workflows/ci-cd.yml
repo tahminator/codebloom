@@ -251,8 +251,8 @@ jobs:
         if: github.ref_name == 'main'
 
         steps:
-            - name: Migrate Production
-              run: make migrate-prod-no-env
+            - name: Migrate Production DB
+              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
             - name: Trigger App Platform Redeploy
               run: |
