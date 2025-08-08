@@ -5,7 +5,8 @@ migrate-ci:
 	dotenvx run -f .env.ci -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
 migrate-ci-no-env:
-	./mvnw flyway:clean -Dflyway.cleanDisabled=false ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
+	./mvnw flyway:clean -Dflyway.cleanDisabled=false && \
+	./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
 migrate-prod:
 	dotenvx run -f .env.production -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
