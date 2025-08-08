@@ -7,6 +7,9 @@ migrate-ci:
 migrate-prod:
 	dotenvx run -f .env.production -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
 
+migrate-prod-no-env:
+	./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
+
 java-dev:
 	dotenvx run -- ./mvnw -Dspring-boot.run.profiles=dev spring-boot:run
 
