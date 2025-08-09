@@ -267,7 +267,7 @@ jobs:
                   echo "JAVA_HOME=$JAVA_HOME"
 
             - name: Migrate Production DB
-              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
+              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
               env:
                   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
                   DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
