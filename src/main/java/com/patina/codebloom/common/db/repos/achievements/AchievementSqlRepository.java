@@ -28,13 +28,13 @@ public class AchievementSqlRepository implements AchievementRepository {
                             INSERT INTO Achievement
                                 (id, user_id, icon_url, title, description, is_active, created_at, deleted_at)
                             VALUES
-                               (?, ? , ? , ? , ? , ? , ? , ? )
+                               (:id, :user_id, :icon_url, :title, :description, :is_active, :created_at, :deleted_at)
                             RETURNING created_at
                         """;
-        
+
         achievement.setId(UUID.randomUUID().toString());
         achievement.setCreatedAt(OffsetDateTime.now());
-        
+
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(achievement.getId()));
             stmt.setObject("user_id", UUID.fromString(achievement.getUserId()));
@@ -44,7 +44,7 @@ public class AchievementSqlRepository implements AchievementRepository {
             stmt.setBoolean("is_active", achievement.isActive());
             stmt.setObject("created_at", achievement.getCreatedAt());
             stmt.setObject("deleted_at", achievement.getDeletedAt());
-            
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     achievement.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
@@ -60,15 +60,15 @@ public class AchievementSqlRepository implements AchievementRepository {
         String sql = """
                             UPDATE Achievement
                             SET
-                                icon_url = ?,
-                                title = ?,
-                                description = ?,
-                                is_active = :?,
-                                deleted_at = ?,
+                                icon_url = :icon_url,
+                                title = :title,
+                                description = :description,
+                                is_active = :is_active,
+                                deleted_at = :deleted_at
                             WHERE
-                                id = ?,
+                                id = :id
                         """;
-        
+
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("icon_url", achievement.getIconUrl());
             stmt.setString("title", achievement.getTitle());
@@ -76,7 +76,7 @@ public class AchievementSqlRepository implements AchievementRepository {
             stmt.setBoolean("is_active", achievement.isActive());
             stmt.setObject("deleted_at", achievement.getDeletedAt());
             stmt.setObject("id", UUID.fromString(achievement.getId()));
-            
+
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -97,9 +97,9 @@ public class AchievementSqlRepository implements AchievementRepository {
                                 created_at,
                                 deleted_at
                             FROM Achievement
-                            WHERE id = ?
+                            WHERE id = :id
                         """;
-        
+
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
@@ -117,21 +117,18 @@ public class AchievementSqlRepository implements AchievementRepository {
     public List<Achievement> getAchievementsByUserId(final String userId) {
         String sql = """
                             SELECT
-                                a.id,
-                                a.user_id,
-                                a.icon_url,
-                                a.title,
-                                a.description,
-                                a.is_active,
-                                a.created_at,
-                                a.deleted_at
-                            FROM Achievement a
-                            JOIN
-                            "User" u ON a."userId" = a.id
-                        WHERE
-                            "userId" = ?
+                                id,
+                                user_id,
+                                icon_url,
+                                title,
+                                description,
+                                is_active,
+                                created_at,
+                                deleted_at
+                            FROM Achievement
+                            WHERE user_id = :user_id
                         """;
-        
+
         List<Achievement> achievements = new ArrayList<>();
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("user_id", UUID.fromString(userId));
@@ -148,17 +145,16 @@ public class AchievementSqlRepository implements AchievementRepository {
 
     @Override
     public boolean deleteAchievementById(final String id) {
-                String sql = """
-                            DELETE FROM
-                                "Achievement"
-                            WHERE
-                                id = ?
+        String sql = """
+                            UPDATE Achievement
+                            SET deleted_at = :deleted_at
+                            WHERE id = :id
                         """;
-        
+
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("deleted_at", OffsetDateTime.now());
             stmt.setObject("id", UUID.fromString(id));
-            
+
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {

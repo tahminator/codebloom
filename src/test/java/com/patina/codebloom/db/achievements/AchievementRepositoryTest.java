@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.achievements.Achievement;
-import com.patina.codebloom.common.db.repos.achivenents.AchievementSqlRepository;
+import com.patina.codebloom.common.db.repos.achievements.AchievementSqlRepository;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -85,7 +85,7 @@ public class AchievementRepositoryTest {
                         .deletedAt(testAchievement.getDeletedAt())
                         .build();
 
-        boolean updated = repo.updateAchievement(updatedAchievement);
+        boolean updated = repo.updateAchievementById(updatedAchievement);
         assertTrue(updated);
 
         Achievement fetched = repo.getAchievementById(testAchievement.getId());
@@ -99,7 +99,7 @@ public class AchievementRepositoryTest {
     void testDeleteAchievementById() {
         deletableAchievement = Achievement.builder()
                         .userId(mockUserId2)
-                        .iconUrl("https://test.com/icon2.png")
+                        .iconUrl("")
                         .title("Deletable Achievement")
                         .description("Should be deleted")
                         .isActive(true)
@@ -117,6 +117,7 @@ public class AchievementRepositoryTest {
         assertTrue(deleted);
 
         Achievement deletedFetched = repo.getAchievementById(deletableAchievement.getId());
+        assertNotNull(deletedFetched);
         assertNotNull(deletedFetched.getDeletedAt());
     }
 }
