@@ -1,46 +1,29 @@
-import UserSubmissionsSkeleton from "@/app/user/[userId]/_components/UserSubmissions/UserSubmissionsSkeleton";
 import {
   langNameKey,
   langNameToIcon,
 } from "@/components/ui/langname-to-icon/LangNameToIcon";
-import Paginator from "@/components/ui/table/Paginator";
-import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { timeDiff } from "@/lib/timeDiff";
 import { Badge, Box, Overlay, Table, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
 
-export default function UserSubmissions({ userId }: { userId?: string }) {
-  const {
-    data,
-    status,
-    page,
-    goBack,
-    goForward,
-    isPlaceholderData,
-    goTo,
-    searchQuery,
-    setSearchQuery,
-  } = useUserSubmissionsQuery({
+import MiniUserSubmissionsSkeleton from "./MiniUserSubmissionsSkeleton";
+
+export default function MiniUserSubmissions({ userId }: { userId?: string }) {
+  const { data, status, isPlaceholderData } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
+    pageSize: 5,
   });
 
   if (status === "pending") {
     return (
       <>
-        <UserSubmissionsSkeleton />
+        <MiniUserSubmissionsSkeleton />
       </>
     );
   }
-  //   else{
-  //     return (
-  //       <>
-  //         <UserSubmissionsSkeleton />
-  //       </>
-  //     );
-  //   }
 
   if (status === "error") {
     return (
@@ -56,13 +39,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
 
   return (
     <>
-      <SearchBox
-        query={searchQuery}
-        onChange={(event) => {
-          setSearchQuery(event.currentTarget.value);
-        }}
-        placeholder={"Search for submission title"}
-      />
       <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
         <Table
           verticalSpacing={"lg"}
@@ -88,7 +64,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           <Table.Tbody>
             {pageData.items.length == 0 && (
               <Table.Tr>
-                <Table.Td colSpan={100}>
+                <Table.Td colSpan={100} bg="gray.9">
                   <Text fw={500} ta="center">
                     Nothing found
                   </Text>
@@ -181,14 +157,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           </Table.Tbody>
         </Table>
       </Box>
-      <Paginator
-        pages={pageData.pages}
-        currentPage={page}
-        hasNextPage={pageData.hasNextPage}
-        goBack={goBack}
-        goForward={goForward}
-        goTo={goTo}
-      />
     </>
   );
 }

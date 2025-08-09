@@ -9,7 +9,8 @@ import Onboarding from "@/app/onboarding/Onboarding.page";
 import RootPage from "@/app/Root.page";
 import SettingsPage from "@/app/settings/Settings.page";
 import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDetails.page";
-import UserSubmissionsPage from "@/app/user/[userId]/UserProfile.page";
+import UserProfilePage from "@/app/user/[userId]/UserProfile.page";
+import UserSubmissionsPage from "@/app/user/[userId]/UserSubmissions.page";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { schoolFF } from "@/lib/ff";
 import { createBrowserRouter } from "react-router-dom";
@@ -57,6 +58,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/user/:userId",
+    element: <UserProfilePage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/user/:userId/submissions",
     element: <UserSubmissionsPage />,
     errorElement: <ErrorPage />,
   },
