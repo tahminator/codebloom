@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class PrivateUser extends User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final String verifyKey;
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String schoolEmail;
 
     public PrivateUser(
