@@ -608,7 +608,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (:hunter = TRUE AND ut.tag = 'Hunter') OR
                                         (:nyu = TRUE AND ut.tag = 'Nyu') OR
                                         (:baruch = TRUE AND ut.tag = 'Baruch') OR
-                                        (:rpi= TRUE AND ut.tag = 'Rpi')
+                                        (:rpi = TRUE AND ut.tag = 'Rpi')
                                     )
                                     AND (
                                         -- Any tag is valid for current leaderboard
