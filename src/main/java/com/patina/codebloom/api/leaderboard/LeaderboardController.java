@@ -91,6 +91,8 @@ public class LeaderboardController {
                         .patina(patina)
                         .hunter(hunter)
                         .nyu(nyu)
+                        .baruch(baruch)
+                        .rpi(rpi)
                         .build();
 
         List<Indexed<UserWithScore>> leaderboardData;
@@ -150,6 +152,8 @@ public class LeaderboardController {
                         .patina(patina)
                         .hunter(hunter)
                         .nyu(nyu)
+                        .baruch(baruch)
+                        .rpi(rpi)
                         .build();
 
         int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount(options);
