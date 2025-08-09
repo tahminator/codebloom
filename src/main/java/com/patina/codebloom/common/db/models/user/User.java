@@ -29,7 +29,7 @@ public class User {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private boolean admin;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String profileUrl;
 
     /**
