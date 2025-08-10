@@ -47,7 +47,31 @@ public class AchievementSqlRepository implements AchievementRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    achievement.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+        Achievement toInsert = new Achievement(
+            UUID.randomUUID().toString(),
+            achievement.getUserId(),
+            achievement.getIconUrl(),
+            achievement.getTitle(),
+            achievement.getDescription(),
+            achievement.isActive(),
+            OffsetDateTime.now(),
+            achievement.getDeletedAt()
+        );
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(toInsert.getId()));
+            stmt.setObject("user_id", UUID.fromString(toInsert.getUserId()));
+            stmt.setString("icon_url", toInsert.getIconUrl());
+            stmt.setString("title", toInsert.getTitle());
+            stmt.setString("description", toInsert.getDescription());
+            stmt.setBoolean("is_active", toInsert.isActive());
+            stmt.setObject("created_at", toInsert.getCreatedAt());
+            stmt.setObject("deleted_at", toInsert.getDeletedAt());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Optionally, you can capture the returned created_at value if needed
+                    // OffsetDateTime createdAt = rs.getObject("created_at", OffsetDateTime.class);
                 }
             }
         } catch (SQLException e) {
