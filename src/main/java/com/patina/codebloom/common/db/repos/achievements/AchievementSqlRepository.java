@@ -76,7 +76,7 @@ public class AchievementSqlRepository implements AchievementRepository {
     }
 
     @Override
-    public boolean updateAchievementById(final Achievement achievement) {
+    public Achievement updateAchievement(final Achievement achievement) {
         String sql = """
                 UPDATE
                     "Achievement"
@@ -98,8 +98,8 @@ public class AchievementSqlRepository implements AchievementRepository {
             stmt.setObject("deleted_at", achievement.getDeletedAt());
             stmt.setObject("id", UUID.fromString(achievement.getId()));
 
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+            stmt.executeUpdate();
+            return getAchievementById(achievement.getId());
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update achievement", e);
         }
