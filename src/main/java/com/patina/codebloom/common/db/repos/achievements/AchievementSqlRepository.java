@@ -196,7 +196,8 @@ public class AchievementSqlRepository implements AchievementRepository {
     private Achievement parseResultSetToAchievement(ResultSet rs) throws SQLException {
         return Achievement.builder()
                 .id(rs.getObject("id").toString())
-                .userId(rs.getObject("user_id").toString())
+                .id(rs.getString("id"))
+                .userId(rs.getString("user_id"))
                 .iconUrl(rs.getString("icon_url"))
                 .title(rs.getString("title"))
                 .description(rs.getString("description"))
