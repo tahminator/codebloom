@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -23,8 +22,7 @@ public class AchievementRepositoryTest {
     private AchievementSqlRepository repo;
     private Achievement testAchievement;
     private Achievement deletableAchievement;
-    private String mockUserId = UUID.randomUUID().toString();
-    private String mockUserId2 = UUID.randomUUID().toString();
+    private String mockUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
 
     @Autowired
     public AchievementRepositoryTest(final AchievementSqlRepository repo) {
@@ -71,34 +69,33 @@ public class AchievementRepositoryTest {
         assertTrue(achievementList.stream().anyMatch(a -> a.getId().equals(testAchievement.getId())));
     }
 
-    @Test
-    @Order(3)
-    void testUpdateAchievement() {
-        Achievement updatedAchievement = Achievement.builder()
-                        .id(testAchievement.getId())
-                        .userId(testAchievement.getUserId())
-                        .iconUrl(testAchievement.getIconUrl())
-                        .title("Updated Title")
-                        .description("Updated Description")
-                        .isActive(false)
-                        .createdAt(testAchievement.getCreatedAt())
-                        .deletedAt(testAchievement.getDeletedAt())
-                        .build();
+@Test
+@Order(3)
+void testUpdateAchievement() {
+    Achievement updatedAchievement = Achievement.builder()
+                    .id(testAchievement.getId())
+                    .userId(testAchievement.getUserId())
+                    .iconUrl(testAchievement.getIconUrl())
+                    .title("Updated Title")
+                    .description("Updated Description")
+                    .isActive(false)
+                    .createdAt(testAchievement.getCreatedAt())
+                    .deletedAt(testAchievement.getDeletedAt())
+                    .build();
 
-        boolean updated = repo.updateAchievementById(updatedAchievement);
-        assertTrue(updated);
+    Achievement result = repo.updateAchievement(updatedAchievement);
+    assertNotNull(result);
 
-        Achievement fetched = repo.getAchievementById(testAchievement.getId());
-        assertEquals("Updated Title", fetched.getTitle());
-        assertEquals("Updated Description", fetched.getDescription());
-        assertFalse(fetched.isActive());
-    }
+    assertEquals("Updated Title", result.getTitle());
+    assertEquals("Updated Description", result.getDescription());
+    assertFalse(result.isActive());
+}
 
     @Test
     @Order(4)
     void testDeleteAchievementById() {
         deletableAchievement = Achievement.builder()
-                        .userId(mockUserId2)
+                        .userId(mockUserId)
                         .iconUrl("")
                         .title("Deletable Achievement")
                         .description("Should be deleted")
