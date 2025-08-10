@@ -52,7 +52,38 @@ public class AchievementSqlRepository implements AchievementRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create achievement", e);
+        String newId = UUID.randomUUID().toString();
+        OffsetDateTime createdAt = OffsetDateTime.now();
+        Achievement achievementToInsert = new Achievement(
+            newId,
+            achievement.getUserId(),
+            achievement.getIconUrl(),
+            achievement.getTitle(),
+            achievement.getDescription(),
+            achievement.isActive(),
+            createdAt,
+            achievement.getDeletedAt()
+        );
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(achievementToInsert.getId()));
+            stmt.setObject("user_id", UUID.fromString(achievementToInsert.getUserId()));
+            stmt.setString("icon_url", achievementToInsert.getIconUrl());
+            stmt.setString("title", achievementToInsert.getTitle());
+            stmt.setString("description", achievementToInsert.getDescription());
+            stmt.setBoolean("is_active", achievementToInsert.isActive());
+            stmt.setObject("created_at", achievementToInsert.getCreatedAt());
+            stmt.setObject("deleted_at", achievementToInsert.getDeletedAt());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    achievementToInsert.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create achievement", e);
         }
+        return achievementToInsert;
     }
 
     @Override
