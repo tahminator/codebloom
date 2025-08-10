@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS "Achievement" (
     id UUID NOT NULL PRIMARY KEY,
-    user_id UUID NOT NULL,
-    icon_url TEXT NOT NULL,
+    userId UUID NOT NULL,
+    iconUrl TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    deleted_at TIMESTAMPTZ
+    isActive BOOLEAN NOT NULL DEFAULT TRUE,
+    createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deletedAt TIMESTAMPTZ
 );
