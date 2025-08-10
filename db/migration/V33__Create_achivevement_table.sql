@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "Achievement" (
     id UUID NOT NULL PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES "User"(id),
+    user_id UUID NOT NULL,
     icon_url TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
