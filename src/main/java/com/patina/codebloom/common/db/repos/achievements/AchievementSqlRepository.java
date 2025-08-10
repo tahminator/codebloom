@@ -31,7 +31,6 @@ public class AchievementSqlRepository implements AchievementRepository {
         var isActive = rs.getBoolean("is_active");
         var createdAt = rs.getObject("created_at", OffsetDateTime.class);
         var deletedAt = rs.getObject("deleted_at", OffsetDateTime.class);
-        
         return Achievement.builder()
                 .id(id)
                 .userId(userId)
@@ -55,7 +54,6 @@ public class AchievementSqlRepository implements AchievementRepository {
                 RETURNING
                     created_at
                 """;
-        
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(achievement.getId()));
             stmt.setObject("user_id", UUID.fromString(achievement.getUserId()));
