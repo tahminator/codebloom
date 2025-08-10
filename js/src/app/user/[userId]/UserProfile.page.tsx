@@ -60,22 +60,42 @@ export default function UserProfilePage() {
           p="md"
           bdrs="md"
         >
-          <Center mb="md">
-            <Text size="xl" fw={700} c="yellow.5">
+          <Flex
+            direction={{ base: "column", md: "row" }}
+            justify={"space-between"}
+            w={"100%"}
+            align="center"
+            pl="20px"
+            pr="20px"
+          >
+            <Text size="2em" fw={700} c="white">
               Recent Submissions
             </Text>
-          </Center>
-          <MiniUserSubmissions userId={userId} />
+            <Button
+              variant={"light"}
+              component={Link}
+              to={`/user/${userId}/submissions`}
+            >
+              View All
+            </Button>
+          </Flex>
 
-          <Button
-            fullWidth
-            mt="sm"
-            variant="outline"
-            component={Link}
-            to={`/user/${userId}/submissions`}
-          >
-            All Submissions
-          </Button>
+          {/* <Flex
+        direction={{ base: "column", md: "row" }}
+        justify={"space-between"}
+        w={"100%"}
+      >
+        <Center>
+          <Title order={4} className="text-center" pb={"sm"}>
+            Submissions
+          </Title>
+        </Center>
+        <Button variant={"light"} component={Link} to={`/user/${userId}`}>
+          View all
+        </Button>
+      </Flex> */}
+
+          <MiniUserSubmissions userId={userId} />
         </Box>
       </Flex>
     </>
