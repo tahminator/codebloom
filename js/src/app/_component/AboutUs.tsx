@@ -3,6 +3,7 @@ import MiniLeaderboardMobile from "@/app/_component/MiniLeaderboardMobile";
 import OurFeatures from "@/app/_component/OurFeatures";
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import {
+  Badge,
   Box,
   Button,
   Center,
@@ -37,6 +38,19 @@ export default function AboutUs() {
           direction={"column"}
           w={"50%"}
         >
+          <Badge
+            component={Link}
+            to={"/settings"}
+            variant={"gradient"}
+            gradient={{ from: "green", to: "cyan", deg: 90 }}
+            size={"xl"}
+            m={"md"}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            Join your university leaderboard! Register here
+          </Badge>
           <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
           </Title>
@@ -73,6 +87,19 @@ export default function AboutUs() {
       </Flex>
       <Flex h={"80vh"} w={"100vw"} hiddenFrom="lg">
         <Stack align={"center"} justify={"center"} h={"100%"} w={"100vw"}>
+          <Badge
+            component={Link}
+            to={"/settings"}
+            variant={"gradient"}
+            gradient={{ from: "green", to: "cyan", deg: 90 }}
+            size={"sm"}
+            m={"md"}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            Join your university leaderboard! Register here
+          </Badge>
           <Title order={5} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
           </Title>

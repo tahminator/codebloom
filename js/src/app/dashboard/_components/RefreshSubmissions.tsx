@@ -1,10 +1,15 @@
 import { useUsersTotalPoints } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import { Button, Text } from "@mantine/core";
+import { Button, Center, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { Link } from "react-router-dom";
 
-export default function RefreshSubmissions() {
+export default function RefreshSubmissions({
+  schoolRegistered,
+}: {
+  schoolRegistered: boolean;
+}) {
   const { mutate, isPending } = useUsersTotalPoints();
   const [countdown, resetCountdown] = useCountdown(0);
 
@@ -50,6 +55,22 @@ export default function RefreshSubmissions() {
           `Please wait ${countdown} seconds to refresh again.`
         : "Refresh your latest submissions!"}
       </Button>
+      {!schoolRegistered && (
+        <Center>
+          <Button
+            component={Link}
+            variant={"light"}
+            to={"/settings"}
+            size={"sm"}
+            mb={"sm"}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            Go to settings {"&"} register your university email
+          </Button>
+        </Center>
+      )}
       <Text
         c={"dimmed"}
         style={{
