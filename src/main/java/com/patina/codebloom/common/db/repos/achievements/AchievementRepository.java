@@ -5,7 +5,6 @@ import java.util.List;
 import com.patina.codebloom.common.db.models.achievements.Achievement;
 
 public interface AchievementRepository {
-    
     /**
      * Creates a new achievement in the database.
      * 
@@ -22,7 +21,6 @@ public interface AchievementRepository {
      * </ul>
      */
     void createAchievement(Achievement achievement);
-    
     /**
      * Updates an existing achievement by its ID.
      * 
@@ -37,32 +35,13 @@ public interface AchievementRepository {
      * <li>isActive</li>
      * <li>deletedAt</li>
      * </ul>
-     * 
-     * @return true if the update was successful, false otherwise
-     */
-    boolean updateAchievementById(Achievement achievement);
-    
-    /**
-     * Soft deletes an achievement by setting the deletedAt timestamp.
-     * 
-     * @param id - the achievement ID
-     * @return true if the delete was successful, false otherwise
-     */
+    */
+
+    Achievement updateAchievement(Achievement achievement);
+
     boolean deleteAchievementById(String id);
-    
-    /**
-     * Retrieves an achievement by its ID.
-     * 
-     * @param id - the achievement ID
-     * @return the Achievement object if found, null otherwise
-     */
+
     Achievement getAchievementById(String id);
-    
-    /**
-     * Retrieves all achievements for a specific user.
-     * 
-     * @param userId - the user ID
-     * @return list of achievements for the user, empty list if none found
-     */
+
     List<Achievement> getAchievementsByUserId(String userId);
 }
