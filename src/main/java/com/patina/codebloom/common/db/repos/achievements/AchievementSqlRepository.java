@@ -48,11 +48,11 @@ public class AchievementSqlRepository implements AchievementRepository {
         achievement.setId(UUID.randomUUID().toString());
         String sql = """
                 INSERT INTO "Achievement"
-                    (id, "userId", "iconUrl", "title", "description", isActive, "deletedAt")
+                    (id, "userId", "iconUrl", "title", "description", "isActive", "deletedAt")
                 VALUES
                     (:id, :userId, :iconUrl, :title, :description, :isActive, :deletedAt)
                 RETURNING
-                    createdAt
+                    "createdAt"
                 """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(achievement.getId()));
@@ -82,7 +82,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "iconUrl" = :iconUrl,
                     "title" = :title,
                     "description" = :description,
-                    isActive = :isActive,
+                    "isActive" = :isActive,
                     "deletedAt" = :deletedAt
                 WHERE
                     id = :id
@@ -134,7 +134,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "iconUrl",
                     "title",
                     "description",
-                    isActive,
+                    "isActive",
                     "createdAt",
                     "deletedAt"
                 FROM
@@ -167,7 +167,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "iconUrl",
                     "title",
                     "description",
-                    isActive,
+                    "isActive",
                     "createdAt",
                     "deletedAt"
                 FROM
