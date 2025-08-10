@@ -24,13 +24,13 @@ public class AchievementSqlRepository implements AchievementRepository {
 
     private Achievement parseResultSetToAchievement(final ResultSet rs) throws SQLException {
         var id = rs.getString("id");
-        var userId = rs.getString("user_id");
-        var iconUrl = rs.getString("icon_url");
+        var userId = rs.getString("userId");
+        var iconUrl = rs.getString("iconUrl");
         var title = rs.getString("title");
         var description = rs.getString("description");
-        var isActive = rs.getBoolean("is_active");
-        var createdAt = rs.getObject("created_at", OffsetDateTime.class);
-        var deletedAt = rs.getObject("deleted_at", OffsetDateTime.class);
+        var isActive = rs.getBoolean("isActive");
+        var createdAt = rs.getObject("createdAt", OffsetDateTime.class);
+        var deletedAt = rs.getObject("deletedAt", OffsetDateTime.class);
         return Achievement.builder()
                 .id(id)
                 .userId(userId)
@@ -48,24 +48,24 @@ public class AchievementSqlRepository implements AchievementRepository {
         achievement.setId(UUID.randomUUID().toString());
         String sql = """
                 INSERT INTO "Achievement"
-                    (id, "user_id", "icon_url", "title", "description", is_active, "deleted_at")
+                    (id, "userId", "iconUrl", "title", "description", isActive, "deletedAt")
                 VALUES
-                    (:id, :user_id, :icon_url, :title, :description, :is_active, :deleted_at)
+                    (:id, :userId, :iconUrl, :title, :description, :IsActive, :deletedAt)
                 RETURNING
-                    created_at
+                    createdAt
                 """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(achievement.getId()));
-            stmt.setObject("user_id", UUID.fromString(achievement.getUserId()));
-            stmt.setString("icon_url", achievement.getIconUrl());
+            stmt.setObject("userId", UUID.fromString(achievement.getUserId()));
+            stmt.setString("iconUrl", achievement.getIconUrl());
             stmt.setString("title", achievement.getTitle());
             stmt.setString("description", achievement.getDescription());
-            stmt.setBoolean("is_active", achievement.isActive());
-            stmt.setObject("deleted_at", achievement.getDeletedAt());
+            stmt.setBoolean("isActive", achievement.isActive());
+            stmt.setObject("deletedAt", achievement.getDeletedAt());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    achievement.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+                    achievement.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
                 }
             }
         } catch (SQLException e) {
@@ -79,21 +79,21 @@ public class AchievementSqlRepository implements AchievementRepository {
                 UPDATE
                     "Achievement"
                 SET
-                    "icon_url" = :icon_url,
+                    "iconUrl" = :iconUrl,
                     "title" = :title,
                     "description" = :description,
-                    is_active = :is_active,
-                    "deleted_at" = :deleted_at
+                    isActive = :isActive,
+                    "deletedAt" = :deletedAt
                 WHERE
                     id = :id
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setString("icon_url", achievement.getIconUrl());
+            stmt.setString("iconUrl", achievement.getIconUrl());
             stmt.setString("title", achievement.getTitle());
             stmt.setString("description", achievement.getDescription());
-            stmt.setBoolean("is_active", achievement.isActive());
-            stmt.setObject("deleted_at", achievement.getDeletedAt());
+            stmt.setBoolean("isActive", achievement.isActive());
+            stmt.setObject("deletedAt", achievement.getDeletedAt());
             stmt.setObject("id", UUID.fromString(achievement.getId()));
 
             stmt.executeUpdate();
@@ -109,13 +109,13 @@ public class AchievementSqlRepository implements AchievementRepository {
                 UPDATE
                     "Achievement"
                 SET
-                    "deleted_at" = :deleted_at
+                    "deletedAt" = :deletedAt
                 WHERE
                     id = :id
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("deleted_at", OffsetDateTime.now());
+            stmt.setObject("deletedAt", OffsetDateTime.now());
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
@@ -130,13 +130,13 @@ public class AchievementSqlRepository implements AchievementRepository {
         String sql = """
                 SELECT
                     id,
-                    "user_id",
-                    "icon_url",
+                    "userId",
+                    "iconUrl",
                     "title",
                     "description",
-                    is_active,
-                    "created_at",
-                    "deleted_at"
+                    isActive,
+                    "createdAt",
+                    "deletedAt"
                 FROM
                     "Achievement"
                 WHERE
@@ -163,21 +163,21 @@ public class AchievementSqlRepository implements AchievementRepository {
         String sql = """
                 SELECT
                     id,
-                    "user_id",
-                    "icon_url",
+                    "userId",
+                    "iconUrl",
                     "title",
                     "description",
-                    is_active,
-                    "created_at",
-                    "deleted_at"
+                    isActive,
+                    "createdAt",
+                    "deletedAt"
                 FROM
                     "Achievement"
                 WHERE
-                    "user_id" = :user_id
+                    "userId" = :userId
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("user_id", UUID.fromString(userId));
+            stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var achievement = parseResultSetToAchievement(rs);
