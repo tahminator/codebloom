@@ -35,7 +35,8 @@ export default function DashboardPage() {
     );
   }
 
-  const onboarded = data.user.leetcodeUsername;
+  const onboarded = !!data.user.leetcodeUsername;
+  const schoolRegistered = !!data.user.schoolEmail;
 
   if (!onboarded) {
     return (
@@ -63,7 +64,7 @@ export default function DashboardPage() {
         <Center>
           {!data.user.leetcodeUsername ?
             <OnboardingLeetcodeUser />
-          : <RefreshSubmissions />}
+          : <RefreshSubmissions schoolRegistered={schoolRegistered} />}
         </Center>
         <Flex direction={smallPhone ? "row" : "column"} gap={"md"}>
           <Flex direction={"column"} flex={1}>
