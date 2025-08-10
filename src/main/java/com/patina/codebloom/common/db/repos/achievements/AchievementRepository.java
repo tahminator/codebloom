@@ -35,8 +35,8 @@ public interface AchievementRepository {
      * <li>isActive</li>
      * <li>deletedAt</li>
      * </ul>
-    */
-
+     * @return updated achievement if successful 
+     * */
     Achievement updateAchievement(Achievement achievement);
 
     boolean deleteAchievementById(String id);
