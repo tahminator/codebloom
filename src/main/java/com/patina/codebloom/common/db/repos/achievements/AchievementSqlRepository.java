@@ -16,25 +16,46 @@ import com.patina.codebloom.common.db.models.achievements.Achievement;
 
 @Component
 public class AchievementSqlRepository implements AchievementRepository {
-    private final Connection conn;
+    private Connection conn;
 
     public AchievementSqlRepository(final DbConnection dbConnection) {
         this.conn = dbConnection.getConn();
     }
 
+    private Achievement parseResultSetToAchievement(final ResultSet rs) throws SQLException {
+        var id = rs.getString("id");
+        var userId = rs.getString("user_id");
+        var iconUrl = rs.getString("icon_url");
+        var title = rs.getString("title");
+        var description = rs.getString("description");
+        var isActive = rs.getBoolean("is_active");
+        var createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        var deletedAt = rs.getObject("deleted_at", OffsetDateTime.class);
+        
+        return Achievement.builder()
+                .id(id)
+                .userId(userId)
+                .iconUrl(iconUrl)
+                .title(title)
+                .description(description)
+                .isActive(isActive)
+                .createdAt(createdAt)
+                .deletedAt(deletedAt)
+                .build();
+    }
+
     @Override
     public void createAchievement(final Achievement achievement) {
-        String sql = """
-                            INSERT INTO Achievement
-                                (id, user_id, icon_url, title, description, is_active, created_at, deleted_at)
-                            VALUES
-                               (:id, :user_id, :icon_url, :title, :description, :is_active, :created_at, :deleted_at)
-                            RETURNING created_at
-                        """;
-
         achievement.setId(UUID.randomUUID().toString());
-        achievement.setCreatedAt(OffsetDateTime.now());
-
+        String sql = """
+                INSERT INTO "Achievement"
+                    (id, "user_id", "icon_url", "title", "description", is_active, "deleted_at")
+                VALUES
+                    (:id, :user_id, :icon_url, :title, :description, :is_active, :deleted_at)
+                RETURNING
+                    created_at
+                """;
+        
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(achievement.getId()));
             stmt.setObject("user_id", UUID.fromString(achievement.getUserId()));
@@ -42,87 +63,32 @@ public class AchievementSqlRepository implements AchievementRepository {
             stmt.setString("title", achievement.getTitle());
             stmt.setString("description", achievement.getDescription());
             stmt.setBoolean("is_active", achievement.isActive());
-            stmt.setObject("created_at", achievement.getCreatedAt());
             stmt.setObject("deleted_at", achievement.getDeletedAt());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-        Achievement toInsert = new Achievement(
-            UUID.randomUUID().toString(),
-            achievement.getUserId(),
-            achievement.getIconUrl(),
-            achievement.getTitle(),
-            achievement.getDescription(),
-            achievement.isActive(),
-            OffsetDateTime.now(),
-            achievement.getDeletedAt()
-        );
-
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("id", UUID.fromString(toInsert.getId()));
-            stmt.setObject("user_id", UUID.fromString(toInsert.getUserId()));
-            stmt.setString("icon_url", toInsert.getIconUrl());
-            stmt.setString("title", toInsert.getTitle());
-            stmt.setString("description", toInsert.getDescription());
-            stmt.setBoolean("is_active", toInsert.isActive());
-            stmt.setObject("created_at", toInsert.getCreatedAt());
-            stmt.setObject("deleted_at", toInsert.getDeletedAt());
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    // Optionally, you can capture the returned created_at value if needed
-                    // OffsetDateTime createdAt = rs.getObject("created_at", OffsetDateTime.class);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to create achievement", e);
-        String newId = UUID.randomUUID().toString();
-        OffsetDateTime createdAt = OffsetDateTime.now();
-        Achievement achievementToInsert = new Achievement(
-            newId,
-            achievement.getUserId(),
-            achievement.getIconUrl(),
-            achievement.getTitle(),
-            achievement.getDescription(),
-            achievement.isActive(),
-            createdAt,
-            achievement.getDeletedAt()
-        );
-
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("id", UUID.fromString(achievementToInsert.getId()));
-            stmt.setObject("user_id", UUID.fromString(achievementToInsert.getUserId()));
-            stmt.setString("icon_url", achievementToInsert.getIconUrl());
-            stmt.setString("title", achievementToInsert.getTitle());
-            stmt.setString("description", achievementToInsert.getDescription());
-            stmt.setBoolean("is_active", achievementToInsert.isActive());
-            stmt.setObject("created_at", achievementToInsert.getCreatedAt());
-            stmt.setObject("deleted_at", achievementToInsert.getDeletedAt());
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    achievementToInsert.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+                    achievement.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create achievement", e);
         }
-        return achievementToInsert;
     }
 
     @Override
     public boolean updateAchievementById(final Achievement achievement) {
         String sql = """
-                            UPDATE Achievement
-                            SET
-                                icon_url = :icon_url,
-                                title = :title,
-                                description = :description,
-                                is_active = :is_active,
-                                deleted_at = :deleted_at
-                            WHERE
-                                id = :id
-                        """;
+                UPDATE
+                    "Achievement"
+                SET
+                    "icon_url" = :icon_url,
+                    "title" = :title,
+                    "description" = :description,
+                    is_active = :is_active,
+                    "deleted_at" = :deleted_at
+                WHERE
+                    id = :id
+                """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("icon_url", achievement.getIconUrl());
@@ -140,20 +106,44 @@ public class AchievementSqlRepository implements AchievementRepository {
     }
 
     @Override
+    public boolean deleteAchievementById(final String id) {
+        String sql = """
+                UPDATE
+                    "Achievement"
+                SET
+                    "deleted_at" = :deleted_at
+                WHERE
+                    id = :id
+                """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("deleted_at", OffsetDateTime.now());
+            stmt.setObject("id", UUID.fromString(id));
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete achievement by ID", e);
+        }
+    }
+
+    @Override
     public Achievement getAchievementById(final String id) {
         String sql = """
-                            SELECT
-                                id,
-                                user_id,
-                                icon_url,
-                                title,
-                                description,
-                                is_active,
-                                created_at,
-                                deleted_at
-                            FROM Achievement
-                            WHERE id = :id
-                        """;
+                SELECT
+                    id,
+                    "user_id",
+                    "icon_url",
+                    "title",
+                    "description",
+                    is_active,
+                    "created_at",
+                    "deleted_at"
+                FROM
+                    "Achievement"
+                WHERE
+                    id = :id
+                """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
@@ -163,71 +153,43 @@ public class AchievementSqlRepository implements AchievementRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get achievement by id", e);
+            throw new RuntimeException("Failed to get achievement by ID", e);
         }
+
         return null;
     }
 
     @Override
     public List<Achievement> getAchievementsByUserId(final String userId) {
-        String sql = """
-                            SELECT
-                                id,
-                                user_id,
-                                icon_url,
-                                title,
-                                description,
-                                is_active,
-                                created_at,
-                                deleted_at
-                            FROM Achievement
-                            WHERE user_id = :user_id
-                        """;
-
         List<Achievement> achievements = new ArrayList<>();
+        String sql = """
+                SELECT
+                    id,
+                    "user_id",
+                    "icon_url",
+                    "title",
+                    "description",
+                    is_active,
+                    "created_at",
+                    "deleted_at"
+                FROM
+                    "Achievement"
+                WHERE
+                    "user_id" = :user_id
+                """;
+
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("user_id", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    achievements.add(parseResultSetToAchievement(rs));
+                    var achievement = parseResultSetToAchievement(rs);
+                    achievements.add(achievement);
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get achievements by user id", e);
+            throw new RuntimeException("Failed to get achievements by user ID", e);
         }
+
         return achievements;
-    }
-
-    @Override
-    public boolean deleteAchievementById(final String id) {
-        String sql = """
-                            UPDATE Achievement
-                            SET deleted_at = :deleted_at
-                            WHERE id = :id
-                        """;
-
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("deleted_at", OffsetDateTime.now());
-            stmt.setObject("id", UUID.fromString(id));
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete achievement by id", e);
-        }
-    }
-
-    private Achievement parseResultSetToAchievement(ResultSet rs) throws SQLException {
-        return Achievement.builder()
-                .id(rs.getObject("id").toString())
-                .id(rs.getString("id"))
-                .userId(rs.getString("user_id"))
-                .iconUrl(rs.getString("icon_url"))
-                .title(rs.getString("title"))
-                .description(rs.getString("description"))
-                .isActive(rs.getBoolean("is_active"))
-                .createdAt(rs.getObject("created_at", OffsetDateTime.class))
-                .deletedAt(rs.getObject("deleted_at", OffsetDateTime.class))
-                .build();
     }
 }
