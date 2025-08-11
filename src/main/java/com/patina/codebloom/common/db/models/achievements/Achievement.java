@@ -43,7 +43,7 @@ public class Achievement {
     private boolean isActive = true;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private LocalDateTime deletedAt;
