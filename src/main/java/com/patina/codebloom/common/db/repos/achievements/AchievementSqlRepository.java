@@ -29,8 +29,10 @@ public class AchievementSqlRepository implements AchievementRepository {
         var title = rs.getString("title");
         var description = rs.getString("description");
         var isActive = rs.getBoolean("isActive");
-        var createdAt = rs.getObject("createdAt", OffsetDateTime.class);
-        var deletedAt = rs.getObject("deletedAt", OffsetDateTime.class);
+        var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+        var deletedAt = Optional.ofNullable(rs.getTimestamp("deletedAt"))
+                        .map(Timestamp::toLocalDateTime)
+                        .orElse(null);
         return Achievement.builder()
                 .id(id)
                 .userId(userId)
