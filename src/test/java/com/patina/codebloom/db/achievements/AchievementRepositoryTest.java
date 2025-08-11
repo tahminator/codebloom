@@ -69,27 +69,28 @@ public class AchievementRepositoryTest {
         assertTrue(achievementList.stream().anyMatch(a -> a.getId().equals(testAchievement.getId())));
     }
 
-@Test
-@Order(3)
-void testUpdateAchievement() {
-    Achievement updatedAchievement = Achievement.builder()
-                    .id(testAchievement.getId())
-                    .userId(testAchievement.getUserId())
-                    .iconUrl(testAchievement.getIconUrl())
-                    .title("Updated Title")
-                    .description("Updated Description")
-                    .isActive(false)
-                    .createdAt(testAchievement.getCreatedAt())
-                    .deletedAt(testAchievement.getDeletedAt())
-                    .build();
+    @Test
+    @Order(3)
+    void testUpdateAchievement() {
+        Achievement updatedAchievement = Achievement.builder()
+            .id(testAchievement.getId())
+            .userId(testAchievement.getUserId())
+            .iconUrl(testAchievement.getIconUrl())
+            .title("Updated Title")
+            .description("Updated Description")
+            .isActive(false)
+            .createdAt(testAchievement.getCreatedAt())
+            .deletedAt(testAchievement.getDeletedAt())
+            .build();
 
-    Achievement result = repo.updateAchievement(updatedAchievement);
-    assertNotNull(result);
+        Achievement result = repo.updateAchievement(updatedAchievement);
 
-    assertEquals("Updated Title", result.getTitle());
-    assertEquals("Updated Description", result.getDescription());
-    assertFalse(result.isActive());
-}
+        assertNotNull(result);
+
+        assertEquals("Updated Title", result.getTitle());
+        assertEquals("Updated Description", result.getDescription());
+        assertFalse(result.isActive());
+    }
 
     @Test
     @Order(4)
