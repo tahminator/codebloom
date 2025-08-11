@@ -289,7 +289,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query) {
+    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query, final boolean pointFilter) {
 
         ArrayList<Question> questions = new ArrayList<>();
         String sql = """
@@ -319,6 +319,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                             "userId" = ?
                         AND
                             q."questionTitle" ILIKE ?
+                        AND 
+                            (NOT ? OR q."pointsAwarded" <> 0)
                         ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?
                         """;
@@ -326,8 +328,11 @@ public class QuestionSqlRepository implements QuestionRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
-            stmt.setInt(3, pageSize);
-            stmt.setInt(4, (page - 1) * pageSize);
+            stmt.setBoolean(3, pointFilter);
+            stmt.setInt(4, pageSize);
+            stmt.setInt(5, (page - 1) * pageSize);
+            // stmt.setInt(3, pageSize);
+            // stmt.setInt(4, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
@@ -504,7 +509,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public int getQuestionCountByUserId(final String userId, final String query) {
+    public int getQuestionCountByUserId(final String userId, final String query, final boolean pointFilter) {
         String sql = """
                         SELECT
                             COUNT(*)
@@ -514,11 +519,14 @@ public class QuestionSqlRepository implements QuestionRepository {
                             "userId" = ?
                         AND
                             "questionTitle" ILIKE ?
+                        AND 
+                            (NOT ? OR "pointsAwarded" <> 0)
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
+            stmt.setBoolean(3, pointFilter);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
