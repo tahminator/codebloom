@@ -33,6 +33,7 @@ export const useUserSubmissionsQuery = ({
   pageSize?: number;
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const [pointFilter, setPointFilter] = useURLState("pointFilter", false, tieToUrl, true, 100)
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
@@ -60,10 +61,15 @@ export const useUserSubmissionsQuery = ({
     goTo(1);
   }, [searchQuery, goTo]);
 
+  const togglePointFilter = useCallback(() => {
+    setPointFilter((prev) => !prev);
+    goTo(1);
+  }, [goTo, setPointFilter]);
+
   const query = useQuery({
-    queryKey: ["submission", "user", userId, page, debouncedQuery, pageSize],
+    queryKey: ["submission", "user", userId, page, debouncedQuery, pageSize, pointFilter],
     queryFn: () =>
-      fetchUserSubmissions({ page, userId, query: debouncedQuery, pageSize }),
+      fetchUserSubmissions({ page, userId, query: debouncedQuery, pageSize, pointFilter}),
   });
 
   return {
@@ -76,6 +82,8 @@ export const useUserSubmissionsQuery = ({
     setSearchQuery,
     debouncedQuery,
     pageSize,
+    pointFilter,
+    togglePointFilter,
   };
 };
 
@@ -158,18 +166,19 @@ async function fetchUserSubmissions({
   userId,
   query,
   pageSize,
+  pointFilter
 }: {
   page: number;
   userId?: string;
   query?: string;
   pageSize: number;
+  pointFilter: boolean;
 }) {
   const response = await fetch(
-    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}`,
+    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}`,
   );
 
   const json = (await response.json()) as UnknownApiResponse<Page<Question[]>>;
-
   return json;
 }
 
