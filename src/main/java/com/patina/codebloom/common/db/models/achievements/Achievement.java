@@ -28,7 +28,7 @@ public class Achievement {
     private String userId;
 
     @NotNull
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String iconUrl;
 
     @NotNull
