@@ -146,7 +146,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "Achievement"
                 WHERE
                     id = :id
-                    AND deleted_at IS NULL
+                    AND deletedAt IS NULL
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -180,7 +180,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "Achievement"
                 WHERE
                     "userId" = :userId
-                    AND deleted_at IS NULL
+                    AND deletedAt IS NULL
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
