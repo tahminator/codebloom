@@ -3,10 +3,14 @@ package com.patina.codebloom.common.db.repos.achievements;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
+import java.sql.Timestamp;
+
 
 import org.springframework.stereotype.Component;
 
@@ -30,9 +34,9 @@ public class AchievementSqlRepository implements AchievementRepository {
         var description = rs.getString("description");
         var isActive = rs.getBoolean("isActive");
         var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-        var deletedAt = Optional.ofNullable(rs.getTimestamp("deletedAt"))
-                        .map(Timestamp::toLocalDateTime)
-                        .orElse(null);
+        LocalDateTime deletedAt = Optional.ofNullable(rs.getTimestamp("deletedAt"))
+            .map(Timestamp::toLocalDateTime)
+                .orElse(null);
         return Achievement.builder()
                 .id(id)
                 .userId(userId)
@@ -67,7 +71,7 @@ public class AchievementSqlRepository implements AchievementRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    achievement.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
+                    achievement.setCreatedAt(rs.getObject("createdAt", LocalDateTime.class));
                 }
             }
         } catch (SQLException e) {
@@ -143,6 +147,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "Achievement"
                 WHERE
                     id = :id
+                    AND deleted_at IS NULL
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -176,6 +181,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "Achievement"
                 WHERE
                     "userId" = :userId
+                    AND deleted_at IS NULL
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
