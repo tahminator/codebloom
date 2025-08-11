@@ -46,5 +46,5 @@ public class Achievement {
     private OffsetDateTime createdAt;
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
-    private OffsetDateTime deletedAt;
+    private LocalDateTime deletedAt;
 }
