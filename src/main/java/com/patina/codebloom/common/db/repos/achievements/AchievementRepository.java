@@ -21,6 +21,7 @@ public interface AchievementRepository {
      * </ul>
      */
     void createAchievement(Achievement achievement);
+    
     /**
      * Updates an existing achievement by its ID.
      * 
