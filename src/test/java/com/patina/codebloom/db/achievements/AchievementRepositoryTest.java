@@ -58,6 +58,7 @@ public class AchievementRepositoryTest {
         Achievement found = repo.getAchievementById(testAchievement.getId());
         assertNotNull(found);
         assertEquals(testAchievement.getId(), found.getId());
+        assertEquals(testAchievement, found);
     }
 
     @Test
