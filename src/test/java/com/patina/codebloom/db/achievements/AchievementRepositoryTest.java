@@ -118,7 +118,6 @@ public class AchievementRepositoryTest {
         assertTrue(deleted);
 
         Achievement deletedFetched = repo.getAchievementById(deletableAchievement.getId());
-        assertNotNull(deletedFetched);
-        assertNotNull(deletedFetched.getDeletedAt());
+        assertNull(deletedFetched);
     }
 }
