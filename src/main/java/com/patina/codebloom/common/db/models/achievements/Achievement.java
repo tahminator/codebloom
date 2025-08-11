@@ -1,9 +1,8 @@
 package com.patina.codebloom.common.db.models.achievements;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,18 +19,16 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Achievement {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
-    @NotNull
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String userId;
 
-    @NotNull
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String iconUrl;
 
-    @NotNull
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String title;
 

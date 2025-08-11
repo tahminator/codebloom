@@ -2,6 +2,9 @@ package com.patina.codebloom.db.achievements;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.security.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +40,7 @@ public class AchievementRepositoryTest {
                         .title("Test Achievement")
                         .description("Integration test achievement")
                         .isActive(true)
-                        .createdAt(OffsetDateTime.now())
+                        .createdAt(LocalDateTime.now())
                         .deletedAt(null)
                         .build();
 
@@ -102,7 +105,7 @@ public class AchievementRepositoryTest {
                         .title("Deletable Achievement")
                         .description("Should be deleted")
                         .isActive(true)
-                        .createdAt(OffsetDateTime.now())
+                        .createdAt(LocalDateTime.now())
                         .deletedAt(null)
                         .build();
 
