@@ -70,7 +70,7 @@ public class AchievementSqlRepository implements AchievementRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    achievement.setCreatedAt(rs.getObject("createdAt", LocalDateTime.class));
+                    achievement.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
                 }
             }
         } catch (SQLException e) {
@@ -146,7 +146,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "Achievement"
                 WHERE
                     id = :id
-                    AND deletedAt IS NULL
+                    AND "deletedAt" IS NULL
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -180,7 +180,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                     "Achievement"
                 WHERE
                     "userId" = :userId
-                    AND deletedAt IS NULL
+                    AND "deletedAt" IS NULL
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
