@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -121,7 +120,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("deletedAt", OffsetDateTime.now());
+            stmt.setObject("deletedAt", LocalDateTime.now());
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
