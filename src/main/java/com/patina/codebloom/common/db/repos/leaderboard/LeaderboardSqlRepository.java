@@ -373,7 +373,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
-                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE and :gwc = FALSE)
+                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE)
                         )
                         AND
                             (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
