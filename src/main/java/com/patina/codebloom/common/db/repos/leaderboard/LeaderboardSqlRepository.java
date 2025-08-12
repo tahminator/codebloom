@@ -701,7 +701,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("nyu", options.isNyu());
             stmt.setBoolean("baruch", options.isBaruch());
             stmt.setBoolean("rpi", options.isRpi());
-            stmt.setBoolean("gwc",options.isGwc());
+            stmt.setBoolean("gwc", options.isGwc());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
