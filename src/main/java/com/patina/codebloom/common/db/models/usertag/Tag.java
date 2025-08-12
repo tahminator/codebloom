@@ -9,5 +9,6 @@ public enum Tag {
     Nyu,
     Baruch,
     Rpi,
+    Gwc,
 }
 
