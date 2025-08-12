@@ -24,80 +24,72 @@ export default function UserProfilePage() {
           ← Go back
         </Button>
       </Center>
-      <Flex
-        direction={{ base: "column", sm: "row" }}
-        gap="md"
-        justify="center"
-        wrap="wrap"
-        w="100%"
-        p="100px"
-        pt="md"
-      >
-        <Box
-          style={{
-            flexBasis: "200px",
-            flexGrow: 1,
-            boxShadow: "0 4px 10px rgba(0, 0, 0, .5)",
-          }}
-          bg="gray.9"
-          p="md"
-          bdrs="md"
+      <Center>
+        <Flex
+          direction={{ base: "column", sm: "row" }}
+          w="100%"
+          gap="md"
+          maw="1440px"
+          p="5%"
+          pt="md"
+          wrap="wrap"
         >
-          <Flex direction="column" align="center" gap="sm" pt={"20px"}>
-            <ProfilePicture />
-
-            <UserProfileHeader userId={userId} />
-          </Flex>
-        </Box>
-
-        <Box
-          style={{
-            flexGrow: 3,
-            minWidth: "400px", // wraps under 400px
-            boxShadow: "0 4px 10px rgba(0, 0, 0, .5)",
-          }}
-          bg="gray.9"
-          p="md"
-          bdrs="md"
-        >
-          <Flex
-            direction={{ base: "column", md: "row" }}
-            justify={"space-between"}
-            w={"100%"}
-            align="center"
-            pl="20px"
-            pr="20px"
+          {/* Left card */}
+          <Box
+            bg="gray.9"
+            w="100%"
+            p="md"
+            bdrs="md"
+            style={{
+              flex: "1 1 260px",
+              minWidth: 0,
+              boxShadow: "0 4px 10px rgba(0,0,0,.5)",
+            }}
           >
-            <Text size="2em" fw={700} c="white">
-              Recent Submissions
-            </Text>
-            <Button
-              variant={"light"}
-              component={Link}
-              to={`/user/${userId}/submissions`}
+            <Flex direction="column" align="center" gap="sm" pt="20px">
+              <ProfilePicture />
+              <UserProfileHeader userId={userId} />
+            </Flex>
+          </Box>
+
+          {/* Right card */}
+          <Box
+            bg="gray.9"
+            w="100%"
+            p="md"
+            bdrs="md"
+            style={{
+              flex: "3 1 360px", // prefer bigger, but allow shrink
+              minWidth: "75%",
+              boxShadow: "0 4px 10px rgba(0,0,0,.5)",
+            }}
+          >
+            <Flex
+              direction={{ base: "column", md: "row" }}
+              justify="space-between"
+              w="100%"
+              align="center"
+              px="20px"
+              gap="10px"
             >
-              View All
-            </Button>
-          </Flex>
+              <Text size="clamp(1.2rem, 2vw, 2em)" fw={700} c="white">
+                Recent Submissions
+              </Text>
+              <Button
+                variant="light"
+                component={Link}
+                to={`/user/${userId}/submissions`}
+              >
+                View All
+              </Button>
+            </Flex>
 
-          {/* <Flex
-        direction={{ base: "column", md: "row" }}
-        justify={"space-between"}
-        w={"100%"}
-      >
-        <Center>
-          <Title order={4} className="text-center" pb={"sm"}>
-            Submissions
-          </Title>
-        </Center>
-        <Button variant={"light"} component={Link} to={`/user/${userId}`}>
-          View all
-        </Button>
-      </Flex> */}
-
-          <MiniUserSubmissions userId={userId} />
-        </Box>
-      </Flex>
+            <Box >
+              <MiniUserSubmissions userId={userId} />
+            </Box>
+          </Box>
+        </Flex>
+      </Center>
     </>
   );
 }
