@@ -84,7 +84,7 @@ export default function UserProfilePage() {
               </Button>
             </Flex>
 
-            <Box >
+            <Box>
               <MiniUserSubmissions userId={userId} />
             </Box>
           </Box>
