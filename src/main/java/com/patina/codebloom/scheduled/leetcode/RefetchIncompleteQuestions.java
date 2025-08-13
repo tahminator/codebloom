@@ -61,7 +61,7 @@ public class RefetchIncompleteQuestions {
                                 .build();
 
                 questionRepository.updateQuestion(updated);
-                LOGGER.info("Successfully updated question of id: " + submissionId);
+                LOGGER.info("Successfully updated question with id: " + q.getId() + " (submissionId: " + submissionId + ")");
             } catch (Exception e) {
                 LOGGER.error("Failed to refetch question: " + q.getQuestionSlug(), e);
             }
