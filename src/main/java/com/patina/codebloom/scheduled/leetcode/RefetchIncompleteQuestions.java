@@ -26,7 +26,7 @@ public class RefetchIncompleteQuestions {
 
     }
 
-    @Scheduled(initialDelay = 0, fixedDelay = 12, timeUnit = TimeUnit.HOURS)
+    @Scheduled(initialDelay = 0, fixedDelay = 24, timeUnit = TimeUnit.HOURS)
     public void reFetchIncompleteQuestions() {
         ArrayList<Question> questions = questionRepository.getAllIncompleteQuestions();
 
