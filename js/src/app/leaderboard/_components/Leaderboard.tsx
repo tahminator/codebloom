@@ -41,6 +41,10 @@ export default function LeaderboardIndex() {
     toggleHunter,
     nyu,
     toggleNyu,
+    baruch,
+    toggleBaruch,
+    rpi,
+    toggleRpi,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -166,12 +170,50 @@ export default function LeaderboardIndex() {
                 </Box>
               }
             />
+            <FilterDropdownItem
+              value={baruch}
+              toggle={() => toggleBaruch()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Baruch
+                  <Image
+                    src="/Baruch_Logo.webp"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={rpi}
+              toggle={() => toggleRpi()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  RPI
+                  <Image
+                    src="/RPI_Logo.png"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
           </>
         )}
         <FilterDropdownItem
           value={globalIndex}
           toggle={toggleGlobalIndex}
-          disabled={!nyu && !hunter && !patina}
+          disabled={!nyu && !hunter && !patina && !baruch && !rpi}
           switchMode
           name={
             <Box
