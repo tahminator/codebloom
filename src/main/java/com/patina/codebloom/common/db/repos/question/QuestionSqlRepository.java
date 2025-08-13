@@ -256,27 +256,27 @@ public class QuestionSqlRepository implements QuestionRepository {
                     User user = userRepository.getUserById(userId);
 
                     question = QuestionWithUser.builder()
-                        .id(questionId)
-                        .userId(userId)
-                        .questionSlug(questionSlug)
-                        .questionDifficulty(questionDifficulty)
-                        .questionNumber(questionNumber)
-                        .questionLink(questionLink)
-                        .pointsAwarded(pointsAwarded)
-                        .questionTitle(questionTitle)
-                        .description(description)
-                        .acceptanceRate(acceptanceRate)
-                        .createdAt(createdAt)
-                        .submittedAt(submittedAt)
-                        .runtime(runtime)
-                        .memory(memory)
-                        .code(code)
-                        .language(language)
-                        .submissionId(submissionId)
-                        .discordName(user.getDiscordName())
-                        .leetcodeUsername(user.getLeetcodeUsername())
-                        .nickname(user.getNickname())
-                        .build();
+                                    .id(questionId)
+                                    .userId(userId)
+                                    .questionSlug(questionSlug)
+                                    .questionDifficulty(questionDifficulty)
+                                    .questionNumber(questionNumber)
+                                    .questionLink(questionLink)
+                                    .pointsAwarded(pointsAwarded)
+                                    .questionTitle(questionTitle)
+                                    .description(description)
+                                    .acceptanceRate(acceptanceRate)
+                                    .createdAt(createdAt)
+                                    .submittedAt(submittedAt)
+                                    .runtime(runtime)
+                                    .memory(memory)
+                                    .code(code)
+                                    .language(language)
+                                    .submissionId(submissionId)
+                                    .discordName(user.getDiscordName())
+                                    .leetcodeUsername(user.getLeetcodeUsername())
+                                    .nickname(user.getNickname())
+                                    .build();
 
                     return question;
                 }
@@ -550,5 +550,32 @@ public class QuestionSqlRepository implements QuestionRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve question", e);
         }
+    }
+
+    @Override
+    public ArrayList<Question> getAllIncompleteQuestions() {
+        ArrayList<Question> questions = new ArrayList<>();
+        String sql = """
+                        SELECT
+                            *
+                        FROM
+                            "Question"
+                        WHERE
+                            ("runtime" IS NULL OR "runtime" = '')
+                            OR ("memory" IS NULL OR "memory" = '')
+                            OR ("code" is NULL OR "code" = '')
+                            OR ("language" is NULL OR "language" = '')
+                        """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    questions.add(mapResultSetToQuestion(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve all incomplete questions", e);
+        }
+
+        return questions;
     }
 }
