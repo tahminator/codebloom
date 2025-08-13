@@ -47,9 +47,19 @@ public interface QuestionRepository {
      * <li>language</li>
      * <li>submissionId</li>
      * </ul>
-     * @return updated question if sucessful 
+     * @return updated question if sucessful
      */
     Question updateQuestion(Question question);
+
+    /**
+     * @note - Some fields may not be populated properly due to a service outage. So
+     * this method looks for any Questions missing fields populated by LeetCode's
+     * API.
+     * 
+     * @return all questions missing either a runtime, memory, code, language, or
+     * description
+     */
+    ArrayList<Question> getAllIncompleteQuestions();
 
     boolean deleteQuestionById(String id);
 
