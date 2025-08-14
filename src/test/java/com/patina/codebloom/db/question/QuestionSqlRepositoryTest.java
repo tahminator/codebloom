@@ -161,7 +161,7 @@ public class QuestionSqlRepositoryTest {
     @Test
     @Order(6)
     void testGetQuestionCountByUserId() {
-        int count = questionRepository.getQuestionCountByUserId(testQuestion.getUserId(), "");
+        int count = questionRepository.getQuestionCountByUserId(testQuestion.getUserId(), "", false);
 
         assertTrue(count > 0, "Question count should be greater than 0");
 

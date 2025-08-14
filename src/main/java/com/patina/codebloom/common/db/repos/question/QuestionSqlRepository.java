@@ -466,6 +466,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                                 "questionSlug" = ?
                             AND
                                 "userId" = ?
+                            AND 
+                                gi
                             LIMIT 1
                         """;
 

@@ -18,7 +18,7 @@ export default function SearchBox({
     <TextInput
       value={query}
       placeholder={placeholder}
-    //   pt={"md"}
+      pt={"md"}
       onChange={onChange}
       maw={"100%"}
       miw={"66%"}
