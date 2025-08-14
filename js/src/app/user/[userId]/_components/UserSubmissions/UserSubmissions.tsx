@@ -1,4 +1,6 @@
 import UserSubmissionsSkeleton from "@/app/user/[userId]/_components/UserSubmissions/UserSubmissionsSkeleton";
+import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
+import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import {
   langNameKey,
   langNameToIcon,
@@ -8,7 +10,7 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { timeDiff } from "@/lib/timeDiff";
-import { Badge, Box, Flex, Overlay, Switch, Table, Text } from "@mantine/core";
+import { Badge, Box, Overlay, Table, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function UserSubmissions({ userId }: { userId?: string }) {
@@ -51,24 +53,38 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
 
   return (
     <>
-    <Flex gap="sm" p="sm">
-        <Switch
-        onClick={togglePointFilter}
-        checked={pointFilter}
-        withThumbIndicator={false}
-        size="md"
-        color="green"
-        />
-        <Text fw={500}>Filter Points {pageData.pages}</Text>
-    </Flex>
+    <Box miw={"66%"} >
+        <FilterDropdown 
+            style={{
+                marginLeft: "auto",
+                display: "block",
+            }}
+            buttonName="Filters"
+        >
+            <FilterDropdownItem 
+                value={pointFilter}
+                toggle={togglePointFilter}
+                switchMode
+                name={
+                    <Box
+                    style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+                    >
+                    Filter Points
+                    </Box>
+                }
+            >
+
+            </FilterDropdownItem>
+        </FilterDropdown>
       <SearchBox
+        pt="10px"
         query={searchQuery}
         onChange={(event) => {
           setSearchQuery(event.currentTarget.value);
         }}
         placeholder={"Search for submission title"}
       />
-      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
+      <Box style={{ overflowX: "auto" }}>
         <Table
           verticalSpacing={"lg"}
           horizontalSpacing={"xs"}
@@ -168,9 +184,9 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                 .fill(0)
                 .map((_, idx) => (
                   <Table.Tr key={idx} opacity={0}>
-                    <Table.Td>Language Icon</Table.Td>
+                    <Table.Td></Table.Td>
                     <Table.Td>
-                      <Text>Sample problem.</Text>
+                      <Text></Text>
                     </Table.Td>
                     <Table.Td>
                       <Badge ta="center">Difficulty</Badge>
@@ -193,6 +209,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
         goForward={goForward}
         goTo={goTo}
       />
+      </Box>
     </>
   );
 }
