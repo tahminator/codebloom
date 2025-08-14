@@ -186,7 +186,7 @@ export default function LeaderboardIndex() {
                 >
                   Baruch
                   <Image
-                    src="/Baruch_Logo.webp"
+                    src="/Baruch_Logo.png"
                     alt="Baruch College Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -206,7 +206,7 @@ export default function LeaderboardIndex() {
                 >
                   RPI
                   <Image
-                    src="/RPI_Logo.png"
+                    src="/Rpi_Logo.png"
                     alt="RPI Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
