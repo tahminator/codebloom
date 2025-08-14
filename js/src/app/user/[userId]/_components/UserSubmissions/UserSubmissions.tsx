@@ -69,7 +69,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                     <Box
                     style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
                     >
-                    Filter Points
+                    Points Recieved
                     </Box>
                 }
             >
