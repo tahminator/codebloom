@@ -45,6 +45,8 @@ export const useCurrentLeaderboardUsersQuery = (
   const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
   const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
+  const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
+  const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -95,6 +97,16 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [setNyu, goTo]);
 
+  const toggleBaruch = useCallback(() => {
+    setBaruch((prev) => !prev);
+    goTo(1);
+  }, [setBaruch, goTo]);
+
+  const toggleRpi = useCallback(() => {
+    setRpi((prev) => !prev);
+    goTo(1);
+  }, [setRpi, goTo]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -110,6 +122,8 @@ export const useCurrentLeaderboardUsersQuery = (
       patina,
       hunter,
       nyu,
+      baruch,
+      rpi,
       globalIndex,
     ],
     queryFn: () =>
@@ -119,6 +133,8 @@ export const useCurrentLeaderboardUsersQuery = (
         patina,
         hunter,
         nyu,
+        baruch,
+        rpi,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -131,6 +147,8 @@ export const useCurrentLeaderboardUsersQuery = (
     patina,
     hunter,
     nyu,
+    baruch,
+    rpi,
     globalIndex,
     goBack,
     goForward,
@@ -142,6 +160,8 @@ export const useCurrentLeaderboardUsersQuery = (
     togglePatina,
     toggleHunter,
     toggleNyu,
+    toggleBaruch,
+    toggleRpi,
     toggleGlobalIndex,
   };
 };
@@ -255,6 +275,8 @@ export const useLeaderboardUsersByIdQuery = ({
   const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
   const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
+  const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
+  const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -305,6 +327,16 @@ export const useLeaderboardUsersByIdQuery = ({
     goTo(1);
   }, [setNyu, goTo]);
 
+  const toggleBaruch = useCallback(() => {
+    setBaruch((prev) => !prev);
+    goTo(1);
+  }, [setBaruch, goTo]);
+
+  const toggleRpi = useCallback(() => {
+    setRpi((prev) => !prev);
+    goTo(1);
+  }, [setRpi, goTo]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -321,6 +353,8 @@ export const useLeaderboardUsersByIdQuery = ({
       patina,
       hunter,
       nyu,
+      baruch,
+      rpi,
       globalIndex,
     ],
     queryFn: () =>
@@ -331,6 +365,8 @@ export const useLeaderboardUsersByIdQuery = ({
         patina,
         hunter,
         nyu,
+        baruch,
+        rpi,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -354,6 +390,8 @@ export const useLeaderboardUsersByIdQuery = ({
     togglePatina,
     toggleHunter,
     toggleNyu,
+    toggleBaruch,
+    toggleRpi,
     toggleGlobalIndex,
   };
 };
@@ -424,6 +462,8 @@ async function fetchLeaderboardUsers({
   patina,
   hunter,
   nyu,
+  baruch,
+  rpi,
   globalIndex,
 }: {
   page: number;
@@ -432,10 +472,12 @@ async function fetchLeaderboardUsers({
   patina: boolean;
   hunter: boolean;
   nyu: boolean;
+  baruch: boolean;
+  rpi: boolean;
   globalIndex: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
@@ -455,6 +497,8 @@ async function fetchLeaderboardUsersByLeaderboardId({
   patina,
   hunter,
   nyu,
+  baruch,
+  rpi,
   globalIndex,
   leaderboardId,
 }: {
@@ -464,11 +508,13 @@ async function fetchLeaderboardUsersByLeaderboardId({
   patina: boolean;
   hunter: boolean;
   nyu: boolean;
+  baruch: boolean;
+  rpi: boolean;
   globalIndex: boolean;
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },

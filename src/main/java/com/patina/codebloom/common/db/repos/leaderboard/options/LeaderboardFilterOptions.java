@@ -28,6 +28,8 @@ public class LeaderboardFilterOptions {
     private final boolean baruch = false;
     @Builder.Default
     private final boolean rpi = false;
+    @Builder.Default
+    private final boolean gwc = false;
     public static final LeaderboardFilterOptions DEFAULT = LeaderboardFilterOptions.builder()
                     .build();
 }
