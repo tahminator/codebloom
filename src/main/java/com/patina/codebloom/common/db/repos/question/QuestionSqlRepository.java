@@ -319,7 +319,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                             "userId" = ?
                         AND
                             q."questionTitle" ILIKE ?
-                        AND 
+                        AND
                             (NOT ? OR q."pointsAwarded" <> 0)
                         ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?
