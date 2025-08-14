@@ -166,7 +166,7 @@ export default function LeaderboardIndex() {
                 >
                   NYU
                   <Image
-                    src="/NYU_Logo.jpeg"
+                    src="/NYU_Logo.png"
                     alt="NYU Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -186,7 +186,7 @@ export default function LeaderboardIndex() {
                 >
                   Baruch
                   <Image
-                    src="/Baruch_Logo.png"
+                    src="/Baruch_Logo.webp"
                     alt="Baruch College Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -206,7 +206,7 @@ export default function LeaderboardIndex() {
                 >
                   RPI
                   <Image
-                    src="/Rpi_Logo.png"
+                    src="/RPI_Logo.png"
                     alt="RPI Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
