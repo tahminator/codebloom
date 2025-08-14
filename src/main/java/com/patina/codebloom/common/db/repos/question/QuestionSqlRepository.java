@@ -466,8 +466,6 @@ public class QuestionSqlRepository implements QuestionRepository {
                                 "questionSlug" = ?
                             AND
                                 "userId" = ?
-                            AND 
-                                gi
                             LIMIT 1
                         """;
 
@@ -521,7 +519,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                             "userId" = ?
                         AND
                             "questionTitle" ILIKE ?
-                        AND 
+                        AND
                             (NOT ? OR "pointsAwarded" <> 0)
                         """;
 
