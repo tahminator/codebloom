@@ -189,13 +189,13 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                       <Text></Text>
                     </Table.Td>
                     <Table.Td>
-                      <Badge ta="center">Difficulty</Badge>
+                      <Badge ta="center"></Badge>
                     </Table.Td>
                     <Table.Td>
-                      <Badge ta={"center"}>AC%</Badge>
+                      <Badge ta={"center"}></Badge>
                     </Table.Td>
-                    <Table.Td>PTs</Table.Td>
-                    <Table.Td>Date 1</Table.Td>
+                    <Table.Td></Table.Td>
+                    <Table.Td></Table.Td>
                   </Table.Tr>
                 ))}
           </Table.Tbody>
