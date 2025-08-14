@@ -166,7 +166,7 @@ export default function LeaderboardIndex() {
                 >
                   NYU
                   <Image
-                    src="/NYU_Logo.jpeg"
+                    src="/NYU_Logo.png"
                     alt="NYU Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
