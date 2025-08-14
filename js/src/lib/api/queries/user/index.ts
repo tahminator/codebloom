@@ -33,7 +33,13 @@ export const useUserSubmissionsQuery = ({
   pageSize?: number;
 }) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
-  const [pointFilter, setPointFilter] = useURLState("pointFilter", false, tieToUrl, true, 100)
+  const [pointFilter, setPointFilter] = useURLState(
+    "pointFilter",
+    false,
+    tieToUrl,
+    true,
+    100,
+  );
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
@@ -67,9 +73,23 @@ export const useUserSubmissionsQuery = ({
   }, [goTo, setPointFilter]);
 
   const query = useQuery({
-    queryKey: ["submission", "user", userId, page, debouncedQuery, pageSize, pointFilter],
+    queryKey: [
+      "submission",
+      "user",
+      userId,
+      page,
+      debouncedQuery,
+      pageSize,
+      pointFilter,
+    ],
     queryFn: () =>
-      fetchUserSubmissions({ page, userId, query: debouncedQuery, pageSize, pointFilter}),
+      fetchUserSubmissions({
+        page,
+        userId,
+        query: debouncedQuery,
+        pageSize,
+        pointFilter,
+      }),
   });
 
   return {
@@ -166,7 +186,7 @@ async function fetchUserSubmissions({
   userId,
   query,
   pageSize,
-  pointFilter
+  pointFilter,
 }: {
   page: number;
   userId?: string;
