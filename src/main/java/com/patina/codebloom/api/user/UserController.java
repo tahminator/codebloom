@@ -72,14 +72,15 @@ public class UserController {
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize,
+                    @Parameter(description = "Filter to hide questions with 0 points awarded") @RequestParam(required = false, defaultValue = "false") final boolean pointFilter,
                     @PathVariable final String userId) {
         FakeLag.sleep(500);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
 
-        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query);
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query, pointFilter);
 
-        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query);
+        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query, pointFilter);
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
