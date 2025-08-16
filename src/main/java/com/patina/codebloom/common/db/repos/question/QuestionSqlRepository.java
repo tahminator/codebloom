@@ -332,7 +332,6 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setInt(4, pageSize);
             stmt.setInt(5, (page - 1) * pageSize);
             // stmt.setInt(3, pageSize);
-            // stmt.setInt(4, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
