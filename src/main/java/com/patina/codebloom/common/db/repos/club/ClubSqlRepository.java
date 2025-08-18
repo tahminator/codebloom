@@ -51,7 +51,7 @@ public class ClubSqlRepository implements ClubRepository {
                             (:id, :name, :description, :slug, :splashIconUrl, :password, :tag)
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setString("id", club.getId());
+            stmt.setObject("id", UUID.fromString(club.getId()));
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
             stmt.setString("slug", club.getSlug());
@@ -72,7 +72,6 @@ public class ClubSqlRepository implements ClubRepository {
                         SET
                             "name" = :name,
                             "description" = :description,
-                            "slug" = :slug,
                             "splashIconUrl" = :splashIconUrl,
                             "password" = :password,
                             "tag" = :tag
@@ -80,15 +79,17 @@ public class ClubSqlRepository implements ClubRepository {
                             id = :id
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setString("id", club.getId());
+            stmt.setObject("id", UUID.fromString(club.getId()));
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
-            stmt.setString("slug", club.getSlug());
             stmt.setString("splashIconUrl", club.getSplashIconUrl());
             stmt.setString("password", club.getPassword());
             stmt.setObject("tag", club.getTag() != null ? club.getTag().name() : null, java.sql.Types.OTHER);
-            stmt.executeUpdate();
-            return getClubById(club.getId());
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                return getClubById(club.getId());
+            }
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update Club", e);
         }
@@ -112,7 +113,7 @@ public class ClubSqlRepository implements ClubRepository {
                             id = :id
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setString("id", id);
+            stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToClub(rs);
@@ -177,7 +178,7 @@ public class ClubSqlRepository implements ClubRepository {
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setString("id", id);
+            stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
