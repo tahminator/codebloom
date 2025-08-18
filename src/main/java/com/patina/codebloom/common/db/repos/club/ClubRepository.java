@@ -1,11 +1,10 @@
 package com.patina.codebloom.common.db.repos.club;
 
-import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.club.Club;
 
 public interface ClubRepository {
     /**
-    * Creates a new club in the database.
+     * Creates a new club in the database.
      * 
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
@@ -16,8 +15,9 @@ public interface ClubRepository {
      * <li>slug</li>
      * <li>password</li>
      * <li>tag</li>
+     * </ul>
      */
-    void createClub (final Club Club);
+    void createClub(Club club);
 
     /**
      * Updates an existing club by its ID.
@@ -35,15 +35,14 @@ public interface ClubRepository {
      * </ul>
      * @return updated club if successful
      */
+    Club updateClub(Club club);
 
-    Club updateClub (final Club Club);
+    Club getClubById(String id);
 
-    Club getClubById(final String id);
+    Club getClubBySlug(String slug);
 
-    Club getClubBySlug(final String slug);
+    boolean deleteClubBySlug(String slug);
 
-    boolean deleteClubBySlug(final String slug);
-
-    boolean deleteClubById(final String id);
+    boolean deleteClubById(String id);
 }
 
