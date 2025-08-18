@@ -40,6 +40,7 @@ public class ClubSqlRepository implements ClubRepository {
                         .tag(tag)
                         .build();
     }
+
     @Override
     public void createClub(final Club club) {
         club.setId(UUID.randomUUID().toString());
@@ -49,16 +50,16 @@ public class ClubSqlRepository implements ClubRepository {
                         VALUES
                             (:id, :name, :description, :slug, :splashIconUrl, :password, :tag)
                         """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)){
-            stmt.setObject("id", UUID.fromString(club.getId()));
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("id", club.getId());
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
             stmt.setString("slug", club.getSlug());
             stmt.setString("splashIconUrl", club.getSplashIconUrl());
             stmt.setString("password", club.getPassword());
-            stmt.setObject("tag", club.getTag());
+            stmt.setObject("tag", club.getTag().name(), java.sql.Types.OTHER);
             stmt.executeUpdate();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException("Failed to create Club", e);
         }
     }
@@ -66,124 +67,123 @@ public class ClubSqlRepository implements ClubRepository {
     @Override
     public Club updateClub(final Club club) {
         String sql = """
-                    UPDATE
-                        "Club"
-                    SET
-                        "name" = :name,
-                        "description" = :description,
-                        "slug" = :slug,
-                        "splashIconUrl" = :splashIconUrl,
-                        "password" = :password,
-                        "tag" = :tag
-                    WHERE
-                        id = :id
-                    """;
-         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)){
-            stmt.setObject("id", UUID.fromString(club.getId()));
+                        UPDATE
+                            "Club"
+                        SET
+                            "name" = :name,
+                            "description" = :description,
+                            "slug" = :slug,
+                            "splashIconUrl" = :splashIconUrl,
+                            "password" = :password,
+                            "tag" = :tag
+                        WHERE
+                            id = :id
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("id", club.getId());
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
             stmt.setString("slug", club.getSlug());
             stmt.setString("splashIconUrl", club.getSplashIconUrl());
             stmt.setString("password", club.getPassword());
-            stmt.setObject("tag", club.getTag());
+            stmt.setObject("tag", club.getTag().name(), java.sql.Types.OTHER);
             stmt.executeUpdate();
             return getClubById(club.getId());
-         } catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException("Failed to update Club", e);
         }
-        
+
     }
 
     @Override
     public Club getClubById(final String id) {
-            String sql = """
-                    SELECT
-                        id,
-                        "name",
-                        "description",
-                        "slug",
-                        "splashIconUrl",
-                        "password",
-                        "tag"
-                    FROM
-                        "Club"
-                    WHERE
-                        id = :id
-                    """;
-            try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-                stmt.setObject("id", UUID.fromString(id));
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return parseResultSetToClub(rs);
-                    }
+        String sql = """
+                        SELECT
+                            id,
+                            "name",
+                            "description",
+                            "slug",
+                            "splashIconUrl",
+                            "password",
+                            "tag"
+                        FROM
+                            "Club"
+                        WHERE
+                            id = :id
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("id", id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetToClub(rs);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to get Club by id", e);
             }
-            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get Club by id", e);
+        }
+        return null;
     }
 
     @Override
     public Club getClubBySlug(final String slug) {
-            String sql = """
-                    SELECT
-                        id,
-                        "name",
-                        "description",
-                        "slug",
-                        "splashIconUrl",
-                        "password",
-                        "tag"
-                    FROM
-                        "Club"
-                    WHERE
-                        "slug" = :slug
-                    """;
-            try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-                stmt.setString("slug", slug);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return parseResultSetToClub(rs);
-                    }
+        String sql = """
+                        SELECT
+                            id,
+                            "name",
+                            "description",
+                            "slug",
+                            "splashIconUrl",
+                            "password",
+                            "tag"
+                        FROM
+                            "Club"
+                        WHERE
+                            "slug" = :slug
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("slug", slug);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetToClub(rs);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to get Club by slug", e);
             }
-            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get Club by slug", e);
+        }
+        return null;
     }
 
     @Override
     public boolean deleteClubBySlug(final String slug) {
-            String sql = """
-                DELETE FROM "Club"
-                WHERE "slug" = :slug
-                """;
+        String sql = """
+                        DELETE FROM "Club"
+                        WHERE "slug" = :slug
+                        """;
 
-            try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-                 stmt.setString("slug", slug);
-                int rowsAffected = stmt.executeUpdate();
-                return rowsAffected > 0;
-    } catch (SQLException e) {
-        throw new RuntimeException("Failed to delete club by slug", e);
-    }
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("slug", slug);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete club by slug", e);
+        }
     }
 
     @Override
     public boolean deleteClubById(final String id) {
-            String sql = """
-                DELETE FROM "Club"
-                WHERE id = :id
-                """;
+        String sql = """
+                        DELETE FROM "Club"
+                        WHERE id = :id
+                        """;
 
-            try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-                stmt.setObject("id", UUID.fromString(id));
-                int rowsAffected = stmt.executeUpdate();
-                return rowsAffected > 0;
-    } catch (SQLException e) {
-        throw new RuntimeException("Failed to delete club by id", e);
-    }
-        
-    }
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("id", id);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete club by id", e);
+        }
 
+    }
 
 }
