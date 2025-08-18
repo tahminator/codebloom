@@ -10,7 +10,6 @@ import lombok.Setter;
 import lombok.ToString;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 
-
 @Builder
 @Getter
 @Setter
@@ -36,7 +35,7 @@ public class Club {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
-    
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Tag tag;
 
