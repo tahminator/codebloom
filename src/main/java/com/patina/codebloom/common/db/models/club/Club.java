@@ -22,21 +22,6 @@ public class Club {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
-    @Schema(requiredMode =Schema.RequiredMode.REQUIRED)
-    private String name;
-
-    @Schema(requiredMode =Schema.RequiredMode.REQUIRED, nullable = true)
-    private String description;
-
-    @Schema(requiredMode =Schema.RequiredMode.REQUIRED)
-    private String slug;
-
-    @Schema(requiredMode =Schema.RequiredMode.REQUIRED, nullable = true)
-    private String splashIconUrl;
-
-    @Schema(requiredMode =Schema.RequiredMode.REQUIRED)
-    private String password;
-    
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
