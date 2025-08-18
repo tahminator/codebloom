@@ -27,10 +27,11 @@ public class ClubRepositoryTest {
 
     @BeforeAll
     void createClub() {
+        long timestamp = System.currentTimeMillis();
         testClub = Club.builder()
                         .name("Test Club")
                         .description("Integration test club")
-                        .slug("test-club")
+                        .slug("test-club-" + timestamp)
                         .splashIconUrl("")
                         .password("testpassword123")
                         .tag(Tag.Patina)
@@ -91,10 +92,11 @@ public class ClubRepositoryTest {
     @Test
     @Order(4)
     void testDeleteClubById() {
+        long timestamp = System.currentTimeMillis();
         deletableClub = Club.builder()
                         .name("Deletable Club")
                         .description("Should be deleted")
-                        .slug("deletable-club")
+                        .slug("deletable-club-" + timestamp)
                         .splashIconUrl("")
                         .password("deletepassword")
                         .tag(Tag.Nyu)
@@ -117,10 +119,11 @@ public class ClubRepositoryTest {
     @Test
     @Order(5)
     void testDeleteClubBySlug() {
+        long timestamp = System.currentTimeMillis();
         Club deletableBySlugClub = Club.builder()
                         .name("Deletable By Slug Club")
                         .description("Should be deleted by slug")
-                        .slug("deletable-by-slug-club")
+                        .slug("deletable-by-slug-club-" + timestamp)
                         .splashIconUrl("")
                         .password("deleteslugpassword")
                         .tag(Tag.Baruch)
