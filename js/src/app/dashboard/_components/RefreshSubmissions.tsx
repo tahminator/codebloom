@@ -19,8 +19,8 @@ export default function RefreshSubmissions({
   const [hideBtn, setHideBtn] = useState(false);
 
   useEffect(() => {
-    if(localStorage.getItem("hideUniversityButton") === "true") {
-        setHideBtn(true);
+    if (localStorage.getItem("hideUniversityButton") === "true") {
+      setHideBtn(true);
     }
   }, []);
 
@@ -71,46 +71,47 @@ export default function RefreshSubmissions({
       </Button>
       {!schoolRegistered && !hideBtn && (
         <Center>
-            <div style={{position: "relative", display: "incline-block"}}>
-                <Button
-                component={Link}
-                variant={"light"}
-                to={"/settings"}
-                size={"sm"}
-                mb={"sm"}
-                style={{
-                cursor: "pointer", }}
-                >
-            Go to settings {"&"} register your university email
-          </Button>
-
-          <button
-            type = "button"
-            onClick={handleHideButton}
-            style={{
-              top: -10,
-              right: -10,
-              zIndex: 2,
-              color: "white",
-              background: "#b91c1c",
-              width: 24,
-              height: 24,
-              fontSize: 14,
-              fontWeight: 700,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              lineHeight: 1,
-              textAlign: "center",
-              cursor: "pointer",
-              borderRadius: "50%",
-              border: "none",
-              position: "absolute",
-            }}
+          <div style={{ position: "relative", display: "incline-block" }}>
+            <Button
+              component={Link}
+              variant={"light"}
+              to={"/settings"}
+              size={"sm"}
+              mb={"sm"}
+              style={{
+                cursor: "pointer",
+              }}
             >
-                x
+              Go to settings {"&"} register your university email
+            </Button>
+
+            <button
+              type="button"
+              onClick={handleHideButton}
+              style={{
+                top: -10,
+                right: -10,
+                zIndex: 2,
+                color: "white",
+                background: "#b91c1c",
+                width: 24,
+                height: 24,
+                fontSize: 14,
+                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                lineHeight: 1,
+                textAlign: "center",
+                cursor: "pointer",
+                borderRadius: "50%",
+                border: "none",
+                position: "absolute",
+              }}
+            >
+              x
             </button>
-            </div>
+          </div>
         </Center>
       )}
       <Text
@@ -119,7 +120,7 @@ export default function RefreshSubmissions({
           maxWidth: "640px",
         }}
         ta={"center"}
-        >
+      >
         Please note that we automatically query Leetcode's APIs behind the
         scenes to make sure you can stay on that LeetCode grind without having
         to press this button everytime!
