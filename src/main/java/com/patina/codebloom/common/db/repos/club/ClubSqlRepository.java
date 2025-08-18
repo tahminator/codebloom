@@ -57,7 +57,7 @@ public class ClubSqlRepository implements ClubRepository {
             stmt.setString("slug", club.getSlug());
             stmt.setString("splashIconUrl", club.getSplashIconUrl());
             stmt.setString("password", club.getPassword());
-            stmt.setObject("tag", club.getTag().name(), java.sql.Types.OTHER);
+            stmt.setObject("tag", club.getTag() != null ? club.getTag().name() : null, java.sql.Types.OTHER);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create Club", e);
