@@ -1,3 +1,10 @@
+
+DO $$ BEGIN
+    CREATE TYPE "Tag" AS ENUM ('Gwc');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 CREATE TABLE IF NOT EXISTS "Club" (
     id UUID PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
