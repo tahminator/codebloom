@@ -29,7 +29,7 @@ public interface QuestionRepository {
 
     QuestionWithUser getQuestionWithUserById(String id);
 
-    ArrayList<Question> getQuestionsByUserId(String userId, int page, int pageSize, String query);
+    ArrayList<Question> getQuestionsByUserId(String userId, int page, int pageSize, String query, boolean pointFilter);
 
     /**
      * @note - The provided object's methods will be overridden with any returned
@@ -67,5 +67,5 @@ public interface QuestionRepository {
 
     boolean questionExistsBySubmissionId(String submissionId);
 
-    int getQuestionCountByUserId(String userId, String query);
+    int getQuestionCountByUserId(String userId, String query, boolean filterPoints);
 }
