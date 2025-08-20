@@ -29,7 +29,7 @@
     </scm>
     <properties>
         <checkstyle.config.location>./checkstyle.xml</checkstyle.config.location>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
     </properties>
     <dependencies>
         <dependency>
