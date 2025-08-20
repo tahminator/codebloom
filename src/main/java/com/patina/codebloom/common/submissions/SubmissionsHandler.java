@@ -17,7 +17,7 @@ import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
-import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
+import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -31,7 +31,7 @@ import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 @Controller
 public class SubmissionsHandler {
     private final QuestionRepository questionRepository;
-    private final LeetcodeApiHandler leetcodeApiHandler;
+    private final LeetcodeClient leetcodeClient;
     private final LeaderboardRepository leaderboardRepository;
     private final POTDRepository potdRepository;
     private final UserRepository userRepository;
@@ -43,10 +43,10 @@ public class SubmissionsHandler {
         return createdAtDate.equals(today);
     }
 
-    public SubmissionsHandler(final QuestionRepository questionRepository, final LeetcodeApiHandler leetcodeApiHandler, final LeaderboardRepository leaderboardRepository,
+    public SubmissionsHandler(final QuestionRepository questionRepository, final LeetcodeClient leetcodeClient, final LeaderboardRepository leaderboardRepository,
                     final POTDRepository potdRepository, final UserRepository userRepository) {
         this.questionRepository = questionRepository;
-        this.leetcodeApiHandler = leetcodeApiHandler;
+        this.leetcodeClient = leetcodeClient;
         this.leaderboardRepository = leaderboardRepository;
         this.potdRepository = potdRepository;
         this.userRepository = userRepository;
@@ -75,9 +75,9 @@ public class SubmissionsHandler {
                 multiplier = potd.getMultiplier();
             }
 
-            LeetcodeQuestion leetcodeQuestion = leetcodeApiHandler.findQuestionBySlug(leetcodeSubmission.getTitleSlug());
+            LeetcodeQuestion leetcodeQuestion = leetcodeClient.findQuestionBySlug(leetcodeSubmission.getTitleSlug());
 
-            LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
+            LeetcodeDetailedQuestion detailedQuestion = leetcodeClient.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
 
             // If the submission is before the leaderboard started, points awarded = 0
             Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
@@ -135,7 +135,7 @@ public class SubmissionsHandler {
         List<User> users = userRepository.getAllUsers();
         for (User user : users) {
             System.out.println("Starting migration for user ID " + user.getId());
-            ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(user.getLeetcodeUsername());
+            ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
             for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
                 if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
@@ -148,7 +148,7 @@ public class SubmissionsHandler {
                     continue;
                 }
 
-                LeetcodeDetailedQuestion detailedQuestion = leetcodeApiHandler.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
+                LeetcodeDetailedQuestion detailedQuestion = leetcodeClient.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
 
                 if (detailedQuestion == null) {
                     continue;

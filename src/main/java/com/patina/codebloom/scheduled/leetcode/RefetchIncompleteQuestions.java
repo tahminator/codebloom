@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.DefaultLeetcodeApiHandler;
+import com.patina.codebloom.common.leetcode.LeetcodeClientImpl;
 
 @Component
 public class RefetchIncompleteQuestions {
     private static final Logger LOGGER = LoggerFactory.getLogger(RefetchIncompleteQuestions.class);
 
     private final QuestionRepository questionRepository;
-    private final DefaultLeetcodeApiHandler defaultLeetcodeApiHandler;
+    private final LeetcodeClientImpl defaultleetcodeClient;
 
-    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final DefaultLeetcodeApiHandler defaultLeetcodeApiHandler) {
+    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final LeetcodeClientImpl defaultleetcodeClient) {
         this.questionRepository = questionRepository;
-        this.defaultLeetcodeApiHandler = defaultLeetcodeApiHandler;
+        this.defaultleetcodeClient = defaultleetcodeClient;
 
     }
 
@@ -38,7 +38,7 @@ public class RefetchIncompleteQuestions {
         for (Question q : questions) {
             try {
                 int submissionId = Integer.parseInt(q.getSubmissionId());
-                LeetcodeDetailedQuestion matchingQuestionWithDetails = defaultLeetcodeApiHandler.findSubmissionDetailBySubmissionId(submissionId);
+                LeetcodeDetailedQuestion matchingQuestionWithDetails = defaultleetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
 
                 Question updated = Question.builder()
                                 .id(q.getId())
