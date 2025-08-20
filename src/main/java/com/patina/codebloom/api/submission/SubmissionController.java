@@ -29,7 +29,7 @@ import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
 import com.patina.codebloom.common.lag.FakeLag;
-import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
+import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.security.AuthenticationObject;
@@ -60,7 +60,7 @@ public class SubmissionController {
     private final UserRepository userRepository;
     private final Protector protector;
     private final SimpleRedis simpleRedis;
-    private final LeetcodeApiHandler leetcodeApiHandler;
+    private final LeetcodeClient leetcodeClient;
     private final SubmissionsHandler submissionsHandler;
     private final QuestionRepository questionRepository;
     private final POTDRepository potdRepository;
@@ -77,13 +77,13 @@ public class SubmissionController {
     }
 
     public SubmissionController(final UserRepository userRepository, final Protector protector, final SimpleRedis simpleRedis,
-                    final LeetcodeApiHandler leetcodeApiHandler,
+                    final LeetcodeClient leetcodeClient,
                     final SubmissionsHandler submissionsHandler, final QuestionRepository questionRepository,
                     final POTDRepository potdRepository) {
         this.userRepository = userRepository;
         this.protector = protector;
         this.simpleRedis = simpleRedis;
-        this.leetcodeApiHandler = leetcodeApiHandler;
+        this.leetcodeClient = leetcodeClient;
         this.submissionsHandler = submissionsHandler;
         this.questionRepository = questionRepository;
         this.potdRepository = potdRepository;
@@ -137,7 +137,7 @@ public class SubmissionController {
                             "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
         }
 
-        UserProfile leetcodeUserProfile = leetcodeApiHandler.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
+        UserProfile leetcodeUserProfile = leetcodeClient.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
         String aboutMe = leetcodeUserProfile.getAboutMe();
         if (aboutMe == null || !aboutMe.equals(privateUser.getVerifyKey())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
@@ -190,7 +190,7 @@ public class SubmissionController {
 
         simpleRedis.put(0, user.getId(), System.currentTimeMillis());
 
-        ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeApiHandler.findSubmissionsByUsername(user.getLeetcodeUsername());
+        ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
         return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!",
                         submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
