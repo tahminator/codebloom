@@ -1,6 +1,6 @@
 import { useUsersTotalPoints } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import { Button, Center, Text } from "@mantine/core";
+import { Button, Center, Text, CloseButton} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
@@ -85,32 +85,18 @@ export default function RefreshSubmissions({
               Go to settings {"&"} register your university email
             </Button>
 
-            <button
-              type="button"
-              onClick={handleHideButton}
-              style={{
-                top: -10,
-                right: -10,
-                zIndex: 2,
-                color: "white",
-                background: "#b91c1c",
-                width: 24,
-                height: 24,
-                fontSize: 14,
-                fontWeight: 700,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                lineHeight: 1,
-                textAlign: "center",
-                cursor: "pointer",
-                borderRadius: "50%",
-                border: "none",
-                position: "absolute",
+            <CloseButton
+                aria-label="Hide university button"
+                onClick={handleHideButton}
+                size="sm"
+                style={{
+                    top: -8,
+                    right: -8,
+                    zIndex: 2,
+                    background: "#b91c1c",
+                    position: "absolute",
               }}
-            >
-              x
-            </button>
+            />
           </div>
         </Center>
       )}
