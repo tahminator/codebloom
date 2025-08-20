@@ -64,7 +64,13 @@ public class OfficialCodebloomEmail extends Email {
             message.setFrom(new InternetAddress(emailProperties.getUsername()));
             message.setRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(sendEmailOptions.getRecipientEmail()));
             message.setSubject(sendEmailOptions.getSubject());
-            message.setText(sendEmailOptions.getBody());
+            
+            // Check if the email body is HTML or plain text
+            if (sendEmailOptions.getIsHtml() != null && sendEmailOptions.getIsHtml()) {
+                message.setContent(sendEmailOptions.getBody(), "text/html; charset=UTF-8");
+            } else {
+                message.setText(sendEmailOptions.getBody());
+            }
 
             Transport.send(message);
 

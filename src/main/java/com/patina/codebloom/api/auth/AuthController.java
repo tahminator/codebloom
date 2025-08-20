@@ -1,5 +1,7 @@
 package com.patina.codebloom.api.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import com.patina.codebloom.common.email.options.SendEmailOptions;
 import com.patina.codebloom.api.auth.body.EmailBody;
 import com.patina.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
 import com.patina.codebloom.common.email.error.EmailException;
+import com.patina.codebloom.common.email.template.EmailTemplateService;
+import com.patina.codebloom.common.email.template.EmailTemplateException;
 import com.patina.codebloom.common.url.ServerUrlUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,21 +57,25 @@ import com.patina.codebloom.common.db.models.usertag.UserTag;
 @Tag(name = "Authentication Routes")
 @RequestMapping("/api/auth")
 public class AuthController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    
     private final SessionRepository sessionRepository;
     private final Protector protector;
     private final JWTClient jwtClient;
     private final UserRepository userRepository;
     private final OfficialCodebloomEmail emailClient;
+    private final EmailTemplateService emailTemplateService;
     private final ServerUrlUtils serverUrlUtils;
     private final UserTagRepository userTagRepository;
 
     public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository,
-                    final OfficialCodebloomEmail emailClient, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository) {
+                    final OfficialCodebloomEmail emailClient, final EmailTemplateService emailTemplateService, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
         this.jwtClient = jwtClient;
         this.emailClient = emailClient;
+        this.emailTemplateService = emailTemplateService;
         this.serverUrlUtils = serverUrlUtils;
         this.userTagRepository = userTagRepository;
     }
@@ -116,9 +124,9 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "not implemented")
     })
     @PostMapping("/school/enroll")
-    public ResponseEntity<ApiResponder<Empty>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Empty>> enrollSchool(@Valid @RequestBody final EmailBody emailBodyRequest, final HttpServletRequest request) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
-        String email = emailBody.getEmail();
+        String email = emailBodyRequest.getEmail();
         String domain = email.substring(email.indexOf("@")).toLowerCase();
         Set<String> supportedDomains = Stream.of(SchoolEnum.values())
                         .map(school -> school.getEmailDomain())
@@ -139,15 +147,31 @@ public class AuthController {
             String token = jwtClient.encode(magicLink, Duration.ofHours(1));
             String verificationLink = serverUrlUtils.getUrl()
                             + "/api/auth/school/verify?state=" + token;
+            
+            // Try to render HTML email template, fallback to plain text if it fails
+            String emailBody;
+            boolean isHtml = false;
+            
+            try {
+                emailBody = emailTemplateService.renderSchoolVerificationEmail(email, verificationLink);
+                isHtml = true;
+            } catch (EmailTemplateException e) {
+                // Fallback to plain text email if template rendering fails
+                logger.warn("Failed to render email template, falling back to plain text: " + e.getMessage());
+                emailBody = String.format("""
+                                        Please click on this link to verify your school email with Codebloom: %s.
+
+                                        Note: This link will expire in 1 hour. If it expires, you'll need to request a new one.
+                                        """, verificationLink);
+                isHtml = false;
+            }
+            
             emailClient.sendMessage(
                             SendEmailOptions.builder()
                                             .recipientEmail(email)
                                             .subject("Hello from Codebloom!")
-                                            .body(String.format("""
-                                                            Please click on this link to verify your school email with Codebloom: %s.
-
-                                                            Note: This link will expire in 1 hour. If it expires, you'll need to request a new one.
-                                                            """, verificationLink))
+                                            .body(emailBody)
+                                            .isHtml(isHtml)
                                             .build());
             return ResponseEntity.ok().body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", Empty.of()));
         } catch (EmailException e) {
