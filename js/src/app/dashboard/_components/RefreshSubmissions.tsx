@@ -1,6 +1,6 @@
 import { useUsersTotalPoints } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import { Button, Center, Text, CloseButton} from "@mantine/core";
+import { Button, Center, Text, CloseButton } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
@@ -71,13 +71,13 @@ export default function RefreshSubmissions({
       </Button>
       {!schoolRegistered && !hideBtn && (
         <Center>
-          <div style={{ position: "relative", display: "incline-block" }}>
+          <div style={{ position: "relative", display: "inline-block" }}>
             <Button
               component={Link}
-              variant={"light"}
-              to={"/settings"}
-              size={"sm"}
-              mb={"sm"}
+              variant="light"
+              to="/settings"
+              size="sm"
+              mb="sm"
               style={{
                 cursor: "pointer",
               }}
