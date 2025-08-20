@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
-import com.patina.codebloom.common.leetcode.LeetcodeApiHandler;
+import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
@@ -17,17 +17,17 @@ import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 public class PotdSetter {
     private static final Logger LOGGER = LoggerFactory.getLogger(PotdSetter.class);
 
-    private LeetcodeApiHandler leetcodeApiHandler;
+    private LeetcodeClient leetcodeClient;
     private POTDRepository potdRepository;
 
-    public PotdSetter(final LeetcodeApiHandler leetcodeApiHandler, final POTDRepository potdRepository) {
-        this.leetcodeApiHandler = leetcodeApiHandler;
+    public PotdSetter(final LeetcodeClient leetcodeClient, final POTDRepository potdRepository) {
+        this.leetcodeClient = leetcodeClient;
         this.potdRepository = potdRepository;
     }
 
     @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60 * 5)
     public void setPotd() {
-        com.patina.codebloom.common.leetcode.models.POTD leetcodePotd = leetcodeApiHandler.getPotd();
+        com.patina.codebloom.common.leetcode.models.POTD leetcodePotd = leetcodeClient.getPotd();
 
         if (leetcodePotd == null) {
             LOGGER.warn("No POTD was been returned.");
