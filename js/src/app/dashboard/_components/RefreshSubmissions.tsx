@@ -86,15 +86,15 @@ export default function RefreshSubmissions({
             </Button>
 
             <CloseButton
-                aria-label="Hide university button"
-                onClick={handleHideButton}
-                size="sm"
-                style={{
-                    top: -8,
-                    right: -8,
-                    zIndex: 2,
-                    background: "#b91c1c",
-                    position: "absolute",
+              aria-label="Hide university button"
+              onClick={handleHideButton}
+              size="sm"
+              style={{
+                top: -8,
+                right: -8,
+                zIndex: 2,
+                background: "#b91c1c",
+                position: "absolute",
               }}
             />
           </div>
