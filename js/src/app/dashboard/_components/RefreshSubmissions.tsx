@@ -1,9 +1,9 @@
 import { useUsersTotalPoints } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import { Button, Center, Text, CloseButton } from "@mantine/core";
+import { Button, Center, Text, CloseButton, Box } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useLocalStorage } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function RefreshSubmissions({
@@ -16,17 +16,14 @@ export default function RefreshSubmissions({
 
   const isDisabled = countdown > 0;
 
-  const [hideBtn, setHideBtn] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.getItem("hideUniversityButton") === "true") {
-      setHideBtn(true);
-    }
-  }, []);
+  const [hideBtn, setHideBtn] = useLocalStorage({
+    key: "hideUniversityButton",
+    defaultValue: false,
+    getInitialValueInEffect: true,
+  });
 
   const handleHideButton = () => {
     setHideBtn(true);
-    localStorage.setItem("hideUniversityButton", "true");
   };
 
   const form = useForm({
@@ -71,33 +68,28 @@ export default function RefreshSubmissions({
       </Button>
       {!schoolRegistered && !hideBtn && (
         <Center>
-          <div style={{ position: "relative", display: "inline-block" }}>
+          <Box pos="relative" display="inline-block">
             <Button
               component={Link}
               variant="light"
               to="/settings"
               size="sm"
               mb="sm"
-              style={{
-                cursor: "pointer",
-              }}
             >
-              Go to settings {"&"} register your university email
+              Go to settings & register your university email
             </Button>
 
             <CloseButton
               aria-label="Hide university button"
               onClick={handleHideButton}
               size="sm"
-              style={{
-                top: -8,
-                right: -8,
-                zIndex: 2,
-                background: "#b91c1c",
-                position: "absolute",
-              }}
+              pos="absolute"
+              top={-8}
+              right={-8}
+              bg="red.7"
+              c="white"
             />
-          </div>
+          </Box>
         </Center>
       )}
       <Text
