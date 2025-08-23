@@ -1,8 +1,8 @@
 import { useUsersTotalPoints } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import { Button, Center, Text, CloseButton, Box } from "@mantine/core";
+import { Button, Center, Text, CloseButton, Box, Modal, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useLocalStorage } from "@mantine/hooks";
+import { useLocalStorage, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Link } from "react-router-dom";
 
@@ -22,9 +22,14 @@ export default function RefreshSubmissions({
     getInitialValueInEffect: true,
   });
 
-  const handleHideButton = () => {
-    setHideBtn(true);
-  };
+  const [confirmOpen, { open, close }] = useDisclosure(false);
+  const xClicked = () => {
+    open(); // opens modal
+  }
+  const confirmHidden = () => {
+    setHideBtn(true); // hide permanently
+    close(); // closes modal
+  }
 
   const form = useForm({
     initialValues: {
@@ -50,6 +55,27 @@ export default function RefreshSubmissions({
   };
 
   return (
+    <>
+    <Modal opened = {confirmOpen} onClose={close} withCloseButton={false} centered>
+        <Text fw={700} ta="center">
+            Are you sure you want to hide this button permanenly?
+        </Text>
+        <Text size = "sm" c="dimmed" ta="center" mt="xs">
+            You can always register your university email by clicking on the profile icon on the top right & going to the settings page
+        </Text>
+
+        <Group justify="center" mt="md">
+            <Button variant="default" onClick={close}>
+                Cancel
+            </Button>
+            <Button color="red" onClick={confirmHidden}>
+                Confirm
+            </Button>
+        </Group>
+    </Modal>
+    
+
+
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Button
         fullWidth
@@ -81,17 +107,19 @@ export default function RefreshSubmissions({
 
             <CloseButton
               aria-label="Hide university button"
-              onClick={handleHideButton}
               size="sm"
               pos="absolute"
               top={-8}
               right={-8}
               bg="red.7"
               c="white"
+              onClick = {xClicked}
+              radius="xl"
             />
           </Box>
         </Center>
       )}
+
       <Text
         c={"dimmed"}
         style={{
@@ -104,5 +132,6 @@ export default function RefreshSubmissions({
         to press this button everytime!
       </Text>
     </form>
+    </>
   );
 }
