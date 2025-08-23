@@ -32,11 +32,11 @@ export default function RefreshSubmissions({
 
   const [confirmOpen, { open, close }] = useDisclosure(false);
   const xClicked = () => {
-    open(); // opens modal
+    open();
   };
   const confirmHidden = () => {
-    setHideBtn(true); // hide permanently
-    close(); // closes modal
+    setHideBtn(true);
+    close();
   };
 
   const form = useForm({
