@@ -1,3 +1,5 @@
+# DEPRECATED: Use Justfile
+
 migrate:
 	dotenvx run -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
