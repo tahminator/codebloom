@@ -77,7 +77,6 @@ export default function RefreshSubmissions({
           You can always register your university email by clicking on the
           profile icon on the top right & going to the settings page
         </Text>
-
         <Group justify="center" mt="md">
           <Button variant="default" onClick={close}>
             Cancel
