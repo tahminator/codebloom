@@ -87,7 +87,6 @@ export default function RefreshSubmissions({
           </Button>
         </Group>
       </Modal>
-
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Button
           fullWidth
@@ -116,7 +115,6 @@ export default function RefreshSubmissions({
               >
                 Go to settings & register your university email
               </Button>
-
               <CloseButton
                 aria-label="Hide university button"
                 size="sm"
@@ -131,7 +129,6 @@ export default function RefreshSubmissions({
             </Box>
           </Center>
         )}
-
         <Text
           c={"dimmed"}
           style={{
