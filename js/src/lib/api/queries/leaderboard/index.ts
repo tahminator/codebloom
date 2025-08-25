@@ -47,6 +47,7 @@ export const useCurrentLeaderboardUsersQuery = (
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
   const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
   const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
+  const [gwc, setGwc] = useURLState("gwc", false, tieToUrl, true, 100);
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -107,6 +108,11 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [setRpi, goTo]);
 
+  const toggleGwc = useCallback(() => {
+    setGwc((prev) => !prev);
+    goTo(1);
+  }, [goTo, setGwc]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -124,6 +130,7 @@ export const useCurrentLeaderboardUsersQuery = (
       nyu,
       baruch,
       rpi,
+      gwc,
       globalIndex,
     ],
     queryFn: () =>
@@ -135,6 +142,7 @@ export const useCurrentLeaderboardUsersQuery = (
         nyu,
         baruch,
         rpi,
+        gwc,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -149,6 +157,7 @@ export const useCurrentLeaderboardUsersQuery = (
     nyu,
     baruch,
     rpi,
+    gwc,
     globalIndex,
     goBack,
     goForward,
@@ -163,6 +172,7 @@ export const useCurrentLeaderboardUsersQuery = (
     toggleBaruch,
     toggleRpi,
     toggleGlobalIndex,
+    toggleGwc,
   };
 };
 
@@ -277,6 +287,7 @@ export const useLeaderboardUsersByIdQuery = ({
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
   const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
   const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
+  const [gwc, setGwc] = useURLState("gwc", false, tieToUrl, true, 100);
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -337,6 +348,11 @@ export const useLeaderboardUsersByIdQuery = ({
     goTo(1);
   }, [setRpi, goTo]);
 
+  const toggleGwc = useCallback(() => {
+    setGwc((prev) => !prev);
+    goTo(1);
+  }, [goTo, setGwc]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -355,6 +371,7 @@ export const useLeaderboardUsersByIdQuery = ({
       nyu,
       baruch,
       rpi,
+      gwc,
       globalIndex,
     ],
     queryFn: () =>
@@ -367,6 +384,7 @@ export const useLeaderboardUsersByIdQuery = ({
         nyu,
         baruch,
         rpi,
+        gwc,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -379,6 +397,9 @@ export const useLeaderboardUsersByIdQuery = ({
     patina,
     hunter,
     nyu,
+    baruch,
+    rpi,
+    gwc,
     globalIndex,
     goBack,
     goForward,
@@ -393,6 +414,7 @@ export const useLeaderboardUsersByIdQuery = ({
     toggleBaruch,
     toggleRpi,
     toggleGlobalIndex,
+    toggleGwc,
   };
 };
 
@@ -464,6 +486,7 @@ async function fetchLeaderboardUsers({
   nyu,
   baruch,
   rpi,
+  gwc,
   globalIndex,
 }: {
   page: number;
@@ -474,10 +497,11 @@ async function fetchLeaderboardUsers({
   nyu: boolean;
   baruch: boolean;
   rpi: boolean;
+  gwc: boolean;
   globalIndex: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
@@ -499,6 +523,7 @@ async function fetchLeaderboardUsersByLeaderboardId({
   nyu,
   baruch,
   rpi,
+  gwc,
   globalIndex,
   leaderboardId,
 }: {
@@ -510,11 +535,12 @@ async function fetchLeaderboardUsersByLeaderboardId({
   nyu: boolean;
   baruch: boolean;
   rpi: boolean;
+  gwc: boolean;
   globalIndex: boolean;
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },

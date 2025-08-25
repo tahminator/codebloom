@@ -44,6 +44,10 @@ export default function LeaderboardWithId({
     toggleHunter,
     nyu,
     toggleNyu,
+    baruch,
+    toggleBaruch,
+    rpi,
+    toggleRpi,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -164,6 +168,46 @@ export default function LeaderboardWithId({
                   NYU
                   <Image
                     src="/NYU_Logo.jpeg"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={baruch}
+              toggle={() => toggleBaruch()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Baruch
+                  <Image
+                    src="/Baruch_Logo.png"
+                    alt="Baruch College Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={rpi}
+              toggle={() => toggleRpi()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  RPI
+                  <Image
+                    src="/Rpi_Logo.png"
+                    alt="RPI Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
                 </Box>
