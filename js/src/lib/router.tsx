@@ -1,5 +1,6 @@
 import AdminPage from "@/app/admin/admin.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
+import GwcEmbedContainer from "@/app/embed/leaderboard/gwc/GwcEmbed";
 import ErrorPage from "@/app/error/Error.page";
 import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
 import AllLeaderboardsPage from "@/app/leaderboard/all/AllLeaderboards.page";
@@ -64,6 +65,11 @@ export const router = createBrowserRouter([
   {
     path: "/user/:userId/submissions",
     element: <UserSubmissionsPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/embed/leaderboard/gwc",
+    element: <GwcEmbedContainer />,
     errorElement: <ErrorPage />,
   },
   {
