@@ -6,7 +6,7 @@
 
 or
 
-make migrate
+just migrate
 
 or
 
