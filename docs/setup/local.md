@@ -115,6 +115,8 @@ While you can use any editor, VSCode is recommended as it can handle multiple la
     - For local database setup, refer to `/local-database.md`
     - Find more information about the backend in the `backend` folder which you can go to by clicking [here](https://github.com/tahminator/codebloom/tree/main/docs/backend)
 
+You may also run `just java-dev` in your terminal.
+
 ### Frontend
 
 1. Important: Always ensure you're in the `js` folder when working with frontend packages
@@ -132,3 +134,13 @@ While you can use any editor, VSCode is recommended as it can handle multiple la
     ```
 
 3. Additional frontend documentation can be found in the `frontend` folder [here](https://github.com/tahminator/codebloom/tree/main/docs/frontend).
+
+You may also run `just js-dev` in your terminal.
+
+### Development
+
+1. For quick access to development after setup, you can simply run
+
+    ```bash
+    just dev
+    ```
