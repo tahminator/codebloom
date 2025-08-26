@@ -33,7 +33,7 @@ This document should represent the best practices for writing/creating repositor
         ```java
         @Getter
         @Setter
-        @AllArgsConstructor
+        @Jacksonized
         @Builder
         @EqualsAndHashCode
         @ToString
