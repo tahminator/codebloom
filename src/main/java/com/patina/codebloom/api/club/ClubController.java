@@ -27,10 +27,10 @@ public class ClubController {
     private final ClubService clubService;
 
     @GetMapping("/{clubSlug}")
-    public ResponseEntity<ApiResponder<ClubDto>> getClubDataBySlug(@PathVariable final String slug) {
+    public ResponseEntity<ApiResponder<ClubDto>> getClubDataBySlug(@PathVariable final String clubSlug) {
         FakeLag.sleep(650);
 
-        ClubDto club = clubService.getClubBySlug(slug);
+        ClubDto club = clubService.getClubBySlug(clubSlug);
 
         if (club == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club does not exist.");
