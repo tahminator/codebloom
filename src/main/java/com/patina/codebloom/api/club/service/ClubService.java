@@ -1,11 +1,9 @@
 package com.patina.codebloom.api.club.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.patina.codebloom.api.club.dto.ClubDto;
 import com.patina.codebloom.common.db.models.club.Club;
-import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.club.ClubRepository;
 
 import lombok.RequiredArgsConstructor;
