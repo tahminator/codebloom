@@ -15,16 +15,17 @@ This document should represent the best practices for writing/creating repositor
     - Required annotations:
 
         - `@Getter` - Create getter methods for all variables: `getId()`
-        - `@Setter` - Create setter methods for all variables: `setId("4819e35f-003b-4ad5-930f-6cd6a6102623")`
+        - `@Setter` - Create setter methods for all variables: `setId("4819e35f-003b-4ad5-930f-6cd6a6102623")`. If the class is immutable, `@Setter` is not required.
         - `@ToString` - Generates a `toString()` method that will, by default, include all variable names. If you need to override this behavior, please check Lombok documentation on how to do so.
         - `@EqualsAndHashCode` - Generates an `equals()` method, _which requires `hashcode()` method, which is why it's included_, which allows you to compare object equalities. This is very important when writing tests.
         - `@Builder` - Generates a `ClassName.builder()` which lets you use a builder pattern to create the object instead:
+            - You may need `@SuperBuilder` instead if the class is extending from another base class which has `@Builder`.
 
             ```java
             Agent agent = Agent.builder().id("79e1d624-ab4f-4a28-9178-08f5a8bc4641").name("James Bond").build()
             ```
 
-        - `@AllArgsConstructor` - Generates a constructor with every method.
+        - `@Jacksonized` - This is required so a class can be de-serialized if it's ever converted from a JSON string into a Java object. It is best to always add this annotation,
 
     - **NOTE - Do not use @Data. The annotation has too much scope, and it's better to just use the annotations you were going to apply.**
     - Example file of a database object in Java:
