@@ -25,7 +25,7 @@ This document should represent the best practices for writing/creating repositor
             Agent agent = Agent.builder().id("79e1d624-ab4f-4a28-9178-08f5a8bc4641").name("James Bond").build()
             ```
 
-        - `@Jacksonized` - This is required so a class can be de-serialized if it's ever converted from a JSON string into a Java object. It is best to always add this annotation,
+        - `@Jacksonized` - This is required so a class can be de-serialized if it's ever converted from a JSON string into a Java object. It is best to always add this annotation.
 
     - **NOTE - Do not use @Data. The annotation has too much scope, and it's better to just use the annotations you were going to apply.**
     - Example file of a database object in Java:
