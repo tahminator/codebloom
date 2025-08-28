@@ -1,7 +1,5 @@
 package com.patina.codebloom.api.admin.body;
 
-
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,5 +10,5 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class DeleteAnnouncementBody {
-	private String id;
+    private String id;
 }
