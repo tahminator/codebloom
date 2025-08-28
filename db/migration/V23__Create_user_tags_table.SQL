@@ -9,7 +9,6 @@ END $$;
 CREATE TABLE IF NOT EXISTS "UserTag" (
     id UUID PRIMARY KEY,
     "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-
     "userId" UUID NOT NULL,
     tag "Tag" NOT NULL,
     CONSTRAINT "pk_user_tags" UNIQUE ("userId", tag), -- Ensures one tag type per user.
