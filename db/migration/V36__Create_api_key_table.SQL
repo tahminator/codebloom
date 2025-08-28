@@ -1,18 +1,24 @@
-CREATE TABLE IF NOT EXISTS "ApiKeyEnum" (
-    id SMALLINT PRIMARY KEY,
-    code TEXT NOT NULL UNIQUE,
-    description TEXT
-);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Access') THEN
+        CREATE TYPE "Access" AS ENUM ('GWC_READ_BY_USER');
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS "ApiKey" (
-    id VARCHAR(64) PRIMARY KEY,
-    "apiKey" TEXT NOT NULL,
-    "access" SMALLINT NOT NULL,
+    id UUID PRIMARY KEY,
+    "apiKeyHash" TEXT NOT NULL UNIQUE,
+    access "Access" NOT NULL,
     "expiresAt" TIMESTAMP WITH TIME ZONE NOT NULL,
     "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    "updatedBy" UUID,
-    CONSTRAINT "fk_apiKey_access" FOREIGN KEY ("access") REFERENCES "ApiKeyEnum" (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "fk_apiKey_user" FOREIGN KEY ("updatedBy") REFERENCES "User" (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "uq_apiKey_hash" UNIQUE ("apiKey")
+    "updatedBy" UUID
+);
+
+CREATE TABLE IF NOT EXISTS "ApiKeyAccess" (
+    id UUID PRIMARY KEY,
+    "apiKeyId" UUID NOT NULL,
+    access "Access" NOT NULL,
+    CONSTRAINT "uq_api_key_access_pair" UNIQUE ("apiKeyId", access),
+    CONSTRAINT "fk_api_key_access_key" FOREIGN KEY ("apiKeyId") REFERENCES "ApiKey"(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
