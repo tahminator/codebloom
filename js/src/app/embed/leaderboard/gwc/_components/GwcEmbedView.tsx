@@ -16,7 +16,6 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
-import { useEffect, useMemo, useRef } from "react";
 import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -38,41 +37,12 @@ export default function GwcLeaderboardEmbed() {
     setSearchQuery,
     searchQuery,
     debouncedQuery,
-    gwc,
-    toggleGwc,
-  } = useCurrentLeaderboardUsersQuery();
+  } = useCurrentLeaderboardUsersQuery({
+    tieToUrl: false,
+    defaultGwc: true,
+  });
 
-  const gwcParam = useMemo(() => {
-    try {
-      return new URLSearchParams(window.location.search).get("gwc") === "true";
-    } catch {
-      return false;
-    }
-  }, []);
-
-  const didForce = useRef(false);
-
-  useEffect(() => {
-    if (!didForce.current && gwcParam && !gwc) {
-      toggleGwc();
-      didForce.current = true;
-    }
-  }, [gwcParam, gwc, toggleGwc]);
-
-  useEffect(() => {
-    const post = () => {
-      if (!window.parent) return;
-      window.parent.postMessage(
-        { type: "CODEBLOOM_EMBED_HEIGHT", height: document.body.scrollHeight },
-        "*",
-      );
-    };
-    post();
-    const id = setInterval(post, 500);
-    return () => clearInterval(id);
-  }, []);
-
-  if (status === "pending" || !gwc) {
+  if (status === "pending") {
     return <LeaderboardSkeleton />;
   }
 
