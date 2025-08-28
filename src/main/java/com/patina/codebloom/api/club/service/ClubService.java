@@ -13,20 +13,25 @@ import lombok.RequiredArgsConstructor;
 public class ClubService {
     private final ClubRepository clubRepository;
 
-    public ClubDto getClubBySlug(String slug) {
+    public ClubDto getClubDtoBySlug(final String slug) {
         Club club = clubRepository.getClubBySlug(slug);
-        if (club == null) return null;
+        if (club == null)
+            return null;
         return ClubDto.builder()
-            .id(club.getId())
-            .name(club.getName())
-            .description(club.getDescription())
-            .slug(club.getSlug())
-            .splashIconUrl(club.getSplashIconUrl())
-            .tag(club.getTag())
-            .build();
+                        .id(club.getId())
+                        .name(club.getName())
+                        .description(club.getDescription())
+                        .slug(club.getSlug())
+                        .splashIconUrl(club.getSplashIconUrl())
+                        .tag(club.getTag())
+                        .build();
     }
 
-    public boolean isPasswordValid(Club club, String rawPassword) {
-        return club.getPassword() == rawPassword;
+    public boolean isPasswordValid(final Club club, final String rawPassword) {
+        return club.getPassword().equals(rawPassword);
+    }
+
+    public Club getClubBySlug(final String slug) {
+        return clubRepository.getClubBySlug(slug);
     }
 }
