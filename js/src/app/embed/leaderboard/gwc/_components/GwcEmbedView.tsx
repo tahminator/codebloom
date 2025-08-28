@@ -60,10 +60,17 @@ export default function GwcLeaderboardEmbed() {
   return (
     <>
       <GwcBrandHeader />
-
-      <div
-        className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem" }}
+      <Center mb="md">
+        <Button component={Link} to="https://codebloom.patinanetwork.org">
+          Visit CodeBloom
+        </Button>
+      </Center>
+      <Flex
+        direction={{ base: "column", xs: "row" }}
+        align={{ base: "center", xs: "flex-end" }}
+        justify="center"
+        gap="md"
+        mb="xl"
       >
         {page === 1 && second && !debouncedQuery && (
           <LeaderboardCard
@@ -101,8 +108,7 @@ export default function GwcLeaderboardEmbed() {
             userId={third.id as string}
           />
         )}
-      </div>
-
+      </Flex>
       <SearchBox
         query={searchQuery}
         onChange={(event) => {
@@ -110,7 +116,6 @@ export default function GwcLeaderboardEmbed() {
         }}
         placeholder={"Search for User"}
       />
-
       <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
         <Table
           verticalSpacing={"lg"}

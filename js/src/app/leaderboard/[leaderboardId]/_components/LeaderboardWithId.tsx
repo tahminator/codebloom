@@ -70,9 +70,12 @@ export default function LeaderboardWithId({
 
   return (
     <>
-      <div
-        className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem" }}
+      <Flex
+        direction={{ base: "column", xs: "row" }}
+        align={{ base: "center", xs: "flex-end" }}
+        justify="center"
+        gap="md"
+        mb="xl"
       >
         {page === 1 && second && !debouncedQuery && (
           <LeaderboardCard
@@ -110,7 +113,7 @@ export default function LeaderboardWithId({
             userId={third.id}
           />
         )}
-      </div>
+      </Flex>
       <FilterDropdown
         style={{
           marginLeft: "auto",

@@ -1,4 +1,4 @@
-import { Center, Skeleton, Table } from "@mantine/core";
+import { Center, Flex, Skeleton, Table } from "@mantine/core";
 
 /**
  * @todo - Could possibly scan the URL for page number and define different skeletons based off of that.
@@ -6,7 +6,13 @@ import { Center, Skeleton, Table } from "@mantine/core";
 export default function LeaderboardSkeleton() {
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4">
+      <Flex
+        direction={{ base: "column", xs: "row" }}
+        align={{ base: "center", xs: "flex-end" }}
+        justify="center"
+        gap="md"
+        mb="xl"
+      >
         {Array(3)
           .fill(0)
           .map((_, index) => {
@@ -20,7 +26,7 @@ export default function LeaderboardSkeleton() {
               <Skeleton visible key={index} width={"300px"} height={height} />
             );
           })}
-      </div>
+      </Flex>
       <div
         style={{
           display: "flex",
