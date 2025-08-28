@@ -169,7 +169,7 @@ public class AdminController {
         protector.validateAdminSession(request);
         Announcement announcement = announcementRepository.getAnnouncementById(deleteAnnouncementBody.getId());
         if (announcement == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, " announcement does not exist");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
         boolean isSuccessful = announcementRepository.deleteAnnouncementById(announcement.getId());
 
