@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
+import com.patina.codebloom.api.admin.body.DeleteAnnouncementBody;
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
 import com.patina.codebloom.api.admin.body.UpdateAdminBody;
 import com.patina.codebloom.api.admin.helper.PatinaDiscordMessageHelper;
@@ -157,4 +158,27 @@ public class AdminController {
 
         return ResponseEntity.ok(ApiResponder.success("New announcement successfully created!", announcement));
     }
+
+    @Operation(summary = "Create a delete announcement if exist (only for admins).", responses = {
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Announcement successfully Deleted"),
+            @ApiResponse(responseCode = "500", description = "Something went wrong", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    })
+    @PostMapping("/announcement/delete")
+    public ResponseEntity<ApiResponder<Announcement>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody DeleteAnnouncementBody,final HttpServletRequest request) {
+        protector.validateAdminSession(request);
+        Announcement announcement = announcementRepository.getAnnouncementById(DeleteAnnouncementBody.getId());
+        if(announcement == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, " announcement does not exist");
+        }
+        boolean isSuccessful = announcementRepository.deleteAnnouncementById(announcement.getId());
+
+        if (!isSuccessful) {
+            return ResponseEntity
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(ApiResponder.failure("Hmm, something went wrong."));
+        }
+         return ResponseEntity.ok(ApiResponder.success("announcement successfully deleted!", announcement));
+    }
+
 }
