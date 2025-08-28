@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.LeetcodeClientImpl;
+import com.patina.codebloom.common.leetcode.LeetcodeClient;
 
 @Component
 public class RefetchIncompleteQuestions {
     private static final Logger LOGGER = LoggerFactory.getLogger(RefetchIncompleteQuestions.class);
 
     private final QuestionRepository questionRepository;
-    private final LeetcodeClientImpl leetcodeClient;
+    private final LeetcodeClient leetcodeClient;
 
-    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final LeetcodeClientImpl leetcodeClient) {
+    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final LeetcodeClient leetcodeClient) {
         this.questionRepository = questionRepository;
         this.leetcodeClient = leetcodeClient;
 
