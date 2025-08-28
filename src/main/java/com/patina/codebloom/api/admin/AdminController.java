@@ -178,7 +178,7 @@ public class AdminController {
                             .status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Hmm, something went wrong."));
         }
-        return ResponseEntity.ok(ApiResponder.success("announcement successfully deleted!", announcement));
+        return ResponseEntity.ok(ApiResponder.success("Announcement successfully deleted!", announcement));
     }
 
 }
