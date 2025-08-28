@@ -165,10 +165,10 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Something went wrong", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     })
     @PostMapping("/announcement/delete")
-    public ResponseEntity<ApiResponder<Announcement>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody DeleteAnnouncementBody,final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Announcement>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody, final HttpServletRequest request) {
         protector.validateAdminSession(request);
-        Announcement announcement = announcementRepository.getAnnouncementById(DeleteAnnouncementBody.getId());
-        if(announcement == null){
+        Announcement announcement = announcementRepository.getAnnouncementById(deleteAnnouncementBody.getId());
+        if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, " announcement does not exist");
         }
         boolean isSuccessful = announcementRepository.deleteAnnouncementById(announcement.getId());
@@ -178,7 +178,7 @@ public class AdminController {
                             .status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Hmm, something went wrong."));
         }
-         return ResponseEntity.ok(ApiResponder.success("announcement successfully deleted!", announcement));
+        return ResponseEntity.ok(ApiResponder.success("announcement successfully deleted!", announcement));
     }
 
 }
