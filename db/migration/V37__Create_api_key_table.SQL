@@ -1,4 +1,4 @@
-DO $$ 
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Access') THEN
         CREATE TYPE "Access" AS ENUM ('GWC_READ_BY_USER');
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "ApiKey" (
     "expiresAt" TIMESTAMP WITH TIME ZONE NOT NULL,
     "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    "updatedBy" UUID
+    "updatedBy" UUID NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "ApiKeyAccess" (
