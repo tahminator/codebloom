@@ -20,14 +20,17 @@ export const useCurrentLeaderboardUsersQuery = (
     initialPage = 1,
     pageSize = 20,
     tieToUrl = true,
+    defaultGwc = false,
   }: {
     initialPage?: number;
     pageSize?: number;
     tieToUrl?: boolean;
+    defaultGwc?: boolean;
   } = {
     initialPage: 1,
     pageSize: 20,
     tieToUrl: true,
+    defaultGwc: false,
   },
 ) => {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
@@ -47,7 +50,7 @@ export const useCurrentLeaderboardUsersQuery = (
   const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
   const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
   const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
-  const [gwc, setGwc] = useURLState("gwc", false, tieToUrl, true, 100);
+  const [gwc, setGwc] = useURLState("gwc", defaultGwc, tieToUrl, true, 100);
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
