@@ -61,7 +61,12 @@ export default function GwcLeaderboardEmbed() {
     <>
       <GwcBrandHeader />
       <Center mb="md">
-        <Button component={Link} to="https://codebloom.patinanetwork.org">
+        <Button
+          component="a"
+          href="https://codebloom.patinanetwork.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Visit CodeBloom
         </Button>
       </Center>
