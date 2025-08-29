@@ -13,6 +13,7 @@ import {
   Card,
   Title,
   TextInput,
+  Image,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
@@ -28,6 +29,7 @@ export default function ClubSignUp() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   if (clubQuery.status === "pending" || authQuery.status === "pending") {
     return <ClubSignUpSkeleton />;
@@ -103,6 +105,18 @@ export default function ClubSignUp() {
         w="100%"
       >
         <Stack gap="md">
+          {club.splashIconUrl && !imgError && (
+            <Image
+              src={club.splashIconUrl}
+              alt=""
+              radius="md"
+              w={160}
+              maw={200}
+              fit="contain"
+              mx="auto"
+              onError={() => setImgError(true)}
+            />
+          )}
           <Title order={2} ta="center">
             Register for {club.name ?? "this club"}
           </Title>
