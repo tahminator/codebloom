@@ -91,6 +91,7 @@ jobs:
         name: Validate DB Schema
         runs-on: ubuntu-latest
         needs: backendTests
+        environment: production
 
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
