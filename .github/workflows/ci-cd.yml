@@ -245,7 +245,7 @@ jobs:
                   echo "JAVA_HOME=$JAVA_HOME"
 
             - name: Validate DB Schema
-              run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignorePendingMigrations=true
+              run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
 
     buildImage:
         name: Build Docker Image & Upload to Registry
