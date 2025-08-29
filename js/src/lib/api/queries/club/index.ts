@@ -34,7 +34,7 @@ async function verifyPassword({
     password: string;
     clubSlug: string;
 }) {
-    const response = await fetch("api/club/verify", {
+    const response = await fetch("/api/club/verify", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
