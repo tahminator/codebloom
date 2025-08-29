@@ -1,8 +1,8 @@
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ApiKeyAccessEnum') THEN
-        CREATE TYPE "ApiKeyAccessEnum" AS ENUM ('GWC_READ_BY_USER');
-    END IF;
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ApiKeyAccessEnum') THEN 
+        CREATE TYPE "ApiKeyAccessEnum" AS ENUM ('GWC_READ_BY_USER'); 
+    END IF; 
 END $$;
 
 CREATE TABLE IF NOT EXISTS "ApiKey" (
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "ApiKey" (
     "expiresAt" TIMESTAMP WITH TIME ZONE NOT NULL,
     "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    "updatedBy" UUID NOT NULL
+    "updatedBy" UUID NOT NULL,
     CONSTRAINT "fk_apiKey_updatedBy_user" FOREIGN KEY ("updatedBy") REFERENCES "User"(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
