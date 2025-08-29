@@ -1,4 +1,4 @@
-import UserSubmissions from "@/app/user/[userId]/_components/UserSubmissions/UserSubmissions";
+import UserSubmissions from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissions";
 import Header from "@/components/ui/header/Header";
 import { Button, Flex, Center } from "@mantine/core";
 import { useParams, useNavigate } from "react-router-dom";
