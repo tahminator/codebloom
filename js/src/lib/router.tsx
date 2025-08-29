@@ -1,4 +1,5 @@
 import AdminPage from "@/app/admin/admin.page";
+import ClubSignUp from "@/app/clubs/ClubSignUp.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import GwcEmbedContainer from "@/app/embed/leaderboard/gwc/GwcEmbed";
 import ErrorPage from "@/app/error/Error.page";
@@ -94,6 +95,11 @@ export const router = createBrowserRouter([
   {
     path: "/privacy",
     element: <PolicyPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/club/:clubSlug",
+    element: <ClubSignUp />,
     errorElement: <ErrorPage />,
   },
 ]);
