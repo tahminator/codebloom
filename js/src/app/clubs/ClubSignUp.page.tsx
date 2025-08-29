@@ -16,8 +16,9 @@ import {
   Image,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import ClubSignUpSkeleton from "./ClubSignUpSkeleton.page";
 
@@ -26,10 +27,15 @@ export default function ClubSignUp() {
   const clubQuery = useClubQuery({ clubSlug });
   const authQuery = useAuthQuery();
   const { mutate } = useVerifyPasswordMutation();
+
+  // State Hooks
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [imgError, setImgError] = useState(false);
+
+  // Query Client
+  const queryClient = useQueryClient();
 
   if (clubQuery.status === "pending" || authQuery.status === "pending") {
     return <ClubSignUpSkeleton />;
@@ -54,7 +60,15 @@ export default function ClubSignUp() {
   }
 
   const club = clubQuery.data.payload;
+  const clubTag = clubQuery.data.payload.tag!;
+
   const userId = authQuery.data.user!.id;
+  const userTags = authQuery.data.user!.tags;
+
+  // Check if the User already has the desired club tag
+  const hasTag = userTags.some(
+    ({ tag }) => tag.toString() === clubTag?.toString(),
+  );
 
   const handleSubmit = (userId: string, password: string, clubSlug: string) => {
     if (!password.trim()) {
@@ -83,6 +97,10 @@ export default function ClubSignUp() {
               color: undefined,
               message: data.message,
             });
+
+            // Refresh queries to update page after obtaining the tag
+            queryClient.invalidateQueries({ queryKey: ["auth"] });
+            queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
           },
         },
       );
@@ -117,34 +135,60 @@ export default function ClubSignUp() {
               onError={() => setImgError(true)}
             />
           )}
-          <Title order={2} ta="center">
-            Register for {club.name ?? "this club"}
-          </Title>
-          <Text c="dimmed" ta="center">
-            Enter the club password to continue.
-          </Text>
+          {!hasTag ?
+            <>
+              <Title order={2} ta="center">
+                Register for {club.name ?? "this club"}
+              </Title>
+              <Text c="dimmed" ta="center">
+                Enter the club password to continue.
+              </Text>
 
-          <TextInput
-            label="Password"
-            placeholder="Enter secret password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            error={error || undefined}
-            onKeyDown={(e) =>
-              e.key === "Enter" && handleSubmit(userId, password, clubSlug!)
-            }
-            autoComplete="new-password"
-            radius="md"
-          />
+              <TextInput
+                label="Password"
+                placeholder="Enter secret password"
+                value={password}
+                onChange={(e) => setPassword(e.currentTarget.value)}
+                error={error || undefined}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleSubmit(userId, password, clubSlug!)
+                }
+                autoComplete="new-password"
+                radius="md"
+              />
 
-          <Button
-            onClick={() => handleSubmit(userId, password, clubSlug!)}
-            loading={submitting}
-            radius="md"
-            fullWidth
-          >
-            Register
-          </Button>
+              <Button
+                onClick={() => handleSubmit(userId, password, clubSlug!)}
+                loading={submitting}
+                radius="md"
+                fullWidth
+              >
+                Register
+              </Button>
+            </>
+          : <>
+              <Title order={2} ta="center">
+                You already are verified for {club.name ?? "this club"}!
+              </Title>
+
+              <TextInput
+                label="Password"
+                value="Enter secret password"
+                readOnly
+                disabled
+                radius="md"
+              />
+              <Button
+                component={Link}
+                to="/dashboard"
+                radius="md"
+                fullWidth
+                mt="md"
+              >
+                Go to Dashboard
+              </Button>
+            </>
+          }
         </Stack>
       </Card>
     </Center>
