@@ -11,22 +11,22 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.LeetcodeClientImpl;
+import com.patina.codebloom.common.leetcode.LeetcodeClient;
 
 @Component
 public class RefetchIncompleteQuestions {
     private static final Logger LOGGER = LoggerFactory.getLogger(RefetchIncompleteQuestions.class);
 
     private final QuestionRepository questionRepository;
-    private final LeetcodeClientImpl defaultleetcodeClient;
+    private final LeetcodeClient leetcodeClient;
 
-    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final LeetcodeClientImpl defaultleetcodeClient) {
+    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final LeetcodeClient leetcodeClient) {
         this.questionRepository = questionRepository;
-        this.defaultleetcodeClient = defaultleetcodeClient;
+        this.leetcodeClient = leetcodeClient;
 
     }
 
-    @Scheduled(initialDelay = 0, fixedDelay = 24, timeUnit = TimeUnit.HOURS)
+    @Scheduled(initialDelay = 0, fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     public void reFetchIncompleteQuestions() {
         ArrayList<Question> questions = questionRepository.getAllIncompleteQuestions();
 
@@ -38,7 +38,7 @@ public class RefetchIncompleteQuestions {
         for (Question q : questions) {
             try {
                 int submissionId = Integer.parseInt(q.getSubmissionId());
-                LeetcodeDetailedQuestion matchingQuestionWithDetails = defaultleetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
+                LeetcodeDetailedQuestion matchingQuestionWithDetails = leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
 
                 Question updated = Question.builder()
                                 .id(q.getId())
@@ -53,8 +53,8 @@ public class RefetchIncompleteQuestions {
                                 .acceptanceRate(q.getAcceptanceRate())
                                 .createdAt(q.getCreatedAt())
                                 .submittedAt(q.getSubmittedAt())
-                                .runtime(Integer.toString(matchingQuestionWithDetails.getRuntime()))
-                                .memory(Integer.toString(matchingQuestionWithDetails.getMemory()))
+                                .runtime(matchingQuestionWithDetails.getRuntimeDisplay())
+                                .memory(matchingQuestionWithDetails.getMemoryDisplay())
                                 .code(matchingQuestionWithDetails.getCode())
                                 .language(matchingQuestionWithDetails.getLang().getName())
                                 .submissionId(q.getSubmissionId())

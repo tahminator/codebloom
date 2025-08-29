@@ -1,4 +1,4 @@
-import UserSubmissionsSkeleton from "@/app/user/[userId]/_components/UserSubmissions/UserSubmissionsSkeleton";
+import UserSubmissionsSkeleton from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissionsSkeleton";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import {

@@ -19,7 +19,7 @@ public class JSTypesGenerator implements CommandLineRunner {
     @Override
     public void run(final String... args) throws Exception {
         log.info("Type generation command starting...");
-        Process process = new ProcessBuilder("make", "types-dev")
+        Process process = new ProcessBuilder("just", "types-dev")
                         .inheritIO()
                         .start();
         int exitCode = process.waitFor();

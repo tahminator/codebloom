@@ -1,6 +1,9 @@
 package com.patina.codebloom.common.reporter;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -16,6 +19,20 @@ public class ErrorReporter {
 
     public ErrorReporter(final JDAClient jdaClient) {
         this.jdaClient = jdaClient;
+    }
+
+    /**
+     * Convert the stacktrace of a {@linkplain Throwable} into an array of bytes.
+     */
+    public static byte[] getStackTraceAsBytes(final Throwable throwable) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
+            throwable.printStackTrace(ps);
+            ps.flush();
+            return baos.toByteArray();
+        } catch (Exception e) {
+            return ("Failed to capture stack trace: " + e.getMessage()).getBytes(StandardCharsets.UTF_8);
+        }
     }
 
     @Async
