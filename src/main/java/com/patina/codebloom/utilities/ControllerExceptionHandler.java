@@ -1,9 +1,5 @@
 package com.patina.codebloom.utilities;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,24 +13,13 @@ import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.report.location.Location;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class ControllerExceptionHandler {
     private final ErrorReporter errorReporter;
     private final Env env;
 
-    public GlobalExceptionHandler(final ErrorReporter errorReporter, final Env env) {
+    public ControllerExceptionHandler(final ErrorReporter errorReporter, final Env env) {
         this.errorReporter = errorReporter;
         this.env = env;
-    }
-
-    private byte[] getStackTraceAsBytes(final Throwable throwable) {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
-            throwable.printStackTrace(ps);
-            ps.flush();
-            return baos.toByteArray();
-        } catch (Exception e) {
-            return ("Failed to capture stack trace: " + e.getMessage()).getBytes(StandardCharsets.UTF_8);
-        }
     }
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -42,15 +27,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getStatusCode()).body(ApiResponder.failure(ex.getReason()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponder<?>> handleRuntimeException(final RuntimeException rx) {
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ApiResponder<?>> handleThrowable(final Throwable rx) {
         rx.printStackTrace();
 
         if (env.isProd()) {
             errorReporter.report(Report.builder()
                             .environments(env.getActiveProfiles())
                             .location(Location.BACKEND)
-                            .stackTrace(getStackTraceAsBytes(rx))
+                            .stackTrace(ErrorReporter.getStackTraceAsBytes(rx))
                             .build());
         }
 
