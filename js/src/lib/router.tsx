@@ -1,4 +1,5 @@
 import AdminPage from "@/app/admin/admin.page";
+import ClubSignUp from "@/app/clubs/ClubSignUp.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import ErrorPage from "@/app/error/Error.page";
 import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
@@ -82,6 +83,11 @@ export const router = createBrowserRouter([
           }
         />
       : <SettingsPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/club/:clubSlug",
+    element: <ClubSignUp />,
     errorElement: <ErrorPage />,
   },
 ]);
