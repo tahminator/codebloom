@@ -72,8 +72,7 @@ public class ClubController {
             userTagRepository.createTag(clubTag);
             return ResponseEntity.ok(ApiResponder.success("Club Tag added.", clubTag));
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponder.failure("Incorrect Password"));
+        return ResponseEntity.ok(ApiResponder.custom(false, "Incorrect Password", null));
     }
 
 }
