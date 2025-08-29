@@ -7,7 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.patina.codebloom.api.admin.body.RegisterClubBody;
 import com.patina.codebloom.api.club.dto.ClubDto;
 import com.patina.codebloom.api.club.service.ClubService;
-import com.patina.codebloom.common.clubs.ClubEnum;
 import com.patina.codebloom.common.db.models.club.Club;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 import com.patina.codebloom.common.db.repos.club.ClubRepository;
@@ -18,8 +17,6 @@ import com.patina.codebloom.common.lag.FakeLag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
-import java.util.stream.Stream;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,13 +64,9 @@ public class ClubController {
         boolean valid = clubService.isPasswordValid(club, password);
 
         if (valid) {
-            ClubEnum clubEnum = Stream.of(ClubEnum.values())
-                            .filter(c -> c.getClubSlug().equals(clubSlug))
-                            .findFirst()
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Club enum not found."));
             UserTag clubTag = UserTag.builder()
                             .userId(userId)
-                            .tag(clubEnum.getInternalTag())
+                            .tag(club.getTag())
                             .build();
 
             userTagRepository.createTag(clubTag);
