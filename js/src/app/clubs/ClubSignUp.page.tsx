@@ -11,8 +11,8 @@ import {
   Stack,
   Text,
   Card,
-  PasswordInput,
   Title,
+  TextInput,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
@@ -110,7 +110,7 @@ export default function ClubSignUp() {
             Enter the club password to continue.
           </Text>
 
-          <PasswordInput
+          <TextInput
             label="Password"
             placeholder="Enter secret password"
             value={password}
