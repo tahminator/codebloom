@@ -1,5 +1,5 @@
 import { GotoAdminPageButton } from "@/components/ui/admin-button/AdminButton";
-import { ActionIcon, Text } from "@mantine/core";
+import { ActionIcon, Text, Button } from "@mantine/core";
 import { ReactNode } from "react";
 import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
 
@@ -40,6 +40,14 @@ export function Footer() {
           >
             <FaGithub size={24} />
           </FooterIconLink>
+            <Button
+            component="a"
+            href="/privacy"
+            c="dimmed"
+            size="sm"
+            variant="subtle">
+              Privacy Policy
+            </Button>
         </div>
       </div>
     </div>
