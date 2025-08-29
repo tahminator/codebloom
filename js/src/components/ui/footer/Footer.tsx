@@ -40,14 +40,15 @@ export function Footer() {
           >
             <FaGithub size={24} />
           </FooterIconLink>
-            <Button
+          <Button
             component="a"
             href="/privacy"
             c="dimmed"
             size="sm"
-            variant="subtle">
-              Privacy Policy
-            </Button>
+            variant="subtle"
+          >
+            Privacy Policy
+          </Button>
         </div>
       </div>
     </div>
