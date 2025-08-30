@@ -15,8 +15,9 @@ public class ClubService {
 
     public ClubDto getClubDtoBySlug(final String slug) {
         Club club = clubRepository.getClubBySlug(slug);
-        if (club == null)
+        if (club == null) {
             return null;
+        }
         return ClubDto.builder()
                         .id(club.getId())
                         .name(club.getName())
