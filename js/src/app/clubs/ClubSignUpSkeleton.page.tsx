@@ -1,5 +1,3 @@
-export default function  ClubSignUpSkeleton() {
-    return (
-        <></>
-    );
+export default function ClubSignUpSkeleton() {
+  return <></>;
 }
