@@ -1,12 +1,9 @@
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
-import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
-import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { schoolFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -14,7 +11,6 @@ import {
   Button,
   Center,
   Flex,
-  Image,
   Overlay,
   Table,
   Tooltip,
@@ -24,31 +20,27 @@ import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-export default function LeaderboardIndex() {
+import GwcBrandHeader from "./GwcBrandHeader";
+
+/**
+ * GWC Leaderboard Embed Page
+ */
+export default function GwcLeaderboardEmbed() {
   const {
-    data,
     status,
-    goTo,
+    isPlaceholderData,
+    data,
     page,
+    goTo,
     goBack,
     goForward,
     setSearchQuery,
     searchQuery,
     debouncedQuery,
-    patina,
-    togglePatina,
-    hunter,
-    toggleHunter,
-    nyu,
-    toggleNyu,
-    baruch,
-    toggleBaruch,
-    rpi,
-    toggleRpi,
-    globalIndex,
-    toggleGlobalIndex,
-    isPlaceholderData,
-  } = useCurrentLeaderboardUsersQuery();
+  } = useCurrentLeaderboardUsersQuery({
+    tieToUrl: false,
+    defaultGwc: true,
+  });
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -67,6 +59,17 @@ export default function LeaderboardIndex() {
 
   return (
     <>
+      <GwcBrandHeader />
+      <Center mb="md">
+        <Button
+          component="a"
+          href="https://codebloom.patinanetwork.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Visit CodeBloom
+        </Button>
+      </Center>
       <Flex
         direction={{ base: "column", xs: "row" }}
         align={{ base: "center", xs: "flex-end" }}
@@ -83,7 +86,7 @@ export default function LeaderboardIndex() {
             totalScore={second.totalScore}
             nickname={second.nickname}
             width={"300px"}
-            userId={second.id}
+            userId={second.id as string}
           />
         )}
         {page === 1 && first && !debouncedQuery && (
@@ -95,7 +98,7 @@ export default function LeaderboardIndex() {
             totalScore={first.totalScore}
             nickname={first.nickname}
             width={"300px"}
-            userId={first.id}
+            userId={first.id as string}
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -107,131 +110,10 @@ export default function LeaderboardIndex() {
             totalScore={third.totalScore}
             nickname={third.nickname}
             width={"300px"}
-            userId={third.id}
+            userId={third.id as string}
           />
         )}
       </Flex>
-      <FilterDropdown
-        style={{
-          marginLeft: "auto",
-          display: "block",
-        }}
-        buttonName="Filters"
-      >
-        <FilterDropdownItem
-          value={patina}
-          toggle={() => togglePatina()}
-          name={
-            <Box
-              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-            >
-              Patina
-              <Image
-                src="/Patina_Logo.png"
-                alt="Patina Logo"
-                style={{ height: "2em", width: "auto" }}
-              />
-            </Box>
-          }
-        />
-        {schoolFF && (
-          <>
-            <FilterDropdownItem
-              value={hunter}
-              toggle={() => toggleHunter()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  Hunter
-                  <Image
-                    src="/Hunter_Logo.jpeg"
-                    alt="Hunter College Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={nyu}
-              toggle={() => toggleNyu()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  NYU
-                  <Image
-                    src="/NYU_Logo.png"
-                    alt="NYU Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={baruch}
-              toggle={() => toggleBaruch()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  Baruch
-                  <Image
-                    src="/Baruch_Logo.png"
-                    alt="Baruch College Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={rpi}
-              toggle={() => toggleRpi()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  RPI
-                  <Image
-                    src="/Rpi_Logo.png"
-                    alt="RPI Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-          </>
-        )}
-        <FilterDropdownItem
-          value={globalIndex}
-          toggle={toggleGlobalIndex}
-          disabled={!nyu && !hunter && !patina && !baruch && !rpi}
-          switchMode
-          name={
-            <Box
-              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-            >
-              Toggle Global Rank
-            </Box>
-          }
-        />
-      </FilterDropdown>
       <SearchBox
         query={searchQuery}
         onChange={(event) => {

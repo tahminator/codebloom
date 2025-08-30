@@ -44,6 +44,10 @@ export default function LeaderboardWithId({
     toggleHunter,
     nyu,
     toggleNyu,
+    baruch,
+    toggleBaruch,
+    rpi,
+    toggleRpi,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -66,9 +70,12 @@ export default function LeaderboardWithId({
 
   return (
     <>
-      <div
-        className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem" }}
+      <Flex
+        direction={{ base: "column", xs: "row" }}
+        align={{ base: "center", xs: "flex-end" }}
+        justify="center"
+        gap="md"
+        mb="xl"
       >
         {page === 1 && second && !debouncedQuery && (
           <LeaderboardCard
@@ -106,7 +113,7 @@ export default function LeaderboardWithId({
             userId={third.id}
           />
         )}
-      </div>
+      </Flex>
       <FilterDropdown
         style={{
           marginLeft: "auto",
@@ -164,6 +171,46 @@ export default function LeaderboardWithId({
                   NYU
                   <Image
                     src="/NYU_Logo.jpeg"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={baruch}
+              toggle={() => toggleBaruch()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Baruch
+                  <Image
+                    src="/Baruch_Logo.png"
+                    alt="Baruch College Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={rpi}
+              toggle={() => toggleRpi()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  RPI
+                  <Image
+                    src="/Rpi_Logo.png"
+                    alt="RPI Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
                 </Box>

@@ -1,4 +1,4 @@
-import { Box, Card, Center, Skeleton, Table } from "@mantine/core";
+import { Box, Card, Center, Flex, Skeleton, Table } from "@mantine/core";
 
 export default function MiniLeaderboardSkeleton() {
   return (
@@ -8,9 +8,12 @@ export default function MiniLeaderboardSkeleton() {
           <div style={{ width: "100%", height: "36px" }} />
         </Skeleton>
       </Center>
-      <div
-        className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-        style={{ marginBottom: "2rem" }}
+      <Flex
+        direction={{ base: "column", xs: "row" }}
+        align={{ base: "center", xs: "flex-end" }}
+        justify="center"
+        gap="md"
+        mb="xl"
       >
         {Array(3)
           .fill(0)
@@ -36,7 +39,7 @@ export default function MiniLeaderboardSkeleton() {
               </Skeleton>
             );
           })}
-      </div>
+      </Flex>
       <Table horizontalSpacing="lg">
         <Table.Thead>
           <Table.Tr>
