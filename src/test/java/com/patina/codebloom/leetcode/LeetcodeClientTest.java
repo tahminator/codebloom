@@ -1,14 +1,13 @@
 package com.patina.codebloom.leetcode;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,12 +15,14 @@ import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 
-import io.restassured.RestAssured;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
+@Slf4j
 public class LeetcodeClientTest {
     private final LeetcodeClient leetcodeClient;
 
@@ -117,10 +118,31 @@ public class LeetcodeClientTest {
 
     @Test
     void userListValid() {
-        ArrayList<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
+        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
 
         assertTrue(userList != null);
 
         assertNotNull(userList, "Expecting a non-zero list of submissions");
     }
+
+    @Test
+    void getAllTopicTags() {
+        Set<LeetcodeTopicTag> topicTags = leetcodeClient.getAllTopicTags();
+
+        // if this value is no longer true, make a new ticket on Notion to update the
+        // enums stored in the database, THEN update this count.
+        int expectedTagsCount = 72;
+        assertEquals(expectedTagsCount, topicTags.size());
+
+        System.out.println(topicTags);
+    }
+
+    // @Test
+    // void getProblemDetails() {
+    // log.info("heyyyyyyyy");
+    // var x = leetcodeClient.findQuestionBySlug("trapping-rain-water");
+    // log.info(x.toString());
+    // System.out.println(x);
+    // }
+    //
 }

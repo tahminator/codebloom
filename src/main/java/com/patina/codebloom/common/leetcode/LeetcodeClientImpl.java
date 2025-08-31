@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -25,10 +27,12 @@ import com.patina.codebloom.common.leetcode.models.Lang;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.queries.GetPotd;
 import com.patina.codebloom.common.leetcode.queries.GetSubmissionDetails;
+import com.patina.codebloom.common.leetcode.queries.GetTopics;
 import com.patina.codebloom.common.leetcode.queries.GetUserProfile;
 import com.patina.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
@@ -36,6 +40,7 @@ import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 @Component
 public class LeetcodeClientImpl implements LeetcodeClient {
+    private static final String ENDPOINT = "https://leetcode.com/graphql";
     private final LeetcodeAuthStealer leetcodeAuthStealer;
 
     public LeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer) {
@@ -108,9 +113,17 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         return objectMapper.writeValueAsString(requestBodyMap);
     }
 
+    private String buildGetTagsRequestBody(final String query) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("query", query);
+
+        return objectMapper.writeValueAsString(requestBodyMap);
+    }
+
     @Override
     public LeetcodeQuestion findQuestionBySlug(final String slug) {
-        String endpoint = "https://leetcode.com/graphql";
         String query = SelectProblemQuery.QUERY;
 
         String requestBody;
@@ -124,7 +137,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(endpoint))
+                            .uri(URI.create(ENDPOINT))
                             .POST(BodyPublishers.ofString(requestBody))
                             .header("Content-Type", "application/json")
                             .header("Referer", "https://leetcode.com")
@@ -147,10 +160,25 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String link = "https://leetcode.com/problems/" + titleSlug;
             String difficulty = node.path("data").path("question").path("difficulty").asText();
             String question = node.path("data").path("question").path("content").asText();
+
             String statsJson = node.path("data").path("question").path("stats").asText();
             JsonObject stats = JsonParser.parseString(statsJson).getAsJsonObject();
             String acRateString = stats.get("acRate").getAsString();
             float acRate = Float.parseFloat(acRateString.replace("%", "")) / 100f;
+
+            // String topicTagsJson =
+            // node.path("data").path("question").path("topicTags").asText();
+            // JsonArray topicTags = JsonParser.parseString(topicTagsJson).getAsJsonArray();
+
+            // List<LeetcodeTopicTag> tags = new ArrayList<>();
+            // for (JsonElement el : topicTags) {
+            // JsonObject topicTag = el.getAsJsonObject();
+            // tags.add(LeetcodeTopicTag.builder()
+            // .id(topicTag.get("id").getAsString())
+            // .name(topicTag.get("name").getAsString())
+            // .slug()
+            // .build());
+            // }
 
             return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question, acRate);
         } catch (Exception e) {
@@ -162,7 +190,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username) {
         ArrayList<LeetcodeSubmission> submissions = new ArrayList<>();
 
-        String endpoint = "https://leetcode.com/graphql";
         String query = SelectAcceptedSubmisisonsQuery.QUERY;
 
         String requestBody;
@@ -176,7 +203,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(endpoint))
+                            .uri(URI.create(ENDPOINT))
                             .POST(BodyPublishers.ofString(requestBody))
                             .header("Content-Type", "application/json")
                             .header("Referer", "https://leetcode.com")
@@ -223,7 +250,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     @Override
     public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(final int submissionId) {
-        String endpoint = "https://leetcode.com/graphql";
         String query = GetSubmissionDetails.QUERY;
 
         String requestBody;
@@ -237,7 +263,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(endpoint))
+                            .uri(URI.create(ENDPOINT))
                             .POST(BodyPublishers.ofString(requestBody))
                             .header("Content-Type", "application/json")
                             .header("Referer", "https://leetcode.com")
@@ -278,7 +304,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     }
 
     public POTD getPotd() {
-        String endpoint = "https://leetcode.com/graphql";
         String query = GetPotd.QUERY;
 
         String requestBody;
@@ -292,7 +317,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(endpoint))
+                            .uri(URI.create(ENDPOINT))
                             .POST(BodyPublishers.ofString(requestBody))
                             .header("Content-Type", "application/json")
                             .header("Referer", "https://leetcode.com")
@@ -322,7 +347,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     @Override
     public UserProfile getUserProfile(final String username) {
-        String endpoint = "https://leetcode.com/graphql";
         String query = GetUserProfile.QUERY;
 
         String requestBody;
@@ -336,7 +360,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(endpoint))
+                            .uri(URI.create(ENDPOINT))
                             .POST(BodyPublishers.ofString(requestBody))
                             .header("Content-Type", "application/json")
                             .header("Referer", "https://leetcode.com")
@@ -366,4 +390,48 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         }
     }
 
+    @Override
+    public Set<LeetcodeTopicTag> getAllTopicTags() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(ENDPOINT))
+                            .POST(BodyPublishers.ofString(buildGetTagsRequestBody(GetTopics.QUERY)))
+                            .header("Content-Type", "application/json")
+                            .header("Referer", "https://leetcode.com")
+                            .build();
+
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
+
+            if (statusCode != 200) {
+                throw new RuntimeException("Non-successful response getting topics from Leetcode API. Status code: " + statusCode);
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode json = mapper.readTree(body);
+            JsonNode edges = json.path("data").path("questionTopicTags").path("edges");
+
+            if (!edges.isArray()) {
+                throw new RuntimeException("The expected shape of getting topics did not match the received body");
+            }
+
+            Set<LeetcodeTopicTag> result = new HashSet<>();
+
+            for (JsonNode edge : edges) {
+                JsonNode node = edge.path("node");
+                result.add(LeetcodeTopicTag.builder()
+                                .name(node.get("name").asText())
+                                .slug(node.get("slug").asText())
+                                .build());
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting topics from Leetcode API", e);
+        }
+    }
 }

@@ -52,7 +52,7 @@ public class SubmissionsHandler {
         this.userRepository = userRepository;
     }
 
-    public ArrayList<AcceptedSubmission> handleSubmissions(final ArrayList<LeetcodeSubmission> leetcodeSubmissions, final User user) {
+    public ArrayList<AcceptedSubmission> handleSubmissions(final List<LeetcodeSubmission> leetcodeSubmissions, final User user) {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
@@ -135,7 +135,7 @@ public class SubmissionsHandler {
         List<User> users = userRepository.getAllUsers();
         for (User user : users) {
             System.out.println("Starting migration for user ID " + user.getId());
-            ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
+            List<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
             for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
                 if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
