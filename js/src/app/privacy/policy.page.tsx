@@ -1,6 +1,7 @@
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import { Text, Title, Container, Stack, Anchor } from "@mantine/core";
+
 const lastUpdated = "August 28, 11:00PM"; //placeholder, update when merged
 
 export default function PolicyPage() {
