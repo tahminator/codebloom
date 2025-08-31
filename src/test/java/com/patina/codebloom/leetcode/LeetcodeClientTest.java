@@ -1,12 +1,12 @@
 package com.patina.codebloom.leetcode;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,17 +15,20 @@ import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
-import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
+@Slf4j
 public class LeetcodeClientTest {
     private final LeetcodeClient leetcodeClient;
 
     @Autowired
-    public LeetcodeClientTest(final ThrottledLeetcodeClient throttledLeetcodeClient) {
-        this.leetcodeClient = throttledLeetcodeClient;
+    public LeetcodeClientTest(final LeetcodeClient leetcodeClient) {
+        this.leetcodeClient = leetcodeClient;
     }
 
     @Test
@@ -115,7 +118,7 @@ public class LeetcodeClientTest {
 
     @Test
     void userListValid() {
-        ArrayList<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
+        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
 
         assertTrue(userList != null);
 
@@ -123,41 +126,23 @@ public class LeetcodeClientTest {
     }
 
     @Test
-    void stressTestConcurrent() throws InterruptedException {
-        int threadCount = 100;
-        int requestsPerThread = 45;
+    void getAllTopicTags() {
+        Set<LeetcodeTopicTag> topicTags = leetcodeClient.getAllTopicTags();
 
-        Thread[] threads = new Thread[threadCount];
-        AtomicInteger tries = new AtomicInteger();
-        AtomicInteger failures = new AtomicInteger();
+        // if this value is no longer true, make a new ticket on Notion to update the
+        // enums stored in the database, THEN update this count.
+        int expectedTagsCount = 72;
+        assertEquals(expectedTagsCount, topicTags.size());
 
-        for (int t = 0; t < threadCount; t++) {
-            threads[t] = new Thread(() -> {
-                for (int i = 0; i < requestsPerThread; i++) {
-                    try {
-                        if (tries.get() % 100 == 0) {
-                            System.out.println("tries (ongoing): " + tries.get());
-                        }
-                        tries.incrementAndGet();
-                        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
-                        assertNotNull(userList);
-                    } catch (Exception e) {
-                        System.out.println("tries (failed): " + tries.get());
-                        failures.incrementAndGet();
-                    }
-                }
-            });
-            threads[t].start();
-        }
-
-        for (Thread thread : threads) {
-            thread.join();
-        }
-
-        // TODO: Figure out why the failures are always around 1 to 5. For now, do not
-        // fail tests with anything over 10 requests.
-        if (failures.get() > 10) {
-            fail("Failed to reach 5000 requests from leetcode client. Failures: " + failures.get());
-        }
+        System.out.println(topicTags);
     }
+
+    // @Test
+    // void getProblemDetails() {
+    // log.info("heyyyyyyyy");
+    // var x = leetcodeClient.findQuestionBySlug("trapping-rain-water");
+    // log.info(x.toString());
+    // System.out.println(x);
+    // }
+    //
 }

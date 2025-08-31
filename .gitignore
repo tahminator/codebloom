@@ -54,7 +54,7 @@ node_modules
 
 .env
 .env.local
-.env.production
+.env.production*
 .env.development
 .env.staging
 .env.ci
