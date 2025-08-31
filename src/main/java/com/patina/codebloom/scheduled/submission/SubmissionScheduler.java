@@ -1,6 +1,7 @@
 package com.patina.codebloom.scheduled.submission;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public class SubmissionScheduler {
                 continue;
             }
 
-            ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient
+            List<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient
                             .findSubmissionsByUsername(user.getLeetcodeUsername());
 
             submissionsHandler.handleSubmissions(leetcodeSubmissions, user);

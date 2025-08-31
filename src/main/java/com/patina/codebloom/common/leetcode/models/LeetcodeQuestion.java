@@ -1,5 +1,8 @@
 package com.patina.codebloom.common.leetcode.models;
 
+import lombok.ToString;
+
+@ToString
 public class LeetcodeQuestion {
     private String link;
     private int questionId;
