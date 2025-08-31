@@ -1,6 +1,6 @@
 # React Email Starter
 
-Create a pretty email tempalate using React-y code.
+Create a pretty email template using React-y code.
 
 ## Getting Started
 
