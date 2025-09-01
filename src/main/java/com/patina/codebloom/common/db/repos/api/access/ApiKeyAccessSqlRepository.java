@@ -152,7 +152,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
     }
 
     @Override
-    public boolean deleteApiKeyAccesesByApiKeyId(final String apiKeyId) {
+    public boolean deleteApiKeyAccessesByApiKeyId(final String apiKeyId) {
         String sql = """
                         DELETE FROM
                             "ApiKeyAccess"
