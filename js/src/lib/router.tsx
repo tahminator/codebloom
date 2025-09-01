@@ -7,7 +7,7 @@ import AllLeaderboardsPage from "@/app/leaderboard/all/AllLeaderboards.page";
 import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
 import LoginPage from "@/app/login/Login.page";
 import Onboarding from "@/app/onboarding/Onboarding.page";
-import PolicyPage from "@/app/privacy/policy.page";
+import PolicyPage from "@/app/privacy/Policy.page";
 import RootPage from "@/app/Root.page";
 import SettingsPage from "@/app/settings/Settings.page";
 import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDetails.page";
