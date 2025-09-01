@@ -134,7 +134,7 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User updateUser(final User inputUser) {
-        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=?, \"admin\"=?, \"profileUrl\"=?, \"schoolEmail\"=? WHERE id=?";
+        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=?, \"admin\"=?, \"profileUrl\"=?, \"schoolEmail\"=COALESCE(?, \"schoolEmail\") WHERE id=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputUser.getDiscordName());
@@ -146,6 +146,8 @@ public class UserSqlRepository implements UserRepository {
             if (inputUser instanceof PrivateUser) {
                 PrivateUser privateUser = (PrivateUser) inputUser;
                 stmt.setString(7, privateUser.getSchoolEmail());
+            } else {
+                stmt.setNull(7, java.sql.Types.VARCHAR);
             }
             stmt.setObject(8, UUID.fromString(inputUser.getId()));
 
