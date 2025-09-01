@@ -166,7 +166,7 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", java.util.UUID.fromString(apiKey.getId()));
-            stmt.setObject("apiKey", java.util.UUID.fromString(apiKey.getApiKey()));
+            stmt.setString("apiKey", apiKey.getApiKey());
 
             if (apiKey.getAccess() == null || apiKey.getAccess().isEmpty()) {
                 stmt.setObject("access", null, java.sql.Types.ARRAY);
@@ -224,7 +224,7 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(apiKey.getId()));
-            stmt.setObject("apiKey", UUID.fromString(apiKey.getApiKey()));
+            stmt.setString("apiKey", apiKey.getApiKey());
 
             if (apiKey.getAccess() == null || apiKey.getAccess().isEmpty()) {
                 stmt.setObject("access", null, java.sql.Types.ARRAY);
