@@ -134,7 +134,11 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User updateUser(final User inputUser) {
-        String sql = "UPDATE \"User\" SET \"discordName\"=?, \"discordId\"=?, \"leetcodeUsername\"=?, \"nickname\"=?, \"admin\"=?, \"profileUrl\"=?, \"schoolEmail\"=COALESCE(?, \"schoolEmail\") WHERE id=?";
+        String sql = """
+                        UPDATE "User"
+                        SET "discordName"=?, "discordId"=?, "leetcodeUsername"=?, "nickname"=?, "admin"=?, "profileUrl"=?, "schoolEmail"=COALESCE(?, "schoolEmail")
+                        WHERE id=?
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputUser.getDiscordName());
