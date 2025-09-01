@@ -146,8 +146,6 @@ public class UserSqlRepository implements UserRepository {
             if (inputUser instanceof PrivateUser) {
                 PrivateUser privateUser = (PrivateUser) inputUser;
                 stmt.setString(7, privateUser.getSchoolEmail());
-            } else {
-                stmt.setNull(7, java.sql.Types.VARCHAR);
             }
             stmt.setObject(8, UUID.fromString(inputUser.getId()));
 
