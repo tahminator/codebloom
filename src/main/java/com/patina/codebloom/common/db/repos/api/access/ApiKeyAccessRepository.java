@@ -24,7 +24,7 @@ public interface ApiKeyAccessRepository {
 
     boolean updateApiKeyAccessById(ApiKeyAccess apiKeyAccess);
 
-    boolean deleteApiKeyAccesesByApiKeyId(String apiKeyId);
+    boolean deleteApiKeyAccessesByApiKeyId(String apiKeyId);
 
     boolean deleteApiKeyAccessById(String id);
 }
