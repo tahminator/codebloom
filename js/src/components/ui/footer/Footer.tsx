@@ -46,8 +46,6 @@ export function Footer() {
             size="sm"
             variant="subtle"
             underline="always"
-            /* need to fix centering issue, mt={"sm"} is too large */
-            mt={5}
           >
             Privacy Policy
           </Anchor>
