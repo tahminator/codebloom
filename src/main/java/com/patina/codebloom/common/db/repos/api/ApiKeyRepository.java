@@ -14,16 +14,26 @@ public interface ApiKeyRepository {
     /**
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
-     * 
+     *
      * @param userTag - required fields:
      * <ul>
      * <li>apiKey</li>
      * <li>id</li>
      * </ul>
      */
-
     void createApiKey(ApiKey apiKey);
 
+    /**
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     *
+     * @param agent - overridden fields:
+     * <ul>
+     * <li>id</li>
+     * <li>apiKey</li>
+     * <li>hash</li>
+     * </ul>
+     */
     boolean updateApiKeyById(ApiKey apiKey);
 
     boolean deleteApiKeyById(String id);
