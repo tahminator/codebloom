@@ -4,14 +4,17 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
+
 @Component
 public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
     private Connection conn;
@@ -20,18 +23,31 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private ApiKeyAccess parseResultSetToApiKeyAccess(final ResultSet resultSet) throws SQLException {
-        Set<String> access = null;
+    private ApiKeyAccess parseResultSetToApiKeyAccess(final ResultSet rs) throws SQLException {
+        List<ApiKeyAccess> access = null;
 
-        java.sql.Array sqlArray = resultSet.getArray("access");
+        final java.sql.Array sqlArray = rs.getArray("access");
         if (sqlArray != null) {
-            Object arrayObj = sqlArray.getArray();
-            access = Set.of((String[]) arrayObj);
+            try {
+                final String[] values = (String[]) sqlArray.getArray();
+                final String apiKeyId = rs.getString("apiKeyId");
+                access = Arrays.stream(values)
+                        .filter(v -> v != null && !v.isEmpty())
+                        .map(v -> ApiKeyAccess.builder()
+                                .apiKeyId(apiKeyId)
+                                .build())
+                        .collect(Collectors.toList());
+            } finally {
+                try {
+                    sqlArray.free();
+                } catch (SQLException ignore) {
+                }
+            }
         }
 
         return ApiKeyAccess.builder()
-                .id(resultSet.getString("id"))
-                .apiKeyId(resultSet.getString("apiKeyId"))
+                .id(rs.getString("id"))
+                .apiKeyId(rs.getString("apiKeyId"))
                 .access(access)
                 .build();
     }
