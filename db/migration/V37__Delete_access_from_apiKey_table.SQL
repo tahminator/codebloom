@@ -1,0 +1,2 @@
+ALTER TABLE "ApiKey"
+DROP COLUMN access;
