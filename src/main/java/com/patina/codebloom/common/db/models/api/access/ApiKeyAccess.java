@@ -1,6 +1,6 @@
 package com.patina.codebloom.common.db.models.api.access;
 
-import java.util.Set;
+import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -10,19 +10,17 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Builder
+@Setter
 @Getter
 @ToString
 @EqualsAndHashCode
 public class ApiKeyAccess {
-    // @Setter on some of the properties
-    // so we can override id property when new object
-    // created in database.
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private @Setter String id;
+    private String id;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private @Setter String apiKeyId;
+    private String apiKeyId;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private @Setter Set<String> access;
+    private List<ApiKeyAccess> access;
 }
