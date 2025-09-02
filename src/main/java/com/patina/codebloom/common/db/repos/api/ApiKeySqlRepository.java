@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.api.ApiKey;
-import static com.patina.codebloom.common.db.models.api.ApiKey.builder;
 
 @Component
 public class ApiKeySqlRepository implements ApiKeyRepository {
@@ -34,7 +33,7 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
             access = Set.of((String[]) arrayObj);
         }
 
-        return builder()
+        return ApiKey.builder()
                 .id(resultSet.getString("id"))
                 .apiKey(resultSet.getString("apiKey"))
                 .access(access)
