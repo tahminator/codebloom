@@ -73,6 +73,7 @@ function FooterIconLink({
       variant="transparent"
       size="lg"
       aria-label={ariaLabel}
+      mt={-7}
     >
       {children}
     </ActionIcon>
