@@ -2,7 +2,7 @@ import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import { Text, Title, Container, Stack, Anchor } from "@mantine/core";
 
-const lastUpdated = "August 28, 11:00PM"; //placeholder, update when merged
+const lastUpdated = "September 1, 2025";
 
 export default function PolicyPage() {
   return (
@@ -24,7 +24,6 @@ export default function PolicyPage() {
           <Text size="sm" c="dimmed" mb="sm">
             Last updated: {lastUpdated}
           </Text>
-
           <Text mb="sm">
             This website is non-commercial. We do not show advertisements.
           </Text>
