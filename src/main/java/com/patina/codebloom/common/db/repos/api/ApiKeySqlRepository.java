@@ -1,11 +1,11 @@
 package com.patina.codebloom.common.db.repos.api;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -176,30 +176,6 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
                 stmt.setArray("access", sqlArray);
             }
 
-            if (apiKey.getExpiresAt() == null) {
-                stmt.setNull("expiresAt", java.sql.Types.TIMESTAMP);
-            } else {
-                stmt.setTimestamp("expiresAt", java.sql.Timestamp.valueOf(apiKey.getExpiresAt()));
-            }
-
-            if (apiKey.getCreatedAt() == null) {
-                stmt.setNull("createdAt", java.sql.Types.TIMESTAMP);
-            } else {
-                stmt.setTimestamp("createdAt", java.sql.Timestamp.valueOf(apiKey.getCreatedAt()));
-            }
-
-            if (apiKey.getUpdatedAt() == null) {
-                stmt.setNull("updatedAt", java.sql.Types.TIMESTAMP);
-            } else {
-                stmt.setTimestamp("updatedAt", java.sql.Timestamp.valueOf(apiKey.getUpdatedAt()));
-            }
-
-            if (apiKey.getUpdatedBy() == null) {
-                stmt.setNull("updatedBy", java.sql.Types.VARCHAR);
-            } else {
-                stmt.setString("updatedBy", apiKey.getUpdatedBy());
-            }
-
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create ApiKey", e);
@@ -232,30 +208,6 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
                 java.sql.Array sqlArray =
                     conn.createArrayOf("text", apiKey.getAccess().toArray(new String[0]));
                 stmt.setArray("access", sqlArray);
-            }
-
-            if (apiKey.getExpiresAt() == null) {
-                stmt.setNull("expiresAt", java.sql.Types.TIMESTAMP);
-            } else {
-                stmt.setTimestamp("expiresAt", java.sql.Timestamp.valueOf(apiKey.getExpiresAt()));
-            }
-
-            if (apiKey.getCreatedAt() == null) {
-                stmt.setNull("createdAt", java.sql.Types.TIMESTAMP);
-            } else {
-                stmt.setTimestamp("createdAt", java.sql.Timestamp.valueOf(apiKey.getCreatedAt()));
-            }
-
-            if (apiKey.getUpdatedAt() == null) {
-                stmt.setNull("updatedAt", java.sql.Types.TIMESTAMP);
-            } else {
-                stmt.setTimestamp("updatedAt", java.sql.Timestamp.valueOf(apiKey.getUpdatedAt()));
-            }
-
-            if (apiKey.getUpdatedBy() == null) {
-                stmt.setNull("updatedBy", java.sql.Types.VARCHAR);
-            } else {
-                stmt.setString("updatedBy", apiKey.getUpdatedBy());
             }
 
             int rows = stmt.executeUpdate();
