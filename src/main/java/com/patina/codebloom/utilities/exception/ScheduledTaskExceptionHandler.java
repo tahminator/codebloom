@@ -1,4 +1,4 @@
-package com.patina.codebloom.utilities;
+package com.patina.codebloom.utilities.exception;
 
 import java.util.concurrent.Executors;
 
