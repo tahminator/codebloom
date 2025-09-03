@@ -175,8 +175,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             int statusCode = response.statusCode();
             String body = response.body();
 
-            System.out.println(response.headers().allValues("Set-Cookie"));
-
             if (statusCode != 200) {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
