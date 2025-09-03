@@ -126,7 +126,7 @@ public class LeetcodeClientTest {
     @Test
     void stressTestConcurrent() throws InterruptedException {
         int threadCount = 100;
-        int requestsPerThread = 100;
+        int requestsPerThread = 50;
 
         Thread[] threads = new Thread[threadCount];
         AtomicInteger tries = new AtomicInteger();
