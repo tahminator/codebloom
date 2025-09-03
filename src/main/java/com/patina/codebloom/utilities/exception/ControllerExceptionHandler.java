@@ -1,4 +1,4 @@
-package com.patina.codebloom.utilities;
+package com.patina.codebloom.utilities.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<ApiResponder<?>> handleThrowable(final Throwable rx) {
         rx.printStackTrace();
 
-        if (env.isProd()) {
+        if (env.isProd() && ExcludedExceptions.isValid(rx)) {
             errorReporter.report(Report.builder()
                             .environments(env.getActiveProfiles())
                             .location(Location.BACKEND)
