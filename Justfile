@@ -22,11 +22,11 @@ js-dev *args:
 
 # Run the email development server
 email-dev *args:
-  cd email && pnpm i && pnpm email dev --dir emails --port 3000 {{args}}
+  cd email && pnpm i && pnpm email dev --dir emails {{args}}
 
 # Generate HTML output of email and copy to Spring server
 email-gen *args:
-  sh email.sh {{args}}
+  ./email.sh {{args}}
 
 # Generate types through OpenAPI
 types-dev *args:
