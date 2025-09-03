@@ -190,7 +190,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
             return getAnnouncementById(announcement.getId());
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to update achievement", e);
+            throw new RuntimeException("Failed to update announcement", e);
         }
 
     }
