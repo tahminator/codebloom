@@ -15,7 +15,7 @@ import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 @Component
 public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements ThrottledLeetcodeClient {
-    private static final double REQUESTS_PER_SECOND = 40.0d;
+    private static final double REQUESTS_PER_SECOND = 35.0d;
     private final RateLimiter rateLimiter;
 
     public ThrottledLeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer) {
