@@ -22,11 +22,10 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
     }
 
     private ApiKeyAccess parseResultSetToApiKeyAccess(final ResultSet rs) throws SQLException {
-        var access = ApiKeyAccessEnum.valueOf(rs.getString("access"));
         return ApiKeyAccess.builder()
                 .id(rs.getString("id"))
                 .apiKeyId(rs.getString("apiKeyId"))
-                .access(access)
+                .access(ApiKeyAccessEnum.valueOf(rs.getString("access")))
                 .build();
     }
 
@@ -35,7 +34,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
         String sql = """
                         SELECT
                             id,
-                            apiKeyId,
+                            "apiKeyId",
                             access
                         FROM
                             "ApiKeyAccess"
@@ -61,9 +60,9 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
     public ArrayList<ApiKeyAccess> getApiKeyAccessesByApiKeyId(final String apiKeyId) {
         String sql = """
                         SELECT
-                            "id",
+                            id,
                             "apiKeyId",
-                            "access"
+                            access
                         FROM
                             "ApiKeyAccess"
                         WHERE
@@ -110,7 +109,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                         UPDATE
                             "ApiKeyAccess"
                         SET
-                            apiKeyId = :apiKeyId,
+                            "apiKeyId" = :apiKeyId,
                             access = :access
                         WHERE
                             id = :id
@@ -134,7 +133,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                         DELETE FROM
                             "ApiKeyAccess"
                         WHERE
-                            apiKeyId = :apiKeyId
+                            "apiKeyId" = :apiKeyId
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {

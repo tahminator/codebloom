@@ -17,7 +17,10 @@ public interface ApiKeyRepository {
      *
      * @param userTag - required fields:
      * <ul>
-     * <li>apiKey</li>
+     * <li>id</li>
+     * <li>apiKeyHash</li>
+     * <li>expiresAt</li>
+     * <li>updatedBy</li>
      * </ul>
      */
     void createApiKey(ApiKey apiKey);
@@ -28,8 +31,10 @@ public interface ApiKeyRepository {
      *
      * @param agent - overridden fields:
      * <ul>
-     * <li>apiKey</li>
-     * <li>hash</li>
+     * <li>apiKeyHash</li>
+     * <li>expiresAt</li>
+     * <li>updatedAt</li>
+     * <li>updatedBy</li>
      * </ul>
      */
     boolean updateApiKeyById(ApiKey apiKey);
