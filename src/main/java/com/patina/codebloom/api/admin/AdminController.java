@@ -164,21 +164,23 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Announcement successfully Deleted"),
             @ApiResponse(responseCode = "500", description = "Something went wrong", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     })
-    @PostMapping("/announcement/delete")
+    @PostMapping("/announcement/disable")
     public ResponseEntity<ApiResponder<Announcement>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody, final HttpServletRequest request) {
         protector.validateAdminSession(request);
         Announcement announcement = announcementRepository.getAnnouncementById(deleteAnnouncementBody.getId());
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        boolean isSuccessful = announcementRepository.deleteAnnouncementById(announcement.getId());
+        announcement.setShowTimer(false);
+        announcement.setExpiresAt(LocalDateTime.now());
+        Announcement updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
-        if (!isSuccessful) {
+        if (updatedAnnouncement == null) {
             return ResponseEntity
                             .status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Hmm, something went wrong."));
         }
-        return ResponseEntity.ok(ApiResponder.success("Announcement successfully deleted!", announcement));
+        return ResponseEntity.ok(ApiResponder.success("Announcement successfully disabled!", updatedAnnouncement));
     }
 
 }
