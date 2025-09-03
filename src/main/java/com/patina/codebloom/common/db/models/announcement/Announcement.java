@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Announcement {
-    
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
