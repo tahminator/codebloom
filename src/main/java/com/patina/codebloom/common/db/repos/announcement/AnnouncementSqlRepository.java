@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 
 @Component
@@ -166,5 +167,31 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete announcement by ID", e);
         }
+    }
+
+    @Override
+    public Announcement updateAnnouncement(final Announcement announcement) {
+        String sql = """
+                        UPDATE
+                            "Announcement"
+                        SET
+                            "expiresAt" = :expiresAt,
+                            "showTimer" = :showTimer,
+                            "message"  = :message
+                        WHERE
+                            id = :id
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("expiresAt", announcement.getExpiresAt());
+            stmt.setBoolean("showTimer", announcement.isShowTimer());
+            stmt.setString("message", announcement.getMessage());
+            stmt.setObject("id", UUID.fromString(announcement.getId()));
+            stmt.executeUpdate();
+            return getAnnouncementById(announcement.getId());
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update achievement", e);
+        }
+
     }
 }
