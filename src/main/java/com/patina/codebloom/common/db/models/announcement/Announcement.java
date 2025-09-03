@@ -12,6 +12,7 @@ import lombok.ToString;
 
 @Builder
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 public class Announcement {
@@ -19,10 +20,10 @@ public class Announcement {
     // so we can override id property when new object
     // created in database.
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private @Setter String id;
+    private String id;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private @Setter LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @NotNull
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
