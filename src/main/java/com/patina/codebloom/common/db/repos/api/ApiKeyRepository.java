@@ -18,7 +18,6 @@ public interface ApiKeyRepository {
      * @param userTag - required fields:
      * <ul>
      * <li>apiKey</li>
-     * <li>id</li>
      * </ul>
      */
     void createApiKey(ApiKey apiKey);
@@ -29,7 +28,6 @@ public interface ApiKeyRepository {
      *
      * @param agent - overridden fields:
      * <ul>
-     * <li>id</li>
      * <li>apiKey</li>
      * <li>hash</li>
      * </ul>

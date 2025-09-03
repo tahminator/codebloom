@@ -4,15 +4,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
+import com.patina.codebloom.common.db.models.api.ApiKeyAccessEnum;
 import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
 
 @Component
@@ -24,27 +22,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
     }
 
     private ApiKeyAccess parseResultSetToApiKeyAccess(final ResultSet rs) throws SQLException {
-        List<ApiKeyAccess> access = null;
-
-        final java.sql.Array sqlArray = rs.getArray("access");
-        if (sqlArray != null) {
-            try {
-                final String[] values = (String[]) sqlArray.getArray();
-                final String apiKeyId = rs.getString("apiKeyId");
-                access = Arrays.stream(values)
-                        .filter(v -> v != null && !v.isEmpty())
-                        .map(v -> ApiKeyAccess.builder()
-                                .apiKeyId(apiKeyId)
-                                .build())
-                        .collect(Collectors.toList());
-            } finally {
-                try {
-                    sqlArray.free();
-                } catch (SQLException ignore) {
-                }
-            }
-        }
-
+        var access = ApiKeyAccessEnum.valueOf(rs.getString("access"));
         return ApiKeyAccess.builder()
                 .id(rs.getString("id"))
                 .apiKeyId(rs.getString("apiKeyId"))
@@ -106,7 +84,6 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
         return results;
     }
 
-
     @Override
     public void createApiKeyAccess(final ApiKeyAccess apiKeyAccess) {
         String sql = """
@@ -119,15 +96,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", java.util.UUID.fromString(apiKeyAccess.getId()));
             stmt.setObject("apiKeyId", java.util.UUID.fromString(apiKeyAccess.getApiKeyId()));
-
-            if (apiKeyAccess.getAccess() == null || apiKeyAccess.getAccess().isEmpty()) {
-                stmt.setObject("access", null, java.sql.Types.ARRAY);
-            } else {
-                java.sql.Array sqlArray = conn.createArrayOf(
-                    "text", apiKeyAccess.getAccess().toArray(new String[0])
-                );
-                stmt.setArray("access", sqlArray);
-            }
+            stmt.setObject("access", apiKeyAccess.getAccess().name(), java.sql.Types.OTHER);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -150,15 +119,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(apiKeyAccess.getId()));
             stmt.setObject("apiKeyId", UUID.fromString(apiKeyAccess.getApiKeyId()));
-
-            if (apiKeyAccess.getAccess() == null || apiKeyAccess.getAccess().isEmpty()) {
-                stmt.setObject("access", null, java.sql.Types.ARRAY);
-            } else {
-                java.sql.Array sqlArray = conn.createArrayOf(
-                    "text", apiKeyAccess.getAccess().toArray(new String[0])
-                );
-                stmt.setArray("access", sqlArray);
-            }
+            stmt.setObject("access", apiKeyAccess.getAccess().name(), java.sql.Types.OTHER);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -177,7 +138,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("apiKeyId", java.util.UUID.fromString(apiKeyId));
+            stmt.setObject("apiKeyId", UUID.fromString(apiKeyId));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -196,7 +157,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            stmt.setObject("id", java.util.UUID.fromString(id));
+            stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
