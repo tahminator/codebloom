@@ -27,7 +27,6 @@ public interface ApiKeyAccessRepository {
      *
      * @param agent - overridden fields:
      * <ul>
-     * <li>id</li>
      * <li>apiKeyId</li>
      * <li>apiKeyAccess</li>
      * </ul>
