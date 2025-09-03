@@ -156,7 +156,7 @@ public class LeetcodeClientTest {
         }
 
         if (failures.get() > 0) {
-            fail("Failed to reach 10000 requests from leetcode client. Failures: " + failures.get());
+            fail("Failed to reach 5000 requests from leetcode client. Failures: " + failures.get());
         }
     }
 }
