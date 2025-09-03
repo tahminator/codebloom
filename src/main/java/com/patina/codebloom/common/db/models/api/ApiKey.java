@@ -1,9 +1,6 @@
 package com.patina.codebloom.common.db.models.api;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -23,9 +20,6 @@ public class ApiKey {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String apiKey;
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<ApiKeyAccess> access;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime expiresAt;
