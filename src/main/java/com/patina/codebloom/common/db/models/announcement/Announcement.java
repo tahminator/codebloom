@@ -16,9 +16,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Announcement {
-    // @Setter on some of the properties
-    // so we can override id property when new object
-    // created in database.
+    
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
