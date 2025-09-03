@@ -112,13 +112,13 @@ public class AnnouncementRepositoryTest {
                         .id(testAnnouncement.getId())
                         .expiresAt(testAnnouncement.getExpiresAt())
                         .showTimer(true)
-                        .message("Hi this is a update announcement!")
+                        .message("Hi this is an update announcement!")
                         .build();
 
         Announcement result = announcementRepository.updateAnnouncement(updatedAnnouncement);
 
         assertNotNull(result);
-        assertEquals(result.getMessage(), "Hi this is a update announcement!");
+        assertEquals(result.getMessage(), "Hi this is an update announcement!");
         assertEquals(result.getId(), testAnnouncement.getId());
         assertTrue(result.isShowTimer());
     }
