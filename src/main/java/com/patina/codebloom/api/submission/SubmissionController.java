@@ -32,6 +32,7 @@ import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.simpleredis.SimpleRedis;
@@ -77,13 +78,13 @@ public class SubmissionController {
     }
 
     public SubmissionController(final UserRepository userRepository, final Protector protector, final SimpleRedis simpleRedis,
-                    final LeetcodeClient leetcodeClient,
+                    final ThrottledLeetcodeClient throttledLeetcodeClient,
                     final SubmissionsHandler submissionsHandler, final QuestionRepository questionRepository,
                     final POTDRepository potdRepository) {
         this.userRepository = userRepository;
         this.protector = protector;
         this.simpleRedis = simpleRedis;
-        this.leetcodeClient = leetcodeClient;
+        this.leetcodeClient = throttledLeetcodeClient;
         this.submissionsHandler = submissionsHandler;
         this.questionRepository = questionRepository;
         this.potdRepository = potdRepository;
