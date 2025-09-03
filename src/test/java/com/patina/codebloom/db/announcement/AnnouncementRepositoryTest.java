@@ -1,8 +1,9 @@
 package com.patina.codebloom.db.announcement;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -88,6 +89,7 @@ public class AnnouncementRepositoryTest {
     }
 
     @Test
+    @Order(3)
     void findAnnouncementById() {
         Announcement possibleTestAnnouncement = announcementRepository.getAnnouncementById(testAnnouncement.getId());
 
@@ -98,12 +100,31 @@ public class AnnouncementRepositoryTest {
         log.info("testAnnouncement: {}", testAnnouncement.toString());
         log.info("possibleTestAnnouncement: {}", possibleTestAnnouncement.toString());
 
-        if (!testAnnouncement.equals(possibleTestAnnouncement)) {
-            fail("the generated test announcement does not match the announcement fetched with get announcement by ID");
+        if (!testAnnouncement.getId().equals(possibleTestAnnouncement.getId())) {
+            fail("the generated test announcement ID does not match the announcement fetched with get announcement by ID");
         }
     }
 
     @Test
+    @Order(2)
+    void updateAnnouncementTest() {
+        Announcement updatedAnnouncement = Announcement.builder()
+                        .id(testAnnouncement.getId())
+                        .expiresAt(testAnnouncement.getExpiresAt())
+                        .showTimer(true)
+                        .message("Hi this is a update announcement!")
+                        .build();
+
+        Announcement result = announcementRepository.updateAnnouncement(updatedAnnouncement);
+
+        assertNotNull(result);
+        assertEquals(result.getMessage(), "Hi this is a update announcement!");
+        assertEquals(result.getId(), testAnnouncement.getId());
+        assertTrue(result.isShowTimer());
+    }
+
+    @Test
+    @Order(4)
     void findAllAnnouncements() {
         List<Announcement> announcementsList = announcementRepository.getAllAnnouncements();
 
@@ -116,9 +137,11 @@ public class AnnouncementRepositoryTest {
         }
 
         log.info(announcementsList.toString());
-        if (!announcementsList.contains(testAnnouncement)) {
+
+        boolean foundTestAnnouncement = announcementsList.stream()
+                        .anyMatch(announcement -> announcement.getId().equals(testAnnouncement.getId()));
+        if (!foundTestAnnouncement) {
             fail("test announcement cannot be found in the list of all announcements");
         }
     }
-
 }
