@@ -1,14 +1,14 @@
 package com.patina.codebloom.leetcode;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,16 +18,15 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
-
-import io.restassured.RestAssured;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 
 @SpringBootTest
 public class LeetcodeClientTest {
     private final LeetcodeClient leetcodeClient;
 
     @Autowired
-    public LeetcodeClientTest(final LeetcodeClient leetcodeClient) {
-        this.leetcodeClient = leetcodeClient;
+    public LeetcodeClientTest(final ThrottledLeetcodeClient throttledLeetcodeClient) {
+        this.leetcodeClient = throttledLeetcodeClient;
     }
 
     @Test
@@ -122,5 +121,42 @@ public class LeetcodeClientTest {
         assertTrue(userList != null);
 
         assertNotNull(userList, "Expecting a non-zero list of submissions");
+    }
+
+    @Test
+    void stressTestConcurrent() throws InterruptedException {
+        int threadCount = 100;
+        int requestsPerThread = 100;
+
+        Thread[] threads = new Thread[threadCount];
+        AtomicInteger tries = new AtomicInteger();
+        AtomicInteger failures = new AtomicInteger();
+
+        for (int t = 0; t < threadCount; t++) {
+            threads[t] = new Thread(() -> {
+                for (int i = 0; i < requestsPerThread; i++) {
+                    try {
+                        if (tries.get() % 100 == 0) {
+                            System.out.println("tries (ongoing): " + tries.get());
+                        }
+                        tries.incrementAndGet();
+                        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
+                        assertNotNull(userList);
+                    } catch (Exception e) {
+                        System.out.println("tries (failed): " + tries.get());
+                        failures.incrementAndGet();
+                    }
+                }
+            });
+            threads[t].start();
+        }
+
+        for (Thread thread : threads) {
+            thread.join();
+        }
+
+        if (failures.get() > 0) {
+            fail("Failed to reach 5000 requests from leetcode client. Failures: " + failures.get());
+        }
     }
 }

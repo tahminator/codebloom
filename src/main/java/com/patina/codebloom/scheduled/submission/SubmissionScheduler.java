@@ -12,6 +12,7 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
 
 @Component
@@ -23,10 +24,10 @@ public class SubmissionScheduler {
     private final LeetcodeClient leetcodeClient;
     private final SubmissionsHandler submissionsHandler;
 
-    public SubmissionScheduler(final UserRepository userRepository, final LeetcodeClient leetcodeClient,
+    public SubmissionScheduler(final UserRepository userRepository, final ThrottledLeetcodeClient throttledLeetcodeClient,
                     final SubmissionsHandler submissionsHandler) {
         this.userRepository = userRepository;
-        this.leetcodeClient = leetcodeClient;
+        this.leetcodeClient = throttledLeetcodeClient;
         this.submissionsHandler = submissionsHandler;
     }
 
