@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.api.ApiKey;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 @Component
 public class ApiKeySqlRepository implements ApiKeyRepository {
@@ -43,11 +44,11 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
         String sql = """
                         SELECT
                             id,
-                            apiKeyHash,
-                            expiresAt,
-                            createdAt,
-                            updatedAt,
-                            updatedBy
+                            "apiKeyHash",
+                            "expiresAt",
+                            "createdAt",
+                            "updatedAt",
+                            "updatedBy"
                         FROM
                             "ApiKey"
                         WHERE
@@ -73,11 +74,11 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
         String sql = """
                         SELECT
                             id,
-                            apiKeyHash,
-                            expiresAt,
-                            createdAt,
-                            updatedAt,
-                            updatedBy
+                            "apiKeyHash",
+                            "expiresAt",
+                            "createdAt",
+                            "updatedAt",
+                            "updatedBy"
                         FROM
                             "ApiKey"
                         WHERE
@@ -102,7 +103,7 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
     public List<ApiKey> getAllApiKeys() {
         String sql = """
                         SELECT
-                            "id",
+                            id,
                             "apiKeyHash",
                             "expiresAt",
                             "createdAt",
@@ -128,30 +129,28 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
     }
 
     @Override
-    public void createApiKey(final ApiKey apiKeyHash) {
+    public void createApiKey(final ApiKey apiKey) {
         final String sql = """
                                 INSERT INTO "ApiKey" (
-                                    "id",
+                                    id,
                                     "apiKeyHash",
                                     "expiresAt",
-                                    "createdAt",
-                                    "updatedAt",
                                     "updatedBy"
                                 )
                                 VALUES (
                                     :id,
                                     :apiKeyHash,
                                     :expiresAt,
-                                    :createdAt,
-                                    :updatedAt,
                                     :updatedBy
                                 )
+                                RETURNING
+                                    "createdAt", "updatedAt"
                                 """;
-        UUID id = UUID.fromString(apiKeyHash.getId());
+        UUID id = UUID.fromString(apiKey.getId());
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", id);
-            stmt.setString("apiKeyHash", apiKeyHash.getApiKey());
+            stmt.setString("apiKeyHash", apiKey.getApiKey());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create ApiKey", e);
@@ -159,24 +158,28 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
     }
 
     @Override
-    public boolean updateApiKeyById(final ApiKey apiKeyHash) {
+    public boolean updateApiKeyById(final ApiKey apiKey) {
         final String sql = """
                                 UPDATE
                                     "ApiKey"
                                 SET
                                     "apiKeyHash"  = :apiKeyHash,
                                     "expiresAt" = :expiresAt,
-                                    "createdAt" = :createdAt,
                                     "updatedAt" = :updatedAt,
                                     "updatedBy" = :updatedBy
                                 WHERE
                                     "id" = :id
                                 """;
-        UUID id = UUID.fromString(apiKeyHash.getId());
+        UUID id = UUID.fromString(apiKey.getId());
+        var localTime = StandardizedLocalDateTime.now();
+        apiKey.setUpdatedAt(localTime);
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", id);
-            stmt.setString("apiKeyHash", apiKeyHash.getApiKey());
+            stmt.setString("apiKeyHash", apiKey.getApiKey());
+            stmt.setObject("expiresAt", apiKey.getExpiresAt());
+            stmt.setObject("updatedAt", apiKey.getUpdatedAt());
+            stmt.setString("updatedBy", apiKey.getUpdatedBy());
 
             int rows = stmt.executeUpdate();
             return rows > 0;
