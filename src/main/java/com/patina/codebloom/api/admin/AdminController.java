@@ -165,7 +165,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Something went wrong", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     })
     @PostMapping("/announcement/disable")
-    public ResponseEntity<ApiResponder<Announcement>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody, final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Boolean>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody, final HttpServletRequest request) {
         protector.validateAdminSession(request);
         Announcement announcement = announcementRepository.getAnnouncementById(deleteAnnouncementBody.getId());
         if (announcement == null) {
@@ -173,9 +173,9 @@ public class AdminController {
         }
         announcement.setShowTimer(false);
         announcement.setExpiresAt(LocalDateTime.now());
-        Announcement updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
+        boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
-        if (updatedAnnouncement == null) {
+        if (!updatedAnnouncement) {
             return ResponseEntity
                             .status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Hmm, something went wrong."));
