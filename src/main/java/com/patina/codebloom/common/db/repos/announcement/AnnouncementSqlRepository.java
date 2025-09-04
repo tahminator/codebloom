@@ -170,7 +170,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
     }
 
     @Override
-    public Announcement updateAnnouncement(final Announcement announcement) {
+    public boolean updateAnnouncement(final Announcement announcement) {
         String sql = """
                         UPDATE
                             "Announcement"
@@ -186,8 +186,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
             stmt.setBoolean("showTimer", announcement.isShowTimer());
             stmt.setString("message", announcement.getMessage());
             stmt.setObject("id", UUID.fromString(announcement.getId()));
-            stmt.executeUpdate();
-            return getAnnouncementById(announcement.getId());
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
 
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update announcement", e);
