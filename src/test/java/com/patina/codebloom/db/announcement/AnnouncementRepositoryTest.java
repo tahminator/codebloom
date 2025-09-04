@@ -89,7 +89,7 @@ public class AnnouncementRepositoryTest {
     }
 
     @Test
-    @Order(3)
+    @Order(2)
     void findAnnouncementById() {
         Announcement possibleTestAnnouncement = announcementRepository.getAnnouncementById(testAnnouncement.getId());
 
@@ -100,13 +100,13 @@ public class AnnouncementRepositoryTest {
         log.info("testAnnouncement: {}", testAnnouncement.toString());
         log.info("possibleTestAnnouncement: {}", possibleTestAnnouncement.toString());
 
-        if (!testAnnouncement.getId().equals(possibleTestAnnouncement.getId())) {
-            fail("the generated test announcement ID does not match the announcement fetched with get announcement by ID");
-        }
+       if (!testAnnouncement.equals(possibleTestAnnouncement)) {
+            fail("the generated test announcement does not match the announcement fetched with get announcement by ID");
+       }
     }
 
     @Test
-    @Order(2)
+    @Order(4)
     void updateAnnouncementTest() {
         Announcement updatedAnnouncement = Announcement.builder()
                         .id(testAnnouncement.getId())
@@ -114,17 +114,19 @@ public class AnnouncementRepositoryTest {
                         .showTimer(true)
                         .message("Hi this is an update announcement!")
                         .build();
-
-        Announcement result = announcementRepository.updateAnnouncement(updatedAnnouncement);
-
-        assertNotNull(result);
-        assertEquals(result.getMessage(), "Hi this is an update announcement!");
-        assertEquals(result.getId(), testAnnouncement.getId());
-        assertTrue(result.isShowTimer());
+        boolean result = announcementRepository.updateAnnouncement(updatedAnnouncement);
+        if (!result){
+            fail("failure to update announcement");
+        }
+        Announcement resultAnnouncement = announcementRepository.getAnnouncementById(updatedAnnouncement.getId());
+        assertNotNull(resultAnnouncement);
+        assertEquals(resultAnnouncement.getMessage(), "Hi this is an update announcement!");
+        assertEquals(resultAnnouncement.getId(), testAnnouncement.getId());
+        assertTrue(resultAnnouncement.isShowTimer());
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     void findAllAnnouncements() {
         List<Announcement> announcementsList = announcementRepository.getAllAnnouncements();
 
@@ -138,9 +140,7 @@ public class AnnouncementRepositoryTest {
 
         log.info(announcementsList.toString());
 
-        boolean foundTestAnnouncement = announcementsList.stream()
-                        .anyMatch(announcement -> announcement.getId().equals(testAnnouncement.getId()));
-        if (!foundTestAnnouncement) {
+         if (!announcementsList.contains(testAnnouncement)) {
             fail("test announcement cannot be found in the list of all announcements");
         }
     }
