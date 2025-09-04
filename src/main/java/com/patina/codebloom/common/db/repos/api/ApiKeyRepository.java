@@ -15,7 +15,7 @@ public interface ApiKeyRepository {
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
-     * @param userTag - required fields:
+     * @param apiKey - required fields:
      * <ul>
      * <li>id</li>
      * <li>apiKeyHash</li>
@@ -29,7 +29,7 @@ public interface ApiKeyRepository {
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
-     * @param agent - overridden fields:
+     * @param apiKey - required fields:
      * <ul>
      * <li>apiKeyHash</li>
      * <li>expiresAt</li>
