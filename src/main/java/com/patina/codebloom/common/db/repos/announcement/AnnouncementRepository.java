@@ -20,5 +20,5 @@ public interface AnnouncementRepository {
 
     boolean deleteAnnouncementById(String id);
 
-    Announcement updateAnnouncement(Announcement announcement);
+    boolean updateAnnouncement(Announcement announcement);
 }
