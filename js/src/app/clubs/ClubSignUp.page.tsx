@@ -1,10 +1,32 @@
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
-import { Box } from "@mantine/core";
+import Toast from "@/components/ui/toast/Toast";
+import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { useAuthQuery } from "@/lib/api/queries/auth";
+import { Box, Loader } from "@mantine/core";
 
 import ClubSignUp from "./_components/ClubSignUp";
 
 export default function ClubSignupPage() {
+  const { data, status } = useAuthQuery();
+
+  if (status === "pending") {
+    return <Loader />;
+  }
+  if (status === "error") {
+    return (
+      <Toast message="Sorry, something went wrong. Please try again later." />
+    );
+  }
+
+  // If user isnt logged in or theres an error, toast and redirect to login page
+  const authenticated = !!data.user && !!data.session;
+  if (!authenticated) {
+    return (
+      <ToastWithRedirect to="/login" message="You are not authenticated!" />
+    );
+  }
+
   return (
     <Box
       style={{
@@ -15,7 +37,7 @@ export default function ClubSignupPage() {
     >
       <Header />
       <Box>
-        <ClubSignUp />
+        <ClubSignUp {...data.user}/>
       </Box>
 
       <Footer />
