@@ -170,7 +170,7 @@ public class AdminController {
         Announcement announcement = announcementRepository.getAnnouncementById(deleteAnnouncementBody.getId());
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
-        }        
+        }
         announcement.setExpiresAt(LocalDateTime.now());
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
