@@ -1,10 +1,10 @@
 import Toast from "@/components/ui/toast/Toast";
-import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
-import { useAuthQuery } from "@/lib/api/queries/auth";
 import {
+  clubVerificationForm,
   useClubQuery,
   useVerifyPasswordMutation,
 } from "@/lib/api/queries/club";
+import { PrivateUser } from "@/lib/api/types/user";
 import {
   Button,
   Center,
@@ -15,101 +15,148 @@ import {
   TextInput,
   Image,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import z from "zod";
 
 import ClubSignUpSkeleton from "./ClubSignUpSkeleton";
 
-export default function ClubSignUp() {
+export default function ClubSignUp({
+  id: userId,
+  tags: userTags,
+}: PrivateUser) {
   const { clubSlug } = useParams<{ clubSlug: string }>();
-  const clubQuery = useClubQuery({ clubSlug });
-  const authQuery = useAuthQuery();
+  const { data, status } = useClubQuery({
+    clubSlug,
+  });
   const { mutate } = useVerifyPasswordMutation();
 
   // State Hooks
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+//   const [password, setPassword] = useState("");
+//   const [error, setError] = useState<string | null>(null);
+//   const [submitting, setSubmitting] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   // Query Client
   const queryClient = useQueryClient();
 
-  if (clubQuery.status === "pending" || authQuery.status === "pending") {
+  const form = useForm({
+    validate: zodResolver(clubVerificationForm),
+    initialValues: {
+      password: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof clubVerificationForm>) => {
+    const id = notifications.show({
+      message: "Verifying email... ",
+      color: "blue",
+    });
+    mutate(
+      {
+        userId: userId,
+        password: values.password,
+        clubSlug: clubSlug!,
+      },
+      //   {
+      //     onSuccess: async (data) => {
+      //       notifications.update({
+      //         id,
+      //         message: data.message,
+      //         color: data.success ? undefined : "red",
+      //       });
+      //       if (data.success) {
+      //         form.reset();
+      //         toggle();
+      //       }
+      //     },
+      //   },
+      {
+        onSuccess: async (data) => {
+          notifications.update({
+            id,
+            message: data.message,
+            color: data.success ? undefined : "red",
+          });
+
+          if (data.success) {
+            form.reset();
+          }
+
+          // Refresh queries to update page after obtaining the tag
+          queryClient.invalidateQueries({ queryKey: ["auth"] });
+          queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
+        },
+      },
+    );
+  };
+
+  if (status === "pending") {
     return <ClubSignUpSkeleton />;
   }
 
-  if (clubQuery.status === "error" || authQuery.status === "error") {
+  if (status === "error") {
     return (
       <Toast message="Sorry, something went wrong. Please try again later." />
     );
   }
 
-  if (!clubQuery.data.success) {
-    return <Toast message={clubQuery.data.message} />;
+  if (!data.success) {
+    return <Toast message={data.message} />;
   }
 
-  // If user isnt logged in or theres an error, toast and redirect to login page
-  const authenticated = !!authQuery.data.user && !!authQuery.data.session;
-  if (!authenticated) {
-    return (
-      <ToastWithRedirect to="/login" message="You are not authenticated!" />
-    );
-  }
-
-  const club = clubQuery.data.payload;
-  const clubTag = clubQuery.data.payload.tag!;
-
-  const userId = authQuery.data.user!.id;
-  const userTags = authQuery.data.user!.tags;
+  const club = data.payload;
+  const clubTag = data.payload.tag!;
 
   // Check if the User already has the desired club tag
   const hasTag = userTags.some(
     ({ tag }) => tag.toString() === clubTag?.toString(),
   );
 
-  const handleSubmit = (userId: string, password: string, clubSlug: string) => {
-    if (!password.trim()) {
-      setError("Please enter a password.");
-      return;
-    }
-    setError(null);
-    setSubmitting(true);
-    try {
-      mutate(
-        {
-          userId,
-          password,
-          clubSlug,
-        },
-        {
-          onSuccess: (data) => {
-            if (!data.success) {
-              return notifications.show({
-                color: "red",
-                message: data.message,
-              });
-            }
+//   const handleSubmit = (userId: string, password: string, clubSlug: string) => {
+//     if (!password.trim()) {
+//       setError("Please enter a password.");
+//       return;
+//     }
+//     setError(null);
+//     setSubmitting(true);
+//     try {
+//       mutate(
+//         {
+//           userId,
+//           password,
+//           clubSlug,
+//         },
+//         {
+//           onSuccess: (data) => {
+//             if (!data.success) {
+//               return notifications.show({
+//                 color: "red",
+//                 message: data.message,
+//               });
+//             }
 
-            notifications.show({
-              color: undefined,
-              message: data.message,
-            });
+//             notifications.show({
+//               color: undefined,
+//               message: data.message,
+//             });
 
-            // Refresh queries to update page after obtaining the tag
-            queryClient.invalidateQueries({ queryKey: ["auth"] });
-            queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
-          },
-        },
-      );
-    } catch {
-      setError("Something went wrong. Try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+//             // Refresh queries to update page after obtaining the tag
+//             queryClient.invalidateQueries({ queryKey: ["auth"] });
+//             queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
+//           },
+//         },
+//       );
+//     } catch {
+//       setError("Something went wrong. Try again.");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
 
   return (
     <Center style={{ minHeight: "70vh", padding: 16 }}>
@@ -143,41 +190,24 @@ export default function ClubSignUp() {
               <Text c="dimmed" ta="center">
                 Enter the club password to continue.
               </Text>
+              <form onSubmit={form.onSubmit(onSubmit)}>
+                <TextInput
+                  {...form.getInputProps("password")}
+                  placeholder="Enter the club password"
+                  error={form.errors.email}
+                  pb="md"
+                />
 
-              <TextInput
-                label="Password"
-                placeholder="Enter secret password"
-                value={password}
-                onChange={(e) => setPassword(e.currentTarget.value)}
-                error={error || undefined}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && handleSubmit(userId, password, clubSlug!)
-                }
-                autoComplete="new-password"
-                radius="md"
-              />
-
-              <Button
-                onClick={() => handleSubmit(userId, password, clubSlug!)}
-                loading={submitting}
-                radius="md"
-                fullWidth
-              >
-                Register
-              </Button>
+                <Button type="submit" size="xs" disabled={hasTag}>
+                  Submit
+                </Button>
+              </form>
             </>
           : <>
               <Title order={2} ta="center">
                 You already are verified for {club.name ?? "this club"}!
               </Title>
 
-              <TextInput
-                label="Password"
-                value="Enter secret password"
-                readOnly
-                disabled
-                radius="md"
-              />
               <Button
                 component={Link}
                 to="/dashboard"
@@ -187,6 +217,7 @@ export default function ClubSignUp() {
               >
                 Go to Dashboard
               </Button>
+              
             </>
           }
         </Stack>
