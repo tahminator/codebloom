@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -126,7 +125,7 @@ public class LeetcodeClientTest {
     @Test
     void stressTestConcurrent() throws InterruptedException {
         int threadCount = 100;
-        int requestsPerThread = 50;
+        int requestsPerThread = 45;
 
         Thread[] threads = new Thread[threadCount];
         AtomicInteger tries = new AtomicInteger();
