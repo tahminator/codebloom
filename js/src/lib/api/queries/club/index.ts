@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { UnknownApiResponse } from "../../common/apiResponse";
@@ -21,9 +21,15 @@ async function fetchClubDto({ clubSlug }: { clubSlug?: string }) {
   return json;
 }
 
-export const useVerifyPasswordMutation = () => {
+export const useVerifyPasswordMutation = (clubSlug: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: verifyPassword,
+    onSettled: () => {
+          // Refresh queries to update page after obtaining the tag
+          queryClient.invalidateQueries({ queryKey: ["auth"] });
+          queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
+    }
   });
 };
 
@@ -47,7 +53,6 @@ async function verifyPassword({
       clubSlug,
     }),
   });
-
   const json = (await response.json()) as UnknownApiResponse<UserTag>;
 
   return json;

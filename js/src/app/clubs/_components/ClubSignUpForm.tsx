@@ -17,7 +17,6 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -33,16 +32,8 @@ export default function ClubSignUp({
   const { data, status } = useClubQuery({
     clubSlug,
   });
-  const { mutate } = useVerifyPasswordMutation();
-
-  // State Hooks
-//   const [password, setPassword] = useState("");
-//   const [error, setError] = useState<string | null>(null);
-//   const [submitting, setSubmitting] = useState(false);
+  const { mutate } = useVerifyPasswordMutation(clubSlug!);
   const [imgError, setImgError] = useState(false);
-
-  // Query Client
-  const queryClient = useQueryClient();
 
   const form = useForm({
     validate: zodResolver(clubVerificationForm),
@@ -53,7 +44,7 @@ export default function ClubSignUp({
 
   const onSubmit = (values: z.infer<typeof clubVerificationForm>) => {
     const id = notifications.show({
-      message: "Verifying email... ",
+      message: "Verifying password... ",
       color: "blue",
     });
     mutate(
@@ -62,19 +53,6 @@ export default function ClubSignUp({
         password: values.password,
         clubSlug: clubSlug!,
       },
-      //   {
-      //     onSuccess: async (data) => {
-      //       notifications.update({
-      //         id,
-      //         message: data.message,
-      //         color: data.success ? undefined : "red",
-      //       });
-      //       if (data.success) {
-      //         form.reset();
-      //         toggle();
-      //       }
-      //     },
-      //   },
       {
         onSuccess: async (data) => {
           notifications.update({
@@ -86,10 +64,6 @@ export default function ClubSignUp({
           if (data.success) {
             form.reset();
           }
-
-          // Refresh queries to update page after obtaining the tag
-          queryClient.invalidateQueries({ queryKey: ["auth"] });
-          queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
         },
       },
     );
@@ -116,47 +90,6 @@ export default function ClubSignUp({
   const hasTag = userTags.some(
     ({ tag }) => tag.toString() === clubTag?.toString(),
   );
-
-//   const handleSubmit = (userId: string, password: string, clubSlug: string) => {
-//     if (!password.trim()) {
-//       setError("Please enter a password.");
-//       return;
-//     }
-//     setError(null);
-//     setSubmitting(true);
-//     try {
-//       mutate(
-//         {
-//           userId,
-//           password,
-//           clubSlug,
-//         },
-//         {
-//           onSuccess: (data) => {
-//             if (!data.success) {
-//               return notifications.show({
-//                 color: "red",
-//                 message: data.message,
-//               });
-//             }
-
-//             notifications.show({
-//               color: undefined,
-//               message: data.message,
-//             });
-
-//             // Refresh queries to update page after obtaining the tag
-//             queryClient.invalidateQueries({ queryKey: ["auth"] });
-//             queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
-//           },
-//         },
-//       );
-//     } catch {
-//       setError("Something went wrong. Try again.");
-//     } finally {
-//       setSubmitting(false);
-//     }
-//   };
 
   return (
     <Center style={{ minHeight: "70vh", padding: 16 }}>
@@ -217,7 +150,6 @@ export default function ClubSignUp({
               >
                 Go to Dashboard
               </Button>
-              
             </>
           }
         </Stack>
