@@ -171,7 +171,7 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        announcement.setShowTimer(false);
+        
         announcement.setExpiresAt(LocalDateTime.now());
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
