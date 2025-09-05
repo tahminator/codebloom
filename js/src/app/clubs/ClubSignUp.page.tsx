@@ -5,7 +5,7 @@ import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Box, Loader } from "@mantine/core";
 
-import ClubSignUp from "./_components/ClubSignUp";
+import ClubSignUp from "./_components/ClubSignUpForm";
 
 export default function ClubSignupPage() {
   const { data, status } = useAuthQuery();
