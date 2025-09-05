@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 
 import { UnknownApiResponse } from "../../common/apiResponse";
 import { ClubDto } from "../../types/club";
 import { UserTag } from "../../types/usertag";
+
 
 export const useClubQuery = ({ clubSlug }: { clubSlug?: string }) => {
   return useQuery({
@@ -50,3 +52,7 @@ async function verifyPassword({
 
   return json;
 }
+
+export const clubVerificationForm = z.object({
+  password: z.string().trim().min(1).max(230),
+});
