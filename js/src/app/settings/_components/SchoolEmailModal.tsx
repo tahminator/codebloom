@@ -1,8 +1,9 @@
 import { useVerifySchoolMutation } from "@/lib/api/queries/auth/school";
 import { schoolVerificationForm } from "@/lib/api/schema/school";
 import { Box, Button, Modal, Text, TextInput } from "@mantine/core";
-import { useForm, zodResolver } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { z } from "zod";
 
 type SchoolModalProps = {
