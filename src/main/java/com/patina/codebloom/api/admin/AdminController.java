@@ -165,7 +165,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Something went wrong", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     })
     @PostMapping("/announcement/disable")
-    public ResponseEntity<ApiResponder<Boolean>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody, final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Empty>> deleteAnnouncement(@Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody, final HttpServletRequest request) {
         protector.validateAdminSession(request);
         Announcement announcement = announcementRepository.getAnnouncementById(deleteAnnouncementBody.getId());
         if (announcement == null) {
@@ -180,7 +180,7 @@ public class AdminController {
                             .status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Hmm, something went wrong."));
         }
-        return ResponseEntity.ok(ApiResponder.success("Announcement successfully disabled!", updatedAnnouncement));
+        return ResponseEntity.ok(ApiResponder.success("Announcement successfully disabled!", Empty.of()));
     }
 
 }
