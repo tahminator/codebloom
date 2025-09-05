@@ -5,7 +5,6 @@ import { UnknownApiResponse } from "../../common/apiResponse";
 import { ClubDto } from "../../types/club";
 import { UserTag } from "../../types/usertag";
 
-
 export const useClubQuery = ({ clubSlug }: { clubSlug?: string }) => {
   return useQuery({
     queryKey: ["club", clubSlug],
@@ -26,10 +25,10 @@ export const useVerifyPasswordMutation = (clubSlug: string) => {
   return useMutation({
     mutationFn: verifyPassword,
     onSettled: () => {
-          // Refresh queries to update page after obtaining the tag
-          queryClient.invalidateQueries({ queryKey: ["auth"] });
-          queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
-    }
+      // Refresh queries to update page after obtaining the tag
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
+    },
   });
 };
 
