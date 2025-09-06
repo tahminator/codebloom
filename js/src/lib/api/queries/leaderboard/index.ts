@@ -34,7 +34,10 @@ export const useCurrentLeaderboardUsersQuery = (
     defaultGwc: false,
   },
 ) => {
-  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
+  const { page, goBack, goForward, goTo } = usePagination({
+    initialPage: initialPage,
+    tieToUrl: tieToUrl,
+  });
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
@@ -178,7 +181,10 @@ export const useAllLeaderboardsMetadataQuery = ({
   pageSize?: number;
   tieToUrl?: boolean;
 }) => {
-  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
+  const { page, goBack, goForward, goTo } = usePagination({
+    initialPage: initialPage,
+    tieToUrl: tieToUrl,
+  });
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
    */
@@ -244,7 +250,10 @@ export const useLeaderboardUsersByIdQuery = ({
   tieToUrl?: boolean;
   leaderboardId: string;
 }) => {
-  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
+  const { page, goBack, goForward, goTo } = usePagination({
+    initialPage: initialPage,
+    tieToUrl: tieToUrl,
+  });
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
