@@ -11,11 +11,14 @@ import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
+import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
+import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
@@ -36,6 +39,7 @@ public class SubmissionsHandler {
     private final LeaderboardRepository leaderboardRepository;
     private final POTDRepository potdRepository;
     private final UserRepository userRepository;
+    private final QuestionTopicRepository questionTopicRepository;
 
     private boolean isSameDay(final LocalDateTime createdAt) {
         LocalDate createdAtDate = createdAt.toLocalDate();
@@ -45,12 +49,13 @@ public class SubmissionsHandler {
     }
 
     public SubmissionsHandler(final QuestionRepository questionRepository, final ThrottledLeetcodeClient throttledLeetcodeClient, final LeaderboardRepository leaderboardRepository,
-                    final POTDRepository potdRepository, final UserRepository userRepository) {
+                    final POTDRepository potdRepository, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository) {
         this.questionRepository = questionRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.leaderboardRepository = leaderboardRepository;
         this.potdRepository = potdRepository;
         this.userRepository = userRepository;
+        this.questionTopicRepository = questionTopicRepository;
     }
 
     public ArrayList<AcceptedSubmission> handleSubmissions(final List<LeetcodeSubmission> leetcodeSubmissions, final User user) {
@@ -117,6 +122,13 @@ public class SubmissionsHandler {
                             .build();
 
             questionRepository.createQuestion(newQuestion);
+
+            leetcodeQuestion.getTopics().stream().forEach(topic -> questionTopicRepository.createQuestionTopic(
+                            QuestionTopic.builder()
+                                            .questionId(newQuestion.getId())
+                                            .topicSlug(topic.getSlug())
+                                            .topic(LeetcodeTopicEnum.fromValue(topic.getSlug()))
+                                            .build()));
 
             acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
