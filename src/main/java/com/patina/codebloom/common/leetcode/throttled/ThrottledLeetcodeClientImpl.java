@@ -2,6 +2,7 @@ package com.patina.codebloom.common.leetcode.throttled;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import com.patina.codebloom.common.leetcode.LeetcodeClientImpl;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
@@ -75,5 +77,11 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
     public UserProfile getUserProfile(final String username) {
         waitForToken();
         return super.getUserProfile(username);
+    }
+
+    @Override
+    public Set<LeetcodeTopicTag> getAllTopicTags() {
+        rateLimiter.acquire();
+        return super.getAllTopicTags();
     }
 }
