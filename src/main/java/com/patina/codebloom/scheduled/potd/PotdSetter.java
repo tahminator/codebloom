@@ -10,6 +10,7 @@ import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 @Component
@@ -20,8 +21,8 @@ public class PotdSetter {
     private LeetcodeClient leetcodeClient;
     private POTDRepository potdRepository;
 
-    public PotdSetter(final LeetcodeClient leetcodeClient, final POTDRepository potdRepository) {
-        this.leetcodeClient = leetcodeClient;
+    public PotdSetter(final ThrottledLeetcodeClient throttledLeetcodeClient, final POTDRepository potdRepository) {
+        this.leetcodeClient = throttledLeetcodeClient;
         this.potdRepository = potdRepository;
     }
 

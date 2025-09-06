@@ -54,8 +54,8 @@ public class LeetcodeAuthStealer {
     public synchronized void stealAuthCookie() {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
-        // The auth token should be refreshed every 4 days.
-        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(StandardizedLocalDateTime.now().minus(4, ChronoUnit.DAYS))) {
+        // The auth token should be refreshed every day.
+        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(StandardizedLocalDateTime.now().minus(1, ChronoUnit.DAYS))) {
             LOGGER.info("Auth token already exists, using token from database.");
             cookie = mostRecentAuth.getToken();
             return;
@@ -168,6 +168,15 @@ public class LeetcodeAuthStealer {
             context.close();
             browser.close();
         }
+    }
+
+    /**
+     * There are some cases where leetcode.com may not respect the token anymore. If
+     * that is the case, it is best to try to steal a new cookie and replace the
+     * current one.
+     */
+    public synchronized void reloadCookie() {
+        stealAuthCookie();
     }
 
     public synchronized String getCookie() {

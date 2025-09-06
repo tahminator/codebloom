@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 
 @Component
@@ -20,9 +21,9 @@ public class RefetchIncompleteQuestions {
     private final QuestionRepository questionRepository;
     private final LeetcodeClient leetcodeClient;
 
-    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final LeetcodeClient leetcodeClient) {
+    public RefetchIncompleteQuestions(final QuestionRepository questionRepository, final ThrottledLeetcodeClient throttledLeetcodeClient) {
         this.questionRepository = questionRepository;
-        this.leetcodeClient = leetcodeClient;
+        this.leetcodeClient = throttledLeetcodeClient;
 
     }
 

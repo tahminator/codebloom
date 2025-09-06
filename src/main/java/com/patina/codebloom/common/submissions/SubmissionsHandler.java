@@ -22,6 +22,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 
 /**
@@ -43,10 +44,10 @@ public class SubmissionsHandler {
         return createdAtDate.equals(today);
     }
 
-    public SubmissionsHandler(final QuestionRepository questionRepository, final LeetcodeClient leetcodeClient, final LeaderboardRepository leaderboardRepository,
+    public SubmissionsHandler(final QuestionRepository questionRepository, final ThrottledLeetcodeClient throttledLeetcodeClient, final LeaderboardRepository leaderboardRepository,
                     final POTDRepository potdRepository, final UserRepository userRepository) {
         this.questionRepository = questionRepository;
-        this.leetcodeClient = leetcodeClient;
+        this.leetcodeClient = throttledLeetcodeClient;
         this.leaderboardRepository = leaderboardRepository;
         this.potdRepository = potdRepository;
         this.userRepository = userRepository;

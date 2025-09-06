@@ -22,6 +22,7 @@ import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
 
@@ -55,13 +56,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
                     final LeaderboardRepository leaderboardRepository,
                     final JDAClient jdaClient,
-                    final UserTagRepository userTagRepository, final LeetcodeClient leetcodeClient) {
+                    final UserTagRepository userTagRepository, final ThrottledLeetcodeClient throttledLeetcodeClient) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
         this.jdaClient = jdaClient.connect();
         this.userTagRepository = userTagRepository;
-        this.leetcodeClient = leetcodeClient;
+        this.leetcodeClient = throttledLeetcodeClient;
     }
 
     @Override
