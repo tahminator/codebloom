@@ -10,14 +10,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
@@ -39,108 +37,45 @@ import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 @Component
+@Primary
 public class LeetcodeClientImpl implements LeetcodeClient {
-    private static final String ENDPOINT = "https://leetcode.com/graphql";
+    private static final String GRAPHQL_ENDPOINT = "https://leetcode.com/graphql";
+
+    private final HttpClient client;
     private final LeetcodeAuthStealer leetcodeAuthStealer;
 
     public LeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer) {
+        this.client = HttpClient.newHttpClient();
         this.leetcodeAuthStealer = leetcodeAuthStealer;
     }
 
-    public static String buildQuestionRequestBody(final String query, final String slug) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("titleSlug", slug);
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-        requestBodyMap.put("variables", variables);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
-    }
-
-    public static String buildAcceptedSubmissionsRequestBody(final String query, final String username) throws JsonProcessingException {
-        // API doesn't let you get more than this amount.
-        int limit = 20;
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("username", username);
-        variables.put("limit", limit);
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-        requestBodyMap.put("variables", variables);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
-    }
-
-    public static String buildGetSubmissionDetailRequestBody(final String query, final int submissionId) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Integer> variables = new HashMap<>();
-        variables.put("submissionId", submissionId);
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-        requestBodyMap.put("variables", variables);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
-
-    }
-
-    public static String buildPotdRequestBody(final String query) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
-    }
-
-    public static String buildUserProfileRequestBody(final String query, final String username) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("username", username);
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-        requestBodyMap.put("variables", variables);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
-    }
-
-    private String buildGetTagsRequestBody(final String query) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", query);
-
-        return objectMapper.writeValueAsString(requestBodyMap);
+    /**
+     *
+     * Returns {@link HttpRequest.Builder} with some defaults required to interface
+     * with leetcode.com
+     * 
+     */
+    private HttpRequest.Builder getGraphQLRequestBuilder() {
+        return HttpRequest.newBuilder()
+                        .uri(URI.create(GRAPHQL_ENDPOINT))
+                        .header("Content-Type", "application/json")
+                        .header("Referer", "https://leetcode.com")
+                        .header("Cookie", "LEETCODE_SESSION=" + leetcodeAuthStealer.getCookie());
     }
 
     @Override
     public LeetcodeQuestion findQuestionBySlug(final String slug) {
-        String query = SelectProblemQuery.QUERY;
 
         String requestBody;
         try {
-            requestBody = buildQuestionRequestBody(query, slug);
+            requestBody = SelectProblemQuery.body(slug);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(ENDPOINT))
+            HttpRequest request = getGraphQLRequestBuilder()
                             .POST(BodyPublishers.ofString(requestBody))
-                            .header("Content-Type", "application/json")
-                            .header("Referer", "https://leetcode.com")
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -160,25 +95,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String link = "https://leetcode.com/problems/" + titleSlug;
             String difficulty = node.path("data").path("question").path("difficulty").asText();
             String question = node.path("data").path("question").path("content").asText();
-
             String statsJson = node.path("data").path("question").path("stats").asText();
             JsonObject stats = JsonParser.parseString(statsJson).getAsJsonObject();
             String acRateString = stats.get("acRate").getAsString();
             float acRate = Float.parseFloat(acRateString.replace("%", "")) / 100f;
-
-            // String topicTagsJson =
-            // node.path("data").path("question").path("topicTags").asText();
-            // JsonArray topicTags = JsonParser.parseString(topicTagsJson).getAsJsonArray();
-
-            // List<LeetcodeTopicTag> tags = new ArrayList<>();
-            // for (JsonElement el : topicTags) {
-            // JsonObject topicTag = el.getAsJsonObject();
-            // tags.add(LeetcodeTopicTag.builder()
-            // .id(topicTag.get("id").getAsString())
-            // .name(topicTag.get("name").getAsString())
-            // .slug()
-            // .build());
-            // }
 
             return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question, acRate);
         } catch (Exception e) {
@@ -190,23 +110,16 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username) {
         ArrayList<LeetcodeSubmission> submissions = new ArrayList<>();
 
-        String query = SelectAcceptedSubmisisonsQuery.QUERY;
-
         String requestBody;
         try {
-            requestBody = buildAcceptedSubmissionsRequestBody(query, username);
+            requestBody = SelectAcceptedSubmisisonsQuery.body(username);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(ENDPOINT))
+            HttpRequest request = getGraphQLRequestBuilder()
                             .POST(BodyPublishers.ofString(requestBody))
-                            .header("Content-Type", "application/json")
-                            .header("Referer", "https://leetcode.com")
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -250,24 +163,16 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     @Override
     public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(final int submissionId) {
-        String query = GetSubmissionDetails.QUERY;
-
         String requestBody;
         try {
-            requestBody = buildGetSubmissionDetailRequestBody(query, submissionId);
+            requestBody = GetSubmissionDetails.body(submissionId);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(ENDPOINT))
+            HttpRequest request = getGraphQLRequestBuilder()
                             .POST(BodyPublishers.ofString(requestBody))
-                            .header("Content-Type", "application/json")
-                            .header("Referer", "https://leetcode.com")
-                            .header("Cookie", "LEETCODE_SESSION=" + leetcodeAuthStealer.getCookie())
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -304,23 +209,16 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     }
 
     public POTD getPotd() {
-        String query = GetPotd.QUERY;
-
         String requestBody;
         try {
-            requestBody = buildPotdRequestBody(query);
+            requestBody = GetPotd.body();
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(ENDPOINT))
+            HttpRequest request = getGraphQLRequestBuilder()
                             .POST(BodyPublishers.ofString(requestBody))
-                            .header("Content-Type", "application/json")
-                            .header("Referer", "https://leetcode.com")
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -347,23 +245,16 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     @Override
     public UserProfile getUserProfile(final String username) {
-        String query = GetUserProfile.QUERY;
-
         String requestBody;
         try {
-            requestBody = buildUserProfileRequestBody(query, username);
+            requestBody = GetUserProfile.body(username);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body", e);
         }
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(ENDPOINT))
+            HttpRequest request = getGraphQLRequestBuilder()
                             .POST(BodyPublishers.ofString(requestBody))
-                            .header("Content-Type", "application/json")
-                            .header("Referer", "https://leetcode.com")
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -393,13 +284,8 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     @Override
     public Set<LeetcodeTopicTag> getAllTopicTags() {
         try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(ENDPOINT))
-                            .POST(BodyPublishers.ofString(buildGetTagsRequestBody(GetTopics.QUERY)))
-                            .header("Content-Type", "application/json")
-                            .header("Referer", "https://leetcode.com")
+            HttpRequest request = getGraphQLRequestBuilder()
+                            .POST(BodyPublishers.ofString(GetTopics.body()))
                             .build();
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
