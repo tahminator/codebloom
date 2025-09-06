@@ -102,4 +102,9 @@ export const router = createBrowserRouter([
     element: <ClubSignUp />,
     errorElement: <ErrorPage />,
   },
+  {
+    path: "/privacy",
+    element: <PolicyPage />,
+    errorElement: <ErrorPage />,
+  },
 ]);
