@@ -17,6 +17,11 @@ public class SelectProblemQuery {
                             content
                             difficulty
                             stats
+                            topicTags {
+                                id
+                                name
+                                slug
+                            }
                         }
                     }
                     """;

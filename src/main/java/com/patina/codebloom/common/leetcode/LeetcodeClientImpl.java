@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -23,10 +25,12 @@ import com.patina.codebloom.common.leetcode.models.Lang;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.queries.GetPotd;
 import com.patina.codebloom.common.leetcode.queries.GetSubmissionDetails;
+import com.patina.codebloom.common.leetcode.queries.GetTopics;
 import com.patina.codebloom.common.leetcode.queries.GetUserProfile;
 import com.patina.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
@@ -277,4 +281,43 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         }
     }
 
+    @Override
+    public Set<LeetcodeTopicTag> getAllTopicTags() {
+        try {
+            HttpRequest request = getGraphQLRequestBuilder()
+                            .POST(BodyPublishers.ofString(GetTopics.body()))
+                            .build();
+
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
+
+            if (statusCode != 200) {
+                throw new RuntimeException("Non-successful response getting topics from Leetcode API. Status code: " + statusCode);
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode json = mapper.readTree(body);
+            JsonNode edges = json.path("data").path("questionTopicTags").path("edges");
+
+            if (!edges.isArray()) {
+                throw new RuntimeException("The expected shape of getting topics did not match the received body");
+            }
+
+            Set<LeetcodeTopicTag> result = new HashSet<>();
+
+            for (JsonNode edge : edges) {
+                JsonNode node = edge.path("node");
+                result.add(LeetcodeTopicTag.builder()
+                                .name(node.get("name").asText())
+                                .slug(node.get("slug").asText())
+                                .build());
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting topics from Leetcode API", e);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.patina.codebloom.api.submission;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -191,7 +192,7 @@ public class SubmissionController {
 
         simpleRedis.put(0, user.getId(), System.currentTimeMillis());
 
-        ArrayList<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
+        List<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
         return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!",
                         submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
