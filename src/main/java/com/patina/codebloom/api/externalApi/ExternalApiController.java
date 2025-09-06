@@ -48,7 +48,7 @@ public class ExternalApiController {
     @Operation(summary = "Get GWC users from a specific leaderboard", description = "Returns a list of users with GWC tags from the specified leaderboard. "
                     + "Requires a valid API key with GWC_READ_BY_USER access.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved GWC users")
-    @ApiResponse(responseCode = "401", description = "Invalid or missing API key")
+    @ApiResponse(responseCode = "401", description = "Invalid API key")
     @ApiResponse(responseCode = "403", description = "API key does not have required permissions")
     @ApiResponse(responseCode = "404", description = "Leaderboard not found")
     @GetMapping("/gwcUsers")
