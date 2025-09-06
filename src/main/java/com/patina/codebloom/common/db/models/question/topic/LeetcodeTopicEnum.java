@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.db.models.questiontopic;
+package com.patina.codebloom.common.db.models.question.topic;
 
 import java.util.Arrays;
 
@@ -82,15 +82,24 @@ public enum LeetcodeTopicEnum {
     COUNTING_SORT("counting-sort"),
     UNKNOWN("unknown");
 
-    private final String value;
+    private final String leetcodeEnum;
 
     /**
-     * Will attempt to resolve internal value into an enum. Will return
-     * {@code LeetcodeTopicEnum.UNKNOWN} if none can be matched.
+     * Converts a string value to the corresponding LeetcodeTopicEnum.
+     * <p>
+     * This method performs a case-sensitive search through all enum values to find
+     * a match with the provided string value. The comparison is done against the
+     * internal leetcode.com topic identifier format.
+     *
+     * @param value the string representation of the leetcode topic (e.g., "array",
+     * "dynamic-programming")
+     * @return the matching LeetcodeTopicEnum, or {@link #UNKNOWN} if no match is
+     * found
+     * @see #getLeetcodeEnum()
      */
     public static LeetcodeTopicEnum fromValue(final String value) {
         return Arrays.stream(LeetcodeTopicEnum.values())
-                        .filter(topic -> topic.getValue().equals(value))
+                        .filter(topic -> topic.getLeetcodeEnum().equals(value))
                         .findFirst().orElse(LeetcodeTopicEnum.UNKNOWN);
     }
 }

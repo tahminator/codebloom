@@ -1,9 +1,9 @@
-package com.patina.codebloom.common.db.repos.questiontopic;
+package com.patina.codebloom.common.db.repos.question.topic;
 
 import java.util.List;
 
-import com.patina.codebloom.common.db.models.questiontopic.LeetcodeTopicEnum;
-import com.patina.codebloom.common.db.models.questiontopic.QuestionTopic;
+import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
+import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 
 public interface QuestionTopicRepository {
     List<QuestionTopic> findQuestionTopicsByQuestionId(String questionId);
