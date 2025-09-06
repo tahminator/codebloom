@@ -15,16 +15,12 @@ export default function ClubSignUpSkeleton() {
         <Stack gap="md">
           {/* Splash image placeholder */}
           <Skeleton height={120} width={160} mx="auto" radius="md" />
-
           {/* Title */}
           <Skeleton height={28} width="70%" mx="auto" />
-
           {/* Subtitle text */}
           <Skeleton height={18} width="60%" mx="auto" />
-
           {/* Input field */}
           <Skeleton height={44} radius="md" />
-
           {/* Button */}
           <Skeleton height={36} radius="md" />
         </Stack>
