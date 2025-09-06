@@ -591,14 +591,10 @@ public class QuestionSqlRepository implements QuestionRepository {
                             q.code,
                             q.language,
                             q."submissionId"
-                        FROM
-                            "Question" q
-                        WHERE NOT EXISTS (
-                            SELECT 1
-                            FROM "QuestionTopic" qt
-                            WHERE qt."questionId" = q.id
-                        );
-                        """;
+                        FROM "Question" q
+                        LEFT JOIN "QuestionTopic" qt ON qt."questionId" = q.id
+                        WHERE qt."questionId" IS NULL;
+                                                """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
