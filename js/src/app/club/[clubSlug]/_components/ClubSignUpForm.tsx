@@ -129,7 +129,6 @@ export default function ClubSignUp({
                   error={form.errors.email}
                   pb="md"
                 />
-
                 <Button type="submit" size="xs" disabled={hasTag}>
                   Submit
                 </Button>
@@ -139,7 +138,6 @@ export default function ClubSignUp({
               <Title order={2} ta="center">
                 You already are verified for {club.name ?? "this club"}!
               </Title>
-
               <Button
                 component={Link}
                 to="/dashboard"

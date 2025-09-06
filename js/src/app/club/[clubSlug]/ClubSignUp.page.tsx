@@ -38,7 +38,6 @@ export default function ClubSignupPage() {
       <Box>
         <ClubSignUp {...data.user} />
       </Box>
-
       <Footer />
     </Box>
   );
