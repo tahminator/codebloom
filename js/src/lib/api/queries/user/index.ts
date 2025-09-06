@@ -2,6 +2,7 @@ import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Question } from "@/lib/api/types/question";
 import { User } from "@/lib/api/types/user";
+import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
@@ -32,7 +33,7 @@ export const useUserSubmissionsQuery = ({
   tieToUrl?: boolean;
   pageSize?: number;
 }) => {
-  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
   const [pointFilter, setPointFilter] = useURLState(
     "pointFilter",
     false,
@@ -46,21 +47,6 @@ export const useUserSubmissionsQuery = ({
     tieToUrl,
     true,
     500,
-  );
-
-  const goBack = useCallback(() => {
-    setPage((old) => Math.max(old - 1, 0));
-  }, [setPage]);
-
-  const goForward = useCallback(() => {
-    setPage((old) => old + 1);
-  }, [setPage]);
-
-  const goTo = useCallback(
-    (pageNumber: number) => {
-      setPage(() => Math.max(pageNumber, 0));
-    },
-    [setPage],
   );
 
   useEffect(() => {
@@ -121,28 +107,13 @@ export const useGetAllUsersQuery = (
   const initialPage = 1;
   const pageSize = 5;
 
-  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
     tieToUrl,
     true,
     500,
-  );
-
-  const goBack = useCallback(() => {
-    setPage((old) => Math.max(old - 1, 0));
-  }, [setPage]);
-
-  const goForward = useCallback(() => {
-    setPage((old) => old + 1);
-  }, [setPage]);
-
-  const goTo = useCallback(
-    (pageNumber: number) => {
-      setPage(() => Math.max(pageNumber, 0));
-    },
-    [setPage],
   );
 
   useEffect(() => {
