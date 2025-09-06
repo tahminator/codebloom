@@ -16,11 +16,11 @@ type PaginatedProps = {
 
 /**
  * A custom React hook for managing pagination of lists
- * 
+ *
  * @param {PaginatedProps} props - Configuration options for the pagination hook.
  * @param {number} props.initialPage - The starting page number.
  * @param {boolean} props.tieToUrl - Whether to sync the page state with the URL.
- * 
+ *
  * @returns {Paginator} A paginator object containing:
  * - `page` (number): The current page number.
  * - `goBack` (function): Decrements the page number, but never below 1.
