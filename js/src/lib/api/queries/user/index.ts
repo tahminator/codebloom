@@ -33,7 +33,10 @@ export const useUserSubmissionsQuery = ({
   tieToUrl?: boolean;
   pageSize?: number;
 }) => {
-  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
+  const { page, goBack, goForward, goTo } = usePagination({
+    initialPage: initialPage,
+    tieToUrl: tieToUrl,
+  });
   const [pointFilter, setPointFilter] = useURLState(
     "pointFilter",
     false,
@@ -107,7 +110,10 @@ export const useGetAllUsersQuery = (
   const initialPage = 1;
   const pageSize = 5;
 
-  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
+  const { page, goBack, goForward, goTo } = usePagination({
+    initialPage: initialPage,
+    tieToUrl: tieToUrl,
+  });
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
