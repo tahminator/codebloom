@@ -1,6 +1,7 @@
 import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import { useAuthQuery } from "@/lib/api/queries/auth";
 import {
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
@@ -12,7 +13,6 @@ import {
   Divider,
   Flex,
   Overlay,
-  SegmentedControl,
   Text,
   Title,
   Tooltip,
@@ -22,6 +22,8 @@ import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
+import FilterControl from "./FilterControl";
+
 export default function LeaderboardForDashboard({
   userId,
 }: {
@@ -30,16 +32,16 @@ export default function LeaderboardForDashboard({
   // Hack to fix a race condition.
   useFixMyPointsPrefetch({ userId });
 
-  const { data, status, patina, togglePatina, isPlaceholderData } =
-    useCurrentLeaderboardUsersQuery({
-      pageSize: 5,
-    });
+  const leaderboardQuery = useCurrentLeaderboardUsersQuery({
+    pageSize: 5,
+  });
+  const userQuery = useAuthQuery();
 
-  if (status === "pending") {
+  if (leaderboardQuery.status === "pending" || userQuery.status === "pending") {
     return <DashboardLeaderboardSkeleton />;
   }
 
-  if (status === "error") {
+  if (leaderboardQuery.status === "error" || userQuery.status === "error") {
     return (
       <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
@@ -57,7 +59,7 @@ export default function LeaderboardForDashboard({
     );
   }
 
-  if (!data.success) {
+  if (!leaderboardQuery.data.success || !userQuery.data.user) {
     return (
       <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
@@ -68,14 +70,16 @@ export default function LeaderboardForDashboard({
           h={"100%"}
         >
           <Title order={6} ta={"center"}>
-            {data.message}
+            {leaderboardQuery.data.success && leaderboardQuery.data.message}
+            {!userQuery.data.user}
           </Title>
         </Flex>
       </Card>
     );
   }
 
-  const leaderboardData = data.payload;
+  const leaderboardData = leaderboardQuery.data.payload;
+  const userTags = userQuery.data.user!.tags;
 
   if (leaderboardData.items.length == 0) {
     return (
@@ -110,15 +114,24 @@ export default function LeaderboardForDashboard({
           View all
         </Button>
       </Flex>
-      <SegmentedControl
-        value={patina ? "patina" : "all"}
-        w={"100%"}
-        variant={"light"}
-        data={[
-          { label: "All", value: "all" },
-          { label: "Patina", value: "patina" },
-        ]}
-        onChange={togglePatina}
+      <FilterControl
+        userTags={userTags}
+        flags={{
+          patina: leaderboardQuery.patina,
+          hunter: leaderboardQuery.hunter,
+          nyu: leaderboardQuery.nyu,
+          baruch: leaderboardQuery.baruch,
+          rpi: leaderboardQuery.rpi,
+          gwc: leaderboardQuery.gwc,
+        }}
+        toggles={{
+          patina: leaderboardQuery.togglePatina,
+          hunter: leaderboardQuery.toggleHunter,
+          nyu: leaderboardQuery.toggleNyu,
+          baruch: leaderboardQuery.toggleBaruch,
+          rpi: leaderboardQuery.toggleRpi,
+          gwc: leaderboardQuery.toggleGwc,
+        }}
       />
       {!inTop5 && (
         <>
@@ -127,7 +140,7 @@ export default function LeaderboardForDashboard({
         </>
       )}
       <Flex direction={"column"} gap={"md"} m={"xs"}>
-        {isPlaceholderData && (
+        {leaderboardQuery.isPlaceholderData && (
           <Overlay
             zIndex={1000}
             backgroundOpacity={0.55}
