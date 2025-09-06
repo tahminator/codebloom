@@ -86,7 +86,6 @@ export default function ClubSignUp({
   const club = data.payload;
   const clubTag = data.payload.tag;
 
-  // Check if the User already has the desired club tag
   const hasTag = userTags.some(
     ({ tag }) => tag.toString() === clubTag.toString(),
   );
