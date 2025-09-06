@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { useURLState } from "./useUrlState";
 
-type PaginatedReturn = {
+type Paginator = {
   page: number;
   goBack: () => void;
   goForward: () => void;
@@ -17,7 +17,7 @@ type PaginatedProps = {
 export function usePagination({
   initialPage = 1,
   tieToUrl = true,
-}: PaginatedProps): PaginatedReturn {
+}: PaginatedProps): Paginator {
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
 
   const goBack = useCallback(() => {
