@@ -3,6 +3,7 @@ package com.patina.codebloom.common.db.repos.question;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface QuestionRepository {
     /**
@@ -60,6 +61,12 @@ public interface QuestionRepository {
      * description
      */
     ArrayList<Question> getAllIncompleteQuestions();
+
+    /**
+     * @note - Special case that will do a reverse-lookup on `QuestionTopic` to
+     * return all `Question` rows that do not have any assigned topics yet.
+     */
+    List<Question> getAllQuestionsWithNoTopics();
 
     boolean deleteQuestionById(String id);
 
