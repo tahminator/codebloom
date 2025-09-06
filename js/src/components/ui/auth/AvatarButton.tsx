@@ -23,7 +23,6 @@ export default function AvatarDropdown({
           </Avatar>
         : <Avatar component="button" src={src} />}
       </Menu.Target>
-
       <Menu.Dropdown>
         {schoolFF && (
           <>

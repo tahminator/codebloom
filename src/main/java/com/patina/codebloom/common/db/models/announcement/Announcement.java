@@ -12,17 +12,16 @@ import lombok.ToString;
 
 @Builder
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 public class Announcement {
-    // @Setter on some of the properties
-    // so we can override id property when new object
-    // created in database.
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private @Setter String id;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private @Setter LocalDateTime createdAt;
+    private String id;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private LocalDateTime createdAt;
 
     @NotNull
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

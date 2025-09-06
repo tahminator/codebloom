@@ -106,7 +106,6 @@ export default function LeaderboardForDashboard({
         w={"100%"}
       >
         <LeaderboardMetadata />
-
         <Button variant={"light"} component={Link} to={"/leaderboard"}>
           View all
         </Button>

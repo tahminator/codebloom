@@ -52,7 +52,6 @@ export default function AllLeaderboardsPage() {
               width: "85%",
             }}
           />
-
           <NewLeaderboardForm
             currentLeaderboardName={currentLeaderboard.name}
           />

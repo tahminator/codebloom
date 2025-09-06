@@ -118,7 +118,6 @@ export default function SubmissionDetailsContent({
             </Button>
           </Title>
         </Center>
-
         <div style={{ padding: "0rem" }}>
           <Center>
             <Title order={3}>
