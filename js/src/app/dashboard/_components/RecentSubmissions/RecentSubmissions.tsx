@@ -92,7 +92,6 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
           View all
         </Button>
       </Flex>
-
       {dashboardQuestions.map((q, idx) => {
         const badgeColor = (() => {
           if (q.questionDifficulty === "Easy") {
@@ -130,7 +129,6 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
               >
                 {q.questionTitle}
               </Text>
-
               <Box ta={"center"}>
                 <Badge
                   ta="center"
@@ -141,7 +139,6 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
                 </Badge>
               </Box>
             </Flex>
-
             <Text
               ta={"center"}
               className="transition-all group-hover:text-blue-500"

@@ -73,7 +73,6 @@ export default function UsernameForm() {
               </Text>
             </Group>
           </Center>
-
           <Text size={"sm"} ta={"center"}>
             You must set the following key inside of your "Summary" section on
             Leetcode:
@@ -93,7 +92,6 @@ export default function UsernameForm() {
               Click here to go to your profile.
             </Text>
           </Link>
-
           <TextInput
             label="Username"
             placeholder="0pengu"
@@ -106,7 +104,6 @@ export default function UsernameForm() {
           <Button mt="md" mb="md" radius="md" type="submit" loading={isPending}>
             Submit
           </Button>
-
           <Text size="xs" c="dimmed">
             You can't change your LeetCode Username, so choose wisely. You may
             remove this key after you have been verified.{" "}
