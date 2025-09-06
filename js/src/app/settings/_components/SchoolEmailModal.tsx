@@ -52,7 +52,6 @@ export default function SchoolEmailModal({
           Verify your student email to gain access to school-specific
           competitions!
         </Text>
-
         <form onSubmit={form.onSubmit(onSubmit)}>
           <TextInput
             {...form.getInputProps("email")}
@@ -60,7 +59,6 @@ export default function SchoolEmailModal({
             error={form.errors.email}
             p="md"
           />
-
           <Button
             type="submit"
             size="xs"
