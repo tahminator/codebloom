@@ -19,7 +19,6 @@ export default function ClubSignupPage() {
     );
   }
 
-  // If user isnt logged in or theres an error, toast and redirect to login page
   const authenticated = !!data.user && !!data.session;
   if (!authenticated) {
     return (
