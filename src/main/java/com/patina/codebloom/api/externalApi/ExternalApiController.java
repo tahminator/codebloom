@@ -36,17 +36,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/externalApis")
 public class ExternalApiController {
 
-    private final Protector protector;
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyAccessRepository apiKeyAccessRepository;
     private final LeaderboardRepository leaderboardRepository;
 
     public ExternalApiController(
-                    final Protector protector,
                     final ApiKeyRepository apiKeyRepository,
                     final ApiKeyAccessRepository apiKeyAccessRepository,
                     final LeaderboardRepository leaderboardRepository) {
-        this.protector = protector;
         this.apiKeyRepository = apiKeyRepository;
         this.apiKeyAccessRepository = apiKeyAccessRepository;
         this.leaderboardRepository = leaderboardRepository;
@@ -57,7 +54,7 @@ public class ExternalApiController {
     @ApiResponse(responseCode = "401", description = "Invalid or missing API key")
     @ApiResponse(responseCode = "403", description = "API key does not have required permissions")
     @ApiResponse(responseCode = "404", description = "Leaderboard not found")
-    @GetMapping("/gwcUsers")
+    @GetMapping("/GWC/Users")
     public ResponseEntity<ApiResponder<List<User>>> getGwcUsers(
                     @RequestHeader("X-API-Key") String apiKey,
                     @RequestParam("leaderboardId") String leaderboardId) {
