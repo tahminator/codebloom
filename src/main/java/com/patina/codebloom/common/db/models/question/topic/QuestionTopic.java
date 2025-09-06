@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.db.models.questiontopic;
+package com.patina.codebloom.common.db.models.question.topic;
 
 import java.time.LocalDateTime;
 
@@ -19,12 +19,16 @@ import lombok.extern.jackson.Jacksonized;
 public class QuestionTopic {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String questionId;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String topicSlug;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LeetcodeTopicEnum topic;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createdAt;
 }
