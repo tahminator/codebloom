@@ -116,7 +116,7 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
         final List<ApiKey> results = new ArrayList<>();
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql);
-                        ResultSet resultSet = stmt.executeQuery()) {
+            ResultSet resultSet = stmt.executeQuery()) {
 
             while (resultSet.next()) {
                 results.add(parseResultSetToApiKey(resultSet));
@@ -213,7 +213,7 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
                                 DELETE FROM
                                     "ApiKey"
                                 WHERE
-                                    "id" = :id
+                                    "apiKeyHash" = :hash
                                 """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
