@@ -51,7 +51,6 @@ export default function UserProfilePage() {
               <UserProfileHeader userId={userId} />
             </Flex>
           </Box>
-
           {/* Right card */}
           <Box
             bg="gray.9"
@@ -83,7 +82,6 @@ export default function UserProfilePage() {
                 View All
               </Button>
             </Flex>
-
             <Box>
               <MiniUserSubmissions userId={userId} />
             </Box>

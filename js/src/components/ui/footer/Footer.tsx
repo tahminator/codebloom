@@ -20,7 +20,6 @@ export function Footer() {
             "CodeBloom is a LeetCode motivation site for Patina Network members."
           }
         </Text>
-
         <div className={styles.footerLinks}>
           <FooterIconLink
             href={"https://www.linkedin.com/company/patinanetwork"}
