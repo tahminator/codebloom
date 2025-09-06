@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.context.annotation.Primary;
@@ -18,9 +19,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
+import com.patina.codebloom.common.json.JsonPrinter;
 import com.patina.codebloom.common.leetcode.models.Lang;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
@@ -41,11 +41,15 @@ import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 public class LeetcodeClientImpl implements LeetcodeClient {
     private static final String GRAPHQL_ENDPOINT = "https://leetcode.com/graphql";
 
+    private final ObjectMapper mapper;
+
     private final HttpClient client;
     private final LeetcodeAuthStealer leetcodeAuthStealer;
 
     public LeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer) {
         this.client = HttpClient.newHttpClient();
+        this.mapper = new ObjectMapper();
+
         this.leetcodeAuthStealer = leetcodeAuthStealer;
     }
 
@@ -86,7 +90,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(body);
 
             int questionId = node.path("data").path("question").path("questionId").asInt();
@@ -95,12 +98,34 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String link = "https://leetcode.com/problems/" + titleSlug;
             String difficulty = node.path("data").path("question").path("difficulty").asText();
             String question = node.path("data").path("question").path("content").asText();
+
             String statsJson = node.path("data").path("question").path("stats").asText();
-            JsonObject stats = JsonParser.parseString(statsJson).getAsJsonObject();
-            String acRateString = stats.get("acRate").getAsString();
+            JsonNode stats = mapper.readTree(statsJson);
+            String acRateString = stats.get("acRate").asText();
             float acRate = Float.parseFloat(acRateString.replace("%", "")) / 100f;
 
-            return new LeetcodeQuestion(link, questionId, questionTitle, titleSlug, difficulty, question, acRate);
+            JsonNode topicTagsNode = node.path("data").path("question").path("topicTags");
+
+            List<LeetcodeTopicTag> tags = new ArrayList<>();
+
+            for (JsonNode el : topicTagsNode) {
+                tags.add(LeetcodeTopicTag.builder()
+                                .name(el.get("name").asText())
+                                .slug(el.get("slug").asText())
+                                .build());
+            }
+
+            return LeetcodeQuestion.builder()
+                            .link(link)
+                            .questionId(questionId)
+                            .questionTitle(questionTitle)
+                            .titleSlug(titleSlug)
+                            .difficulty(difficulty)
+                            .question(question)
+                            .acceptanceRate(acRate)
+                            .topics(tags)
+                            .build();
+
         } catch (Exception e) {
             throw new RuntimeException("Error fetching the API", e);
         }
@@ -130,7 +155,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(body);
             JsonNode submissionsNode = node.path("data").path("recentAcSubmissionList");
 
@@ -183,7 +207,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(body);
             JsonNode baseNode = node.path("data").path("submissionDetails");
 
@@ -229,7 +252,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(body);
             JsonNode baseNode = node.path("data").path("activeDailyCodingChallengeQuestion").path("question");
 
@@ -265,7 +287,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(body);
             JsonNode baseNode = node.path("data").path("matchedUser");
 
@@ -296,7 +317,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 throw new RuntimeException("Non-successful response getting topics from Leetcode API. Status code: " + statusCode);
             }
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(body);
             JsonNode edges = json.path("data").path("questionTopicTags").path("edges");
 
