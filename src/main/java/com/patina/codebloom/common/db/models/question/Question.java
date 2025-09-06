@@ -8,6 +8,10 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
@@ -46,7 +50,6 @@ public class Question {
      * some points, so there might be a case where we create the DB entry and then
      * pass it to a message queue to use AI and calculate a score.
      */
-
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private Integer pointsAwarded;
 
@@ -72,8 +75,12 @@ public class Question {
     private String language;
 
     // Not every submission will have this.
-
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String submissionId;
 
+    /**
+     * Join field, update/create with {@link QuestionTopicRepository}
+     */
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<QuestionTopic> topics;
 }
