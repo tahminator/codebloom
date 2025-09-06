@@ -11,23 +11,19 @@ import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
 import com.patina.codebloom.common.db.models.api.ApiKey;
 import com.patina.codebloom.common.db.models.api.ApiKeyAccessEnum;
 import com.patina.codebloom.common.db.repos.api.access.ApiKeyAccessRepository;
-import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.db.repos.api.ApiKeyRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.dto.ApiResponder;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestHeader;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,15 +45,16 @@ public class ExternalApiController {
         this.leaderboardRepository = leaderboardRepository;
     }
 
-    @Operation(summary = "Get GWC users from a specific leaderboard", description = "Returns a list of users with GWC tags from the specified leaderboard. Requires a valid API key with GWC_READ_BY_USER access.")
+    @Operation(summary = "Get GWC users from a specific leaderboard", description = "Returns a list of users with GWC tags from the specified leaderboard. "
+                    + "Requires a valid API key with GWC_READ_BY_USER access.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved GWC users")
     @ApiResponse(responseCode = "401", description = "Invalid or missing API key")
     @ApiResponse(responseCode = "403", description = "API key does not have required permissions")
     @ApiResponse(responseCode = "404", description = "Leaderboard not found")
-    @GetMapping("/GWC/Users")
+    @GetMapping("/gwcUsers")
     public ResponseEntity<ApiResponder<List<User>>> getGwcUsers(
-                    @RequestHeader("X-API-Key") String apiKey,
-                    @RequestParam("leaderboardId") String leaderboardId) {
+                    @RequestHeader("X-API-Key") final String apiKey,
+                    @RequestParam("leaderboardId") final String leaderboardId) {
 
         ApiKey validApiKey = apiKeyRepository.getApiKeyByHash(apiKey);
         if (validApiKey == null) {
