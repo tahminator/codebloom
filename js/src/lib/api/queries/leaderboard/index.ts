@@ -2,6 +2,7 @@ import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Indexed, Page } from "@/lib/api/common/page";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { User, UserWithScore } from "@/lib/api/types/user";
+import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import {
   keepPreviousData,
@@ -33,7 +34,7 @@ export const useCurrentLeaderboardUsersQuery = (
     defaultGwc: false,
   },
 ) => {
-  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
@@ -57,21 +58,6 @@ export const useCurrentLeaderboardUsersQuery = (
     tieToUrl,
     true,
     100,
-  );
-
-  const goBack = useCallback(() => {
-    setPage((old) => Math.max(old - 1, 0));
-  }, [setPage]);
-
-  const goForward = useCallback(() => {
-    setPage((old) => old + 1);
-  }, [setPage]);
-
-  const goTo = useCallback(
-    (pageNumber: number) => {
-      setPage(() => Math.max(pageNumber, 0));
-    },
-    [setPage],
   );
 
   /**
@@ -192,7 +178,7 @@ export const useAllLeaderboardsMetadataQuery = ({
   pageSize?: number;
   tieToUrl?: boolean;
 }) => {
-  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
    */
@@ -202,21 +188,6 @@ export const useAllLeaderboardsMetadataQuery = ({
     tieToUrl,
     true,
     500,
-  );
-
-  const goBack = useCallback(() => {
-    setPage((old) => Math.max(old - 1, 0));
-  }, [setPage]);
-
-  const goForward = useCallback(() => {
-    setPage((old) => old + 1);
-  }, [setPage]);
-
-  const goTo = useCallback(
-    (pageNumber: number) => {
-      setPage(() => Math.max(pageNumber, 0));
-    },
-    [setPage],
   );
 
   /**
@@ -273,7 +244,7 @@ export const useLeaderboardUsersByIdQuery = ({
   tieToUrl?: boolean;
   leaderboardId: string;
 }) => {
-  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const { page, goBack, goForward, goTo } = usePagination({ initialPage: initialPage, tieToUrl: tieToUrl});
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
@@ -297,21 +268,6 @@ export const useLeaderboardUsersByIdQuery = ({
     tieToUrl,
     true,
     100,
-  );
-
-  const goBack = useCallback(() => {
-    setPage((old) => Math.max(old - 1, 0));
-  }, [setPage]);
-
-  const goForward = useCallback(() => {
-    setPage((old) => old + 1);
-  }, [setPage]);
-
-  const goTo = useCallback(
-    (pageNumber: number) => {
-      setPage(() => Math.max(pageNumber, 0));
-    },
-    [setPage],
   );
 
   /**
