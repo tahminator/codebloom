@@ -21,6 +21,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
     private QuestionTopic mapResultSetToQuestionTopic(final ResultSet resultSet) throws SQLException {
         return QuestionTopic.builder()
                         .id(resultSet.getString("id"))
+                        .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
                         .questionId(resultSet.getString("questionId"))
                         .topicSlug(resultSet.getString("topicSlug"))
                         .topic(LeetcodeTopicEnum.fromValue(resultSet.getString("topic")))
@@ -40,6 +41,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                                 id,
                                 "questionId",
                                 "topicSlug",
+                                "createdAt",
                                 "topic"
                             FROM
                                 "QuestionTopic" qt
@@ -70,6 +72,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                                     id,
                                     "questionId",
                                     "topicSlug",
+                                    "createdAt",
                                     "topic"
                                 FROM
                                     "QuestionTopic" qt
@@ -100,6 +103,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                                 id,
                                 "questionId",
                                 "topicSlug",
+                                "createdAt",
                                 "topic"
                             FROM
                                 "QuestionTopic" qt
