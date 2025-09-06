@@ -1,12 +1,9 @@
-// import { Dispatch, SetStateAction } from "react";
-
 import { useCallback } from "react";
 
 import { useURLState } from "./useUrlState";
 
 type PaginatedReturn = {
   page: number;
-  //   setPage: Dispatch<SetStateAction<number>>;
   goBack: () => void;
   goForward: () => void;
   goTo: (n: number) => void;
