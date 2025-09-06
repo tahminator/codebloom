@@ -21,7 +21,7 @@ export function usePagination({
   const [page, setPage] = useURLState("page", initialPage, tieToUrl);
 
   const goBack = useCallback(() => {
-    setPage((old: number) => Math.max(old - 1, 0));
+    setPage((old: number) => Math.max(old - 1, 1));
   }, [setPage]);
 
   const goForward = useCallback(() => {
@@ -30,7 +30,7 @@ export function usePagination({
 
   const goTo = useCallback(
     (pageNumber: number) => {
-      setPage(() => Math.max(pageNumber, 0));
+      setPage(() => Math.max(pageNumber, 1));
     },
     [setPage],
   );
