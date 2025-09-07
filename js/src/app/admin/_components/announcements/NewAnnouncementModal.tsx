@@ -21,7 +21,7 @@ export default function NewAnnouncementModal() {
     },
     transformValues: ({ expiresAt, ...values }) => ({
       ...values,
-      expiresAt: d(expiresAt).toISOString(),
+      expiresAt: d(expiresAt).format("YYYY-MM-DDTHH:mm:ss"),
     }),
   });
 
