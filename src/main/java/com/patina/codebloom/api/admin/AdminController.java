@@ -25,6 +25,7 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -136,7 +137,7 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        boolean isInFuture = LocalDateTime.now().isBefore(createAnnouncementBody.getExpiresAt());
+        boolean isInFuture = StandardizedLocalDateTime.now().isBefore(createAnnouncementBody.getExpiresAt());
 
         if (!isInFuture) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The expiration date must be in the future.");
