@@ -79,15 +79,15 @@
         <dependency>
             <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
             <groupId>io.rest-assured</groupId>
-                <artifactId>rest-assured</artifactId>
-                <version>5.0.0</version>
+            <artifactId>rest-assured</artifactId>
+            <version>5.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
             <groupId>io.rest-assured</groupId>
-                <artifactId>rest-assured-all</artifactId>
-                <version>5.0.0</version>
+            <artifactId>rest-assured-all</artifactId>
+            <version>5.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -141,11 +141,6 @@
             <version>2.0.1</version>
         </dependency>
         <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-opentelemetry-agent</artifactId>
-            <version>8.7.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>4.5.0</version>
@@ -177,34 +172,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>io.sentry</groupId>
-                <artifactId>sentry-maven-plugin</artifactId>
-                <version>0.4.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <!-- for showing output of sentry-cli -->
-                    <debugSentryCli>true</debugSentryCli>
-
-                    <skip>${env.SKIP:true}</skip>
-                    <!--  Disable source-context and source bundle upload -->
-                    <skipSourceBundle>true</skipSourceBundle>
-                    <!--  Disable auto-install of SDK and Integrations -->
-                    <skipAutoInstall>false</skipAutoInstall>
-                    <!--  Disable validating consistency of SDK dependency versions -->
-                    <skipValidateSdkDependencyVersions>false</skipValidateSdkDependencyVersions>
-
-                    <org>codebloom-vv</org>
-
-                    <project>codebloom-java</project>
-
-                    <!-- in case you're self hosting, provide the URL here -->
-                    <!--<url>http://localhost:8000/</url>-->
-
-                    <!-- provide your auth token via SENTRY_AUTH_TOKEN environment variable -->
-                    <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.flywaydb</groupId>
