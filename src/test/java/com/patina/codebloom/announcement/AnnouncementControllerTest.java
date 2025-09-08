@@ -22,7 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.ZoneId;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
@@ -45,7 +45,7 @@ public class AnnouncementControllerTest {
                     .builder()
                     .message("Hi this is a test message!")
                     .showTimer(true)
-                    .expiresAt(Instant.now().plus(24, ChronoUnit.HOURS))
+                    .expiresAt(OffsetDateTime.now().plusHours(24))
                     .build();
     private Announcement testAnnouncement;
 
