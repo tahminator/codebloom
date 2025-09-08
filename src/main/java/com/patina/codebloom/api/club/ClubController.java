@@ -67,16 +67,17 @@ public class ClubController {
 
         boolean valid = clubService.isPasswordValid(club, password);
 
-        if (valid) {
-            UserTag clubTag = UserTag.builder()
-                            .userId(userId)
-                            .tag(club.getTag())
-                            .build();
-
-            userTagRepository.createTag(clubTag);
-            return ResponseEntity.ok(ApiResponder.success("Club Tag added.", clubTag));
+        if (!valid) {
+            return ResponseEntity.ok(ApiResponder.custom(false, "Incorrect Password", null));
         }
-        return ResponseEntity.ok(ApiResponder.custom(false, "Incorrect Password", null));
+        
+        UserTag clubTag = UserTag.builder()
+                        .userId(userId)
+                        .tag(club.getTag())
+                        .build();
+
+        userTagRepository.createTag(clubTag);
+        return ResponseEntity.ok(ApiResponder.success("Club Tag added.", clubTag));
     }
 
 }
