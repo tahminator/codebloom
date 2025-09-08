@@ -28,12 +28,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/club")
 @Tag(name = "General Club Routes")
-@RequiredArgsConstructor
 public class ClubController {
 
     private final ClubService clubService;
     private final ClubRepository clubRepository;
     private final UserTagRepository userTagRepository;
+
+    public ClubController(final ClubService clubService, final ClubRepository clubRepository, final UserTagRepository userTagRepository) {
+        this.clubService = clubService;
+        this.clubRepository = clubRepository;
+        this.userTagRepository = userTagRepository;
+    }
 
     @GetMapping("/{clubSlug}")
     public ResponseEntity<ApiResponder<ClubDto>> getClubDataBySlug(@PathVariable final String clubSlug) {
