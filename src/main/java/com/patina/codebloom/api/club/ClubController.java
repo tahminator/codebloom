@@ -70,7 +70,7 @@ public class ClubController {
         if (!valid) {
             return ResponseEntity.ok(ApiResponder.custom(false, "Incorrect Password", null));
         }
-        
+
         UserTag clubTag = UserTag.builder()
                         .userId(userId)
                         .tag(club.getTag())
