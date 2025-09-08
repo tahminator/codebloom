@@ -1,4 +1,5 @@
 import Toast from "@/components/ui/toast/Toast";
+import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import {
   clubVerificationForm,
   useClubQuery,
@@ -19,7 +20,7 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import z from "zod";
 
 import ClubSignUpSkeleton from "./ClubSignUpSkeleton";
@@ -27,15 +28,17 @@ import ClubSignUpSkeleton from "./ClubSignUpSkeleton";
 export default function ClubSignUp({
   id: userId,
   tags: userTags,
+  clubSlug: clubSlug,
 }: {
   id: string;
   tags: { id: string; createdAt: string; userId: string; tag: UserTagTag }[];
+  clubSlug: string;
 }) {
-  const { clubSlug } = useParams<{ clubSlug: string }>();
   const { data, status } = useClubQuery({
     clubSlug,
   });
-  const { mutate } = useVerifyPasswordMutation(clubSlug!);
+
+  const { mutate } = useVerifyPasswordMutation(clubSlug);
   const [imgError, setImgError] = useState(false);
 
   const form = useForm({
@@ -83,7 +86,7 @@ export default function ClubSignUp({
   }
 
   if (!data.success) {
-    return <Toast message={data.message} />;
+    return <ToastWithRedirect to="/" message={data.message} />;
   }
 
   const club = data.payload;
