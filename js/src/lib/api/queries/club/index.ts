@@ -25,7 +25,6 @@ export const useVerifyPasswordMutation = (clubSlug: string) => {
   return useMutation({
     mutationFn: verifyPassword,
     onSettled: () => {
-      // Refresh queries to update page after obtaining the tag
       queryClient.invalidateQueries({ queryKey: ["auth"] });
       queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
     },
