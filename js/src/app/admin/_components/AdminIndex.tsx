@@ -6,6 +6,7 @@ import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Flex, Loader, Title } from "@mantine/core";
 
 import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
+import DeleteAnnouncementModal from "./announcements/DeleteAnnouncementModal";
 
 export default function AdminIndex() {
   const { data, status } = useAuthQuery();
@@ -35,6 +36,9 @@ export default function AdminIndex() {
       </Title>
       <Flex w={"100%"} direction={"row"} justify={"center"}>
         <NewAnnouncementModal />
+      </Flex>
+      <Flex w={"100%"} direction={"row"} justify={"center"}>
+        <DeleteAnnouncementModal />
       </Flex>
       <Flex w={"100%"} direction={{ base: "column", sm: "row" }}>
         <Flex
