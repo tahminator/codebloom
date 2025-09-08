@@ -47,7 +47,7 @@ public class AdminController {
     private final Protector protector;
     private final PatinaDiscordMessageHelper patinaDiscordMessageHelper;
 
-    private static final ZoneId ApplicationZone = ZoneId.systemDefault();
+    private static final ZoneId APPLICATION_ZONE = ZoneId.systemDefault();
 
     public AdminController(
                     final LeaderboardRepository leaderboardRepository,
@@ -140,8 +140,8 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        ZonedDateTime expiresAtZoned = createAnnouncementBody.getExpiresAt().atZone(ApplicationZone);
-        ZonedDateTime nowZoned = ZonedDateTime.now(ApplicationZone);
+        ZonedDateTime expiresAtZoned = createAnnouncementBody.getExpiresAt().atZone(APPLICATION_ZONE);
+        ZonedDateTime nowZoned = ZonedDateTime.now(APPLICATION_ZONE);
         boolean isInFuture = nowZoned.isBefore(expiresAtZoned);
 
         if (!isInFuture) {
@@ -178,7 +178,7 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        LocalDateTime nowApplicationTime = ZonedDateTime.now(ApplicationZone).toLocalDateTime();
+        LocalDateTime nowApplicationTime = ZonedDateTime.now(APPLICATION_ZONE).toLocalDateTime();
         announcement.setExpiresAt(nowApplicationTime);
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 

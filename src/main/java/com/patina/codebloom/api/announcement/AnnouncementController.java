@@ -27,7 +27,7 @@ public class AnnouncementController {
     private final Protector protector;
     private final AnnouncementRepository announcementRepository;
 
-    private static final ZoneId ApplicationZone = ZoneId.systemDefault();
+    private static final ZoneId APPLICATION_ZONE = ZoneId.systemDefault();
 
     public AnnouncementController(final Protector protector, final AnnouncementRepository announcementRepository) {
         this.protector = protector;
@@ -48,8 +48,8 @@ public class AnnouncementController {
             return ResponseEntity.ok()
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
-        ZonedDateTime expiresAtZoned = announcement.getExpiresAt().atZone(ApplicationZone);
-        ZonedDateTime nowZoned = ZonedDateTime.now(ApplicationZone);
+        ZonedDateTime expiresAtZoned = announcement.getExpiresAt().atZone(APPLICATION_ZONE);
+        ZonedDateTime nowZoned = ZonedDateTime.now(APPLICATION_ZONE);
         boolean isExpired = expiresAtZoned.isBefore(nowZoned);
 
         if (isExpired) {
