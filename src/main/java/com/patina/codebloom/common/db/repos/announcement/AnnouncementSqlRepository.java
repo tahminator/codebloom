@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.time.OffsetDateTime;
 
 import org.springframework.stereotype.Component;
 
@@ -25,8 +26,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
     private Announcement parseResultSetToTag(final ResultSet resultSet) throws SQLException {
         return Announcement.builder()
                         .id(resultSet.getString("id"))
-                        .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
-                        .expiresAt(resultSet.getTimestamp("expiresAt").toLocalDateTime())
+                        .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
+                        .expiresAt(resultSet.getObject("expiresAt", OffsetDateTime.class))
                         .showTimer(resultSet.getBoolean("showTimer"))
                         .message(resultSet.getString("message"))
                         .build();
@@ -139,7 +140,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     announcement.setId(rs.getString("id"));
-                    announcement.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                    announcement.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
                     return true;
                 }
             }
