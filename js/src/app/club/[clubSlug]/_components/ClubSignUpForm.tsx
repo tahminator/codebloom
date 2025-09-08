@@ -25,15 +25,22 @@ import z from "zod";
 
 import ClubSignUpSkeleton from "./ClubSignUpSkeleton";
 
+type ClubSignUpProps = {
+  id: string;
+  tags: {
+    id: string;
+    createdAt: string;
+    userId: string;
+    tag: UserTagTag;
+  }[];
+  clubSlug: string;
+};
+
 export default function ClubSignUp({
   id: userId,
   tags: userTags,
   clubSlug: clubSlug,
-}: {
-  id: string;
-  tags: { id: string; createdAt: string; userId: string; tag: UserTagTag }[];
-  clubSlug: string;
-}) {
+}: ClubSignUpProps) {
   const { data, status } = useClubQuery({
     clubSlug,
   });
