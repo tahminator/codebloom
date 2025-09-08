@@ -1,5 +1,6 @@
 package com.patina.codebloom.api.announcement;
 
+import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,6 @@ import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,9 +48,9 @@ public class AnnouncementController {
             return ResponseEntity.ok()
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
-        ZonedDateTime expiresAtZoned = announcement.getExpiresAt().atZone(APPLICATION_ZONE);
-        ZonedDateTime nowZoned = ZonedDateTime.now(APPLICATION_ZONE);
-        boolean isExpired = expiresAtZoned.isBefore(nowZoned);
+        OffsetDateTime expiresAtWithOffset = announcement.getExpiresAt().atZone(APPLICATION_ZONE).toOffsetDateTime();
+        OffsetDateTime nowWithOffset = OffsetDateTime.now();
+        boolean isExpired = expiresAtWithOffset.isBefore(nowWithOffset);
 
         if (isExpired) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
