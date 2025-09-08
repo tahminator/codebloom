@@ -22,22 +22,13 @@ export default function DeleteAnnouncementModal() {
     setModalOpen((prev) => !prev);
 
     if (!isModalOpen) {
-      try {
-        const latestId = data?.payload?.id ?? "";
-        form.setFieldValue("id", latestId);
-      } catch (e) {
-        form.setFieldValue("id", "");
-      }
+      const latestId = data?.payload?.id ?? "";
+      form.setFieldValue("id", latestId);
     }
   };
 
   const onSubmit = async () => {
-    let latestId = "";
-    try {
-      latestId = data?.payload?.id ?? "";
-    } catch (e) {
-      latestId = "";
-    }
+    let latestId = data?.payload?.id ?? "";
 
     if (!latestId) {
       notifications.show({
