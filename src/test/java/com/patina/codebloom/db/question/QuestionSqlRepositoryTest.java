@@ -20,6 +20,7 @@ import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -169,6 +170,7 @@ public class QuestionSqlRepositoryTest {
     }
 
     @Test
+    @Order(7)
     void testQuestionExistsBySubmissionId() {
         boolean exists = questionRepository.questionExistsBySubmissionId(testQuestion.getSubmissionId());
 
@@ -178,5 +180,14 @@ public class QuestionSqlRepositoryTest {
         assertFalse(notExists, "Question should not exist with non-existent submission ID");
 
         log.info("Successfully verified question existence by submission ID: {}", testQuestion.getSubmissionId());
+    }
+
+    @Test
+    @Order(8)
+    void testGetQuestionsWithNoTopics() {
+        List<Question> questions = questionRepository.getAllQuestionsWithNoTopics();
+
+        assertNotNull(questions);
+        assertTrue(questions.size() > 0);
     }
 }
