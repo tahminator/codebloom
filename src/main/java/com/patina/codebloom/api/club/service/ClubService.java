@@ -6,12 +6,13 @@ import com.patina.codebloom.api.club.dto.ClubDto;
 import com.patina.codebloom.common.db.models.club.Club;
 import com.patina.codebloom.common.db.repos.club.ClubRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class ClubService {
     private final ClubRepository clubRepository;
+
+    public ClubService(final ClubRepository clubRepository) {
+        this.clubRepository = clubRepository;
+    }
 
     public ClubDto getClubDtoBySlug(final String slug) {
         Club club = clubRepository.getClubBySlug(slug);
