@@ -24,7 +24,6 @@ import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.ZoneId;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.config.TestProtector;
@@ -109,8 +108,9 @@ public class AnnouncementControllerTest {
         testAnnouncement = apiResponder.getPayload();
 
         assertTrue(testAnnouncement != null, "Expected announcement to not be equal to null");
-        assertTrue(testAnnouncement.getExpiresAt().atZone(ZoneId.systemDefault()).toInstant().truncatedTo(ChronoUnit.SECONDS)
-                        .equals(createAnnouncementBody.getExpiresAt().truncatedTo(ChronoUnit.SECONDS)),
+
+        assertEquals(testAnnouncement.getExpiresAt().truncatedTo(ChronoUnit.SECONDS),
+                        createAnnouncementBody.getExpiresAt().truncatedTo(ChronoUnit.SECONDS),
                         "Expected announcement response and announcement request body expiresAt to be equal");
         assertTrue(testAnnouncement.getMessage().equals(createAnnouncementBody.getMessage()),
                         "Expected announcement response and announcement request body message to be equal");
@@ -146,8 +146,8 @@ public class AnnouncementControllerTest {
         assertEquals(testAnnouncement.isShowTimer(), newlyFetchedAnnouncement.isShowTimer(),
                         "expected the showTimer of the previously created test announcement to be equal to the newly fetched announcement");
 
-        assertEquals(testAnnouncement.getExpiresAt().atZone(ZoneId.systemDefault()).toInstant().truncatedTo(ChronoUnit.SECONDS),
-                        newlyFetchedAnnouncement.getExpiresAt().atZone(ZoneId.systemDefault()).toInstant().truncatedTo(ChronoUnit.SECONDS),
+        assertEquals(testAnnouncement.getExpiresAt().truncatedTo(ChronoUnit.SECONDS),
+                        newlyFetchedAnnouncement.getExpiresAt().truncatedTo(ChronoUnit.SECONDS),
                         "expected the expiresAt to match saved announcement (trunccated to seconds for comparison)");
     }
 }

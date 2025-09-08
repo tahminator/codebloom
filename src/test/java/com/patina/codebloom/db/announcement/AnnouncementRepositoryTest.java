@@ -2,6 +2,7 @@ package com.patina.codebloom.db.announcement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +40,8 @@ public class AnnouncementRepositoryTest {
         testAnnouncement = Announcement.builder()
                         // id will be set by announcementRepository
                         .id(null)
-                        .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                        .expiresAt(OffsetDateTime.now().plusMinutes(5L))
+                        .createdAt(OffsetDateTime.now())
                         .showTimer(true)
                         .message("Hi this is a test announcement!")
                         .build();
@@ -100,9 +102,9 @@ public class AnnouncementRepositoryTest {
         log.info("testAnnouncement: {}", testAnnouncement.toString());
         log.info("possibleTestAnnouncement: {}", possibleTestAnnouncement.toString());
 
-       if (!testAnnouncement.equals(possibleTestAnnouncement)) {
+        if (!testAnnouncement.equals(possibleTestAnnouncement)) {
             fail("the generated test announcement does not match the announcement fetched with get announcement by ID");
-       }
+        }
     }
 
     @Test
@@ -111,11 +113,12 @@ public class AnnouncementRepositoryTest {
         Announcement updatedAnnouncement = Announcement.builder()
                         .id(testAnnouncement.getId())
                         .expiresAt(testAnnouncement.getExpiresAt())
+                        .createdAt(testAnnouncement.getCreatedAt())
                         .showTimer(true)
                         .message("Hi this is an update announcement!")
                         .build();
         boolean result = announcementRepository.updateAnnouncement(updatedAnnouncement);
-        if (!result){
+        if (!result) {
             fail("failure to update announcement");
         }
         Announcement resultAnnouncement = announcementRepository.getAnnouncementById(updatedAnnouncement.getId());
@@ -140,7 +143,7 @@ public class AnnouncementRepositoryTest {
 
         log.info(announcementsList.toString());
 
-         if (!announcementsList.contains(testAnnouncement)) {
+        if (!announcementsList.contains(testAnnouncement)) {
             fail("test announcement cannot be found in the list of all announcements");
         }
     }
