@@ -12,8 +12,6 @@ import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
-import java.time.ZoneId;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -26,8 +24,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AnnouncementController {
     private final Protector protector;
     private final AnnouncementRepository announcementRepository;
-
-    private static final ZoneId APPLICATION_ZONE = ZoneId.systemDefault();
 
     public AnnouncementController(final Protector protector, final AnnouncementRepository announcementRepository) {
         this.protector = protector;
@@ -48,9 +44,8 @@ public class AnnouncementController {
             return ResponseEntity.ok()
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
-        OffsetDateTime expiresAtWithOffset = announcement.getExpiresAt().atZone(APPLICATION_ZONE).toOffsetDateTime();
-        OffsetDateTime nowWithOffset = OffsetDateTime.now();
-        boolean isExpired = expiresAtWithOffset.isBefore(nowWithOffset);
+        OffsetDateTime now = OffsetDateTime.now();
+        boolean isExpired = announcement.getExpiresAt().isBefore(now);
 
         if (isExpired) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)

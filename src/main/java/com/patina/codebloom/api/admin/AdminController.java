@@ -1,9 +1,6 @@
 package com.patina.codebloom.api.admin;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,8 +43,6 @@ public class AdminController {
     private final AnnouncementRepository announcementRepository;
     private final Protector protector;
     private final PatinaDiscordMessageHelper patinaDiscordMessageHelper;
-
-    private static final ZoneId APPLICATION_ZONE = ZoneId.systemDefault();
 
     public AdminController(
                     final LeaderboardRepository leaderboardRepository,
@@ -140,19 +135,18 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        OffsetDateTime expiresAtWithOffset = createAnnouncementBody.getExpiresAt();
         OffsetDateTime nowWithOffset = OffsetDateTime.now();
-        boolean isInFuture = nowWithOffset.isBefore(expiresAtWithOffset);
+        boolean isInFuture = nowWithOffset.isBefore(createAnnouncementBody.getExpiresAt());
 
         if (!isInFuture) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The expiration date must be in the future.");
         }
 
-        LocalDateTime localExpiresAt = expiresAtWithOffset.atZoneSameInstant(APPLICATION_ZONE).toLocalDateTime();
         Announcement announcement = Announcement.builder()
-                        .expiresAt(localExpiresAt)
+                        .expiresAt(createAnnouncementBody.getExpiresAt())
                         .showTimer(createAnnouncementBody.isShowTimer())
                         .message(createAnnouncementBody.getMessage())
+                        .createdAt(nowWithOffset)
                         .build();
 
         boolean isSuccessful = announcementRepository.createAnnouncement(announcement);
@@ -178,8 +172,8 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        LocalDateTime nowApplicationTime = OffsetDateTime.now(APPLICATION_ZONE).toLocalDateTime();
-        announcement.setExpiresAt(nowApplicationTime);
+        OffsetDateTime nowWithOffset = OffsetDateTime.now();
+        announcement.setExpiresAt(nowWithOffset);
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
         if (!updatedAnnouncement) {
