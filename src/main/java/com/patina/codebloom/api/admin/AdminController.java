@@ -1,6 +1,8 @@
 package com.patina.codebloom.api.admin;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,6 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,6 +46,8 @@ public class AdminController {
     private final AnnouncementRepository announcementRepository;
     private final Protector protector;
     private final PatinaDiscordMessageHelper patinaDiscordMessageHelper;
+
+    private static final ZoneId ApplicationZone = ZoneId.systemDefault();
 
     public AdminController(
                     final LeaderboardRepository leaderboardRepository,
@@ -137,14 +140,17 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        boolean isInFuture = StandardizedLocalDateTime.now().isBefore(createAnnouncementBody.getExpiresAt());
+        ZonedDateTime expiresAtZoned = createAnnouncementBody.getExpiresAt().atZone(ApplicationZone);
+        ZonedDateTime nowZoned = ZonedDateTime.now(ApplicationZone);
+        boolean isInFuture = nowZoned.isBefore(expiresAtZoned);
 
         if (!isInFuture) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The expiration date must be in the future.");
         }
 
+        LocalDateTime normalizedExpiresAt = expiresAtZoned.toLocalDateTime();
         Announcement announcement = Announcement.builder()
-                        .expiresAt(createAnnouncementBody.getExpiresAt())
+                        .expiresAt(normalizedExpiresAt)
                         .showTimer(createAnnouncementBody.isShowTimer())
                         .message(createAnnouncementBody.getMessage())
                         .build();
@@ -172,7 +178,8 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        announcement.setExpiresAt(LocalDateTime.now());
+        LocalDateTime nowApplicationTime = ZonedDateTime.now(ApplicationZone).toLocalDateTime();
+        announcement.setExpiresAt(nowApplicationTime);
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
         if (!updatedAnnouncement) {

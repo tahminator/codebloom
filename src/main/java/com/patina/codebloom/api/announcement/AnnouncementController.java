@@ -11,7 +11,8 @@ import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +26,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AnnouncementController {
     private final Protector protector;
     private final AnnouncementRepository announcementRepository;
+
+    private static final ZoneId ApplicationZone = ZoneId.systemDefault();
 
     public AnnouncementController(final Protector protector, final AnnouncementRepository announcementRepository) {
         this.protector = protector;
@@ -45,8 +48,9 @@ public class AnnouncementController {
             return ResponseEntity.ok()
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
-
-        boolean isExpired = announcement.getExpiresAt().isBefore(StandardizedLocalDateTime.now());
+        ZonedDateTime expiresAtZoned = announcement.getExpiresAt().atZone(ApplicationZone);
+        ZonedDateTime nowZoned = ZonedDateTime.now(ApplicationZone);
+        boolean isExpired = expiresAtZoned.isBefore(nowZoned);
 
         if (isExpired) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
