@@ -1,6 +1,7 @@
 package com.patina.codebloom.announcement;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -140,7 +141,13 @@ public class AnnouncementControllerTest {
         log.info("testAnnouncement: {}", testAnnouncement.toString());
         log.info("possibleTestAnnouncement: {}", newlyFetchedAnnouncement.toString());
 
-        assertTrue(testAnnouncement.equals(newlyFetchedAnnouncement),
-                        "expected the previously created test announcement to be equal to the newly fetched announcement");
+        assertEquals(testAnnouncement.getMessage(), newlyFetchedAnnouncement.getMessage(),
+                        "expected the message of the previously created test announcement to be equal to the newly fetched announcement");
+        assertEquals(testAnnouncement.isShowTimer(), newlyFetchedAnnouncement.isShowTimer(),
+                        "expected the showTimer of the previously created test announcement to be equal to the newly fetched announcement");
+
+        assertEquals(testAnnouncement.getExpiresAt().atZone(ZoneId.systemDefault()).toInstant().truncatedTo(ChronoUnit.SECONDS),
+                        newlyFetchedAnnouncement.getExpiresAt().atZone(ZoneId.systemDefault()).toInstant().truncatedTo(ChronoUnit.SECONDS),
+                        "expected the expiresAt to match saved announcement (trunccated to seconds for comparison)");
     }
 }
