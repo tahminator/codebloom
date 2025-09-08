@@ -36,7 +36,7 @@ export default function ClubSignupPage() {
     >
       <Header />
       <Box>
-        <ClubSignUp {...data.user} />
+        <ClubSignUp id={data.user.id} tags={data.user.tags} />
       </Box>
       <Footer />
     </Box>

@@ -4,7 +4,7 @@ import {
   useClubQuery,
   useVerifyPasswordMutation,
 } from "@/lib/api/queries/club";
-import { PrivateUser } from "@/lib/api/types/user";
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import {
   Button,
   Center,
@@ -27,7 +27,10 @@ import ClubSignUpSkeleton from "./ClubSignUpSkeleton";
 export default function ClubSignUp({
   id: userId,
   tags: userTags,
-}: PrivateUser) {
+}: {
+  id: string;
+  tags: { id: string; createdAt: string; userId: string; tag: UserTagTag }[];
+}) {
   const { clubSlug } = useParams<{ clubSlug: string }>();
   const { data, status } = useClubQuery({
     clubSlug,
