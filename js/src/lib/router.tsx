@@ -98,7 +98,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/club/:clubSlug",
+    path: "/club/:clubSlug?",
     element: <ClubSignUp />,
     errorElement: <ErrorPage />,
   },
