@@ -21,9 +21,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.config.TestProtector;
 
 import io.restassured.RestAssured;
@@ -42,7 +43,7 @@ public class AnnouncementControllerTest {
                     .builder()
                     .message("Hi this is a test message!")
                     .showTimer(true)
-                    .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                    .expiresAt(Instant.now().plus(24, ChronoUnit.HOURS))
                     .build();
     private Announcement testAnnouncement;
 
