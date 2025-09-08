@@ -1,8 +1,8 @@
 package com.patina.codebloom.api.admin;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -140,17 +140,17 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        ZonedDateTime expiresAtZoned = createAnnouncementBody.getExpiresAt().atZone(APPLICATION_ZONE);
-        ZonedDateTime nowZoned = ZonedDateTime.now(APPLICATION_ZONE);
-        boolean isInFuture = nowZoned.isBefore(expiresAtZoned);
+        OffsetDateTime expiresAtWithOffset = createAnnouncementBody.getExpiresAt();
+        OffsetDateTime nowWithOffset = OffsetDateTime.now();
+        boolean isInFuture = nowWithOffset.isBefore(expiresAtWithOffset);
 
         if (!isInFuture) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The expiration date must be in the future.");
         }
 
-        LocalDateTime normalizedExpiresAt = expiresAtZoned.toLocalDateTime();
+        LocalDateTime localExpiresAt = expiresAtWithOffset.atZoneSameInstant(APPLICATION_ZONE).toLocalDateTime();
         Announcement announcement = Announcement.builder()
-                        .expiresAt(normalizedExpiresAt)
+                        .expiresAt(localExpiresAt)
                         .showTimer(createAnnouncementBody.isShowTimer())
                         .message(createAnnouncementBody.getMessage())
                         .build();
@@ -178,7 +178,7 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        LocalDateTime nowApplicationTime = ZonedDateTime.now(APPLICATION_ZONE).toLocalDateTime();
+        LocalDateTime nowApplicationTime = OffsetDateTime.now(APPLICATION_ZONE).toLocalDateTime();
         announcement.setExpiresAt(nowApplicationTime);
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
