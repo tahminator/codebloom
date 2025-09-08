@@ -5,9 +5,12 @@ import { DateTimePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import d from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useState } from "react";
 import { z } from "zod";
+
+d.extend(utc);
 
 export default function NewAnnouncementModal() {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -21,7 +24,7 @@ export default function NewAnnouncementModal() {
     },
     transformValues: ({ expiresAt, ...values }) => ({
       ...values,
-      expiresAt: d(expiresAt).format("YYYY-MM-DDTHH:mm:ss"),
+      expiresAt: d(expiresAt).utc().toISOString(),
     }),
   });
 
