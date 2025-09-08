@@ -121,7 +121,7 @@ public class LeetcodeClientTest {
 
     @Test
     void userListValid() {
-        ArrayList<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
+        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
 
         assertTrue(userList != null);
 
