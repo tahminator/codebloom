@@ -5,8 +5,8 @@ import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Flex, Loader, Title } from "@mantine/core";
 
-import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
 import DeleteAnnouncementModal from "./announcements/DeleteAnnouncementModal";
+import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
 
 export default function AdminIndex() {
   const { data, status } = useAuthQuery();
