@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useDeleteAnnouncementMutation } from "@/lib/api/queries/admin";
+import { useLatestAnnouncement } from "@/lib/api/queries/announcement";
+import { disableAnnouncementSchema } from "@/lib/api/schema/admin";
 import { Button, Modal, Text, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useDeleteAnnouncementMutation } from "@/lib/api/queries/admin";
-import { disableAnnouncementSchema } from "@/lib/api/schema/admin";
-import { useLatestAnnouncement } from "@/lib/api/queries/announcement";
+import { useEffect, useRef, useState } from "react";
 
 export default function DeleteAnnouncementModal() {
   const [isModalOpen, setModalOpen] = useState(false);
   const { mutate, status } = useDeleteAnnouncementMutation();
   const { data } = useLatestAnnouncement();
+
+  const justDeletedRef = useRef(false);
+
+  useEffect(() => {
+    if (data?.payload?.id) {
+      justDeletedRef.current = false;
+    }
+  }, [data?.payload?.id]);
 
   const form = useForm({
     validate: zodResolver(disableAnnouncementSchema),
@@ -22,13 +30,17 @@ export default function DeleteAnnouncementModal() {
     setModalOpen((prev) => !prev);
 
     if (!isModalOpen) {
-      const latestId = data?.payload?.id ?? "";
-      form.setFieldValue("id", latestId);
+      if (justDeletedRef.current) {
+        form.setFieldValue("id", "");
+      } else {
+        const latestId = data?.payload?.id ?? "";
+        form.setFieldValue("id", latestId);
+      }
     }
   };
 
   const onSubmit = async () => {
-    let latestId = data?.payload?.id ?? "";
+    const latestId = data?.payload?.id ?? "";
 
     if (!latestId) {
       notifications.show({
@@ -47,7 +59,9 @@ export default function DeleteAnnouncementModal() {
             color: data.success ? undefined : "red",
           });
           if (data.success) {
+            justDeletedRef.current = true;
             form.reset();
+            form.setFieldValue("id", "");
             setModalOpen(false);
           }
         },
