@@ -4,6 +4,7 @@ import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
+import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { schoolFF } from "@/lib/ff";
@@ -272,28 +273,31 @@ export default function LeaderboardIndex() {
                       to={`/user/${entry.id}`}
                       className="group"
                     >
-                      {entry.nickname ?
-                        <Tooltip
-                          label={
-                            "This user is a verified member of the Patina Discord server."
-                          }
-                          color={"dark.4"}
-                        >
-                          <span className="transition-all group-hover:text-blue-500 w-max">
-                            <IconCircleCheckFilled
-                              className="inline"
-                              color={theme.colors.patina[4]}
-                              z={5000000}
-                              size={20}
-                            />{" "}
-                            {entry.nickname}
+                      <Flex align="center" gap="xs">
+                        {entry.nickname ?
+                          <Tooltip
+                            label={
+                              "This user is a verified member of the Patina Discord server."
+                            }
+                            color={"dark.4"}
+                          >
+                            <span className="transition-all group-hover:text-blue-500 w-max">
+                              <IconCircleCheckFilled
+                                className="inline"
+                                color={theme.colors.patina[4]}
+                                z={5000000}
+                                size={20}
+                              />{" "}
+                              {entry.nickname}
+                            </span>
+                          </Tooltip>
+                        : <span className="transition-all group-hover:text-blue-500 w-max">
+                            <FaDiscord style={{ display: "inline" }} />{" "}
+                            {entry.discordName}
                           </span>
-                        </Tooltip>
-                      : <span className="transition-all group-hover:text-blue-500 w-max">
-                          <FaDiscord style={{ display: "inline" }} />{" "}
-                          {entry.discordName}
-                        </span>
-                      }
+                        }
+                        <TagList tags={entry.tags || []} size={16} gap="xs" />
+                      </Flex>
                       <span className="transition-all group-hover:text-blue-500 w-max">
                         <SiLeetcode style={{ display: "inline" }} />{" "}
                         {entry.leetcodeUsername}
