@@ -29,7 +29,7 @@ export default function LeaderboardCard({
   width: CSSProperties["width"];
   userId: string;
   nickname: string | null;
-  tags: UserTag[];
+  tags?: UserTag[];
 }) {
   const borderColor = (() => {
     if (placeString === "1st") return "border-yellow-300";
