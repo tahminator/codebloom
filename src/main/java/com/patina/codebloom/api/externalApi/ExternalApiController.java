@@ -51,7 +51,7 @@ public class ExternalApiController {
     @ApiResponse(responseCode = "401", description = "Invalid API key")
     @ApiResponse(responseCode = "403", description = "API key does not have required permissions")
     @ApiResponse(responseCode = "404", description = "Leaderboard not found")
-    @GetMapping("/gwcUsers")
+    @GetMapping("/gwc/users")
     public ResponseEntity<ApiResponder<List<User>>> getGwcUsers(
                     @RequestHeader("X-API-Key") final String apiKey,
                     @RequestParam("leaderboardId") final String leaderboardId) {
@@ -78,7 +78,7 @@ public class ExternalApiController {
 
         List<UserWithScore> usersWithScore = leaderboardRepository.getLeaderboardUsersById(leaderboardId, options);
         List<User> gwcUsers = usersWithScore.stream()
-                        .map(userWithScore -> (User) userWithScore)
+                        .map(userWithScore -> userWithScore)
                         .collect(Collectors.toList());
 
         return ResponseEntity.ok(ApiResponder.success("Gwc Users successfully fetched", gwcUsers));
