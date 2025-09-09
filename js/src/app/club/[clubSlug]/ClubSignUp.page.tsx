@@ -29,7 +29,7 @@ export default function ClubSignupPage() {
   }
 
   // Potentially return a club list page in the future
-  if (clubSlug == undefined) {
+  if (clubSlug === undefined) {
     return <ToastWithRedirect to="/" message="Club Slug missing!" />;
   }
 
