@@ -11,21 +11,21 @@ export const School_List = {
   Hunter: {
     name: "Hunter College",
     icon: "/Hunter_Logo.jpeg",
-    alt: "Hunter College Logo"
+    alt: "Hunter College Logo",
   },
   Nyu: {
     name: "NYU",
     icon: "/NYU_Logo.png",
-    alt: "NYU Logo"
+    alt: "NYU Logo",
   },
   Baruch: {
     name: "Baruch College",
     icon: "/Baruch_Logo.png",
-    alt: "Baruch College Logo"
+    alt: "Baruch College Logo",
   },
   Rpi: {
     name: "RPI",
     icon: "/Rpi_Logo.png",
-    alt: "RPI Logo"
-  }
+    alt: "RPI Logo",
+  },
 } as const;
