@@ -8,7 +8,7 @@ import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 import TagList from "./tags/TagList";
-import { UserTag } from "./tags/UserTag.tsx";
+import { UserTag } from "./tags/UserTags.tsx";
 
 export default function LeaderboardCard({
   placeString,
