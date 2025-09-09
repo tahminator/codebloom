@@ -85,12 +85,12 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
 
     @Override
     public void createApiKeyAccess(final ApiKeyAccess apiKeyAccess) {
-        String sql = """
-                        INSERT INTO
-                            "ApiKeyAccess" (id, apiKeyId, access)
-                        VALUES
-                            (:id, :apiKeyId, :access)
-                        """;
+    String sql = """
+                    INSERT INTO
+                        "ApiKeyAccess" (id, "apiKeyId", access)
+                    VALUES
+                        (:id, :apiKeyId, :access)
+                    """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", java.util.UUID.fromString(apiKeyAccess.getId()));
