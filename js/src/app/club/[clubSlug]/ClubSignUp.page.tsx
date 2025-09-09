@@ -6,7 +6,7 @@ import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Box, Loader } from "@mantine/core";
 import { useParams } from "react-router-dom";
 
-import ClubSignUp from "./_components/ClubSignUpForm";
+import ClubSignUpForm from "./_components/ClubSignUpForm";
 
 export default function ClubSignupPage() {
   const { data, status } = useAuthQuery();
@@ -43,9 +43,9 @@ export default function ClubSignupPage() {
     >
       <Header />
       <Box>
-        <ClubSignUp
-          id={data.user.id}
-          tags={data.user.tags}
+        <ClubSignUpForm
+          userId={data.user.id}
+          userTags={data.user.tags}
           clubSlug={clubSlug}
         />
       </Box>
