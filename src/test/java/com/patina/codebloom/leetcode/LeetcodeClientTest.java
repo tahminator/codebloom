@@ -173,7 +173,5 @@ public class LeetcodeClientTest {
 
         Set<LeetcodeTopicTag> topicTags = leetcodeClient.getAllTopicTags();
         assertEquals(expectedTagsCount, topicTags.size());
-
-        System.out.println(topicTags);
     }
 }
