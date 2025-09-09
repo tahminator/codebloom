@@ -13,8 +13,11 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
     return null;
   }
 
-  const filteredTags = tags.filter(userTag => 
-    userTag.tag !== "Gwc" && userTag.tag !== "Patina" && userTag.tag in School_List
+  const filteredTags = tags.filter(
+    (userTag) =>
+      userTag.tag !== "Gwc" &&
+      userTag.tag !== "Patina" &&
+      userTag.tag in School_List,
   );
 
   if (filteredTags.length === 0) {
@@ -25,7 +28,7 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
     <Group gap={gap} wrap="nowrap">
       {filteredTags.map((userTag) => {
         const school = School_List[userTag.tag as keyof typeof School_List];
-        
+
         if (!school) {
           return null;
         }
@@ -41,10 +44,10 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
             <Image
               src={school.icon}
               alt={school.alt}
-              style={{ 
-                height: size, 
+              style={{
+                height: size,
                 width: "auto",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
             />
           </Tooltip>

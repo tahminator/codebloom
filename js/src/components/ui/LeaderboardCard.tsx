@@ -67,7 +67,9 @@ export default function LeaderboardCard({
       <Flex align="center" gap="xs" justify="center">
         {nickname ?
           <Tooltip
-            label={"This user is a verified member of the Patina Discord server."}
+            label={
+              "This user is a verified member of the Patina Discord server."
+            }
             color={"dark.4"}
           >
             <Text
