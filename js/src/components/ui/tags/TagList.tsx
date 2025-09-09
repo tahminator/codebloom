@@ -1,11 +1,11 @@
 import { Image, Tooltip, Group } from "@mantine/core";
 
-import { UserTag, TAG_CONFIG } from "./userTag.tsx";
+import { UserTag, School_List } from "./UserTag.tsx";
 
 interface TagListProps {
   tags: UserTag[];
-  size?: number;
-  gap?: string | number;
+  size: number;
+  gap: string | number;
 }
 
 export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
@@ -14,7 +14,7 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
   }
 
   const filteredTags = tags.filter(userTag => 
-    userTag.tag !== "Gwc" && userTag.tag !== "Patina" && userTag.tag in TAG_CONFIG
+    userTag.tag !== "Gwc" && userTag.tag !== "Patina" && userTag.tag in School_List
   );
 
   if (filteredTags.length === 0) {
@@ -24,23 +24,23 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
   return (
     <Group gap={gap} wrap="nowrap">
       {filteredTags.map((userTag) => {
-        const config = TAG_CONFIG[userTag.tag as keyof typeof TAG_CONFIG];
+        const school = School_List[userTag.tag as keyof typeof School_List];
         
-        if (!config) {
+        if (!school) {
           return null;
         }
 
         return (
           <Tooltip
             key={userTag.id}
-            label={config.name}
+            label={school.name}
             color="dark.4"
             position="top"
             withArrow
           >
             <Image
-              src={config.icon}
-              alt={config.alt}
+              src={school.icon}
+              alt={school.alt}
               style={{ 
                 height: size, 
                 width: "auto",

@@ -8,7 +8,7 @@ export interface UserTag {
   tag: TagType;
 }
 
-export const TAG_CONFIG = {
+export const School_List = {
   Hunter: {
     name: "Hunter College",
     icon: "/Hunter_Logo.jpeg",
