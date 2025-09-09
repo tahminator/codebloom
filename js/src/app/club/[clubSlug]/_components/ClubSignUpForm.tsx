@@ -5,7 +5,8 @@ import {
   useClubQuery,
   useVerifyPasswordMutation,
 } from "@/lib/api/queries/club";
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+// import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { UserTag } from "@/lib/api/types/usertag";
 import {
   Button,
   Center,
@@ -26,20 +27,15 @@ import z from "zod";
 import ClubSignUpSkeleton from "./ClubSignUpSkeleton";
 
 type ClubSignUpProps = {
-  id: string;
-  tags: {
-    id: string;
-    createdAt: string;
-    userId: string;
-    tag: UserTagTag;
-  }[];
+  userId: string;
+  userTags: UserTag[];
   clubSlug: string;
 };
 
-export default function ClubSignUp({
-  id: userId,
-  tags: userTags,
-  clubSlug: clubSlug,
+export default function ClubSignUpForm({
+  userId,
+  userTags,
+  clubSlug,
 }: ClubSignUpProps) {
   const { data, status } = useClubQuery({
     clubSlug,
