@@ -85,6 +85,7 @@ export default function LeaderboardIndex() {
             nickname={second.nickname}
             width={"300px"}
             userId={second.id}
+            tags={second.tags}
           />
         )}
         {page === 1 && first && !debouncedQuery && (
@@ -97,6 +98,7 @@ export default function LeaderboardIndex() {
             nickname={first.nickname}
             width={"300px"}
             userId={first.id}
+            tags={first.tags}
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -109,6 +111,7 @@ export default function LeaderboardIndex() {
             nickname={third.nickname}
             width={"300px"}
             userId={third.id}
+            tags={third.tags}
           />
         )}
       </Flex>
