@@ -1,11 +1,14 @@
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
-import { Card, Text, Tooltip } from "@mantine/core";
+import { Card, Text, Tooltip, Flex } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
+
+import TagList from "./tags/TagList";
+import { UserTag } from "./tags/UserTag.tsx";
 
 export default function LeaderboardCard({
   placeString,
@@ -16,6 +19,7 @@ export default function LeaderboardCard({
   width,
   userId,
   nickname,
+  tags,
 }: {
   placeString: OrdinalString;
   sizeOrder: 1 | 2 | 3;
@@ -25,6 +29,7 @@ export default function LeaderboardCard({
   width: CSSProperties["width"];
   userId: string;
   nickname: string | null;
+  tags: UserTag[];
 }) {
   const borderColor = (() => {
     if (placeString === "1st") return "border-yellow-300";
@@ -59,44 +64,45 @@ export default function LeaderboardCard({
       <Text ta="center" size="xl">
         {placeString}
       </Text>
-      {nickname ?
-        <Tooltip
-          label={"This user is a verified member of the Patina Discord server."}
-          color={"dark.4"}
-        >
-          <Text
+      <Flex align="center" gap="xs" justify="center">
+        {nickname ?
+          <Tooltip
+            label={"This user is a verified member of the Patina Discord server."}
+            color={"dark.4"}
+          >
+            <Text
+              ta="center"
+              fw={700}
+              style={{
+                fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              <IconCircleCheckFilled
+                className="inline"
+                color={theme.colors.patina[4]}
+                z={5000000}
+              />{" "}
+              {nickname}
+            </Text>
+          </Tooltip>
+        : <Text
             ta="center"
             fw={700}
             style={{
-              width: "100%",
               fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
           >
-            <IconCircleCheckFilled
-              className="inline"
-              color={theme.colors.patina[4]}
-              z={5000000}
-            />{" "}
-            {nickname}
+            <FaDiscord className="inline" /> {discordName}
           </Text>
-        </Tooltip>
-      : <Text
-          ta="center"
-          fw={700}
-          style={{
-            width: "100%",
-            fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          <FaDiscord className="inline" /> {discordName}
-        </Text>
-      }
+        }
+        <TagList tags={tags || []} size={14} gap="xs" />
+      </Flex>
       <Text ta="center" style={{ whiteSpace: "nowrap" }}>
         <SiLeetcode className="inline" /> {leetcodeUsername}
       </Text>
