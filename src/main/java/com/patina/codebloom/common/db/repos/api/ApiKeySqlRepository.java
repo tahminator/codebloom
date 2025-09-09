@@ -131,26 +131,28 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
     @Override
     public void createApiKey(final ApiKey apiKey) {
         final String sql = """
-                                INSERT INTO "ApiKey" (
-                                    id,
-                                    "apiKeyHash",
-                                    "expiresAt",
-                                    "updatedBy"
-                                )
-                                VALUES (
-                                    :id,
-                                    :apiKeyHash,
-                                    :expiresAt,
-                                    :updatedBy
-                                )
-                                RETURNING
-                                    "createdAt", "updatedAt"
-                                """;
-        UUID id = UUID.fromString(apiKey.getId());
+            INSERT INTO "ApiKey" (
+                id,
+                "apiKeyHash",
+                "expiresAt",
+                "updatedBy"
+            )
+            VALUES (
+                :id,
+                :apiKeyHash,
+                :expiresAt,
+                :updatedBy
+            )
+            """;
+
+        final UUID id = UUID.fromString(apiKey.getId());
+        final UUID updatedBy = UUID.fromString(apiKey.getUpdatedBy());
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", id);
             stmt.setString("apiKeyHash", apiKey.getApiKey());
+            stmt.setObject("expiresAt", apiKey.getExpiresAt());
+            stmt.setObject("updatedBy", updatedBy);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create ApiKey", e);
@@ -179,7 +181,7 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
             stmt.setString("apiKeyHash", apiKey.getApiKey());
             stmt.setObject("expiresAt", apiKey.getExpiresAt());
             stmt.setObject("updatedAt", apiKey.getUpdatedAt());
-            stmt.setString("updatedBy", apiKey.getUpdatedBy());
+            stmt.setObject("updatedBy", UUID.fromString(apiKey.getUpdatedBy()));
 
             int rows = stmt.executeUpdate();
             return rows > 0;
