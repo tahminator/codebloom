@@ -1,23 +1,14 @@
 import { useDeleteAnnouncementMutation } from "@/lib/api/queries/admin";
-import { useLatestAnnouncement } from "@/lib/api/queries/announcement";
 import { disableAnnouncementSchema } from "@/lib/api/schema/admin";
 import { Button, Modal, Text, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
-export default function DeleteAnnouncementModal() {
+export default function DeleteAnnouncementModal({ id }: { id?: string }) {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [currentId, setCurrentId] = useState<string>("");
   const { mutate, status } = useDeleteAnnouncementMutation();
-  const { data } = useLatestAnnouncement();
-
-  const justDeletedRef = useRef(false);
-
-  useEffect(() => {
-    if (data?.payload?.id) {
-      justDeletedRef.current = false;
-    }
-  }, [data?.payload?.id]);
 
   const form = useForm({
     validate: zodResolver(disableAnnouncementSchema),
@@ -30,19 +21,13 @@ export default function DeleteAnnouncementModal() {
     setModalOpen((prev) => !prev);
 
     if (!isModalOpen) {
-      if (justDeletedRef.current) {
-        form.setFieldValue("id", "");
-      } else {
-        const latestId = data?.payload?.id ?? "";
-        form.setFieldValue("id", latestId);
-      }
+      setCurrentId(id ?? "");
+      form.setFieldValue("id", id ?? "");
     }
   };
 
   const onSubmit = async () => {
-    const latestId = data?.payload?.id ?? "";
-
-    if (!latestId) {
+    if (!currentId) {
       notifications.show({
         message: "No active announcement to disable.",
         color: "red",
@@ -51,19 +36,16 @@ export default function DeleteAnnouncementModal() {
     }
 
     mutate(
-      { id: latestId },
+      { id: currentId },
       {
         onSuccess: async (data) => {
           notifications.show({
             message: data.message,
             color: data.success ? undefined : "red",
           });
-          if (data.success) {
-            justDeletedRef.current = true;
-            form.reset();
-            form.setFieldValue("id", "");
-            setModalOpen(false);
-          }
+
+          setCurrentId("");
+          setModalOpen(false);
         },
       },
     );
@@ -85,6 +67,7 @@ export default function DeleteAnnouncementModal() {
           </Text>
           <TextInput
             {...form.getInputProps("id")}
+            value={currentId}
             label="Announcement ID"
             error={form.errors.id}
             withAsterisk
