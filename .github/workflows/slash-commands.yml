@@ -1,4 +1,5 @@
 name: Pull Request Commands
+run-name: Running pull request command(s) on ${{ github.actor }}'s commits
 
 on:
     issue_comment:
@@ -6,8 +7,9 @@ on:
 
 jobs:
     cleanCiDb:
-        if: github.event.issue.pull_request && contains(github.event.comment.body, '/clean')
         runs-on: ubuntu-latest
+        if: github.event.issue.pull_request && contains(github.event.comment.body, '/clean')
+
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
@@ -25,4 +27,4 @@ jobs:
                   echo "JAVA_HOME=$JAVA_HOME"
 
             - name: Clean CI DB
-              run: ./mvnw flyway:clean -Dflyway.cleanDisabled=false -Dflyway.locations=filesystem:./db &&
+              run: ./mvnw flyway:clean -Dflyway.cleanDisabled=false -Dflyway.locations=filesystem:./db
