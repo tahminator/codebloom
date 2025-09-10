@@ -18,6 +18,25 @@ jobs:
             DATABASE_USER: ${{ secrets.DATABASE_USER }}
 
         steps:
+            - name: Comment on PR
+              if: ${{ github.event.client_payload.slash_command.args.named.prId }}
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const prId = '${{ github.event.client_payload.slash_command.args.named.prId }}';
+                      const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+                      const body = prId === '-1' 
+                          ? `🗄️ CI database has been dropped.`
+                          : `🗄️ CI database has been dropped. [View action run](${runUrl})`;
+
+                          await github.rest.issues.createComment({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              issue_number: prId,
+                              body: body
+                          });
+
             - name: Checkout Repository
               uses: actions/checkout@v4
 
