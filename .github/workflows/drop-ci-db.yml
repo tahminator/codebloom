@@ -1,4 +1,5 @@
 name: Drop CI Database
+run-name: Drop CI Database
 
 on:
     repository_dispatch:
