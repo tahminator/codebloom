@@ -34,6 +34,7 @@ public class ApiKeyAccessRepositoryTest {
     private ApiKeyAccess deletableApiKeyAccess;
     private final String mockedApiKeyId = "48fa0072-2d3c-4c94-9003-0234efcf0209";
     private final ApiKeyAccessEnum access = ApiKeyAccessEnum.GWC_READ_BY_USER;
+    private final ApiKeyAccessEnum testAccess = ApiKeyAccessEnum.TEST_VAL;
 
     @Autowired
     public ApiKeyAccessRepositoryTest(final ApiKeyAccessRepository apiKeyAccessRepository) {
@@ -130,12 +131,10 @@ public class ApiKeyAccessRepositoryTest {
 
     @Test
     void testDeleteApiKeyAccessesByApiKeyId() {
-        String differentApiKeyId = "edb761a8-5263-4657-ad8c-0eb46a3e1067";
-
         deletableApiKeyAccess = ApiKeyAccess.builder()
                 .id(UUID.randomUUID().toString())
-                .apiKeyId(differentApiKeyId)
-                .access(access)
+                .apiKeyId(mockedApiKeyId)
+                .access(testAccess)
                 .build();
 
         apiKeyAccessRepository.createApiKeyAccess(deletableApiKeyAccess);
