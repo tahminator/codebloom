@@ -16,6 +16,10 @@ jobs:
         name: Backend Tests
         runs-on: ubuntu-latest
 
+        concurrency:
+            group: repo-wide
+            cancel-in-progress: false
+
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
             DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
