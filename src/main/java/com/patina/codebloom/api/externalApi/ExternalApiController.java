@@ -21,10 +21,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestHeader;
-import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "External Api Routes", description = """
@@ -77,7 +75,6 @@ public class ExternalApiController {
                         .build();
 
         List<UserWithScore> usersWithScore = leaderboardRepository.getLeaderboardUsersById(leaderboardId, options);
-        
 
         return ResponseEntity.ok(ApiResponder.success("Gwc Users successfully fetched", usersWithScore));
     }
