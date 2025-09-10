@@ -21,6 +21,7 @@ public interface QuestionTopicRepository {
      * <li>questionId</li>
      * <li>topicTag</li>
      * <li>topic</li>
+     * <li>topicSlug</li>
      * </ul>
      */
     void createQuestionTopic(QuestionTopic questionTopic);
@@ -34,6 +35,7 @@ public interface QuestionTopicRepository {
      * <li>questionId</li>
      * <li>topicTag</li>
      * <li>topic</li>
+     * <li>topicSlug</li>
      * </ul>
      */
     boolean updateQuestionTopicById(QuestionTopic questionTopic);

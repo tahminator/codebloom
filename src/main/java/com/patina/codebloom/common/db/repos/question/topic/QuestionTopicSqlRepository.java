@@ -186,7 +186,20 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
     @Override
     public boolean deleteQuestionTopicById(final String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteQuestionTopicById'");
+        String sql = """
+                        DELETE FROM
+                            "QuestionTopic"
+                        WHERE
+                            id = :id
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete tag by tag ID", e);
+        }
     }
 }
