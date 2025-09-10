@@ -181,7 +181,7 @@ async function createAnnouncement({
 }
 
 /**
- * Delete the current announcement.
+ * Disable the current announcement.
  */
 export const useDeleteAnnouncementMutation = () => {
   const queryClient = useQueryClient();
