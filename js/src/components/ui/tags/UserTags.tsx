@@ -1,13 +1,14 @@
-export type TagType = "Patina" | "Hunter" | "Nyu" | "Baruch" | "Rpi" | "Gwc";
+import { UserTag, UserTagTagWithoutGwc } from "@/lib/api/types/user";
+export type { UserTag };
 
-export interface UserTag {
-  id: string;
-  createdAt: string;
-  userId: string;
-  tag: TagType;
-}
-
-export const School_List = {
+export const TAG_ICONS_LIST: Record<
+  UserTagTagWithoutGwc,
+  {
+    name: string;
+    icon: string;
+    alt: string;
+  }
+> = {
   Hunter: {
     name: "Hunter College",
     icon: "/Hunter_Logo.jpeg",
@@ -27,5 +28,10 @@ export const School_List = {
     name: "RPI",
     icon: "/Rpi_Logo.png",
     alt: "RPI Logo",
+  },
+  Patina: {
+    name: "Patina",
+    icon: "", 
+    alt: "Patina Logo",
   },
 } as const;
