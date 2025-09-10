@@ -4,7 +4,12 @@ import { useLatestAnnouncement } from "@/lib/api/queries/announcement";
 export default function BannerParent() {
   const { data, status } = useLatestAnnouncement();
 
-  if (status !== "success" || !data || !data.success || !data.payload) {
+  if (status === "pending" || status === "error" || !data.success) {
+    return <></>;
+  }
+
+  // null payload means announcement doesn't exist.
+  if (!data.success || !data.payload) {
     return <></>;
   }
 
