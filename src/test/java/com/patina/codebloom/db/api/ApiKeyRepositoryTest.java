@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiKeyRepositoryTest {
     private final ApiKeyRepository apiKeyRepository;
     private ApiKey testApiKey;
+    private ApiKey deletableApiKey;
     private final String mockedUpdatedBy = "742d5c7d-4fe2-44c7-b36a-0f5a6e2efb79";
 
     @Autowired
@@ -149,5 +152,27 @@ public class ApiKeyRepositoryTest {
         assertEquals(resultApiKey.getUpdatedBy(), mockedUpdatedBy);
         assertEquals(resultApiKey.getExpiresAt(), testApiKey.getExpiresAt());
         assertEquals(resultApiKey.getApiKey(), testApiKey.getApiKey());
+    }
+
+    @Test
+    void testDeleteApiKeyByHash() {
+        deletableApiKey = ApiKey.builder()
+                .id(UUID.randomUUID().toString())
+                .apiKey(UUID.randomUUID().toString())
+                .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                .updatedBy(mockedUpdatedBy)
+                .build();
+
+        apiKeyRepository.createApiKey(deletableApiKey);
+
+        ApiKey found = apiKeyRepository.getApiKeyByHash(deletableApiKey.getApiKey());
+        assertNotNull(found);
+        assertEquals(deletableApiKey.getId(), found.getId());
+
+        boolean deleted = apiKeyRepository.deleteApiKeyByHash(deletableApiKey.getApiKey());
+        assertTrue(deleted);
+
+        ApiKey deletedFetched = apiKeyRepository.getApiKeyByHash(deletableApiKey.getApiKey());
+        assertNull(deletedFetched);
     }
 }

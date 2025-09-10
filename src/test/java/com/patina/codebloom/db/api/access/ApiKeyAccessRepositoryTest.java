@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiKeyAccessRepositoryTest {
     private final ApiKeyAccessRepository apiKeyAccessRepository;
     private ApiKeyAccess testApiKeyAccess;
+    private ApiKeyAccess deletableApiKeyAccess;
     private final String mockedApiKeyId = "48fa0072-2d3c-4c94-9003-0234efcf0209";
     private final ApiKeyAccessEnum access = ApiKeyAccessEnum.GWC_READ_BY_USER;
 
@@ -123,5 +126,29 @@ public class ApiKeyAccessRepositoryTest {
         assertEquals(resultApiKeyAccess.getId(), testApiKeyAccess.getId());
         assertEquals(resultApiKeyAccess.getApiKeyId(), testApiKeyAccess.getApiKeyId());
         assertEquals(resultApiKeyAccess.getAccess(), testApiKeyAccess.getAccess());
+    }
+
+    @Test
+    void testDeleteApiKeyAccessesByApiKeyId() {
+        String differentApiKeyId = "edb761a8-5263-4657-ad8c-0eb46a3e1067";
+
+        deletableApiKeyAccess = ApiKeyAccess.builder()
+                .id(UUID.randomUUID().toString())
+                .apiKeyId(differentApiKeyId)
+                .access(access)
+                .build();
+
+        apiKeyAccessRepository.createApiKeyAccess(deletableApiKeyAccess);
+
+        List<ApiKeyAccess> found = apiKeyAccessRepository.getApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
+        assertNotNull(found);
+        assertTrue(found.size() > 0);
+        assertTrue(found.stream().anyMatch(k -> k.getId().equals(deletableApiKeyAccess.getId())));
+
+        boolean deleted = apiKeyAccessRepository.deleteApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
+        assertTrue(deleted);
+
+        ApiKeyAccess deletedFetched = apiKeyAccessRepository.getApiKeyAccessById(deletableApiKeyAccess.getId());
+        assertNull(deletedFetched);
     }
 }
