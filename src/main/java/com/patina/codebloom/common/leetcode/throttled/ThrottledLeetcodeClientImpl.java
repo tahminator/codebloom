@@ -81,7 +81,7 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
 
     @Override
     public Set<LeetcodeTopicTag> getAllTopicTags() {
-        rateLimiter.acquire();
+        waitForToken();
         return super.getAllTopicTags();
     }
 }
