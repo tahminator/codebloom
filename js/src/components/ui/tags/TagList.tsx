@@ -1,6 +1,6 @@
+import { UserTag } from "@/lib/api/types/user";
 import { Image, Tooltip, Group } from "@mantine/core";
 
-import { UserTag } from "@/lib/api/types/user";
 import { TAG_ICONS_LIST } from "./UserTags.tsx";
 
 interface TagListProps {
