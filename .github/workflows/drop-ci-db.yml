@@ -1,0 +1,37 @@
+name: Drop CI Database
+
+on:
+    repository_dispatch:
+        types: [drop-ci-db-command]
+
+jobs:
+    dropCiDb:
+        name: Drop CI DB
+
+        runs-on: ubuntu-latest
+
+        env:
+            DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+            DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+            DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+            DATABASE_USER: ${{ secrets.DATABASE_USER }}
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Set up OpenJDK 21
+              uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
+
+            - name: Verify Java version
+              run: |
+                  java -version
+                  javac -version
+                  echo "JAVA_HOME=$JAVA_HOME"
+
+            - name: Run clean CI DB command
+              run: ./mvnw flyway:clean -Dflyway.cleanDisabled=false -Dflyway.locations=filesystem:./db
