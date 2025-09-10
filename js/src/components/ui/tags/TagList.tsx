@@ -28,7 +28,8 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
   return (
     <Group gap={gap} wrap="nowrap">
       {filteredTags.map((userTag) => {
-        const school = TAG_ICONS_LIST[userTag.tag as keyof typeof TAG_ICONS_LIST];
+        const school =
+          TAG_ICONS_LIST[userTag.tag as keyof typeof TAG_ICONS_LIST];
 
         if (!school) {
           return null;
