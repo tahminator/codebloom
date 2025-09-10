@@ -6,9 +6,7 @@ on:
 
 jobs:
     cleanCiDb:
-        if: |
-            github.event.issue.pull_request != null &&
-            startsWith(github.event.comment.body, '/clean')
+        if: github.event.issue.pull_request && contains(github.event.comment.body, '/clean')
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repository
