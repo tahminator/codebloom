@@ -20,4 +20,4 @@ jobs:
                   commands: |
                       drop-ci-db
                   static-args: |
-                      prId=${{ github.event.pull_request.number || -1 }}
+                      prId=${{ github.event.issue.number || -1 }}
