@@ -13,6 +13,7 @@ permissions:
 jobs:
     cleanCiDb:
         runs-on: ubuntu-latest
+        if: contains(github.event.comment.body, '/clean') && github.event.issue.pull_request != null
 
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
