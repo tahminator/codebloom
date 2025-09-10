@@ -1,6 +1,7 @@
 import { Image, Tooltip, Group } from "@mantine/core";
 
-import { UserTag, School_List } from "./UserTags.tsx";
+import { UserTag } from "@/lib/api/types/user";
+import { TAG_ICONS_LIST } from "./UserTags.tsx";
 
 interface TagListProps {
   tags: UserTag[];
@@ -17,7 +18,7 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
     (userTag) =>
       userTag.tag !== "Gwc" &&
       userTag.tag !== "Patina" &&
-      userTag.tag in School_List,
+      userTag.tag in TAG_ICONS_LIST,
   );
 
   if (filteredTags.length === 0) {
@@ -27,7 +28,7 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
   return (
     <Group gap={gap} wrap="nowrap">
       {filteredTags.map((userTag) => {
-        const school = School_List[userTag.tag as keyof typeof School_List];
+        const school = TAG_ICONS_LIST[userTag.tag as keyof typeof TAG_ICONS_LIST];
 
         if (!school) {
           return null;
