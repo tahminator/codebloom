@@ -30,16 +30,12 @@ jobs:
                       const prId = '${{ github.event.client_payload.slash_command.args.named.prId }}';
                       const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
-                      const body = prId === '-1' 
-                          ? `🗄️ CI database has been dropped.`
-                          : `🗄️ CI database has been dropped. [View action run](${runUrl})`;
-
-                          await github.rest.issues.createComment({
-                              owner: context.repo.owner,
-                              repo: context.repo.repo,
-                              issue_number: parseInt(prId, 10),
-                              body: body
-                          });
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: parseInt(prId, 10),
+                          body: `The command to drop the CI database has been triggered. [View action run](${runUrl})`
+                      });
 
             - name: Checkout Repository
               uses: actions/checkout@v4
