@@ -34,7 +34,7 @@ public class ApiKeyAccessRepositoryTest {
     private ApiKeyAccess deletableApiKeyAccess;
     private final String mockedApiKeyId = "48fa0072-2d3c-4c94-9003-0234efcf0209";
     private final ApiKeyAccessEnum access = ApiKeyAccessEnum.GWC_READ_BY_USER;
-    private final ApiKeyAccessEnum testAccess = ApiKeyAccessEnum.TEST_VAL;
+    private final ApiKeyAccessEnum testAccess = ApiKeyAccessEnum.TEST_VALUE;
 
     @Autowired
     public ApiKeyAccessRepositoryTest(final ApiKeyAccessRepository apiKeyAccessRepository) {
@@ -53,12 +53,25 @@ public class ApiKeyAccessRepositoryTest {
     }
 
     @AfterAll
-    void deleteTestApiKeyAccess() {
-        boolean isSuccessful = apiKeyAccessRepository.deleteApiKeyAccessById(testApiKeyAccess.getId());
+    void testDeleteApiKeyAccessesByApiKeyId() {
+        deletableApiKeyAccess = ApiKeyAccess.builder()
+                .id(UUID.randomUUID().toString())
+                .apiKeyId(mockedApiKeyId)
+                .access(testAccess)
+                .build();
 
-        if (!isSuccessful) {
-            fail("Failed to delete test apiKeyAccess");
-        }
+        apiKeyAccessRepository.createApiKeyAccess(deletableApiKeyAccess);
+
+        List<ApiKeyAccess> found = apiKeyAccessRepository.getApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
+        assertNotNull(found);
+        assertTrue(found.size() > 0);
+        assertTrue(found.stream().anyMatch(k -> k.getId().equals(deletableApiKeyAccess.getId())));
+
+        boolean deleted = apiKeyAccessRepository.deleteApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
+        assertTrue(deleted);
+
+        ApiKeyAccess deletedFetched = apiKeyAccessRepository.getApiKeyAccessById(deletableApiKeyAccess.getId());
+        assertNull(deletedFetched);
     }
 
     /**
@@ -130,24 +143,12 @@ public class ApiKeyAccessRepositoryTest {
     }
 
     @Test
-    void testDeleteApiKeyAccessesByApiKeyId() {
-        deletableApiKeyAccess = ApiKeyAccess.builder()
-                .id(UUID.randomUUID().toString())
-                .apiKeyId(mockedApiKeyId)
-                .access(testAccess)
-                .build();
+    @Order(4)
+    void deleteTestApiKeyAccess() {
+        boolean isSuccessful = apiKeyAccessRepository.deleteApiKeyAccessById(testApiKeyAccess.getId());
 
-        apiKeyAccessRepository.createApiKeyAccess(deletableApiKeyAccess);
-
-        List<ApiKeyAccess> found = apiKeyAccessRepository.getApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
-        assertNotNull(found);
-        assertTrue(found.size() > 0);
-        assertTrue(found.stream().anyMatch(k -> k.getId().equals(deletableApiKeyAccess.getId())));
-
-        boolean deleted = apiKeyAccessRepository.deleteApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
-        assertTrue(deleted);
-
-        ApiKeyAccess deletedFetched = apiKeyAccessRepository.getApiKeyAccessById(deletableApiKeyAccess.getId());
-        assertNull(deletedFetched);
+        if (!isSuccessful) {
+            fail("Failed to delete test apiKeyAccess");
+        }
     }
 }
