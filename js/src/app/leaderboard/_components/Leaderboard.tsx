@@ -299,7 +299,9 @@ export default function LeaderboardIndex() {
                             {entry.discordName}
                           </span>
                         }
-                        {tagFF && <TagList tags={entry.tags || []} size={16} gap="xs" />}
+                        {tagFF && (
+                          <TagList tags={entry.tags || []} size={16} gap="xs" />
+                        )}
                       </Flex>
                       <span className="transition-all group-hover:text-blue-500 w-max">
                         <SiLeetcode style={{ display: "inline" }} />{" "}
