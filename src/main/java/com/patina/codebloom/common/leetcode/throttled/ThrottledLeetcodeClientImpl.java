@@ -22,7 +22,7 @@ import io.github.bucket4j.Bucket;
 @Component
 public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements ThrottledLeetcodeClient {
     private static final long REQUESTS_OVER_TIME = 1L;
-    private static final long MILLISECONDS_TO_WAIT = 50L;
+    private static final long MILLISECONDS_TO_WAIT = 100L;
     private final BlockingBucket rateLimiter;
 
     private BlockingBucket initializeBucket() {
