@@ -1,4 +1,5 @@
 import { UserTag } from "@/lib/api/types/user";
+import { tagFF } from "@/lib/ff";
 import { Image, Tooltip, Group } from "@mantine/core";
 
 import { TAG_ICONS_LIST } from "./UserTags.tsx";
@@ -10,7 +11,7 @@ interface TagListProps {
 }
 
 export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
-  if (!tags || tags.length === 0) {
+  if (!tagFF || !tags || tags.length === 0) {
     return <></>;
   }
 
