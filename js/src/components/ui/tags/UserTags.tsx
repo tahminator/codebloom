@@ -31,7 +31,7 @@ export const TAG_ICONS_LIST: Record<
   },
   Patina: {
     name: "Patina",
-    icon: "",
+    icon: "/Patina_Logo.png",
     alt: "Patina Logo",
   },
 } as const;
