@@ -15,9 +15,7 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
     return <></>;
   }
 
-  const filteredTags = tags.filter(
-    (userTag) => userTag.tag !== "Gwc" && userTag.tag in TAG_ICONS_LIST,
-  );
+  const filteredTags = tags.filter((userTag) => userTag.tag !== "Gwc");
 
   if (filteredTags.length === 0) {
     return <></>;
