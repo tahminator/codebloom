@@ -11,18 +11,15 @@ interface TagListProps {
 
 export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
   if (!tags || tags.length === 0) {
-    return null;
+    return <></>;
   }
 
   const filteredTags = tags.filter(
-    (userTag) =>
-      userTag.tag !== "Gwc" &&
-      userTag.tag !== "Patina" &&
-      userTag.tag in TAG_ICONS_LIST,
+    (userTag) => userTag.tag !== "Gwc" && userTag.tag in TAG_ICONS_LIST,
   );
 
   if (filteredTags.length === 0) {
-    return null;
+    return <></>;
   }
 
   return (
