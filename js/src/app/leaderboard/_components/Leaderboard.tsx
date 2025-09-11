@@ -7,7 +7,7 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { schoolFF } from "@/lib/ff";
+import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -299,7 +299,7 @@ export default function LeaderboardIndex() {
                             {entry.discordName}
                           </span>
                         }
-                        <TagList tags={entry.tags || []} size={16} gap="xs" />
+                        {tagFF && <TagList tags={entry.tags || []} size={16} gap="xs" />}
                       </Flex>
                       <span className="transition-all group-hover:text-blue-500 w-max">
                         <SiLeetcode style={{ display: "inline" }} />{" "}

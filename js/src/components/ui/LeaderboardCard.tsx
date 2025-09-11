@@ -1,3 +1,4 @@
+import { tagFF } from "@/lib/ff";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import { Card, Text, Tooltip, Flex } from "@mantine/core";
@@ -103,7 +104,7 @@ export default function LeaderboardCard({
             <FaDiscord className="inline" /> {discordName}
           </Text>
         }
-        <TagList tags={tags || []} size={14} gap="xs" />
+        {tagFF && tags && <TagList tags={tags} size={14} gap="xs" />}
       </Flex>
       <Text ta="center" style={{ whiteSpace: "nowrap" }}>
         <SiLeetcode className="inline" /> {leetcodeUsername}
