@@ -5,5 +5,5 @@ export type UserWithScore = components["schemas"]["UserWithScore"];
 export type UserTag = components["schemas"]["UserTag"];
 
 export { UserTagTag };
-
+//TODO update this to be a little less brittle
 export type UserTagTagWithoutGwc = Exclude<UserTagTag, UserTagTag.Gwc>;
