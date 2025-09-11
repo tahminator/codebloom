@@ -46,6 +46,7 @@ jobs:
               with:
                   distribution: "temurin"
                   java-version: "21"
+                  cache: "maven"
 
             - name: Verify Java version
               run: |
