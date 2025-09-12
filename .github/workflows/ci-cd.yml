@@ -73,7 +73,7 @@ jobs:
               run: ./mvnw checkstyle:check -Denv.SKIP=true
 
             - name: Ensure browsers are installed
-              run: ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps" -Denv.SKIP=true
+              run: ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps firefox"
 
             - name: Run migration on CI DB
               run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
