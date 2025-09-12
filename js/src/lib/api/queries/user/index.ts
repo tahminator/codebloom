@@ -79,6 +79,7 @@ export const useUserSubmissionsQuery = ({
         pageSize,
         pointFilter,
       }),
+    placeholderData: keepPreviousData,
   });
 
   return {

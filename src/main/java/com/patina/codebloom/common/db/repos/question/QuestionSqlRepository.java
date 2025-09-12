@@ -5,15 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 @Component
@@ -21,6 +24,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     private Connection conn;
     private final UserRepository userRepository;
+    private final QuestionTopicRepository questionTopicRepository;
 
     private Question mapResultSetToQuestion(final ResultSet rs) throws SQLException {
         var questionId = rs.getString("id");
@@ -60,12 +64,14 @@ public class QuestionSqlRepository implements QuestionRepository {
                         .code(code)
                         .language(language)
                         .submissionId(submissionId)
+                        .topics(questionTopicRepository.findQuestionTopicsByQuestionId(questionId))
                         .build();
     }
 
-    public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository) {
+    public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository) {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
+        this.questionTopicRepository = questionTopicRepository;
     }
 
     @Override
@@ -165,29 +171,6 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var questionId = rs.getString("id");
-                    var userId = rs.getString("userId");
-                    var questionSlug = rs.getString("questionSlug");
-                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
-                    var questionNumber = rs.getInt("questionNumber");
-                    var questionLink = rs.getString("questionLink");
-                    int points = rs.getInt("pointsAwarded");
-                    Integer pointsAwarded;
-                    if (rs.wasNull()) {
-                        pointsAwarded = null;
-                    } else {
-                        pointsAwarded = points;
-                    }
-                    var questionTitle = rs.getString("questionTitle");
-                    var description = rs.getString("description");
-                    var acceptanceRate = rs.getFloat("acceptanceRate");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    var runtime = rs.getString("runtime");
-                    var memory = rs.getString("memory");
-                    var code = rs.getString("code");
-                    var language = rs.getString("language");
-                    var submissionId = rs.getString("submissionId");
                     question = mapResultSetToQuestion(rs);
                     return question;
                 }
@@ -583,5 +566,50 @@ public class QuestionSqlRepository implements QuestionRepository {
         }
 
         return questions;
+    }
+
+    @Override
+    public List<Question> getAllQuestionsWithNoTopics() {
+        List<Question> result = new ArrayList<>();
+
+        String sql = """
+                        SELECT
+                            q.id,
+                            q."userId",
+                            q."questionSlug",
+                            q."questionDifficulty",
+                            q."questionNumber",
+                            q."questionLink",
+                            q."pointsAwarded",
+                            q."questionTitle",
+                            q.description,
+                            q."acceptanceRate",
+                            q."createdAt",
+                            q."submittedAt",
+                            q.runtime,
+                            q.memory,
+                            q.code,
+                            q.language,
+                            q."submissionId"
+                        FROM
+                            "Question" q
+                        WHERE NOT EXISTS (
+                            SELECT 1
+                            FROM "QuestionTopic" qt
+                            WHERE qt."questionId" = q.id
+                        );
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(mapResultSetToQuestion(rs));
+                }
+            }
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get all questions with no topics", e);
+        }
     }
 }

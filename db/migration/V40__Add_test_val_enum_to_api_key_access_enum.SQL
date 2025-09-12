@@ -1,0 +1,1 @@
+ALTER TYPE "ApiKeyAccessEnum" ADD VALUE 'TEST_VALUE';

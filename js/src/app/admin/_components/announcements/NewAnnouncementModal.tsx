@@ -2,10 +2,11 @@ import { useCreateAnnouncementLeaderboardMutation } from "@/lib/api/queries/admi
 import { newAnnouncementSchema } from "@/lib/api/schema/admin";
 import { Box, Button, Modal, Switch, TextInput } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import { useForm, zodResolver } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import d from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useState } from "react";
 import { z } from "zod";
 

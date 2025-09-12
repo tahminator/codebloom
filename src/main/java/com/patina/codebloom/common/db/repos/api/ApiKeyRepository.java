@@ -17,7 +17,6 @@ public interface ApiKeyRepository {
      *
      * @param apiKey - required fields:
      * <ul>
-     * <li>id</li>
      * <li>apiKeyHash</li>
      * <li>expiresAt</li>
      * <li>updatedBy</li>
