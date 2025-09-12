@@ -5,10 +5,14 @@ import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Flex, Loader, Title } from "@mantine/core";
 
+import DeleteAnnouncementModal from "./announcements/DeleteAnnouncementModal";
 import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
+import { useLatestAnnouncement } from "@/lib/api/queries/announcement";
 
 export default function AdminIndex() {
   const { data, status } = useAuthQuery();
+  const { data: announcementData } = useLatestAnnouncement();
+
   if (status == "pending") {
     return (
       <div className="flex flex-col items-center justify-center w-screen h-screen">
@@ -16,10 +20,13 @@ export default function AdminIndex() {
       </div>
     );
   }
+
   if (status == "error") {
     return <Toast message={"Something went wrong."} />;
   }
+
   const { isAdmin } = data;
+
   if (!isAdmin) {
     return (
       <ToastWithRedirect
@@ -28,6 +35,9 @@ export default function AdminIndex() {
       />
     );
   }
+
+  const id = announcementData?.payload?.id;
+
   return (
     <Flex w={"98vw"} h={"100vh"} direction={"column"}>
       <Title order={1} ta="center">
@@ -35,6 +45,9 @@ export default function AdminIndex() {
       </Title>
       <Flex w={"100%"} direction={"row"} justify={"center"}>
         <NewAnnouncementModal />
+      </Flex>
+      <Flex w={"100%"} direction={"row"} justify={"center"}>
+        <DeleteAnnouncementModal id={id} />
       </Flex>
       <Flex w={"100%"} direction={{ base: "column", sm: "row" }}>
         <Flex
