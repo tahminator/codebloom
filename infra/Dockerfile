@@ -62,8 +62,7 @@ COPY --from=backend-build /app/target/*.jar app.jar
 # Download any needed Playwright configurations.
 COPY mvnw pom.xml ./
 COPY .mvn/ .mvn/
-RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
-RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install firefox"
+RUN ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps --with-deps firefox"
 
 # Expose backend port
 EXPOSE 8080
