@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -40,8 +41,8 @@ public class AnnouncementRepositoryTest {
         testAnnouncement = Announcement.builder()
                         // id will be set by announcementRepository
                         .id(null)
-                        .expiresAt(OffsetDateTime.now().plusMinutes(5L))
-                        .createdAt(OffsetDateTime.now())
+                        .expiresAt(OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(5L))
+                        .createdAt(OffsetDateTime.now(ZoneOffset.UTC))
                         .showTimer(true)
                         .message("Hi this is a test announcement!")
                         .build();
