@@ -1,6 +1,7 @@
 package com.patina.codebloom.announcement;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +22,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.ZoneOffset;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.config.TestProtector;
 
 import io.restassured.RestAssured;
@@ -42,7 +45,7 @@ public class AnnouncementControllerTest {
                     .builder()
                     .message("Hi this is a test message!")
                     .showTimer(true)
-                    .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                    .expiresAt(OffsetDateTime.now().plusHours(24).toLocalDateTime())
                     .build();
     private Announcement testAnnouncement;
 
@@ -106,7 +109,9 @@ public class AnnouncementControllerTest {
         testAnnouncement = apiResponder.getPayload();
 
         assertTrue(testAnnouncement != null, "Expected announcement to not be equal to null");
-        assertTrue(testAnnouncement.getExpiresAt().equals(createAnnouncementBody.getExpiresAt()),
+
+        assertEquals(testAnnouncement.getExpiresAt().truncatedTo(ChronoUnit.SECONDS),
+                        createAnnouncementBody.getExpiresAt().atOffset(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS),
                         "Expected announcement response and announcement request body expiresAt to be equal");
         assertTrue(testAnnouncement.getMessage().equals(createAnnouncementBody.getMessage()),
                         "Expected announcement response and announcement request body message to be equal");
@@ -137,7 +142,13 @@ public class AnnouncementControllerTest {
         log.info("testAnnouncement: {}", testAnnouncement.toString());
         log.info("possibleTestAnnouncement: {}", newlyFetchedAnnouncement.toString());
 
-        assertTrue(testAnnouncement.equals(newlyFetchedAnnouncement),
-                        "expected the previously created test announcement to be equal to the newly fetched announcement");
+        assertEquals(testAnnouncement.getMessage(), newlyFetchedAnnouncement.getMessage(),
+                        "expected the message of the previously created test announcement to be equal to the newly fetched announcement");
+        assertEquals(testAnnouncement.isShowTimer(), newlyFetchedAnnouncement.isShowTimer(),
+                        "expected the showTimer of the previously created test announcement to be equal to the newly fetched announcement");
+
+        assertEquals(testAnnouncement.getExpiresAt().truncatedTo(ChronoUnit.SECONDS),
+                        newlyFetchedAnnouncement.getExpiresAt().truncatedTo(ChronoUnit.SECONDS),
+                        "expected the expiresAt to match saved announcement (trunccated to seconds for comparison)");
     }
 }

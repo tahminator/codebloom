@@ -1,7 +1,7 @@
 package com.patina.codebloom.api.admin;
 
-import java.time.LocalDateTime;
-
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -136,16 +136,19 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        boolean isInFuture = LocalDateTime.now().isBefore(createAnnouncementBody.getExpiresAt());
+        OffsetDateTime nowWithOffset = OffsetDateTime.now(ZoneOffset.UTC);
+        OffsetDateTime expiresAtWithOffset = createAnnouncementBody.getExpiresAt().atOffset(ZoneOffset.UTC);
+        boolean isInFuture = nowWithOffset.isBefore(expiresAtWithOffset);
 
         if (!isInFuture) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The expiration date must be in the future.");
         }
 
         Announcement announcement = Announcement.builder()
-                        .expiresAt(createAnnouncementBody.getExpiresAt())
+                        .expiresAt(createAnnouncementBody.getExpiresAt().atOffset(ZoneOffset.UTC))
                         .showTimer(createAnnouncementBody.isShowTimer())
                         .message(createAnnouncementBody.getMessage())
+                        .createdAt(nowWithOffset)
                         .build();
 
         boolean isSuccessful = announcementRepository.createAnnouncement(announcement);
@@ -171,7 +174,8 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        announcement.setExpiresAt(LocalDateTime.now());
+        OffsetDateTime nowWithOffset = OffsetDateTime.now(ZoneOffset.UTC);
+        announcement.setExpiresAt(nowWithOffset);
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
         if (!updatedAnnouncement) {
