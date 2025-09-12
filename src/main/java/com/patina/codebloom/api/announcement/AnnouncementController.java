@@ -1,6 +1,7 @@
 package com.patina.codebloom.api.announcement;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ public class AnnouncementController {
             return ResponseEntity.ok()
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         boolean isExpired = announcement.getExpiresAt().isBefore(now);
 
         if (isExpired) {
