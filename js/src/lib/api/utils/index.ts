@@ -1,4 +1,4 @@
-import { ApiTypeUtils } from "@/lib/api/helper/types";
+import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { UserTag, UserTagTag } from "@/lib/api/types/usertag";
 
 /**

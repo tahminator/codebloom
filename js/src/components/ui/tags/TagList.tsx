@@ -1,4 +1,4 @@
-import { ApiUtils } from "@/lib/api/helper/index.ts";
+import { ApiUtils } from "@/lib/api/utils";
 import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
 import { Image, Tooltip, Group } from "@mantine/core";
