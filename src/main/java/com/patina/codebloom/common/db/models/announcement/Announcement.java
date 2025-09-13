@@ -14,10 +14,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 public class Announcement {
 
-    @EqualsAndHashCode.Include
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 

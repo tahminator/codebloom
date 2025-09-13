@@ -10,8 +10,6 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { useState } from "react";
 import { z } from "zod";
 
-d.extend(utc);
-
 export default function NewAnnouncementModal() {
   const [isModalOpen, setModalOpen] = useState(false);
   const { mutate, status } = useCreateAnnouncementLeaderboardMutation();
