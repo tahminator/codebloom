@@ -9,7 +9,7 @@
         "typecheck": "tsc -b --noEmit",
         "test": "pnpm run typecheck && pnpm run prettier && pnpm run lint && pnpm run build",
         "lint": "pnpm run eslint && pnpm run stylelint",
-        "generate": "openapi-typescript http://localhost:8080/v3/api-docs -o src/lib/api/types/autogen/schema.d.ts --properties-required-by-default --enum && prettier --write \"src/lib/api/types/autogen/schema.d.ts\"",
+        "generate": "openapi-typescript http://localhost:8080/v3/api-docs -o src/lib/api/types/autogen/schema.ts --properties-required-by-default --enum && prettier --write \"src/lib/api/types/autogen/schema.ts\"",
         "generate:dev": "nodemon --watch ../ --ext java --exec \"pnpm run generate\"",
         "eslint": "eslint .",
         "eslint:fix": "eslint . --fix",
