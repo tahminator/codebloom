@@ -1,5 +1,5 @@
-import { ApiUtils } from "@/lib/api/utils";
 import { UserTag } from "@/lib/api/types/usertag";
+import { ApiUtils } from "@/lib/api/utils";
 import { tagFF } from "@/lib/ff";
 import { Image, Tooltip, Group } from "@mantine/core";
 
