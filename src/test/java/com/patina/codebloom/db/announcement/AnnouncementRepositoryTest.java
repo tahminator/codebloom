@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,7 +42,7 @@ public class AnnouncementRepositoryTest {
         testAnnouncement = Announcement.builder()
                         // id will be set by announcementRepository
                         .id(null)
-                        .expiresAt(OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(5L))
+                        .expiresAt(OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(5L).truncatedTo(ChronoUnit.MICROS))
                         .showTimer(true)
                         .message("Hi this is a test announcement!")
                         .build();
@@ -49,6 +50,10 @@ public class AnnouncementRepositoryTest {
 
         if (!isSuccessful) {
             fail("Failed to create test announcement");
+        }
+        testAnnouncement = announcementRepository.getRecentAnnouncement();
+        if (testAnnouncement == null) {
+            fail("Failed to fetch the created test announcement");
         }
     }
 
