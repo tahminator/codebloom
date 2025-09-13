@@ -1,5 +1,5 @@
-import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { UserTag, UserTagTag } from "@/lib/api/types/usertag";
+import { ApiTypeUtils } from "@/lib/api/utils/types";
 
 /**
  * A collection of helpful utilities to help transform & use data returned from the API.
