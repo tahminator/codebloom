@@ -42,7 +42,6 @@ public class AnnouncementRepositoryTest {
                         // id will be set by announcementRepository
                         .id(null)
                         .expiresAt(OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(5L))
-                        .createdAt(OffsetDateTime.now(ZoneOffset.UTC))
                         .showTimer(true)
                         .message("Hi this is a test announcement!")
                         .build();
