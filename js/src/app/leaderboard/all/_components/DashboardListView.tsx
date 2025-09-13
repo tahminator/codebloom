@@ -127,15 +127,15 @@ export default function DashboardListView() {
                       </Tooltip>
                     </Table.Td>
                     <Table.Td>
-                      {!isCurrentLeaderboard ?
+                      {!isCurrentLeaderboard && leaderboard.deletedAt ?
                         <Tooltip
                           label={new Date(
-                            leaderboard.deletedAt!,
+                            leaderboard.deletedAt,
                           ).toLocaleString()}
                           events={{ hover: true, focus: true, touch: true }}
                         >
                           <span>
-                            {timeDiff(new Date(leaderboard.deletedAt!))}
+                            {timeDiff(new Date(leaderboard.deletedAt))}
                           </span>
                         </Tooltip>
                       : "Currently running"}

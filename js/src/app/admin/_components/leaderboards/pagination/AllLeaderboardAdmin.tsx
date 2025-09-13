@@ -119,16 +119,12 @@ export default function AllLeaderboardsPage() {
                     </Tooltip>
                   </Table.Td>
                   <Table.Td>
-                    {!isCurrentLeaderboard ?
+                    {!isCurrentLeaderboard && leaderboard.deletedAt ?
                       <Tooltip
-                        label={new Date(
-                          leaderboard.deletedAt!,
-                        ).toLocaleString()}
+                        label={new Date(leaderboard.deletedAt).toLocaleString()}
                         events={{ hover: true, focus: true, touch: true }}
                       >
-                        <span>
-                          {timeDiff(new Date(leaderboard.deletedAt!))}
-                        </span>
+                        <span>{timeDiff(new Date(leaderboard.deletedAt))}</span>
                       </Tooltip>
                     : "Currently running"}
                   </Table.Td>
