@@ -60,7 +60,7 @@ export default function ClubSignUpForm({
       {
         userId: userId,
         password: values.password,
-        clubSlug: clubSlug!,
+        clubSlug: clubSlug,
       },
       {
         onSuccess: async (data) => {
