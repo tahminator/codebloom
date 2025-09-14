@@ -45,7 +45,7 @@ public class AnnouncementControllerTest {
                     .builder()
                     .message("Hi this is a test message!")
                     .showTimer(true)
-                    .expiresAt(OffsetDateTime.now().plusHours(24))
+                    .expiresAt(StandardizedOffsetDateTime.now().plusHours(24))
                     .build();
     private Announcement testAnnouncement;
 
