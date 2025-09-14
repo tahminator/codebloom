@@ -110,7 +110,7 @@ public class AnnouncementControllerTest {
         assertTrue(testAnnouncement != null, "Expected announcement to not be equal to null");
 
         assertEquals(testAnnouncement.getExpiresAt(),
-                        StandardizedOffsetDateTime.from(createAnnouncementBody.getExpiresAt()),
+                        StandardizedOffsetDateTime.normalize(createAnnouncementBody.getExpiresAt()),
                         "Expected announcement response and announcement request body expiresAt to be equal");
         assertTrue(testAnnouncement.getMessage().equals(createAnnouncementBody.getMessage()),
                         "Expected announcement response and announcement request body message to be equal");
