@@ -5,11 +5,18 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 public class StandardizedOffsetDateTime {
+    /*
+     * Returns the current time in UTC with milliseconds precision.
+     */
     public static OffsetDateTime now() {
         return OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
     }
 
-    public static OffsetDateTime from(final OffsetDateTime dateTime) {
+    /*
+     * Normalizes the given OffsetDateTime by converting it to UTC and truncating to
+     * milliseconds precision.
+     */
+    public static OffsetDateTime normalize(final OffsetDateTime dateTime) {
         return dateTime.withOffsetSameInstant(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
     }
 }

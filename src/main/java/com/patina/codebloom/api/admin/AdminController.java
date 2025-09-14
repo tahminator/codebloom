@@ -137,7 +137,7 @@ public class AdminController {
         protector.validateAdminSession(request);
 
         OffsetDateTime nowWithOffset = StandardizedOffsetDateTime.now();
-        OffsetDateTime expiresAtWithOffset = StandardizedOffsetDateTime.from(createAnnouncementBody.getExpiresAt());
+        OffsetDateTime expiresAtWithOffset = StandardizedOffsetDateTime.normalize(createAnnouncementBody.getExpiresAt());
         boolean isInFuture = nowWithOffset.isBefore(expiresAtWithOffset);
 
         if (!isInFuture) {
