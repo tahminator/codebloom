@@ -118,7 +118,6 @@ public class AnnouncementRepositoryTest {
         Announcement updatedAnnouncement = Announcement.builder()
                         .id(testAnnouncement.getId())
                         .expiresAt(testAnnouncement.getExpiresAt())
-                        .createdAt(testAnnouncement.getCreatedAt())
                         .showTimer(true)
                         .message("Hi this is an update announcement!")
                         .build();
