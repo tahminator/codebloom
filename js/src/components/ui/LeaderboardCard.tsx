@@ -1,3 +1,4 @@
+import { UserTag } from "@/lib/api/types/user";
 import { tagFF } from "@/lib/ff";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -9,7 +10,6 @@ import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 import TagList from "./tags/TagList";
-import { UserTag } from "./tags/UserTags.tsx";
 
 export default function LeaderboardCard({
   placeString,
