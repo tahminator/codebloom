@@ -9,7 +9,7 @@ public class StandardizedOffsetDateTime {
         return OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
     }
 
-    public static OffsetDateTime from(OffsetDateTime dateTime) {
+    public static OffsetDateTime from(final OffsetDateTime dateTime) {
         return dateTime.withOffsetSameInstant(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
     }
 }
