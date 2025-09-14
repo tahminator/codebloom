@@ -22,7 +22,7 @@ export default function NewAnnouncementModal() {
     },
     transformValues: ({ expiresAt, ...values }) => ({
       ...values,
-      expiresAt: d(expiresAt).utc().toISOString(),
+      expiresAt: d(expiresAt).toISOString(),
     }),
   });
 
