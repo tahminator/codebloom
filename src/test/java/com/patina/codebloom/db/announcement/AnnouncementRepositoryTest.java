@@ -2,11 +2,8 @@ package com.patina.codebloom.db.announcement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +39,7 @@ public class AnnouncementRepositoryTest {
         testAnnouncement = Announcement.builder()
                         // id will be set by announcementRepository
                         .id(null)
-                        .expiresAt(OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(5L).truncatedTo(ChronoUnit.MICROS))
+                        .expiresAt(StandardizedOffsetDateTime.normalize(StandardizedOffsetDateTime.now().plusMinutes(5L)))
                         .showTimer(true)
                         .message("Hi this is a test announcement!")
                         .build();
