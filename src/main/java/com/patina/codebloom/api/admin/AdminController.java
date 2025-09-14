@@ -137,7 +137,7 @@ public class AdminController {
         protector.validateAdminSession(request);
 
         OffsetDateTime nowWithOffset = OffsetDateTime.now(ZoneOffset.UTC);
-        OffsetDateTime expiresAtWithOffset = createAnnouncementBody.getExpiresAt().atOffset(ZoneOffset.UTC);
+        OffsetDateTime expiresAtWithOffset = createAnnouncementBody.getExpiresAt().withOffsetSameInstant(ZoneOffset.UTC);
         boolean isInFuture = nowWithOffset.isBefore(expiresAtWithOffset);
 
         if (!isInFuture) {
@@ -145,7 +145,7 @@ public class AdminController {
         }
 
         Announcement announcement = Announcement.builder()
-                        .expiresAt(createAnnouncementBody.getExpiresAt().atOffset(ZoneOffset.UTC))
+                        .expiresAt(expiresAtWithOffset)
                         .showTimer(createAnnouncementBody.isShowTimer())
                         .message(createAnnouncementBody.getMessage())
                         .createdAt(nowWithOffset)
