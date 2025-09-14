@@ -1,4 +1,5 @@
 import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
+import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -6,6 +7,7 @@ import {
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
 } from "@/lib/api/queries/leaderboard";
+import { ApiUtils } from "@/lib/api/utils";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -22,8 +24,6 @@ import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-import FilterControl from "./FilterControl";
-
 export default function LeaderboardForDashboard({
   userId,
 }: {
@@ -34,6 +34,7 @@ export default function LeaderboardForDashboard({
 
   const leaderboardQuery = useCurrentLeaderboardUsersQuery({
     pageSize: 5,
+    tieToUrl: false,
   });
   const userQuery = useAuthQuery();
 
@@ -101,6 +102,7 @@ export default function LeaderboardForDashboard({
   }
 
   const inTop5 = !!leaderboardData.items.find((u) => u.id === userId);
+  const filteredTags = ApiUtils.filterUnusedTags(userTags);
 
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
@@ -114,23 +116,23 @@ export default function LeaderboardForDashboard({
           View all
         </Button>
       </Flex>
-      <FilterControl
-        userTags={userTags}
+      <FilterTagsControl
+        tags={filteredTags}
         flags={{
-          patina: leaderboardQuery.patina,
-          hunter: leaderboardQuery.hunter,
-          nyu: leaderboardQuery.nyu,
-          baruch: leaderboardQuery.baruch,
-          rpi: leaderboardQuery.rpi,
-          gwc: leaderboardQuery.gwc,
+          Patina: leaderboardQuery.patina,
+          Hunter: leaderboardQuery.hunter,
+          Nyu: leaderboardQuery.nyu,
+          Baruch: leaderboardQuery.baruch,
+          Rpi: leaderboardQuery.rpi,
+          Gwc: leaderboardQuery.gwc,
         }}
-        toggles={{
-          patina: leaderboardQuery.togglePatina,
-          hunter: leaderboardQuery.toggleHunter,
-          nyu: leaderboardQuery.toggleNyu,
-          baruch: leaderboardQuery.toggleBaruch,
-          rpi: leaderboardQuery.toggleRpi,
-          gwc: leaderboardQuery.toggleGwc,
+        flagsToggle={{
+          Patina: leaderboardQuery.togglePatina,
+          Hunter: leaderboardQuery.toggleHunter,
+          Nyu: leaderboardQuery.toggleNyu,
+          Baruch: leaderboardQuery.toggleBaruch,
+          Rpi: leaderboardQuery.toggleRpi,
+          Gwc: leaderboardQuery.toggleGwc,
         }}
       />
       {!inTop5 && (
