@@ -1,8 +1,7 @@
-import { UserTag } from "@/lib/api/types/user";
+import { UserTag } from "@/lib/api/types/usertag";
+import { ApiUtils } from "@/lib/api/utils";
 import { tagFF } from "@/lib/ff";
 import { Image, Tooltip, Group } from "@mantine/core";
-
-import { TAG_ICONS_LIST } from "./UserTags.tsx";
 
 interface TagListProps {
   tags: UserTag[];
@@ -15,7 +14,7 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
     return <></>;
   }
 
-  const filteredTags = tags.filter((userTag) => userTag.tag !== "Gwc");
+  const filteredTags = ApiUtils.filterUnusedTags(tags);
 
   if (filteredTags.length === 0) {
     return <></>;
@@ -24,24 +23,19 @@ export default function TagList({ tags, size = 20, gap = "xs" }: TagListProps) {
   return (
     <Group gap={gap} wrap="nowrap">
       {filteredTags.map((userTag) => {
-        const school =
-          TAG_ICONS_LIST[userTag.tag as keyof typeof TAG_ICONS_LIST];
-
-        if (!school) {
-          return null;
-        }
+        const metadata = ApiUtils.getMetadataByTagEnum(userTag.tag);
 
         return (
           <Tooltip
             key={userTag.id}
-            label={school.name}
+            label={metadata.name}
             color="dark.4"
             position="top"
             withArrow
           >
             <Image
-              src={school.icon}
-              alt={school.alt}
+              src={metadata.icon}
+              alt={metadata.alt}
               style={{
                 height: size,
                 width: "auto",
