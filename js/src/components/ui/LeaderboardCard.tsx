@@ -1,4 +1,4 @@
-import { UserTag } from "@/lib/api/types/user";
+import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
