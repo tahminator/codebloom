@@ -25,6 +25,7 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -136,8 +137,8 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        OffsetDateTime nowWithOffset = OffsetDateTime.now(ZoneOffset.UTC);
-        OffsetDateTime expiresAtWithOffset = createAnnouncementBody.getExpiresAt().withOffsetSameInstant(ZoneOffset.UTC);
+        OffsetDateTime nowWithOffset = StandardizedOffsetDateTime.now();
+        OffsetDateTime expiresAtWithOffset = StandardizedOffsetDateTime.from(createAnnouncementBody.getExpiresAt());
         boolean isInFuture = nowWithOffset.isBefore(expiresAtWithOffset);
 
         if (!isInFuture) {
@@ -174,7 +175,7 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        OffsetDateTime nowWithOffset = OffsetDateTime.now(ZoneOffset.UTC);
+        OffsetDateTime nowWithOffset = StandardizedOffsetDateTime.now();
         announcement.setExpiresAt(nowWithOffset);
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 

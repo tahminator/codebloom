@@ -5,7 +5,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 public class StandardizedOffsetDateTime {
-    public static OffsetDateTime nowOffset() {
+    public static OffsetDateTime now() {
         return OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
     }
 
