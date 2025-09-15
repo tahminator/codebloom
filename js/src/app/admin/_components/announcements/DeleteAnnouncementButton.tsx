@@ -16,6 +16,7 @@ export default function DeleteAnnouncementButton() {
     return <></>;
   }
 
+  // data.payload could be null
   if (!data.success || !data.payload) {
     return <></>;
   }
@@ -28,7 +29,7 @@ export default function DeleteAnnouncementButton() {
 
   return (
     <>
-      <Button top={20} color="red" onClick={open}>
+      <Button mt={20} color="red" onClick={open}>
         Delete Announcement
       </Button>
       <DeleteAnnouncementModal opened={opened} onClose={close} id={id} />
