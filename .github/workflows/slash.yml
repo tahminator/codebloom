@@ -13,6 +13,8 @@ permissions:
 jobs:
     slashCommandDispatch:
         runs-on: ubuntu-latest
+        needs:
+
         steps:
             - name: Slash Command Dispatch
               uses: peter-evans/slash-command-dispatch@v4
@@ -20,5 +22,6 @@ jobs:
                   token: ${{ secrets.GH_PAT }}
                   commands: |
                       drop-ci-db
+                      deploy
                   static-args: |
                       prId=${{ github.event.issue.number || -1 }}
