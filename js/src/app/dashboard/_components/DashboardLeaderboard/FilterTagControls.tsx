@@ -23,6 +23,7 @@ export default function FilterTagsControl({
     value: SegmentFlagsWithAll;
   }[] = useMemo(
     () => [
+      { label: "All", value: "All" },
       ...tags.map((tag) => {
         const metadata = ApiUtils.getMetadataByTagEnum(tag.tag);
         return {
@@ -41,7 +42,6 @@ export default function FilterTagsControl({
           value: tag.tag,
         };
       }),
-      { label: "All", value: "All" },
     ],
     [tags],
   );
