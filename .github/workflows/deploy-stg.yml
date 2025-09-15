@@ -39,7 +39,6 @@ jobs:
         name: Send deploying to staging message
         runs-on: ubuntu-latest
         needs: getPRHead
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
 
         steps:
             - name: Comment on PR
