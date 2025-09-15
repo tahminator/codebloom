@@ -55,7 +55,7 @@ jobs:
     backendTests:
         name: Backend Tests
         runs-on: ubuntu-latest
-        needs: sendMessage
+        needs: [sendMessage, getPRHead]
 
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
@@ -127,7 +127,7 @@ jobs:
     frontendTests:
         name: Frontend Tests
         runs-on: ubuntu-latest
-        needs: backendTests
+        needs: [backendTests, getPRHead]
 
         steps:
             - name: Checkout Repository
@@ -232,7 +232,7 @@ jobs:
     validateDBSchema:
         name: Validate DB Schema on Staging DB
         runs-on: ubuntu-latest
-        needs: frontendTests
+        needs: [frontendTests, getPRHead]
         environment: staging
 
         env:
@@ -293,7 +293,7 @@ jobs:
     buildImage:
         name: Build Docker Image & Upload to Registry
         runs-on: ubuntu-latest
-        needs: validateDBSchema
+        needs: [validateDBSchema, getPRHead]
         environment: staging
 
         env:
@@ -427,7 +427,7 @@ jobs:
     redeploy:
         name: Redeploy on DigitalOcean
         runs-on: ubuntu-latest
-        needs: buildImage
+        needs: [buildImage, getPRHead]
         environment: staging
 
         if: github.ref_name == 'main'
