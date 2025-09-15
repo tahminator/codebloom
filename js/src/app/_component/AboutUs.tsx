@@ -52,7 +52,7 @@ export default function AboutUs() {
             Join your university leaderboard! Register here
           </Badge>
           <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
-            Level Up Your Coding with
+            Staging test, wow so cool!
           </Title>
           <Title order={3}>Patina’s LeetCode Challenge!</Title>
           <div
