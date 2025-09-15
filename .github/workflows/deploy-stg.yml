@@ -1,6 +1,10 @@
 name: Deploying to staging
 run-name: Deploying to staging
 
+concurrency:
+    group: deploy-staging-pr-${{ github.event.client_payload.slash_command.args.named.prId }}
+    cancel-in-progress: true
+
 on:
     repository_dispatch:
         types: [deploy-command]
@@ -31,10 +35,32 @@ jobs:
                       });
                        return pr.head.sha;
 
+    sendMessage:
+        name: Send deploying to staging message
+        runs-on: ubuntu-latest
+        needs: getPRHead
+        if: needs.checkExistingImage.outputs.image-exists == 'false'
+
+        steps:
+            - name: Comment on PR
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const prId = '${{ github.event.client_payload.slash_command.args.named.prId }}';
+                      const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+                      const commitHash = '${{ needs.getPRHead.outputs.sha }}';
+
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: parseInt(prId, 10),
+                          body: `The command to deploy to staging for the commit ${commitHash} has been triggered. [View action run](${runUrl})`
+                      });
+
     checkExistingImage:
         name: Check if image already exists
         runs-on: ubuntu-latest
-        needs: getPRHead
+        needs: [getPRHead, sendMessage]
         outputs:
             image-exists: ${{ steps.check-image.outputs.exists }}
             git-sha: ${{ steps.set-sha.outputs.sha }}
@@ -75,28 +101,6 @@ jobs:
                   docker tag tahminator/codebloom:staging-$SHA7 tahminator/codebloom:staging-latest
                   docker push tahminator/codebloom:staging-latest
                   echo "Promoted staging-$SHA7 to staging-latest"
-
-    sendMessage:
-        name: Send deploying to staging message
-        runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
-
-        steps:
-            - name: Comment on PR
-              uses: actions/github-script@v7
-              with:
-                  script: |
-                      const prId = '${{ github.event.client_payload.slash_command.args.named.prId }}';
-                      const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-                      const commitHash = '${{ needs.getPRHead.outputs.sha }}';
-
-                      await github.rest.issues.createComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          issue_number: parseInt(prId, 10),
-                          body: `The command to deploy to staging for the commit ${commitHash} has been triggered. [View action run](${runUrl})`
-                      });
 
     backendTests:
         name: Backend Tests
@@ -542,4 +546,30 @@ jobs:
                   -X POST \
                   -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
                   -H "Content-Type: application/json" \
-                  https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments
+                   https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments
+
+    notifyFailure:
+        name: Notify on failure
+        runs-on: ubuntu-latest
+        needs: [getPRHead, checkExistingImage, sendMessage, backendTests, frontendTests, validateDBSchema, buildImage, promoteExisting, redeploy]
+        if: always() && contains(needs.*.result, 'failure')
+        
+        steps:
+            - name: Comment on PR about failure
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const prId = '${{ github.event.client_payload.slash_command.args.named.prId }}';
+                      const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+                      const commitHash = '${{ needs.getPRHead.outputs.sha }}';
+                      
+                      const results = ${{ toJSON(needs.*.result) }};
+                      const jobNames = ['getPRHead', 'checkExistingImage', 'sendMessage', 'backendTests', 'frontendTests', 'validateDBSchema', 'buildImage', 'promoteExisting', 'redeploy'];
+                      const failedJobs = jobNames.filter((name, index) => results[index] === 'failure');
+                      
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: parseInt(prId, 10),
+                          body: `**Staging deployment failed** for commit ${commitHash}\n\n**Failed job(s):** ${failedJobs.join(', ')}\n\n[View failed run](${runUrl})`
+                      });
