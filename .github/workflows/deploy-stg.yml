@@ -1,20 +1,61 @@
-name: CI/CD
-run-name: Running CI/CD on ${{ github.actor }}'s commits
+name: Deploying to staging
+run-name: Deploying to staging
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
+    repository_dispatch:
+        types: [deploy-command]
 
-concurrency:
-    group: ci-${{ github.ref }}
-    cancel-in-progress: true
+permissions:
+    contents: write
+    issues: write
+    pull-requests: write
 
 jobs:
+    getPRHead:
+        name: Get PR head SHA
+        runs-on: ubuntu-latest
+        outputs:
+            sha: ${{ steps.pr-head.outputs.result }}
+        steps:
+            - name: Get PR head SHA
+              id: pr-head
+              uses: actions/github-script@v7
+              with:
+                  result-encoding: string
+                  script: |
+                      const prId = '${{ github.event.client_payload.slash_command.args.named.prId }}';
+                      const { data: pr } = await github.rest.pulls.get({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          pull_number: parseInt(prId, 10)
+                      });
+                      return pr.head.sha;
+
+    sendMessage:
+        name: Send deploying to staging message
+        runs-on: ubuntu-latest
+        needs: getPRHead
+
+        steps:
+            - name: Comment on PR
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const prId = '${{ github.event.client_payload.slash_command.args.named.prId }}';
+                      const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+                      const commitHash = '${{ needs.getPRHead.outputs.sha }}';
+
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: parseInt(prId, 10),
+                          body: `The command to deploy to staging for the commit ${commitHash} has been triggered. [View action run](${runUrl})`
+                      });
+
     backendTests:
         name: Backend Tests
         runs-on: ubuntu-latest
+        needs: [sendMessage, getPRHead]
 
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
@@ -52,6 +93,8 @@ jobs:
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ needs.getPRHead.outputs.sha }}
 
             - name: Set up OpenJDK 21
               uses: actions/setup-java@v4
@@ -84,11 +127,13 @@ jobs:
     frontendTests:
         name: Frontend Tests
         runs-on: ubuntu-latest
-        needs: backendTests
+        needs: [backendTests, getPRHead]
 
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ needs.getPRHead.outputs.sha }}
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
@@ -185,10 +230,10 @@ jobs:
                   fi
 
     validateDBSchema:
-        name: Validate DB Schema on Prod DB
+        name: Validate DB Schema on Staging DB
         runs-on: ubuntu-latest
-        needs: frontendTests
-        environment: production-ro
+        needs: [frontendTests, getPRHead]
+        environment: staging
 
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
@@ -226,6 +271,8 @@ jobs:
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ needs.getPRHead.outputs.sha }}
 
             - name: Set up OpenJDK 21
               uses: actions/setup-java@v4
@@ -246,9 +293,8 @@ jobs:
     buildImage:
         name: Build Docker Image & Upload to Registry
         runs-on: ubuntu-latest
-        needs: validateDBSchema
-
-        if: github.ref_name == 'main'
+        needs: [validateDBSchema, getPRHead]
+        environment: staging
 
         env:
             SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -259,6 +305,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ needs.getPRHead.outputs.sha }}
 
             - name: Set up OpenJDK 21
               uses: actions/setup-java@v4
@@ -367,9 +415,9 @@ jobs:
                   file: infra/Dockerfile
                   push: true
                   tags: |
-                      tahminator/codebloom:latest
-                      tahminator/codebloom:${{ env.TIMESTAMP }}
-                      tahminator/codebloom:${{ env.GIT_SHA }}
+                      tahminator/codebloom:staging-latest
+                      tahminator/codebloom:staging-${{ env.TIMESTAMP }}
+                      tahminator/codebloom:staging-${{ env.GIT_SHA }}
                   build-args: |
                       SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
                       SENTRY_DSN=${{ env.SENTRY_DSN }}
@@ -379,14 +427,16 @@ jobs:
     redeploy:
         name: Redeploy on DigitalOcean
         runs-on: ubuntu-latest
-        needs: buildImage
-        environment: production
+        needs: [buildImage, getPRHead]
+        environment: staging
 
         if: github.ref_name == 'main'
 
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ needs.getPRHead.outputs.sha }}
 
             - name: Set up OpenJDK 21
               uses: actions/setup-java@v4
@@ -401,7 +451,7 @@ jobs:
                   javac -version
                   echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Migrate Production DB
+            - name: Migrate Staging DB
               run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
               env:
                   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
