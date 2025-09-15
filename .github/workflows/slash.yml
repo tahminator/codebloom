@@ -13,7 +13,6 @@ permissions:
 jobs:
     slashCommandDispatch:
         runs-on: ubuntu-latest
-        needs:
 
         steps:
             - name: Slash Command Dispatch
