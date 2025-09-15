@@ -5,7 +5,3 @@ export const newAnnouncementSchema = z.object({
   showTimer: z.boolean(),
   expiresAt: z.string(),
 });
-
-export const disableAnnouncementSchema = z.object({
-  id: z.string().min(1, "Announcement ID is required"),
-});
