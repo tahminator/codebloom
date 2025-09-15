@@ -1,6 +1,7 @@
 import { useDeleteAnnouncementMutation } from "@/lib/api/queries/admin";
 import { Modal, Text, Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { FormEvent } from "react";
 
 export default function DeleteAnnouncementModal({
   id,
@@ -13,7 +14,9 @@ export default function DeleteAnnouncementModal({
 }) {
   const { mutate, status } = useDeleteAnnouncementMutation();
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     mutate(
       { id: id },
       {
