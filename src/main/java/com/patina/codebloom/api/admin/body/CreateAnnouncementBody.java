@@ -1,6 +1,6 @@
 package com.patina.codebloom.api.admin.body;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,7 +20,7 @@ public class CreateAnnouncementBody {
     private String message;
 
     @NotNull
-    private LocalDateTime expiresAt;
+    private OffsetDateTime expiresAt;
 
     private boolean showTimer;
 }

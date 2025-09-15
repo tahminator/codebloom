@@ -179,3 +179,34 @@ async function createAnnouncement({
 
   return (await response.json()) as UnknownApiResponse<Announcement>;
 }
+
+/**
+ * Disable the current announcement.
+ */
+export const useDeleteAnnouncementMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAnnouncement,
+    onSuccess: async (data) => {
+      if (data.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["announcement"],
+        });
+      }
+    },
+  });
+};
+
+async function deleteAnnouncement({ id }: { id: string }) {
+  const response = await fetch("/api/admin/announcement/disable", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id,
+    }),
+  });
+
+  return (await response.json()) as UnknownApiResponse<string>;
+}

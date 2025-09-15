@@ -1,7 +1,6 @@
 package com.patina.codebloom.api.admin;
 
-import java.time.LocalDateTime;
-
+import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +24,7 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -136,16 +136,19 @@ public class AdminController {
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
-        boolean isInFuture = LocalDateTime.now().isBefore(createAnnouncementBody.getExpiresAt());
+        OffsetDateTime nowWithOffset = StandardizedOffsetDateTime.now();
+        OffsetDateTime expiresAtWithOffset = StandardizedOffsetDateTime.normalize(createAnnouncementBody.getExpiresAt());
+        boolean isInFuture = nowWithOffset.isBefore(expiresAtWithOffset);
 
         if (!isInFuture) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The expiration date must be in the future.");
         }
 
         Announcement announcement = Announcement.builder()
-                        .expiresAt(createAnnouncementBody.getExpiresAt())
+                        .expiresAt(expiresAtWithOffset)
                         .showTimer(createAnnouncementBody.isShowTimer())
                         .message(createAnnouncementBody.getMessage())
+                        .createdAt(nowWithOffset)
                         .build();
 
         boolean isSuccessful = announcementRepository.createAnnouncement(announcement);
@@ -171,7 +174,8 @@ public class AdminController {
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
         }
-        announcement.setExpiresAt(LocalDateTime.now());
+        OffsetDateTime nowWithOffset = StandardizedOffsetDateTime.now();
+        announcement.setExpiresAt(nowWithOffset);
         boolean updatedAnnouncement = announcementRepository.updateAnnouncement(announcement);
 
         if (!updatedAnnouncement) {

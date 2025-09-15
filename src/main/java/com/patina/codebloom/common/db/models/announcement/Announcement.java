@@ -1,6 +1,6 @@
 package com.patina.codebloom.common.db.models.announcement;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -21,11 +21,11 @@ public class Announcement {
     private String id;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @NotNull
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private LocalDateTime expiresAt;
+    private OffsetDateTime expiresAt;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private boolean showTimer;
