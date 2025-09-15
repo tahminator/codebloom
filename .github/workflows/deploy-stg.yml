@@ -203,7 +203,7 @@ jobs:
                   fi
 
     validateDBSchema:
-        name: Validate DB Schema
+        name: Validate DB Schema on Staging DB
         runs-on: ubuntu-latest
         needs: frontendTests
         environment: staging
@@ -266,8 +266,6 @@ jobs:
         runs-on: ubuntu-latest
         needs: validateDBSchema
         environment: staging
-
-        if: github.ref_name == 'main'
 
         env:
             SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
