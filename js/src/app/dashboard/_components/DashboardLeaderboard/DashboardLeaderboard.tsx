@@ -2,11 +2,11 @@ import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardL
 import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
-import { useAuthQuery } from "@/lib/api/queries/auth";
 import {
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
 } from "@/lib/api/queries/leaderboard";
+import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
 import { theme } from "@/lib/theme";
 import {
@@ -26,23 +26,40 @@ import { Link } from "react-router-dom";
 
 export default function LeaderboardForDashboard({
   userId,
+  userTags,
 }: {
   userId: string;
+  userTags: UserTag[];
 }) {
   // Hack to fix a race condition.
   useFixMyPointsPrefetch({ userId });
 
-  const leaderboardQuery = useCurrentLeaderboardUsersQuery({
+  const {
+    data,
+    status,
+    patina,
+    togglePatina,
+    hunter,
+    toggleHunter,
+    nyu,
+    toggleNyu,
+    baruch,
+    toggleBaruch,
+    rpi,
+    toggleRpi,
+    gwc,
+    toggleGwc,
+    isPlaceholderData,
+  } = useCurrentLeaderboardUsersQuery({
     pageSize: 5,
     tieToUrl: false,
   });
-  const userQuery = useAuthQuery();
 
-  if (leaderboardQuery.status === "pending" || userQuery.status === "pending") {
+  if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
   }
 
-  if (leaderboardQuery.status === "error" || userQuery.status === "error") {
+  if (status === "error") {
     return (
       <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
@@ -60,7 +77,7 @@ export default function LeaderboardForDashboard({
     );
   }
 
-  if (!leaderboardQuery.data.success || !userQuery.data.user) {
+  if (!data.success) {
     return (
       <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
         <Flex
@@ -71,16 +88,14 @@ export default function LeaderboardForDashboard({
           h={"100%"}
         >
           <Title order={6} ta={"center"}>
-            {leaderboardQuery.data.success && leaderboardQuery.data.message}
-            {!userQuery.data.user}
+            {data.message}
           </Title>
         </Flex>
       </Card>
     );
   }
 
-  const leaderboardData = leaderboardQuery.data.payload;
-  const userTags = userQuery.data.user!.tags;
+  const leaderboardData = data.payload;
 
   if (leaderboardData.items.length == 0) {
     return (
@@ -119,20 +134,20 @@ export default function LeaderboardForDashboard({
       <FilterTagsControl
         tags={filteredTags}
         flags={{
-          Patina: leaderboardQuery.patina,
-          Hunter: leaderboardQuery.hunter,
-          Nyu: leaderboardQuery.nyu,
-          Baruch: leaderboardQuery.baruch,
-          Rpi: leaderboardQuery.rpi,
-          Gwc: leaderboardQuery.gwc,
+          Patina: patina,
+          Hunter: hunter,
+          Nyu: nyu,
+          Baruch: baruch,
+          Rpi: rpi,
+          Gwc: gwc,
         }}
         flagsToggle={{
-          Patina: leaderboardQuery.togglePatina,
-          Hunter: leaderboardQuery.toggleHunter,
-          Nyu: leaderboardQuery.toggleNyu,
-          Baruch: leaderboardQuery.toggleBaruch,
-          Rpi: leaderboardQuery.toggleRpi,
-          Gwc: leaderboardQuery.toggleGwc,
+          Patina: togglePatina,
+          Hunter: toggleHunter,
+          Nyu: toggleNyu,
+          Baruch: toggleBaruch,
+          Rpi: toggleRpi,
+          Gwc: toggleGwc,
         }}
       />
       {!inTop5 && (
@@ -142,7 +157,7 @@ export default function LeaderboardForDashboard({
         </>
       )}
       <Flex direction={"column"} gap={"md"} m={"xs"}>
-        {leaderboardQuery.isPlaceholderData && (
+        {isPlaceholderData && (
           <Overlay
             zIndex={1000}
             backgroundOpacity={0.55}

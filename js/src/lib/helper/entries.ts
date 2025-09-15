@@ -10,4 +10,3 @@ export function typedEntries<T extends Record<PropertyKey, unknown>>(
 ): Array<Tuple<T>> {
   return Object.entries(obj) as Array<Tuple<T>>;
 }
-
