@@ -189,7 +189,7 @@ export const useDeleteAnnouncementMutation = () => {
     mutationFn: deleteAnnouncement,
     onSuccess: async (data) => {
       if (data.success) {
-        await queryClient.invalidateQueries({
+        queryClient.invalidateQueries({
           queryKey: ["announcement"],
         });
       }
