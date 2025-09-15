@@ -29,12 +29,58 @@ jobs:
                           repo: context.repo.repo,
                           pull_number: parseInt(prId, 10)
                       });
-                      return pr.head.sha;
+                       return pr.head.sha;
+
+    checkExistingImage:
+        name: Check if image already exists
+        runs-on: ubuntu-latest
+        needs: getPRHead
+        outputs:
+            image-exists: ${{ steps.check-image.outputs.exists }}
+            git-sha: ${{ steps.set-sha.outputs.sha }}
+        steps:
+            - name: Set SHA
+              id: set-sha
+              run: echo "sha=${{ needs.getPRHead.outputs.sha }}" | cut -c1-7 >> $GITHUB_OUTPUT
+
+            - name: Check if Docker image exists
+              id: check-image
+              run: |
+                  SHA7=$(echo "${{ needs.getPRHead.outputs.sha }}" | cut -c1-7)
+                  if docker manifest inspect tahminator/codebloom:staging-$SHA7 > /dev/null 2>&1; then
+                      echo "exists=true" >> $GITHUB_OUTPUT
+                      echo "Image staging-$SHA7 already exists"
+                  else
+                      echo "exists=false" >> $GITHUB_OUTPUT
+                      echo "Image staging-$SHA7 does not exist"
+                  fi
+
+    promoteExisting:
+        name: Promote existing image to staging-latest
+        runs-on: ubuntu-latest
+        needs: [getPRHead, checkExistingImage]
+        if: needs.checkExistingImage.outputs.image-exists == 'true'
+        steps:
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  registry: docker.io
+                  username: tahminator
+                  password: ${{ secrets.DOCKER_HUB_PAT }}
+
+            - name: Promote existing image
+              run: |
+                  SHA7=${{ needs.checkExistingImage.outputs.git-sha }}
+                  docker pull tahminator/codebloom:staging-$SHA7
+                  docker tag tahminator/codebloom:staging-$SHA7 tahminator/codebloom:staging-latest
+                  docker push tahminator/codebloom:staging-latest
+                  echo "Promoted staging-$SHA7 to staging-latest"
 
     sendMessage:
         name: Send deploying to staging message
         runs-on: ubuntu-latest
-        needs: getPRHead
+        needs: [getPRHead, checkExistingImage]
+        if: needs.checkExistingImage.outputs.image-exists == 'false'
 
         steps:
             - name: Comment on PR
@@ -55,7 +101,8 @@ jobs:
     backendTests:
         name: Backend Tests
         runs-on: ubuntu-latest
-        needs: [sendMessage, getPRHead]
+        needs: [sendMessage, checkExistingImage]
+        if: needs.checkExistingImage.outputs.image-exists == 'false'
 
         env:
             DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
@@ -127,7 +174,8 @@ jobs:
     frontendTests:
         name: Frontend Tests
         runs-on: ubuntu-latest
-        needs: [backendTests, getPRHead]
+        needs: [backendTests, checkExistingImage]
+        if: needs.checkExistingImage.outputs.image-exists == 'false'
 
         steps:
             - name: Checkout Repository
@@ -232,7 +280,8 @@ jobs:
     validateDBSchema:
         name: Validate DB Schema on Staging DB
         runs-on: ubuntu-latest
-        needs: [frontendTests, getPRHead]
+        needs: [frontendTests, checkExistingImage]
+        if: needs.checkExistingImage.outputs.image-exists == 'false'
         environment: staging
 
         env:
@@ -293,7 +342,8 @@ jobs:
     buildImage:
         name: Build Docker Image & Upload to Registry
         runs-on: ubuntu-latest
-        needs: [validateDBSchema, getPRHead]
+        needs: [validateDBSchema, checkExistingImage]
+        if: needs.checkExistingImage.outputs.image-exists == 'false'
         environment: staging
 
         env:
@@ -427,10 +477,9 @@ jobs:
     redeploy:
         name: Redeploy on DigitalOcean
         runs-on: ubuntu-latest
-        needs: [buildImage, getPRHead]
+        needs: [buildImage, promoteExisting, getPRHead]
+        if: always() && (needs.buildImage.result == 'success' || needs.promoteExisting.result == 'success') && github.ref_name == 'main'
         environment: staging
-
-        if: github.ref_name == 'main'
 
         steps:
             - name: Checkout Repository
