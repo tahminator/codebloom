@@ -102,7 +102,7 @@ jobs:
                   echo "Promoted staging-$SHA7 to staging-latest"
 
     backendCompileTest:
-        name: backendCompileTest
+        name: Backend compile test
         runs-on: ubuntu-latest
         needs: [getPRHead, checkExistingImage]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
@@ -127,7 +127,7 @@ jobs:
                   echo "JAVA_HOME=$JAVA_HOME"
 
             - name: Verify that there are no compile time errors in the backend
-              run: /mvnw -B verify -Dmaven.test.skip=true --no-transfer-progress -Denv.SKIP=true
+              run: ./mvnw -B verify -Dmaven.test.skip=true --no-transfer-progress -Denv.SKIP=true
 
     backendTests:
         name: Backend Tests
