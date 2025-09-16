@@ -12,8 +12,8 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    backendCompileTest:
-        name: Backend Compile Test
+    backendPreTest:
+        name: Backend Compile Test & Migrate CI DB
         runs-on: ubuntu-latest
 
         steps:
@@ -35,6 +35,15 @@ jobs:
 
             - name: Verify that there are no compile time errors in the backend
               run: ./mvnw -B verify -Dmaven.test.skip=true --no-transfer-progress -Denv.SKIP=true
+
+            - name: Run migration on CI DB
+              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
+              env:
+                  DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+                  DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+                  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+                  DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+                  DATABASE_USER: ${{ secrets.DATABASE_USER }}
 
     backendTests:
         name: Backend Tests
@@ -99,9 +108,6 @@ jobs:
 
             - name: Ensure browsers are installed
               run: ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps firefox"
-
-            - name: Run migration on CI DB
-              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db
 
             - name: Run Tests
               run: ./mvnw test -Denv.SKIP=true -Dspring.profiles.active=ci
