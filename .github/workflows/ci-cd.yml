@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
     backendCompileTest:
-        name: Backend compile test
+        name: Backend Compile Test
         runs-on: ubuntu-latest
 
         steps:
