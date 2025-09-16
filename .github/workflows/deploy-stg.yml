@@ -66,7 +66,7 @@ jobs:
         steps:
             - name: Set SHA
               id: set-sha
-              run: echo "sha=${{ needs.getPRHead.outputs.sha }}" | cut -c1-7 >> $GITHUB_OUTPUT
+              run: echo "sha=$(echo "${{ needs.getPRHead.outputs.sha }}" | cut -c1-7)" >> $GITHUB_OUTPUT
 
             - name: Check if Docker image exists
               id: check-image
