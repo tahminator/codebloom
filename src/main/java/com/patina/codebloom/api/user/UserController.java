@@ -67,7 +67,7 @@ public class UserController {
                     These questions are guaranteed to be completed by the user.
                     """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    @GetMapping("{userId}/submissions")
+    @GetMapping("{leetcodeUsername}/submissions")
     public ResponseEntity<ApiResponder<Page<ArrayList<Question>>>> getAllQuestionsForUser(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
