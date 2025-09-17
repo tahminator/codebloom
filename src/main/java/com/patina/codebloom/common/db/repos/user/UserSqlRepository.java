@@ -391,4 +391,52 @@ public class UserSqlRepository implements UserRepository {
             throw new RuntimeException("Failed to delete user by id", e);
         }
     }
+
+    @Override
+    public UserWithScore getUserWithScoreByLeetcodeUsername(final String userLeetcodeUsername, final String leaderboardId) {
+        String sql = """
+                            SELECT
+                                u.id,
+                                u."discordId",
+                                u."discordName",
+                                u."leetcodeUsername",
+                                u.nickname,
+                                u.admin,
+                                u."profileUrl",
+                                m."totalScore"
+                            FROM
+                                "User" u
+                            JOIN "Metadata" m ON m."userLeetcodeUsername" = u.leetcodeUsername
+                            WHERE
+                                u.leetcodeUsername = ?
+                                AND
+                                m."leaderboardId" = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(userLeetcodeUsername));
+            stmt.setObject(2, UUID.fromString(leaderboardId));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    var id = rs.getString("id");
+                    var discordId = rs.getString("discordId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
+                    var profileUrl = rs.getString("profileUrl");
+                    var totalScore = rs.getInt("totalScore");
+
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, totalScore, tags);
+                    return userWithScore;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get user with score by leetcode username", e);
+        }
+
+        return null;
+    }
 }

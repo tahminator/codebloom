@@ -30,4 +30,6 @@ public interface UserRepository {
     boolean userExistsByLeetcodeUsername(String leetcodeUsername);
 
     boolean deleteUserById(String id);
+
+    UserWithScore getUserWithScoreByLeetcodeUsername(String userLeetcodeUsername, String leaderboardId);
 }
