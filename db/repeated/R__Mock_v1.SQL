@@ -52,7 +52,7 @@ BEGIN
             ('4c5b86a3-4108-4d92-91a6-bad8bc96b376', '123456789012345684', 'frostfirex', 'sofia_garcia', NULL),
             ('39412388-3b4d-47db-97b2-8ec826f34b50', '234567890123456789', 'darkvortex', 'victor_johnson', NULL),
             ('d8f6ecf0-cb98-43d6-bb87-8d0d9b709f50', '567890123456789016', 'lightbringer88', NULL, 'Elijah'),
-            ('e8c65f44-3839-45ed-a032-7221cb8d14fe', '678901234567890127', 'echohunter', 'lucas_brown', 'Zoe'),
+            ('e8c65f44-3839-45ed-a032-7221cb8d14fe', '678901234567890127', 'echohunter', 'mitchell_brown', 'Zoe'),
             ('af6b8f7c-0f70-4787-94b9-7d52b7f64a60', '890123456789012350', 'tigerclaw99', 'maggie_lee', NULL),
             ('51592f3b-f26b-4ff1-bd0f-4e579b5a9882', '012345678901234571', 'lightningstorm', 'anna_martin', 'Nathan'),
             ('c4a90a22-d6ae-48e5-9334-c83fc0537fd3', '123456789012345685', 'starcatcher', NULL, 'Victoria'),
