@@ -11,5 +11,7 @@ public enum Tag {
     Rpi,
     Gwc,
     Sbu,
+    Ccny,
+    Columbia,
 }
 
