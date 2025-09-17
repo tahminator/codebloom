@@ -9,7 +9,7 @@ public enum SchoolEnum {
     RPI("@rpi.edu", Tag.Rpi),
     SBU("@stonybrook.edu", Tag.Sbu),
     CCNY("@ccny.cuny.edu", Tag.Ccny),
-    COLUMBIA("@columbia.edu",Tag.Columbia);
+    COLUMBIA("@columbia.edu", Tag.Columbia);
 
     private final String emailDomain;
     private final Tag internalTag;
