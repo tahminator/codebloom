@@ -268,8 +268,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (:nyu = TRUE AND ut.tag = 'Nyu') OR
                                         (:baruch = TRUE AND ut.tag = 'Baruch') OR
                                         (:rpi = TRUE AND ut.tag = 'Rpi') OR
-                                        (:gwc = TRUE AND ut.tag = 'Gwc')
-
+                                        (:gwc = TRUE AND ut.tag = 'Gwc') OR
+                                        (:sbu = TRUE AND ut.tag = 'Sbu')
                                     )
                                     AND (
                                         -- Any tag is valid for current leaderboard
@@ -280,7 +280,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE )
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE  AND :sbu = FALSE )
                             )
                         )
                         SELECT
@@ -308,6 +308,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("baruch", options.isBaruch());
             stmt.setBoolean("rpi", options.isRpi());
             stmt.setBoolean("gwc", options.isGwc());
+            stmt.setBoolean("sbu", options.isSbu());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -362,7 +363,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (:nyu = TRUE AND ut.tag = 'Nyu') OR
                                     (:baruch = TRUE AND ut.tag = 'Baruch') OR
                                     (:rpi = TRUE AND ut.tag = 'Rpi') OR
-                                    (:gwc = TRUE AND ut.tag = 'Gwc')
+                                    (:gwc = TRUE AND ut.tag = 'Gwc') OR
+                                    (:sbu = TRUE AND ut.tag = 'Sbu')
                                 )
                                 AND (
                                     -- Any tag is valid for current leaderboard
@@ -373,7 +375,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
-                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE)
+                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE  AND :sbu = FALSE )
                         )
                         AND
                             (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
@@ -401,6 +403,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("baruch", options.isBaruch());
             stmt.setBoolean("rpi", options.isRpi());
             stmt.setBoolean("gwc", options.isGwc());
+            stmt.setBoolean("sbu", options.isSbu());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
             stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
@@ -449,7 +452,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (:nyu = TRUE AND ut.tag = 'Nyu') OR
                                     (:baruch = TRUE AND ut.tag = 'Baruch') OR
                                     (:rpi = TRUE AND ut.tag = 'Rpi') OR
-                                    (:gwc = TRUE AND ut.tag = 'Gwc')
+                                    (:gwc = TRUE AND ut.tag = 'Gwc') OR 
+                                    (:sbu = TRUE AND ut.tag = 'Sbu')
                                 )
                                 AND (
                                     -- Any tag is valid for current leaderboard
@@ -460,7 +464,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
-                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE)
+                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE  AND :sbu = FALSE )
                         )
                         AND
                             (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
@@ -489,6 +493,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("baruch", options.isBaruch());
             stmt.setBoolean("rpi", options.isRpi());
             stmt.setBoolean("gwc", options.isGwc());
+            stmt.setBoolean("sbu", options.isSbu());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
             stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
@@ -615,7 +620,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (:nyu = TRUE AND ut.tag = 'Nyu') OR
                                         (:baruch = TRUE AND ut.tag = 'Baruch') OR
                                         (:rpi = TRUE AND ut.tag = 'Rpi') OR
-                                        (:gwc = TRUE AND ut.tag = 'Gwc')
+                                        (:gwc = TRUE AND ut.tag = 'Gwc') OR
+                                        (:sbu = TRUE AND ut.tag = 'Sbu')
                                     )
                                     AND (
                                         -- Any tag is valid for current leaderboard
@@ -626,7 +632,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE)
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE  AND :sbu = FALSE )
                             )
                             AND
                                 (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
@@ -638,6 +644,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("baruch", options.isBaruch());
             stmt.setBoolean("rpi", options.isRpi());
             stmt.setBoolean("gwc", options.isGwc());
+            stmt.setBoolean("sbu", options.isSbu());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -678,7 +685,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (:nyu = TRUE AND ut.tag = 'Nyu') OR
                                         (:baruch = TRUE AND ut.tag = 'Baruch') OR
                                         (:rpi = TRUE AND ut.tag = 'Rpi') OR
-                                        (:gwc = TRUE AND ut.tag = 'Gwc')
+                                        (:gwc = TRUE AND ut.tag = 'Gwc') OR
+                                        (:sbu = TRUE AND ut.tag = 'Sbu')
                                     )
                                     AND (
                                         -- Any tag is valid for current leaderboard
@@ -689,7 +697,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE)
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE  AND :sbu = FALSE )
                             )
                             AND
                                 (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
@@ -702,6 +710,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("baruch", options.isBaruch());
             stmt.setBoolean("rpi", options.isRpi());
             stmt.setBoolean("gwc", options.isGwc());
+            stmt.setBoolean("sbu", options.isSbu());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
