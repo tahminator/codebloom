@@ -280,7 +280,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE  AND :sbu = FALSE )
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE )
                             )
                         )
                         SELECT
