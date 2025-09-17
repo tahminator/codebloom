@@ -101,7 +101,7 @@ public class LeaderboardController {
 
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
-        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu )) {
+        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu)) {
             leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
                             leaderboardId, options);
         } else {
