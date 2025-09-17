@@ -10,5 +10,6 @@ public enum Tag {
     Baruch,
     Rpi,
     Gwc,
+    Sbu,
 }
 
