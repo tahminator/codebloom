@@ -282,7 +282,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE )
+                                OR (
+                                    :patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND
+                                    :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND
+                                    :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
+                                )
                             )
                         )
                         SELECT
@@ -380,8 +384,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
-                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE )
-                        )
+                                OR (
+                                    :patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND
+                                    :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND
+                                    :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
+                                )
                         AND
                             (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
                         ORDER BY
@@ -473,8 +480,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                     (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                 )
                             )
-                            OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE)
-                        )
+                                OR (
+                                    :patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND
+                                    :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND
+                                    :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
+                                )
                         AND
                             (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
                         ORDER BY
@@ -645,8 +655,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE)
-                            )
+                                OR (
+                                    :patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND
+                                    :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND
+                                    :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
+                                )
                             AND
                                 (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
                         """;
@@ -714,7 +727,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                         (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
                                     )
                                 )
-                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE )
+                                OR (
+                                    :patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND
+                                    :baruch = FALSE AND :rpi = FALSE AND :gwc = FALSE AND
+                                    :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
+                                )
                             )
                             AND
                                 (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
