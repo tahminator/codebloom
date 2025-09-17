@@ -1,4 +1,5 @@
 package com.patina.codebloom.common.schools;
+
 import com.patina.codebloom.common.db.models.usertag.Tag;
 
 public enum SchoolEnum {
@@ -6,7 +7,7 @@ public enum SchoolEnum {
     NYU("@nyu.edu", Tag.Nyu),
     BARUCH("@baruchmail.cuny.edu", Tag.Baruch),
     RPI("@rpi.edu", Tag.Rpi),
-    SBU("@stonybrook.edu", Tag.Sbu );
+    SBU("@stonybrook.edu", Tag.Sbu);
 
     private final String emailDomain;
     private final Tag internalTag;
@@ -19,6 +20,7 @@ public enum SchoolEnum {
     public String getEmailDomain() {
         return emailDomain;
     }
+
     public Tag getInternalTag() {
         return internalTag;
     }
