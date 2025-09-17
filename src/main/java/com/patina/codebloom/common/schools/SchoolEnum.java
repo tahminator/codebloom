@@ -5,7 +5,8 @@ public enum SchoolEnum {
     HUNTER("@myhunter.cuny.edu", Tag.Hunter),
     NYU("@nyu.edu", Tag.Nyu),
     BARUCH("@baruchmail.cuny.edu", Tag.Baruch),
-    RPI("@rpi.edu", Tag.Rpi);
+    RPI("@rpi.edu", Tag.Rpi),
+    SBU("@stonybrook.edu", Tag.Sbu );
 
     private final String emailDomain;
     private final Tag internalTag;
