@@ -30,6 +30,8 @@ public class LeaderboardFilterOptions {
     private final boolean rpi = false;
     @Builder.Default
     private final boolean gwc = false;
+    @Builder.Default
+    private final boolean sbu = false;
     public static final LeaderboardFilterOptions DEFAULT = LeaderboardFilterOptions.builder()
                     .build();
 }
