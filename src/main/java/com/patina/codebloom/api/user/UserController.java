@@ -49,7 +49,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User profile has not been found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "200", description = "User profile has been found")
     })
-    @GetMapping("{userId}/profile")
+    @GetMapping("{leetcodeUsername}/profile")
     public ResponseEntity<ApiResponder<User>> getUserProfileByUserId(final HttpServletRequest request, @PathVariable final String userId) {
         FakeLag.sleep(650);
 
