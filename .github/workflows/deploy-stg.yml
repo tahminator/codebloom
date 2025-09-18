@@ -141,7 +141,7 @@ jobs:
     backendTests:
         name: Backend Tests
         runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendCompileTest]
+        needs: [getPRHead, checkExistingImage, backendPreTest]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
 
         env:
@@ -211,7 +211,7 @@ jobs:
     frontendTests:
         name: Frontend Tests
         runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendCompileTest]
+        needs: [getPRHead, checkExistingImage, backendPreTest]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
 
         steps:
@@ -317,7 +317,7 @@ jobs:
     validateDBSchema:
         name: Validate DB Schema on Staging DB
         runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendCompileTest]
+        needs: [getPRHead, checkExistingImage, backendPreTest]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
         environment: staging
 
@@ -386,7 +386,7 @@ jobs:
                 frontendTests,
                 backendTests,
                 validateDBSchema,
-                backendCompileTest,
+                backendPreTest,
             ]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
         environment: staging
@@ -598,7 +598,7 @@ jobs:
                 checkExistingImage,
                 sendMessage,
                 backendTests,
-                backendCompileTest,
+                backendPreTest,
                 frontendTests,
                 validateDBSchema,
                 buildImage,
