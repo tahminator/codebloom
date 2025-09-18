@@ -152,7 +152,7 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc,
                     @Parameter(description = "Filter for SBU users") @RequestParam(required = false, defaultValue = "false") final boolean sbu,
                     @Parameter(description = "Filter for CCNY users") @RequestParam(required = false, defaultValue = "false") final boolean ccny,
-                    @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia,                   
+                    @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia,
                     @Parameter(description = "Enable global leaderboard index") @RequestParam(required = false, defaultValue = "false") final boolean globalIndex) {
         FakeLag.sleep(800);
 
