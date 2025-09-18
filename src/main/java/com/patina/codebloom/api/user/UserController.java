@@ -43,6 +43,20 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    @Operation(summary = "DEPRECATED USE {leetcodeUsername}/profile INSTEAD", description = "Fetch a user by their ID (deprecated). Use the new endpoint instead.")
+    @GetMapping("{userId}/profile")
+    public ResponseEntity<ApiResponder<User>> getUserProfileByUserId(final HttpServletRequest request, @PathVariable final String userId) {
+        FakeLag.sleep(650);
+
+        User user = userRepository.getUserById(userId);
+
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find user profile.");
+        }
+
+        return ResponseEntity.ok().body(ApiResponder.success("User profile found!", user));
+    }
+
     @Operation(summary = "Public route that returns the given user's profile", description = """
                         Unprotected endpoint that returns the user profile of the user ID that is passed to the endpoint's path.
                     """, responses = {
@@ -50,10 +64,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User profile has been found")
     })
     @GetMapping("{leetcodeUsername}/profile")
-    public ResponseEntity<ApiResponder<User>> getUserProfileByUserId(final HttpServletRequest request, @PathVariable final String userId) {
+    public ResponseEntity<ApiResponder<User>> getUserProfileByLeetcodeUsername(final HttpServletRequest request, @PathVariable final String leetcodeUsername) {
         FakeLag.sleep(650);
 
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.getUserByLeetcodeUsername(leetcodeUsername);
 
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find user profile.");

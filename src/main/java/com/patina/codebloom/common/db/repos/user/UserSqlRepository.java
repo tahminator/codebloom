@@ -88,6 +88,35 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
+    public User getUserByLeetcodeUsername(final String inputLeetcodeUsername) {
+        User user = null;
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\", admin, \"profileUrl\" FROM \"User\" WHERE leetcodeUsername=?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, inputLeetcodeUsername);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    var id = rs.getString("id");
+                    var discordId = rs.getString("discordId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
+                    var admin = rs.getBoolean("admin");
+                    var profileUrl = rs.getString("profileUrl");
+                    var tags = userTagRepository.findTagsByUserId(id);
+
+                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags);
+                    return user;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving user", e);
+        }
+
+        return user;
+    }
+
+    @Override
     public User getUserByDiscordId(final String inputDiscordId) {
         User user = null;
         String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\", admin, \"profileUrl\" FROM \"User\" WHERE \"discordId\"=?";
@@ -414,7 +443,7 @@ public class UserSqlRepository implements UserRepository {
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userLeetcodeUsername));
+            stmt.setObject(1, userLeetcodeUsername);
             stmt.setObject(2, UUID.fromString(leaderboardId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
