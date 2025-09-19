@@ -13,7 +13,7 @@ export const useToggleAdminMutation = () => {
     mutationFn: toggleUserAdmin,
     onMutate: async (newData) => {
       const { userId, toggleTo, metadata } = newData;
-      await queryClient.cancelQueries({
+      queryClient.cancelQueries({
         queryKey: ["user", "all", metadata.page, metadata.debouncedQuery],
       });
 
@@ -135,7 +135,7 @@ export const useCreateLeaderboardMutation = () => {
     mutationFn: createLeaderboard,
     onSuccess: async (data) => {
       if (data.success) {
-        await queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+        queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
       }
     },
   });
@@ -150,7 +150,7 @@ export const useCreateAnnouncementLeaderboardMutation = () => {
     mutationFn: createAnnouncement,
     onSuccess: async (data) => {
       if (data.success) {
-        await queryClient.invalidateQueries({ queryKey: ["announcement"] });
+        queryClient.invalidateQueries({ queryKey: ["announcement"] });
       }
     },
   });
