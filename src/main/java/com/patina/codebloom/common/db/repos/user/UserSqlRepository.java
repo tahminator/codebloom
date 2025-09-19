@@ -90,7 +90,7 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public User getUserByLeetcodeUsername(final String inputLeetcodeUsername) {
         User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\", admin, \"profileUrl\" FROM \"User\" WHERE leetcodeUsername=?";
+        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", admin, \"profileUrl\" FROM \"User\" WHERE leetcodeUsername=?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, inputLeetcodeUsername);
