@@ -23,7 +23,7 @@ export const useVerifySchoolMutation = () => {
          * https://github.com/tahminator/codebloom/pull/256#issue-3286903003
          */
         setTimeout(async () => {
-          await queryClient.invalidateQueries();
+          queryClient.invalidateQueries();
         }, 100);
       }
     },
