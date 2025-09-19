@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @Operation(summary = "Public route that returns the given user's profile", description = """
-                        Unprotected endpoint that returns the user profile of the user ID that is passed to the endpoint's path.
+                        Unprotected endpoint that returns the user profile of the LeetCode username that is passed to the endpoint's path.
                     """, responses = {
             @ApiResponse(responseCode = "404", description = "User profile has not been found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "200", description = "User profile has been found")
