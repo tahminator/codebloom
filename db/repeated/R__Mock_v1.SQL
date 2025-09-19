@@ -99,7 +99,7 @@ BEGIN
             ('e8f3ad6d-68db-4e4c-bb12-45fe8852cfd4', '890123456789012358', 'frostfallx', NULL, 'Ava'),
             ('d970cc3f-3a21-431d-bd3e-91c270d4a3f2', '012345678901234580', 'darkphoenixx', 'jasmine_lee', 'Lily'),
             ('742d5c7d-4fe2-44c7-b36a-0f5a6e2efb79', '123456789012345694', 'ghosthunterx', NULL, 'Ethan'),
-            ('5a953746-f635-4f72-98ed-ffcd5763225f', '234567890123456798', 'starfire88', 'lucas_brown', 'Sophia'),
+            ('5a953746-f635-4f72-98ed-ffcd5763225f', '234567890123456798', 'starfire88', 'jackson_lin', 'Sophia'),
             ('b14e0204-7844-4b5a-9835-0fc47e81daae', '567890123456789025', 'darkflamex', NULL, 'Lucas'),
             ('48ff67e1-9277-4a0e-9390-e16fd4c07c69', '890123456789012359', 'lightkeeperx', 'olga_wilson', 'David'),
             ('6f6247e9-e7a7-4d2f-85a2-cbd58d57c3b9', '012345678901234581', 'mysticninjax', 'susan_garcia', 'Charlotte'),
