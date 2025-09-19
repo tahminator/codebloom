@@ -40,7 +40,7 @@ export default function UsernameForm() {
             color: success ? undefined : "red",
           });
           if (success) {
-            await queryClient.invalidateQueries({
+            queryClient.invalidateQueries({
               queryKey: ["auth"],
             });
             navigate("/dashboard");
