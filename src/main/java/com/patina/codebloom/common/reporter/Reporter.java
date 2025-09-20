@@ -35,7 +35,7 @@ public class Reporter {
             ps.flush();
             return baos.toString();
         } catch (Exception e) {
-            return ("Failed to capture stack trace: " + e.getMessage()).toString();
+            return "Failed to capture stack trace: " + e.getMessage();
         }
     }
 
