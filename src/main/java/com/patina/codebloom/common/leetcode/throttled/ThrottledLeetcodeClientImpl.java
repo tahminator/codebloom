@@ -13,6 +13,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
+import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 import io.github.bucket4j.Bandwidth;
@@ -44,8 +45,8 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
         }
     }
 
-    public ThrottledLeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer) {
-        super(leetcodeAuthStealer);
+    public ThrottledLeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer, final Reporter reporter) {
+        super(leetcodeAuthStealer, reporter);
         this.rateLimiter = initializeBucket();
     }
 

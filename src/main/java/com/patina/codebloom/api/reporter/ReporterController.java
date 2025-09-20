@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.patina.codebloom.api.reporter.body.IngestErrorsBody;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
-import com.patina.codebloom.common.reporter.ErrorReporter;
+import com.patina.codebloom.common.reporter.Reporter;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -19,9 +19,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Error reporting route", description = "This controller allows the frontend to report any runtime errors, which will then be ingested by the server.")
 @RequestMapping("/api/reporting")
 public class ReporterController {
-    private final ErrorReporter errorReporter;
+    private final Reporter errorReporter;
 
-    public ReporterController(final ErrorReporter errorReporter) {
+    public ReporterController(final Reporter errorReporter) {
         this.errorReporter = errorReporter;
     }
 

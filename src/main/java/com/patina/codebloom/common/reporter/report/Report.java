@@ -18,5 +18,5 @@ public class Report {
     @Builder.Default
     private Location location = Location.UNKNOWN;
     @Builder.Default
-    private byte[] stackTrace = "N/A".getBytes(StandardCharsets.UTF_8);
+    private String data = "N/A";
 }

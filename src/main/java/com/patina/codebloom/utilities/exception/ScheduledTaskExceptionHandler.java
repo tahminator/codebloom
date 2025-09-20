@@ -8,20 +8,20 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 
 import com.patina.codebloom.common.env.Env;
-import com.patina.codebloom.common.reporter.ErrorReporter;
+import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.report.location.Location;
 
 /**
- * Add {@link ErrorReporter} to Spring Boot `@Scheduled` methods.
+ * Add {@link Reporter} to Spring Boot `@Scheduled` methods.
  */
 @Configuration
 public class ScheduledTaskExceptionHandler {
 
-    private final ErrorReporter errorReporter;
+    private final Reporter errorReporter;
     private final Env env;
 
-    public ScheduledTaskExceptionHandler(final ErrorReporter errorReporter, final Env env) {
+    public ScheduledTaskExceptionHandler(final Reporter errorReporter, final Env env) {
         this.errorReporter = errorReporter;
         this.env = env;
     }
@@ -36,10 +36,10 @@ public class ScheduledTaskExceptionHandler {
 
         scheduler.setErrorHandler(throwable -> {
             if (env.isProd()) {
-                errorReporter.report(Report.builder()
+                errorReporter.error(Report.builder()
                                 .environments(env.getActiveProfiles())
                                 .location(Location.BACKEND)
-                                .stackTrace(ErrorReporter.getStackTraceAsBytes(throwable))
+                                .data(Reporter.throwableToString(throwable))
                                 .build());
             }
 

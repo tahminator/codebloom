@@ -7,11 +7,10 @@ import com.patina.codebloom.jda.properties.JDAExtendedProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@ConfigurationProperties(prefix = "jda.discord.reporting")
+@ConfigurationProperties(prefix = "jda.discord.reporting.error")
 @Getter
 @AllArgsConstructor
-public class JDAReportingProperties implements JDAExtendedProperties {
+public class JDAErrorReportingProperties implements JDAExtendedProperties {
     private final Long guildId;
     private final Long channelId;
-
 }
