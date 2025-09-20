@@ -11,8 +11,6 @@ public interface UserRepository {
 
     User getUserById(String id);
 
-    User getUserByLeetcodeUsername(String leetcodeUsername);
-
     UserWithScore getUserWithScoreById(String userId, String leaderboardId);
 
     User getUserByDiscordId(String discordId);
@@ -32,6 +30,4 @@ public interface UserRepository {
     boolean userExistsByLeetcodeUsername(String leetcodeUsername);
 
     boolean deleteUserById(String id);
-
-    UserWithScore getUserWithScoreByLeetcodeUsername(String userLeetcodeUsername, String leaderboardId);
 }
