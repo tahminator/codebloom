@@ -33,6 +33,8 @@ import com.patina.codebloom.common.leetcode.queries.GetTopics;
 import com.patina.codebloom.common.leetcode.queries.GetUserProfile;
 import com.patina.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
 import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
+import com.patina.codebloom.common.reporter.Reporter;
+import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 @Component
@@ -44,12 +46,14 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     private final HttpClient client;
     private final LeetcodeAuthStealer leetcodeAuthStealer;
+    private final Reporter reporter;
 
-    public LeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer) {
+    public LeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer, final Reporter reporter) {
         this.client = HttpClient.newHttpClient();
         this.mapper = new ObjectMapper();
 
         this.leetcodeAuthStealer = leetcodeAuthStealer;
+        this.reporter = reporter;
     }
 
     /**
@@ -86,6 +90,17 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                reporter.log(Report.builder()
+                                .data(String.format("""
+                                                    Leetcode client failed to find question by slug due to status code of %d
+
+                                                    Slug: %s
+
+                                                    Body: %s
+
+                                                    Header(s): %s
+                                                """, statusCode, slug, body, response.headers().toString()))
+                                .build());
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
@@ -151,6 +166,17 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                reporter.log(Report.builder()
+                                .data(String.format("""
+                                                    Leetcode client failed to find submission by username due to status code of %d
+
+                                                    Username: %s
+
+                                                    Body: %s
+
+                                                    Header(s): %s
+                                                """, statusCode, username, body, response.headers().toString()))
+                                .build());
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
@@ -203,6 +229,17 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                reporter.log(Report.builder()
+                                .data(String.format("""
+                                                    Leetcode client failed to find submission detail by submission ID due to status code of %d
+
+                                                    Submission ID: %s
+
+                                                    Body: %s
+
+                                                    Header(s): %s
+                                                """, statusCode, submissionId, body, response.headers().toString()))
+                                .build());
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
@@ -248,6 +285,15 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                reporter.log(Report.builder()
+                                .data(String.format("""
+                                                    Leetcode client failed to get POTD due to status code of %d
+
+                                                    Body: %s
+
+                                                    Header(s): %s
+                                                """, statusCode, body, response.headers().toString()))
+                                .build());
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
@@ -283,6 +329,17 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                reporter.log(Report.builder()
+                                .data(String.format("""
+                                                    Leetcode client failed to get user profile by username due to status code of %d
+
+                                                    Username: %s
+
+                                                    Body: %s
+
+                                                    Header(s): %s
+                                                """, statusCode, username, body, response.headers().toString()))
+                                .build());
                 throw new RuntimeException("API Returned status " + statusCode + ": " + body);
             }
 
@@ -313,6 +370,15 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                reporter.log(Report.builder()
+                                .data(String.format("""
+                                                    Leetcode client failed to get all topic tags due to status code of %d
+
+                                                    Body: %s
+
+                                                    Header(s): %s
+                                                """, statusCode, body, response.headers().toString()))
+                                .build());
                 throw new RuntimeException("Non-successful response getting topics from Leetcode API. Status code: " + statusCode);
             }
 

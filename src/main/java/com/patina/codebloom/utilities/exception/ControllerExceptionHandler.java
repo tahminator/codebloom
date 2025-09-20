@@ -8,16 +8,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.env.Env;
-import com.patina.codebloom.common.reporter.ErrorReporter;
+import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.report.location.Location;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
-    private final ErrorReporter errorReporter;
+    private final Reporter errorReporter;
     private final Env env;
 
-    public ControllerExceptionHandler(final ErrorReporter errorReporter, final Env env) {
+    public ControllerExceptionHandler(final Reporter errorReporter, final Env env) {
         this.errorReporter = errorReporter;
         this.env = env;
     }
@@ -32,10 +32,10 @@ public class ControllerExceptionHandler {
         rx.printStackTrace();
 
         if (env.isProd() && ExcludedExceptions.isValid(rx)) {
-            errorReporter.report(Report.builder()
+            errorReporter.error(Report.builder()
                             .environments(env.getActiveProfiles())
                             .location(Location.BACKEND)
-                            .stackTrace(ErrorReporter.getStackTraceAsBytes(rx))
+                            .data(Reporter.throwableToString(rx))
                             .build());
         }
 

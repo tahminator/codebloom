@@ -10,33 +10,40 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
 import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 
+/**
+ * Can either report an error or log data that can only be viewed in Discord.
+ */
 @Component
-public class ErrorReporter {
+public class Reporter {
     private final JDAClient jdaClient;
 
-    public ErrorReporter(final JDAClient jdaClient) {
+    public Reporter(final JDAClient jdaClient) {
         this.jdaClient = jdaClient;
     }
 
     /**
-     * Convert the stacktrace of a {@linkplain Throwable} into an array of bytes.
+     * Convert the stacktrace of a {@linkplain Throwable} into a string.
      */
-    public static byte[] getStackTraceAsBytes(final Throwable throwable) {
+    public static String throwableToString(final Throwable throwable) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
             throwable.printStackTrace(ps);
             ps.flush();
-            return baos.toByteArray();
+            return baos.toString();
         } catch (Exception e) {
-            return ("Failed to capture stack trace: " + e.getMessage()).getBytes(StandardCharsets.UTF_8);
+            return ("Failed to capture stack trace: " + e.getMessage()).toString();
         }
     }
 
+    /**
+     * Report an error.
+     */
     @Async
-    public void report(final Report report) {
+    public void error(final Report report) {
         String description = String.format("""
                         An error occurred in Codebloom.
 
@@ -46,7 +53,7 @@ public class ErrorReporter {
 
                         Check attachment for stack trace.""",
                         report.getEnvironments(),
-                        StandardizedLocalDateTime.now().toString(),
+                        StandardizedOffsetDateTime.now().toString(),
                         report.getLocation().getResolvedName());
 
         jdaClient.sendEmbedWithImage(
@@ -57,8 +64,36 @@ public class ErrorReporter {
                                         .description(description)
                                         .color(Color.RED)
                                         .fileName("stacktrace.txt")
-                                        .fileBytes(report.getStackTrace())
+                                        .fileBytes(report.getData().getBytes())
                                         .build());
     }
 
+    /**
+     * Report a log.
+     */
+    @Async
+    public void log(final Report report) {
+        String description = String.format("""
+                        Log request has been triggered.
+
+                        Active environment(s): %s
+                        Current Time: %s
+                        Location: %s
+
+                        Check attachment for data.""",
+                        report.getEnvironments(),
+                        StandardizedLocalDateTime.now().toString(),
+                        report.getLocation().getResolvedName());
+
+        jdaClient.sendEmbedWithImage(
+                        EmbeddedMessageOptions.builder()
+                                        .guildId(jdaClient.getJdaReportingProperties().getGuildId())
+                                        .channelId(jdaClient.getJdaReportingProperties().getChannelId())
+                                        .title("Log")
+                                        .description(description)
+                                        .color(Color.BLUE)
+                                        .fileName("data.txt")
+                                        .fileBytes(report.getData().getBytes())
+                                        .build());
+    }
 }
