@@ -10,5 +10,8 @@ public enum Tag {
     Baruch,
     Rpi,
     Gwc,
+    Sbu,
+    Ccny,
+    Columbia,
 }
 
