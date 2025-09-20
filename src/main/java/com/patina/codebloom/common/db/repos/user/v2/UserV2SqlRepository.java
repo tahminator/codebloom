@@ -78,7 +78,7 @@ public class UserV2SqlRepository implements UserV2Repository {
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, userLeetcodeUsername);
+            stmt.setString(1, userLeetcodeUsername);
             stmt.setObject(2, UUID.fromString(leaderboardId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
