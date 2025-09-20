@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
-import com.patina.codebloom.common.db.repos.user.v2.UserV2Repository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
@@ -23,15 +23,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@Tag(name = "General user routes", description = "This controller is responsible for handling general user data, such as user profile, user submissions, and more.")
+@Tag(name = "General user routes (v2)", description = "This controller is responsible for handling general user data, such as user profile, user submissions, and more.")
 @RequestMapping("/api/user/v2")
 public class UserV2Controller {
     private final QuestionRepository questionRepository;
-    private final UserV2Repository userV2Repository;
+    private final UserRepository userRepository;
 
-    public UserV2Controller(final QuestionRepository questionRepository, final UserV2Repository userV2Repository) {
+    public UserV2Controller(final QuestionRepository questionRepository, final UserRepository userRepository) {
         this.questionRepository = questionRepository;
-        this.userV2Repository = userV2Repository;
+        this.userRepository = userRepository;
     }
 
     @Operation(summary = "Public route that returns the given user's profile", description = """
@@ -44,7 +44,7 @@ public class UserV2Controller {
     public ResponseEntity<ApiResponder<User>> getUserProfileByLeetcodeUsername(final HttpServletRequest request, @PathVariable final String leetcodeUsername) {
         FakeLag.sleep(650);
 
-        User user = userV2Repository.getUserByLeetcodeUsername(leetcodeUsername);
+        User user = userRepository.getUserByLeetcodeUsername(leetcodeUsername);
 
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find user profile.");
