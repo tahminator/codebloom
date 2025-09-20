@@ -70,7 +70,7 @@ public class UserV2SqlRepository implements UserV2Repository {
                                 m."totalScore"
                             FROM
                                 "User" u
-                            JOIN "Metadata" m ON m."userLeetcodeUsername" = u.leetcodeUsername
+                            JOIN "Metadata" m ON m."userLeetcodeUsername" = u."leetcodeUsername"
                             WHERE
                                 u."leetcodeUsername" = ?
                                 AND
