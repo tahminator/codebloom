@@ -58,8 +58,8 @@ public class Reporter {
 
         jdaClient.sendEmbedWithImage(
                         EmbeddedMessageOptions.builder()
-                                        .guildId(jdaClient.getJdaReportingProperties().getGuildId())
-                                        .channelId(jdaClient.getJdaReportingProperties().getChannelId())
+                                        .guildId(jdaClient.getJdaErrorReportingProperties().getGuildId())
+                                        .channelId(jdaClient.getJdaErrorReportingProperties().getChannelId())
                                         .title("Something went wrong!")
                                         .description(description)
                                         .color(Color.RED)
@@ -87,8 +87,8 @@ public class Reporter {
 
         jdaClient.sendEmbedWithImage(
                         EmbeddedMessageOptions.builder()
-                                        .guildId(jdaClient.getJdaReportingProperties().getGuildId())
-                                        .channelId(jdaClient.getJdaReportingProperties().getChannelId())
+                                        .guildId(jdaClient.getJdaLogReportingProperties().getGuildId())
+                                        .channelId(jdaClient.getJdaLogReportingProperties().getChannelId())
                                         .title("Log")
                                         .description(description)
                                         .color(Color.BLUE)

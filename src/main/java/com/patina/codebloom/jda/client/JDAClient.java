@@ -10,6 +10,7 @@ import com.patina.codebloom.jda.JDAInitializer;
 import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 import com.patina.codebloom.jda.properties.patina.JDAPatinaProperties;
 import com.patina.codebloom.jda.properties.reporting.JDAErrorReportingProperties;
+import com.patina.codebloom.jda.properties.reporting.JDALogReportingProperties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +36,19 @@ public class JDAClient {
     private final JDAPatinaProperties jdaPatinaProperties;
 
     @Getter
-    private final JDAErrorReportingProperties jdaReportingProperties;
+    private final JDAErrorReportingProperties jdaErrorReportingProperties;
+
+    @Getter
+    private final JDALogReportingProperties jdaLogReportingProperties;
 
     JDAClient(final JDAInitializer jdaInitializer,
                     final JDAPatinaProperties jdaPatinaProperties,
-                    final JDAErrorReportingProperties jdaReportingProperties) {
+                    final JDAErrorReportingProperties jdaReportingProperties,
+                    final JDALogReportingProperties jdaLogReportingProperties) {
         this.jdaInitializer = jdaInitializer;
         this.jdaPatinaProperties = jdaPatinaProperties;
-        this.jdaReportingProperties = jdaReportingProperties;
+        this.jdaErrorReportingProperties = jdaReportingProperties;
+        this.jdaLogReportingProperties = jdaLogReportingProperties;
     }
 
     private void isJdaReadyOrThrow() {
