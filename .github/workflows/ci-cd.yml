@@ -66,6 +66,8 @@ jobs:
             DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
             DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
             DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
+            DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
+            DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
             GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
             GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
             GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
@@ -159,6 +161,8 @@ jobs:
                   DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
                   DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
                   DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
+                  DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
+                  DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
                   GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
                   GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
                   GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
@@ -237,6 +241,8 @@ jobs:
             DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
             DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
             DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
+            DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
+            DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
             GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
             GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
             GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
@@ -324,6 +330,8 @@ jobs:
                   DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
                   DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
                   DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
+                  DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
+                  DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
                   GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
                   GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
                   GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
@@ -450,6 +458,8 @@ jobs:
                   DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
                   DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
                   DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
+                  DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
+                  DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
                   GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
                   GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
                   GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
