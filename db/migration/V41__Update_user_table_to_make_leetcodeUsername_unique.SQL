@@ -1,0 +1,1 @@
+ALTER TABLE "User" ADD CONSTRAINT unique_leetcode_username UNIQUE ("leetcodeUsername");
