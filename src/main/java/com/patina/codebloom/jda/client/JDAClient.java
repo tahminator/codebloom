@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.jda.JDAInitializer;
 import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 import com.patina.codebloom.jda.properties.patina.JDAPatinaProperties;
-import com.patina.codebloom.jda.properties.reporting.JDAReportingProperties;
+import com.patina.codebloom.jda.properties.reporting.JDAErrorReportingProperties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
  */
 @Component
 @Slf4j
-@EnableConfigurationProperties({ JDAPatinaProperties.class, JDAReportingProperties.class })
+@EnableConfigurationProperties({ JDAPatinaProperties.class, JDAErrorReportingProperties.class })
 public class JDAClient {
     private final JDAInitializer jdaInitializer;
     private JDA jda;
@@ -35,11 +35,11 @@ public class JDAClient {
     private final JDAPatinaProperties jdaPatinaProperties;
 
     @Getter
-    private final JDAReportingProperties jdaReportingProperties;
+    private final JDAErrorReportingProperties jdaReportingProperties;
 
     JDAClient(final JDAInitializer jdaInitializer,
                     final JDAPatinaProperties jdaPatinaProperties,
-                    final JDAReportingProperties jdaReportingProperties) {
+                    final JDAErrorReportingProperties jdaReportingProperties) {
         this.jdaInitializer = jdaInitializer;
         this.jdaPatinaProperties = jdaPatinaProperties;
         this.jdaReportingProperties = jdaReportingProperties;
