@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Tag(name = "Basic server metadata")
 public class ApiController {
 
-    final Reporter reporter;
+    private final Reporter reporter;
 
     public ApiController(final Reporter reporter) {
         this.reporter = reporter;

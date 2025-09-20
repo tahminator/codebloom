@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.reporter.report;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.patina.codebloom.common.reporter.report.location.Location;
