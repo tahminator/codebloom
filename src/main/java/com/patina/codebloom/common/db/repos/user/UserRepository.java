@@ -11,7 +11,11 @@ public interface UserRepository {
 
     User getUserById(String id);
 
+    User getUserByLeetcodeUsername(String leetcodeUsername);
+
     UserWithScore getUserWithScoreById(String userId, String leaderboardId);
+
+    UserWithScore getUserWithScoreByLeetcodeUsername(String userLeetcodeUsername, String leaderboardId);
 
     User getUserByDiscordId(String discordId);
 
