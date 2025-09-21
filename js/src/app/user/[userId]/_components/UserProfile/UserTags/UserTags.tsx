@@ -2,6 +2,8 @@ import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { ApiUtils } from "@/lib/api/utils";
+import { Group, Text } from "@mantine/core";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 import UserTagsSkeleton from "./UserTagsSkeleton";
 
@@ -23,7 +25,21 @@ export default function UserTags({ userId }: { userId?: string }) {
   }
 
   if (!data.success) {
-    return <>{data.message}</>;
+    return (
+      <>
+        {
+          <Group gap="xs">
+            <IconAlertTriangle color="red"/>
+            <Text
+              fw={500} // medium weight (not too thin, not too bold)
+              ff="Inter, sans-serif"
+            >
+              Error Fetching Tags
+            </Text>
+          </Group>
+        }
+      </>
+    );
   }
 
   const tags = data.payload.tags;
