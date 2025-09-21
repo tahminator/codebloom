@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+# TODO clean up for CI/command use.
+
 # Environment variables required:
 # DATABASE_HOST, DATABASE_PORT, DATABASE_USER, DATABASE_PASSWORD
 # PRODUCTION_DATABASE_NAME, STAGING_DATABASE_NAME
