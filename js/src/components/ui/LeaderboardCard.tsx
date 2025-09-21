@@ -65,7 +65,6 @@ export default function LeaderboardCard({
       <Text ta="center" size="xl">
         {placeString}
       </Text>
-
       {nickname && (
         <Tooltip
           label={"This user is a verified member of the Patina Discord server."}
@@ -90,7 +89,6 @@ export default function LeaderboardCard({
           </Text>
         </Tooltip>
       )}
-
       <Flex align="center" gap="xs" justify="center">
         <Text
           ta="center"
@@ -106,11 +104,9 @@ export default function LeaderboardCard({
         </Text>
         {tagFF && tags && <TagList tags={tags} size={14} gap="xs" />}
       </Flex>
-
       <Text ta="center" style={{ whiteSpace: "nowrap" }}>
         <SiLeetcode className="inline" /> {leetcodeUsername}
       </Text>
-
       <Text ta="center" fw={500} size="md">
         {totalScore} Points
       </Text>

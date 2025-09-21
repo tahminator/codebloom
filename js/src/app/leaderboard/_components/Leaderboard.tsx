@@ -294,13 +294,6 @@ export default function LeaderboardIndex() {
                               {entry.nickname}
                             </span>
                           </Tooltip>
-                          {tagFF && (
-                            <TagList
-                              tags={entry.tags || []}
-                              size={16}
-                              gap="xs"
-                            />
-                          )}
                         </Flex>
                       )}
                       <Flex align="center" gap="xs">
@@ -308,7 +301,7 @@ export default function LeaderboardIndex() {
                           <FaDiscord style={{ display: "inline" }} />{" "}
                           {entry.discordName}
                         </span>
-                        {!entry.nickname && tagFF && (
+                        {tagFF && (
                           <TagList tags={entry.tags || []} size={16} gap="xs" />
                         )}
                       </Flex>
