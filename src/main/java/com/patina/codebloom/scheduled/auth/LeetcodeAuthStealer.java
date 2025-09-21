@@ -37,6 +37,12 @@ public class LeetcodeAuthStealer {
     private String cookie;
     private String csrf;
 
+    /**
+     * So we don't report that a csrf token is missing more than once per machine
+     * lifecycle.
+     */
+    private boolean reported = false;
+
     @Value("${github.username}")
     private String githubUsername;
 
@@ -202,7 +208,8 @@ public class LeetcodeAuthStealer {
      * data from the GraphQL layer of leetcode.com
      */
     public synchronized String getCsrf() {
-        if (csrf == null) {
+        if (csrf == null && !reported) {
+            reported = true;
             reporter.log(Report.builder()
                             .environments(env.getActiveProfiles())
                             .location(Location.BACKEND)
