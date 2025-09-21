@@ -1,6 +1,7 @@
 import BannerParent from "@/components/ui/banner/BannerParent";
 import ReactQueryProvider from "@/lib/queryProvider";
 import "@mantine/core/styles.css";
+import "@/lib/helper/entries";
 import { router } from "@/lib/router";
 import { themeOverride } from "@/lib/theme";
 import "@mantine/notifications/styles.css";
