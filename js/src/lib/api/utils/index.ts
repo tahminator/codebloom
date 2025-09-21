@@ -64,6 +64,17 @@ export class ApiUtils {
   }
 
   /**
+   * Returns a list of all metadata objects that exist on a given tag, which are iterable.
+   *
+   * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
+   */
+  static getAllTagEnumMetada(): ApiTypeUtils.UserTagTagMetadata[] {
+    return Object.typedEntries(ApiUtils._TAG_METADATA_LIST).map(
+      ([_, metadata]) => metadata,
+    );
+  }
+
+  /**
    * Given a list of tags, strip the tags that contains a `tag`
    * enum that we do not actually support directly on our frontend.
    *
