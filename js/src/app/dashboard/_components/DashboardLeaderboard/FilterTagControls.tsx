@@ -1,7 +1,6 @@
 import { UserTagTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
-import { typedEntries } from "@/lib/helper/entries";
 import { Flex, Image, SegmentedControl, Tooltip } from "@mantine/core";
 import { ReactNode, useMemo } from "react";
 
@@ -47,7 +46,7 @@ export default function FilterTagsControl({
   );
 
   const currentValue: SegmentFlagsWithAll = useMemo(() => {
-    const firstEnabledKeyValue = typedEntries(flags).find(
+    const firstEnabledKeyValue = Object.typedEntries(flags).find(
       ([_flagTag, isFlagActive]) => isFlagActive,
     );
 
