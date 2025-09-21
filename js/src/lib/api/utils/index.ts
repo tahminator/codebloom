@@ -68,7 +68,7 @@ export class ApiUtils {
    *
    * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
    */
-  static getAllTagEnumMetada(): ApiTypeUtils.UserTagTagMetadata[] {
+  static getAllTagEnumMetadata(): ApiTypeUtils.UserTagTagMetadata[] {
     return Object.typedEntries(ApiUtils._TAG_METADATA_LIST).map(
       ([_, metadata]) => metadata,
     );
