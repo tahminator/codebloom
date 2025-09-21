@@ -55,10 +55,7 @@ export default function LeaderboardCard({
       shadow="sm"
       radius="md"
       className={`border-2 flex flex-col items-center justify-center ${borderColor}`}
-      style={{
-        height,
-        width,
-      }}
+      style={{ height, width }}
       component={Link}
       to={`/user/${userId}`}
     >
