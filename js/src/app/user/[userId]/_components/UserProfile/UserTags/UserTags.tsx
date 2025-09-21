@@ -31,7 +31,7 @@ export default function UserTags({ userId }: { userId?: string }) {
           <Group gap="xs">
             <IconAlertTriangle color="red"/>
             <Text
-              fw={500} // medium weight (not too thin, not too bold)
+              fw={500}
               ff="Inter, sans-serif"
             >
               Error Fetching Tags
