@@ -55,7 +55,10 @@ export default function LeaderboardCard({
       shadow="sm"
       radius="md"
       className={`border-2 flex flex-col items-center justify-center ${borderColor}`}
-      style={{ height, width }}
+      style={{
+        height,
+        width,
+      }}
       component={Link}
       to={`/user/${userId}`}
     >
@@ -72,7 +75,7 @@ export default function LeaderboardCard({
             ta="center"
             fw={700}
             style={{
-              fontSize: `clamp(1rem, ${100 / ((nickname?.length ?? 0) + 5)}vw, 1.25rem)`,
+              fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
