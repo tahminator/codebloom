@@ -56,6 +56,20 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         this.reporter = reporter;
     }
 
+    private String buildCookieHeader() {
+        List<String> cookies = new ArrayList<>();
+
+        String session = leetcodeAuthStealer.getCookie();
+        cookies.add("LEETCODE_SESSION=" + session);
+
+        String csrf = leetcodeAuthStealer.getCsrf();
+        if (csrf != null) {
+            cookies.add("csrftoken=" + csrf);
+        }
+
+        return String.join("; ", cookies);
+    }
+
     /**
      *
      * Returns {@link HttpRequest.Builder} with some defaults required to interface
@@ -63,11 +77,12 @@ public class LeetcodeClientImpl implements LeetcodeClient {
      * 
      */
     private HttpRequest.Builder getGraphQLRequestBuilder() {
+        System.out.println(buildCookieHeader());
         return HttpRequest.newBuilder()
                         .uri(URI.create(GRAPHQL_ENDPOINT))
                         .header("Content-Type", "application/json")
                         .header("Referer", "https://leetcode.com")
-                        .header("Cookie", "LEETCODE_SESSION=" + leetcodeAuthStealer.getCookie());
+                        .header("Cookie", buildCookieHeader());
     }
 
     @Override

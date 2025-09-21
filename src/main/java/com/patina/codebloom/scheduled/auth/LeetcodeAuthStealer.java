@@ -2,6 +2,8 @@ package com.patina.codebloom.scheduled.auth;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +25,18 @@ import com.patina.codebloom.common.db.repos.auth.AuthRepository;
 import com.patina.codebloom.common.email.Email;
 import com.patina.codebloom.common.email.Message;
 import com.patina.codebloom.common.email.client.github.GithubOAuthEmail;
+import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.reporter.Reporter;
+import com.patina.codebloom.common.reporter.report.Report;
+import com.patina.codebloom.common.reporter.report.location.Location;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 @Component
 public class LeetcodeAuthStealer {
     private static final Logger LOGGER = LoggerFactory.getLogger(LeetcodeAuthStealer.class);
+
     private String cookie;
+    private String csrf;
 
     @Value("${github.username}")
     private String githubUsername;
@@ -38,10 +46,14 @@ public class LeetcodeAuthStealer {
 
     private final AuthRepository authRepository;
     private final Email email;
+    private final Reporter reporter;
+    private final Env env;
 
-    public LeetcodeAuthStealer(final AuthRepository authRepository, final GithubOAuthEmail email) {
+    public LeetcodeAuthStealer(final AuthRepository authRepository, final GithubOAuthEmail email, final Reporter reporter, final Env env) {
         this.authRepository = authRepository;
         this.email = email;
+        this.reporter = reporter;
+        this.env = env;
     }
 
     /**
@@ -58,6 +70,7 @@ public class LeetcodeAuthStealer {
         if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(StandardizedLocalDateTime.now().minus(1, ChronoUnit.DAYS))) {
             LOGGER.info("Auth token already exists, using token from database.");
             cookie = mostRecentAuth.getToken();
+            csrf = mostRecentAuth.getCsrf();
             return;
         }
 
@@ -146,23 +159,22 @@ public class LeetcodeAuthStealer {
             // }
 
             if (page.url().equals("https://leetcode.com/")) {
-                for (Cookie cookie : page.context().cookies()) {
-                    if (cookie.name.equals("LEETCODE_SESSION")) {
-                        // System.out.println(cookie.name + " " + cookie.value);
-                        try {
-                            LOGGER.info("Cookie found!");
-                            authRepository.createAuth(Auth
-                                            .builder()
-                                            .token(cookie.value)
-                                            .build());
-                            this.cookie = cookie.value;
-                        } catch (Exception e) {
-                            System.err.println(e);
-                        }
-                    }
+                Map<String, String> cookieMap = page.context().cookies().stream()
+                                .filter(cookie -> cookie.name.equals("LEETCODE_SESSION") || cookie.name.equals("csrftoken"))
+                                .collect(Collectors.toMap(cookie -> cookie.name, cookie -> cookie.value));
+
+                String sessionToken = cookieMap.get("LEETCODE_SESSION");
+                if (sessionToken != null) {
+                    LOGGER.info("Cookie found!");
+                    authRepository.createAuth(Auth
+                                    .builder()
+                                    .token(sessionToken)
+                                    .csrf(cookieMap.get("csrftoken"))
+                                    .build());
+                    this.cookie = sessionToken;
                 }
             } else {
-                System.err.println("Should be authenticated but not authenticated.");
+                LOGGER.info("Should be authenticated but not authenticated.");
             }
 
             context.close();
@@ -184,5 +196,21 @@ public class LeetcodeAuthStealer {
             stealAuthCookie();
         }
         return cookie;
+    }
+
+    /**
+     * It's fine if this is null for some requests; it isn't a requirement to fetch
+     * data from the GraphQL layer of leetcode.com
+     */
+    public synchronized String getCsrf() {
+        if (csrf == null) {
+            reporter.log(Report.builder()
+                            .environments(env.getActiveProfiles())
+                            .location(Location.BACKEND)
+                            .data("CSRF token is missing inside of LeetcodeAuthStealer. This may be something to look into.")
+                            .build());
+        }
+
+        return csrf;
     }
 }

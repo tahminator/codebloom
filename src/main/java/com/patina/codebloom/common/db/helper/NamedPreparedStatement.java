@@ -61,6 +61,20 @@ public class NamedPreparedStatement implements AutoCloseable {
     }
 
     /**
+     * Alternative way to create a NamedPreparedStatement.
+     *
+     * Creates a NamedPreparedStatement. Wraps a call to
+     * c.{@link Connection#prepareStatement(java.lang.String) prepareStatement}.
+     * 
+     * @param conn the database connection
+     * @param sql the parameterized query
+     * @throws SQLException if the statement could not be created
+     */
+    public static NamedPreparedStatement create(final Connection conn, final String sql) throws SQLException {
+        return new NamedPreparedStatement(conn, sql);
+    }
+
+    /**
      * Parses a query with named parameters. The parameter-index mappings are put
      * into the map, and the parsed query is returned. DO NOT CALL FROM CLIENT CODE.
      * This method is non-private so JUnit code can test it.

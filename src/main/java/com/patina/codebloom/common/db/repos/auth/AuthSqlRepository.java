@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.auth.Auth;
+import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 
 @Component
 public class AuthSqlRepository implements AuthRepository {
@@ -19,21 +20,31 @@ public class AuthSqlRepository implements AuthRepository {
         this.conn = dbConnection.getConn();
     }
 
+    private Auth parseResultSetToAuth(ResultSet rs) throws SQLException {
+        return Auth.builder()
+                        .id(rs.getString("id"))
+                        .token(rs.getString("token"))
+                        .csrf(rs.getString("csrf"))
+                        .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                        .build();
+    }
+
     @Override
     public void createAuth(final Auth auth) {
         String sql = """
                         INSERT INTO "Auth"
-                            (id, token)
+                            (id, token, csrf)
                         VALUES
-                            (?, ?)
+                            (:id, :token, :csrf)
                         RETURNING
                             "createdAt"
                         """;
         auth.setId(UUID.randomUUID().toString());
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(auth.getId()));
-            stmt.setString(2, auth.getToken());
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(auth.getId()));
+            stmt.setString("token", auth.getToken());
+            stmt.setString("csrf", auth.getCsrf());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -48,15 +59,17 @@ public class AuthSqlRepository implements AuthRepository {
     @Override
     public boolean updateAuthById(final Auth auth) {
         String sql = """
-                UPDATE "Auth"
-                SET
-                    token = ?
-                WHERE
-                    id = ?
-                """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, auth.getToken());
-            stmt.setObject(2, UUID.fromString(auth.getId()));
+                        UPDATE "Auth"
+                        SET
+                            token = :token,
+                            csrf = :csrf
+                        WHERE
+                            id = :id
+                        """;
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(auth.getId()));
+            stmt.setString("token", auth.getToken());
+            stmt.setString("csrf", auth.getCsrf());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -69,20 +82,17 @@ public class AuthSqlRepository implements AuthRepository {
     @Override
     public Auth getAuthById(final String inputtedId) {
         String sql = """
-                SELECT
-                    id, token, "createdAt"
-                FROM "Auth"
-                WHERE
-                    id = ?
-                """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(inputtedId));
+                        SELECT
+                            id, token, csrf, "createdAt"
+                        FROM "Auth"
+                        WHERE
+                            id = :id;
+                        """;
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(inputtedId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var token = rs.getString("token");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    return new Auth(id, token, createdAt);
+                    return parseResultSetToAuth(rs);
                 }
             }
         } catch (SQLException e) {
@@ -95,19 +105,16 @@ public class AuthSqlRepository implements AuthRepository {
     @Override
     public Auth getMostRecentAuth() {
         String sql = """
-                SELECT
-                    id, token, "createdAt"
-                FROM "Auth"
-                ORDER BY "createdAt" DESC
-                LIMIT 1
-                """;
+                        SELECT
+                            id, token, csrf, "createdAt"
+                        FROM "Auth"
+                        ORDER BY "createdAt" DESC
+                        LIMIT 1
+                        """;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var token = rs.getString("token");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    return new Auth(id, token, createdAt);
+                    return parseResultSetToAuth(rs);
                 }
             }
         } catch (SQLException e) {
@@ -123,11 +130,11 @@ public class AuthSqlRepository implements AuthRepository {
                             DELETE FROM
                                 "Auth"
                             WHERE
-                                id = ?
+                                id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
