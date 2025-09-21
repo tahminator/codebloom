@@ -11,7 +11,7 @@ export default function UserProfile({ userId }: { userId?: string }) {
 
   return (
     <>
-      <Center mt={"xs"} pt="20">
+      <Center mt={"xs"} pt={20}>
         <Button
           variant={"outline"}
           onClick={() => {
