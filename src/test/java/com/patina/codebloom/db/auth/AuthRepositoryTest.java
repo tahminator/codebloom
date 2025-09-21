@@ -36,8 +36,8 @@ public class AuthRepositoryTest {
     @BeforeAll
     void createTestAuth() {
         testAuth = Auth.builder()
-                        // this represents the Leetcode cookie auth token
                         .token(UUID.randomUUID().toString())
+                        .csrf(UUID.randomUUID().toString())
                         .build();
 
         authRepository.createAuth(testAuth);
