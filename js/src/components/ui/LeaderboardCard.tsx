@@ -75,7 +75,7 @@ export default function LeaderboardCard({
             ta="center"
             fw={700}
             style={{
-              fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
+              fontSize: `clamp(1rem, ${100 / ((nickname?.length ?? 0) + 5)}vw, 1.25rem)`,
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
