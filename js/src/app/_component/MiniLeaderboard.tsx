@@ -123,7 +123,7 @@ export default function MiniLeaderboardDesktop() {
                     <Table.Td>{index + 1}</Table.Td>
                     <Table.Td>
                       <div style={{ display: "flex", flexDirection: "column" }}>
-                        {entry.nickname ?
+                        {entry.nickname && (
                           <span
                             style={{ fontSize: "18px", lineHeight: "28px" }}
                           >
@@ -144,13 +144,11 @@ export default function MiniLeaderboardDesktop() {
                               </Text>
                             </Tooltip>
                           </span>
-                        : <span
-                            style={{ fontSize: "18px", lineHeight: "28px" }}
-                          >
-                            <FaDiscord style={{ display: "inline" }} />{" "}
-                            {entry.discordName}
-                          </span>
-                        }
+                        )}
+                        <span style={{ fontSize: "18px", lineHeight: "28px" }}>
+                          <FaDiscord style={{ display: "inline" }} />{" "}
+                          {entry.discordName}
+                        </span>
                         <span>
                           <SiLeetcode style={{ display: "inline" }} />{" "}
                           {entry.leetcodeUsername}

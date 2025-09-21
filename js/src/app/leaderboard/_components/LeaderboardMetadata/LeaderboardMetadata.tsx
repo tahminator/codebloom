@@ -82,7 +82,7 @@ export default function LeaderboardMetadata(
 
   return (
     <>
-      <Title order={3} ta={"center"} mb={"xs"}>
+      <Title order={4} ta={"center"} mb={"xs"}>
         {leaderboardData.name}
       </Title>
       <Title order={6} ta={"center"} mb={"xs"}>

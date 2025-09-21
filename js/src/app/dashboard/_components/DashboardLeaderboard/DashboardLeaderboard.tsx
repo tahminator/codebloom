@@ -209,7 +209,7 @@ export default function LeaderboardForDashboard({
                 {idx + 1}.
               </Text>
               <Flex direction={"column"}>
-                {user.nickname ?
+                {user.nickname && (
                   <Tooltip
                     label={
                       "This user is a verified member of the Patina Discord server."
@@ -231,20 +231,20 @@ export default function LeaderboardForDashboard({
                       {user.nickname}
                     </Text>
                   </Tooltip>
-                : <Text
-                    ta="center"
-                    className="transition-all group-hover:text-white-500"
-                  >
-                    <FaDiscord
-                      style={{
-                        display: "inline",
-                        marginLeft: "4px",
-                        marginRight: "4px",
-                      }}
-                    />
-                    {user.discordName}
-                  </Text>
-                }
+                )}
+                <Text
+                  ta="center"
+                  className="transition-all group-hover:text-white-500"
+                >
+                  <FaDiscord
+                    style={{
+                      display: "inline",
+                      marginLeft: "4px",
+                      marginRight: "4px",
+                    }}
+                  />
+                  {user.discordName}
+                </Text>
                 <Text
                   ta="center"
                   className="transition-all group-hover:text-white-500"

@@ -85,7 +85,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
       >
         <Text>Me</Text>
         <Flex direction={"column"}>
-          {userData.nickname ?
+          {userData.nickname && (
             <Tooltip
               label={
                 "This user is a verified member of the Patina Discord server."
@@ -107,20 +107,20 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
                 {userData.nickname}
               </Text>
             </Tooltip>
-          : <Text
-              ta="center"
-              className="transition-all group-hover:text-white-500"
-            >
-              <FaDiscord
-                style={{
-                  display: "inline",
-                  marginLeft: "4px",
-                  marginRight: "4px",
-                }}
-              />
-              {userData.discordName}
-            </Text>
-          }
+          )}
+          <Text
+            ta="center"
+            className="transition-all group-hover:text-white-500"
+          >
+            <FaDiscord
+              style={{
+                display: "inline",
+                marginLeft: "4px",
+                marginRight: "4px",
+              }}
+            />
+            {userData.discordName}
+          </Text>
           <Text ta="center">
             <SiLeetcode
               style={{
