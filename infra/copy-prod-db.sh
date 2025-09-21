@@ -14,22 +14,20 @@ echo "Cleaning staging database..."
 ./mvnw flyway:clean -Dflyway.cleanDisabled=false
 
 echo "Copying production database to staging..."
-pg_dump \
+PGPASSWORD="$DATABASE_PASSWORD" pg_dump \
     --host="$DATABASE_HOST" \
     --port="$DATABASE_PORT" \
     --username="$DATABASE_USER" \
     --dbname="$PRODUCTION_DATABASE_NAME" \
-    --no-password \
     --verbose \
     --clean \
     --if-exists \
     --format=custom |
-    pg_restore \
+    PGPASSWORD="$DATABASE_PASSWORD" pg_restore \
         --host="$DATABASE_HOST" \
         --port="$DATABASE_PORT" \
         --username="$DATABASE_USER" \
         --dbname="$STAGING_DATABASE_NAME" \
-        --no-password \
         --verbose \
         --clean \
         --if-exists
