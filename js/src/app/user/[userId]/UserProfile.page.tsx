@@ -1,5 +1,5 @@
 import Header from "@/components/ui/header/Header";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 
 import UserProfile from "./_components/UserProfile/UserProfile";
 
