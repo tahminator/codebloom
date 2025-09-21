@@ -20,7 +20,7 @@ public class AuthSqlRepository implements AuthRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private Auth parseResultSetToAuth(ResultSet rs) throws SQLException {
+    private Auth parseResultSetToAuth(final ResultSet rs) throws SQLException {
         return Auth.builder()
                         .id(rs.getString("id"))
                         .token(rs.getString("token"))

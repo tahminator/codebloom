@@ -18,7 +18,6 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-import com.microsoft.playwright.options.Cookie;
 import com.microsoft.playwright.options.LoadState;
 import com.patina.codebloom.common.db.models.auth.Auth;
 import com.patina.codebloom.common.db.repos.auth.AuthRepository;
