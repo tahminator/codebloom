@@ -18,7 +18,7 @@ export default function UserTags({ userId }: { userId?: string }) {
 
   if (status === "error") {
     return (
-      <Toast message="Sorry, something went wrong when trying to fetch user's submissions. Please try again later." />
+      <Toast message="Sorry, something went wrong when trying to fetch the user's tags. Please try again later." />
     );
   }
 
