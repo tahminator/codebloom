@@ -77,7 +77,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
      * 
      */
     private HttpRequest.Builder getGraphQLRequestBuilder() {
-        System.out.println(buildCookieHeader());
         return HttpRequest.newBuilder()
                         .uri(URI.create(GRAPHQL_ENDPOINT))
                         .header("Content-Type", "application/json")
