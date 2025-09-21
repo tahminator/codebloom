@@ -13,7 +13,7 @@ export default function UserTags({ userId }: { userId?: string }) {
   if (status === "pending") {
     return (
       <>
-        <UserTagsSkeleton /> {/* # WIP */}
+        <UserTagsSkeleton />
       </>
     );
   }

@@ -3,7 +3,6 @@ import { Center, Button, Flex, Box, Text } from "@mantine/core";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import ProfilePicture from "./_components/UserProfile/ProfilePicture/ProfilePicture";
-// import UserProfile from "./_components/UserProfile/UserProfile";
 import UserProfileHeader from "./_components/UserProfile/UserProfileHeader";
 import UserTags from "./_components/UserProfile/UserTags/UserTags";
 import MiniUserSubmissions from "./submissions/_components/UserSubmissions/MiniUserSubmissions";
@@ -35,7 +34,6 @@ export default function UserProfilePage() {
           pt="md"
           wrap="wrap"
         >
-          {/* Left card */}
           <Box
             bg="gray.9"
             w="100%"
@@ -53,7 +51,6 @@ export default function UserProfilePage() {
               <UserTags userId={userId} />
             </Flex>
           </Box>
-          {/* Right card */}
           <Box
             bg="gray.9"
             w="100%"
