@@ -10,7 +10,16 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { timeDiff } from "@/lib/timeDiff";
-import { Badge, Box, Overlay, Table, Text, Stack, Group, Card } from "@mantine/core";
+import {
+  Badge,
+  Box,
+  Overlay,
+  Table,
+  Text,
+  Stack,
+  Group,
+  Card,
+} from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
@@ -59,14 +68,14 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
 
   const pageData = data.payload;
 
-  if(isMobile) {
+  if (isMobile) {
     return (
-        <Box pos="relative" px="xs">
-            {isPlaceholderData && (
-                <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
+      <Box pos="relative" px="xs">
+        {isPlaceholderData && (
+          <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
         )}
         <Group justify="space-between" align="flex-end" mb="sm" gap="xs">
-          <Box style={{ flex: 1, minWidth: 0}}>
+          <Box style={{ flex: 1, minWidth: 0 }}>
             <SearchBox
               query={searchQuery}
               onChange={(event) => {
@@ -83,7 +92,11 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               switchMode
               name={
                 <Box
-                  style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
                 >
                   Points Received
                 </Box>
@@ -94,7 +107,12 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
         <Stack gap="sm" my="sm">
           {pageData.items.length === 0 && (
             <>
-              <Card withBorder p="md" radius="md" style={{ minHeight: "80px", width: "100%", flex: 1}}>
+              <Card
+                withBorder
+                p="md"
+                radius="md"
+                style={{ minHeight: "80px", width: "100%", flex: 1 }}
+              >
                 <Stack gap="xs" justify="center" align="center" h="100%">
                   <Text fw={500} ta="center" c="dimmed">
                     Nothing found.
@@ -187,7 +205,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           goTo={goTo}
         />
       </Box>
-    )
+    );
   }
   return (
     <>
