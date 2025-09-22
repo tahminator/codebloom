@@ -1,1 +1,0 @@
-ALTER TYPE "Tag" ADD VALUE 'Sbu';
