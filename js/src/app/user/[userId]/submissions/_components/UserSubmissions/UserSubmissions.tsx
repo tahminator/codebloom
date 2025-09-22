@@ -53,7 +53,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
 
   return (
     <>
-      <Box maw={"100%"} miw={"66%"} p="md">
+      <Box maw={"100%"} miw={"66%"} p="xs">
         <FilterDropdown
           style={{
             marginLeft: "auto",
