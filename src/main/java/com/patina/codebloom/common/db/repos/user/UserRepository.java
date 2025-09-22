@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
+import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 
 public interface UserRepository {
     User createNewUser(User user);
@@ -13,7 +14,7 @@ public interface UserRepository {
 
     User getUserByLeetcodeUsername(String leetcodeUsername);
 
-    UserWithScore getUserWithScoreById(String userId, String leaderboardId);
+    UserWithScore getUserWithScoreById(String userId, String leaderboardId, UserFilterOptions options);
 
     UserWithScore getUserWithScoreByLeetcodeUsername(String userLeetcodeUsername, String leaderboardId);
 

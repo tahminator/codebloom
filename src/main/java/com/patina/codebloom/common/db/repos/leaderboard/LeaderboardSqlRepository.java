@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.page.Indexed;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 
@@ -341,7 +343,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         )
                         SELECT
                             m."userId",
-                            ll.id as "leaderboardId"
+                            ll.id as "leaderboardId",
+                            l."deletedAt" as "leaderboardDeletedAt"
                         FROM
                             "Leaderboard" l
                         JOIN
@@ -408,8 +411,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
                     var leaderboardId = rs.getString("leaderboardId");
+                    var leaderboardDeletedAt = rs.getObject("leaderboardDeletedAt", OffsetDateTime.class);
 
-                    UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
+                    UserWithScore user = userRepository.getUserWithScoreById(
+                                    userId,
+                                    leaderboardId,
+                                    UserFilterOptions.builder()
+                                                    .pointOfTime(leaderboardDeletedAt)
+                                                    .build());
 
                     if (user != null) {
                         users.add(user);
@@ -430,7 +439,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         String sql = """
                         SELECT
                             m."userId",
-                            l.id as "leaderboardId"
+                            l.id as "leaderboardId",
+                            l."deletedAt" as "leaderboardDeletedAt"
                         FROM
                             "Leaderboard" l
                         JOIN "Metadata" m ON
@@ -496,8 +506,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
                     var leaderboardId = rs.getString("leaderboardId");
+                    var leaderboardDeletedAt = rs.getObject("leaderboardDeletedAt", OffsetDateTime.class);
 
-                    UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
+                    UserWithScore user = userRepository.getUserWithScoreById(
+                                    userId,
+                                    leaderboardId,
+                                    UserFilterOptions.builder()
+                                                    .pointOfTime(leaderboardDeletedAt)
+                                                    .build());
 
                     if (user != null) {
                         users.add(user);

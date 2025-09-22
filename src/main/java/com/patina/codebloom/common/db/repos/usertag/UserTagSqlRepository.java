@@ -3,6 +3,7 @@ package com.patina.codebloom.common.db.repos.usertag;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
+import com.patina.codebloom.common.db.repos.usertag.options.UserTagFilterOptions;
 
 @Component
 public class UserTagSqlRepository implements UserTagRepository {
@@ -105,6 +107,45 @@ public class UserTagSqlRepository implements UserTagRepository {
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var tag = parseResultSetToTag(rs);
+                    if (tag != null) {
+                        tags.add(tag);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch user tag by user ID and tag", e);
+        }
+
+        return tags;
+    }
+
+    @Override
+    public ArrayList<UserTag> findTagsByUserId(final String userId, final UserTagFilterOptions options) {
+        ArrayList<UserTag> tags = new ArrayList<>();
+        String sql = """
+                        SELECT
+                            id,
+                            "createdAt",
+                            "userId",
+                            tag
+                        FROM
+                            "UserTag"
+                        WHERE
+                            "userId" = :userId
+                        AND
+                            (cast(:pointOfTime AS timestamptz) IS NULL OR "createdAt" <= :pointOfTime)
+                                """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("userId", UUID.fromString(userId));
+            if (options.getPointOfTime() == null) {
+                stmt.setNull("pointOfTime", Types.TIMESTAMP_WITH_TIMEZONE);
+            } else {
+                stmt.setObject("pointOfTime", options.getPointOfTime());
+            }
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var tag = parseResultSetToTag(rs);

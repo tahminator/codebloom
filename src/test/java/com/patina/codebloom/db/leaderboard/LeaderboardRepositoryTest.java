@@ -25,6 +25,7 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -215,7 +216,12 @@ public class LeaderboardRepositoryTest {
 
         assertTrue(isUserUpdatePointsSuccessful, "failed to update points of super user on mock leaderboard");
 
-        UserWithScore superUser = userRepository.getUserWithScoreById(superUserId, mockLeaderboard.getId());
+        // TODO - Write tests for pointOfTime
+        UserWithScore superUser = userRepository.getUserWithScoreById(
+                        superUserId,
+                        mockLeaderboard.getId(),
+                        UserFilterOptions.builder()
+                                        .build());
 
         assertTrue(superUser != null);
         assertEquals(newPoints, superUser.getTotalScore());

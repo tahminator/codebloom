@@ -13,7 +13,9 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
+import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
+import com.patina.codebloom.common.db.repos.usertag.options.UserTagFilterOptions;
 
 @Component
 public class UserSqlRepository implements UserRepository {
@@ -334,7 +336,7 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public UserWithScore getUserWithScoreById(final String userId, final String leaderboardId) {
+    public UserWithScore getUserWithScoreById(final String userId, final String leaderboardId, final UserFilterOptions options) {
         String sql = """
                             SELECT
                                 u.id,
@@ -368,7 +370,9 @@ public class UserSqlRepository implements UserRepository {
                     var profileUrl = rs.getString("profileUrl");
                     var totalScore = rs.getInt("totalScore");
 
-                    var tags = userTagRepository.findTagsByUserId(id);
+                    var tags = userTagRepository.findTagsByUserId(id,
+                                    UserTagFilterOptions.builder()
+                                                    .pointOfTime(options.getPointOfTime()).build());
 
                     var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, totalScore, tags);
                     return userWithScore;

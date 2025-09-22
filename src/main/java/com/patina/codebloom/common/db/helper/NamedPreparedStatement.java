@@ -306,6 +306,23 @@ public class NamedPreparedStatement implements AutoCloseable {
     }
 
     /**
+     * Sets a parameter.
+     * 
+     * @param name parameter name
+     * @param targetSqlType the SQL type (as defined in java.sql.Types) to be sent
+     * to the database
+     * @throws SQLException if an error occurred
+     * @throws IllegalArgumentException if the parameter does not exist
+     * @see PreparedStatement#setNull(int, int)
+     */
+    public void setNull(final String name, final int targetSqlType) throws SQLException {
+        int[] indexes = getIndexes(name);
+        for (int i = 0; i < indexes.length; i++) {
+            statement.setNull(indexes[i], targetSqlType);
+        }
+    }
+
+    /**
      * Returns the underlying statement.
      * 
      * @return the statement
