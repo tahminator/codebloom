@@ -6,8 +6,8 @@ import { useParams } from "react-router";
 import ProfilePictureSkeleton from "./ProfilePictureSkeleton";
 
 export default function ProfilePicture() {
-  const { userId } = useParams();
-  const { data, status } = useUserProfileQuery({ userId });
+  const { leetcodeUsername } = useParams();
+  const { data, status } = useUserProfileQuery({ leetcodeUsername });
 
   if (status === "pending") {
     return <ProfilePictureSkeleton />;

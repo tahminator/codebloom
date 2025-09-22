@@ -1,16 +1,35 @@
 import UserProfileHeader from "@/app/user/[userId]/_components/UserProfile/UserProfileHeader";
 import Header from "@/components/ui/header/Header";
+import Toast from "@/components/ui/toast/Toast";
+import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { Flex, Box, Center, Text, Button } from "@mantine/core";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import ProfilePicture from "./_components/UserProfile/ProfilePicture/ProfilePicture";
+import ProfilePictureSkeleton from "./_components/UserProfile/ProfilePicture/ProfilePictureSkeleton";
 import MiniUserSubmissions from "./submissions/_components/UserSubmissions/MiniUserSubmissions";
 
 export default function UserProfilePage() {
-  const { userId } = useParams();
+  const { leetcodeUsername } = useParams();
   const navigate = useNavigate();
-  // const { data, status } = useUserProfileQuery({ userId });
+  const { data, status } = useUserProfileQuery({ leetcodeUsername });
 
+  if (status === "pending") {
+    return <ProfilePictureSkeleton />;
+  }
+
+  if (status === "error") {
+    return (
+      <Toast message="Sorry, something went wrong. Please try again later." />
+    );
+  }
+
+  if (!data.success) {
+    return <Toast message={data.message} />;
+  }
+
+  const user = data.payload;
+  const userId = user.id;
   return (
     <>
       <Header />
@@ -48,7 +67,7 @@ export default function UserProfilePage() {
           >
             <Flex direction="column" align="center" gap="sm" pt="20px">
               <ProfilePicture />
-              <UserProfileHeader userId={userId} />
+              <UserProfileHeader leetcodeUsername={leetcodeUsername} />
             </Flex>
           </Box>
           {/* Right card */}

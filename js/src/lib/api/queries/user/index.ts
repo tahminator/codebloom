@@ -10,25 +10,14 @@ import { useCallback, useEffect } from "react";
 /**
  * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more using the userId.
  */
-export const useUserProfileQuery = ({ userId }: { userId?: string }) => {
-  return useQuery({
-    queryKey: ["user", "profile", userId],
-    queryFn: () => fetchUserProfile({ userId }),
-    placeholderData: keepPreviousData,
-  });
-};
-
-/**
- * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more using the user's leetcodeUsername.
- */
-export const useUserProfileWithUsernameQuery = ({
+export const useUserProfileQuery = ({
   leetcodeUsername,
 }: {
   leetcodeUsername?: string;
 }) => {
   return useQuery({
     queryKey: ["user", "profile", leetcodeUsername],
-    queryFn: () => fetchUserProfileWithUsername({ leetcodeUsername }),
+    queryFn: () => fetchUserProfile({ leetcodeUsername }),
     placeholderData: keepPreviousData,
   });
 };
@@ -166,15 +155,7 @@ export const useGetAllUsersQuery = (
   };
 };
 
-async function fetchUserProfile({ userId }: { userId?: string }) {
-  const response = await fetch(`/api/user/${userId ?? ""}/profile`);
-
-  const json = (await response.json()) as UnknownApiResponse<User>;
-
-  return json;
-}
-
-async function fetchUserProfileWithUsername({
+async function fetchUserProfile({
   leetcodeUsername,
 }: {
   leetcodeUsername?: string;
