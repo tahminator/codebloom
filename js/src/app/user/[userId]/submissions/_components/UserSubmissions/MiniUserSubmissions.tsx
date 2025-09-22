@@ -11,11 +11,7 @@ import {
   Overlay,
   Table,
   Text,
-  Stack,
-  Group,
-  Card,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
 import MiniUserSubmissionsSkeleton from "./MiniUserSubmissionsSkeleton";
@@ -26,7 +22,6 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
     tieToUrl: true,
     pageSize: 5,
   });
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   if (status === "pending") {
     return (
@@ -48,98 +43,6 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
 
   const pageData = data.payload;
 
-  if (isMobile) {
-    return (
-      <Box pos="relative">
-        {isPlaceholderData && (
-          <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
-        )}
-        <Stack gap="sm" my="sm">
-          {pageData.items.length === 0 && (
-            <Card bg="gray.9" p="md">
-              <Text fw={500} ta="center">
-                Nothing found
-              </Text>
-            </Card>
-          )}
-          {pageData.items.map((submission, index) => {
-            const badgeDifficultyColor = (() => {
-              if (submission.questionDifficulty === "Easy") {
-                return undefined;
-              }
-              if (submission.questionDifficulty === "Medium") {
-                return "yellow";
-              }
-              if (submission.questionDifficulty === "Hard") {
-                return "red";
-              }
-              return undefined;
-            })();
-
-            const badgeAcceptedColor = (() => {
-              const acceptanceRate = submission.acceptanceRate * 100;
-              if (acceptanceRate >= 75) {
-                return undefined;
-              }
-              if (acceptanceRate >= 50) {
-                return "yellow";
-              }
-              if (acceptanceRate >= 0) {
-                return "red";
-              }
-              return undefined;
-            })();
-
-            const LanguageIcon =
-              langNameToIcon[submission.language as langNameKey] ||
-              langNameToIcon["default"];
-
-            return (
-              <Card key={index} withBorder p="sm" radius="md">
-                <Stack gap="xs">
-                  <Group justify="space-between" align="flex-start">
-                    <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
-                      <LanguageIcon size={20} width={20} height={20} />
-                      <Text
-                        component={Link}
-                        to={`/submission/${submission.id}`}
-                        className="transition-all hover:text-blue-500"
-                        size="sm"
-                        fw={500}
-                        style={{
-                          flex: 1,
-                          wordBreak: "break-word",
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {submission.questionTitle}
-                      </Text>
-                    </Group>
-                    <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-                      {timeDiff(new Date(submission.submittedAt))}
-                    </Text>
-                  </Group>
-                  <Group justify="space-between" wrap="wrap" gap="xs">
-                    <Group gap="xs">
-                      <Badge size="sm" color={badgeDifficultyColor}>
-                        {submission.questionDifficulty}
-                      </Badge>
-                      <Badge size="sm" color={badgeAcceptedColor}>
-                        {Math.round(submission.acceptanceRate * 100)}%
-                      </Badge>
-                    </Group>
-                    <Text size="sm" fw={500}>
-                      {submission.pointsAwarded} pts
-                    </Text>
-                  </Group>
-                </Stack>
-              </Card>
-            );
-          })}
-        </Stack>
-      </Box>
-    );
-  }
   return (
     <>
       <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
