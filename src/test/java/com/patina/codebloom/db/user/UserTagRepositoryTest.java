@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
+import com.patina.codebloom.common.db.repos.usertag.options.UserTagFilterOptions;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,6 +73,16 @@ public class UserTagRepositoryTest {
 
     @Test
     @Order(2)
+    void testFindAllTagsByUserIdWithPointOfTime() {
+        List<UserTag> tagList = userTagRepository.findTagsByUserId(mockUserId, UserTagFilterOptions.builder()
+                        .pointOfTime(OffsetDateTime.MIN)
+                        .build());
+        assertNotNull(tagList);
+        assertEquals(0, tagList.size());
+    }
+
+    @Test
+    @Order(3)
     void testFindAllTagsByUserId() {
         ArrayList<UserTag> tagList = userTagRepository.findTagsByUserId(mockUserId);
         assertNotNull(tagList);
@@ -78,7 +91,7 @@ public class UserTagRepositoryTest {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     void testDeleteTagByUserIdAndTag() {
 
         deletableUserTag = UserTag.builder()

@@ -16,6 +16,7 @@ import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
@@ -189,7 +190,12 @@ public class LeaderboardController {
 
         Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
-        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardData.getId());
+        // we do not support point of time in this endpoint currently
+        UserWithScore user = userRepository.getUserWithScoreById(
+                        userId,
+                        leaderboardData.getId(),
+                        UserFilterOptions.builder()
+                                        .build());
 
         // if (user == null) {
         // return

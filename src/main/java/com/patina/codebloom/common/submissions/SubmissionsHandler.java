@@ -20,6 +20,7 @@ import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
@@ -132,7 +133,7 @@ public class SubmissionsHandler {
 
             acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
-            UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(user.getId(), recentLeaderboard.getId());
+            UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(user.getId(), recentLeaderboard.getId(), UserFilterOptions.builder().build());
 
             leaderboardRepository.updateUserPointsFromLeaderboard(recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }
