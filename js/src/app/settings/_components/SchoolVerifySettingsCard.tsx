@@ -1,4 +1,4 @@
-import { SupportedSchools } from "@/lib/api/common/school";
+import { ApiUtils } from "@/lib/api/utils";
 import { Box, Button, Card, Title, Text, List } from "@mantine/core";
 import { useState } from "react";
 
@@ -27,8 +27,8 @@ export default function SchoolVerifySettingsCard({
           <Text pt={"md"} pl={"md"}>
             Supported schools:
             <List>
-              {Object.entries(SupportedSchools).map(([k, v]) => (
-                <List.Item key={k}>{v}</List.Item>
+              {ApiUtils.getAllSupportedTagEnumMetadata().map((school) => (
+                <List.Item key={school.name}>{school.name}</List.Item>
               ))}
             </List>
           </Text>

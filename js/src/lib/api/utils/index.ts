@@ -39,6 +39,21 @@ export class ApiUtils {
       icon: "/Gwc_Logo.png",
       alt: "GWC Logo",
     },
+    Sbu: {
+      name: "Stony Brook University",
+      icon: "/SBU_shield.png",
+      alt: "Stony Brook University Logo",
+    },
+    Columbia: {
+      name: "Columbia University",
+      icon: "/Columbia_logo.png",
+      alt: "Columbia University Logo",
+    },
+    Ccny: {
+      name: "City College of New York",
+      icon: "/CCNY_logo.png",
+      alt: "City College of New York Logo",
+    },
   } as const;
 
   static _UNUSED_TAGS: UserTagTag[] = [UserTagTag.Gwc];

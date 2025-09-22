@@ -49,6 +49,12 @@ export default function LeaderboardForDashboard({
     toggleRpi,
     gwc,
     toggleGwc,
+    sbu,
+    toggleSbu,
+    columbia,
+    toggleColumbia,
+    ccny,
+    toggleCcny,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery({
     pageSize: 5,
@@ -140,6 +146,9 @@ export default function LeaderboardForDashboard({
           Baruch: baruch,
           Rpi: rpi,
           Gwc: gwc,
+          Sbu: sbu,
+          Columbia: columbia,
+          Ccny: ccny,
         }}
         flagsToggle={{
           Patina: togglePatina,
@@ -148,6 +157,9 @@ export default function LeaderboardForDashboard({
           Baruch: toggleBaruch,
           Rpi: toggleRpi,
           Gwc: toggleGwc,
+          Sbu: toggleSbu,
+          Columbia: toggleColumbia,
+          Ccny: toggleCcny,
         }}
       />
       {!inTop5 && (
