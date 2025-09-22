@@ -55,6 +55,15 @@ export const useCurrentLeaderboardUsersQuery = (
   const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
   const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
   const [gwc, setGwc] = useURLState("gwc", defaultGwc, tieToUrl, true, 100);
+  const [sbu, setSbu] = useURLState("sbu", false, tieToUrl, true, 100);
+  const [columbia, setColumbia] = useURLState(
+    "columbia",
+    false,
+    tieToUrl,
+    true,
+    100,
+  );
+  const [ccny, setCcny] = useURLState("ccny", false, tieToUrl, true, 100);
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -105,6 +114,21 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [goTo, setGwc]);
 
+  const toggleSbu = useCallback(() => {
+    setSbu((prev) => !prev);
+    goTo(1);
+  }, [setSbu, goTo]);
+
+  const toggleColumbia = useCallback(() => {
+    setColumbia((prev) => !prev);
+    goTo(1);
+  }, [setColumbia, goTo]);
+
+  const toggleCcny = useCallback(() => {
+    setCcny((prev) => !prev);
+    goTo(1);
+  }, [setCcny, goTo]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -123,6 +147,9 @@ export const useCurrentLeaderboardUsersQuery = (
       baruch,
       rpi,
       gwc,
+      sbu,
+      columbia,
+      ccny,
       globalIndex,
     ],
     queryFn: () =>
@@ -135,6 +162,9 @@ export const useCurrentLeaderboardUsersQuery = (
         baruch,
         rpi,
         gwc,
+        sbu,
+        columbia,
+        ccny,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -150,6 +180,9 @@ export const useCurrentLeaderboardUsersQuery = (
     baruch,
     rpi,
     gwc,
+    sbu,
+    columbia,
+    ccny,
     globalIndex,
     goBack,
     goForward,
@@ -165,6 +198,9 @@ export const useCurrentLeaderboardUsersQuery = (
     toggleRpi,
     toggleGlobalIndex,
     toggleGwc,
+    toggleSbu,
+    toggleColumbia,
+    toggleCcny,
   };
 };
 
@@ -271,6 +307,15 @@ export const useLeaderboardUsersByIdQuery = ({
   const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
   const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
   const [gwc, setGwc] = useURLState("gwc", false, tieToUrl, true, 100);
+  const [sbu, setSbu] = useURLState("sbu", false, tieToUrl, true, 100);
+  const [columbia, setColumbia] = useURLState(
+    "columbia",
+    false,
+    tieToUrl,
+    true,
+    100,
+  );
+  const [ccny, setCcny] = useURLState("ccny", false, tieToUrl, true, 100);
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -321,6 +366,21 @@ export const useLeaderboardUsersByIdQuery = ({
     goTo(1);
   }, [goTo, setGwc]);
 
+  const toggleSbu = useCallback(() => {
+    setSbu((prev) => !prev);
+    goTo(1);
+  }, [setSbu, goTo]);
+
+  const toggleColumbia = useCallback(() => {
+    setColumbia((prev) => !prev);
+    goTo(1);
+  }, [setColumbia, goTo]);
+
+  const toggleCcny = useCallback(() => {
+    setCcny((prev) => !prev);
+    goTo(1);
+  }, [setCcny, goTo]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -339,6 +399,9 @@ export const useLeaderboardUsersByIdQuery = ({
       nyu,
       baruch,
       rpi,
+      sbu,
+      columbia,
+      ccny,
       gwc,
       globalIndex,
     ],
@@ -353,6 +416,9 @@ export const useLeaderboardUsersByIdQuery = ({
         baruch,
         rpi,
         gwc,
+        sbu,
+        columbia,
+        ccny,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -368,6 +434,9 @@ export const useLeaderboardUsersByIdQuery = ({
     baruch,
     rpi,
     gwc,
+    sbu,
+    columbia,
+    ccny,
     globalIndex,
     goBack,
     goForward,
@@ -383,6 +452,9 @@ export const useLeaderboardUsersByIdQuery = ({
     toggleRpi,
     toggleGlobalIndex,
     toggleGwc,
+    toggleSbu,
+    toggleColumbia,
+    toggleCcny,
   };
 };
 
@@ -455,6 +527,9 @@ async function fetchLeaderboardUsers({
   baruch,
   rpi,
   gwc,
+  sbu,
+  columbia,
+  ccny,
   globalIndex,
 }: {
   page: number;
@@ -466,10 +541,13 @@ async function fetchLeaderboardUsers({
   baruch: boolean;
   rpi: boolean;
   gwc: boolean;
+  sbu: boolean;
+  columbia: boolean;
+  ccny: boolean;
   globalIndex: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
@@ -492,6 +570,9 @@ async function fetchLeaderboardUsersByLeaderboardId({
   baruch,
   rpi,
   gwc,
+  sbu,
+  columbia,
+  ccny,
   globalIndex,
   leaderboardId,
 }: {
@@ -504,11 +585,14 @@ async function fetchLeaderboardUsersByLeaderboardId({
   baruch: boolean;
   rpi: boolean;
   gwc: boolean;
+  sbu: boolean;
+  columbia: boolean;
+  ccny: boolean;
   globalIndex: boolean;
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
