@@ -1,11 +1,11 @@
-import { Skeleton } from "@mantine/core";
+import { Flex, Skeleton } from "@mantine/core";
 
 export default function UserTagsSkeleton() {
   return (
-    <div className="flex flex-wrap gap-2">
+    <Flex wrap="wrap" gap="sm">
       <Skeleton height={40} width={40} />
       <Skeleton height={40} width={40} />
       <Skeleton height={40} width={40} />
-    </div>
+    </Flex>
   );
 }
