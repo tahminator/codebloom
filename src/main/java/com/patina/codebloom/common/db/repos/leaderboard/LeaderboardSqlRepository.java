@@ -332,7 +332,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public Indexed<UserWithScore> getGlobalRankedUserById(final String leaderboardId, final String userId) {
-        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
+        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId, UserFilterOptions.builder().build());
         if (user == null) {
             return null;
         }
@@ -388,7 +388,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public Indexed<UserWithScore> getFilteredRankedUserById(final String leaderboardId, final String userId, final LeaderboardFilterOptions options) {
-        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
+        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId, UserFilterOptions.builder().build());
         if (user == null) {
             return null;
         }
