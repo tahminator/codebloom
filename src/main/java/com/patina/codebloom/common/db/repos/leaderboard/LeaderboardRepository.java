@@ -44,6 +44,29 @@ public interface LeaderboardRepository {
      */
     List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(String leaderboardId, LeaderboardFilterOptions options);
 
+    /**
+     * Returns a specific user's global rank on the leaderboard wrapped in
+     * {@code Indexed}. The rank is calculated globally without applying any
+     * filters.
+     *
+     * @param leaderboardId The ID of the leaderboard
+     * @param userId The ID of the user to fetch
+     * @return The user with their global rank, or null if user not found
+     */
+    Indexed<UserWithScore> getGlobalRankedUserById(String leaderboardId, String userId);
+
+    /**
+     * Returns a specific user's filtered rank on the leaderboard wrapped in
+     * {@code Indexed}. The rank is calculated with the provided filter options
+     * applied.
+     *
+     * @param leaderboardId The ID of the leaderboard
+     * @param userId The ID of the user to fetch
+     * @param options The filter options to apply when calculating rank
+     * @return The user with their filtered rank, or null if user not found
+     */
+    Indexed<UserWithScore> getFilteredRankedUserById(String leaderboardId, String userId, LeaderboardFilterOptions options);
+
     boolean disableLeaderboardById(String leaderboardId);
 
     /**
