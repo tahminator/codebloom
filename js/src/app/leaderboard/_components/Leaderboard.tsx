@@ -46,6 +46,12 @@ export default function LeaderboardIndex() {
     toggleBaruch,
     rpi,
     toggleRpi,
+    sbu,
+    toggleSbu,
+    columbia,
+    toggleColumbia,
+    ccny,
+    toggleCcny,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -215,6 +221,66 @@ export default function LeaderboardIndex() {
                   <Image
                     src="/Rpi_Logo.png"
                     alt="RPI Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={sbu}
+              toggle={() => toggleSbu()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  SBU
+                  <Image
+                    src="/SBU_shield.png"
+                    alt="Stony Brook University Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={columbia}
+              toggle={() => toggleColumbia()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Columbia
+                  <Image
+                    src="/Columbia_logo.png"
+                    alt="Columbia University Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={ccny}
+              toggle={() => toggleCcny()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  CCNY
+                  <Image
+                    src="/CCNY_logo.png"
+                    alt="City College of New York Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
                 </Box>
