@@ -242,30 +242,14 @@ public class LeaderboardController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active leaderboard found.");
         }
 
-        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardData.getId());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found on the current leaderboard.");
-        }
-
-        String leetcodeUsername = user.getLeetcodeUsername();
-        if (leetcodeUsername == null || leetcodeUsername.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not have a leetcode username.");
-        }
-
-        List<Indexed<UserWithScore>> results;
+        Indexed<UserWithScore> userWithRank;
 
         if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc) {
-            LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-                            .page(1)
-                            .pageSize(1)
-                            .query(leetcodeUsername)
-                            .build();
-            results = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(leaderboardData.getId(), options);
+            // Use global ranking when no filters are applied
+            userWithRank = leaderboardRepository.getGlobalRankedUserById(leaderboardData.getId(), userId);
         } else {
+            // Use filtered ranking when filters are applied
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
-                            .page(1)
-                            .pageSize(1)
-                            .query(leetcodeUsername)
                             .patina(patina)
                             .hunter(hunter)
                             .nyu(nyu)
@@ -273,16 +257,11 @@ public class LeaderboardController {
                             .rpi(rpi)
                             .gwc(gwc)
                             .build();
-            results = leaderboardRepository.getRankedIndexedLeaderboardUsersById(leaderboardData.getId(), options);
+            userWithRank = leaderboardRepository.getFilteredRankedUserById(leaderboardData.getId(), userId, options);
         }
 
-        if (results == null || results.size() != 1) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User rank lookup failed - expected exactly 1 result.");
-        }
-
-        Indexed<UserWithScore> userWithRank = results.get(0);
-        if (!leetcodeUsername.equals(userWithRank.getItem().getLeetcodeUsername())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User rank lookup failed - leetcode username mismatch.");
+        if (userWithRank == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found on the current leaderboard or does not match the specified filters.");
         }
 
         return ResponseEntity.ok().body(ApiResponder.success("User rank found!", userWithRank));
