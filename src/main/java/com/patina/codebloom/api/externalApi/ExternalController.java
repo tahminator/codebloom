@@ -27,14 +27,14 @@ import java.util.List;
 @RestController
 @Tag(name = "External Api Routes", description = """
                 These routes house the logic for External Apis. """)
-@RequestMapping("/api/externalApis")
-public class ExternalApiController {
+@RequestMapping("/api/external")
+public class ExternalController {
 
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyAccessRepository apiKeyAccessRepository;
     private final LeaderboardRepository leaderboardRepository;
 
-    public ExternalApiController(
+    public ExternalController(
                     final ApiKeyRepository apiKeyRepository,
                     final ApiKeyAccessRepository apiKeyAccessRepository,
                     final LeaderboardRepository leaderboardRepository) {
