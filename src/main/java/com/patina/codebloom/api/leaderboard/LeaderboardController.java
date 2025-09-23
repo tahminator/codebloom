@@ -232,8 +232,7 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
                     @Parameter(description = "Filter for Baruch College users") @RequestParam(required = false, defaultValue = "false") final boolean baruch,
                     @Parameter(description = "Filter for RPI users") @RequestParam(required = false, defaultValue = "false") final boolean rpi,
-                    @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc,
-                    ) {
+                    @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc){
         FakeLag.sleep(650);
 
         Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
