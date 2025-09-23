@@ -60,7 +60,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/user/:userId",
+    path: "/user/:leetcodeUsername",
     element: <UserProfilePage />,
     errorElement: <ErrorPage />,
   },

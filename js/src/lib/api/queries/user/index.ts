@@ -8,12 +8,16 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 
 /**
- * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more.
+ * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more using the userId.
  */
-export const useUserProfileQuery = ({ userId }: { userId?: string }) => {
+export const useUserProfileQuery = ({
+  leetcodeUsername,
+}: {
+  leetcodeUsername?: string;
+}) => {
   return useQuery({
-    queryKey: ["user", "profile", userId],
-    queryFn: () => fetchUserProfile({ userId }),
+    queryKey: ["user", "profile", leetcodeUsername],
+    queryFn: () => fetchUserProfile({ leetcodeUsername }),
     placeholderData: keepPreviousData,
   });
 };
@@ -151,8 +155,14 @@ export const useGetAllUsersQuery = (
   };
 };
 
-async function fetchUserProfile({ userId }: { userId?: string }) {
-  const response = await fetch(`/api/user/${userId ?? ""}/profile`);
+async function fetchUserProfile({
+  leetcodeUsername,
+}: {
+  leetcodeUsername?: string;
+}) {
+  const response = await fetch(
+    `/api/user/v2/${leetcodeUsername ?? ""}/profile`,
+  );
 
   const json = (await response.json()) as UnknownApiResponse<User>;
 
