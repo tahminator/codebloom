@@ -218,6 +218,105 @@ public class LeaderboardController {
         return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
     }
 
+    @GetMapping("/current/user/{userId}/rank")
+    @Operation(summary = "Fetch the specific user's current rank/position on the active leaderboard.", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "User not found on leaderboard"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    })
+    public ResponseEntity<ApiResponder<Indexed<UserWithScore>>> getUserCurrentLeaderboardRank(
+                    final HttpServletRequest request,
+                    @PathVariable final String userId,
+                    @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
+                    @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
+                    @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
+                    @Parameter(description = "Filter for Baruch College users") @RequestParam(required = false, defaultValue = "false") final boolean baruch,
+                    @Parameter(description = "Filter for RPI users") @RequestParam(required = false, defaultValue = "false") final boolean rpi,
+                    @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc,
+                    @Parameter(description = "Enable global leaderboard rank") @RequestParam(required = false, defaultValue = "false") final boolean globalRank) {
+        FakeLag.sleep(650);
+
+        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
+
+        if (leaderboardData == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active leaderboard found.");
+        }
+
+        Indexed<UserWithScore> userWithRank;
+
+        // If globalRank is enabled OR no filters are applied, use global ranking
+        if (globalRank || (!patina && !hunter && !nyu && !baruch && !rpi && !gwc)) {
+            userWithRank = leaderboardRepository.getGlobalRankedUserById(leaderboardData.getId(), userId);
+        } else {
+            // Use filtered ranking when filters are applied
+            LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+                            .patina(patina)
+                            .hunter(hunter)
+                            .nyu(nyu)
+                            .baruch(baruch)
+                            .rpi(rpi)
+                            .gwc(gwc)
+                            .build();
+            userWithRank = leaderboardRepository.getFilteredRankedUserById(leaderboardData.getId(), userId, options);
+        }
+
+        if (userWithRank == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found on the current leaderboard.");
+        }
+
+        return ResponseEntity.ok().body(ApiResponder.success("User rank found!", userWithRank));
+    }
+
+    @GetMapping("/{leaderboardId}/user/{userId}/rank")
+    @Operation(summary = "Fetch the specific user's rank/position on a specific leaderboard.", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "User or leaderboard not found"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    })
+    public ResponseEntity<ApiResponder<Indexed<UserWithScore>>> getUserLeaderboardRank(
+                    final HttpServletRequest request,
+                    @PathVariable final String leaderboardId,
+                    @PathVariable final String userId,
+                    @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
+                    @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
+                    @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
+                    @Parameter(description = "Filter for Baruch College users") @RequestParam(required = false, defaultValue = "false") final boolean baruch,
+                    @Parameter(description = "Filter for RPI users") @RequestParam(required = false, defaultValue = "false") final boolean rpi,
+                    @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc,
+                    @Parameter(description = "Enable global leaderboard rank") @RequestParam(required = false, defaultValue = "false") final boolean globalRank) {
+        FakeLag.sleep(650);
+
+        // Verify leaderboard exists
+        Leaderboard leaderboard = leaderboardRepository.getLeaderboardMetadataById(leaderboardId);
+        if (leaderboard == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Leaderboard cannot be found or does not exist.");
+        }
+
+        Indexed<UserWithScore> userWithRank;
+
+        // If globalRank is enabled OR no filters are applied, use global ranking
+        if (globalRank || (!patina && !hunter && !nyu && !baruch && !rpi && !gwc)) {
+            userWithRank = leaderboardRepository.getGlobalRankedUserById(leaderboardId, userId);
+        } else {
+            // Use filtered ranking when filters are applied
+            LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
+                            .patina(patina)
+                            .hunter(hunter)
+                            .nyu(nyu)
+                            .baruch(baruch)
+                            .rpi(rpi)
+                            .gwc(gwc)
+                            .build();
+            userWithRank = leaderboardRepository.getFilteredRankedUserById(leaderboardId, userId, options);
+        }
+
+        if (userWithRank == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found on the specified leaderboard.");
+        }
+
+        return ResponseEntity.ok().body(ApiResponder.success("User rank found!", userWithRank));
+    }
+
     @GetMapping("/all/metadata")
     @Operation(summary = "Returns the metadata for all leaderboards.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })

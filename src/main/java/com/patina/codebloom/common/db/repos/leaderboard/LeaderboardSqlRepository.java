@@ -331,6 +331,155 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
+    public Indexed<UserWithScore> getGlobalRankedUserById(final String leaderboardId, final String userId) {
+        // First get the user with score
+        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
+        if (user == null) {
+            return null;
+        }
+
+        String sql = """
+                        WITH ranks AS (
+                            SELECT
+                                m."userId",
+                                ROW_NUMBER() OVER (
+                                    ORDER BY
+                                        m."totalScore" DESC,
+                                        -- The following case is used to put users with linked leetcode names before
+                                        -- those who don't.
+                                        CASE
+                                            WHEN m."totalScore" = 0 THEN
+                                                CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
+                                            ELSE 0
+                                        END,
+                                        -- This is the tie breaker if we can't sort them by the above conditions.
+                                        m."createdAt" ASC,
+                                        -- This is extremely rare, but if the createdAt time is somehow not unique,
+                                        -- this serves to be the final tiebreaker.
+                                        m."userId"
+                                ) AS rank
+                            FROM "Metadata" m
+                            JOIN "User" u ON u.id = m."userId"
+                            WHERE m."leaderboardId" = :leaderboardId
+                        )
+                        SELECT
+                            r.rank
+                        FROM
+                            ranks r
+                        WHERE
+                            r."userId" = :userId
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
+            stmt.setObject("userId", UUID.fromString(userId));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int rank = rs.getInt("rank");
+                    return Indexed.of(user, rank);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get global rank for user", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Indexed<UserWithScore> getFilteredRankedUserById(final String leaderboardId, final String userId, final LeaderboardFilterOptions options) {
+        // First get the user with score
+        UserWithScore user = userRepository.getUserWithScoreById(userId, leaderboardId);
+        if (user == null) {
+            return null;
+        }
+
+        String sql = """
+                        WITH ranks AS (
+                            SELECT
+                                m."userId",
+                                ROW_NUMBER() OVER (
+                                    ORDER BY
+                                        m."totalScore" DESC,
+                                        CASE
+                                            WHEN m."totalScore" = 0 THEN
+                                                CASE WHEN u."leetcodeUsername" IS NOT NULL THEN 0 ELSE 1 END
+                                            ELSE 0
+                                        END,
+                                        m."createdAt" ASC,
+                                        m."userId"
+                                ) AS rank
+                            FROM
+                                "Metadata" m
+                            JOIN
+                                "User" u
+                            ON
+                                u.id = m."userId"
+                            JOIN
+                                "Leaderboard" l
+                            ON
+                                m."leaderboardId" = l.id
+                            WHERE
+                                m."leaderboardId" = :leaderboardId
+                            AND (
+                                EXISTS (
+                                    SELECT 1 FROM "UserTag" ut
+                                    WHERE ut."userId" = m."userId"
+                                    AND (
+                                        (:patina = TRUE AND ut.tag = 'Patina') OR
+                                        (:hunter = TRUE AND ut.tag = 'Hunter') OR
+                                        (:nyu = TRUE AND ut.tag = 'Nyu') OR
+                                        (:baruch = TRUE AND ut.tag = 'Baruch') OR
+                                        (:rpi = TRUE AND ut.tag = 'Rpi') OR
+                                        (:gwc = TRUE AND ut.tag = 'Gwc')
+                                    )
+                                    AND (
+                                        -- Any tag is valid for current leaderboard
+                                        (l."deletedAt" IS NULL)
+                                        OR
+                                        -- Tag is only valid for previous leaderboards if it was created before
+                                        -- leaderboard started, or during the lifespan of leaderboard.
+                                        (l."deletedAt" IS NOT NULL AND ut."createdAt" <= l."deletedAt")
+                                    )
+                                )
+                                OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE
+                                AND :rpi = FALSE AND :gwc = FALSE)
+                            )
+                        )
+                        SELECT
+                            r.rank
+                        FROM
+                            ranks r
+                        WHERE
+                            r."userId" = :userId
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
+            stmt.setObject("userId", UUID.fromString(userId));
+
+            stmt.setBoolean("patina", options.isPatina());
+            stmt.setBoolean("hunter", options.isHunter());
+            stmt.setBoolean("nyu", options.isNyu());
+            stmt.setBoolean("baruch", options.isBaruch());
+            stmt.setBoolean("rpi", options.isRpi());
+            stmt.setBoolean("gwc", options.isGwc());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int rank = rs.getInt("rank");
+                    return Indexed.of(user, rank);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get filtered rank for user", e);
+        }
+
+        return null;
+    }
+
+    @Override
     public List<UserWithScore> getRecentLeaderboardUsers(final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
