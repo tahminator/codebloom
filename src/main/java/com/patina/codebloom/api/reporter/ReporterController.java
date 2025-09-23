@@ -43,8 +43,6 @@ public class ReporterController {
         String origin = request.getHeader("Origin");
         String serverUrl = serverUrlUtils.getUrl();
 
-        System.out.println(String.format("%s %s", origin, serverUrl));
-
         if (origin == null) {
             return false;
         }
