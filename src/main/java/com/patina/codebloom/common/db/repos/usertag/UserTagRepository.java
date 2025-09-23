@@ -14,7 +14,7 @@ public interface UserTagRepository {
     ArrayList<UserTag> findTagsByUserId(String userId);
 
     /**
-     * @note - Will not return any tags before `pointOfTime` set in options. If
+     * @note - Will return tags created at or before `pointOfTime` set in options. If
      * `pointOfTime` is set to `null` (default), it will return all tags attached to
      * given user ID.
      */

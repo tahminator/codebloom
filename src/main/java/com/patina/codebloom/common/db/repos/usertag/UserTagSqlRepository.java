@@ -155,7 +155,7 @@ public class UserTagSqlRepository implements UserTagRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch user tag by user ID and tag", e);
+            throw new RuntimeException("Failed to fetch user tags by user ID with filter options", e);
         }
 
         return tags;
