@@ -283,8 +283,8 @@ export default function LeaderboardWithId({
                         to={`/user/${entry.id}`}
                         className="group"
                       >
-                        <Flex align="center" gap="xs">
-                          {entry.nickname ?
+                        {entry.nickname && (
+                          <Flex align="center" gap="xs">
                             <Tooltip
                               label={
                                 "This user is a verified member of the Patina Discord server."
@@ -301,11 +301,13 @@ export default function LeaderboardWithId({
                                 {entry.nickname}
                               </span>
                             </Tooltip>
-                          : <span className="transition-all group-hover:text-blue-500 w-max">
-                              <FaDiscord style={{ display: "inline" }} />{" "}
-                              {entry.discordName}
-                            </span>
-                          }
+                          </Flex>
+                        )}
+                        <Flex align="center" gap="xs">
+                          <span className="transition-all group-hover:text-blue-500 w-max">
+                            <FaDiscord style={{ display: "inline" }} />{" "}
+                            {entry.discordName}
+                          </span>
                           {tagFF && (
                             <TagList
                               tags={entry.tags || []}
