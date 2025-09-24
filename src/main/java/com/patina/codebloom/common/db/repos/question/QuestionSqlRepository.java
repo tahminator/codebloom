@@ -1,11 +1,13 @@
 package com.patina.codebloom.common.db.repos.question;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -272,48 +274,58 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query, final boolean pointFilter) {
-
+    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query, final boolean pointFilter, final Set<String> topics) {
         ArrayList<Question> questions = new ArrayList<>();
         String sql = """
-                        SELECT
-                            q.id,
-                            q."userId",
-                            q."questionSlug",
-                            q."questionDifficulty",
-                            q."questionNumber",
-                            q."questionLink",
-                            q."pointsAwarded",
-                            q."questionTitle",
-                            q.description,
-                            q."acceptanceRate",
-                            q."createdAt",
-                            q."submittedAt",
-                            q.runtime,
-                            q.memory,
-                            q.code,
-                            q.language,
-                            q."submissionId"
-                        FROM
-                            "Question" q
-                        JOIN
-                            "User" u ON q."userId" = u.id
-                        WHERE
-                            "userId" = ?
-                        AND
-                            q."questionTitle" ILIKE ?
-                        AND
-                            (NOT ? OR q."pointsAwarded" <> 0)
-                        ORDER BY "submittedAt" DESC
-                        LIMIT ? OFFSET ?
+                        SELECT *
+                        FROM (
+                            SELECT DISTINCT ON (q.id)
+                                q.id,
+                                q."userId",
+                                q."questionSlug",
+                                q."questionDifficulty",
+                                q."questionNumber",
+                                q."questionLink",
+                                q."pointsAwarded",
+                                q."questionTitle",
+                                q.description,
+                                q."acceptanceRate",
+                                q."createdAt",
+                                q."submittedAt",
+                                q.runtime,
+                                q.memory,
+                                q.code,
+                                q.language,
+                                q."submissionId"
+                            FROM
+                                "Question" q
+                            JOIN "User" u ON q."userId" = u.id
+                            JOIN "QuestionTopic" t ON t."questionId" = q."id"
+                            WHERE
+                                q."userId" = ?
+                                AND q."questionTitle" ILIKE ?
+                                AND (NOT ? OR q."pointsAwarded" <> 0)
+                                AND (
+                                    ? = '{}'::varchar[]
+                                    OR t."topicSlug" = ANY (?)
+                                )
+                            ORDER BY q.id, q."submittedAt" DESC   -- required for DISTINCT ON
+                        ) sub
+                        ORDER BY "submittedAt" DESC               -- final sort order
+                        LIMIT ? OFFSET ?;
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
             stmt.setBoolean(3, pointFilter);
-            stmt.setInt(4, pageSize);
-            stmt.setInt(5, (page - 1) * pageSize);
+
+            Array topicsArray = conn.createArrayOf("VARCHAR", topics.toArray(new String[0]));
+
+            stmt.setArray(4, topicsArray);
+            stmt.setArray(5, topicsArray);
+            stmt.setInt(6, pageSize);
+            stmt.setInt(7, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
