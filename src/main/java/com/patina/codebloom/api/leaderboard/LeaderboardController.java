@@ -232,7 +232,10 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
                     @Parameter(description = "Filter for Baruch College users") @RequestParam(required = false, defaultValue = "false") final boolean baruch,
                     @Parameter(description = "Filter for RPI users") @RequestParam(required = false, defaultValue = "false") final boolean rpi,
-                    @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc) {
+                    @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc,
+                    @Parameter(description = "Filter for SBU users") @RequestParam(required = false, defaultValue = "false") final boolean sbu,
+                    @Parameter(description = "Filter for CCNY users") @RequestParam(required = false, defaultValue = "false") final boolean ccny,
+                    @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia ) {
         FakeLag.sleep(650);
 
         Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
@@ -243,7 +246,7 @@ public class LeaderboardController {
 
         Indexed<UserWithScore> userWithRank;
 
-        if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc) {
+        if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc && !sbu && !ccny && columbia) {
             // Use global ranking when no filters are applied
             userWithRank = leaderboardRepository.getGlobalRankedUserById(leaderboardData.getId(), userId);
         } else {
@@ -255,6 +258,9 @@ public class LeaderboardController {
                             .baruch(baruch)
                             .rpi(rpi)
                             .gwc(gwc)
+                            .sbu(sbu)
+                            .ccny(ccny)
+                            .columbia(columbia)
                             .build();
             userWithRank = leaderboardRepository.getFilteredRankedUserById(leaderboardData.getId(), userId, options);
         }
