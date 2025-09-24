@@ -20,6 +20,8 @@ import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.lag.FakeLag;
+import com.patina.codebloom.common.security.AuthenticationObject;
+import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.page.Indexed;
 import com.patina.codebloom.common.page.Page;
 
@@ -39,10 +41,12 @@ public class LeaderboardController {
 
     private final LeaderboardRepository leaderboardRepository;
     private final UserRepository userRepository;
+    private final Protector protector;
 
-    public LeaderboardController(final LeaderboardRepository leaderboardRepository, final UserRepository userRepository) {
+    public LeaderboardController(final LeaderboardRepository leaderboardRepository, final UserRepository userRepository, final Protector protector) {
         this.leaderboardRepository = leaderboardRepository;
         this.userRepository = userRepository;
+        this.protector = protector;
     }
 
     @GetMapping("/{leaderboardId}/metadata")
@@ -218,15 +222,14 @@ public class LeaderboardController {
         return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
     }
 
-    @GetMapping("/current/user/{userId}/rank")
-    @Operation(summary = "Fetch the specific user's current rank/position on the active leaderboard.", responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "User not found on leaderboard"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    @GetMapping("/current/user/rank")
+    @Operation(summary = "Fetch the authenticated user's current rank/position on the active leaderboard.", responses = {
+            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved user rank"),
+            @ApiResponse(responseCode = "404", description = "User not found on leaderboard")
     })
     public ResponseEntity<ApiResponder<Indexed<UserWithScore>>> getUserCurrentLeaderboardRank(
                     final HttpServletRequest request,
-                    @PathVariable final String userId,
                     @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
                     @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
                     @Parameter(description = "Filter for NYU users") @RequestParam(required = false, defaultValue = "false") final boolean nyu,
@@ -235,8 +238,11 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for GWC users") @RequestParam(required = false, defaultValue = "false") final boolean gwc,
                     @Parameter(description = "Filter for SBU users") @RequestParam(required = false, defaultValue = "false") final boolean sbu,
                     @Parameter(description = "Filter for CCNY users") @RequestParam(required = false, defaultValue = "false") final boolean ccny,
-                    @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia ) {
+                    @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia) {
         FakeLag.sleep(650);
+
+        AuthenticationObject authenticationObject = protector.validateSession(request);
+        String userId = authenticationObject.getUser().getId();
 
         Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
