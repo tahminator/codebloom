@@ -6,7 +6,6 @@ import { Flex, Box, Center, Text, Button } from "@mantine/core";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import ProfilePicture from "./_components/UserProfile/ProfilePicture/ProfilePicture";
-import ProfilePictureSkeleton from "./_components/UserProfile/ProfilePicture/ProfilePictureSkeleton";
 import MiniUserSubmissions from "./submissions/_components/UserSubmissions/MiniUserSubmissions";
 
 export default function UserProfilePage() {
@@ -15,7 +14,7 @@ export default function UserProfilePage() {
   const { data, status } = useUserProfileQuery({ leetcodeUsername });
 
   if (status === "pending") {
-    return <ProfilePictureSkeleton />;
+    return <></>;
   }
 
   if (status === "error") {

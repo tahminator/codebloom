@@ -18,7 +18,6 @@ export default function LeaderboardCard({
   sizeOrder,
   totalScore,
   width,
-  userId,
   nickname,
   tags,
 }: {
@@ -28,7 +27,6 @@ export default function LeaderboardCard({
   leetcodeUsername: string | null;
   totalScore: number;
   width: CSSProperties["width"];
-  userId: string;
   nickname: string | null;
   tags?: UserTag[];
 }) {
@@ -60,7 +58,7 @@ export default function LeaderboardCard({
         width,
       }}
       component={Link}
-      to={`/user/${userId}`}
+      to={`/user/${leetcodeUsername}`}
     >
       <Text ta="center" size="xl">
         {placeString}

@@ -84,7 +84,6 @@ export default function LeaderboardIndex() {
             totalScore={second.totalScore}
             nickname={second.nickname}
             width={"300px"}
-            userId={second.id}
             tags={second.tags}
           />
         )}
@@ -97,7 +96,6 @@ export default function LeaderboardIndex() {
             totalScore={first.totalScore}
             nickname={first.nickname}
             width={"300px"}
-            userId={first.id}
             tags={first.tags}
           />
         )}
@@ -110,7 +108,6 @@ export default function LeaderboardIndex() {
             totalScore={third.totalScore}
             nickname={third.nickname}
             width={"300px"}
-            userId={third.id}
             tags={third.tags}
           />
         )}
@@ -273,7 +270,7 @@ export default function LeaderboardIndex() {
                     <Flex
                       direction={"column"}
                       component={Link}
-                      to={`/user/${entry.id}`}
+                      to={`/user/${entry.leetcodeUsername}`}
                       className="group"
                     >
                       {entry.nickname && (

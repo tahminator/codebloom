@@ -61,7 +61,7 @@ export default function SubmissionDetailsContent({
     runtime,
     memory,
     language,
-    userId,
+    leetcodeUsername,
   } = data.payload;
 
   const badgeAcceptedColor = (() => {
@@ -162,7 +162,7 @@ export default function SubmissionDetailsContent({
           <Center mt={"xs"}>
             <Button
               onClick={() => {
-                navigate(`/user/${userId}`);
+                navigate(`/user/${leetcodeUsername}`);
               }}
             >
               ← Go back to profile

@@ -12,7 +12,13 @@ import {
 } from "@mantine/core";
 import { Link } from "react-router-dom";
 
-export default function RecentSubmissions({ userId }: { userId: string }) {
+export default function RecentSubmissions({
+  userId,
+  leetcodeUsername,
+}: {
+  userId: string;
+  leetcodeUsername: string;
+}) {
   const { data, status } = useUserSubmissionsQuery({ userId });
 
   if (status === "pending") {
@@ -88,7 +94,11 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
             Submissions
           </Title>
         </Center>
-        <Button variant={"light"} component={Link} to={`/user/${userId}`}>
+        <Button
+          variant={"light"}
+          component={Link}
+          to={`/user/${leetcodeUsername}`}
+        >
           View all
         </Button>
       </Flex>

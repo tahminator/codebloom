@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const onboarded = !!data.user.leetcodeUsername;
   const schoolRegistered = !!data.user.schoolEmail;
 
-  if (!onboarded) {
+  if (!onboarded || !data.user.leetcodeUsername) {
     return (
       <ToastWithRedirect
         to="/onboarding"
@@ -46,6 +46,8 @@ export default function DashboardPage() {
       />
     );
   }
+
+  const leetcodeUsername = data.user.leetcodeUsername;
   return (
     <>
       <Header />
@@ -77,7 +79,10 @@ export default function DashboardPage() {
             />
           </Flex>
           <Flex direction={"column"} flex={1}>
-            <RecentSubmissions userId={data.user.id} />
+            <RecentSubmissions
+              userId={data.user.id}
+              leetcodeUsername={leetcodeUsername}
+            />
           </Flex>
         </Flex>
       </Flex>

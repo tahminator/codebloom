@@ -86,7 +86,6 @@ export default function GwcLeaderboardEmbed() {
             totalScore={second.totalScore}
             nickname={second.nickname}
             width={"300px"}
-            userId={second.id as string}
           />
         )}
         {page === 1 && first && !debouncedQuery && (
@@ -98,7 +97,6 @@ export default function GwcLeaderboardEmbed() {
             totalScore={first.totalScore}
             nickname={first.nickname}
             width={"300px"}
-            userId={first.id as string}
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -110,7 +108,6 @@ export default function GwcLeaderboardEmbed() {
             totalScore={third.totalScore}
             nickname={third.nickname}
             width={"300px"}
-            userId={third.id as string}
           />
         )}
       </Flex>
@@ -151,7 +148,7 @@ export default function GwcLeaderboardEmbed() {
                     <Flex
                       direction={"column"}
                       component={Link}
-                      to={`/user/${entry.id}`}
+                      to={`/user/${entry.leetcodeUsername}`}
                       className="group"
                     >
                       {entry.nickname ?
