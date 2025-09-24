@@ -20,6 +20,7 @@ import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -108,7 +109,7 @@ public class QuestionSqlRepositoryTest {
     @Order(3)
     void testGetQuestionsByUserId() {
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
-                        testQuestion.getUserId(), 1, 20, "", false);
+                        testQuestion.getUserId(), 1, 20, "", false, Collections.emptySet());
 
         assertNotNull(questions, "Questions list should not be null");
         assertTrue(questions.size() > 0, "Questions list should contain at least one question");
