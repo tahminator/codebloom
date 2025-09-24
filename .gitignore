@@ -62,5 +62,3 @@ node_modules
 # Ignore the static folder, it will be generated in the build process for production use.
 **/static/*
 
-# Used by Playwright
-example*
