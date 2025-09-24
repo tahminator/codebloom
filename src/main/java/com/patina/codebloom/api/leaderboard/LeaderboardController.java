@@ -246,7 +246,7 @@ public class LeaderboardController {
 
         Indexed<UserWithScore> userWithRank;
 
-        if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc && !sbu && !ccny && columbia) {
+        if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc && !sbu && !ccny && !columbia) {
             // Use global ranking when no filters are applied
             userWithRank = leaderboardRepository.getGlobalRankedUserById(leaderboardData.getId(), userId);
         } else {
