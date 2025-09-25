@@ -1,7 +1,6 @@
 package com.patina.codebloom.reactEmail;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,20 +13,17 @@ import org.jsoup.nodes.Element;
 import com.patina.codebloom.common.email.client.ReactEmailClient;
 import com.patina.codebloom.common.email.client.ReactEmailClientImpl;
 
-class ReactEmailClientImplTest {
+class ReactEmailClientTest {
 
     @Test
     void jsoupRenderTest() throws IOException {
         ReactEmailClient client = new ReactEmailClientImpl();
 
-        String templatePath = "static/email/example.html";
+        String recipientName = "Example";
+        String verifyUrl = "https://example.com";
+        String supportEmail = "codebloom@patinanetwork.org";
 
-        Map<String, String> vars = Map.of(
-                        "recipientName", "Example",
-                        "verifyUrl", "https://example.com",
-                        "supportEmail", "codebloom@patinanetwork.org");
-
-        String renderedHtml = client.renderWithJsoup(templatePath, vars);
+        String renderedHtml = client.createExampleTemplate(recipientName, verifyUrl, supportEmail);
         System.out.println(renderedHtml);
 
         Document doc = Jsoup.parse(renderedHtml);
@@ -45,8 +41,7 @@ class ReactEmailClientImplTest {
         assertEquals("codebloom@patinanetwork.org", supportText.text(), "supportEmail text not set");
 
         Element supportHref = doc.getElementById("input-supportEmail-href");
-        assertNotNull(supportHref, "Missing element: input-supportEmail-innerText");
-        assertEquals("codebloom@patinanetwork.org", supportHref.text(), "supportEmail text not set");
-
+        assertNotNull(supportHref, "Missing element: input-supportEmail-href");
+        assertEquals("codebloom@patinanetwork.org", supportHref.attr("href"), "supportEmail href not set");
     }
 }
