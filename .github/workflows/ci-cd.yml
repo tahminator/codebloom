@@ -111,6 +111,13 @@ jobs:
             - name: Ensure browsers are installed
               run: ./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps firefox"
 
+            - name: Install Dependencies
+              run: corepack enable pnpm && pnpm i --frozen-lockfile
+              working-directory: email
+
+            - name: Convert React Email to HTML
+              run: ./email.sh
+
             - name: Run Tests
               run: ./mvnw test -Denv.SKIP=true -Dspring.profiles.active=ci
 
