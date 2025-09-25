@@ -32,6 +32,10 @@ class ReactEmailClientTest {
         assertNotNull(recipientText, "Missing element: input-recipientName-innerText");
         assertEquals("Example", recipientText.text(), "recipientName text not set");
 
+        Element verifyText = doc.getElementById("input-verifyUrl-innerText");
+        assertNotNull(verifyText, "Missing element: input-verifyUrl-innerText");
+        assertEquals("https://example.com", verifyText.text(), "verifyUrl text not set");
+
         Element verifyHref = doc.getElementById("input-verifyUrl-href");
         assertNotNull(verifyHref, "Missing element: input-verifyUrl-href");
         assertEquals("https://example.com", verifyHref.attr("href"), "verifyUrl href not set");
