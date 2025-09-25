@@ -22,6 +22,7 @@ public class ReactEmailClientImpl implements ReactEmailClient {
         final Document doc = Jsoup.parse(html);
 
         doc.getElementById("input-recipientName-innerText").text(recipientName);
+        doc.getElementById("input-verifyUrl-innerText").text(verifyUrl);
         doc.getElementById("input-verifyUrl-href").attr("href", verifyUrl);
         doc.getElementById("input-supportEmail-innerText").text(supportEmail);
         doc.getElementById("input-supportEmail-href").attr("href", supportEmail);
