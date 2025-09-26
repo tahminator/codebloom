@@ -17,8 +17,10 @@ import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
+import com.patina.codebloom.common.db.repos.question.topic.service.QuestionTopicService;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 @Component
@@ -27,6 +29,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     private Connection conn;
     private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
+    private final QuestionTopicService questionTopicService;
 
     private Question mapResultSetToQuestion(final ResultSet rs) throws SQLException {
         var questionId = rs.getString("id");
@@ -70,10 +73,11 @@ public class QuestionSqlRepository implements QuestionRepository {
                         .build();
     }
 
-    public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository) {
+    public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository, final QuestionTopicService questionTopicService) {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
+        this.questionTopicService = questionTopicService;
     }
 
     @Override
@@ -306,12 +310,12 @@ public class QuestionSqlRepository implements QuestionRepository {
                                 AND q."questionTitle" ILIKE ?
                                 AND (NOT ? OR q."pointsAwarded" <> 0)
                                 AND (
-                                    ? = '{}'::varchar[]
-                                    OR t."topicSlug" = ANY (?)
+                                    ? = '{}'::"LeetcodeTopicEnum"[] 
+                                    OR t."topic" = ANY(?)
                                 )
-                            ORDER BY q.id, q."submittedAt" DESC   -- required for DISTINCT ON
+                            ORDER BY q.id, q."submittedAt" DESC
                         ) sub
-                        ORDER BY "submittedAt" DESC               -- final sort order
+                        ORDER BY "submittedAt" DESC
                         LIMIT ? OFFSET ?;
                         """;
 
@@ -320,7 +324,9 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(2, "%" + query + "%");
             stmt.setBoolean(3, pointFilter);
 
-            Array topicsArray = conn.createArrayOf("VARCHAR", topics.toArray(new String[0]));
+            LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
+
+            Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", topicEnums);
 
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
