@@ -310,7 +310,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                             FROM
                                 "Question" q
                             JOIN "User" u ON q."userId" = u.id
-                            JOIN "QuestionTopic" t ON t."questionId" = q."id"
+                            LEFT JOIN "QuestionTopic" t ON t."questionId" = q."id"
                             WHERE
                                 q."userId" = ?
                                 AND q."questionTitle" ILIKE ?
