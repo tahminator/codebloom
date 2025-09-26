@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -326,8 +327,12 @@ public class QuestionSqlRepository implements QuestionRepository {
 
             LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
 
-            Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", topicEnums);
+            String[] sqlValues = Arrays.stream(topicEnums)
+                .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                .toArray(String[]::new);
 
+            Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
+            System.out.println(topicsArray);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
             stmt.setInt(6, pageSize);

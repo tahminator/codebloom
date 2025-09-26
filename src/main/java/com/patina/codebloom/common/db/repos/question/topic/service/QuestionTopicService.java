@@ -19,7 +19,8 @@ public class QuestionTopicService {
 
     public LeetcodeTopicEnum[] stringsToEnums(final Set<String> topics) {
         return topics.stream()
-                        .map(LeetcodeTopicEnum::fromValue)
+                        .map(LeetcodeTopicEnum::valueOf)
                         .toArray(LeetcodeTopicEnum[]::new);
     }
+
 }
