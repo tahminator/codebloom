@@ -1,11 +1,14 @@
 package com.patina.codebloom.common.db.repos.question;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -15,8 +18,10 @@ import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
+import com.patina.codebloom.common.db.repos.question.topic.service.QuestionTopicService;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 
 @Component
@@ -25,6 +30,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     private Connection conn;
     private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
+    private final QuestionTopicService questionTopicService;
 
     private Question mapResultSetToQuestion(final ResultSet rs) throws SQLException {
         var questionId = rs.getString("id");
@@ -68,10 +74,16 @@ public class QuestionSqlRepository implements QuestionRepository {
                         .build();
     }
 
-    public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository) {
+    public QuestionSqlRepository(
+        final DbConnection dbConnection,
+        final UserRepository userRepository,
+        final QuestionTopicRepository questionTopicRepository,
+        final QuestionTopicService questionTopicService
+    ) {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
+        this.questionTopicService = questionTopicService;
     }
 
     @Override
@@ -272,48 +284,62 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query, final boolean pointFilter) {
-
+    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query, final boolean pointFilter, final Set<String> topics) {
         ArrayList<Question> questions = new ArrayList<>();
         String sql = """
-                        SELECT
-                            q.id,
-                            q."userId",
-                            q."questionSlug",
-                            q."questionDifficulty",
-                            q."questionNumber",
-                            q."questionLink",
-                            q."pointsAwarded",
-                            q."questionTitle",
-                            q.description,
-                            q."acceptanceRate",
-                            q."createdAt",
-                            q."submittedAt",
-                            q.runtime,
-                            q.memory,
-                            q.code,
-                            q.language,
-                            q."submissionId"
-                        FROM
-                            "Question" q
-                        JOIN
-                            "User" u ON q."userId" = u.id
-                        WHERE
-                            "userId" = ?
-                        AND
-                            q."questionTitle" ILIKE ?
-                        AND
-                            (NOT ? OR q."pointsAwarded" <> 0)
+                        SELECT *
+                        FROM (
+                            SELECT DISTINCT ON (q.id)
+                                q.id,
+                                q."userId",
+                                q."questionSlug",
+                                q."questionDifficulty",
+                                q."questionNumber",
+                                q."questionLink",
+                                q."pointsAwarded",
+                                q."questionTitle",
+                                q.description,
+                                q."acceptanceRate",
+                                q."createdAt",
+                                q."submittedAt",
+                                q.runtime,
+                                q.memory,
+                                q.code,
+                                q.language,
+                                q."submissionId"
+                            FROM
+                                "Question" q
+                            JOIN "User" u ON q."userId" = u.id
+                            LEFT JOIN "QuestionTopic" t ON t."questionId" = q."id"
+                            WHERE
+                                q."userId" = ?
+                                AND q."questionTitle" ILIKE ?
+                                AND (NOT ? OR q."pointsAwarded" <> 0)
+                                AND (
+                                    ? = '{}'::"LeetcodeTopicEnum"[]
+                                    OR t."topic" = ANY(?)
+                                )
+                            ORDER BY q.id, q."submittedAt" DESC
+                        ) sub
                         ORDER BY "submittedAt" DESC
-                        LIMIT ? OFFSET ?
+                        LIMIT ? OFFSET ?;
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
             stmt.setBoolean(3, pointFilter);
-            stmt.setInt(4, pageSize);
-            stmt.setInt(5, (page - 1) * pageSize);
+
+            LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
+
+            String[] sqlValues = Arrays.stream(topicEnums)
+                .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                .toArray(String[]::new);
+            Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
+            stmt.setArray(4, topicsArray);
+            stmt.setArray(5, topicsArray);
+            stmt.setInt(6, pageSize);
+            stmt.setInt(7, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");

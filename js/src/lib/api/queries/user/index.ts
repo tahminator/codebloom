@@ -165,15 +165,17 @@ async function fetchUserSubmissions({
   query,
   pageSize,
   pointFilter,
+  topics,
 }: {
   page: number;
   userId?: string;
   query?: string;
   pageSize: number;
   pointFilter: boolean;
+  topics?: string;
 }) {
   const response = await fetch(
-    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}`,
+    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}&topics=${topics ?? ""}`,
   );
 
   const json = (await response.json()) as UnknownApiResponse<Page<Question[]>>;
