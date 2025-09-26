@@ -74,7 +74,7 @@ public class UserController {
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize,
                     @Parameter(description = "Filter to hide questions with 0 points awarded") @RequestParam(required = false, defaultValue = "false") final boolean pointFilter,
-                    @Parameter(description = "Filter to only show questions with at least one of the topics listed") @RequestParam(required=false, defaultValue = "") final Set<String> topics,
+                    @Parameter(description = "Filter for questions with at least one of the topics provided") @RequestParam(required = false, defaultValue = "") final Set<String> topics,
                     @PathVariable final String userId) {
         FakeLag.sleep(500);
 
