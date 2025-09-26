@@ -4,12 +4,25 @@ import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { theme } from "@/lib/theme";
 import { Flex, Group, Stack, Title, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
+import { useEffect } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-export default function UserProfileHeader({ userId }: { userId?: string }) {
+export default function UserProfileHeader({
+  userId,
+  setTitle,
+}: {
+  userId?: string;
+  setTitle: ($0: string) => void;
+}) {
   const { data, status } = useUserProfileQuery({ userId });
+
+  useEffect(() => {
+    if (status === "success" && data.success) {
+      setTitle(`CodeBloom - ${data.payload.leetcodeUsername}`);
+    }
+  }, [data?.payload?.leetcodeUsername, data?.success, setTitle, status]);
 
   if (status === "pending") {
     return <UserProfileHeaderSkeleton />;
