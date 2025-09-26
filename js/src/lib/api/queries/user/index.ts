@@ -174,7 +174,6 @@ async function fetchUserSubmissions({
   pointFilter: boolean;
   topics?: string;
 }) {
-//   topics="string,math";  // Used this to test if it works. Will before completing merge
   const response = await fetch(
     `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}&topics=${topics ?? ""}`,
   );
