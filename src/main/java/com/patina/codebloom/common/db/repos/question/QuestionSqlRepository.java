@@ -74,7 +74,12 @@ public class QuestionSqlRepository implements QuestionRepository {
                         .build();
     }
 
-    public QuestionSqlRepository(final DbConnection dbConnection, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository, final QuestionTopicService questionTopicService) {
+    public QuestionSqlRepository(
+        final DbConnection dbConnection,
+        final UserRepository userRepository,
+        final QuestionTopicRepository questionTopicRepository,
+        final QuestionTopicService questionTopicService
+    ) {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
@@ -311,7 +316,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                                 AND q."questionTitle" ILIKE ?
                                 AND (NOT ? OR q."pointsAwarded" <> 0)
                                 AND (
-                                    ? = '{}'::"LeetcodeTopicEnum"[] 
+                                    ? = '{}'::"LeetcodeTopicEnum"[]
                                     OR t."topic" = ANY(?)
                                 )
                             ORDER BY q.id, q."submittedAt" DESC
