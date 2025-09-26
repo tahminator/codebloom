@@ -335,9 +335,7 @@ public class QuestionSqlRepository implements QuestionRepository {
             String[] sqlValues = Arrays.stream(topicEnums)
                 .map(LeetcodeTopicEnum::getLeetcodeEnum)
                 .toArray(String[]::new);
-
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
-            System.out.println(topicsArray);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
             stmt.setInt(6, pageSize);
