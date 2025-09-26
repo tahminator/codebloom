@@ -7,6 +7,6 @@ import lombok.extern.jackson.Jacksonized;
 @Getter
 @Builder
 @Jacksonized
-public class IngestErrorsBody {
-    private String trace;
+public class IngestLogBody {
+    private String info;
 }

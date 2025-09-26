@@ -1,5 +1,6 @@
 import { useCreateAnnouncementLeaderboardMutation } from "@/lib/api/queries/admin";
 import { newAnnouncementSchema } from "@/lib/api/schema/admin";
+import { useReporter } from "@/lib/reporter";
 import { Box, Button, Modal, Switch, TextInput } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
@@ -10,6 +11,7 @@ import { useState } from "react";
 import { z } from "zod";
 
 export default function NewAnnouncementModal() {
+  const { log } = useReporter();
   const [isModalOpen, setModalOpen] = useState(false);
   const { mutate, status } = useCreateAnnouncementLeaderboardMutation();
   const form = useForm({
@@ -26,6 +28,7 @@ export default function NewAnnouncementModal() {
   });
 
   const toggleModal = () => {
+    log("test log that's triggered when announcement modal is triggered");
     setModalOpen((prev) => !prev);
   };
 
