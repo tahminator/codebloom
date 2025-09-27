@@ -19,7 +19,6 @@ import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
-import com.patina.codebloom.common.reporter.report.location.Location;
 import com.patina.codebloom.common.schools.SchoolEnum;
 import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
