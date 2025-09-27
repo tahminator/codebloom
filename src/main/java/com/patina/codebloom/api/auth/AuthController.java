@@ -17,6 +17,9 @@ import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.common.lag.FakeLag;
+import com.patina.codebloom.common.reporter.Reporter;
+import com.patina.codebloom.common.reporter.report.Report;
+import com.patina.codebloom.common.reporter.report.location.Location;
 import com.patina.codebloom.common.schools.SchoolEnum;
 import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
@@ -60,9 +63,10 @@ public class AuthController {
     private final OfficialCodebloomEmail emailClient;
     private final ServerUrlUtils serverUrlUtils;
     private final UserTagRepository userTagRepository;
+    private final Reporter reporter;
 
     public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository,
-                    final OfficialCodebloomEmail emailClient, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository) {
+                    final OfficialCodebloomEmail emailClient, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository, final Reporter reporter) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
@@ -70,6 +74,7 @@ public class AuthController {
         this.emailClient = emailClient;
         this.serverUrlUtils = serverUrlUtils;
         this.userTagRepository = userTagRepository;
+        this.reporter = reporter;
     }
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
@@ -210,7 +215,18 @@ public class AuthController {
                         .userId(user.getId())
                         .tag(schoolEnum.getInternalTag())
                         .build();
-        userTagRepository.createTag(schoolTag);
+
+        if (user.getTags().stream()
+                        .anyMatch(tag -> tag.getTag().name()
+                                        .equals(schoolEnum.getInternalTag().name()))) {
+            reporter.log(Report.builder()
+                            .data(String.format("User %s\nAlready has tag %s",
+                                            user.getNickname() != null ? user.getNickname() : user.getDiscordName(),
+                                            schoolEnum.getInternalTag().name()))
+                            .build());
+        } else {
+            userTagRepository.createTag(schoolTag);
+        }
 
         return new RedirectView("/settings?success=true&message=The email has been verified!");
     }
