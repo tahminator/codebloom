@@ -7,7 +7,7 @@ import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
 
 export default function AdminIndex() {
   return (
-    <Flex w={"98vw"} h={"100vh"} direction={"column"}>
+    <Flex w={"98vw"} mih={"100vh"} direction={"column"}>
       <Title order={1} ta="center">
         Admin Page
       </Title>
