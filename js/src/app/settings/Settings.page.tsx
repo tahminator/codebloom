@@ -48,7 +48,7 @@ export default function SettingsPage() {
   return (
     <>
       <Header />
-      <Box p={"lg"}>
+      <Box mih={"90vh"} p={"lg"}>
         <Box>
           <Center>
             <Title order={3} p="md">
