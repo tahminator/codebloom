@@ -25,7 +25,7 @@ export default function SchoolEmail({
     return (
     <Html>
         <Head />
-        <Preview>Confirm your email to activate your Code Bloom account</Preview>
+        <Preview>Confirm your email to activate your CodeBloom account</Preview>
         <Tailwind>
             <Body className="m-0 p-0 bg-slate-50 text-slate-900">
                 <Container className="mx-auto p-0 max-w-[560px]">
