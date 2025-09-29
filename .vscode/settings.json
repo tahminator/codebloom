@@ -8,7 +8,6 @@
     "java.checkstyle.configuration": "./checkstyle.xml",
     "java.format.settings.url": "./java-formatter.xml",
     "editor.detectIndentation": false,
-    "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "java.checkstyle.version": "10.21.2",
     "gitlens.advanced.blame.customArguments": [
