@@ -1,28 +1,17 @@
 import UserProfileHeaderSkeleton from "@/app/user/[userId]/_components/UserProfile/UserProfileHeaderSkeleton";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { theme } from "@/lib/theme";
 import { Flex, Group, Stack, Title, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
-import { useEffect } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-export default function UserProfileHeader({
-  userId,
-  setTitle,
-}: {
-  userId?: string;
-  setTitle: ($0: string) => void;
-}) {
+export default function UserProfileHeader({ userId }: { userId?: string }) {
   const { data, status } = useUserProfileQuery({ userId });
-
-  useEffect(() => {
-    if (status === "success" && data.success) {
-      setTitle(`CodeBloom - ${data.payload.leetcodeUsername}`);
-    }
-  }, [data?.payload?.leetcodeUsername, data?.success, setTitle, status]);
 
   if (status === "pending") {
     return <UserProfileHeaderSkeleton />;
@@ -40,58 +29,70 @@ export default function UserProfileHeader({
 
   const userProfile = data.payload;
   return (
-    <Flex direction={"row"} gap="xs" wrap={"wrap"} mb={"xs"}>
-      <Stack justify="center" gap="xs">
-        {userProfile.nickname ?
-          <>
-            <Tooltip
-              label={
-                "This user is a verified member of the Patina Discord server."
-              }
-              color={"dark.4"}
-            >
-              <Title size="h4" c="patina.4">
-                <IconCircleCheckFilled
-                  className="inline"
-                  color={theme.colors.patina[4]}
-                  z={5000000}
-                  size={20}
-                />{" "}
-                {userProfile.nickname}
-              </Title>
-            </Tooltip>
-          </>
-        : <>
-            <Group gap="2px">
-              <FaDiscord
-                style={{
-                  color: "var(--mantine-color-blue-5)",
-                  fontSize: "1.5rem",
-                  paddingRight: "0",
-                }}
-              />
-              <Title size="h4" c="blue.5">
-                {userProfile.discordName}
-              </Title>
-            </Group>
-          </>
-        }
-        <Link
-          to={`https://leetcode.com/u/${userProfile.leetcodeUsername}`}
-          className="hover:underline"
-          style={{ display: "flex", alignItems: "center", gap: "4px" }}
-        >
-          <SiLeetcode
-            style={{
-              color: "var(--mantine-color-yellow-5)",
-              fontSize: "1.5rem",
-            }}
+    <>
+      {userProfile.leetcodeUsername && (
+        <>
+          <DocumentTitle
+            title={`CodeBloom - ${userProfile.leetcodeUsername}`}
           />
-          <Title size="h4" c="yellow.5">
-            {userProfile.leetcodeUsername}
-          </Title>
-        </Link>
-      </Stack>
-    </Flex>
+          <DocumentDescription
+            description={`CodeBloom - View the solutions of ${userProfile.leetcodeUsername}`}
+          />
+        </>
+      )}
+      <Flex direction={"row"} gap="xs" wrap={"wrap"} mb={"xs"}>
+        <Stack justify="center" gap="xs">
+          {userProfile.nickname ?
+            <>
+              <Tooltip
+                label={
+                  "This user is a verified member of the Patina Discord server."
+                }
+                color={"dark.4"}
+              >
+                <Title size="h4" c="patina.4">
+                  <IconCircleCheckFilled
+                    className="inline"
+                    color={theme.colors.patina[4]}
+                    z={5000000}
+                    size={20}
+                  />{" "}
+                  {userProfile.nickname}
+                </Title>
+              </Tooltip>
+            </>
+          : <>
+              <Group gap="2px">
+                <FaDiscord
+                  style={{
+                    color: "var(--mantine-color-blue-5)",
+                    fontSize: "1.5rem",
+                    paddingRight: "0",
+                  }}
+                />
+                <Title size="h4" c="blue.5">
+                  {userProfile.discordName}
+                </Title>
+              </Group>
+            </>
+          }
+          <Link
+            to={`https://leetcode.com/u/${userProfile.leetcodeUsername}`}
+            className="hover:underline"
+            style={{ display: "flex", alignItems: "center", gap: "4px" }}
+          >
+            <SiLeetcode
+              style={{
+                color: "var(--mantine-color-yellow-5)",
+                fontSize: "1.5rem",
+              }}
+            />
+            <Title size="h4" c="yellow.5">
+              {userProfile.leetcodeUsername}
+            </Title>
+          </Link>
+        </Stack>
+      </Flex>
+    </>
   );
 }

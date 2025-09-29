@@ -1,5 +1,4 @@
 import Header from "@/components/ui/header/Header";
-import { useTitle } from "@/lib/hooks/useTitle";
 import { Center, Button, Flex, Box, Text } from "@mantine/core";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -11,7 +10,6 @@ import MiniUserSubmissions from "./submissions/_components/UserSubmissions/MiniU
 export default function UserProfilePage() {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { setTitle } = useTitle();
 
   return (
     <>
@@ -49,7 +47,7 @@ export default function UserProfilePage() {
           >
             <Flex direction="column" align="center" gap="sm" pt="20px">
               <ProfilePicture />
-              <UserProfileHeader userId={userId} setTitle={setTitle} />
+              <UserProfileHeader userId={userId} />
               <UserTags userId={userId} />
             </Flex>
           </Box>
