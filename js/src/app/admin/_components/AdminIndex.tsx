@@ -8,11 +8,12 @@ import DeleteAnnouncementButton from "./announcements/DeleteAnnouncementButton";
 import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
 
 export default function AdminIndex() {
-  const { log } = useReporter();
+  const { log, err } = useReporter();
 
   useEffect(() => {
     log("hello world");
-  }, [log]);
+    err("window is not defined");
+  }, [err, log]);
 
   return (
     <Flex w={"98vw"} mih={"100vh"} direction={"column"}>
