@@ -9,12 +9,10 @@ import { useNavigate } from "react-router";
  * unfavorable and hard to maintain.
  */
 export default function ToastWithRedirect({
-  children,
   to,
   message,
   color,
 }: {
-  children?: ReactNode;
   to: string;
   message: ReactNode;
   color?: DefaultMantineColor;
@@ -29,5 +27,5 @@ export default function ToastWithRedirect({
     navigate(to);
   }, [color, message, navigate, to]);
 
-  return children;
+  return <></>;
 }

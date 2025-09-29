@@ -10,7 +10,7 @@ import { useState, useCallback } from "react";
  *   - setDescription: (newValue: string) => void
  */
 export function useTitle() {
-  const [title, _setTitle] = useState(document.title);
+  const [title, _setTitle] = useState(() => document.title);
   const [description, _setDescription] = useState(() => {
     const desc = document.querySelector<HTMLMetaElement>(
       'meta[name="description"]',
