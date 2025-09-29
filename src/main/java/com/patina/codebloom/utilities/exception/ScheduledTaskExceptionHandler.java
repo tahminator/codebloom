@@ -35,13 +35,11 @@ public class ScheduledTaskExceptionHandler {
         ConcurrentTaskScheduler scheduler = new ConcurrentTaskScheduler(Executors.newSingleThreadScheduledExecutor());
 
         scheduler.setErrorHandler(throwable -> {
-            if (env.isProd()) {
-                errorReporter.error(Report.builder()
-                                .environments(env.getActiveProfiles())
-                                .location(Location.BACKEND)
-                                .data(Reporter.throwableToString(throwable))
-                                .build());
-            }
+            errorReporter.error(Report.builder()
+                            .environments(env.getActiveProfiles())
+                            .location(Location.BACKEND)
+                            .data(Reporter.throwableToString(throwable))
+                            .build());
 
             throwable.printStackTrace();
         });
