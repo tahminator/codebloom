@@ -6,8 +6,10 @@ import java.nio.charset.StandardCharsets;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
+@Component
 public class ReactEmailClientImpl implements ReactEmailClient {
 
     private String getHtmlAsString(final String path) throws IOException {
