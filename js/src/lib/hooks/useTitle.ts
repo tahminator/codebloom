@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 
 /**
- * A React hook for setting the page's title and descrsiption.
+ * A React hook for setting the page's title and description.
  *
  * Returns:
  *   - title: string
