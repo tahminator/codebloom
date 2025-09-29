@@ -8,11 +8,9 @@ import { ReactNode, useEffect } from "react";
  * unfavorable and hard to maintain.
  */
 export default function Toast({
-  children,
   message,
   color,
 }: {
-  children?: ReactNode;
   message: ReactNode;
   color?: DefaultMantineColor;
 }) {
@@ -23,5 +21,5 @@ export default function Toast({
     });
   }, [color, message]);
 
-  return children;
+  return <></>;
 }
