@@ -31,7 +31,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<ApiResponder<?>> handleThrowable(final Throwable rx) {
         rx.printStackTrace();
 
-        if (env.isProd() && ExcludedExceptions.isValid(rx)) {
+        if (ExcludedExceptions.isValid(rx)) {
             errorReporter.error(Report.builder()
                             .environments(env.getActiveProfiles())
                             .location(Location.BACKEND)

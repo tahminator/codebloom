@@ -12,6 +12,9 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 public class Report {
+    /**
+     * @see {@link com.patina.codebloom.common.env.Env}
+     */
     @Builder.Default
     private List<String> environments = List.of("N/A");
     @Builder.Default
