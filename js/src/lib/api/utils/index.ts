@@ -40,8 +40,8 @@ export class ApiUtils {
       alt: "Patina Logo",
     },
     Gwc: {
-      shortName: "Hunter GWC",
-      name: "Hunter GWC",
+      shortName: "GWC@Hunter",
+      name: "Hunter College - GWC",
       icon: "/brands/Gwc_Logo.png",
       alt: "GWC Logo",
     },
