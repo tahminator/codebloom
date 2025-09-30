@@ -614,7 +614,7 @@ jobs:
 
             - name: Poll Deployment Status
               run: |
-                  DEPLOYMENT_ID=$(echo "$GITHUB_ENV" | grep deployment_id | cut -d '=' -f2)
+                  DEPLOYMENT_ID="$deployment_id"
 
                   echo "Waiting for deployment to be promoted."
 
