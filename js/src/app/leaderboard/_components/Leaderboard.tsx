@@ -5,6 +5,8 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import TagList from "@/components/ui/tags/TagList";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { schoolFF, tagFF } from "@/lib/ff";
@@ -76,6 +78,10 @@ export default function LeaderboardIndex() {
 
   return (
     <>
+      <DocumentTitle title={`CodeBloom - Leaderboard`} />
+      <DocumentDescription
+        description={`CodeBloom - View your rank in the leaderboard`}
+      />
       <Flex
         direction={{ base: "column", xs: "row" }}
         align={{ base: "center", xs: "flex-end" }}

@@ -5,6 +5,8 @@ import RecentSubmissions from "@/app/dashboard/_components/RecentSubmissions/Rec
 import RefreshSubmissions from "@/app/dashboard/_components/RefreshSubmissions";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -48,6 +50,10 @@ export default function DashboardPage() {
   }
   return (
     <>
+      <DocumentTitle title={`CodeBloom - Dashboard`} />
+      <DocumentDescription
+        description={`CodeBloom - Refresh your latest submissions`}
+      />
       <Header />
       <Flex
         p={"32px"}
