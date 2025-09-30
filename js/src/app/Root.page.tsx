@@ -8,9 +8,7 @@ export default function RootPage() {
   return (
     <>
       <DocumentTitle title={`CodeBloom`} />
-      <DocumentDescription
-        description={`CodeBloom - Welcome to CodeBloom!`}
-      />
+      <DocumentDescription description={`CodeBloom - Welcome to CodeBloom!`} />
       <Header />
       <AboutUs />
       <Footer />

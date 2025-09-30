@@ -9,9 +9,7 @@ export default function AllLeaderboardsPage() {
   return (
     <>
       <DocumentTitle title={`CodeBloom - All Leaderboards`} />
-      <DocumentDescription
-        description={`CodeBloom - View all leaderboards`}
-      />
+      <DocumentDescription description={`CodeBloom - View all leaderboards`} />
       <Header />
       <Box p={"lg"}>
         <DashboardListView />
