@@ -627,7 +627,7 @@ jobs:
                       RESPONSE=$(curl -s -X GET \
                           -H "Content-Type: application/json" \
                           -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
-                          "https://api.digitalocean.com/v2/apps/$APP_ID/deployments/$DEPLOYMENT_ID")
+                          "https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
 
                       PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
 
