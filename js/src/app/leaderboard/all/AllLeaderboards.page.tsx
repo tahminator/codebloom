@@ -8,12 +8,10 @@ import { Box } from "@mantine/core";
 export default function AllLeaderboardsPage() {
   return (
     <>
-      <>
-        <DocumentTitle title={`CodeBloom - All Leaderboards`} />
-        <DocumentDescription
-          description={`CodeBloom - View all leaderboards`}
-        />
-      </>
+      <DocumentTitle title={`CodeBloom - All Leaderboards`} />
+      <DocumentDescription
+        description={`CodeBloom - View all leaderboards`}
+      />
       <Header />
       <Box p={"lg"}>
         <DashboardListView />
