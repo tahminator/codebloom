@@ -7,12 +7,10 @@ import DocumentTitle from "@/components/ui/title/DocumentTitle";
 export default function RootPage() {
   return (
     <>
-      <>
-        <DocumentTitle title={`CodeBloom`} />
-        <DocumentDescription
-          description={`CodeBloom - Welcome to CodeBloom!`}
-        />
-      </>
+      <DocumentTitle title={`CodeBloom`} />
+      <DocumentDescription
+        description={`CodeBloom - Welcome to CodeBloom!`}
+      />
       <Header />
       <AboutUs />
       <Footer />
