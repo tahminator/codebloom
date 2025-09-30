@@ -13,5 +13,6 @@ public enum Tag {
     Sbu,
     Ccny,
     Columbia,
+    Cornell,
 }
 

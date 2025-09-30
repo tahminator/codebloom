@@ -50,6 +50,14 @@ export default function LeaderboardWithId({
     toggleBaruch,
     rpi,
     toggleRpi,
+    sbu,
+    toggleSbu,
+    ccny,
+    toggleCcny,
+    columbia,
+    toggleColumbia,
+    cornell,
+    toggleCornell,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -135,7 +143,7 @@ export default function LeaderboardWithId({
             >
               Patina
               <Image
-                src="/Patina_Logo.png"
+                src="/brands/Patina_Logo.png"
                 style={{ height: "2em", width: "auto" }}
               />
             </Box>
@@ -156,7 +164,8 @@ export default function LeaderboardWithId({
                 >
                   Hunter
                   <Image
-                    src="/Hunter_Logo.jpeg"
+                    src="/brands/Hunter_Logo.jpeg"
+                    alt="Hunter College Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
                 </Box>
@@ -175,7 +184,8 @@ export default function LeaderboardWithId({
                 >
                   NYU
                   <Image
-                    src="/NYU_Logo.jpeg"
+                    src="/brands/NYU_Logo.png"
+                    alt="NYU Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
                 </Box>
@@ -194,7 +204,7 @@ export default function LeaderboardWithId({
                 >
                   Baruch
                   <Image
-                    src="/Baruch_Logo.png"
+                    src="/brands/Baruch_Logo.png"
                     alt="Baruch College Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -214,8 +224,88 @@ export default function LeaderboardWithId({
                 >
                   RPI
                   <Image
-                    src="/Rpi_Logo.png"
+                    src="/brands/Rpi_Logo.png"
                     alt="RPI Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={sbu}
+              toggle={() => toggleSbu()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  SBU
+                  <Image
+                    src="/brands/SBU_shield.png"
+                    alt="Stony Brook University Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={columbia}
+              toggle={() => toggleColumbia()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Columbia
+                  <Image
+                    src="/brands/Columbia_logo.png"
+                    alt="Columbia University Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={ccny}
+              toggle={() => toggleCcny()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  CCNY
+                  <Image
+                    src="/brands/CCNY_logo.png"
+                    alt="City College of New York Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={cornell}
+              toggle={() => toggleCornell()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Cornell
+                  <Image
+                    src="/brands/Cornell_Logo.png"
+                    alt="Cornell University"
                     style={{ height: "2em", width: "auto" }}
                   />
                 </Box>
@@ -226,7 +316,17 @@ export default function LeaderboardWithId({
         <FilterDropdownItem
           value={globalIndex}
           toggle={toggleGlobalIndex}
-          disabled={!nyu && !hunter && !patina}
+          disabled={
+            !nyu &&
+            !hunter &&
+            !patina &&
+            !baruch &&
+            !rpi &&
+            !sbu &&
+            !columbia &&
+            !ccny &&
+            !cornell
+          }
           switchMode
           name={
             <Box

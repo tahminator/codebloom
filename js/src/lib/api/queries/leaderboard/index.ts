@@ -64,6 +64,13 @@ export const useCurrentLeaderboardUsersQuery = (
     100,
   );
   const [ccny, setCcny] = useURLState("ccny", false, tieToUrl, true, 100);
+  const [cornell, setCornell] = useURLState(
+    "cornell",
+    false,
+    tieToUrl,
+    true,
+    100,
+  );
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -129,6 +136,11 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [setCcny, goTo]);
 
+  const toggleCornell = useCallback(() => {
+    setCornell((prev) => !prev);
+    goTo(1);
+  }, [setCornell, goTo]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -150,6 +162,7 @@ export const useCurrentLeaderboardUsersQuery = (
       sbu,
       columbia,
       ccny,
+      cornell,
       globalIndex,
     ],
     queryFn: () =>
@@ -165,6 +178,7 @@ export const useCurrentLeaderboardUsersQuery = (
         sbu,
         columbia,
         ccny,
+        cornell,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -183,6 +197,7 @@ export const useCurrentLeaderboardUsersQuery = (
     sbu,
     columbia,
     ccny,
+    cornell,
     globalIndex,
     goBack,
     goForward,
@@ -201,6 +216,7 @@ export const useCurrentLeaderboardUsersQuery = (
     toggleSbu,
     toggleColumbia,
     toggleCcny,
+    toggleCornell,
   };
 };
 
@@ -316,6 +332,13 @@ export const useLeaderboardUsersByIdQuery = ({
     100,
   );
   const [ccny, setCcny] = useURLState("ccny", false, tieToUrl, true, 100);
+  const [cornell, setCornell] = useURLState(
+    "cornell",
+    false,
+    tieToUrl,
+    true,
+    100,
+  );
   const [globalIndex, setGlobalIndex] = useURLState(
     "globalIndex",
     false,
@@ -381,6 +404,11 @@ export const useLeaderboardUsersByIdQuery = ({
     goTo(1);
   }, [setCcny, goTo]);
 
+  const toggleCornell = useCallback(() => {
+    setCornell((prev) => !prev);
+    goTo(1);
+  }, [setCornell, goTo]);
+
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
@@ -403,6 +431,7 @@ export const useLeaderboardUsersByIdQuery = ({
       columbia,
       ccny,
       gwc,
+      cornell,
       globalIndex,
     ],
     queryFn: () =>
@@ -419,6 +448,7 @@ export const useLeaderboardUsersByIdQuery = ({
         sbu,
         columbia,
         ccny,
+        cornell,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -437,6 +467,7 @@ export const useLeaderboardUsersByIdQuery = ({
     sbu,
     columbia,
     ccny,
+    cornell,
     globalIndex,
     goBack,
     goForward,
@@ -455,6 +486,7 @@ export const useLeaderboardUsersByIdQuery = ({
     toggleSbu,
     toggleColumbia,
     toggleCcny,
+    toggleCornell,
   };
 };
 
@@ -530,6 +562,7 @@ async function fetchLeaderboardUsers({
   sbu,
   columbia,
   ccny,
+  cornell,
   globalIndex,
 }: {
   page: number;
@@ -544,10 +577,11 @@ async function fetchLeaderboardUsers({
   sbu: boolean;
   columbia: boolean;
   ccny: boolean;
+  cornell: boolean;
   globalIndex: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&cornell=${cornell}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
@@ -573,6 +607,7 @@ async function fetchLeaderboardUsersByLeaderboardId({
   sbu,
   columbia,
   ccny,
+  cornell,
   globalIndex,
   leaderboardId,
 }: {
@@ -588,11 +623,12 @@ async function fetchLeaderboardUsersByLeaderboardId({
   sbu: boolean;
   columbia: boolean;
   ccny: boolean;
+  cornell: boolean;
   globalIndex: boolean;
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&cornell=${cornell}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },

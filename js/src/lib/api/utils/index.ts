@@ -11,48 +11,53 @@ export class ApiUtils {
   > = {
     Hunter: {
       name: "Hunter College",
-      icon: "/Hunter_Logo.jpeg",
+      icon: "/brands/Hunter_Logo.jpeg",
       alt: "Hunter College Logo",
     },
     Nyu: {
       name: "NYU",
-      icon: "/NYU_Logo.png",
+      icon: "/brands/NYU_Logo.png",
       alt: "NYU Logo",
     },
     Baruch: {
       name: "Baruch College",
-      icon: "/Baruch_Logo.png",
+      icon: "/brands/Baruch_Logo.png",
       alt: "Baruch College Logo",
     },
     Rpi: {
       name: "RPI",
-      icon: "/Rpi_Logo.png",
+      icon: "/brands/Rpi_Logo.png",
       alt: "RPI Logo",
     },
     Patina: {
       name: "Patina",
-      icon: "/Patina_Logo.png",
+      icon: "/brands/Patina_Logo.png",
       alt: "Patina Logo",
     },
     Gwc: {
       name: "Hunter GWC",
-      icon: "/Gwc_Logo.png",
+      icon: "/brands/Gwc_Logo.png",
       alt: "GWC Logo",
     },
     Sbu: {
       name: "Stony Brook University",
-      icon: "/SBU_shield.png",
+      icon: "/brands/SBU_shield.png",
       alt: "Stony Brook University Logo",
     },
     Columbia: {
       name: "Columbia University",
-      icon: "/Columbia_logo.png",
+      icon: "/brands/Columbia_logo.png",
       alt: "Columbia University Logo",
     },
     Ccny: {
       name: "City College of New York",
-      icon: "/CCNY_logo.png",
+      icon: "/brands/CCNY_logo.png",
       alt: "City College of New York Logo",
+    },
+    Cornell: {
+      name: "Cornell University",
+      icon: "/brands/Cornell_Logo.png",
+      alt: "Cornell University Logo",
     },
   } as const;
 

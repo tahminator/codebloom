@@ -52,6 +52,8 @@ export default function LeaderboardIndex() {
     toggleColumbia,
     ccny,
     toggleCcny,
+    cornell,
+    toggleCornell,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -137,7 +139,7 @@ export default function LeaderboardIndex() {
             >
               Patina
               <Image
-                src="/Patina_Logo.png"
+                src="/brands/Patina_Logo.png"
                 alt="Patina Logo"
                 style={{ height: "2em", width: "auto" }}
               />
@@ -159,7 +161,7 @@ export default function LeaderboardIndex() {
                 >
                   Hunter
                   <Image
-                    src="/Hunter_Logo.jpeg"
+                    src="/brands/Hunter_Logo.jpeg"
                     alt="Hunter College Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -179,7 +181,7 @@ export default function LeaderboardIndex() {
                 >
                   NYU
                   <Image
-                    src="/NYU_Logo.png"
+                    src="/brands/NYU_Logo.png"
                     alt="NYU Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -199,7 +201,7 @@ export default function LeaderboardIndex() {
                 >
                   Baruch
                   <Image
-                    src="/Baruch_Logo.png"
+                    src="/brands/Baruch_Logo.png"
                     alt="Baruch College Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -219,7 +221,7 @@ export default function LeaderboardIndex() {
                 >
                   RPI
                   <Image
-                    src="/Rpi_Logo.png"
+                    src="/brands/Rpi_Logo.png"
                     alt="RPI Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -239,7 +241,7 @@ export default function LeaderboardIndex() {
                 >
                   SBU
                   <Image
-                    src="/SBU_shield.png"
+                    src="/brands/SBU_shield.png"
                     alt="Stony Brook University Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -259,7 +261,7 @@ export default function LeaderboardIndex() {
                 >
                   Columbia
                   <Image
-                    src="/Columbia_logo.png"
+                    src="/brands/Columbia_logo.png"
                     alt="Columbia University Logo"
                     style={{ height: "2em", width: "auto" }}
                   />
@@ -279,8 +281,28 @@ export default function LeaderboardIndex() {
                 >
                   CCNY
                   <Image
-                    src="/CCNY_logo.png"
+                    src="/brands/CCNY_logo.png"
                     alt="City College of New York Logo"
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Box>
+              }
+            />
+            <FilterDropdownItem
+              value={cornell}
+              toggle={() => toggleCornell()}
+              name={
+                <Box
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  Cornell
+                  <Image
+                    src="/brands/Cornell_Logo.png"
+                    alt="Cornell University"
                     style={{ height: "2em", width: "auto" }}
                   />
                 </Box>
@@ -291,7 +313,17 @@ export default function LeaderboardIndex() {
         <FilterDropdownItem
           value={globalIndex}
           toggle={toggleGlobalIndex}
-          disabled={!nyu && !hunter && !patina && !baruch && !rpi}
+          disabled={
+            !nyu &&
+            !hunter &&
+            !patina &&
+            !baruch &&
+            !rpi &&
+            !sbu &&
+            !columbia &&
+            !ccny &&
+            !cornell
+          }
           switchMode
           name={
             <Box

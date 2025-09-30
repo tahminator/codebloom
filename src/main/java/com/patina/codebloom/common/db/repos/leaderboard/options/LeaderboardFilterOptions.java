@@ -36,6 +36,8 @@ public class LeaderboardFilterOptions {
     private final boolean ccny = false;
     @Builder.Default
     private final boolean columbia = false;
+    @Builder.Default
+    private final boolean cornell = false;
     public static final LeaderboardFilterOptions DEFAULT = LeaderboardFilterOptions.builder()
                     .build();
 }

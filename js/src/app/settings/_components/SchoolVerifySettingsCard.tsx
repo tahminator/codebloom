@@ -1,5 +1,14 @@
 import { ApiUtils } from "@/lib/api/utils";
-import { Box, Button, Card, Title, Text, List } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Card,
+  Title,
+  Text,
+  List,
+  Image,
+  Flex,
+} from "@mantine/core";
 import { useState } from "react";
 
 import SchoolEmailModal from "./SchoolEmailModal";
@@ -28,7 +37,12 @@ export default function SchoolVerifySettingsCard({
             Supported schools:
             <List>
               {ApiUtils.getAllSupportedTagEnumMetadata().map((school) => (
-                <List.Item key={school.name}>{school.name}</List.Item>
+                <List.Item key={school.name}>
+                  <Flex gap={"sm"} direction={"column"}>
+                    {school.name}
+                    <Image src={school.icon} alt={school.alt} h={20} w={20} />
+                  </Flex>
+                </List.Item>
               ))}
             </List>
           </Text>
