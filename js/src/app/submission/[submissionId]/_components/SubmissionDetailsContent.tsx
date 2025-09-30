@@ -1,5 +1,7 @@
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useSubmissionDetailsQuery } from "@/lib/api/queries/submissions";
@@ -98,6 +100,10 @@ export default function SubmissionDetailsContent({
 
   return (
     <>
+      <DocumentTitle title={`CodeBloom - ${questionTitle}`} />
+      <DocumentDescription
+        description={`CodeBloom - View ${discordName}'s solution for ${questionTitle}`}
+      />
       <Header />
       <Box p={"lg"}>
         <Center>

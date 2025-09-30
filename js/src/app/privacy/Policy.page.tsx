@@ -1,5 +1,7 @@
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import { Text, Title, Container, Stack, Anchor } from "@mantine/core";
 
 const lastUpdated = "September 1, 2025";
@@ -7,6 +9,12 @@ const lastUpdated = "September 1, 2025";
 export default function PolicyPage() {
   return (
     <>
+      <>
+        <DocumentTitle title={`CodeBloom - Privacy Policy`} />
+        <DocumentDescription
+          description={`CodeBloom - View our Privacy Policy`}
+        />
+      </>
       <Header />
       <Container
         size="sm"

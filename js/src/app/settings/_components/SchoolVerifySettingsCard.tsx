@@ -1,3 +1,5 @@
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import { ApiUtils } from "@/lib/api/utils";
 import {
   Box,
@@ -51,8 +53,8 @@ export default function SchoolVerifySettingsCard({
               {schoolExists ? "You are already verified!" : "Verify Now"}
             </Button>
           </Box>
+          <SchoolEmailModal enabled={modalOpen} toggle={toggleModal} />
         </Box>
-        <SchoolEmailModal enabled={modalOpen} toggle={toggleModal} />
       </Card>
     </Box>
   );

@@ -1,6 +1,8 @@
 import { Illustration } from "@/app/error/IIllustration";
 import { useReporter } from "@/lib/reporter";
 import { CustomErrorResponse } from "@/lib/reporter/types";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import { Box, Button, Flex, Group, Text, Title } from "@mantine/core";
 import { isRouteErrorResponse, Link, useRouteError } from "react-router-dom";
 
@@ -140,11 +142,6 @@ Error, attempting to convert to string: ${String(error)}
               try again now or at another time.
             </Text>
           </Flex>
-          <Group justify="center">
-            <Button size="md" component={Link} to={"/"}>
-              Go back to the home page
-            </Button>
-          </Group>
         </Flex>
       </Flex>
     </Flex>

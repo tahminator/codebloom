@@ -1,5 +1,7 @@
 import { useAuthCallbackInfo } from "@/app/login/hooks";
 import LoginButton from "@/components/ui/auth/LoginButton";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -46,24 +48,28 @@ export default function LoginPage() {
   }
 
   return (
-    <Center style={{ height: "100vh" }}>
-      <Card
-        style={{
-          width: 500,
-          textAlign: "center",
-        }}
-      >
-        <Text fw={400} size="xl">
-          Welcome to CodeBloom!
-        </Text>
-        <LoginButton />
-        <Space h="sm" />
-        <Link to="/" reloadDocument>
-          <Button size="xs" variant="subtle" style={{ fontSize: "12px" }}>
-            Go Back
-          </Button>
-        </Link>
-      </Card>
-    </Center>
+    <>
+      <DocumentTitle title={`CodeBloom - Login`} />
+      <DocumentDescription description={`CodeBloom - Log into your account`} />
+      <Center style={{ height: "100vh" }}>
+        <Card
+          style={{
+            width: 500,
+            textAlign: "center",
+          }}
+        >
+          <Text fw={400} size="xl">
+            Welcome to CodeBloom!
+          </Text>
+          <LoginButton />
+          <Space h="sm" />
+          <Link to="/" reloadDocument>
+            <Button size="xs" variant="subtle" style={{ fontSize: "12px" }}>
+              Go Back
+            </Button>
+          </Link>
+        </Card>
+      </Center>
+    </>
   );
 }

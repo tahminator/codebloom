@@ -38,7 +38,7 @@ export default function LeaderboardMetadata(
         <Center>
           {showClock && (
             <Title order={6} mb={"sm"} ta={"center"}>
-              <Skeleton visible>Long tTime value</Skeleton>
+              <Skeleton visible>Long Time value</Skeleton>
             </Title>
           )}
         </Center>
