@@ -9,12 +9,10 @@ const lastUpdated = "September 1, 2025";
 export default function PolicyPage() {
   return (
     <>
-      <>
-        <DocumentTitle title={`CodeBloom - Privacy Policy`} />
-        <DocumentDescription
-          description={`CodeBloom - View our Privacy Policy`}
-        />
-      </>
+      <DocumentTitle title={`CodeBloom - Privacy Policy`} />
+      <DocumentDescription
+        description={`CodeBloom - View our Privacy Policy`}
+      />
       <Header />
       <Container
         size="sm"
