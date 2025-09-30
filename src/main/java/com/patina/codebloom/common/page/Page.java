@@ -1,13 +1,15 @@
 package com.patina.codebloom.common.page;
 
+import java.util.List;
+
 public class Page<T> {
     private boolean hasNextPage;
-    private T items;
+    private List<T> items;
     private int pages;
 
     private int pageSize;
 
-    public Page(final boolean hasNextPage, final T items, final int pages, final int pageSize) {
+    public Page(final boolean hasNextPage, final List<T> items, final int pages, final int pageSize) {
         this.hasNextPage = hasNextPage;
         this.items = items;
         this.pages = pages;
@@ -22,11 +24,11 @@ public class Page<T> {
         this.hasNextPage = hasNextPage;
     }
 
-    public T getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    public void setItems(final T items) {
+    public void setItems(final List<T> items) {
         this.items = items;
     }
 

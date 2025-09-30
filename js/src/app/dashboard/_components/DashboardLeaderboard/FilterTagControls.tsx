@@ -17,6 +17,7 @@ export default function FilterTagsControl({
   flags: SegmentFlags;
   flagsToggle: SegmentFlagToggleFn;
 }) {
+  // https://mantine.dev/core/segmented-control/#controlled
   const segments: {
     label: ReactNode;
     value: SegmentFlagsWithAll;
@@ -45,6 +46,7 @@ export default function FilterTagsControl({
     [tags],
   );
 
+  // can only have one selected at a time, which is why we can use `.find`
   const currentValue: SegmentFlagsWithAll = useMemo(() => {
     const firstEnabledKeyValue = Object.typedEntries(flags).find(
       ([_flagTag, isFlagActive]) => isFlagActive,

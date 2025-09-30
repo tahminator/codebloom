@@ -73,7 +73,7 @@ public class LeaderboardController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
 
-    public ResponseEntity<ApiResponder<Page<List<Indexed<UserWithScore>>>>> getLeaderboardUsersById(
+    public ResponseEntity<ApiResponder<Page<Indexed<UserWithScore>>>> getLeaderboardUsersById(
                     @PathVariable final String leaderboardId,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize,
@@ -90,6 +90,7 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for Cornell users") @RequestParam(required = false, defaultValue = "false") final boolean cornell,
                     @Parameter(description = "Enable global leaderboard index") @RequestParam(required = false, defaultValue = "false") final boolean globalIndex,
                     final HttpServletRequest request) {
+        System.out.println("hi");
         FakeLag.sleep(800);
 
         final int parsedPageSize = Math.min(pageSize, MAX_LEADERBOARD_PAGE_SIZE);
@@ -110,6 +111,8 @@ public class LeaderboardController {
                         .cornell(cornell)
                         .build();
 
+        System.out.println(options);
+
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
         if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell)) {
@@ -124,7 +127,7 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<List<Indexed<UserWithScore>>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
+        Page<Indexed<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -146,7 +149,7 @@ public class LeaderboardController {
     @Operation(summary = "Fetch the currently active leaderboard data, attaching the users for each leaderboard.", responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<Page<List<Indexed<UserWithScore>>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<Indexed<UserWithScore>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize,
                     @Parameter(description = "Discord name", example = "tahmid") @RequestParam(required = false, defaultValue = "") final String query,
@@ -188,7 +191,7 @@ public class LeaderboardController {
         String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
-        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia)) {
+        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell)) {
             leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
                             currentLeaderboardId, options);
         } else {
@@ -196,7 +199,7 @@ public class LeaderboardController {
                             currentLeaderboardId, options);
         }
 
-        Page<List<Indexed<UserWithScore>>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
+        Page<Indexed<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -287,7 +290,7 @@ public class LeaderboardController {
     @GetMapping("/all/metadata")
     @Operation(summary = "Returns the metadata for all leaderboards.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<Page<List<Leaderboard>>>> getAllLeaderboardMetadata(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<Leaderboard>>> getAllLeaderboardMetadata(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize) {
@@ -307,7 +310,7 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalLeaderboards / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<List<Leaderboard>> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);
+        Page<Leaderboard> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboard metadatas have been found!", createdPage));
     }

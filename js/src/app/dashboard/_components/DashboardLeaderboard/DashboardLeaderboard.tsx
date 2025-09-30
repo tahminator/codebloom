@@ -55,6 +55,8 @@ export default function LeaderboardForDashboard({
     toggleColumbia,
     ccny,
     toggleCcny,
+    cornell,
+    toggleCornell,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery({
     pageSize: 5,
@@ -149,6 +151,7 @@ export default function LeaderboardForDashboard({
           Sbu: sbu,
           Columbia: columbia,
           Ccny: ccny,
+          Cornell: cornell,
         }}
         flagsToggle={{
           Patina: togglePatina,
@@ -160,6 +163,7 @@ export default function LeaderboardForDashboard({
           Sbu: toggleSbu,
           Columbia: toggleColumbia,
           Ccny: toggleCcny,
+          Cornell: toggleCornell,
         }}
       />
       {!inTop5 && (
