@@ -616,6 +616,11 @@ jobs:
               run: |
                   DEPLOYMENT_ID="$deployment_id"
 
+                   if [ -z "$DEPLOYMENT_ID" ]; then
+                       echo "Deployment ID is empty."
+                       exit 1
+                   fi
+
                   echo "Waiting for deployment to be promoted."
 
                   for i in {1..60}; do
