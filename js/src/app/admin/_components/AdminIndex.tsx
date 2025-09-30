@@ -1,20 +1,11 @@
 import NewAnnouncementModal from "@/app/admin/_components/announcements/NewAnnouncementModal";
 import UserAdminList from "@/app/admin/_components/users/UserAdminList";
-import { useReporter } from "@/lib/reporter";
 import { Flex, Title } from "@mantine/core";
-import { useEffect } from "react";
 
 import DeleteAnnouncementButton from "./announcements/DeleteAnnouncementButton";
 import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
 
 export default function AdminIndex() {
-  const { log, err } = useReporter();
-
-  useEffect(() => {
-    log("hello world");
-    err("window is not defined");
-  }, [err, log]);
-
   return (
     <Flex w={"98vw"} mih={"100vh"} direction={"column"}>
       <Title order={1} ta="center">
