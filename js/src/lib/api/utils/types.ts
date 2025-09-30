@@ -6,6 +6,11 @@ import { UserTag, UserTagTag } from "@/lib/api/types/usertag";
 export namespace ApiTypeUtils {
   export type UserTagTagMetadata = {
     /**
+     * Pretty short name for the given tag.
+     */
+    shortName: string;
+
+    /**
      * Pretty name for the given tag.
      */
     name: string;
