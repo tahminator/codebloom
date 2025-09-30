@@ -480,8 +480,57 @@ jobs:
 
             - name: Trigger App Platform Redeploy
               run: |
-                  curl -s -o /dev/null -w "%{http_code}\n" \
+                  RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
                   -X POST \
                   -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
                   -H "Content-Type: application/json" \
-                  https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments
+                  https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments)
+
+                  HTTP_BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//g')
+                  HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+                  echo "$HTTP_STATUS"
+
+                  if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+                      exit 1
+                  fi
+
+                  DEPLOYMENT_ID=$(echo "$HTTP_BODY" | jq -r '.deployment.id')
+
+                  echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_ENV
+
+            - name: Poll Deployment Status
+              run: |
+                  DEPLOYMENT_ID="$deployment_id"
+
+                   if [ -z "$DEPLOYMENT_ID" ]; then
+                       echo "Deployment ID is empty."
+                       exit 1
+                   fi
+
+                  echo "Waiting for deployment to be promoted."
+
+                  for i in {1..60}; do
+                      RESPONSE=$(curl -s -X GET \
+                          -H "Content-Type: application/json" \
+                          -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
+                          "https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
+
+                      PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
+
+                      echo "Deployment phase: $PHASE"
+
+                      if [ "$PHASE" == "ACTIVE" ]; then
+                          echo "Deployment is active."
+                          exit 0
+                      elif [ "$PHASE" == "SUPERSEDED" ] || [ "$PHASE" == "ERROR" ] || [ "$PHASE" == "CANCELED" ]; then
+                          echo "Deployment failed with phase: $PHASE"
+                          exit 1
+                      fi
+
+                      echo "Waiting for deployment to complete, sleep 10... ($i/60)"
+                      sleep 10
+                  done
+
+                  echo "Deployment did not reach a valid state within 10 minutes."
+                  exit 1
