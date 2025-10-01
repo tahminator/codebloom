@@ -648,10 +648,11 @@ jobs:
                   echo "Deployment did not reach a valid state within 10 minutes."
                   exit 1
 
-    notifySuccess:
+    notifyCompletion:
         name: Notify on completion
         runs-on: ubuntu-latest
         needs: [redeploy, getPRHead]
+        if: needs.redeploy.result == 'success'
 
         steps:
             - name: Comment on PR
@@ -666,7 +667,7 @@ jobs:
                           owner: context.repo.owner,
                           repo: context.repo.repo,
                           issue_number: parseInt(prId, 10),
-                          body: `Staging deployment succeeded for commit ${commitHash}.\n\n[View run](${runUrl})`
+                          body: `Staging deployment completed for commit ${commitHash}.\n\n[View run](${runUrl})`
                       });
 
     notifyFailure:
