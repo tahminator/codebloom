@@ -25,7 +25,6 @@ import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.email.options.SendEmailOptions;
 import com.patina.codebloom.api.auth.body.EmailBody;
-import com.patina.codebloom.common.email.client.ReactEmailClient;
 import com.patina.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
 import com.patina.codebloom.common.email.error.EmailException;
 import com.patina.codebloom.common.url.ServerUrlUtils;
