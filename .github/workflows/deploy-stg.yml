@@ -649,10 +649,9 @@ jobs:
                   exit 1
 
     notifySuccess:
-        name: Notify on success
+        name: Notify on completion
         runs-on: ubuntu-latest
         needs: redeploy
-        if: success() && needs.redeploy.result == 'success'
 
         steps:
             - name: Comment on PR about success
