@@ -651,10 +651,10 @@ jobs:
     notifySuccess:
         name: Notify on completion
         runs-on: ubuntu-latest
-        needs: redeploy
+        needs: [redeploy, getPRHead]
 
         steps:
-            - name: Comment on PR about success
+            - name: Comment on PR
               uses: actions/github-script@v7
               with:
                   script: |
