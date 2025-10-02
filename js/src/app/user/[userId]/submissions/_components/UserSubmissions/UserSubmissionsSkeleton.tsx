@@ -5,13 +5,20 @@ export default function UserSubmissionsSkeleton() {
   // <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
   return (
     <>
-      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
+      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"} p="xs">
+        <Skeleton
+          visible
+          width="80px"
+          height="36px"
+          ml="auto"
+          display="block"
+        ></Skeleton>
         <Center mb="md">
           <Skeleton
             visible
             width="100%"
-            height="36px"
-            style={{ marginTop: "1rem" }}
+            height="38px"
+            style={{ marginTop: "0.5rem" }}
           >
             <div style={{ width: "100%", height: "36px" }} />
           </Skeleton>
