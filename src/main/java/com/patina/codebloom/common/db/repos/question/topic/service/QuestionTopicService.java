@@ -19,7 +19,14 @@ public class QuestionTopicService {
 
     public LeetcodeTopicEnum[] stringsToEnums(final Set<String> topics) {
         return topics.stream()
-                        .map(LeetcodeTopicEnum::valueOf)
+                        .map(s -> {
+                            try {
+                                return LeetcodeTopicEnum.valueOf(s);
+                            } catch (IllegalArgumentException e) {
+                                return null;
+                            }
+                        })
+                        .filter(java.util.Objects::nonNull)
                         .toArray(LeetcodeTopicEnum[]::new);
     }
 
