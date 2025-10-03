@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.config.TestProtector;
 
 import io.restassured.RestAssured;
@@ -51,7 +51,7 @@ public class AdminControllerTest {
 
     @Test
     void testAdminToggle() throws JsonProcessingException {
-        ApiResponder<User> apiResponder = RestAssured
+        ApiResponder<UserDto> apiResponder = RestAssured
                         .given()
                         .when()
                         // Everyone should have this user ID on their dev db from the repeated
@@ -62,14 +62,14 @@ public class AdminControllerTest {
                         .then()
                         .statusCode(200)
                         .extract()
-                        .as(new TypeRef<ApiResponder<User>>() {
+                        .as(new TypeRef<ApiResponder<UserDto>>() {
                         });
 
         assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
-        assertTrue(apiResponder.isSuccess() == true, "Testing apiResponder success is true");
+        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
         assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
-        User user = apiResponder.getPayload();
+        UserDto user = apiResponder.getPayload();
         assertTrue(user != null, "Expected user to not be equal to null");
-        assertTrue(user.isAdmin() == false, "Expected user to not be admin");
+        assertTrue(!user.isAdmin(), "Expected user to not be admin");
     }
 }
