@@ -1,7 +1,7 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Indexed, Page } from "@/lib/api/common/page";
+import { Api } from "@/lib/api/types";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
-import { User, UserWithScore } from "@/lib/api/types/user";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import {
@@ -588,7 +588,7 @@ async function fetchLeaderboardUsers({
   );
 
   const json = (await response.json()) as UnknownApiResponse<
-    Page<Indexed<UserWithScore>[]>
+    Page<Indexed<Api<"UserWithScoreDto">>[]>
   >;
 
   return json;
@@ -635,7 +635,7 @@ async function fetchLeaderboardUsersByLeaderboardId({
   );
 
   const json = (await response.json()) as UnknownApiResponse<
-    Page<Indexed<UserWithScore>[]>
+    Page<Indexed<Api<"UserWithScoreDto">>[]>
   >;
 
   return json;
@@ -688,7 +688,7 @@ export async function getMyRecentLeaderboardData({
   const res = await fetch(`/api/leaderboard/current/user/${userId}`);
 
   const json = (await res.json()) as UnknownApiResponse<
-    User & { totalScore: number }
+    Api<"UserDto"> & { totalScore: number }
   >;
 
   return json;

@@ -19,7 +19,6 @@ import com.patina.codebloom.api.submission.body.LeetcodeUsernameObject;
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
-import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
@@ -103,13 +102,8 @@ public class SubmissionController {
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
-        PrivateUser privateUser = userRepository.getPrivateUserById(user.getId());
 
-        if (privateUser == null) {
-            throw new RuntimeException("PrivateUser doesn't exist when User does. This should not be happening");
-        }
-
-        return ResponseEntity.ok().body(ApiResponder.success("Successfully retreived authentication key", privateUser.getVerifyKey()));
+        return ResponseEntity.ok().body(ApiResponder.success("Successfully retreived authentication key", user.getVerifyKey()));
 
     }
 
@@ -128,11 +122,6 @@ public class SubmissionController {
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
-        PrivateUser privateUser = userRepository.getPrivateUserById(user.getId());
-
-        if (privateUser == null) {
-            throw new RuntimeException("PrivateUser doesn't exist when User does. This should not be happening");
-        }
 
         if (user.getLeetcodeUsername() != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -141,7 +130,7 @@ public class SubmissionController {
 
         UserProfile leetcodeUserProfile = leetcodeClient.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
         String aboutMe = leetcodeUserProfile.getAboutMe();
-        if (aboutMe == null || !aboutMe.equals(privateUser.getVerifyKey())) {
+        if (aboutMe == null || !aboutMe.equals(user.getVerifyKey())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                             "The verification key did not match the user's about me or the about me did not exist.");
         }

@@ -88,10 +88,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 }
                 userRepository.updateUser(existingUser);
             } else {
-                User newUser = new User(discordId, discordName);
-                existingUser = userRepository.createNewUser(newUser);
+                User newUser = User.builder()
+                                .discordId(discordId)
+                                .discordName(discordName)
+                                .build();
+                userRepository.createUser(newUser);
                 Leaderboard leaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-                leaderboardRepository.addUserToLeaderboard(existingUser.getId(), leaderboard.getId());
+                leaderboardRepository.addUserToLeaderboard(newUser.getId(), leaderboard.getId());
+                existingUser = newUser;
             }
 
             List<Guild> guilds = jdaClient.getGuilds();

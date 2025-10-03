@@ -2,21 +2,52 @@ package com.patina.codebloom.common.db.repos.user;
 
 import java.util.ArrayList;
 
-import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 
 public interface UserRepository {
-    User createNewUser(User user);
+    /**
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     *
+     * @param user - required fields:
+     * <ul>
+     * <li>discordId</li>
+     * <li>discordName</li>
+     * </ul>
+     * optional fields:
+     * <ul>
+     * <li>discordId</li>
+     * <li>discordName</li>
+     * </ul>
+     */
+    void createUser(User user);
+
+    /**
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     *
+     * @param user - overridden fields:
+     * <ul>
+     * <li>discordName</li>
+     * <li>discordId</li>
+     * <li>leetcodeUsername</li>
+     * <li>nickname</li>
+     * <li>admin</li>
+     * <li>profileUrl</li>
+     * <li>schoolEmail</li>
+     * </ul>
+     */
+    boolean updateUser(User user);
 
     User getUserById(String id);
 
     User getUserByLeetcodeUsername(String leetcodeUsername);
 
-    UserWithScore getUserWithScoreById(String userId, String leaderboardId, UserFilterOptions options);
+    UserWithScore getUserWithScoreByIdAndLeaderboardId(String userId, String leaderboardId, UserFilterOptions options);
 
-    UserWithScore getUserWithScoreByLeetcodeUsername(String userLeetcodeUsername, String leaderboardId);
+    UserWithScore getUserWithScoreByLeetcodeUsernameAndLeaderboardId(String userLeetcodeUsername, String leaderboardId);
 
     User getUserByDiscordId(String discordId);
 
@@ -24,13 +55,9 @@ public interface UserRepository {
 
     int getUserCount(String query);
 
-    User updateUser(User user);
-
     ArrayList<User> getAllUsers();
 
     ArrayList<User> getAllUsers(int page, int pageSize, String query);
-
-    PrivateUser getPrivateUserById(String id);
 
     boolean userExistsByLeetcodeUsername(String leetcodeUsername);
 

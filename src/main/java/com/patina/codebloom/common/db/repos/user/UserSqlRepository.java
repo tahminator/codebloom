@@ -10,12 +10,11 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
-import com.patina.codebloom.common.db.models.user.PrivateUser;
+import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
-import com.patina.codebloom.common.db.repos.usertag.options.UserTagFilterOptions;
 
 @Component
 public class UserSqlRepository implements UserRepository {
@@ -27,33 +26,65 @@ public class UserSqlRepository implements UserRepository {
         this.userTagRepository = userTagRepository;
     }
 
+    private User parseResultSetToUser(final ResultSet rs) throws SQLException {
+        var id = rs.getString("id");
+        return User.builder()
+                        .id(id)
+                        .discordId(rs.getString("discordId"))
+                        .discordName(rs.getString("discordName"))
+                        .leetcodeUsername(rs.getString("leetcodeUsername"))
+                        .nickname(rs.getString("nickname"))
+                        .verifyKey(rs.getString("verifyKey"))
+                        .admin(rs.getBoolean("admin"))
+                        .schoolEmail(rs.getString("schoolEmail"))
+                        .profileUrl(rs.getString("profileUrl"))
+                        .tags(userTagRepository.findTagsByUserId(id))
+                        .build();
+    }
+
+    private UserWithScore parseResultSetToUserWithScore(final ResultSet rs) throws SQLException {
+        var id = rs.getString("id");
+        return UserWithScore.builder()
+                        .id(id)
+                        .discordId(rs.getString("discordId"))
+                        .discordName(rs.getString("discordName"))
+                        .leetcodeUsername(rs.getString("leetcodeUsername"))
+                        .nickname(rs.getString("nickname"))
+                        .verifyKey(rs.getString("verifyKey"))
+                        .admin(rs.getBoolean("admin"))
+                        .schoolEmail(rs.getString("schoolEmail"))
+                        .profileUrl(rs.getString("profileUrl"))
+                        .tags(userTagRepository.findTagsByUserId(id))
+                        .totalScore(rs.getInt("totalScore"))
+                        .build();
+    }
+
     /**
      * @implNote - You can not set tags on a new user. Create the user, and if the
      * returned user is not null, you can use updateUserTagById from
      * {@link UserTagRepository}
      */
     @Override
-    public User createNewUser(final User user) {
-        String sql = "INSERT INTO \"User\" (id, \"discordName\", \"discordId\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\", \"profileUrl\") VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public void createUser(final User user) {
+        String sql = """
+                        INSERT INTO "User"
+                            (id, "discordName", "discordId")
+                        VALUES
+                            (:id, :discordName, :discordId)
+                        RETURNING
+                            "verifyKey"
+                        """;
         user.setId(UUID.randomUUID().toString());
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(user.getId()));
-            stmt.setString(2, user.getDiscordName());
-            stmt.setString(3, user.getDiscordId());
-            // User cannot be instantiated with a leetcodeUsername, it gets collected after
-            // user authentication.
-            stmt.setNull(4, java.sql.Types.VARCHAR);
-            stmt.setString(5, user.getNickname());
-            stmt.setNull(6, java.sql.Types.VARCHAR);
-            // get profile url from the graphql endpoint
-            stmt.setString(7, user.getProfileUrl());
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(user.getId()));
+            stmt.setString("discordName", user.getDiscordName());
+            stmt.setString("discordId", user.getDiscordId());
 
-            // We don't care what this actually returns, it can never be more than 1 anyways
-            // because id is UNIQUE. Just return the new user every time if we want to do
-            // any work on it.
-            stmt.executeUpdate();
-
-            return getUserById(user.getId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    user.setVerifyKey(rs.getString("verifyKey"));
+                }
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException("Error while creating user", e);
@@ -62,94 +93,97 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public User getUserById(final String inputId) {
-        User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\", \"schoolEmail\", admin, \"profileUrl\" FROM \"User\" WHERE id=?";
+        String sql = """
+                        SELECT
+                            id,
+                            "discordId",
+                            "discordName",
+                            "leetcodeUsername",
+                            "nickname",
+                            "schoolEmail",
+                            admin,
+                            "verifyKey",
+                            "profileUrl"
+                        FROM "User"
+                        WHERE
+                            id=:id
+                        """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(inputId));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(inputId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-                    var tags = userTagRepository.findTagsByUserId(id);
-
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags);
-                    return user;
+                    return parseResultSetToUser(rs);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error while retrieving user", e);
         }
 
-        return user;
+        return null;
     }
 
     @Override
     public User getUserByLeetcodeUsername(final String inputLeetcodeUsername) {
-        User user = null;
         String sql = """
-                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", admin, "profileUrl"
+                            SELECT
+                                id,
+                                "discordId",
+                                "discordName",
+                                "leetcodeUsername",
+                                "nickname",
+                                "schoolEmail",
+                                admin,
+                                "verifyKey",
+                                "profileUrl"
                             FROM "User"
-                            WHERE "leetcodeUsername" = ?
+                            WHERE "leetcodeUsername" = :leetcodeUsername
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, inputLeetcodeUsername);
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setString("leetcodeUsername", inputLeetcodeUsername);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-                    var tags = userTagRepository.findTagsByUserId(id);
-
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags);
-                    return user;
+                    return parseResultSetToUser(rs);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error while retrieving user", e);
         }
 
-        return user;
+        return null;
     }
 
     @Override
     public User getUserByDiscordId(final String inputDiscordId) {
-        User user = null;
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\", admin, \"profileUrl\" FROM \"User\" WHERE \"discordId\"=?";
+        String sql = """
+                        SELECT
+                            id,
+                            "discordId",
+                            "discordName",
+                            "leetcodeUsername",
+                            "nickname",
+                            "schoolEmail",
+                            admin,
+                            "verifyKey",
+                            "profileUrl"
+                        FROM "User"
+                        WHERE
+                            "discordId" = :discordId
+                        """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, inputDiscordId);
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setString("discordId", inputDiscordId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-
-                    var tags = userTagRepository.findTagsByUserId(id);
-
-                    user = new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags);
-                    return user;
+                    return parseResultSetToUser(rs);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error while retrieving user", e);
         }
 
-        return user;
+        return null;
     }
 
     @Override
@@ -168,34 +202,38 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public User updateUser(final User inputUser) {
+    public boolean updateUser(final User inputUser) {
+        System.out.println(inputUser.getSchoolEmail());
         String sql = """
                         UPDATE "User"
-                        SET "discordName"=?, "discordId"=?, "leetcodeUsername"=?, "nickname"=?, "admin"=?, "profileUrl"=?, "schoolEmail"=COALESCE(?, "schoolEmail")
-                        WHERE id=?
+                        SET
+                            "discordName" = :discordName,
+                            "discordId" = :discordId,
+                            "leetcodeUsername" = :leetcodeUsername,
+                            "nickname" = :nickname,
+                            "admin" = :admin,
+                            "profileUrl"= :profileUrl,
+                            "schoolEmail" = :schoolEmail
+                        WHERE
+                            id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, inputUser.getDiscordName());
-            stmt.setString(2, inputUser.getDiscordId());
-            stmt.setString(3, inputUser.getLeetcodeUsername());
-            stmt.setString(4, inputUser.getNickname());
-            stmt.setBoolean(5, inputUser.isAdmin());
-            stmt.setString(6, inputUser.getProfileUrl());
-            if (inputUser instanceof PrivateUser) {
-                PrivateUser privateUser = (PrivateUser) inputUser;
-                stmt.setString(7, privateUser.getSchoolEmail());
-            } else {
-                stmt.setNull(7, java.sql.Types.VARCHAR);
-            }
-            stmt.setObject(8, UUID.fromString(inputUser.getId()));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(inputUser.getId()));
+            stmt.setString("discordName", inputUser.getDiscordName());
+            stmt.setString("discordId", inputUser.getDiscordId());
+            stmt.setString("leetcodeUsername", inputUser.getLeetcodeUsername());
+            stmt.setString("nickname", inputUser.getNickname());
+            stmt.setBoolean("admin", inputUser.isAdmin());
+            stmt.setString("profileUrl", inputUser.getProfileUrl());
+            stmt.setString("schoolEmail", inputUser.getSchoolEmail());
 
             // We don't care what this actually returns, it can never be more than 1 anyways
             // because id is UNIQUE. Just return the new user every time if we want to do
             // any work on it.
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
 
-            return getUserByDiscordId(inputUser.getDiscordId());
+            return rowsAffected > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Error while updating user", e);
         }
@@ -204,22 +242,24 @@ public class UserSqlRepository implements UserRepository {
     @Override
     public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
-        String sql = "SELECT id, \"discordId\", \"discordName\", \"leetcodeUsername\", \"nickname\",\"schoolEmail\", admin, \"profileUrl\" FROM \"User\"";
+        String sql = """
+                        SELECT
+                            id,
+                            "discordId",
+                            "discordName",
+                            "leetcodeUsername",
+                            "nickname",
+                            "schoolEmail",
+                            admin,
+                            "verifyKey",
+                            "profileUrl"
+                        FROM "User"
+                        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-
-                    var tags = userTagRepository.findTagsByUserId(id);
-
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags));
+                    users.add(parseResultSetToUser(rs));
                 }
             }
         } catch (SQLException e) {
@@ -233,34 +273,33 @@ public class UserSqlRepository implements UserRepository {
     public ArrayList<User> getAllUsers(final int page, final int pageSize, final String query) {
         ArrayList<User> users = new ArrayList<>();
         String sql = """
-                            SELECT id, "discordId", "discordName", "leetcodeUsername", "nickname", "schoolEmail", admin, "profileUrl"
-                            FROM "User"
+                            SELECT
+                                id,
+                                "discordId",
+                                "discordName",
+                                "leetcodeUsername",
+                                "nickname",
+                                "schoolEmail",
+                                admin,
+                                "verifyKey",
+                                "profileUrl"
+                            FROM
+                                "User"
                             WHERE
-                                ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
-                            ORDER BY id
-                            LIMIT ? OFFSET ?
+                                ("discordName" ILIKE :query OR "leetcodeUsername" ILIKE :query OR "nickname" ILIKE :query)
+                            ORDER BY
+                                id
+                            LIMIT :limit OFFSET :offset
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "%" + query + "%");
-            stmt.setString(2, "%" + query + "%");
-            stmt.setString(3, "%" + query + "%");
-            stmt.setInt(4, pageSize);
-            stmt.setInt(5, (page - 1) * pageSize);
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setString("query", "%" + query + "%");
+            stmt.setInt("limit", pageSize);
+            stmt.setInt("offset", (page - 1) * pageSize);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-
-                    var tags = userTagRepository.findTagsByUserId(id);
-
-                    users.add(new User(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, tags));
+                    users.add(parseResultSetToUser(rs));
                 }
             }
         } catch (SQLException e) {
@@ -268,51 +307,6 @@ public class UserSqlRepository implements UserRepository {
         }
 
         return users;
-    }
-
-    @Override
-    public PrivateUser getPrivateUserById(final String inputId) {
-        PrivateUser user = null;
-        String sql = """
-                        SELECT
-                            id,
-                            "discordId",
-                            "discordName",
-                            "leetcodeUsername",
-                            "nickname",
-                            "admin",
-                            "schoolEmail",
-                            "profileUrl",
-                            "verifyKey"
-                        FROM "User"
-                        WHERE id = ?
-                        """;
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(inputId));
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-                    var schoolEmail = rs.getString("schoolEmail");
-                    var verifyKey = rs.getString("verifyKey");
-
-                    var tags = userTagRepository.findTagsByUserId(id);
-
-                    user = new PrivateUser(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, schoolEmail, verifyKey, tags);
-                    return user;
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error while retrieving user", e);
-        }
-
-        return user;
     }
 
     @Override
@@ -336,46 +330,34 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public UserWithScore getUserWithScoreById(final String userId, final String leaderboardId, final UserFilterOptions options) {
+    public UserWithScore getUserWithScoreByIdAndLeaderboardId(final String userId, final String leaderboardId, final UserFilterOptions options) {
         String sql = """
                             SELECT
                                 u.id,
                                 u."discordId",
                                 u."discordName",
                                 u."leetcodeUsername",
-                                u.nickname,
+                                u."nickname",
+                                u."schoolEmail",
                                 u.admin,
+                                u."verifyKey",
                                 u."profileUrl",
                                 m."totalScore"
                             FROM
                                 "User" u
                             JOIN "Metadata" m ON m."userId" = u.id
                             WHERE
-                                u.id = ?
+                                u.id = :id
                                 AND
-                                m."leaderboardId" = ?
+                                m."leaderboardId" = :leaderboardId
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
-            stmt.setObject(2, UUID.fromString(leaderboardId));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(userId));
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-                    var totalScore = rs.getInt("totalScore");
-
-                    var tags = userTagRepository.findTagsByUserId(id,
-                                    UserTagFilterOptions.builder()
-                                                    .pointOfTime(options.getPointOfTime()).build());
-
-                    var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, totalScore, tags);
-                    return userWithScore;
+                    return parseResultSetToUserWithScore(rs);
                 }
             }
         } catch (SQLException e) {
@@ -386,7 +368,7 @@ public class UserSqlRepository implements UserRepository {
     }
 
     @Override
-    public UserWithScore getUserWithScoreByLeetcodeUsername(final String userLeetcodeUsername, final String leaderboardId) {
+    public UserWithScore getUserWithScoreByLeetcodeUsernameAndLeaderboardId(final String userLeetcodeUsername, final String leaderboardId) {
         String sql = """
                             SELECT
                                 u.id,
@@ -396,34 +378,23 @@ public class UserSqlRepository implements UserRepository {
                                 u.nickname,
                                 u.admin,
                                 u."profileUrl",
+                                u."verifyKey",
                                 m."totalScore"
                             FROM
                                 "User" u
                             JOIN "Metadata" m ON m."userLeetcodeUsername" = u."leetcodeUsername"
                             WHERE
-                                u."leetcodeUsername" = ?
+                                u."leetcodeUsername" = :leetcodeUsername
                                 AND
-                                m."leaderboardId" = ?
+                                m."leaderboardId" = :leaderboardId
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, userLeetcodeUsername);
-            stmt.setObject(2, UUID.fromString(leaderboardId));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setString("leetcodeUsername", userLeetcodeUsername);
+            stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var id = rs.getString("id");
-                    var discordId = rs.getString("discordId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-                    var admin = rs.getBoolean("admin");
-                    var profileUrl = rs.getString("profileUrl");
-                    var totalScore = rs.getInt("totalScore");
-
-                    var tags = userTagRepository.findTagsByUserId(id);
-
-                    var userWithScore = new UserWithScore(id, discordId, discordName, leetcodeUsername, nickname, admin, profileUrl, totalScore, tags);
-                    return userWithScore;
+                    return parseResultSetToUserWithScore(rs);
                 }
             }
         } catch (SQLException e) {
@@ -441,12 +412,10 @@ public class UserSqlRepository implements UserRepository {
                         FROM
                             "User"
                         WHERE
-                            ("discordName" ILIKE ? OR "leetcodeUsername" ILIKE ? OR "nickname" ILIKE ?)
+                            ("discordName" ILIKE :query OR "leetcodeUsername" ILIKE :query OR "nickname" ILIKE :query)
                         """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "%" + query + "%");
-            stmt.setString(2, "%" + query + "%");
-            stmt.setString(3, "%" + query + "%");
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setString("query", "%" + query + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -463,11 +432,11 @@ public class UserSqlRepository implements UserRepository {
         String sql = """
                             DELETE FROM "User"
                             WHERE
-                                id = ?
+                                id = :id
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(id));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
 

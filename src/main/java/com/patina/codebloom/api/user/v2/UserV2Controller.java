@@ -13,6 +13,7 @@ import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.lag.FakeLag;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +42,7 @@ public class UserV2Controller {
             @ApiResponse(responseCode = "200", description = "User profile has been found")
     })
     @GetMapping("{leetcodeUsername}/profile")
-    public ResponseEntity<ApiResponder<User>> getUserProfileByLeetcodeUsername(final HttpServletRequest request, @PathVariable final String leetcodeUsername) {
+    public ResponseEntity<ApiResponder<UserDto>> getUserProfileByLeetcodeUsername(final HttpServletRequest request, @PathVariable final String leetcodeUsername) {
         FakeLag.sleep(650);
 
         User user = userRepository.getUserByLeetcodeUsername(leetcodeUsername);
@@ -50,6 +51,6 @@ public class UserV2Controller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find user profile.");
         }
 
-        return ResponseEntity.ok().body(ApiResponder.success("User profile found!", user));
+        return ResponseEntity.ok().body(ApiResponder.success("User profile found!", UserDto.fromUser(user)));
     }
 }

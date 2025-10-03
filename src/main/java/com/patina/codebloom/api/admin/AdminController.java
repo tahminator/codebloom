@@ -23,6 +23,7 @@ import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
@@ -97,7 +98,7 @@ public class AdminController {
     @Operation(summary = "Allows current admin to toggle another user's admin status", description = """
                     """)
     @PostMapping("/user/admin/toggle")
-    public ResponseEntity<ApiResponder<User>> updateAdmin(
+    public ResponseEntity<ApiResponder<UserDto>> updateAdmin(
                     final HttpServletRequest request,
                     @Valid @RequestBody final UpdateAdminBody newAdminBody) {
         protector.validateAdminSession(request);
@@ -113,16 +114,16 @@ public class AdminController {
         }
 
         user.setAdmin(toggleTo);
-        User updatedUser = userRepository.updateUser(user);
+        boolean isSuccessful = userRepository.updateUser(user);
 
-        if (updatedUser == null) {
+        if (!isSuccessful) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Failed to update the admin."));
         }
 
         return ResponseEntity.ok(ApiResponder.success("User with Discord name of "
-                        + updatedUser.getDiscordName() + " is "
-                        + (toggleTo ? "now an admin!" : "no longer an admin."), updatedUser));
+                        + user.getDiscordName() + " is "
+                        + (toggleTo ? "now an admin!" : "no longer an admin."), UserDto.fromUser(user)));
     }
 
     @Operation(summary = "Create a new announcement (only for admins).", responses = {
