@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
  * Annotation to mark database fields as NULL columns.
  * 
  * Used at compile-time to indicate that the annotated field corresponds to a
- * database column that cannot contain null values.
+ * database column that can contain null values (i.e., is nullable).
  *
  * This interface will get compiled out; there is no run-time effects from this
  * annotation.

@@ -16,11 +16,7 @@ public interface UserRepository {
      * <li>discordId</li>
      * <li>discordName</li>
      * </ul>
-     * optional fields:
-     * <ul>
-     * <li>discordId</li>
-     * <li>discordName</li>
-     * </ul>
+     * 
      */
     void createUser(User user);
 

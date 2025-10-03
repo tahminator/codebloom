@@ -203,7 +203,6 @@ public class UserSqlRepository implements UserRepository {
 
     @Override
     public boolean updateUser(final User inputUser) {
-        System.out.println(inputUser.getSchoolEmail());
         String sql = """
                         UPDATE "User"
                         SET
