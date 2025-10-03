@@ -101,6 +101,7 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
 
     <module name="TreeWalker">
 
+        <module name="SuppressionCommentFilter"/>
         <!-- Checks for Naming Conventions.                  -->
         <!-- See https://checkstyle.org/config_naming.html -->
         <module name="ConstantName" />
