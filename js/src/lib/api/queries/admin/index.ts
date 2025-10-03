@@ -1,8 +1,8 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
+import { Api } from "@/lib/api/types";
 import { Announcement } from "@/lib/api/types/announcement";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
-import { User } from "@/lib/api/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useToggleAdminMutation = () => {
@@ -18,7 +18,7 @@ export const useToggleAdminMutation = () => {
       });
 
       const previousApiResponse = queryClient.getQueryData<
-        UnknownApiResponse<Page<User[]>>
+        UnknownApiResponse<Page<Api<"UserDto">[]>>
       >(["user", "all", metadata.page, metadata.debouncedQuery]);
 
       // Impossible, just handle it to make TS happy and narrow the type.
@@ -27,8 +27,8 @@ export const useToggleAdminMutation = () => {
       }
 
       // Find the user and insert the new admin status to it's object.
-      const newUsers: User[] = previousApiResponse.payload.items.map((user) =>
-        user.id === userId ? { ...user, admin: toggleTo } : user,
+      const newUsers: Api<"UserDto">[] = previousApiResponse.payload.items.map(
+        (user) => (user.id === userId ? { ...user, admin: toggleTo } : user),
       );
 
       // Replace the data (users array) with the newUsers, and keep the rest of the Page items the same.
@@ -47,13 +47,13 @@ export const useToggleAdminMutation = () => {
       //    data: T
       //  };
       // }
-      const newPage: Page<User[]> = {
+      const newPage: Page<Api<"UserDto">[]> = {
         ...previousApiResponse.payload,
         items: newUsers,
       };
 
       // Insert this new Page type, and keep the success and message from the previous API response.
-      queryClient.setQueryData<UnknownApiResponse<Page<User[]>>>(
+      queryClient.setQueryData<UnknownApiResponse<Page<Api<"UserDto">[]>>>(
         ["user", "all", metadata.page, metadata.debouncedQuery],
         { ...previousApiResponse, payload: newPage },
       );
@@ -113,7 +113,7 @@ async function toggleUserAdmin({
     }),
   });
 
-  const json = (await response.json()) as UnknownApiResponse<User>;
+  const json = (await response.json()) as UnknownApiResponse<Api<"UserDto">>;
 
   return json;
 }

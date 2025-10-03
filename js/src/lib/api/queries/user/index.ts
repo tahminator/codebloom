@@ -1,7 +1,7 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
+import { Api } from "@/lib/api/types";
 import { Question } from "@/lib/api/types/question";
-import { User } from "@/lib/api/types/user";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -154,7 +154,7 @@ export const useGetAllUsersQuery = (
 async function fetchUserProfile({ userId }: { userId?: string }) {
   const response = await fetch(`/api/user/${userId ?? ""}/profile`);
 
-  const json = (await response.json()) as UnknownApiResponse<User>;
+  const json = (await response.json()) as UnknownApiResponse<Api<"UserDto">>;
 
   return json;
 }
@@ -193,7 +193,9 @@ async function fetchAllUsers({
     `/api/user/all?page=${page}&query=${query}&pageSize=${pageSize}`,
   );
 
-  const json = (await response.json()) as UnknownApiResponse<Page<User[]>>;
+  const json = (await response.json()) as UnknownApiResponse<
+    Page<Api<"UserDto">[]>
+  >;
 
   return json;
 }

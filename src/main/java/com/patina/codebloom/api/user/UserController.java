@@ -2,6 +2,7 @@ package com.patina.codebloom.api.user;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
 
@@ -51,7 +53,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User profile has been found")
     })
     @GetMapping("{userId}/profile")
-    public ResponseEntity<ApiResponder<User>> getUserProfileByUserId(final HttpServletRequest request, @PathVariable final String userId) {
+    public ResponseEntity<ApiResponder<UserDto>> getUserProfileByUserId(final HttpServletRequest request, @PathVariable final String userId) {
         FakeLag.sleep(650);
 
         User user = userRepository.getUserById(userId);
@@ -60,7 +62,7 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find user profile.");
         }
 
-        return ResponseEntity.ok().body(ApiResponder.success("User profile found!", user));
+        return ResponseEntity.ok().body(ApiResponder.success("User profile found!", UserDto.fromUser(user)));
     }
 
     @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = """
@@ -98,7 +100,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "All users' metadata has been found.")
     })
     @GetMapping("/all")
-    public ResponseEntity<ApiResponder<Page<User>>> getAllUsers(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<UserDto>>> getAllUsers(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize) {
@@ -106,13 +108,15 @@ public class UserController {
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
 
-        ArrayList<User> users = userRepository.getAllUsers(page, parsedPageSize, query);
+        List<User> users = userRepository.getAllUsers(page, parsedPageSize, query);
 
         int totalUsers = userRepository.getUserCount(query);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<User> createdPage = new Page<>(hasNextPage, users, totalPages, parsedPageSize);
+        List<UserDto> userDtos = users.stream().map(UserDto::fromUser).toList();
+
+        Page<UserDto> createdPage = new Page<>(hasNextPage, userDtos, totalPages, parsedPageSize);
 
         return ResponseEntity.ok().body(ApiResponder.success("All users have been successfully fetched!", createdPage));
     }

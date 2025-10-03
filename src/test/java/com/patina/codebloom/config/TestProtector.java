@@ -4,7 +4,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import com.patina.codebloom.common.db.models.Session;
-import com.patina.codebloom.common.db.models.user.PrivateUser;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.security.AuthenticationObject;
@@ -37,7 +37,7 @@ public class TestProtector {
         return new Protector(sesssionRepository, userRepository) {
             @Override
             public AuthenticationObject validateSession(final HttpServletRequest request) {
-                PrivateUser mockAdminUser = userRepository.getPrivateUserById("ed3bfe18-e42a-467f-b4fa-07e8da4d2555");
+                User mockAdminUser = userRepository.getUserById("ed3bfe18-e42a-467f-b4fa-07e8da4d2555");
                 Session mockAdminSession = sesssionRepository.getSessionById("d99e10a2-6285-46f0-8150-ba4727b520f4");
                 return new AuthenticationObject(mockAdminUser, mockAdminSession);
             }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.db.models.Session;
-import com.patina.codebloom.common.db.models.user.PrivateUser;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
@@ -55,7 +55,7 @@ public class Protector {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
 
-                PrivateUser user = userRepository.getPrivateUserById(session.getUserId());
+                User user = userRepository.getUserById(session.getUserId());
                 if (user == null) {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }

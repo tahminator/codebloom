@@ -133,7 +133,7 @@ public class SubmissionsHandler {
 
             acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
-            UserWithScore recentUserMetadata = userRepository.getUserWithScoreById(user.getId(), recentLeaderboard.getId(), UserFilterOptions.builder().build());
+            UserWithScore recentUserMetadata = userRepository.getUserWithScoreByIdAndLeaderboardId(user.getId(), recentLeaderboard.getId(), UserFilterOptions.builder().build());
 
             leaderboardRepository.updateUserPointsFromLeaderboard(recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }

@@ -193,8 +193,11 @@ public class LeaderboardRepositoryTest {
     @Order(8)
     @Test
     void testAddingANewUserToMockLeaderboard() {
-        User newMockUser = new User("3021234402183490", "mockUserName" + ThreadLocalRandom.current().nextInt());
-        userRepository.createNewUser(newMockUser);
+        User newMockUser = User.builder()
+                        .discordId("3021234402183490")
+                        .discordName("mockUserName" + ThreadLocalRandom.current().nextInt())
+                        .build();
+        userRepository.createUser(newMockUser);
 
         boolean isAddUserSuccessful = leaderboardRepository.addUserToLeaderboard(newMockUser.getId(), mockLeaderboard.getId());
 
@@ -217,7 +220,7 @@ public class LeaderboardRepositoryTest {
         assertTrue(isUserUpdatePointsSuccessful, "failed to update points of super user on mock leaderboard");
 
         // TODO - Write tests for pointOfTime
-        UserWithScore superUser = userRepository.getUserWithScoreById(
+        UserWithScore superUser = userRepository.getUserWithScoreByIdAndLeaderboardId(
                         superUserId,
                         mockLeaderboard.getId(),
                         UserFilterOptions.builder()

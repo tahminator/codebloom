@@ -19,6 +19,7 @@ import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.user.UserWithScoreDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
@@ -73,7 +74,7 @@ public class LeaderboardController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
 
-    public ResponseEntity<ApiResponder<Page<Indexed<UserWithScore>>>> getLeaderboardUsersById(
+    public ResponseEntity<ApiResponder<Page<Indexed<UserWithScoreDto>>>> getLeaderboardUsersById(
                     @PathVariable final String leaderboardId,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize,
@@ -111,8 +112,6 @@ public class LeaderboardController {
                         .cornell(cornell)
                         .build();
 
-        System.out.println(options);
-
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
         if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell)) {
@@ -127,7 +126,11 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<Indexed<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
+        List<Indexed<UserWithScoreDto>> indexedUserWithScoreDtos = leaderboardData.stream()
+                        .map(indexed -> Indexed.of(UserWithScoreDto.fromUserWithScore(indexed.getItem()), indexed.getIndex()))
+                        .toList();
+
+        Page<Indexed<UserWithScoreDto>> createdPage = new Page<>(hasNextPage, indexedUserWithScoreDtos, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -149,7 +152,7 @@ public class LeaderboardController {
     @Operation(summary = "Fetch the currently active leaderboard data, attaching the users for each leaderboard.", responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<Page<Indexed<UserWithScore>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<Indexed<UserWithScoreDto>>>> getCurrentLeaderboardUsers(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize,
                     @Parameter(description = "Discord name", example = "tahmid") @RequestParam(required = false, defaultValue = "") final String query,
@@ -199,7 +202,11 @@ public class LeaderboardController {
                             currentLeaderboardId, options);
         }
 
-        Page<Indexed<UserWithScore>> createdPage = new Page<>(hasNextPage, leaderboardData, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
+        List<Indexed<UserWithScoreDto>> indexedUserWithScoreDtos = leaderboardData.stream()
+                        .map(indexed -> Indexed.of(UserWithScoreDto.fromUserWithScore(indexed.getItem()), indexed.getIndex()))
+                        .toList();
+
+        Page<Indexed<UserWithScoreDto>> createdPage = new Page<>(hasNextPage, indexedUserWithScoreDtos, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }
@@ -207,14 +214,14 @@ public class LeaderboardController {
     @GetMapping("/current/user/{userId}")
     @Operation(summary = "Fetch the specific user data in the currently active leaderboard data.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<UserWithScore>> getUserCurrentLeaderboardFull(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<UserWithScoreDto>> getUserCurrentLeaderboardFull(final HttpServletRequest request,
                     @PathVariable final String userId) {
         FakeLag.sleep(650);
 
         Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
         // we do not support point of time in this endpoint currently
-        UserWithScore user = userRepository.getUserWithScoreById(
+        UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
                         userId,
                         leaderboardData.getId(),
                         UserFilterOptions.builder()
@@ -226,7 +233,7 @@ public class LeaderboardController {
         // user does not exist on this leaderboard."));
         // }
 
-        return ResponseEntity.ok().body(ApiResponder.success("User found!", user));
+        return ResponseEntity.ok().body(ApiResponder.success("User found!", UserWithScoreDto.fromUserWithScore(user)));
     }
 
     @GetMapping("/current/user/rank")
@@ -235,7 +242,7 @@ public class LeaderboardController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved user rank"),
             @ApiResponse(responseCode = "404", description = "User not found on leaderboard")
     })
-    public ResponseEntity<ApiResponder<Indexed<UserWithScore>>> getUserCurrentLeaderboardRank(
+    public ResponseEntity<ApiResponder<Indexed<UserWithScoreDto>>> getUserCurrentLeaderboardRank(
                     final HttpServletRequest request,
                     @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false") final boolean patina,
                     @Parameter(description = "Filter for Hunter College users") @RequestParam(required = false, defaultValue = "false") final boolean hunter,
@@ -284,7 +291,9 @@ public class LeaderboardController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found on the current leaderboard or does not match the specified filters.");
         }
 
-        return ResponseEntity.ok().body(ApiResponder.success("User rank found!", userWithRank));
+        Indexed<UserWithScoreDto> indexedUserWithScoreDto = Indexed.of(UserWithScoreDto.fromUserWithScore(userWithRank.getItem()), userWithRank.getIndex());
+
+        return ResponseEntity.ok().body(ApiResponder.success("User rank found!", indexedUserWithScoreDto));
     }
 
     @GetMapping("/all/metadata")

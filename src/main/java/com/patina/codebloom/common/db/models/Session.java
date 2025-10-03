@@ -2,8 +2,8 @@ package com.patina.codebloom.common.db.models;
 
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,18 +12,17 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Builder
 @EqualsAndHashCode
 @ToString
 public class Session {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String userId;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime expiresAt;
 
     // public Session(final String userId, final LocalDateTime expiresAt) {

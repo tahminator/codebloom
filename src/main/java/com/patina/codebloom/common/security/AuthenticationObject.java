@@ -1,22 +1,18 @@
 package com.patina.codebloom.common.security;
 
 import com.patina.codebloom.common.db.models.Session;
-import com.patina.codebloom.common.db.models.user.PrivateUser;
+import com.patina.codebloom.common.db.models.user.User;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+@AllArgsConstructor
+@Getter
+@ToString
+@EqualsAndHashCode
 public class AuthenticationObject {
-    private PrivateUser user;
+    private User user;
     private Session session;
-
-    public AuthenticationObject(final PrivateUser user, final Session session) {
-        this.user = user;
-        this.session = session;
-    }
-
-    public PrivateUser getUser() {
-        return user;
-    }
-
-    public Session getSession() {
-        return session;
-    }
 }

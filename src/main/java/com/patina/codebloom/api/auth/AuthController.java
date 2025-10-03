@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.patina.codebloom.common.db.models.Session;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.security.AuthenticationObjectDto;
 import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.reporter.Reporter;
@@ -46,7 +48,6 @@ import java.util.stream.Stream;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
-import com.patina.codebloom.common.db.models.user.PrivateUser;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
@@ -79,12 +80,13 @@ public class AuthController {
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/validate")
-    public ResponseEntity<ApiResponder<AuthenticationObject>> validateAuth(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<AuthenticationObjectDto>> validateAuth(final HttpServletRequest request) {
         FakeLag.sleep(350);
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
 
-        return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!", authenticationObject));
+        return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!",
+                        AuthenticationObjectDto.fromAuthenticationObject(authenticationObject)));
     }
 
     // Decided to make this redirect to routes, with a message query if needed,
@@ -135,7 +137,7 @@ public class AuthController {
                             "The email is not part of our supported schools domains: " + supportedSchools);
         }
 
-        PrivateUser user = authenticationObject.getUser();
+        User user = authenticationObject.getUser();
         String userId = user.getId();
 
         MagicLink magicLink = new MagicLink(email, userId);
@@ -171,9 +173,11 @@ public class AuthController {
     public RedirectView verifySchoolEmail(final HttpServletRequest request) {
         AuthenticationObject authenticationObject;
         Session session;
+        User user;
         try {
             authenticationObject = protector.validateSession(request);
             session = authenticationObject.getSession();
+            user = authenticationObject.getUser();
         } catch (Exception e) {
             return new RedirectView("/login?success=false&message=You are not logged in.");
         }
@@ -195,9 +199,12 @@ public class AuthController {
             return new RedirectView("/settings?success=false&message=ID does not match current user");
         }
 
-        PrivateUser user = userRepository.getPrivateUserById(magicLinkId);
         user.setSchoolEmail(magicLink.getEmail());
-        userRepository.updateUser(user);
+        boolean isSuccessful = userRepository.updateUser(user);
+
+        if (!isSuccessful) {
+            throw new RuntimeException("User repository failed to update user and add school email.");
+        }
 
         String emailDomain = magicLink.getEmail().substring(magicLink.getEmail().indexOf("@")).toLowerCase();
 
