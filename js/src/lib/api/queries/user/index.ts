@@ -51,7 +51,7 @@ export const useUserSubmissionsQuery = ({
   );
 
   const emptyTopics = useMemo(() => [], []);
-  
+
   const [topics, setTopics] = useURLState<string[]>(
     "topics",
     emptyTopics,
