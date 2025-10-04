@@ -1,116 +1,113 @@
-import { useVerifySchoolMutation } from "@/lib/api/queries/auth/school";
-import { Box, Button, Checkbox, Modal, Stack } from "@mantine/core";
-import { useState } from "react";
+import { ApiUtils } from "@/lib/api/utils";
+import { Box, Button, Chip, Flex, Popover, TextInput } from "@mantine/core";
+import { useEffect, useMemo, useState } from "react";
 
-type TopicModalProps = {
-  enabled: boolean;
-  toggle: () => void;
+type TopicFilterPopoverProps = {
+  value: string[];
+  onChange: (topics: string[]) => void;
 };
 
-const leetcodeTopics = [
-  "stack",
-  "data-stream",
-  "rejection-sampling",
-  "geometry",
-  "counting",
-  "design",
-  "probability-and-statistics",
-  "minimum-spanning-tree",
-  "line-sweep",
-  "number-theory",
-  "rolling-hash",
-  "segment-tree",
-  "biconnected-component",
-  "monotonic-stack",
-  "iterator",
-  "queue",
-  "radix-sort",
-  "bucket-sort",
-  "shell",
-  "memoization",
-  "string",
-  "prefix-sum",
-  "concurrency",
-  "database",
-  "shortest-path",
-  "sorting",
-  "linked-list",
-  "sliding-window",
-  "suffix-array",
-  "doubly-linked-list",
-  "simulation",
-  "ordered-set",
-  "graph",
-  "math",
-  "ordered-map",
-  "game-theory",
-  "dynamic-programming",
-  "recursion",
-  "monotonic-queue",
-  "matrix",
-  "reservoir-sampling",
-  "merge-sort",
-  "combinatorics",
-  "interactive",
-  "binary-tree",
-  "randomized",
-  "bitmask",
-  "breadth-first-search",
-  "string-matching",
-  "greedy",
-  "brainteaser",
-  "backtracking",
-  "bit-manipulation",
-  "union-find",
-  "binary-search-tree",
-  "two-pointers",
-  "array",
-  "depth-first-search",
-  "eulerian-circuit",
-  "tree",
-  "binary-search",
-  "strongly-connected-component",
-  "enumeration",
-  "heap-priority-queue",
-  "divide-and-conquer",
-  "hash-function",
-  "hash-table",
-  "trie",
-  "topological-sort",
-  "quickselect",
-  "binary-indexed-tree",
-  "counting-sort",
-  "unknown",
-];
+export default function TopicFilterPopover({
+  value,
+  onChange,
+}: TopicFilterPopoverProps) {
+  const [opened, setOpened] = useState(false);
+  const [search, setSearch] = useState("");
+  const [local, setLocal] = useState<string[]>(value);
 
-export default function TopicFilterModal({ enabled, toggle }: TopicModalProps) {
-  const { mutate, status } = useVerifySchoolMutation(); // will change when i get backend merged
-  const [selected, setSelected] = useState<string[]>([]);
+  const leetcodeTopics = ApiUtils.getAllTopicEnumMetadata();
+
+  const filteredTopics = useMemo(
+    () =>
+      leetcodeTopics.filter((topic) =>
+        topic.name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [search, leetcodeTopics],
+  );
+
+  useEffect(() => {
+    setLocal(value);
+  }, [value]);
 
   return (
-    <Modal opened={enabled} onClose={toggle} size="lg" title="Select Topics">
-      <Box p="md">
-        <Checkbox.Group
-          value={selected}
-          onChange={setSelected}
-          label="Choose one or more topics"
-        >
-          <Stack gap="xs">
-            {leetcodeTopics.map((topic) => (
-              <Checkbox key={topic} value={topic} label={topic} />
-            ))}
-          </Stack>
-        </Checkbox.Group>
+    <Popover
+      opened={opened}
+      onChange={setOpened}
+      position="bottom-start"
+      trapFocus={false}
+      closeOnEscape
+      withinPortal={false}
+      shadow="md"
+      transitionProps={{ keepMounted: false }}
+    >
+      <Popover.Target>
         <Button
-          mt="lg"
-          onClick={() => {
-            console.log("Selected topics:", selected);
-            toggle();
-          }}
+          fullWidth
+          variant="outline"
+          color="gray"
+          onClick={() => setOpened((o) => !o)}
         >
-          Save
+          Topics
         </Button>
-      </Box>
-    </Modal>
+      </Popover.Target>
+      <Popover.Dropdown style={{ width: 400 }}>
+        <TextInput
+          placeholder="search"
+          value={search}
+          onChange={(e) => setSearch(e.currentTarget.value)}
+          mb="sm"
+        />
+        <Chip.Group multiple value={local} onChange={setLocal}>
+          <Flex
+            wrap="wrap"
+            gap="sm"
+            maw={400}
+            style={{
+              maxHeight: 300,
+              overflowY: "auto",
+            }}
+          >
+            {filteredTopics.map((topic) => (
+              <Chip
+                key={topic.enum}
+                value={topic.enum}
+                radius="xl"
+                styles={(theme, { checked }) => ({
+                  label: {
+                    color: checked ? theme.white : "#b3b3b3",
+                    fontWeight: 600,
+                  },
+                })}
+              >
+                {topic.name}
+              </Chip>
+            ))}
+          </Flex>
+        </Chip.Group>
+        <Box
+          mt="sm"
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <Button
+            variant="subtle"
+            color="gray"
+            onClick={() => {
+              setLocal([]);
+              onChange([]);
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            onClick={() => {
+              onChange(local);
+              setOpened(false);
+            }}
+          >
+            Save
+          </Button>
+        </Box>
+      </Popover.Dropdown>
+    </Popover>
   );
 }
