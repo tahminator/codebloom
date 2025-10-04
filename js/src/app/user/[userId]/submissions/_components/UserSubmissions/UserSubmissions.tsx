@@ -10,16 +10,7 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { timeDiff } from "@/lib/timeDiff";
-import {
-  Badge,
-  Box,
-  Button,
-  Menu,
-  Overlay,
-  Table,
-  Text,
-} from "@mantine/core";
-import { useState } from "react";
+import { Badge, Box, Overlay, Table, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 import TopicFilterModal from "../TopicFilters/TopicFilterModal";
@@ -37,13 +28,12 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     setSearchQuery,
     pointFilter,
     togglePointFilter,
+    topics,
+    setTopics,
   } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
   });
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const toggleModal = () => setModalOpen((prev) => !prev);
 
   if (status === "pending") {
     return (
@@ -68,7 +58,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   return (
     <>
       <Box maw={"100%"} miw={"66%"} p="xs">
-        <TopicFilterModal enabled={modalOpen} toggle={toggleModal} />
         <FilterDropdown
           style={{
             marginLeft: "auto",
@@ -76,17 +65,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           }}
           buttonName="Filters"
         >
-          <Menu.Item
-            style={{ padding: 0 }}
-          >
-            <Button
-              fullWidth
-              onClick={toggleModal}
-              variant="filled"
-            >
-              Topics
-            </Button>
-          </Menu.Item>
+          <TopicFilterModal value={topics} onChange={setTopics} />
           <FilterDropdownItem
             value={pointFilter}
             toggle={togglePointFilter}
