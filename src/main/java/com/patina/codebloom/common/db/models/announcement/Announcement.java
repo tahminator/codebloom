@@ -22,6 +22,7 @@ public class Announcement {
     @NotNullColumn
     private OffsetDateTime createdAt;
 
+    @NotNullColumn
     private OffsetDateTime expiresAt;
 
     @NotNullColumn
