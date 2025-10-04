@@ -13,6 +13,7 @@ import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.dto.announcement.AnnouncementDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -38,7 +39,7 @@ public class AnnouncementController {
             @ApiResponse(responseCode = "200", description = "Successful response (may or may not be announcement, check success key)")
     })
     @GetMapping("")
-    public ResponseEntity<ApiResponder<Announcement>> getLatestAnnouncement() {
+    public ResponseEntity<ApiResponder<AnnouncementDto>> getLatestAnnouncement() {
         Announcement announcement = announcementRepository.getRecentAnnouncement();
 
         if (announcement == null) {
@@ -53,7 +54,7 @@ public class AnnouncementController {
                             .body(ApiResponder.failure("No announcement available: check back later."));
         }
 
-        return ResponseEntity.ok(ApiResponder.success("Announcement found!", announcement));
+        return ResponseEntity.ok(ApiResponder.success("Announcement found!", AnnouncementDto.fromAnnouncement(announcement)));
     }
 
 }
