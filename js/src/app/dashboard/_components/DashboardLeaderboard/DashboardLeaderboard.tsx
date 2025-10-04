@@ -34,34 +34,11 @@ export default function LeaderboardForDashboard({
   // Hack to fix a race condition.
   useFixMyPointsPrefetch({ userId });
 
-  const {
-    data,
-    status,
-    patina,
-    togglePatina,
-    hunter,
-    toggleHunter,
-    nyu,
-    toggleNyu,
-    baruch,
-    toggleBaruch,
-    rpi,
-    toggleRpi,
-    gwc,
-    toggleGwc,
-    sbu,
-    toggleSbu,
-    columbia,
-    toggleColumbia,
-    ccny,
-    toggleCcny,
-    cornell,
-    toggleCornell,
-    isPlaceholderData,
-  } = useCurrentLeaderboardUsersQuery({
-    pageSize: 5,
-    tieToUrl: false,
-  });
+  const { data, status, filters, toggleFilter, isPlaceholderData } =
+    useCurrentLeaderboardUsersQuery({
+      pageSize: 5,
+      tieToUrl: false,
+    });
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
@@ -141,30 +118,8 @@ export default function LeaderboardForDashboard({
       </Flex>
       <FilterTagsControl
         tags={filteredTags}
-        flags={{
-          Patina: patina,
-          Hunter: hunter,
-          Nyu: nyu,
-          Baruch: baruch,
-          Rpi: rpi,
-          Gwc: gwc,
-          Sbu: sbu,
-          Columbia: columbia,
-          Ccny: ccny,
-          Cornell: cornell,
-        }}
-        flagsToggle={{
-          Patina: togglePatina,
-          Hunter: toggleHunter,
-          Nyu: toggleNyu,
-          Baruch: toggleBaruch,
-          Rpi: toggleRpi,
-          Gwc: toggleGwc,
-          Sbu: toggleSbu,
-          Columbia: toggleColumbia,
-          Ccny: toggleCcny,
-          Cornell: toggleCornell,
-        }}
+        filters={filters}
+        toggleFlag={toggleFilter}
       />
       {!inTop5 && (
         <>

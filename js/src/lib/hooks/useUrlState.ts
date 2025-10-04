@@ -2,6 +2,18 @@ import { useDebouncedValue } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+type UseUrlStateOptions = {
+  enabled?: boolean;
+  resetOnDefault?: boolean;
+  debounce?: number;
+};
+
+const defaultProps = {
+  enabled: true,
+  resetOnDefault: true,
+  debounce: 0,
+};
+
 /**
  * A custom React hook that will attach the state to the URL params.
  *
@@ -16,9 +28,11 @@ import { useSearchParams } from "react-router-dom";
 export function useURLState<T>(
   name: string,
   defaultValue: T,
-  enabled = true,
-  resetOnDefault = true,
-  debounce = 0,
+  {
+    enabled = defaultProps.enabled,
+    resetOnDefault = defaultProps.resetOnDefault,
+    debounce = defaultProps.debounce,
+  }: UseUrlStateOptions = defaultProps,
 ) {
   const [initial, setInitial] = useState(true);
   const [value, setValue] = useState<T>(defaultValue);

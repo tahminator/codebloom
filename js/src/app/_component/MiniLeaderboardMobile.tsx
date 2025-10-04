@@ -2,6 +2,7 @@ import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeader
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -18,7 +19,7 @@ import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function MiniLeaderboardMobile() {
-  const { data, status, patina, togglePatina, isPlaceholderData } =
+  const { data, status, filters, toggleFilter, isPlaceholderData } =
     useCurrentLeaderboardUsersQuery({ pageSize: 5, tieToUrl: false });
 
   if (status === "pending") {
@@ -44,14 +45,14 @@ export default function MiniLeaderboardMobile() {
   return (
     <>
       <SegmentedControl
-        value={patina ? "patina" : "all"}
+        value={filters.Patina ? "patina" : "all"}
         w={"100%"}
         variant={"light"}
         data={[
           { label: "All", value: "all" },
           { label: "Patina", value: "patina" },
         ]}
-        onChange={togglePatina}
+        onChange={() => toggleFilter(UserTagTag.Patina)}
       />
       <div style={{ position: "relative" }}>
         {isPlaceholderData && (
@@ -164,7 +165,7 @@ export default function MiniLeaderboardMobile() {
         variant={"light"}
         w={"100%"}
         component={Link}
-        to={`/leaderboard?patina=${patina}`}
+        to={`/leaderboard?patina=${filters.Patina}`}
       >
         View all
       </Button>

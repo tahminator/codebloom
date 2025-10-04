@@ -1,6 +1,8 @@
-import { components } from "@/lib/api/types/autogen/schema";
+import { components, UserTagTag } from "@/lib/api/types/autogen/schema";
 
-type Schemas = components["schemas"];
+type Schemas = components["schemas"] & {
+  UserTagTag: UserTagTag;
+};
 
 export type TApiSchemaKey = keyof Schemas;
 
@@ -16,4 +18,4 @@ export type TApiSchemaKey = keyof Schemas;
  * const json = (await response.json()) as UnknownApiResponse<Api<"UserDto">>; // Access any generated API type.
  * ```
  */
-export type Api<T extends TApiSchemaKey> = components["schemas"][T];
+export type Api<T extends TApiSchemaKey> = Schemas[T];

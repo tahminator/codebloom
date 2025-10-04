@@ -33,6 +33,7 @@
         "clsx": "^2.1.1",
         "dayjs": "^1.11.13",
         "eslint-plugin-react": "^7.37.5",
+        "immer": "^10.1.3",
         "mantine-form-zod-resolver": "^1.3.0",
         "motion": "^12.4.7",
         "prettier": "^3.5.0",
@@ -44,6 +45,7 @@
         "react-syntax-highlighter": "^15.6.6",
         "sass": "^1.83.1",
         "use-debounce": "^10.0.4",
+        "use-immer": "^0.11.0",
         "vite-tsconfig-paths": "^5.1.4",
         "zod": "^3.25.76"
     },
