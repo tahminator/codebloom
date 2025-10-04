@@ -1,10 +1,17 @@
 package com.patina.codebloom.api.admin.helper;
 
 import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 
 import org.springframework.stereotype.Service;
 
@@ -21,7 +28,7 @@ import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
-import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
+import com.patina.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,13 +57,38 @@ public class PatinaDiscordMessageHelper {
                             .setStorageState(null));
             context.clearCookies();
             Page page = browser.newPage();
+
+            List<byte[]> screenshotBytesList = new ArrayList<>();
+
+            log.info("Loading page 1 for screenshot...");
             page.navigate("https://codebloom.patinanetwork.org/leaderboard?patina=true");
-            log.info("Loading page for screenshot...");
-
             page.waitForTimeout(5_000);
+            byte[] screenshot1 = page.screenshot(new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
+            screenshotBytesList.add(screenshot1);
 
-            byte[] screenshotBytes = page.screenshot(
-                            new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
+            log.info("Loading page 2 for screenshot...");
+            page.navigate("https://codebloom.patinanetwork.org/leaderboard?patina=true&page=2");
+            page.waitForTimeout(5_000);
+            byte[] screenshot2 = page.screenshot(new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
+            screenshotBytesList.add(screenshot2);
+
+            log.info("Merging screenshots...");
+            BufferedImage img1 = ImageIO.read(new ByteArrayInputStream(screenshot1));
+            BufferedImage img2 = ImageIO.read(new ByteArrayInputStream(screenshot2));
+
+            int combinedHeight = img1.getHeight() + img2.getHeight();
+            int width = img1.getWidth();
+            BufferedImage combined = new BufferedImage(width, combinedHeight, BufferedImage.TYPE_INT_RGB);
+
+            Graphics2D g = combined.createGraphics();
+            g.drawImage(img1, 0, 0, null);
+            g.drawImage(img2, 0, img1.getHeight(), null);
+            g.dispose();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(combined, "png", baos);
+            byte[] mergedScreenshot = baos.toByteArray();
+
 
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                             .page(1)
@@ -104,8 +136,8 @@ public class PatinaDiscordMessageHelper {
                             users.get(2).getDiscordId(),
                             users.get(2).getTotalScore());
 
-            jdaClient.sendEmbedWithImage(
-                            EmbeddedMessageOptions.builder()
+            jdaClient.sendEmbedWithImages(
+                            EmbeddedImagesMessageOptions.builder()
                                             .guildId(jdaClient.getJdaPatinaProperties().getGuildId())
                                             .channelId(jdaClient.getJdaPatinaProperties().getLeetcodeChannelId())
                                             .description(description)
@@ -113,8 +145,8 @@ public class PatinaDiscordMessageHelper {
                                             .footerText("Codebloom - LeetCode Leaderboard for Patina Network")
                                             .footerIcon("https://codebloom.patinanetwork.org/favicon.ico")
                                             .color(new Color(69, 129, 103))
-                                            .fileBytes(screenshotBytes)
-                                            .fileName("leaderboard.png")
+                                            .filesBytes(List.of(mergedScreenshot))
+                                            .fileNames(List.of("leaderboard.png"))
                                             .build());
         } catch (Exception e) {
             e.printStackTrace();
