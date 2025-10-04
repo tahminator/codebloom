@@ -1,5 +1,6 @@
 package com.patina.codebloom.jda.client;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.jda.JDAInitializer;
 import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
+import com.patina.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
 import com.patina.codebloom.jda.properties.patina.JDAPatinaProperties;
 import com.patina.codebloom.jda.properties.reporting.JDAErrorReportingProperties;
 import com.patina.codebloom.jda.properties.reporting.JDALogReportingProperties;
@@ -138,5 +140,43 @@ public class JDAClient {
                         .queue();
 
         log.info("Message has been queued");
+    }
+
+public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options) {
+    isJdaReadyOrThrow();
+    Guild guild = getGuildById(options.getGuildId());
+    if (guild == null) {
+        log.error("Guild does not exist.");
+        return;
+    }
+    TextChannel channel = guild.getTextChannelById(options.getChannelId());
+    if (channel == null) {
+        log.error("Channel does not exist on the given guild.");
+        return;
+    }
+
+    List<byte[]> filesBytes = options.getFilesBytes();
+    List<String> fileNames = options.getFileNames();
+    if (filesBytes == null || filesBytes.isEmpty()) {
+        log.error("Files must be provided and non-empty.");
+        return;
+    }
+
+    List<FileUpload> uploads = new ArrayList<>();
+    for (int i = 0; i < filesBytes.size(); i++) {
+        String name = (fileNames != null && i < fileNames.size()) ? fileNames.get(i) : "image" + i + ".png";
+        uploads.add(FileUpload.fromData(filesBytes.get(i), name));
+    }
+
+    EmbedBuilder embed = new EmbedBuilder()
+        .setColor(options.getColor())
+        .setTitle(options.getTitle())
+        .setDescription(options.getDescription())
+        .setFooter(options.getFooterText(), options.getFooterIcon())
+        .setImage("attachment://" + (fileNames != null && !fileNames.isEmpty() ? fileNames.get(0) : "image0.png"));
+
+    channel.sendFiles(uploads)
+        .setEmbeds(embed.build())
+        .queue();
     }
 }
