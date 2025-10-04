@@ -6,6 +6,7 @@ import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -13,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 @ToString
 @EqualsAndHashCode
 public class Announcement {
