@@ -8,7 +8,10 @@ import TagList from "@/components/ui/tags/TagList";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
-import { useCurrentLeaderboardUsersQuery, useCurrentLeaderboardMetadataQuery } from "@/lib/api/queries/leaderboard";
+import {
+  useCurrentLeaderboardUsersQuery,
+  useCurrentLeaderboardMetadataQuery,
+} from "@/lib/api/queries/leaderboard";
 import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -80,9 +83,7 @@ export default function LeaderboardIndex() {
 
   return (
     <>
-      <DocumentTitle
-        title={`CodeBloom - ${title?.payload?.name ?? ""}`}
-      />
+      <DocumentTitle title={`CodeBloom - ${title?.payload?.name ?? ""}`} />
       <DocumentDescription
         description={`CodeBloom - View your rank in the leaderboard`}
       />
