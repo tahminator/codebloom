@@ -31,7 +31,9 @@ export function usePagination({
   initialPage = 1,
   tieToUrl = true,
 }: PaginatedProps): Paginator {
-  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  const [page, setPage] = useURLState("page", initialPage, {
+    enabled: tieToUrl,
+  });
 
   const goBack = useCallback(() => {
     setPage((old: number) => Math.max(old - 1, 1));

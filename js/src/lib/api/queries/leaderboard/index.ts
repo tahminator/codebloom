@@ -2,6 +2,11 @@ import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Indexed, Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
+import { ApiUtils } from "@/lib/api/utils";
+import {
+  TagEnumToBooleanFilterObject,
+  useFilters,
+} from "@/lib/hooks/useFilters";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import {
@@ -21,7 +26,6 @@ export const useCurrentLeaderboardUsersQuery = (
     initialPage = 1,
     pageSize = 20,
     tieToUrl = true,
-    defaultGwc = false,
   }: {
     initialPage?: number;
     pageSize?: number;
@@ -34,6 +38,7 @@ export const useCurrentLeaderboardUsersQuery = (
     defaultGwc: false,
   },
 ) => {
+  const { filters, toggleFilter } = useFilters();
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
@@ -45,39 +50,15 @@ export const useCurrentLeaderboardUsersQuery = (
   const [searchQuery, _setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
-    tieToUrl,
-    true,
-    500,
+    {
+      enabled: tieToUrl,
+      debounce: 100,
+    },
   );
-  const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
-  const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
-  const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
-  const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
-  const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
-  const [gwc, setGwc] = useURLState("gwc", defaultGwc, tieToUrl, true, 100);
-  const [sbu, setSbu] = useURLState("sbu", false, tieToUrl, true, 100);
-  const [columbia, setColumbia] = useURLState(
-    "columbia",
-    false,
-    tieToUrl,
-    true,
-    100,
-  );
-  const [ccny, setCcny] = useURLState("ccny", false, tieToUrl, true, 100);
-  const [cornell, setCornell] = useURLState(
-    "cornell",
-    false,
-    tieToUrl,
-    true,
-    100,
-  );
-  const [globalIndex, setGlobalIndex] = useURLState(
-    "globalIndex",
-    false,
-    tieToUrl,
-    true,
-    100,
-  );
+  const [globalIndex, setGlobalIndex] = useURLState("globalIndex", false, {
+    enabled: tieToUrl,
+    debounce: 100,
+  });
 
   /**
    * Abstracted function so that we can also reset the page back to 1 whenever we update the query.
@@ -91,94 +72,18 @@ export const useCurrentLeaderboardUsersQuery = (
     [_setSearchQuery, goTo],
   );
 
-  const togglePatina = useCallback(() => {
-    setPatina((prev) => !prev);
-    goTo(1);
-  }, [setPatina, goTo]);
-
-  const toggleHunter = useCallback(() => {
-    setHunter((prev) => !prev);
-    goTo(1);
-  }, [setHunter, goTo]);
-
-  const toggleNyu = useCallback(() => {
-    setNyu((prev) => !prev);
-    goTo(1);
-  }, [setNyu, goTo]);
-
-  const toggleBaruch = useCallback(() => {
-    setBaruch((prev) => !prev);
-    goTo(1);
-  }, [setBaruch, goTo]);
-
-  const toggleRpi = useCallback(() => {
-    setRpi((prev) => !prev);
-    goTo(1);
-  }, [setRpi, goTo]);
-
-  const toggleGwc = useCallback(() => {
-    setGwc((prev) => !prev);
-    goTo(1);
-  }, [goTo, setGwc]);
-
-  const toggleSbu = useCallback(() => {
-    setSbu((prev) => !prev);
-    goTo(1);
-  }, [setSbu, goTo]);
-
-  const toggleColumbia = useCallback(() => {
-    setColumbia((prev) => !prev);
-    goTo(1);
-  }, [setColumbia, goTo]);
-
-  const toggleCcny = useCallback(() => {
-    setCcny((prev) => !prev);
-    goTo(1);
-  }, [setCcny, goTo]);
-
-  const toggleCornell = useCallback(() => {
-    setCornell((prev) => !prev);
-    goTo(1);
-  }, [setCornell, goTo]);
-
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
     goTo(1);
   }, [goTo, setGlobalIndex]);
 
   const query = useQuery({
-    queryKey: [
-      "leaderboard",
-      "users",
-      page,
-      pageSize,
-      debouncedQuery,
-      patina,
-      hunter,
-      nyu,
-      baruch,
-      rpi,
-      gwc,
-      sbu,
-      columbia,
-      ccny,
-      cornell,
-      globalIndex,
-    ],
+    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, filters],
     queryFn: () =>
       fetchLeaderboardUsers({
         page,
         pageSize,
-        patina,
-        hunter,
-        nyu,
-        baruch,
-        rpi,
-        gwc,
-        sbu,
-        columbia,
-        ccny,
-        cornell,
+        filters,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -188,35 +93,17 @@ export const useCurrentLeaderboardUsersQuery = (
   return {
     ...query,
     page,
-    patina,
-    hunter,
-    nyu,
-    baruch,
-    rpi,
-    gwc,
-    sbu,
-    columbia,
-    ccny,
-    cornell,
     globalIndex,
     goBack,
     goForward,
     goTo,
     searchQuery,
     setSearchQuery,
+    filters,
+    toggleFilter,
     debouncedQuery,
     pageSize,
-    togglePatina,
-    toggleHunter,
-    toggleNyu,
-    toggleBaruch,
-    toggleRpi,
     toggleGlobalIndex,
-    toggleGwc,
-    toggleSbu,
-    toggleColumbia,
-    toggleCcny,
-    toggleCornell,
   };
 };
 
@@ -243,9 +130,10 @@ export const useAllLeaderboardsMetadataQuery = ({
   const [searchQuery, _setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
-    tieToUrl,
-    true,
-    500,
+    {
+      enabled: tieToUrl,
+      debounce: 500,
+    },
   );
 
   /**
@@ -302,6 +190,7 @@ export const useLeaderboardUsersByIdQuery = ({
   tieToUrl?: boolean;
   leaderboardId: string;
 }) => {
+  const { filters, toggleFilter } = useFilters();
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
@@ -313,39 +202,15 @@ export const useLeaderboardUsersByIdQuery = ({
   const [searchQuery, _setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
-    tieToUrl,
-    true,
-    500,
+    {
+      enabled: tieToUrl,
+      debounce: 500,
+    },
   );
-  const [patina, setPatina] = useURLState("patina", false, tieToUrl, true, 100);
-  const [hunter, setHunter] = useURLState("hunter", false, tieToUrl, true, 100);
-  const [nyu, setNyu] = useURLState("nyu", false, tieToUrl, true, 100);
-  const [baruch, setBaruch] = useURLState("baruch", false, tieToUrl, true, 100);
-  const [rpi, setRpi] = useURLState("rpi", false, tieToUrl, true, 100);
-  const [gwc, setGwc] = useURLState("gwc", false, tieToUrl, true, 100);
-  const [sbu, setSbu] = useURLState("sbu", false, tieToUrl, true, 100);
-  const [columbia, setColumbia] = useURLState(
-    "columbia",
-    false,
-    tieToUrl,
-    true,
-    100,
-  );
-  const [ccny, setCcny] = useURLState("ccny", false, tieToUrl, true, 100);
-  const [cornell, setCornell] = useURLState(
-    "cornell",
-    false,
-    tieToUrl,
-    true,
-    100,
-  );
-  const [globalIndex, setGlobalIndex] = useURLState(
-    "globalIndex",
-    false,
-    tieToUrl,
-    true,
-    100,
-  );
+  const [globalIndex, setGlobalIndex] = useURLState("globalIndex", false, {
+    enabled: tieToUrl,
+    debounce: 100,
+  });
 
   /**
    * Abstracted function so that we can also reset the page back to 1 whenever we update the query.
@@ -358,56 +223,6 @@ export const useLeaderboardUsersByIdQuery = ({
     },
     [_setSearchQuery, goTo],
   );
-
-  const togglePatina = useCallback(() => {
-    setPatina((prev) => !prev);
-    goTo(1);
-  }, [setPatina, goTo]);
-
-  const toggleHunter = useCallback(() => {
-    setHunter((prev) => !prev);
-    goTo(1);
-  }, [setHunter, goTo]);
-
-  const toggleNyu = useCallback(() => {
-    setNyu((prev) => !prev);
-    goTo(1);
-  }, [setNyu, goTo]);
-
-  const toggleBaruch = useCallback(() => {
-    setBaruch((prev) => !prev);
-    goTo(1);
-  }, [setBaruch, goTo]);
-
-  const toggleRpi = useCallback(() => {
-    setRpi((prev) => !prev);
-    goTo(1);
-  }, [setRpi, goTo]);
-
-  const toggleGwc = useCallback(() => {
-    setGwc((prev) => !prev);
-    goTo(1);
-  }, [goTo, setGwc]);
-
-  const toggleSbu = useCallback(() => {
-    setSbu((prev) => !prev);
-    goTo(1);
-  }, [setSbu, goTo]);
-
-  const toggleColumbia = useCallback(() => {
-    setColumbia((prev) => !prev);
-    goTo(1);
-  }, [setColumbia, goTo]);
-
-  const toggleCcny = useCallback(() => {
-    setCcny((prev) => !prev);
-    goTo(1);
-  }, [setCcny, goTo]);
-
-  const toggleCornell = useCallback(() => {
-    setCornell((prev) => !prev);
-    goTo(1);
-  }, [setCornell, goTo]);
 
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
@@ -422,16 +237,7 @@ export const useLeaderboardUsersByIdQuery = ({
       page,
       pageSize,
       debouncedQuery,
-      patina,
-      hunter,
-      nyu,
-      baruch,
-      rpi,
-      sbu,
-      columbia,
-      ccny,
-      gwc,
-      cornell,
+      filters,
       globalIndex,
     ],
     queryFn: () =>
@@ -439,16 +245,7 @@ export const useLeaderboardUsersByIdQuery = ({
         leaderboardId,
         page,
         pageSize,
-        patina,
-        hunter,
-        nyu,
-        baruch,
-        rpi,
-        gwc,
-        sbu,
-        columbia,
-        ccny,
-        cornell,
+        filters,
         globalIndex,
         query: debouncedQuery,
       }),
@@ -458,16 +255,8 @@ export const useLeaderboardUsersByIdQuery = ({
   return {
     ...query,
     page,
-    patina,
-    hunter,
-    nyu,
-    baruch,
-    rpi,
-    gwc,
-    sbu,
-    columbia,
-    ccny,
-    cornell,
+    filters,
+    toggleFilter,
     globalIndex,
     goBack,
     goForward,
@@ -476,17 +265,7 @@ export const useLeaderboardUsersByIdQuery = ({
     setSearchQuery,
     debouncedQuery,
     pageSize,
-    togglePatina,
-    toggleHunter,
-    toggleNyu,
-    toggleBaruch,
-    toggleRpi,
     toggleGlobalIndex,
-    toggleGwc,
-    toggleSbu,
-    toggleColumbia,
-    toggleCcny,
-    toggleCornell,
   };
 };
 
@@ -553,35 +332,26 @@ async function fetchLeaderboardUsers({
   page,
   query,
   pageSize,
-  patina,
-  hunter,
-  nyu,
-  baruch,
-  rpi,
-  gwc,
-  sbu,
-  columbia,
-  ccny,
-  cornell,
+  filters,
   globalIndex,
 }: {
   page: number;
   query: string;
   pageSize: number;
-  patina: boolean;
-  hunter: boolean;
-  nyu: boolean;
-  baruch: boolean;
-  rpi: boolean;
-  gwc: boolean;
-  sbu: boolean;
-  columbia: boolean;
-  ccny: boolean;
-  cornell: boolean;
+  filters: TagEnumToBooleanFilterObject;
   globalIndex: boolean;
 }) {
   const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&cornell=${cornell}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&${Object.typedEntries(
+      filters,
+    )
+      .map(([tagEnum, filterEnabled]) => {
+        const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+
+        return [metadata.apiKey, filterEnabled];
+      })
+      .map(([apiKey, filterEnabled]) => `${apiKey}=${filterEnabled}`)
+      .join("&")}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },
@@ -598,37 +368,28 @@ async function fetchLeaderboardUsersByLeaderboardId({
   page,
   query,
   pageSize,
-  patina,
-  hunter,
-  nyu,
-  baruch,
-  rpi,
-  gwc,
-  sbu,
-  columbia,
-  ccny,
-  cornell,
+  filters,
   globalIndex,
   leaderboardId,
 }: {
   page: number;
   query: string;
   pageSize: number;
-  patina: boolean;
-  hunter: boolean;
-  nyu: boolean;
-  baruch: boolean;
-  rpi: boolean;
-  gwc: boolean;
-  sbu: boolean;
-  columbia: boolean;
-  ccny: boolean;
-  cornell: boolean;
+  filters: TagEnumToBooleanFilterObject;
   globalIndex: boolean;
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&patina=${patina}&hunter=${hunter}&nyu=${nyu}&baruch=${baruch}&rpi=${rpi}&gwc=${gwc}&sbu=${sbu}&columbia=${columbia}&ccny=${ccny}&cornell=${cornell}&globalIndex=${globalIndex}`,
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}${Object.typedEntries(
+      filters,
+    )
+      .map(([tagEnum, filterEnabled]) => {
+        const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+
+        return [metadata.apiKey, filterEnabled];
+      })
+      .map(([apiKey, filterEnabled]) => `${apiKey}=${filterEnabled}`)
+      .join("&")}&globalIndex=${globalIndex}`,
     {
       method: "GET",
     },

@@ -15,7 +15,6 @@ export function useBackendCallbackParams() {
 
   const success = (() => {
     const val = searchParams.get("success");
-    console.log(val);
 
     if (val === "true") {
       return true;

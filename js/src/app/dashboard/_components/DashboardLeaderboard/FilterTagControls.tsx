@@ -1,21 +1,21 @@
-import { UserTagTag } from "@/lib/api/types/usertag";
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
+import { TagEnumToBooleanFilterObject } from "@/lib/hooks/useFilters";
 import { Flex, Image, SegmentedControl, Tooltip } from "@mantine/core";
 import { ReactNode, useMemo } from "react";
 
-type SegmentFlags = Record<UserTagTag, boolean>;
-type SegmentFlagToggleFn = Record<UserTagTag, () => void>;
+type SegmentFlagToggleFn = (tagEnum: UserTagTag) => void;
 type SegmentFlagsWithAll = UserTagTag | "All";
 
 export default function FilterTagsControl({
   tags,
-  flags,
-  flagsToggle,
+  filters,
+  toggleFlag,
 }: {
   tags: ApiTypeUtils.FilteredUserTag[];
-  flags: SegmentFlags;
-  flagsToggle: SegmentFlagToggleFn;
+  filters: TagEnumToBooleanFilterObject;
+  toggleFlag: SegmentFlagToggleFn;
 }) {
   // https://mantine.dev/core/segmented-control/#controlled
   const segments: {
@@ -48,7 +48,7 @@ export default function FilterTagsControl({
 
   // can only have one selected at a time, which is why we can use `.find`
   const currentValue: SegmentFlagsWithAll = useMemo(() => {
-    const firstEnabledKeyValue = Object.typedEntries(flags).find(
+    const firstEnabledKeyValue = Object.typedEntries(filters).find(
       ([_flagTag, isFlagActive]) => isFlagActive,
     );
 
@@ -59,19 +59,19 @@ export default function FilterTagsControl({
     const firstEnabledKey = firstEnabledKeyValue[0] as UserTagTag;
 
     return firstEnabledKey;
-  }, [flags]);
+  }, [filters]);
 
   const onChange = (value: string) => {
     const segmentKey = value as SegmentFlagsWithAll;
 
     // disable previous
     if (currentValue !== "All") {
-      flagsToggle[currentValue]();
+      toggleFlag(currentValue);
     }
 
     // enable current
     if (segmentKey !== "All") {
-      flagsToggle[segmentKey]();
+      toggleFlag(segmentKey);
     }
   };
 

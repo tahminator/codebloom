@@ -24,7 +24,6 @@ export default function LeaderboardMetadataWithId(
     if (status === "success" && data.success && data.payload.shouldExpireBy) {
       const shouldExpireByDate = new Date(data.payload.shouldExpireBy);
       const expireSeconds = (shouldExpireByDate.getTime() - Date.now()) / 1000;
-      console.log(expireSeconds);
       reset(expireSeconds);
     }
   }, [status, data, reset]);
