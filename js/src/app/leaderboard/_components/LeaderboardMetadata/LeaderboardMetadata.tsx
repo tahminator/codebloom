@@ -1,4 +1,6 @@
 import PrettyCounter from "@/components/ui/pretty-counter/PrettyCounter";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import { useCurrentLeaderboardMetadataQuery } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
 import { Box, Button, Center, Skeleton, Title } from "@mantine/core";
@@ -81,6 +83,10 @@ export default function LeaderboardMetadata(
 
   return (
     <>
+      <DocumentTitle title={`CodeBloom - ${leaderboardData.name}`} />
+      <DocumentDescription
+        description={`CodeBloom - View your rank in the leaderboard`}
+      />
       <Title order={4} ta={"center"} mb={"xs"}>
         {leaderboardData.name}
       </Title>
