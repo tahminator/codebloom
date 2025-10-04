@@ -8,8 +8,10 @@ import TagList from "@/components/ui/tags/TagList";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
-import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { ApiUtils } from "@/lib/api/utils";
+import {
+  useCurrentLeaderboardUsersQuery,
+  useCurrentLeaderboardMetadataQuery,
+} from "@/lib/api/queries/leaderboard";
 import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -29,6 +31,8 @@ import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
 export default function LeaderboardIndex() {
+  const { data: title } = useCurrentLeaderboardMetadataQuery();
+
   const {
     data,
     status,
@@ -63,7 +67,7 @@ export default function LeaderboardIndex() {
 
   return (
     <>
-      <DocumentTitle title={`CodeBloom - Leaderboard`} />
+      <DocumentTitle title={`CodeBloom - ${title?.payload?.name ?? ""}`} />
       <DocumentDescription
         description={`CodeBloom - View your rank in the leaderboard`}
       />
