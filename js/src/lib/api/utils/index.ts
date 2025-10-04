@@ -2,7 +2,6 @@ import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
-import { QuestionTopicTopic } from "../types/autogen/schema";
 import { TAG_METADATA_LIST, UNUSED_TAGS } from "./metadata/tagMetadata";
 import { TOPIC_METADATA_LIST } from "./metadata/topicMetadata";
 
@@ -42,12 +41,6 @@ export class ApiUtils {
     return ApiUtils._TAG_METADATA_LIST[tagEnum];
   }
 
-  static getMetadataByTopicEnum(
-    topicEnum: QuestionTopicTopic,
-  ): ApiTypeUtils.QuestionTopicMetadata {
-    return ApiUtils._TOPIC_METADATA_LIST[topicEnum];
-  }
-
   /**
    * Returns a list of all metadata objects that exist on a given tag, which are iterable.
    *
@@ -55,6 +48,17 @@ export class ApiUtils {
    */
   static getAllTagEnumMetadata(): ApiTypeUtils.UserTagTagMetadata[] {
     return Object.typedEntries(ApiUtils._TAG_METADATA_LIST).map(
+      ([_, metadata]) => metadata,
+    );
+  }
+
+  /**
+   * Returns a list of all metadata objects that exist on a given tag, which are iterable.
+   *
+   * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
+   */
+  static getAllTopicEnumMetadata(): ApiTypeUtils.QuestionTopicTopicMetadata[] {
+    return Object.typedEntries(ApiUtils._TOPIC_METADATA_LIST).map(
       ([_, metadata]) => metadata,
     );
   }
