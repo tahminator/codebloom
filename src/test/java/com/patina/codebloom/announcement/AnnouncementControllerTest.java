@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.DisplayNameGenerator.Standard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -22,9 +21,9 @@ import org.springframework.context.annotation.Import;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
-import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.announcement.AnnouncementDto;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.config.TestProtector;
 
@@ -46,7 +45,7 @@ public class AnnouncementControllerTest {
                     .showTimer(true)
                     .expiresAt(StandardizedOffsetDateTime.now().plusHours(24))
                     .build();
-    private Announcement testAnnouncement;
+    private AnnouncementDto testAnnouncement;
 
     /**
      * only used for cleanup after all tests are done.
@@ -89,7 +88,7 @@ public class AnnouncementControllerTest {
     @Test
     @Order(1)
     void createNewTestAnnouncementAsAdmin() throws JsonProcessingException {
-        ApiResponder<Announcement> apiResponder = RestAssured
+        ApiResponder<AnnouncementDto> apiResponder = RestAssured
                         .given()
                         .when()
                         .header("Content-Type", "application/json")
@@ -98,11 +97,11 @@ public class AnnouncementControllerTest {
                         .then()
                         .statusCode(200)
                         .extract()
-                        .as(new TypeRef<ApiResponder<Announcement>>() {
+                        .as(new TypeRef<ApiResponder<AnnouncementDto>>() {
                         });
 
         assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
-        assertTrue(apiResponder.isSuccess() == true, "Testing apiResponder success is true");
+        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
         assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
 
         testAnnouncement = apiResponder.getPayload();
@@ -121,20 +120,20 @@ public class AnnouncementControllerTest {
     @Test
     @Order(2)
     void getTestAnnouncement() {
-        ApiResponder<Announcement> apiResponder = RestAssured
+        ApiResponder<AnnouncementDto> apiResponder = RestAssured
                         .given()
                         .when()
                         .get("/api/announcement")
                         .then()
                         .statusCode(200)
                         .extract()
-                        .as(new TypeRef<ApiResponder<Announcement>>() {
+                        .as(new TypeRef<ApiResponder<AnnouncementDto>>() {
                         });
 
         assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
-        assertTrue(apiResponder.isSuccess() == true, "Testing apiResponder success is true");
+        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
         assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
-        Announcement newlyFetchedAnnouncement = apiResponder.getPayload();
+        AnnouncementDto newlyFetchedAnnouncement = apiResponder.getPayload();
 
         assertTrue(newlyFetchedAnnouncement != null, "expected newlyFetchedAnnouncement to not be null");
 
