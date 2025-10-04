@@ -4,7 +4,7 @@ import { Api } from "@/lib/api/types";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 /**
  * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more.
@@ -26,13 +26,11 @@ export const useUserSubmissionsQuery = ({
   initialPage = 1,
   tieToUrl = false,
   pageSize = 20,
-  topics = []
 }: {
   userId?: string;
   initialPage?: number;
   tieToUrl?: boolean;
   pageSize?: number;
-  topics?: string[];
 }) => {
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
@@ -49,6 +47,16 @@ export const useUserSubmissionsQuery = ({
       enabled: tieToUrl,
       debounce: 500,
     },
+  );
+
+  const emptyTopics = useMemo(() => [], []);
+  
+  const [topics, setTopics] = useURLState<string[]>(
+    "topics",
+    emptyTopics,
+    tieToUrl,
+    true,
+    100,
   );
 
   useEffect(() => {
@@ -69,8 +77,7 @@ export const useUserSubmissionsQuery = ({
       debouncedQuery,
       pageSize,
       pointFilter,
-      topics
-
+      topics,
     ],
     queryFn: () =>
       fetchUserSubmissions({
@@ -79,7 +86,7 @@ export const useUserSubmissionsQuery = ({
         query: debouncedQuery,
         pageSize,
         pointFilter,
-        topics
+        topics,
       }),
     placeholderData: keepPreviousData,
   });
@@ -96,6 +103,8 @@ export const useUserSubmissionsQuery = ({
     pageSize,
     pointFilter,
     togglePointFilter,
+    topics,
+    setTopics,
   };
 };
 
@@ -175,7 +184,7 @@ async function fetchUserSubmissions({
   query?: string;
   pageSize: number;
   pointFilter: boolean;
-  topics?: string[]; 
+  topics?: string[];
 }) {
   const response = await fetch(
     `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}&topics=${topics ?? ""}`,
