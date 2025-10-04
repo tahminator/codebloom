@@ -1,5 +1,5 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
-import { Announcement } from "@/lib/api/types/announcement";
+import { Api } from "@/lib/api/types";
 import { useQuery } from "@tanstack/react-query";
 
 /**
@@ -15,5 +15,5 @@ export const useLatestAnnouncement = () => {
 async function getLatestAnnouncement() {
   const response = await fetch("/api/announcement");
 
-  return (await response.json()) as UnknownApiResponse<Announcement | null>;
+  return (await response.json()) as UnknownApiResponse<Api<"AnnouncementDto">>;
 }

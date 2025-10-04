@@ -2,34 +2,31 @@ package com.patina.codebloom.common.db.models.announcement;
 
 import java.time.OffsetDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Builder
 @Getter
 @Setter
+@SuperBuilder
 @ToString
 @EqualsAndHashCode
 public class Announcement {
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private OffsetDateTime createdAt;
 
-    @NotNull
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private OffsetDateTime expiresAt;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NotNullColumn
     private boolean showTimer;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String message;
 }
