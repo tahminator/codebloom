@@ -13,6 +13,8 @@ import { timeDiff } from "@/lib/timeDiff";
 import { Badge, Box, Overlay, Table, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
 
+import TopicFilterModal from "../TopicFilters/TopicFilterPopover";
+
 export default function UserSubmissions({ userId }: { userId?: string }) {
   const {
     data,
@@ -26,6 +28,8 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     setSearchQuery,
     pointFilter,
     togglePointFilter,
+    topics,
+    setTopics,
   } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
@@ -61,6 +65,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           }}
           buttonName="Filters"
         >
+          <TopicFilterModal value={topics} onChange={setTopics} />
           <FilterDropdownItem
             value={pointFilter}
             toggle={togglePointFilter}

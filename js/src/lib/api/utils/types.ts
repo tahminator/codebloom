@@ -43,4 +43,12 @@ export namespace ApiTypeUtils {
   export type FilteredUserTag = UserTag & {
     tag: FilteredUserTagTag;
   };
+
+  /**
+   * Pretty name for the given topic.
+   */
+  export type QuestionTopicTopicMetadata = {
+    enum: string;
+    name: string;
+  };
 }

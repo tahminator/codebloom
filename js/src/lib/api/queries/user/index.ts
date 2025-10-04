@@ -5,7 +5,7 @@ import { Question } from "@/lib/api/types/question";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 /**
  * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more.
@@ -52,6 +52,16 @@ export const useUserSubmissionsQuery = ({
     500,
   );
 
+  const emptyTopics = useMemo(() => [], []);
+
+  const [topics, setTopics] = useURLState<string[]>(
+    "topics",
+    emptyTopics,
+    tieToUrl,
+    true,
+    100,
+  );
+
   useEffect(() => {
     goTo(1);
   }, [searchQuery, goTo]);
@@ -70,6 +80,7 @@ export const useUserSubmissionsQuery = ({
       debouncedQuery,
       pageSize,
       pointFilter,
+      topics,
     ],
     queryFn: () =>
       fetchUserSubmissions({
@@ -78,6 +89,7 @@ export const useUserSubmissionsQuery = ({
         query: debouncedQuery,
         pageSize,
         pointFilter,
+        topics,
       }),
     placeholderData: keepPreviousData,
   });
@@ -94,6 +106,8 @@ export const useUserSubmissionsQuery = ({
     pageSize,
     pointFilter,
     togglePointFilter,
+    topics,
+    setTopics,
   };
 };
 
@@ -165,15 +179,17 @@ async function fetchUserSubmissions({
   query,
   pageSize,
   pointFilter,
+  topics,
 }: {
   page: number;
   userId?: string;
   query?: string;
   pageSize: number;
   pointFilter: boolean;
+  topics?: string[];
 }) {
   const response = await fetch(
-    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}`,
+    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}&topics=${topics ?? ""}`,
   );
 
   const json = (await response.json()) as UnknownApiResponse<Page<Question[]>>;
