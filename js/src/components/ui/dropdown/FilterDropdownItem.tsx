@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 interface FilterDropdownItemProps extends MenuItemProps {
   value: boolean;
   toggle: () => void;
-  name: ReactNode;
+  name: ReactNode | (() => ReactNode);
   switchMode?: boolean;
 }
 
@@ -13,7 +13,7 @@ interface FilterDropdownItemProps extends MenuItemProps {
  *
  * @param value - The current checked state of the checkbox.
  * @param toggle - Function to toggle the checkbox state.
- * @param name - The label for the item.
+ * @param name - The label for the item. This can either be a ReactNode or a function that returns ReactNode.
  *
  * @returns A Menu.Item component with a Checkbox and label.
  */
@@ -51,7 +51,7 @@ export default function FilterDropdownItem({
           width: "100%",
         }}
       >
-        {name}
+        {typeof name === "function" ? name() : name}
       </div>
     </Menu.Item>
   );

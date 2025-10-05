@@ -7,6 +7,7 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useLeaderboardUsersByIdQuery } from "@/lib/api/queries/leaderboard";
+import { ApiUtils } from "@/lib/api/utils";
 import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -40,24 +41,8 @@ export default function LeaderboardWithId({
     setSearchQuery,
     searchQuery,
     debouncedQuery,
-    patina,
-    togglePatina,
-    hunter,
-    toggleHunter,
-    nyu,
-    toggleNyu,
-    baruch,
-    toggleBaruch,
-    rpi,
-    toggleRpi,
-    sbu,
-    toggleSbu,
-    ccny,
-    toggleCcny,
-    columbia,
-    toggleColumbia,
-    cornell,
-    toggleCornell,
+    filters,
+    toggleFilter,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -134,199 +119,37 @@ export default function LeaderboardWithId({
         }}
         buttonName="Filters"
       >
-        <FilterDropdownItem
-          value={patina}
-          toggle={() => togglePatina()}
-          name={
-            <Box
-              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-            >
-              Patina
-              <Image
-                src="/brands/Patina_Logo.png"
-                style={{ height: "2em", width: "auto" }}
-              />
-            </Box>
-          }
-        />
-        {schoolFF && (
-          <>
+        {schoolFF &&
+          ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
             <FilterDropdownItem
-              value={hunter}
-              toggle={() => toggleHunter()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  Hunter
-                  <Image
-                    src="/brands/Hunter_Logo.jpeg"
-                    alt="Hunter College Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
+              name={() => {
+                const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+
+                return (
+                  <Box
+                    style={{
+                      display: "flex",
+                      gap: "0.5rem",
+                      alignItems: "center",
+                    }}
+                  >
+                    {metadata.shortName}
+                    <Image
+                      src={metadata.icon}
+                      alt={metadata.alt}
+                      style={{ height: "2em", width: "auto" }}
+                    />
+                  </Box>
+                );
+              }}
+              value={filters[tagEnum]}
+              toggle={() => toggleFilter(tagEnum)}
             />
-            <FilterDropdownItem
-              value={nyu}
-              toggle={() => toggleNyu()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  NYU
-                  <Image
-                    src="/brands/NYU_Logo.png"
-                    alt="NYU Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={baruch}
-              toggle={() => toggleBaruch()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  Baruch
-                  <Image
-                    src="/brands/Baruch_Logo.png"
-                    alt="Baruch College Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={rpi}
-              toggle={() => toggleRpi()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  RPI
-                  <Image
-                    src="/brands/Rpi_Logo.png"
-                    alt="RPI Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={sbu}
-              toggle={() => toggleSbu()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  SBU
-                  <Image
-                    src="/brands/SBU_shield.png"
-                    alt="Stony Brook University Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={columbia}
-              toggle={() => toggleColumbia()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  Columbia
-                  <Image
-                    src="/brands/Columbia_logo.png"
-                    alt="Columbia University Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={ccny}
-              toggle={() => toggleCcny()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  CCNY
-                  <Image
-                    src="/brands/CCNY_logo.png"
-                    alt="City College of New York Logo"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-            <FilterDropdownItem
-              value={cornell}
-              toggle={() => toggleCornell()}
-              name={
-                <Box
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  Cornell
-                  <Image
-                    src="/brands/Cornell_Logo.png"
-                    alt="Cornell University"
-                    style={{ height: "2em", width: "auto" }}
-                  />
-                </Box>
-              }
-            />
-          </>
-        )}
+          ))}
         <FilterDropdownItem
           value={globalIndex}
           toggle={toggleGlobalIndex}
-          disabled={
-            !nyu &&
-            !hunter &&
-            !patina &&
-            !baruch &&
-            !rpi &&
-            !sbu &&
-            !columbia &&
-            !ccny &&
-            !cornell
-          }
+          disabled={!Object.values(filters).some(Boolean)}
           switchMode
           name={
             <Box
