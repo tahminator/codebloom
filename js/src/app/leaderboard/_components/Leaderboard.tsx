@@ -8,7 +8,6 @@ import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { ApiUtils } from "@/lib/api/utils";
-import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -117,14 +116,13 @@ export default function LeaderboardIndex() {
         buttonName="Filters"
       >
         {schoolFF &&
-          ApiUtils.getAllSupportedTagEnums().map((tagEnum) => {
-            const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+          ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
+            <FilterDropdownItem
+              name={() => {
+                const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
 
-            return (
-              <FilterDropdownItem
-                key={tagEnum}
-                name={() => (
-                  <Flex gap="xs" align="center">
+                return (
+                  <Flex gap={"xs"} align={"center"}>
                     {metadata.shortName}
                     <Image
                       src={metadata.icon}
@@ -132,14 +130,12 @@ export default function LeaderboardIndex() {
                       style={{ height: "2em", width: "auto" }}
                     />
                   </Flex>
-                )}
-                value={filters[tagEnum]}
-                toggle={() =>
-                  toggleFilter(tagEnum as ApiTypeUtils.FilteredUserTagTag)
-                }
-              />
-            );
-          })}
+                );
+              }}
+              value={filters[tagEnum]}
+              toggle={() => toggleFilter(tagEnum)}
+            />
+          ))}
         <FilterDropdownItem
           value={globalIndex}
           toggle={toggleGlobalIndex}
