@@ -1,4 +1,5 @@
-import { UserTag, UserTagTag } from "@/lib/api/types/usertag";
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { UserTag } from "@/lib/api/types/usertag";
 
 /**
  * A collection of helpful types to help transform & use data returned from the API.
@@ -19,6 +20,11 @@ export namespace ApiTypeUtils {
      * Path to tag's icon.
      */
     icon: string;
+
+    /**
+     * How the backend expects to receive this tag when passed in as a URL param.
+     */
+    apiKey: string;
 
     /**
      * Extra information about the given tag.

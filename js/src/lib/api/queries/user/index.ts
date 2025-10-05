@@ -37,19 +37,17 @@ export const useUserSubmissionsQuery = ({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
   });
-  const [pointFilter, setPointFilter] = useURLState(
-    "pointFilter",
-    false,
-    tieToUrl,
-    true,
-    100,
-  );
+  const [pointFilter, setPointFilter] = useURLState("pointFilter", false, {
+    enabled: tieToUrl,
+    debounce: 100,
+  });
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
-    tieToUrl,
-    true,
-    500,
+    {
+      enabled: tieToUrl,
+      debounce: 500,
+    },
   );
 
   useEffect(() => {
@@ -118,9 +116,10 @@ export const useGetAllUsersQuery = (
   const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
     "query",
     "",
-    tieToUrl,
-    true,
-    500,
+    {
+      enabled: tieToUrl,
+      debounce: 500,
+    },
   );
 
   useEffect(() => {

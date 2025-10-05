@@ -5,7 +5,6 @@ import {
   useClubQuery,
   useVerifyPasswordMutation,
 } from "@/lib/api/queries/club";
-// import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import {
   Button,

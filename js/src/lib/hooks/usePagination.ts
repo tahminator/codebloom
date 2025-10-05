@@ -14,6 +14,11 @@ type PaginatedProps = {
   tieToUrl?: boolean;
 };
 
+const defaultProps = {
+  initialPage: 1,
+  tieToUrl: true,
+};
+
 /**
  * A custom React hook for managing pagination of lists
  *
@@ -28,10 +33,12 @@ type PaginatedProps = {
  * - `goTo` (function): Sets the page number to a specific value (minimum 1).
  */
 export function usePagination({
-  initialPage = 1,
-  tieToUrl = true,
-}: PaginatedProps): Paginator {
-  const [page, setPage] = useURLState("page", initialPage, tieToUrl);
+  initialPage = defaultProps.initialPage,
+  tieToUrl = defaultProps.tieToUrl,
+}: PaginatedProps = defaultProps): Paginator {
+  const [page, setPage] = useURLState("page", initialPage, {
+    enabled: tieToUrl,
+  });
 
   const goBack = useCallback(() => {
     setPage((old: number) => Math.max(old - 1, 1));
