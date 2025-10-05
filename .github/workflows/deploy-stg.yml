@@ -237,7 +237,7 @@ jobs:
               working-directory: js
 
             - name: Run script
-              run: bash .github/ci/run-frontend-tests.sh
+              run: bash .github/scripts/run-frontend-tests.sh
               env:
                   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
                   DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
