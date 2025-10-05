@@ -7,6 +7,9 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { ApiUtils } from "@/lib/api/utils";
+import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -114,27 +117,28 @@ export default function LeaderboardIndex() {
         }}
         buttonName="Filters"
       >
-        {schoolFF &&
-          ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
-            <FilterDropdownItem
-              name={() => {
-                const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+      {schoolFF &&
+        (ApiUtils.getAllSupportedTagEnums() as UserTagTag[]).map((tagEnum) => {
+          const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
 
-                return (
-                  <Flex gap={"xs"} align={"center"}>
-                    {metadata.shortName}
-                    <Image
-                      src={metadata.icon}
-                      alt={metadata.alt}
-                      style={{ height: "2em", width: "auto" }}
-                    />
-                  </Flex>
-                );
-              }}
+          return (
+            <FilterDropdownItem
+              key={tagEnum}
+              name={() => (
+                <Flex gap="xs" align="center">
+                  {metadata.shortName}
+                  <Image
+                    src={metadata.icon}
+                    alt={metadata.alt}
+                    style={{ height: "2em", width: "auto" }}
+                  />
+                </Flex>
+              )}
               value={filters[tagEnum]}
-              toggle={() => toggleFilter(tagEnum)}
+              toggle={() => toggleFilter(tagEnum as ApiTypeUtils.FilteredUserTagTag)}
             />
-          ))}
+          );
+        })}
         <FilterDropdownItem
           value={globalIndex}
           toggle={toggleGlobalIndex}
