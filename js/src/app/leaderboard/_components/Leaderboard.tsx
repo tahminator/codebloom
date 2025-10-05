@@ -128,20 +128,14 @@ export default function LeaderboardIndex() {
                 const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
 
                 return (
-                  <Box
-                    style={{
-                      display: "flex",
-                      gap: "0.5rem",
-                      alignItems: "center",
-                    }}
-                  >
+                  <Flex gap={"xs"} align={"center"}>
                     {metadata.shortName}
                     <Image
                       src={metadata.icon}
                       alt={metadata.alt}
                       style={{ height: "2em", width: "auto" }}
                     />
-                  </Box>
+                  </Flex>
                 );
               }}
               value={filters[tagEnum]}
@@ -228,7 +222,7 @@ export default function LeaderboardIndex() {
                           {entry.discordName}
                         </span>
                         {tagFF && (
-                          <TagList tags={entry.tags || []} size={16} gap="xs" />
+                          <TagList tags={entry.tags} size={16} gap="xs" />
                         )}
                       </Flex>
                       <span className="transition-all group-hover:text-blue-500 w-max">

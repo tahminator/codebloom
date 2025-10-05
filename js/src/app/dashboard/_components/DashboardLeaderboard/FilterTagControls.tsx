@@ -1,20 +1,22 @@
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
-import { TagEnumToBooleanFilterObject } from "@/lib/hooks/useFilters";
+import {
+  TagEnumToBooleanFilterObject,
+  ToggleTagEnumFn,
+} from "@/lib/hooks/useFilters";
 import { Flex, Image, SegmentedControl, Tooltip } from "@mantine/core";
 import { ReactNode, useMemo } from "react";
 
-type SegmentFlagToggleFn = (tagEnum: ApiTypeUtils.FilteredUserTagTag) => void;
 type SegmentFlagsWithAll = ApiTypeUtils.FilteredUserTagTag | "All";
 
 export default function FilterTagsControl({
   tags,
   filters,
-  toggleFlag,
+  toggleFilter,
 }: {
   tags: ApiTypeUtils.FilteredUserTag[];
   filters: TagEnumToBooleanFilterObject;
-  toggleFlag: SegmentFlagToggleFn;
+  toggleFilter: ToggleTagEnumFn;
 }) {
   // https://mantine.dev/core/segmented-control/#controlled
   const segments: {
@@ -66,12 +68,12 @@ export default function FilterTagsControl({
 
     // disable previous
     if (currentValue !== "All") {
-      toggleFlag(currentValue);
+      toggleFilter(currentValue);
     }
 
     // enable current
     if (segmentKey !== "All") {
-      toggleFlag(segmentKey);
+      toggleFilter(segmentKey);
     }
   };
 
