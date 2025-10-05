@@ -32,4 +32,15 @@ public class ReactEmailClientImpl implements ReactEmailClient {
         return doc.outerHtml();
     }
 
+    @Override
+    public String schoolEmailImplementation(final String verifyUrl) throws IOException {
+        final String html = getHtmlAsString("static/email/school-email.html");
+        final Document doc = Jsoup.parse(html);
+
+        doc.getElementById("input-verifyUrl-innerText").text(verifyUrl);
+        doc.getElementById("input-verifyUrl-href").attr("href", verifyUrl);
+
+        return doc.outerHtml();
+    }
+
 }

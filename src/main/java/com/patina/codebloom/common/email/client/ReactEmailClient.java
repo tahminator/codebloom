@@ -11,8 +11,17 @@ public interface ReactEmailClient {
      * @param recipientName
      * @param verifyUrl
      * @param supportEmail
-     * @return the rendered HTML with variables filled
+     * @return the rendered HTML as a string
      * @throws IOException
      */
     String createExampleTemplate(String recipientName, String verifyUrl, String supportEmail) throws IOException;
+
+    /**
+     * Load the verifyUrl into the school email template.
+     * 
+     * @param verifyUrl
+     * @return rendered HTML as a string
+     * @throws IOException
+     */
+    String schoolEmailImplementation(String verifyUrl) throws IOException;
 }
