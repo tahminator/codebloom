@@ -142,41 +142,55 @@ public class JDAClient {
         log.info("Message has been queued");
     }
 
-public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options) {
-    isJdaReadyOrThrow();
-    Guild guild = getGuildById(options.getGuildId());
-    if (guild == null) {
-        log.error("Guild does not exist.");
-        return;
-    }
-    TextChannel channel = guild.getTextChannelById(options.getChannelId());
-    if (channel == null) {
-        log.error("Channel does not exist on the given guild.");
-        return;
-    }
+    public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options) {
+        isJdaReadyOrThrow();
+        Guild guild = getGuildById(options.getGuildId());
+        if (guild == null) {
+            log.error("Guild does not exist.");
+            return;
+        }
+        TextChannel channel = guild.getTextChannelById(options.getChannelId());
+        if (channel == null) {
+            log.error("Channel does not exist on the given guild.");
+            return;
+        }
 
-    List<byte[]> filesBytes = options.getFilesBytes();
-    List<String> fileNames = options.getFileNames();
-    if (filesBytes == null || filesBytes.isEmpty()) {
-        log.error("Files must be provided and non-empty.");
-        return;
-    }
+        List<byte[]> filesBytes = options.getFilesBytes();
+        List<String> fileNames = options.getFileNames();
+        if (filesBytes == null || filesBytes.isEmpty()) {
+            log.error("Files must be provided and non-empty.");
+            return;
+        }
+        if (fileNames == null || fileNames.isEmpty()) {
+            log.error("File names must be provided and non-empty.");
+            return;
+        }
 
-    List<FileUpload> uploads = new ArrayList<>();
-    for (int i = 0; i < filesBytes.size(); i++) {
-        String name = (fileNames != null && i < fileNames.size()) ? fileNames.get(i) : "image" + i + ".png";
-        uploads.add(FileUpload.fromData(filesBytes.get(i), name));
-    }
+        List<FileUpload> uploads = new ArrayList<>();
+        for (int i = 0; i < filesBytes.size(); i++) {
+            String name = (fileNames != null && i < fileNames.size()) ? fileNames.get(i) : "image" + i + ".png";
+            uploads.add(FileUpload.fromData(filesBytes.get(i), name));
+        }
 
-    EmbedBuilder embed = new EmbedBuilder()
-        .setColor(options.getColor())
-        .setTitle(options.getTitle())
-        .setDescription(options.getDescription())
-        .setFooter(options.getFooterText(), options.getFooterIcon())
-        .setImage("attachment://" + (fileNames != null && !fileNames.isEmpty() ? fileNames.get(0) : "image0.png"));
+        List<MessageEmbed> embeds = new ArrayList<>();
+        EmbedBuilder firstEmbed = new EmbedBuilder()
+                        .setColor(options.getColor())
+                        .setTitle(options.getTitle())
+                        .setUrl("https://codebloom.patinanetwork.org")
+                        .setDescription(options.getDescription())
+                        .setFooter(options.getFooterText(), options.getFooterIcon())
+                        .setImage("attachment://" + fileNames.get(0));
 
-    channel.sendFiles(uploads)
-        .setEmbeds(embed.build())
-        .queue();
+        embeds.add(firstEmbed.build());
+        for (int i = 1; i < fileNames.size(); i++) {
+            EmbedBuilder additionalEmbed = new EmbedBuilder()
+                            .setUrl("https://codebloom.patinanetwork.org")
+                            .setImage("attachment://" + fileNames.get(i));
+            embeds.add(additionalEmbed.build());
+        }
+
+        channel.sendMessageEmbeds(embeds)
+                        .setFiles(uploads)
+                        .queue();
     }
 }
