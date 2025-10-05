@@ -1,17 +1,11 @@
 package com.patina.codebloom.api.admin.helper;
 
 import java.awt.Color;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.Graphics2D;
 
 import org.springframework.stereotype.Service;
 
@@ -72,24 +66,6 @@ public class PatinaDiscordMessageHelper {
             byte[] screenshot2 = page.screenshot(new Page.ScreenshotOptions().setType(ScreenshotType.PNG).setFullPage(true));
             screenshotBytesList.add(screenshot2);
 
-            log.info("Merging screenshots...");
-            BufferedImage img1 = ImageIO.read(new ByteArrayInputStream(screenshot1));
-            BufferedImage img2 = ImageIO.read(new ByteArrayInputStream(screenshot2));
-
-            int combinedHeight = img1.getHeight() + img2.getHeight();
-            int width = img1.getWidth();
-            BufferedImage combined = new BufferedImage(width, combinedHeight, BufferedImage.TYPE_INT_RGB);
-
-            Graphics2D g = combined.createGraphics();
-            g.drawImage(img1, 0, 0, null);
-            g.drawImage(img2, 0, img1.getHeight(), null);
-            g.dispose();
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(combined, "png", baos);
-            byte[] mergedScreenshot = baos.toByteArray();
-
-
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                             .page(1)
                             .pageSize(5)
@@ -142,11 +118,12 @@ public class PatinaDiscordMessageHelper {
                                             .channelId(jdaClient.getJdaPatinaProperties().getLeetcodeChannelId())
                                             .description(description)
                                             .title(title)
+                                            .title("Patina Leaderboard - " + currentLeaderboard.getName())
                                             .footerText("Codebloom - LeetCode Leaderboard for Patina Network")
                                             .footerIcon("https://codebloom.patinanetwork.org/favicon.ico")
                                             .color(new Color(69, 129, 103))
-                                            .filesBytes(List.of(mergedScreenshot))
-                                            .fileNames(List.of("leaderboard.png"))
+                                            .filesBytes(List.of(screenshot1, screenshot2))
+                                            .fileNames(List.of("leaderboard_page1.png", "leaderboard_page2.png"))
                                             .build());
         } catch (Exception e) {
             e.printStackTrace();
