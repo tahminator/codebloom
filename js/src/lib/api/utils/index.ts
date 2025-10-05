@@ -2,8 +2,8 @@ import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
-import { TAG_METADATA_LIST, UNUSED_TAGS } from "./metadata/tagMetadata";
-import { TOPIC_METADATA_LIST } from "./metadata/topicMetadata";
+import { TAG_METADATA_LIST, UNUSED_TAGS } from "./metadata/tag";
+import { TOPIC_METADATA_LIST } from "./metadata/topic";
 
 /**
  * A collection of helpful utilities to help transform & use data returned from the API.
