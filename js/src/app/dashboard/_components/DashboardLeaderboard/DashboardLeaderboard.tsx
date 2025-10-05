@@ -44,10 +44,10 @@ export default function LeaderboardForDashboard({
     });
   const [selected, setSelected] = useState<string>("");
 
-const chainToggle = (tag: UserTagTag) => {
-  setSelected(ApiUtils.getMetadataByTagEnum(tag).apiKey);
-  toggleFilter(tag as ApiTypeUtils.FilteredUserTagTag);
-};
+  const chainToggle = (tag: UserTagTag) => {
+    setSelected(ApiUtils.getMetadataByTagEnum(tag).apiKey);
+    toggleFilter(tag as ApiTypeUtils.FilteredUserTagTag);
+  };
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
