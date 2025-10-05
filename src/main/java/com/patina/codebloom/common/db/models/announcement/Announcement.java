@@ -3,6 +3,7 @@ package com.patina.codebloom.common.db.models.announcement;
 import java.time.OffsetDateTime;
 
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class Announcement {
     @NotNullColumn
     private OffsetDateTime expiresAt;
 
-    @NotNullColumn
+    @NullColumn
     private boolean showTimer;
 
     @NotNullColumn

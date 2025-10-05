@@ -23,7 +23,7 @@ public class AnnouncementDto {
     private OffsetDateTime createdAt;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private OffsetDateTime expiresAt;
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private boolean showTimer;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String message;
