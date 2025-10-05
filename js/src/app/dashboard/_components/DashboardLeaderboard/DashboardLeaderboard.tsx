@@ -6,8 +6,10 @@ import {
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
 } from "@/lib/api/queries/leaderboard";
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
+import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -20,6 +22,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
+import { useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -39,6 +42,12 @@ export default function LeaderboardForDashboard({
       pageSize: 5,
       tieToUrl: false,
     });
+  const [selected, setSelected] = useState<string>("");
+
+const chainToggle = (tag: UserTagTag) => {
+  setSelected(ApiUtils.getMetadataByTagEnum(tag).apiKey);
+  toggleFilter(tag as ApiTypeUtils.FilteredUserTagTag);
+};
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
@@ -112,14 +121,18 @@ export default function LeaderboardForDashboard({
         w={"100%"}
       >
         <LeaderboardMetadata />
-        <Button variant={"light"} component={Link} to={"/leaderboard"}>
+        <Button
+          variant={"light"}
+          component={Link}
+          to={selected ? `/leaderboard?${selected}=true` : "/leaderboard"}
+        >
           View all
         </Button>
       </Flex>
       <FilterTagsControl
         tags={filteredTags}
         filters={filters}
-        toggleFilter={toggleFilter}
+        toggleFilter={chainToggle}
       />
       {!inTop5 && (
         <>
