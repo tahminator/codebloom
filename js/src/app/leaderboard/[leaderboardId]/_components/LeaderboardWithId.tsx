@@ -126,20 +126,14 @@ export default function LeaderboardWithId({
                 const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
 
                 return (
-                  <Box
-                    style={{
-                      display: "flex",
-                      gap: "0.5rem",
-                      alignItems: "center",
-                    }}
-                  >
+                  <Flex gap={"xs"} align={"center"}>
                     {metadata.shortName}
                     <Image
                       src={metadata.icon}
                       alt={metadata.alt}
                       style={{ height: "2em", width: "auto" }}
                     />
-                  </Box>
+                  </Flex>
                 );
               }}
               value={filters[tagEnum]}

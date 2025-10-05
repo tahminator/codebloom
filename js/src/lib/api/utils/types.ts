@@ -35,6 +35,9 @@ export namespace ApiTypeUtils {
   /**
    * The `tag` enum inside of `UserTag`, but stripped of all unsupported tags.
    *
+   * @note - This is just a subset of `UserTagTag`. As such, you can pass a `FilteredUserTagTag`
+   * into any function that accepts `UserTagTag`.
+   *
    * @see {@link UserTagTag}
    * @see {@link FilteredUserTag}
    */

@@ -119,7 +119,7 @@ export default function LeaderboardForDashboard({
       <FilterTagsControl
         tags={filteredTags}
         filters={filters}
-        toggleFlag={toggleFilter}
+        toggleFilter={toggleFilter}
       />
       {!inTop5 && (
         <>

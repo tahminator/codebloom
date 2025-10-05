@@ -9,6 +9,10 @@ export type TagEnumToBooleanFilterObject = Record<
   boolean
 >;
 
+export type ToggleTagEnumFn = (
+  tagEnum: ApiTypeUtils.FilteredUserTagTag,
+) => void;
+
 function getUrlKey(tagEnum: ApiTypeUtils.FilteredUserTagTag) {
   return ApiUtils.getMetadataByTagEnum(tagEnum).apiKey;
 }
@@ -55,7 +59,7 @@ export function useFilters() {
     return Object.typedFromEntries(kvTuples);
   });
 
-  const toggleFilter = useCallback(
+  const toggleFilter: ToggleTagEnumFn = useCallback(
     (tagEnum: ApiTypeUtils.FilteredUserTagTag) => {
       const key = getUrlKey(tagEnum);
       const prevValue = filters[tagEnum];
