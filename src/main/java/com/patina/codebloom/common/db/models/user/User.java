@@ -2,6 +2,7 @@ package com.patina.codebloom.common.db.models.user;
 
 import java.util.List;
 
+import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
@@ -51,7 +52,7 @@ public class User {
      * If you want to update tags in the database, you have to use the
      * {@link com.patina.codebloom.common.db.repos.usertag.UserTagRepository}
      */
-    @NotNullColumn
+    @JoinColumn
     private List<UserTag> tags;
 
     /**
