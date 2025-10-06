@@ -1,3 +1,4 @@
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 import {
@@ -68,10 +69,11 @@ export default function FilterTagsControl({
   const onChange = (value: string) => {
     const segmentKey = value as SegmentFlagsWithAll;
 
+    // school filter after clicking view all
     if (value == "All") {
       onSelect(undefined);
     } else {
-      onSelect(value.toLowerCase());
+      onSelect(ApiUtils.getMetadataByTagEnum(segmentKey as UserTagTag).apiKey);
     }
 
     // disable previous
