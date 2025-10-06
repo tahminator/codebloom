@@ -53,7 +53,7 @@ class ReactEmailClientTest {
         ReactEmailClient client = new ReactEmailClientImpl();
         String verifyUrl = "https://example.com";
 
-        String renderedHtml = client.schoolEmailImplementation(verifyUrl);
+        String renderedHtml = client.schoolEmailTemplate(verifyUrl);
 
         Document doc = Jsoup.parse(renderedHtml);
 
