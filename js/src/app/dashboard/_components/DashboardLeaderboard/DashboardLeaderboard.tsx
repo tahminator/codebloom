@@ -42,6 +42,10 @@ export default function LeaderboardForDashboard({
     });
   const [selected, setSelected] = useState<string | undefined>();
 
+  const onSelect = (value: string | undefined) => {
+    setSelected(value);
+  };
+
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
   }
@@ -126,7 +130,7 @@ export default function LeaderboardForDashboard({
         tags={filteredTags}
         filters={filters}
         toggleFilter={toggleFilter}
-        setSelected={setSelected}
+        onSelect={onSelect}
       />
       {!inTop5 && (
         <>
