@@ -51,14 +51,10 @@ export const useUserSubmissionsQuery = ({
 
   const emptyTopics = useMemo(() => [], []);
 
-  const [topics, setTopics] = useURLState<string[]>(
-    "topics",
-    emptyTopics,
-    {
-      enabled: tieToUrl,
-      debounce: 100,
-    }
-  );
+  const [topics, setTopics] = useURLState<string[]>("topics", emptyTopics, {
+    enabled: tieToUrl,
+    debounce: 100,
+  });
 
   useEffect(() => {
     goTo(1);
