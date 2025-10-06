@@ -14,12 +14,12 @@ export default function FilterTagsControl({
   tags,
   filters,
   toggleFilter,
-  onSelect,
+  onFilterSelected,
 }: {
   tags: ApiTypeUtils.FilteredUserTag[];
   filters: TagEnumToBooleanFilterObject;
   toggleFilter: ToggleTagEnumFn;
-  onSelect: (value: string | undefined) => void;
+  onFilterSelected: (value: string | undefined) => void;
 }) {
   // https://mantine.dev/core/segmented-control/#controlled
   const segments: {
@@ -71,9 +71,9 @@ export default function FilterTagsControl({
 
     // school filter after clicking view all
     if (value == "All") {
-      onSelect(undefined);
+      onFilterSelected(undefined);
     } else {
-      onSelect(ApiUtils.getMetadataByTagEnum(segmentKey as UserTagTag).apiKey);
+      onFilterSelected(ApiUtils.getMetadataByTagEnum(segmentKey as UserTagTag).apiKey);
     }
 
     // disable previous

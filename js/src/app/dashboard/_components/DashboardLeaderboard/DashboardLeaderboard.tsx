@@ -40,10 +40,10 @@ export default function LeaderboardForDashboard({
       pageSize: 5,
       tieToUrl: false,
     });
-  const [selected, setSelected] = useState<string | undefined>();
+  const [selectedFilterKey, setSelectedFilterKey] = useState<string | undefined>();
 
-  const onSelect = (value: string | undefined) => {
-    setSelected(value);
+  const onFilterSelected = (value: string | undefined) => {
+    setSelectedFilterKey(value);
   };
 
   if (status === "pending") {
@@ -121,7 +121,7 @@ export default function LeaderboardForDashboard({
         <Button
           variant={"light"}
           component={Link}
-          to={selected ? `/leaderboard?${selected}=true` : "/leaderboard"}
+          to={selectedFilterKey ? `/leaderboard?${selectedFilterKey}=true` : "/leaderboard"}
         >
           View all
         </Button>
@@ -130,7 +130,7 @@ export default function LeaderboardForDashboard({
         tags={filteredTags}
         filters={filters}
         toggleFilter={toggleFilter}
-        onSelect={onSelect}
+        onFilterSelected={onFilterSelected}
       />
       {!inTop5 && (
         <>
