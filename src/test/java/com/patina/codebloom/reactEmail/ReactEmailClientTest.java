@@ -16,7 +16,7 @@ import com.patina.codebloom.common.email.client.ReactEmailClientImpl;
 class ReactEmailClientTest {
 
     @Test
-    void jsoupRenderTest() throws IOException {
+    void exampleTemplateTest() throws IOException {
         ReactEmailClient client = new ReactEmailClientImpl();
 
         String recipientName = "Example";
@@ -24,7 +24,6 @@ class ReactEmailClientTest {
         String supportEmail = "codebloom@patinanetwork.org";
 
         String renderedHtml = client.createExampleTemplate(recipientName, verifyUrl, supportEmail);
-        System.out.println(renderedHtml);
 
         Document doc = Jsoup.parse(renderedHtml);
 
@@ -47,5 +46,24 @@ class ReactEmailClientTest {
         Element supportHref = doc.getElementById("input-supportEmail-href");
         assertNotNull(supportHref, "Missing element: input-supportEmail-href");
         assertEquals("codebloom@patinanetwork.org", supportHref.attr("href"), "supportEmail href not set");
+    }
+
+    @Test
+    void emailTest() throws IOException {
+        ReactEmailClient client = new ReactEmailClientImpl();
+        String verifyUrl = "https://example.com";
+
+        String renderedHtml = client.schoolEmailImplementation(verifyUrl);
+
+        Document doc = Jsoup.parse(renderedHtml);
+
+        Element verifyText = doc.getElementById("input-verifyUrl-innerText");
+        assertNotNull(verifyText, "Missing element: input-verifyUrl-innerText");
+        assertEquals(verifyUrl, verifyText.text(), "verifyUrl text not set");
+
+        Element verifyHref = doc.getElementById("input-verifyUrl-href");
+        assertNotNull(verifyHref, "Missing element: input-verifyUrl-href");
+        assertEquals(verifyUrl, verifyHref.attr("href"), "verifyUrl href not set");
+
     }
 }
