@@ -13,12 +13,12 @@ export default function FilterTagsControl({
   tags,
   filters,
   toggleFilter,
-  setSelected,
+  onSelect,
 }: {
   tags: ApiTypeUtils.FilteredUserTag[];
   filters: TagEnumToBooleanFilterObject;
   toggleFilter: ToggleTagEnumFn;
-  setSelected: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSelect: (value: string | undefined) => void;
 }) {
   // https://mantine.dev/core/segmented-control/#controlled
   const segments: {
@@ -69,9 +69,9 @@ export default function FilterTagsControl({
     const segmentKey = value as SegmentFlagsWithAll;
 
     if (value == "All") {
-      setSelected(undefined);
+      onSelect(undefined);
     } else {
-      setSelected(value.toLowerCase());
+      onSelect(value.toLowerCase());
     }
 
     // disable previous
