@@ -33,7 +33,7 @@ public class ReactEmailClientImpl implements ReactEmailClient {
     }
 
     @Override
-    public String schoolEmailImplementation(final String verifyUrl) throws IOException {
+    public String schoolEmailTemplate(final String verifyUrl) throws IOException {
         final String html = getHtmlAsString("static/email/school-email.html");
         final Document doc = Jsoup.parse(html);
 

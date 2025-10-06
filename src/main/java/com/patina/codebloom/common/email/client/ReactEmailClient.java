@@ -23,5 +23,5 @@ public interface ReactEmailClient {
      * @return rendered HTML as a string
      * @throws IOException
      */
-    String schoolEmailImplementation(String verifyUrl) throws IOException;
+    String schoolEmailTemplate(String verifyUrl) throws IOException;
 }
