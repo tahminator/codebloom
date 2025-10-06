@@ -77,6 +77,7 @@ export default function MiniLeaderboardMobile() {
               totalScore={first.totalScore}
               width={"300px"}
               userId={first.id}
+              isLoading={isPlaceholderData}
             />
           )}
           {second && (
@@ -89,6 +90,7 @@ export default function MiniLeaderboardMobile() {
               totalScore={second.totalScore}
               width={"300px"}
               userId={second.id}
+              isLoading={isPlaceholderData}
             />
           )}
           {third && (
@@ -101,6 +103,7 @@ export default function MiniLeaderboardMobile() {
               totalScore={third.totalScore}
               width={"300px"}
               userId={third.id}
+              isLoading={isPlaceholderData}
             />
           )}
         </div>

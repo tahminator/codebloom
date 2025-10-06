@@ -83,6 +83,7 @@ export default function LeaderboardWithId({
             width={"300px"}
             userId={second.id}
             tags={second.tags}
+            isLoading={isPlaceholderData}
           />
         )}
         {page === 1 && first && !debouncedQuery && (
@@ -96,6 +97,7 @@ export default function LeaderboardWithId({
             width={"300px"}
             userId={first.id}
             tags={first.tags}
+            isLoading={isPlaceholderData}
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -109,6 +111,7 @@ export default function LeaderboardWithId({
             width={"300px"}
             userId={third.id}
             tags={third.tags}
+            isLoading={isPlaceholderData}
           />
         )}
       </Flex>

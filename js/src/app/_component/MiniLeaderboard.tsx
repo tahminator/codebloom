@@ -80,6 +80,7 @@ export default function MiniLeaderboardDesktop() {
               nickname={second.nickname}
               width={"200px"}
               userId={second.id}
+              isLoading={isPlaceholderData}
             />
           )}
           {first && (
@@ -92,6 +93,7 @@ export default function MiniLeaderboardDesktop() {
               nickname={first.nickname}
               width={"200px"}
               userId={first.id}
+              isLoading={isPlaceholderData}
             />
           )}
           {third && (
@@ -104,6 +106,7 @@ export default function MiniLeaderboardDesktop() {
               nickname={third.nickname}
               width={"200px"}
               userId={third.id}
+              isLoading={isPlaceholderData}
             />
           )}
         </div>
