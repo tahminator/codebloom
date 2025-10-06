@@ -2,7 +2,7 @@ import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
-import { Card, Text, Tooltip, Flex } from "@mantine/core";
+import { Card, Text, Tooltip, Flex, LoadingOverlay } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
@@ -21,6 +21,7 @@ export default function LeaderboardCard({
   userId,
   nickname,
   tags,
+  isLoading = false,
 }: {
   placeString: OrdinalString;
   sizeOrder: 1 | 2 | 3;
@@ -31,6 +32,7 @@ export default function LeaderboardCard({
   userId: string;
   nickname: string | null;
   tags?: UserTag[];
+  isLoading?: boolean;
 }) {
   const borderColor = (() => {
     if (placeString === "1st") return "border-yellow-300";
@@ -58,10 +60,12 @@ export default function LeaderboardCard({
       style={{
         height,
         width,
+        position: "relative",
       }}
       component={Link}
       to={`/user/${userId}`}
     >
+      <LoadingOverlay visible={isLoading} />
       <Text ta="center" size="xl">
         {placeString}
       </Text>

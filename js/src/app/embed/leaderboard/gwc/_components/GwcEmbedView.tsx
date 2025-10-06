@@ -87,6 +87,7 @@ export default function GwcLeaderboardEmbed() {
             nickname={second.nickname}
             width={"300px"}
             userId={second.id as string}
+            isLoading={isPlaceholderData}
           />
         )}
         {page === 1 && first && !debouncedQuery && (
@@ -99,6 +100,7 @@ export default function GwcLeaderboardEmbed() {
             nickname={first.nickname}
             width={"300px"}
             userId={first.id as string}
+            isLoading={isPlaceholderData}
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -111,6 +113,7 @@ export default function GwcLeaderboardEmbed() {
             nickname={third.nickname}
             width={"300px"}
             userId={third.id as string}
+            isLoading={isPlaceholderData}
           />
         )}
       </Flex>
