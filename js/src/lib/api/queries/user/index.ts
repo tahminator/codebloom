@@ -54,9 +54,10 @@ export const useUserSubmissionsQuery = ({
   const [topics, setTopics] = useURLState<string[]>(
     "topics",
     emptyTopics,
-    tieToUrl,
-    true,
-    100,
+    {
+      enabled: tieToUrl,
+      debounce: 100,
+    }
   );
 
   useEffect(() => {
