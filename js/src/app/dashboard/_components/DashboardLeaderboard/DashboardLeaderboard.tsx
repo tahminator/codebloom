@@ -40,12 +40,7 @@ export default function LeaderboardForDashboard({
       pageSize: 5,
       tieToUrl: false,
     });
-  const [selected, setSelected] = useState<string>("");
-
-  // const chainToggle = (tag: UserTagTag) => {
-  //   setSelected(ApiUtils.getMetadataByTagEnum(tag).apiKey);
-  //   toggleFilter(tag as ApiTypeUtils.FilteredUserTagTag);
-  // };
+  const [selected, setSelected] = useState<string | undefined>();
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
