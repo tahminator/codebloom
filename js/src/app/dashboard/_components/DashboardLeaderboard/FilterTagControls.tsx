@@ -73,7 +73,9 @@ export default function FilterTagsControl({
     if (value == "All") {
       onFilterSelected(undefined);
     } else {
-      onFilterSelected(ApiUtils.getMetadataByTagEnum(segmentKey as UserTagTag).apiKey);
+      onFilterSelected(
+        ApiUtils.getMetadataByTagEnum(segmentKey as UserTagTag).apiKey,
+      );
     }
 
     // disable previous
