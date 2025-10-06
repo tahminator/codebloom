@@ -6,10 +6,8 @@ import {
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
 } from "@/lib/api/queries/leaderboard";
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
-import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -44,10 +42,10 @@ export default function LeaderboardForDashboard({
     });
   const [selected, setSelected] = useState<string>("");
 
-  const chainToggle = (tag: UserTagTag) => {
-    setSelected(ApiUtils.getMetadataByTagEnum(tag).apiKey);
-    toggleFilter(tag as ApiTypeUtils.FilteredUserTagTag);
-  };
+  // const chainToggle = (tag: UserTagTag) => {
+  //   setSelected(ApiUtils.getMetadataByTagEnum(tag).apiKey);
+  //   toggleFilter(tag as ApiTypeUtils.FilteredUserTagTag);
+  // };
 
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
@@ -132,7 +130,8 @@ export default function LeaderboardForDashboard({
       <FilterTagsControl
         tags={filteredTags}
         filters={filters}
-        toggleFilter={chainToggle}
+        toggleFilter={toggleFilter}
+        setSelected={setSelected}
       />
       {!inTop5 && (
         <>
