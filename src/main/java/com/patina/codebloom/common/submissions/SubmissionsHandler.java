@@ -1,7 +1,8 @@
 package com.patina.codebloom.common.submissions;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,11 +44,18 @@ public class SubmissionsHandler {
     private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
 
-    private boolean isSameDay(final LocalDateTime createdAt) {
-        LocalDate createdAtDate = createdAt.toLocalDate();
-        LocalDate today = LocalDate.now();
-
-        return createdAtDate.equals(today);
+    private boolean isValid(final LocalDateTime createdAt) {
+        // TODO - Replace EST locked functionality.
+        ZoneId est = ZoneId.of("America/New_York");
+        ZonedDateTime now = ZonedDateTime.now(est);
+        ZonedDateTime cutoff = createdAt
+                        .atZone(ZoneId.systemDefault())
+                        .withZoneSameInstant(est)
+                        .toLocalDate()
+                        .plusDays(1)
+                        .atTime(19, 0)
+                        .atZone(est);
+        return now.isBefore(cutoff);
     }
 
     public SubmissionsHandler(final QuestionRepository questionRepository, final ThrottledLeetcodeClient throttledLeetcodeClient, final LeaderboardRepository leaderboardRepository,
@@ -77,7 +85,9 @@ public class SubmissionsHandler {
 
             POTD potd = potdRepository.getCurrentPOTD();
 
-            if (potd == null || !Objects.equals(potd.getSlug(), leetcodeSubmission.getTitleSlug())) {
+            if (potd == null
+                            || !isValid(potd.getCreatedAt())
+                            || !Objects.equals(potd.getSlug(), leetcodeSubmission.getTitleSlug())) {
                 multiplier = 1.0f;
             } else {
                 multiplier = potd.getMultiplier();
