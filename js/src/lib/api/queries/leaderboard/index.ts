@@ -380,7 +380,7 @@ async function fetchLeaderboardUsersByLeaderboardId({
   leaderboardId: string;
 }) {
   const response = await fetch(
-    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}${Object.typedEntries(
+    `/api/leaderboard/${leaderboardId}/user/all?page=${page}&pageSize=${pageSize}&query=${query}&${Object.typedEntries(
       filters,
     )
       .map(([tagEnum, filterEnabled]) => {
