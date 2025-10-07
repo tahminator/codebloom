@@ -1,6 +1,6 @@
 import { ApiUtils } from "@/lib/api/utils";
-import { Box, Button, Chip, Flex, Popover, TextInput } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
+import { Button, Chip, Flex, Popover, TextInput } from "@mantine/core";
+import { useMemo, useState } from "react";
 
 type TopicFilterPopoverProps = {
   value: string[];
@@ -13,7 +13,6 @@ export default function TopicFilterPopover({
 }: TopicFilterPopoverProps) {
   const [opened, setOpened] = useState(false);
   const [search, setSearch] = useState("");
-  const [local, setLocal] = useState<string[]>(value);
 
   const leetcodeTopics = ApiUtils.getAllTopicEnumMetadata();
 
@@ -24,10 +23,6 @@ export default function TopicFilterPopover({
       ),
     [search, leetcodeTopics],
   );
-
-  useEffect(() => {
-    setLocal(value);
-  }, [value]);
 
   return (
     <Popover
@@ -52,12 +47,12 @@ export default function TopicFilterPopover({
       </Popover.Target>
       <Popover.Dropdown style={{ width: 400 }}>
         <TextInput
-          placeholder="search"
+          placeholder="Search Topic"
           value={search}
           onChange={(e) => setSearch(e.currentTarget.value)}
           mb="sm"
         />
-        <Chip.Group multiple value={local} onChange={setLocal}>
+        <Chip.Group multiple value={value} onChange={onChange}>
           <Flex
             wrap="wrap"
             gap="sm"
@@ -84,29 +79,18 @@ export default function TopicFilterPopover({
             ))}
           </Flex>
         </Chip.Group>
-        <Box
-          mt="sm"
-          style={{ display: "flex", justifyContent: "space-between" }}
-        >
+        <Flex mt="sm" align="center">
           <Button
-            variant="subtle"
-            color="gray"
+            variant="outline"
+            color="white"
+            w={"100%"}
             onClick={() => {
-              setLocal([]);
               onChange([]);
             }}
           >
             Reset
           </Button>
-          <Button
-            onClick={() => {
-              onChange(local);
-              setOpened(false);
-            }}
-          >
-            Save
-          </Button>
-        </Box>
+        </Flex>
       </Popover.Dropdown>
     </Popover>
   );
