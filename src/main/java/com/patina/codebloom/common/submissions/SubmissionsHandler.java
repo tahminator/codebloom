@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Controller;
 
@@ -75,11 +76,10 @@ public class SubmissionsHandler {
             float multiplier;
 
             POTD potd = potdRepository.getCurrentPOTD();
-            String potdSlug = potd.getSlug();
 
             if (potd == null
                             || !isSameDay(potd.getCreatedAt())
-                            || !leetcodeSubmission.getTitleSlug().equals(potdSlug)) {
+                            || !Objects.equals(potd.getSlug(), leetcodeSubmission.getTitleSlug())) {
                 multiplier = 1.0f;
             } else {
                 multiplier = potd.getMultiplier();
