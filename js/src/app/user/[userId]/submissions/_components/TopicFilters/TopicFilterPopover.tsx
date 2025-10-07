@@ -14,12 +14,14 @@ export default function TopicFilterPopover({
   const [opened, setOpened] = useState(false);
   const [search, setSearch] = useState("");
 
-  const leetcodeTopics = ApiUtils.getAllTopicEnumMetadata();
+  const leetcodeTopics = ApiUtils.getAllTopicEntries();
 
   const filteredTopics = useMemo(
     () =>
-      leetcodeTopics.filter((topic) =>
-        topic.name.toLowerCase().includes(search.toLowerCase()),
+      Object.fromEntries(
+        Object.entries(leetcodeTopics).filter(([_, topic]) =>
+          topic.name.toLowerCase().includes(search.toLowerCase()),
+        ),
       ),
     [search, leetcodeTopics],
   );
@@ -62,10 +64,10 @@ export default function TopicFilterPopover({
               overflowY: "auto",
             }}
           >
-            {filteredTopics.map((topic) => (
+            {Object.entries(filteredTopics).map(([key, topic]) => (
               <Chip
-                key={topic.enum}
-                value={topic.enum}
+                key={topic.name}
+                value={key}
                 radius="xl"
                 styles={(theme, { checked }) => ({
                   label: {
