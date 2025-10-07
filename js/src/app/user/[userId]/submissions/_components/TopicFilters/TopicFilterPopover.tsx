@@ -1,5 +1,6 @@
 import { ApiUtils } from "@/lib/api/utils";
 import { Button, Chip, Flex, Popover, TextInput } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 
 type TopicFilterPopoverProps = {
@@ -11,7 +12,7 @@ export default function TopicFilterPopover({
   value,
   onChange,
 }: TopicFilterPopoverProps) {
-  const [opened, setOpened] = useState(false);
+  const [opened, handlers] = useDisclosure(false);
   const [search, setSearch] = useState("");
 
   const leetcodeTopics = ApiUtils.getAllTopicEntries();
@@ -25,11 +26,9 @@ export default function TopicFilterPopover({
       ),
     [search, leetcodeTopics],
   );
-
   return (
     <Popover
       opened={opened}
-      onChange={setOpened}
       position="bottom-start"
       closeOnEscape
       withinPortal={false}
@@ -41,7 +40,7 @@ export default function TopicFilterPopover({
           fullWidth
           variant="outline"
           color="gray"
-          onClick={() => setOpened((o) => !o)}
+          onClick={handlers.toggle}
         >
           Topics
         </Button>
@@ -63,21 +62,26 @@ export default function TopicFilterPopover({
               overflowY: "auto",
             }}
           >
-            {Object.entries(filteredTopics).map(([key, topic]) => (
-              <Chip
-                key={topic.name}
-                value={key}
-                radius="xl"
-                styles={(theme, { checked }) => ({
-                  label: {
-                    color: checked ? theme.white : "#b3b3b3",
-                    fontWeight: 600,
-                  },
-                })}
-              >
-                {topic.name}
-              </Chip>
-            ))}
+            {Object.entries(filteredTopics).length > 0 ?
+              Object.entries(filteredTopics).map(([key, topic]) => (
+                <Chip
+                  key={topic.name}
+                  value={key}
+                  radius="xl"
+                  styles={(theme, { checked }) => ({
+                    label: {
+                      color: checked ? theme.white : "#b3b3b3",
+                      fontWeight: 600,
+                    },
+                  })}
+                >
+                  {topic.name}
+                </Chip>
+              ))
+            : <div style={{ color: "#999", fontSize: 14, padding: "0.5rem 0" }}>
+                No matching topics
+              </div>
+            }
           </Flex>
         </Chip.Group>
         <Flex mt="sm" align="center">
