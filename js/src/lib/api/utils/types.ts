@@ -57,7 +57,6 @@ export namespace ApiTypeUtils {
    * Pretty name for the given topic.
    */
   export type QuestionTopicTopicMetadata = {
-    enum: string;
     name: string;
   };
 }
