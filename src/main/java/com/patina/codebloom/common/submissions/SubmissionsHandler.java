@@ -75,8 +75,11 @@ public class SubmissionsHandler {
             float multiplier;
 
             POTD potd = potdRepository.getCurrentPOTD();
+            String potdSlug = potd.getSlug();
 
-            if (potd == null || !isSameDay(potd.getCreatedAt())) {
+            if (potd == null
+                            || !isSameDay(potd.getCreatedAt())
+                            || !leetcodeSubmission.getTitleSlug().equals(potdSlug)) {
                 multiplier = 1.0f;
             } else {
                 multiplier = potd.getMultiplier();
