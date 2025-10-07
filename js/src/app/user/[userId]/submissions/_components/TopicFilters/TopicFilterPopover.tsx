@@ -31,7 +31,6 @@ export default function TopicFilterPopover({
       opened={opened}
       onChange={setOpened}
       position="bottom-start"
-      trapFocus={false}
       closeOnEscape
       withinPortal={false}
       shadow="md"
