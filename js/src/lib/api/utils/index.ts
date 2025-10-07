@@ -1,4 +1,4 @@
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { QuestionTopicTopic, UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
@@ -82,6 +82,19 @@ export class ApiUtils {
    */
   static getAllTagEnums(): UserTagTag[] {
     return Object.values(UserTagTag);
+  }
+
+  /**
+   * Return a list of all topic enums. Essentially a shorthand for:
+   * ```ts
+   * Object.values(QuestionTopicTopic);
+   * ```
+   */
+  static getAllTopicEntries(): Record<
+    QuestionTopicTopic,
+    ApiTypeUtils.QuestionTopicTopicMetadata
+  > {
+    return this._TOPIC_METADATA_LIST;
   }
 
   /**
