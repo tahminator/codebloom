@@ -2,7 +2,9 @@ package com.patina.codebloom.common.db.models.auth;
 
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,15 +19,15 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @ToString
 public class Auth {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String token;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String csrf;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime createdAt;
 }
