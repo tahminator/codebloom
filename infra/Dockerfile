@@ -47,6 +47,10 @@ COPY src ./src
 # Copy frontend build output to backend static resources
 COPY --from=frontend-build /js/dist/ src/main/resources/static/
 
+# Copy react email output to backend static resources
+RUN corepack enable pnpm && cd email && pnpm i --frozen-lockfile && cd ..
+RUN ./email.sh
+
 # Package the application
 RUN ./mvnw clean package -DskipTests
 
