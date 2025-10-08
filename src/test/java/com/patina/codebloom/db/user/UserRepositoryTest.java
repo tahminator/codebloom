@@ -47,7 +47,11 @@ public class UserRepositoryTest {
         testUser = User.builder()
                         .discordId(uniqueDiscordId)
                         .discordName("TestUser")
+                        .leetcodeUsername("testuser")
+                        .nickname("TestNickname")
                         .admin(false)
+                        .schoolEmail("test@example.com")
+                        .profileUrl("")
                         .build();
 
         userRepository.createUser(testUser);
@@ -55,6 +59,8 @@ public class UserRepositoryTest {
         if (testUser.getId() == null) {
             fail("Failed to create test user");
         }
+
+        userRepository.updateUser(testUser);
     }
 
     @AfterAll
@@ -87,8 +93,10 @@ public class UserRepositoryTest {
     @Test
     @Order(3)
     void testGetUserByLeetcodeUsername() {
-        User notFound = userRepository.getUserByLeetcodeUsername("non-existent-username");
-        assertNull(notFound);
+        User found = userRepository.getUserByLeetcodeUsername(testUser.getLeetcodeUsername());
+        assertNotNull(found);
+        assertEquals(testUser.getId(), found.getId());
+        assertEquals(testUser.getLeetcodeUsername(), found.getLeetcodeUsername());
     }
 
     @Test
@@ -115,8 +123,8 @@ public class UserRepositoryTest {
     @Test
     @Order(6)
     void testGetUserCountWithQuery() {
-        int countWithQuery = userRepository.getUserCount("non-existent-user");
-        assertEquals(0, countWithQuery);
+        int countWithTestUser = userRepository.getUserCount("TestUser");
+        assertTrue(countWithTestUser > 0);
     }
 
     @Test
@@ -138,8 +146,8 @@ public class UserRepositoryTest {
     @Test
     @Order(9)
     void testUserExistsByLeetcodeUsername() {
-        boolean exists = userRepository.userExistsByLeetcodeUsername("non-existent-username");
-        assertFalse(exists);
+        boolean exists = userRepository.userExistsByLeetcodeUsername(testUser.getLeetcodeUsername());
+        assertTrue(exists);
     }
 
     @Test
