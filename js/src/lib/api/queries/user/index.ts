@@ -1,6 +1,7 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
+import { QuestionTopicTopic } from "@/lib/api/types/autogen/schema";
 import { Question } from "@/lib/api/types/question";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
@@ -50,9 +51,7 @@ export const useUserSubmissionsQuery = ({
     },
   );
 
-  const emptyTopics = useMemo(() => [], []);
-
-  const [topics, setTopics] = useURLState<string[]>("topics", emptyTopics, {
+  const [_topics, _setTopics] = useURLState<string>("topics", "", {
     enabled: tieToUrl,
     debounce: 100,
   });
@@ -65,6 +64,22 @@ export const useUserSubmissionsQuery = ({
     setPointFilter((prev) => !prev);
     goTo(1);
   }, [goTo, setPointFilter]);
+
+  const topics = useMemo(
+    () => _topics.split(",").filter(Boolean) as QuestionTopicTopic[],
+    [_topics],
+  );
+
+  const setTopics = useCallback(
+    (topics: QuestionTopicTopic[]) => {
+      _setTopics(topics.join(","));
+    },
+    [_setTopics],
+  );
+
+  const clearTopics = useCallback(() => {
+    _setTopics("");
+  }, [_setTopics]);
 
   const query = useQuery({
     queryKey: [
@@ -84,7 +99,7 @@ export const useUserSubmissionsQuery = ({
         query: debouncedQuery,
         pageSize,
         pointFilter,
-        topics,
+        topics: _topics,
       }),
     placeholderData: keepPreviousData,
   });
@@ -103,6 +118,7 @@ export const useUserSubmissionsQuery = ({
     togglePointFilter,
     topics,
     setTopics,
+    clearTopics,
   };
 };
 
@@ -182,7 +198,7 @@ async function fetchUserSubmissions({
   query?: string;
   pageSize: number;
   pointFilter: boolean;
-  topics?: string[];
+  topics?: string;
 }) {
   const response = await fetch(
     `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}&topics=${topics ?? ""}`,

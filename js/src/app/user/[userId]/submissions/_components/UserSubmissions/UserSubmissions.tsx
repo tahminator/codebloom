@@ -30,6 +30,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     togglePointFilter,
     topics,
     setTopics,
+    clearTopics,
   } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
@@ -65,7 +66,11 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           }}
           buttonName="Filters"
         >
-          <TopicFilterPopover value={topics} onChange={setTopics} />
+          <TopicFilterPopover
+            value={topics}
+            onChange={setTopics}
+            onClear={clearTopics}
+          />
           <FilterDropdownItem
             value={pointFilter}
             toggle={togglePointFilter}
