@@ -153,7 +153,7 @@ public class UserRepositoryTest {
     @Test
     @Order(10)
     void testDeleteUserByIdAndDiscordId() {
-        String uniqueDiscordId = System.currentTimeMillis() + "999";
+        String uniqueDiscordId = "test-2" + System.currentTimeMillis();
 
         deletableUser = User.builder()
                         .discordId(uniqueDiscordId)
