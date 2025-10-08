@@ -35,7 +35,7 @@ export function useURLState<T>(
   }: UseUrlStateOptions = defaultProps,
 ) {
   const [initial, setInitial] = useState(true);
-  const [value, setValue] = useState<T>(defaultValue);
+  const [value, setValue] = useState<T>(() => defaultValue);
   const [debouncedValue] = useDebouncedValue<T>(value, debounce);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -132,7 +132,8 @@ function coerce<T>(param: string, defaultValue: T): T | symbol {
     if (defaultValueType === "boolean") return (param === "true") as T;
 
     return Symbol();
-  } catch {
+  } catch (e) {
+    console.log(e);
     return Symbol();
   }
 }
