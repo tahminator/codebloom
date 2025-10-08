@@ -28,6 +28,7 @@ import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
+import com.patina.codebloom.common.dto.potd.PotdDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -194,7 +195,7 @@ public class SubmissionController {
             @ApiResponse(responseCode = "404", description = "POTD not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/potd")
-    public ResponseEntity<ApiResponder<POTD>> getCurrentPotd(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotd(final HttpServletRequest request) {
         FakeLag.sleep(750);
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
@@ -213,7 +214,7 @@ public class SubmissionController {
                             .failure("Nice, you have already completed the problem of the day! Come back tomorrow for a new one!"));
         }
 
-        return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", potd));
+        return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(potd)));
     }
 
     @Operation(summary = "Returns submission data.", description = """
