@@ -53,7 +53,7 @@ public class SubmissionsHandler {
                         .withZoneSameInstant(est)
                         .toLocalDate()
                         .plusDays(1)
-                        .atTime(19, 0)
+                        .atTime(20, 0)
                         .atZone(est);
         return now.isBefore(cutoff);
     }
