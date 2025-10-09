@@ -1,48 +1,48 @@
 package com.patina.codebloom.common.db.models.question;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.jackson.Jacksonized;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Jacksonized
 @SuperBuilder
-@EqualsAndHashCode
+@NoArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class Question {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String userId;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String questionSlug;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String questionTitle;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private QuestionDifficulty questionDifficulty;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private int questionNumber;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String questionLink;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String description;
 
     /**
@@ -50,37 +50,37 @@ public class Question {
      * some points, so there might be a case where we create the DB entry and then
      * pass it to a message queue to use AI and calculate a score.
      */
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private Integer pointsAwarded;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private float acceptanceRate;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime createdAt;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime submittedAt;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String runtime;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String memory;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String code;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String language;
 
     // Not every submission will have this.
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String submissionId;
 
     /**
      * Join field, update/create with {@link QuestionTopicRepository}
      */
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private List<QuestionTopic> topics;
 }
