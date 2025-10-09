@@ -2,8 +2,8 @@ package com.patina.codebloom.common.db.models.potd;
 
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,31 +12,23 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Builder
 @EqualsAndHashCode
 @ToString
 public class POTD {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String title;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String slug;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private float multiplier;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime createdAt;
-
-    public POTD(final String title, final String slug, final float multiplier, final LocalDateTime createdAt) {
-        this.title = title;
-        this.slug = slug;
-        this.multiplier = multiplier;
-        this.createdAt = createdAt;
-    }
 
 }
