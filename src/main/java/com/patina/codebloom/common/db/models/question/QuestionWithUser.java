@@ -1,26 +1,27 @@
 package com.patina.codebloom.common.db.models.question;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
-import io.swagger.v3.oas.annotations.media.Schema;
+
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 
 @Getter
 @Setter
-@Jacksonized
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class QuestionWithUser extends Question {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NullColumn
     private String discordName;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NullColumn
     private String leetcodeUsername;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NullColumn
     private String nickname;
 }
