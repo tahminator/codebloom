@@ -2,33 +2,34 @@ package com.patina.codebloom.common.db.models.question.topic;
 
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.jackson.Jacksonized;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Jacksonized
-@Builder
+@SuperBuilder
+@NoArgsConstructor
 @ToString
 @EqualsAndHashCode
 public class QuestionTopic {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String questionId;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String topicSlug;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LeetcodeTopicEnum topic;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime createdAt;
 }
