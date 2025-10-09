@@ -28,6 +28,7 @@ import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeEmptySuccessResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
+import com.patina.codebloom.common.dto.question.QuestionDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
@@ -225,7 +226,7 @@ public class SubmissionController {
             @ApiResponse(responseCode = "404", description = "Question not found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/submission/{submissionId}")
-    public ResponseEntity<ApiResponder<Question>> getSubmissionBySubmissionId(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<QuestionDto>> getSubmissionBySubmissionId(final HttpServletRequest request,
                     @PathVariable final String submissionId) {
         FakeLag.sleep(750);
 
@@ -235,6 +236,6 @@ public class SubmissionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponder.failure("Sorry, submission could not be found."));
         }
 
-        return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", question));
+        return ResponseEntity.ok().body(ApiResponder.success("Problem of the day has been fetched!", QuestionDto.fromQuestion(question)));
     }
 }
