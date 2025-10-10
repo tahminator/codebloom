@@ -3,6 +3,7 @@ package com.patina.codebloom.common.db.models.question;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
@@ -81,6 +82,6 @@ public class Question {
     /**
      * Join field, update/create with {@link QuestionTopicRepository}
      */
-    @NotNullColumn
+    @JoinColumn
     private List<QuestionTopic> topics;
 }
