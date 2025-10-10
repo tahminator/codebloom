@@ -44,6 +44,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
+    pageSize: 15,
   });
 
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -150,15 +151,25 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               langNameToIcon[submission.language as langNameKey] ||
               langNameToIcon["default"];
             return (
-              <Card key={index} withBorder p="sm" radius="md">
+              <Card
+                key={index}
+                withBorder
+                p="sm"
+                radius="md"
+                component={Link}
+                to={`/submission/${submission.id}`}
+                className="transition-all hover:brightness-110"
+                style={{
+                  cursor: "pointer",
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
                 <Stack gap="xs">
                   <Group justify="space-between" align="flex-start">
                     <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
                       <LanguageIcon size={20} width={20} height={20} />
                       <Text
-                        component={Link}
-                        to={`/submission/${submission.id}`}
-                        className="transition-all hover:text-blue-500"
                         size="sm"
                         fw={500}
                         style={{
@@ -321,16 +332,22 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                 withBorder
                 p="md"
                 radius="md"
-                style={{ width: "100%", maxWidth: "950px" }}
+                style={{
+                  width: "100%",
+                  maxWidth: "950px",
+                  cursor: "pointer",
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+                component={Link}
+                to={`/submission/${submission.id}`}
+                className="transition-all hover:brightness-110"
               >
                 <Stack gap="xs">
                   <Group justify="space-between" align="flex-start">
                     <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
                       <LanguageIcon size={22} width={22} height={22} />
                       <Text
-                        component={Link}
-                        to={`/submission/${submission.id}`}
-                        className="transition-all hover:text-blue-500"
                         fw={600}
                         style={{
                           flex: 1,
