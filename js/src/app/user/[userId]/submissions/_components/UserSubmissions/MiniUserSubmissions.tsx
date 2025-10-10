@@ -96,15 +96,27 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
             langNameToIcon[submission.language as langNameKey] ||
             langNameToIcon["default"];
           return (
-            <Card key={index} withBorder p="sm" radius="md">
+            <Card
+              key={index}
+              withBorder
+              p="md"
+              radius="md"
+              style={{
+                width: "100%",
+                maxWidth: "950px",
+                cursor: "pointer",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+              component={Link}
+              to={`/submission/${submission.id}`}
+              className="transition-all hover:brightness-110"
+            >
               <Stack gap="xs">
                 <Group justify="space-between" align="flex-start">
                   <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
                     <LanguageIcon size={20} width={20} height={20} />
                     <Text
-                      component={Link}
-                      to={`/submission/${submission.id}`}
-                      className="transition-all hover:text-blue-500"
                       size="sm"
                       fw={500}
                       style={{
