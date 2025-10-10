@@ -10,7 +10,8 @@ public enum SchoolEnum {
     SBU("@stonybrook.edu", Tag.Sbu),
     CCNY("@citymail.cuny.edu", Tag.Ccny),
     COLUMBIA("@columbia.edu", Tag.Columbia),
-    CORNELL("@cornell.edu", Tag.Cornell);
+    CORNELL("@cornell.edu", Tag.Cornell),
+    BMCC("@stu.bmcc.cuny.edu", Tag.Bmcc);
 
     private final String emailDomain;
     private final Tag internalTag;
