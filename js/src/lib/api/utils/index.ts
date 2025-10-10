@@ -80,6 +80,13 @@ export class ApiUtils {
       icon: "/brands/Cornell_Logo.png",
       alt: "Cornell University Logo",
     },
+    Bmcc: {
+      shortName: "BMCC",
+      name: "Borough of Manhattan Community College",
+      apiKey: "bmcc",
+      icon: "/brands/BMCC_Logo.png",
+      alt: "BMCC Logo",
+    },
   } as const;
 
   static _UNUSED_TAGS: UserTagTag[] = [UserTagTag.Gwc];
