@@ -32,8 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserRepositoryTest {
     private UserRepository userRepository;
+
     private User testUser;
-    private User deletableUser;
 
     @Autowired
     public UserRepositoryTest(final UserRepository userRepository) {
@@ -52,24 +52,21 @@ public class UserRepositoryTest {
                         .admin(false)
                         .schoolEmail("test@example.com")
                         .profileUrl("")
+                        .tags(new ArrayList<>())
                         .build();
 
         userRepository.createUser(testUser);
-
-        if (testUser.getId() == null) {
-            fail("Failed to create test user");
-        }
-
         userRepository.updateUser(testUser);
     }
 
     @AfterAll
     void cleanUp() {
-        if (testUser != null && testUser.getId() != null) {
-            userRepository.deleteUserById(testUser.getId());
-        }
-        if (deletableUser != null && deletableUser.getId() != null) {
-            userRepository.deleteUserById(deletableUser.getId());
+        User existingUser = userRepository.getUserById(testUser.getId());
+        if (existingUser != null) {
+            boolean isSuccessful = userRepository.deleteUserById(testUser.getId());
+            if (!isSuccessful) {
+                fail("Failed deleting User by Id.");
+            }
         }
     }
 
@@ -78,7 +75,7 @@ public class UserRepositoryTest {
     void testGetId() {
         User found = userRepository.getUserById(testUser.getId());
         assertNotNull(found);
-        assertEquals(testUser.getId(), found.getId());
+        assertEquals(testUser, found);
     }
 
     @Test
@@ -86,8 +83,7 @@ public class UserRepositoryTest {
     void testGetUserByDiscordId() {
         User found = userRepository.getUserByDiscordId(testUser.getDiscordId());
         assertNotNull(found);
-        assertEquals(testUser.getId(), found.getId());
-        assertEquals(testUser.getDiscordId(), found.getDiscordId());
+        assertEquals(testUser, found);
     }
 
     @Test
@@ -95,8 +91,7 @@ public class UserRepositoryTest {
     void testGetUserByLeetcodeUsername() {
         User found = userRepository.getUserByLeetcodeUsername(testUser.getLeetcodeUsername());
         assertNotNull(found);
-        assertEquals(testUser.getId(), found.getId());
-        assertEquals(testUser.getLeetcodeUsername(), found.getLeetcodeUsername());
+        assertEquals(testUser, found);
     }
 
     @Test
@@ -133,6 +128,7 @@ public class UserRepositoryTest {
         ArrayList<User> users = userRepository.getAllUsers();
         assertNotNull(users);
         assertTrue(users.size() > 0);
+        assertTrue(users.stream().anyMatch(user -> user.getId().equals(testUser.getId())));
     }
 
     @Test
@@ -141,6 +137,8 @@ public class UserRepositoryTest {
         ArrayList<User> users = userRepository.getAllUsers(1, 5, "");
         assertNotNull(users);
         assertTrue(users.size() >= 0);
+        ArrayList<User> searchResults = userRepository.getAllUsers(1, 100, "TestUser");
+        assertTrue(searchResults.stream().anyMatch(user -> user.getId().equals(testUser.getId())));
     }
 
     @Test
@@ -152,10 +150,10 @@ public class UserRepositoryTest {
 
     @Test
     @Order(10)
-    void testDeleteUserByIdAndDiscordId() {
-        String uniqueDiscordId = "test-2" + System.currentTimeMillis();
+    void testDeleteUserById() {
+        String uniqueDiscordId = "deletable-" + System.currentTimeMillis();
 
-        deletableUser = User.builder()
+        User deletableUser = User.builder()
                         .discordId(uniqueDiscordId)
                         .discordName("DeletableUser")
                         .admin(false)
@@ -169,6 +167,9 @@ public class UserRepositoryTest {
 
         boolean deleted = userRepository.deleteUserById(deletableUser.getId());
         assertTrue(deleted);
+
+        User deletedUser = userRepository.getUserById(deletableUser.getId());
+        assertNull(deletedUser);
     }
 
 }
