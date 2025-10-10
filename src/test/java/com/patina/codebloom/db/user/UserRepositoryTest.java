@@ -61,13 +61,10 @@ public class UserRepositoryTest {
 
     @AfterAll
     void cleanUp() {
-        User existingUser = userRepository.getUserById(testUser.getId());
-        if (existingUser != null) {
             boolean isSuccessful = userRepository.deleteUserById(testUser.getId());
             if (!isSuccessful) {
                 fail("Failed deleting User by Id.");
             }
-        }
     }
 
     @Test
