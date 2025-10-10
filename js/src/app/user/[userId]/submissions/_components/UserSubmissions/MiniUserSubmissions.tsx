@@ -121,14 +121,14 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
                   </Text>
                 </Group>
                 <Group justify="space-between" wrap="wrap" gap="xs">
-                  <Stack gap="xs">
+                  <Group gap="xs">
                     <Badge size="sm" color={badgeDifficultyColor}>
                       {submission.questionDifficulty}
                     </Badge>
                     <Badge size="sm" color={badgeAcceptedColor}>
                       {Math.round(submission.acceptanceRate * 100)}%
                     </Badge>
-                  </Stack>
+                  </Group>
                 </Group>
                 {submission.topics && submission.topics.length > 0 && (
                   <Group justify="space-between">
