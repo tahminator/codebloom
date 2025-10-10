@@ -5,7 +5,7 @@ import GwcEmbedView from "./_components/GwcEmbedView";
 export default function GwcEmbedContainer() {
   return (
     <>
-      <Box className="flex-grow">
+      <Box className="grow">
         <Box p={"lg"}>
           <GwcEmbedView />
         </Box>
