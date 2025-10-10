@@ -89,9 +89,9 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for CCNY users") @RequestParam(required = false, defaultValue = "false") final boolean ccny,
                     @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia,
                     @Parameter(description = "Filter for Cornell users") @RequestParam(required = false, defaultValue = "false") final boolean cornell,
+                    @Parameter(description = "Filter for BMCC users") @RequestParam(required = false, defaultValue = "false") final boolean bmcc,
                     @Parameter(description = "Enable global leaderboard index") @RequestParam(required = false, defaultValue = "false") final boolean globalIndex,
                     final HttpServletRequest request) {
-        System.out.println("hi");
         FakeLag.sleep(800);
 
         final int parsedPageSize = Math.min(pageSize, MAX_LEADERBOARD_PAGE_SIZE);
@@ -110,11 +110,12 @@ public class LeaderboardController {
                         .ccny(ccny)
                         .columbia(columbia)
                         .cornell(cornell)
+                        .bmcc(bmcc)
                         .build();
 
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
-        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell)) {
+        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell || bmcc)) {
             leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
                             leaderboardId, options);
         } else {
@@ -166,6 +167,7 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for CCNY users") @RequestParam(required = false, defaultValue = "false") final boolean ccny,
                     @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia,
                     @Parameter(description = "Filter for Cornell users") @RequestParam(required = false, defaultValue = "false") final boolean cornell,
+                    @Parameter(description = "Filter for BMCC users") @RequestParam(required = false, defaultValue = "false") final boolean bmcc,
                     @Parameter(description = "Enable global leaderboard index") @RequestParam(required = false, defaultValue = "false") final boolean globalIndex) {
         FakeLag.sleep(800);
 
@@ -185,6 +187,7 @@ public class LeaderboardController {
                         .ccny(ccny)
                         .columbia(columbia)
                         .cornell(cornell)
+                        .bmcc(bmcc)
                         .build();
 
         int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount(options);
@@ -194,7 +197,7 @@ public class LeaderboardController {
         String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
-        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell)) {
+        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell || bmcc)) {
             leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
                             currentLeaderboardId, options);
         } else {
@@ -253,7 +256,8 @@ public class LeaderboardController {
                     @Parameter(description = "Filter for SBU users") @RequestParam(required = false, defaultValue = "false") final boolean sbu,
                     @Parameter(description = "Filter for CCNY users") @RequestParam(required = false, defaultValue = "false") final boolean ccny,
                     @Parameter(description = "Filter for Cornell users") @RequestParam(required = false, defaultValue = "false") final boolean cornell,
-                    @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia) {
+                    @Parameter(description = "Filter for Columbia users") @RequestParam(required = false, defaultValue = "false") final boolean columbia,
+                    @Parameter(description = "Filter for BMCC users") @RequestParam(required = false, defaultValue = "false") final boolean bmcc) {
         FakeLag.sleep(650);
 
         AuthenticationObject authenticationObject = protector.validateSession(request);
@@ -267,7 +271,7 @@ public class LeaderboardController {
 
         Indexed<UserWithScore> userWithRank;
 
-        if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc && !sbu && !ccny && !columbia && !cornell) {
+        if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc && !sbu && !ccny && !columbia && !cornell && !bmcc) {
             // Use global ranking when no filters are applied
             userWithRank = leaderboardRepository.getGlobalRankedUserById(leaderboardData.getId(), userId);
         } else {
@@ -283,6 +287,7 @@ public class LeaderboardController {
                             .ccny(ccny)
                             .columbia(columbia)
                             .cornell(cornell)
+                            .bmcc(bmcc)
                             .build();
             userWithRank = leaderboardRepository.getFilteredRankedUserById(leaderboardData.getId(), userId, options);
         }
