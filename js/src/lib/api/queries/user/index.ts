@@ -1,7 +1,6 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
-import { Question } from "@/lib/api/types/question";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -175,7 +174,9 @@ async function fetchUserSubmissions({
     `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}`,
   );
 
-  const json = (await response.json()) as UnknownApiResponse<Page<Question[]>>;
+  const json = (await response.json()) as UnknownApiResponse<
+    Page<Array<Api<"QuestionWithUserDto">>>
+  >;
   return json;
 }
 
