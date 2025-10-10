@@ -8,7 +8,7 @@ export default function LeaderboardPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="flex-grow">
+      <div className="grow">
         <Box p={"lg"}>
           <LeaderboardMetadata showClock showAllLeaderboardButton />
           <Leaderboard />

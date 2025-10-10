@@ -193,9 +193,7 @@ export default function LeaderboardForDashboard({
               p={"xs"}
               className="group transition-all hover:!bg-blue-500 hover:!bg-none"
             >
-              <Text className="transition-all group-hover:text-white-500">
-                {idx + 1}.
-              </Text>
+              <Text>{idx + 1}.</Text>
               <Flex direction={"column"}>
                 {user.nickname && (
                   <Tooltip
@@ -204,10 +202,7 @@ export default function LeaderboardForDashboard({
                     }
                     color={"dark.4"}
                   >
-                    <Text
-                      ta="center"
-                      className="transition-all group-hover:text-white-500"
-                    >
+                    <Text ta="center">
                       <IconCircleCheckFilled
                         style={{
                           display: "inline",
@@ -220,10 +215,7 @@ export default function LeaderboardForDashboard({
                     </Text>
                   </Tooltip>
                 )}
-                <Text
-                  ta="center"
-                  className="transition-all group-hover:text-white-500"
-                >
+                <Text ta="center">
                   <FaDiscord
                     style={{
                       display: "inline",
@@ -233,23 +225,20 @@ export default function LeaderboardForDashboard({
                   />
                   {user.discordName}
                 </Text>
-                <Text
-                  ta="center"
-                  className="transition-all group-hover:text-white-500"
-                >
-                  <SiLeetcode
-                    style={{
-                      display: "inline",
-                      marginLeft: "4px",
-                      marginRight: "4px",
-                    }}
-                  />
-                  {user.leetcodeUsername}
-                </Text>
+                {user.leetcodeUsername && (
+                  <Text ta="center">
+                    <SiLeetcode
+                      style={{
+                        display: "inline",
+                        marginLeft: "4px",
+                        marginRight: "4px",
+                      }}
+                    />
+                    {user.leetcodeUsername}
+                  </Text>
+                )}
               </Flex>
-              <Text className="transition-all group-hover:text-white-500">
-                {user.totalScore}
-              </Text>
+              <Text>{user.totalScore}</Text>
             </Flex>
           );
         })}

@@ -81,7 +81,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
         style={{
           borderRadius: "4px",
         }}
-        className="transition-all group-hover:!bg-blue-500"
+        className="transition-all hover:!bg-blue-500"
       >
         <Text>Me</Text>
         <Flex direction={"column"}>
@@ -92,10 +92,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
               }
               color={"dark.4"}
             >
-              <Text
-                ta="center"
-                className="transition-all group-hover:text-white-500"
-              >
+              <Text ta="center">
                 <IconCircleCheckFilled
                   style={{
                     display: "inline",
@@ -108,10 +105,7 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
               </Text>
             </Tooltip>
           )}
-          <Text
-            ta="center"
-            className="transition-all group-hover:text-white-500"
-          >
+          <Text ta="center">
             <FaDiscord
               style={{
                 display: "inline",
@@ -121,16 +115,18 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
             />
             {userData.discordName}
           </Text>
-          <Text ta="center">
-            <SiLeetcode
-              style={{
-                display: "inline",
-                marginLeft: "4px",
-                marginRight: "4px",
-              }}
-            />
-            {userData.leetcodeUsername}
-          </Text>
+          {userData.leetcodeUsername && (
+            <Text ta="center">
+              <SiLeetcode
+                style={{
+                  display: "inline",
+                  marginLeft: "4px",
+                  marginRight: "4px",
+                }}
+              />
+              {userData.leetcodeUsername}
+            </Text>
+          )}
         </Flex>
         <Text>{userData.totalScore}</Text>
       </Flex>
