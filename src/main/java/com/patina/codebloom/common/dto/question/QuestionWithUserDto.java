@@ -1,7 +1,11 @@
 package com.patina.codebloom.common.dto.question;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -32,11 +36,31 @@ public class QuestionWithUserDto {
     private String questionLink;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String description;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private Integer pointsAwarded;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private float acceptanceRate;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private LocalDateTime createdAt;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private LocalDateTime submittedAt;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private String runtime;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private String memory;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private String code;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private String language;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private String submissionId;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<QuestionTopic> topics;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String discordName;
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String leetcodeUsername;
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String nickname;
 
     public static QuestionWithUserDto fromQuestionWithUser(final QuestionWithUser questionWithUser) {
@@ -49,6 +73,16 @@ public class QuestionWithUserDto {
                         .questionNumber(questionWithUser.getQuestionNumber())
                         .questionLink(questionWithUser.getQuestionLink())
                         .description(questionWithUser.getDescription())
+                        .pointsAwarded(questionWithUser.getPointsAwarded())
+                        .acceptanceRate(questionWithUser.getAcceptanceRate())
+                        .createdAt(questionWithUser.getCreatedAt())
+                        .submittedAt(questionWithUser.getSubmittedAt())
+                        .runtime(questionWithUser.getRuntime())
+                        .memory(questionWithUser.getMemory())
+                        .code(questionWithUser.getCode())
+                        .language(questionWithUser.getLanguage())
+                        .submissionId(questionWithUser.getSubmissionId())
+                        .topics(questionWithUser.getTopics())
                         .discordName(questionWithUser.getDiscordName())
                         .leetcodeUsername(questionWithUser.getLeetcodeUsername())
                         .nickname(questionWithUser.getNickname())
