@@ -42,7 +42,12 @@ public class PotdSetter {
             return;
         }
 
-        potdRepository.createPOTD(new POTD(leetcodePotd.getTitle(), leetcodePotd.getTitleSlug(),
-                        ScoreCalculator.calculateMultiplier(leetcodePotd.getDifficulty()), StandardizedLocalDateTime.now()));
+        potdRepository.createPOTD(
+                        POTD.builder()
+                                        .title(leetcodePotd.getTitle())
+                                        .slug(leetcodePotd.getTitleSlug())
+                                        .multiplier(ScoreCalculator.calculateMultiplier((leetcodePotd.getDifficulty())))
+                                        .createdAt(StandardizedLocalDateTime.now())
+                                        .build());
     }
 }
