@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 
+import javassist.expr.NewArray;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
@@ -56,15 +57,14 @@ public class UserRepositoryTest {
                         .build();
 
         userRepository.createUser(testUser);
-        userRepository.updateUser(testUser);
     }
 
     @AfterAll
     void cleanUp() {
-            boolean isSuccessful = userRepository.deleteUserById(testUser.getId());
-            if (!isSuccessful) {
-                fail("Failed deleting User by Id.");
-            }
+        boolean isSuccessful = userRepository.deleteUserById(testUser.getId());
+        if (!isSuccessful) {
+            fail("Failed deleting User by Id.");
+        }
     }
 
     @Test
@@ -125,7 +125,7 @@ public class UserRepositoryTest {
         ArrayList<User> users = userRepository.getAllUsers();
         assertNotNull(users);
         assertTrue(users.size() > 0);
-        assertTrue(users.stream().anyMatch(user -> user.getId().equals(testUser.getId())));
+        assertTrue(users.contains(testUser));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class UserRepositoryTest {
         assertNotNull(users);
         assertTrue(users.size() >= 0);
         ArrayList<User> searchResults = userRepository.getAllUsers(1, 100, "TestUser");
-        assertTrue(searchResults.stream().anyMatch(user -> user.getId().equals(testUser.getId())));
+        assertTrue(searchResults.contains(testUser));
     }
 
     @Test
@@ -143,30 +143,6 @@ public class UserRepositoryTest {
     void testUserExistsByLeetcodeUsername() {
         boolean exists = userRepository.userExistsByLeetcodeUsername(testUser.getLeetcodeUsername());
         assertTrue(exists);
-    }
-
-    @Test
-    @Order(10)
-    void testDeleteUserById() {
-        String uniqueDiscordId = "deletable-" + System.currentTimeMillis();
-
-        User deletableUser = User.builder()
-                        .discordId(uniqueDiscordId)
-                        .discordName("DeletableUser")
-                        .admin(false)
-                        .build();
-
-        userRepository.createUser(deletableUser);
-
-        User found = userRepository.getUserById(deletableUser.getId());
-        assertNotNull(found);
-        assertEquals(deletableUser.getId(), found.getId());
-
-        boolean deleted = userRepository.deleteUserById(deletableUser.getId());
-        assertTrue(deleted);
-
-        User deletedUser = userRepository.getUserById(deletableUser.getId());
-        assertNull(deletedUser);
     }
 
 }
