@@ -14,5 +14,6 @@ public enum Tag {
     Ccny,
     Columbia,
     Cornell,
+    Bmcc
 }
 
