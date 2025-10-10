@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -23,12 +22,13 @@ public class POTDSqlRepository implements POTDRepository {
     }
 
     private POTD mapRowToPOTD(final ResultSet rs) throws SQLException {
-        String id = rs.getString("id");
-        String title = rs.getString("title");
-        String slug = rs.getString("slug");
-        float multiplier = rs.getFloat("multiplier");
-        LocalDateTime createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-        return new POTD(id, title, slug, multiplier, createdAt);
+        return POTD.builder()
+                        .id(rs.getString("id"))
+                        .title(rs.getString("title"))
+                        .slug(rs.getString("slug"))
+                        .multiplier(rs.getFloat("multiplier"))
+                        .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                        .build();
     }
 
     @Override
