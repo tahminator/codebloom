@@ -68,9 +68,9 @@ public class UserSqlRepository implements UserRepository {
     public void createUser(final User user) {
         String sql = """
                         INSERT INTO "User"
-                            (id, "discordName", "discordId")
+                            (id, "discordName", "discordId","leetcodeUsername","nickname","schoolEmail",admin, "profileUrl")
                         VALUES
-                            (:id, :discordName, :discordId)
+                            (:id, :discordName, :discordId, :leetcodeUsername, :nickname, :schoolEmail, :admin , :profileUrl)
                         RETURNING
                             "verifyKey"
                         """;
@@ -79,6 +79,12 @@ public class UserSqlRepository implements UserRepository {
             stmt.setObject("id", UUID.fromString(user.getId()));
             stmt.setString("discordName", user.getDiscordName());
             stmt.setString("discordId", user.getDiscordId());
+            stmt.setString("leetcodeUsername",user.getLeetcodeUsername());
+            stmt.setString("nickname",user.getNickname());
+            stmt.setString("schoolEmail",user.getSchoolEmail());
+            stmt.setBoolean("admin", user.isAdmin());
+            stmt.setString("profileUrl",user.getProfileUrl());
+            
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
