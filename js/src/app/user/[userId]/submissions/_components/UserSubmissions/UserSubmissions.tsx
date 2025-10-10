@@ -10,7 +10,16 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { timeDiff } from "@/lib/timeDiff";
-import { Badge, Box, Overlay, Text, Stack, Group, Card } from "@mantine/core";
+import {
+  Badge,
+  Box,
+  Overlay,
+  Text,
+  Stack,
+  Group,
+  Card,
+  Flex,
+} from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
@@ -81,15 +90,14 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               toggle={togglePointFilter}
               switchMode
               name={
-                <Box
+                <Flex
                   style={{
-                    display: "flex",
                     gap: "0.5rem",
                     alignItems: "center",
                   }}
                 >
                   Points Received
-                </Box>
+                </Flex>
               }
             ></FilterDropdownItem>
           </FilterDropdown>
@@ -169,14 +177,14 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                     </Text>
                   </Group>
                   <Group justify="space-between" wrap="wrap" gap="xs">
-                    <Stack gap="xs">
+                    <Group gap="xs">
                       <Badge size="sm" color={badgeDifficultyColor}>
                         {submission.questionDifficulty}
                       </Badge>
                       <Badge size="sm" color={badgeAcceptedColor}>
                         {Math.round(submission.acceptanceRate * 100)}%
                       </Badge>
-                    </Stack>
+                    </Group>
                   </Group>
                   {submission.topics && submission.topics.length > 0 && (
                     <Group justify="space-between">
@@ -249,7 +257,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                 withBorder
                 p="md"
                 radius="md"
-                style={{ minHeight: "80px", width: "100%", flex: 1 }}
+                style={{ minHeight: 80, width: "100%", maxWidth: 950 }}
               >
                 <Stack gap="xs" justify="center" align="center" h="100%">
                   <Text fw={500} ta="center" c="dimmed">
@@ -265,9 +273,10 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
         </Stack>
         <Box
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
-            gap: "12px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
           }}
           my="md"
         >
@@ -304,7 +313,13 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               langNameToIcon["default"];
 
             return (
-              <Card key={index} withBorder p="md" radius="md">
+              <Card
+                key={index}
+                withBorder
+                p="md"
+                radius="md"
+                style={{ width: "100%", maxWidth: "950px" }}
+              >
                 <Stack gap="xs">
                   <Group justify="space-between" align="flex-start">
                     <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
