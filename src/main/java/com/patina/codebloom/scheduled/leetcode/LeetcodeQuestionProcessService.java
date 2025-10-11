@@ -1,9 +1,12 @@
+
 package com.patina.codebloom.scheduled.leetcode;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -25,12 +28,11 @@ import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BlockingBucket;
 import io.github.bucket4j.Bucket;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Profile("!ci")
-@Slf4j
 public class LeetcodeQuestionProcessService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LeetcodeQuestionProcessService.class);
     private static final int MAX_JOBS_PER_RUN = 10;
     private static final long REQUESTS_OVER_TIME = 1L;
     private static final long MILLISECONDS_TO_WAIT = 100L;
@@ -87,18 +89,18 @@ public class LeetcodeQuestionProcessService {
             List<Job> jobs = claimBatch(MAX_JOBS_PER_RUN);
 
             if (jobs.isEmpty()) {
-                log.info("No more work to do");
+                LOGGER.info("No more work to do");
                 break;
             }
 
-            log.info("Found {} jobs to process", jobs.size());
+            LOGGER.info("Found {} jobs to process", jobs.size());
 
             for (Job job : jobs) {
                 try {
                     waitForToken();
                     fetchAndUpdate(job);
                 } catch (Exception e) {
-                    log.error("Failed to process job with id: {} for questionId: {}",
+                    LOGGER.error("Failed to process job with id: {} for questionId: {}",
                                     job.getId(), job.getQuestionId(), e);
                 }
             }
@@ -111,7 +113,7 @@ public class LeetcodeQuestionProcessService {
      * leetcode, save it to the question in our db, etc.
      */
     private void fetchAndUpdate(Job job) {
-        log.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
+        LOGGER.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
 
         job.setStatus(JobStatus.PROCESSING);
         job.setProcessedAt(StandardizedOffsetDateTime.now());
@@ -121,14 +123,14 @@ public class LeetcodeQuestionProcessService {
         }
 
         try {
-            log.debug("Fetching question data from Leetcode for slug: {}", job.getQuestionId());
+            LOGGER.debug("Fetching question data from Leetcode for slug: {}", job.getQuestionId());
             LeetcodeQuestion leetcodeQuestion = leetcodeClient.findQuestionBySlug(job.getQuestionId());
 
             if (leetcodeQuestion == null) {
                 throw new RuntimeException("No question found on Leetcode for slug: " + job.getQuestionId());
             }
 
-            log.debug("Successfully fetched question: {}", leetcodeQuestion.getQuestionTitle());
+            LOGGER.debug("Successfully fetched question: {}", leetcodeQuestion.getQuestionTitle());
 
             String slug = leetcodeQuestion.getTitleSlug();
             var allIncompleteQuestions = questionRepository.getAllIncompleteQuestions();
@@ -137,9 +139,9 @@ public class LeetcodeQuestionProcessService {
                             .toList();
 
             if (matchingQuestions.isEmpty()) {
-                log.info("No existing questions found with slug: {}", slug);
+                LOGGER.info("No existing questions found with slug: {}", slug);
             } else {
-                log.info("Found {} question(s) to update with slug: {}", matchingQuestions.size(), slug);
+                LOGGER.info("Found {} question(s) to update with slug: {}", matchingQuestions.size(), slug);
 
                 for (Question existingQuestion : matchingQuestions) {
                     try {
@@ -154,7 +156,7 @@ public class LeetcodeQuestionProcessService {
                                             leetcodeQuestion.getDifficulty().toUpperCase());
                             existingQuestion.setQuestionDifficulty(difficulty);
                         } catch (IllegalArgumentException e) {
-                            log.warn("Unknown difficulty '{}' for question {}",
+                            LOGGER.warn("Unknown difficulty '{}' for question {}",
                                             leetcodeQuestion.getDifficulty(), existingQuestion.getId());
                         }
 
@@ -176,17 +178,17 @@ public class LeetcodeQuestionProcessService {
                                                     .build();
 
                                     questionTopicRepository.createQuestionTopic(newQuestionTopic);
-                                    log.debug("Added topic '{}' to question {}", topicSlug, existingQuestion.getId());
+                                    LOGGER.debug("Added topic '{}' to question {}", topicSlug, existingQuestion.getId());
                                 }
                             } catch (Exception e) {
-                                log.warn("Failed to process topic '{}' for question {}: {}",
+                                LOGGER.warn("Failed to process topic '{}' for question {}: {}",
                                                 leetcodeTopicTag.getSlug(), existingQuestion.getId(), e.getMessage());
                             }
                         }
 
-                        log.debug("Successfully updated question ID: {}", existingQuestion.getId());
+                        LOGGER.debug("Successfully updated question ID: {}", existingQuestion.getId());
                     } catch (Exception e) {
-                        log.error("Failed to update question ID: {}", existingQuestion.getId(), e);
+                        LOGGER.error("Failed to update question ID: {}", existingQuestion.getId(), e);
                     }
                 }
             }
@@ -198,7 +200,7 @@ public class LeetcodeQuestionProcessService {
                 throw new RuntimeException("Failed to update job status to COMPLETE");
             }
 
-            log.info("Successfully completed job {} for question: {} ({})",
+            LOGGER.info("Successfully completed job {} for question: {} ({})",
                             job.getId(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getTitleSlug());
 
         } catch (Exception e) {
@@ -206,7 +208,7 @@ public class LeetcodeQuestionProcessService {
             job.setProcessedAt(null);
             jobRepository.updateJob(job);
 
-            log.error("Failed to process job {} for questionId: {}", job.getId(), job.getQuestionId(), e);
+            LOGGER.error("Failed to process job {} for questionId: {}", job.getId(), job.getQuestionId(), e);
             throw new RuntimeException("Job processing failed", e);
         }
     }
