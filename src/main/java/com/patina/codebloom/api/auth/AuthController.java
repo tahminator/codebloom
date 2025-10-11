@@ -25,6 +25,7 @@ import com.patina.codebloom.common.schools.SchoolEnum;
 import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.email.options.SendEmailOptions;
 import com.patina.codebloom.api.auth.body.EmailBody;
 import com.patina.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
@@ -79,11 +80,10 @@ public class AuthController {
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    @Protected
     @GetMapping("/validate")
-    public ResponseEntity<ApiResponder<AuthenticationObjectDto>> validateAuth(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<AuthenticationObjectDto>> validateAuth(final AuthenticationObject authenticationObject) {
         FakeLag.sleep(350);
-
-        AuthenticationObject authenticationObject = protector.validateSession(request);
 
         return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!",
                         AuthenticationObjectDto.fromAuthenticationObject(authenticationObject)));

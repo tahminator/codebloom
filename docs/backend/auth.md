@@ -39,6 +39,8 @@ Include the following in your `.env` file for OAuth configuration:
 
 - [Protector.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/common/security/Protector.java) is used to validate whether the user is logged in or not. It automatically handles unauthorized requests via GlobalExceptionHandler.java
 
+- [Protected.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/common/security/annotation/Protected.java) can be applied to a controller method as an annotation. You can find an example inside of the file's Javadoc.
+
   - [AuthController.java](https://github.com/0pengu/codebloom/tree/main/src/main/java/com/patina/codebloom/api/auth/AuthController.java) contains examples of using Protector.java to protect endpoints.
 
 - [GlobalExceptionHandler.java](https://github.com/tahminator/codebloom/blob/main/src/main/java/com/patina/codebloom/utilities/GlobalExceptionHandler.java) manages exception handling for unauthorized requests

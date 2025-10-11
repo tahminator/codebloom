@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Protector is used to validate whether or not the user is logged in or not.
  * 
  * @see <a href=
- * "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication
+ * "https://github.com/tahminator/codebloom/blob/main/docs/backend/auth.md">Authentication
  * Documentation</a>
  */
 @Component
