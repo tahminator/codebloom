@@ -78,7 +78,7 @@ public class LeetcodeQuestionProcessServiceTest {
         assertTrue(testJob.getId() != null);
         assertEquals("two-sum", testJob.getQuestionId());
         assertEquals(JobStatus.INCOMPLETE, testJob.getStatus());
-        assertTrue(testJob.getCreatedAt() != null);
+        assertNotNull(testJob.getCreatedAt());
     }
 
     @Test
