@@ -35,34 +35,31 @@ public class JobSqlRepository implements JobRepository {
     }
 
     @Override
-    public Job createJob(final Job job) {
+    public void createJob(final Job job) {
         String sql = """
                         INSERT INTO "Job"
                             (id, "questionId", status)
                         VALUES
                             (?, ?, ?)
                         RETURNING
-                            id, "createdAt"
+                            "createdAt"
                         """;
 
+        job.setId(UUID.randomUUID().toString());
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            UUID jobId = UUID.randomUUID();
-            stmt.setObject(1, jobId);
+            stmt.setObject(1, UUID.fromString(job.getId()));
             stmt.setString(2, job.getQuestionId());
             stmt.setString(3, job.getStatus().name());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    job.setId(rs.getString("id"));
                     job.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
-                    return job;
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create job", e);
         }
-
-        throw new RuntimeException("Failed to create job - no result returned");
     }
 
     @Override
