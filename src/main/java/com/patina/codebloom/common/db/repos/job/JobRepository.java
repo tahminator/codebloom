@@ -37,4 +37,12 @@ public interface JobRepository {
      * @return true if the update was successful, false otherwise
      */
     boolean updateJob(Job job);
+
+    /**
+     * Deletes a job by its ID.
+     * 
+     * @param id the job ID to delete
+     * @return true if the job was deleted successfully, false otherwise
+     */
+    boolean deleteJobById(String id);
 }
