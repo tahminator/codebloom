@@ -157,7 +157,7 @@ public class JobSqlRepository implements JobRepository {
     }
 
     @Override
-    public boolean deleteJobById(final String id) { 
+    public boolean deleteJobById(final String id) {
         String sql = """
                         DELETE FROM "Job"
                         WHERE id = ?
