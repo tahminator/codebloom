@@ -22,7 +22,7 @@ jobs:
         with:
           script: |
             const OWNER = 'tahminator';
-            const GUARDIANS = ['angelayu0530', 'Arshadul-Monir'];
+            const GUARDIANS_OF_THE_GALAXY = ['angelayu0530', 'Arshadul-Monir'];
 
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
@@ -37,19 +37,21 @@ jobs:
             const approved = Object.keys(latest).filter(u => latest[u] === 'APPROVED');
 
             const hasOwner = approved.includes(OWNER);
-            const hasGuardian = GUARDIANS.some(u => approved.includes(u));
+            const hasGuardian = GUARDIANS_OF_THE_GALAXY.some(u => approved.includes(u));
 
             let state, description;
 
             if (hasOwner && hasGuardian) {
+              console.log('All approvals received.');
               state = 'success';
               description = 'All approvals received.';
             } else {
               state = 'failure';
               const missing = [];
               if (!hasGuardian)
-                missing.push(`guardian (${GUARDIANS.filter(u => !approved.includes(u)).join(', ')})`);
-              if (!hasOwner) missing.push(`owner (${OWNER})`);
+                missing.push(`1 guardian of the galaxy (${GUARDIANS_OF_THE_GALAXY.filter(u => !approved.includes(u)).join(', ')})`);
+              if (!hasOwner) missing.push(`1 owner (${OWNER})`);
+              console.log(`Missing ${missing.join(' and ')}`);
               description = `Missing ${missing.join(' and ')}`;
             }
 
