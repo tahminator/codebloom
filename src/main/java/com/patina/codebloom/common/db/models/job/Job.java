@@ -7,8 +7,11 @@ import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-
+@Setter
+@Getter
 @Builder
 @ToString
 @EqualsAndHashCode
