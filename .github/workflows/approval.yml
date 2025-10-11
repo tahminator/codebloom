@@ -36,8 +36,9 @@ jobs:
 
             const approved = Object.keys(latest).filter(u => latest[u] === 'APPROVED');
 
-            const hasOwner = approved.includes(OWNER);
-            const hasGuardian = GUARDIANS_OF_THE_GALAXY.some(u => approved.includes(u));
+            const me = context.actor;
+            const hasOwner = me === OWNER || approved.includes(OWNER);
+            const hasGuardian = GUARDIANS_OF_THE_GALAXY.includes(me) || GUARDIANS_OF_THE_GALAXY.some(u => approved.includes(u));
 
             let state, description;
 
