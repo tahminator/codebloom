@@ -155,4 +155,21 @@ public class JobSqlRepository implements JobRepository {
             throw new RuntimeException("Failed to update job", e);
         }
     }
+
+    @Override
+    public boolean deleteJobById(final String id) { 
+        String sql = """
+                        DELETE FROM "Job"
+                        WHERE id = ?
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(id));
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete job", e);
+        }
+    }
 }
