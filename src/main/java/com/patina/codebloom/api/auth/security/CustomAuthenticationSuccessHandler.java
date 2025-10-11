@@ -38,7 +38,7 @@ import net.dv8tion.jda.api.entities.Member;
  * an old user and generating a cookie storing the session ID.
  * 
  * @see <a href=
- * "https://github.com/0pengu/codebloom/tree/main/docs/auth.md">Authentication
+ * "https://github.com/tahminator/codebloom/tree/main/docs/auth.md">Authentication
  * Documentation</a>
  */
 @Component

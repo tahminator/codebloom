@@ -43,6 +43,7 @@ public class ProtectedAspect {
         } catch (ResponseStatusException ex) {
             throw ex; // propagate intentional auth errors
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal error", ex);
         }
     }
