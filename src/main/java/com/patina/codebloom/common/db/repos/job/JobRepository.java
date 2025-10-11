@@ -10,9 +10,8 @@ public interface JobRepository {
      * object will be set by this method.
      * 
      * @param job the job to create
-     * @return the created job with id and createdAt set
      */
-    Job createJob(Job job);
+    void createJob(Job job);
 
     /**
      * Finds a job by its ID.
