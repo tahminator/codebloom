@@ -21,7 +21,7 @@ jobs:
       - uses: actions/github-script@v7
         with:
           script: |
-            const ME = context.actor;
+            const ME = context.payload.pull_request.user.login;
             const OWNER = 'tahminator';
             const GUARDIANS_OF_THE_GALAXY = (() => {
               let initialGuardians = ['angelayu0530', 'Arshadul-Monir'];
@@ -38,9 +38,12 @@ jobs:
               pull_number: context.payload.pull_request.number,
             });
 
-            const latest = Object.fromEntries(
-              reviews.map(r => [r.user.login, r.state.toUpperCase()])
-            );
+            reviews.sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+
+            const latest = {};
+            for (const r of reviews) {
+              latest[r.user.login] = r.state.toUpperCase();
+            }
 
             const approved = Object.keys(latest).filter(u => latest[u] === 'APPROVED');
 
