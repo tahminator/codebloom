@@ -20,7 +20,7 @@ To run production migrations (BE CAREFUL WITH THIS IF YOU HAVE PRODUCTION ACCESS
 
 We use Flyway to handle our database migrations. However, we perform migrations manually, so it's crucial to exercise extreme caution when dealing with data.
 
-View the current migrations folder [here](https://github.com/0pengu/codebloom/tree/main/db)
+View the current migrations folder [here](https://github.com/tahminator/codebloom/tree/main/db)
 
 ## Mock Data
 
