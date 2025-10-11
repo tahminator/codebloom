@@ -917,7 +917,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                                 )
                                 OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE
                                 AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
-                                AND :cornell = FALSE AND :bmcc = F)
+                                AND :cornell = FALSE AND :bmcc = False)
                             )
                             AND
                                 (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
