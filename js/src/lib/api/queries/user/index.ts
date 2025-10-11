@@ -1,11 +1,12 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
+import { QuestionTopicTopic } from "@/lib/api/types/autogen/schema";
 import { Question } from "@/lib/api/types/question";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 /**
  * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more.
@@ -50,6 +51,11 @@ export const useUserSubmissionsQuery = ({
     },
   );
 
+  const [_topics, _setTopics] = useURLState<string>("topics", "", {
+    enabled: tieToUrl,
+    debounce: 100,
+  });
+
   useEffect(() => {
     goTo(1);
   }, [searchQuery, goTo]);
@@ -58,6 +64,22 @@ export const useUserSubmissionsQuery = ({
     setPointFilter((prev) => !prev);
     goTo(1);
   }, [goTo, setPointFilter]);
+
+  const topics = useMemo(
+    () => _topics.split(",").filter(Boolean) as QuestionTopicTopic[],
+    [_topics],
+  );
+
+  const setTopics = useCallback(
+    (topics: QuestionTopicTopic[]) => {
+      _setTopics(topics.join(","));
+    },
+    [_setTopics],
+  );
+
+  const clearTopics = useCallback(() => {
+    _setTopics("");
+  }, [_setTopics]);
 
   const query = useQuery({
     queryKey: [
@@ -68,6 +90,7 @@ export const useUserSubmissionsQuery = ({
       debouncedQuery,
       pageSize,
       pointFilter,
+      topics,
     ],
     queryFn: () =>
       fetchUserSubmissions({
@@ -76,6 +99,7 @@ export const useUserSubmissionsQuery = ({
         query: debouncedQuery,
         pageSize,
         pointFilter,
+        topics: _topics,
       }),
     placeholderData: keepPreviousData,
   });
@@ -92,6 +116,9 @@ export const useUserSubmissionsQuery = ({
     pageSize,
     pointFilter,
     togglePointFilter,
+    topics,
+    setTopics,
+    clearTopics,
   };
 };
 
@@ -164,15 +191,17 @@ async function fetchUserSubmissions({
   query,
   pageSize,
   pointFilter,
+  topics,
 }: {
   page: number;
   userId?: string;
   query?: string;
   pageSize: number;
   pointFilter: boolean;
+  topics?: string;
 }) {
   const response = await fetch(
-    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}`,
+    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}&topics=${topics ?? ""}`,
   );
 
   const json = (await response.json()) as UnknownApiResponse<Page<Question[]>>;

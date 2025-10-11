@@ -1,88 +1,19 @@
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { QuestionTopicTopic, UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
+
+import { TAG_METADATA_LIST, UNUSED_TAGS } from "./metadata/tag";
+import { TOPIC_METADATA_LIST } from "./metadata/topic";
 
 /**
  * A collection of helpful utilities to help transform & use data returned from the API.
  */
 export class ApiUtils {
-  private static readonly _TAG_METADATA_LIST: Record<
-    UserTagTag,
-    ApiTypeUtils.UserTagTagMetadata
-  > = {
-    Hunter: {
-      shortName: "Hunter",
-      name: "Hunter College",
-      apiKey: "hunter",
-      icon: "/brands/Hunter_Logo.jpeg",
-      alt: "Hunter College Logo",
-    },
-    Nyu: {
-      shortName: "NYU",
-      name: "New York University",
-      apiKey: "nyu",
-      icon: "/brands/NYU_Logo.png",
-      alt: "NYU Logo",
-    },
-    Baruch: {
-      shortName: "Baruch",
-      name: "Baruch College",
-      apiKey: "baruch",
-      icon: "/brands/Baruch_Logo.png",
-      alt: "Baruch College Logo",
-    },
-    Rpi: {
-      shortName: "RPI",
-      name: "Rensselaer Polytechnic Institute",
-      apiKey: "rpi",
-      icon: "/brands/Rpi_Logo.png",
-      alt: "RPI Logo",
-    },
-    Patina: {
-      shortName: "Patina",
-      name: "Patina Network",
-      apiKey: "patina",
-      icon: "/brands/Patina_Logo.png",
-      alt: "Patina Logo",
-    },
-    Gwc: {
-      shortName: "GWC @ Hunter",
-      name: "Hunter College - GWC",
-      apiKey: "gwc",
-      icon: "/brands/Gwc_Logo.png",
-      alt: "GWC Logo",
-    },
-    Sbu: {
-      shortName: "SBU",
-      name: "Stony Brook University",
-      apiKey: "sbu",
-      icon: "/brands/SBU_shield.png",
-      alt: "Stony Brook University Logo",
-    },
-    Columbia: {
-      shortName: "Columbia",
-      name: "Columbia University",
-      apiKey: "columbia",
-      icon: "/brands/Columbia_logo.png",
-      alt: "Columbia University Logo",
-    },
-    Ccny: {
-      shortName: "CCNY",
-      name: "City College of New York",
-      apiKey: "ccny",
-      icon: "/brands/CCNY_logo.png",
-      alt: "City College of New York Logo",
-    },
-    Cornell: {
-      shortName: "Cornell",
-      name: "Cornell University",
-      apiKey: "cornell",
-      icon: "/brands/Cornell_Logo.png",
-      alt: "Cornell University Logo",
-    },
-  } as const;
+  private static readonly _TAG_METADATA_LIST = TAG_METADATA_LIST;
 
-  static _UNUSED_TAGS: UserTagTag[] = [UserTagTag.Gwc];
+  static _UNUSED_TAGS = UNUSED_TAGS;
+
+  private static readonly _TOPIC_METADATA_LIST = TOPIC_METADATA_LIST;
 
   private static _isSupportedTag(
     tag: UserTag,
@@ -122,6 +53,17 @@ export class ApiUtils {
   }
 
   /**
+   * Returns a list of all metadata objects that exist on a given tag, which are iterable.
+   *
+   * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
+   */
+  static getAllTopicEnumMetadata(): ApiTypeUtils.QuestionTopicTopicMetadata[] {
+    return Object.typedEntries(ApiUtils._TOPIC_METADATA_LIST).map(
+      ([_, metadata]) => metadata,
+    );
+  }
+
+  /**
    * Returns a list of all metadata objects that exist on a given tag & **are supported**, which are iterable.
    *
    * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
@@ -140,6 +82,19 @@ export class ApiUtils {
    */
   static getAllTagEnums(): UserTagTag[] {
     return Object.values(UserTagTag);
+  }
+
+  /**
+   * Return a list of all topic enums. Essentially a shorthand for:
+   * ```ts
+   * Object.values(QuestionTopicTopic);
+   * ```
+   */
+  static getAllTopicEntries(): Record<
+    QuestionTopicTopic,
+    ApiTypeUtils.QuestionTopicTopicMetadata
+  > {
+    return this._TOPIC_METADATA_LIST;
   }
 
   /**
