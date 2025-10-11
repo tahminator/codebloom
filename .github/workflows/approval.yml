@@ -13,7 +13,10 @@ permissions:
 
 jobs:
   enforce-approvals:
+    name: Enforce Approvals
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/github-script@v7
         with:
@@ -21,52 +24,40 @@ jobs:
             const OWNER = 'tahminator';
             const GUARDIANS = ['angelayu0530', 'Arshadul-Monir'];
 
-            /**
-             * Fetch all reviews for this PR
-             */
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
             });
 
-            /**
-             * Map -> latest review state per user
-             */
-            const latest = {};
-            for (const r of reviews) {
-              latest[r.user.login] = r.state;
-            }
+            const latest = Object.fromEntries(
+              reviews.map(r => [r.user.login, r.state.toUpperCase()])
+            );
 
-            /**
-             * Normalize to uppercase "APPROVED"
-             */
-            const approved = Object.entries(latest)
-              .filter(([_, s]) => s.toUpperCase() === 'APPROVED')
-              .map(([u]) => u);
+            const approved = Object.keys(latest).filter(u => latest[u] === 'APPROVED');
 
-            const hasOwnerApproval = approved.includes(OWNER);
-            const hasGuardianApproval = GUARDIANS.some(u => approved.includes(u));
+            const hasOwner = approved.includes(OWNER);
+            const hasGuardian = GUARDIANS.some(u => approved.includes(u));
 
-            if (hasGuardianApproval && hasOwnerApproval) {
-              console.log('Approval condition met.');
-              await github.rest.repos.createCommitStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: context.payload.pull_request.head.sha,
-                state: 'success',
-                context: 'approval-check',
-                description: '(A||B)&&C satisfied',
-              });
+            let state, description;
+
+            if (hasOwner && hasGuardian) {
+              state = 'success';
+              description = 'All approvals received.';
             } else {
-              console.log('Approval condition not met.');
-              await github.rest.repos.createCommitStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: context.payload.pull_request.head.sha,
-                state: 'failure',
-                context: 'approval-check',
-                description: 'Need one of A/B AND C',
-              });
-              process.exit(1);
+              state = 'failure';
+              const missing = [];
+              if (!hasGuardian)
+                missing.push(`guardian (${GUARDIANS.filter(u => !approved.includes(u)).join(', ')})`);
+              if (!hasOwner) missing.push(`owner (${OWNER})`);
+              description = `Missing ${missing.join(' and ')}`;
             }
+
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state,
+              context: 'approval-check',
+              description,
+            });
