@@ -59,14 +59,24 @@ public class LeetcodeQuestionProcessServiceTest {
 
     @Test
     void findIncompleteJobsValid() {
+        // Create a fresh job for this test to ensure it exists
+        Job freshJob = Job.builder()
+                        .questionId("find-incomplete-test")
+                        .status(JobStatus.INCOMPLETE)
+                        .build();
+
+        final Job createdJob = jobRepository.createJob(freshJob);
+
         List<Job> incompleteJobs = jobRepository.findIncompleteJobs(10);
 
         assertNotNull(incompleteJobs);
         assertTrue(incompleteJobs.size() >= 1);
 
-        boolean foundTestJob = incompleteJobs.stream()
-                        .anyMatch(job -> job.getId().equals(testJob.getId()));
-        assertTrue(foundTestJob);
+        boolean foundFreshJob = incompleteJobs.stream()
+                        .anyMatch(job -> job.getId().equals(createdJob.getId()));
+        assertTrue(foundFreshJob);
+
+        jobRepository.deleteJobById(createdJob.getId());
     }
 
     @Test
