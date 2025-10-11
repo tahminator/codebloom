@@ -69,6 +69,6 @@ jobs:
               repo: context.repo.repo,
               sha: context.payload.pull_request.head.sha,
               state,
-              context: 'approval-check',
+              context: 'Approvals Check',
               description,
             });
