@@ -12,12 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.patina.codebloom.common.db.models.job.Job;
 import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LeetcodeQuestionProcessServiceTest {
 
