@@ -1,4 +1,4 @@
-package com.patina.codebloom.api.externalApi;
+package com.patina.codebloom.api.external;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
