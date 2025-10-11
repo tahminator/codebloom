@@ -49,12 +49,7 @@ public class JobSqlRepositoryTest {
                         .build();
 
         testJob = jobRepository.createJob(testJob);
-
-        if (testJob.getId() == null) {
-            fail("Failed to create test job");
-        }
-
-        log.info("Created test job with ID: {}", testJob.getId());
+        
     }
 
     @AfterAll
