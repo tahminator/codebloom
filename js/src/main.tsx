@@ -7,7 +7,6 @@ import { themeOverride } from "@/lib/theme";
 import "@mantine/notifications/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import * as Sentry from "@sentry/react";
 
 import "./index.css";
 
@@ -22,15 +21,6 @@ import { RouterProvider } from "react-router";
 
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
-
-if (import.meta.env.PROD) {
-  Sentry.init({
-    dsn: import.meta.env.VITE_DSN,
-    // Setting this option to true will send default PII data to Sentry.
-    // For example, automatic IP address collection on events
-    sendDefaultPii: true,
-  });
-}
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
