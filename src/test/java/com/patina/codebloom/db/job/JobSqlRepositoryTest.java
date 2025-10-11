@@ -48,8 +48,8 @@ public class JobSqlRepositoryTest {
                         .status(JobStatus.INCOMPLETE)
                         .build();
 
-        testJob = jobRepository.createJob(testJob);
-        
+        jobRepository.createJob(testJob);
+
     }
 
     @AfterAll

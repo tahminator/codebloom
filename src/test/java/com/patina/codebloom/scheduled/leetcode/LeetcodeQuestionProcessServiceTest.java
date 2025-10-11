@@ -41,7 +41,7 @@ public class LeetcodeQuestionProcessServiceTest {
                         .status(JobStatus.INCOMPLETE)
                         .build();
 
-        testJob = jobRepository.createJob(testJob);
+        jobRepository.createJob(testJob);
     }
 
     @AfterAll
@@ -63,15 +63,15 @@ public class LeetcodeQuestionProcessServiceTest {
                         .status(JobStatus.INCOMPLETE)
                         .build();
 
-        final Job createdJob = jobRepository.createJob(freshJob);
+        jobRepository.createJob(freshJob);
 
         List<Job> incompleteJobs = jobRepository.findIncompleteJobs(10);
 
         assertNotNull(incompleteJobs);
         assertTrue(incompleteJobs.size() >= 1);
-        assertTrue(incompleteJobs.contains(createdJob));
+        assertTrue(incompleteJobs.contains(freshJob));
 
-        jobRepository.deleteJobById(createdJob.getId());
+        jobRepository.deleteJobById(freshJob.getId());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class LeetcodeQuestionProcessServiceTest {
                         .status(JobStatus.INCOMPLETE)
                         .build();
 
-        processingJob = jobRepository.createJob(processingJob);
+        jobRepository.createJob(processingJob);
 
         assertTrue(processingJob != null);
         assertTrue(processingJob.getId() != null);
