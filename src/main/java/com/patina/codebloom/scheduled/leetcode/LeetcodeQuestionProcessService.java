@@ -79,7 +79,7 @@ public class LeetcodeQuestionProcessService {
      * @param maxSize the maximum number of jobs to claim
      * @return list of incomplete jobs to process
      */
-    private List<Job> claimBatch(int maxSize) {
+    private List<Job> claimBatch(final int maxSize) {
         return jobRepository.findIncompleteJobs(maxSize);
     }
 
@@ -112,7 +112,7 @@ public class LeetcodeQuestionProcessService {
      * indicate the state that the job is in. This will fetch the data from
      * leetcode, save it to the question in our db, etc.
      */
-    private void fetchAndUpdate(Job job) {
+    private void fetchAndUpdate(final Job job) {
         LOGGER.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
 
         job.setStatus(JobStatus.PROCESSING);
