@@ -84,7 +84,7 @@ export class ApiUtils {
       shortName: "BMCC",
       name: "Borough of Manhattan Community College",
       apiKey: "bmcc",
-      icon: "/brands/BMCC_Logo.png",
+      icon: "/brands/BMCC_logo.png",
       alt: "BMCC Logo",
     },
   } as const;
