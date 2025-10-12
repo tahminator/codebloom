@@ -16,6 +16,13 @@ migrate-prod *args:
 java-dev *args:
   dotenvx run -- ./mvnw -Dspring-boot.run.profiles=dev spring-boot:run {{args}}
 
+# Run the backend Spring server with an exposed debugger at :5005
+java-dev-debug *args:
+  dotenvx run -- ./mvnw \
+    -Dspring-boot.run.profiles=dev \
+    -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005" \
+    spring-boot:run {{args}}
+
 # Run the frontend 
 js-dev *args:
   cd js && pnpm run dev {{args}}
@@ -35,6 +42,10 @@ types-dev *args:
 # Run the developmental server (backend & frontend)
 dev *args:
   pnpm i -g concurrently && concurrently "just java-dev" "just js-dev" {{args}}
+
+# Run the developmental server (backend & frontend) but the backend will launch a debugger server.
+devd *args:
+  pnpm i -g concurrently && concurrently "just java-dev-debug" "just js-dev" {{args}}
 
 # Builds and installs Spring backend
 backend-install *args:
