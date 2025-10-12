@@ -175,7 +175,7 @@ async function fetchUserSubmissions({
   );
 
   const json = (await response.json()) as UnknownApiResponse<
-    Page<Array<Api<"QuestionWithUserDto">>>
+    Page<Array<Api<"QuestionDto">>>
   >;
   return json;
 }

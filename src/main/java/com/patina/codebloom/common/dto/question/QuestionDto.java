@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
-import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
+import com.patina.codebloom.common.dto.question.topic.QuestionTopicDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -55,7 +55,7 @@ public class QuestionDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String submissionId;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<QuestionTopic> topics;
+    private List<QuestionTopicDto> topics;
 
     public static QuestionDto fromQuestion(final Question question) {
         return QuestionDto.builder()
@@ -76,7 +76,7 @@ public class QuestionDto {
                         .code(question.getCode())
                         .language(question.getLanguage())
                         .submissionId(question.getSubmissionId())
-                        .topics(question.getTopics())
+                        .topics(question.getTopics().stream().map(q -> QuestionTopicDto.fromQuestionTopic(q)).toList())
                         .build();
     }
 }
