@@ -1,6 +1,8 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { Indexed, Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
+import { ApiPaths } from "@/lib/api/types/autogen/schema";
 import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { ApiUtils } from "@/lib/api/utils";
 import {
@@ -355,21 +357,26 @@ async function fetchLeaderboardUsers({
   filters: TagEnumToBooleanFilterObject;
   globalIndex: boolean;
 }) {
-  const response = await fetch(
-    `/api/leaderboard/current/user/all?page=${page}&pageSize=${pageSize}&query=${query}&${Object.typedEntries(
-      filters,
-    )
-      .map(([tagEnum, filterEnabled]) => {
-        const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+  const url = ApiURL.create(ApiPaths.getCurrentLeaderboardUsers, {
+    method: "get",
+    query: {
+      page,
+      pageSize,
+      query,
+      globalIndex,
+      ...Object.typedFromEntries(
+        Object.typedEntries(filters).map(([tagEnum, filterEnabled]) => {
+          const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
 
-        return [metadata.apiKey, filterEnabled];
-      })
-      .map(([apiKey, filterEnabled]) => `${apiKey}=${filterEnabled}`)
-      .join("&")}&globalIndex=${globalIndex}`,
-    {
-      method: "GET",
+          return [metadata.apiKey, filterEnabled];
+        }),
+      ),
     },
-  );
+  }).url;
+
+  const response = await fetch(url, {
+    method: "GET",
+  });
 
   const json = (await response.json()) as UnknownApiResponse<
     Page<Indexed<Api<"UserWithScoreDto">>[]>
