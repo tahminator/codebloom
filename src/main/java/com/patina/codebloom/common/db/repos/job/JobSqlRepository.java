@@ -50,7 +50,7 @@ public class JobSqlRepository implements JobRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(job.getId()));
             stmt.setString(2, job.getQuestionId());
-            stmt.setString(3, job.getStatus().name());
+            stmt.setObject(3, job.getStatus().name(), java.sql.Types.OTHER);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -113,7 +113,7 @@ public class JobSqlRepository implements JobRepository {
                         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, JobStatus.INCOMPLETE.name());
+            stmt.setObject(1, JobStatus.INCOMPLETE.name(), java.sql.Types.OTHER);
             stmt.setInt(2, maxJobs);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -143,7 +143,7 @@ public class JobSqlRepository implements JobRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, job.getProcessedAt());
             stmt.setObject(2, job.getCompletedAt());
-            stmt.setString(3, job.getStatus().name());
+            stmt.setObject(3, job.getStatus().name(), java.sql.Types.OTHER);
             stmt.setObject(4, UUID.fromString(job.getId()));
 
             int rowsAffected = stmt.executeUpdate();
