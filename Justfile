@@ -39,11 +39,11 @@ email-gen *args:
 types-dev *args:
   cd js && pnpm run generate {{args}}
 
-# Run the developmental server (backend & frontend)
+# Run the dev servers (backend & frontend)
 dev *args:
   pnpm i -g concurrently && concurrently "just java-dev" "just js-dev" {{args}}
 
-# Run the developmental server (backend & frontend) but the backend will launch a debugger server.
+# Run the dev servers (backend & frontend) but the backend will launch a debugger server.
 devd *args:
   pnpm i -g concurrently && concurrently "just java-dev-debug" "just js-dev" {{args}}
 
