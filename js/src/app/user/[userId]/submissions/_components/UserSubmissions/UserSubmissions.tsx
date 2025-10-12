@@ -71,7 +71,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   if (isMobile) {
     return (
       <Box pos="relative" px="xs">
-        {isPlaceholderData && <Overlay zIndex={1000} opacity={0.35} blur={4} />}
         <Group justify="space-between" align="flex-end" mb="sm" gap="xs">
           <Box style={{ flex: 1, minWidth: 0 }}>
             <SearchBox
@@ -101,9 +100,12 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
             ></FilterDropdownItem>
           </FilterDropdown>
         </Group>
-        <Stack gap="sm" my="sm">
-          {pageData.items.length === 0 && (
-            <>
+        <Box pos="relative">
+          {isPlaceholderData && (
+            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={3} />
+          )}
+          <Stack gap="sm" my="sm">
+            {pageData.items.length === 0 && (
               <Card
                 withBorder
                 p="md"
@@ -119,106 +121,106 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                   </Text>
                 </Stack>
               </Card>
-            </>
-          )}
-          {pageData.items.map((submission, index) => {
-            const badgeDifficultyColor = (() => {
-              if (submission.questionDifficulty === "Easy") {
+            )}
+            {pageData.items.map((submission, index) => {
+              const badgeDifficultyColor = (() => {
+                if (submission.questionDifficulty === "Easy") {
+                  return undefined;
+                }
+                if (submission.questionDifficulty === "Medium") {
+                  return "yellow";
+                }
+                if (submission.questionDifficulty === "Hard") {
+                  return "red";
+                }
                 return undefined;
-              }
-              if (submission.questionDifficulty === "Medium") {
-                return "yellow";
-              }
-              if (submission.questionDifficulty === "Hard") {
-                return "red";
-              }
-              return undefined;
-            })();
-            const badgeAcceptedColor = (() => {
-              const acceptanceRate = submission.acceptanceRate * 100;
-              if (acceptanceRate >= 75) {
+              })();
+              const badgeAcceptedColor = (() => {
+                const acceptanceRate = submission.acceptanceRate * 100;
+                if (acceptanceRate >= 75) {
+                  return undefined;
+                }
+                if (acceptanceRate >= 50) {
+                  return "yellow";
+                }
+                if (acceptanceRate >= 0) {
+                  return "red";
+                }
                 return undefined;
-              }
-              if (acceptanceRate >= 50) {
-                return "yellow";
-              }
-              if (acceptanceRate >= 0) {
-                return "red";
-              }
-              return undefined;
-            })();
-            const LanguageIcon =
-              langNameToIcon[submission.language as langNameKey] ||
-              langNameToIcon["default"];
-            return (
-              <Card
-                key={index}
-                withBorder
-                p="sm"
-                radius="md"
-                component={Link}
-                to={`/submission/${submission.id}`}
-                className="transition-all hover:brightness-110"
-                style={{
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                <Stack gap="xs">
-                  <Group justify="space-between" align="flex-start">
-                    <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
-                      <LanguageIcon size={20} width={20} height={20} />
-                      <Text
-                        size="sm"
-                        fw={500}
-                        style={{
-                          flex: 1,
-                          wordBreak: "break-word",
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {submission.questionTitle}
-                      </Text>
-                    </Group>
-                    <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-                      {timeDiff(new Date(submission.submittedAt))}
-                    </Text>
-                  </Group>
-                  <Group justify="space-between" wrap="wrap" gap="xs">
-                    <Group gap="xs">
-                      <Badge size="sm" color={badgeDifficultyColor}>
-                        {submission.questionDifficulty}
-                      </Badge>
-                      <Badge size="sm" color={badgeAcceptedColor}>
-                        {Math.round(submission.acceptanceRate * 100)}%
-                      </Badge>
-                    </Group>
-                  </Group>
-                  {submission.topics && submission.topics.length > 0 && (
-                    <Group justify="space-between">
-                      <Group gap="xs" wrap="wrap">
-                        {submission.topics.map((topic) => (
-                          <Badge
-                            key={topic.id}
-                            size="xs"
-                            variant="outline"
-                            color="gray"
-                          >
-                            {formatTopicName(topic.topicSlug)}
-                          </Badge>
-                        ))}
+              })();
+              const LanguageIcon =
+                langNameToIcon[submission.language as langNameKey] ||
+                langNameToIcon["default"];
+              return (
+                <Card
+                  key={index}
+                  withBorder
+                  p="sm"
+                  radius="md"
+                  component={Link}
+                  to={`/submission/${submission.id}`}
+                  className="transition-all hover:brightness-110"
+                  style={{
+                    cursor: "pointer",
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  <Stack gap="xs">
+                    <Group justify="space-between" align="flex-start">
+                      <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                        <LanguageIcon size={20} width={20} height={20} />
+                        <Text
+                          size="sm"
+                          fw={500}
+                          style={{
+                            flex: 1,
+                            wordBreak: "break-word",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {submission.questionTitle}
+                        </Text>
                       </Group>
-                      <Text size="sm" fw={500}>
-                        {submission.pointsAwarded} pts
+                      <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                        {timeDiff(new Date(submission.submittedAt))}
                       </Text>
                     </Group>
-                  )}
-                </Stack>
-              </Card>
-            );
-          })}
-        </Stack>
+                    <Group justify="space-between" wrap="wrap" gap="xs">
+                      <Group gap="xs">
+                        <Badge size="sm" color={badgeDifficultyColor}>
+                          {submission.questionDifficulty}
+                        </Badge>
+                        <Badge size="sm" color={badgeAcceptedColor}>
+                          {Math.round(submission.acceptanceRate * 100)}%
+                        </Badge>
+                      </Group>
+                    </Group>
+                    {submission.topics && submission.topics.length > 0 && (
+                      <Group justify="space-between">
+                        <Group gap="xs" wrap="wrap">
+                          {submission.topics.map((topic) => (
+                            <Badge
+                              key={topic.id}
+                              size="xs"
+                              variant="outline"
+                              color="gray"
+                            >
+                              {formatTopicName(topic.topicSlug)}
+                            </Badge>
+                          ))}
+                        </Group>
+                        <Text size="sm" fw={500}>
+                          {submission.pointsAwarded} pts
+                        </Text>
+                      </Group>
+                    )}
+                  </Stack>
+                </Card>
+              );
+            })}
+          </Stack>
+        </Box>
         <Paginator
           pages={pageData.pages}
           currentPage={page}
@@ -232,7 +234,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   }
   return (
     <>
-      <Box maw={"100%"} miw={"66%"} p="xs">
+      <Box w="100%" maw={1000} p="xs" pos="relative">
         <FilterDropdown
           style={{
             marginLeft: "auto",
@@ -264,138 +266,142 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
           placeholder={"Search for submission title"}
         />
-        <Stack gap="sm" my="sm">
-          {pageData.items.length === 0 && (
-            <>
-              <Card
-                withBorder
-                p="md"
-                radius="md"
-                style={{ minHeight: 80, width: "100%", maxWidth: 950 }}
-              >
-                <Stack gap="xs" justify="center" align="center" h="100%">
-                  <Text fw={500} ta="center" c="dimmed">
-                    Nothing found.
-                  </Text>
-                  <Text size="sm" ta="center" c="dimmed">
-                    No submissions has been entered yet.
-                  </Text>
-                </Stack>
-              </Card>
-            </>
+        <Box pos="relative">
+          {isPlaceholderData && (
+            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={3} />
           )}
-        </Stack>
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 12,
-          }}
-          my="md"
-        >
-          {pageData.items.map((submission, index) => {
-            const badgeDifficultyColor = (() => {
-              if (submission.questionDifficulty === "Easy") {
+          <Stack gap="sm" my="sm">
+            {pageData.items.length === 0 && (
+              <>
+                <Card
+                  withBorder
+                  p="md"
+                  radius="md"
+                  style={{ minHeight: 80, width: "100%" }}
+                >
+                  <Stack gap="xs" justify="center" align="center" h="100%">
+                    <Text fw={500} ta="center" c="dimmed">
+                      Nothing found.
+                    </Text>
+                    <Text size="sm" ta="center" c="dimmed">
+                      No submissions has been entered yet.
+                    </Text>
+                  </Stack>
+                </Card>
+              </>
+            )}
+          </Stack>
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 12,
+            }}
+            my="md"
+          >
+            {pageData.items.map((submission, index) => {
+              const badgeDifficultyColor = (() => {
+                if (submission.questionDifficulty === "Easy") {
+                  return undefined;
+                }
+                if (submission.questionDifficulty === "Medium") {
+                  return "yellow";
+                }
+                if (submission.questionDifficulty === "Hard") {
+                  return "red";
+                }
                 return undefined;
-              }
-              if (submission.questionDifficulty === "Medium") {
-                return "yellow";
-              }
-              if (submission.questionDifficulty === "Hard") {
-                return "red";
-              }
-              return undefined;
-            })();
+              })();
 
-            const badgeAcceptedColor = (() => {
-              const acceptanceRate = submission.acceptanceRate * 100;
-              if (acceptanceRate >= 75) {
+              const badgeAcceptedColor = (() => {
+                const acceptanceRate = submission.acceptanceRate * 100;
+                if (acceptanceRate >= 75) {
+                  return undefined;
+                }
+                if (acceptanceRate >= 50) {
+                  return "yellow";
+                }
+                if (acceptanceRate >= 0) {
+                  return "red";
+                }
                 return undefined;
-              }
-              if (acceptanceRate >= 50) {
-                return "yellow";
-              }
-              if (acceptanceRate >= 0) {
-                return "red";
-              }
-              return undefined;
-            })();
+              })();
 
-            const LanguageIcon =
-              langNameToIcon[submission.language as langNameKey] ||
-              langNameToIcon["default"];
+              const LanguageIcon =
+                langNameToIcon[submission.language as langNameKey] ||
+                langNameToIcon["default"];
 
-            return (
-              <Card
-                key={index}
-                withBorder
-                p="md"
-                radius="md"
-                style={{
-                  width: "100%",
-                  maxWidth: "950px",
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-                component={Link}
-                to={`/submission/${submission.id}`}
-                className="transition-all hover:brightness-110"
-              >
-                <Stack gap="xs">
-                  <Group justify="space-between" align="flex-start">
-                    <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
-                      <LanguageIcon size={22} width={22} height={22} />
-                      <Text
-                        fw={600}
-                        style={{
-                          flex: 1,
-                          wordBreak: "break-word",
-                          lineHeight: 1.35,
-                        }}
-                      >
-                        {submission.questionTitle}
+              return (
+                <Card
+                  key={index}
+                  withBorder
+                  p="md"
+                  radius="md"
+                  style={{
+                    width: "100%",
+                    cursor: "pointer",
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                  component={Link}
+                  to={`/submission/${submission.id}`}
+                  className="transition-all hover:brightness-110"
+                >
+                  <Stack gap="xs">
+                    <Group justify="space-between" align="flex-start">
+                      <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                        <LanguageIcon size={22} width={22} height={22} />
+                        <Text
+                          fw={600}
+                          style={{
+                            flex: 1,
+                            wordBreak: "break-word",
+                            lineHeight: 1.35,
+                          }}
+                        >
+                          {submission.questionTitle}
+                        </Text>
+                      </Group>
+                      <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                        {timeDiff(new Date(submission.submittedAt))}
                       </Text>
                     </Group>
-                    <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-                      {timeDiff(new Date(submission.submittedAt))}
-                    </Text>
-                  </Group>
-                  <Group gap="xs" wrap="wrap">
-                    <Badge size="sm" color={badgeDifficultyColor}>
-                      {submission.questionDifficulty}
-                    </Badge>
-                    <Badge size="sm" color={badgeAcceptedColor}>
-                      {Math.round(submission.acceptanceRate * 100)}%
-                    </Badge>
-                  </Group>
-                  <Group justify="space-between">
                     <Group gap="xs" wrap="wrap">
-                      {submission.topics?.length ?
-                        submission.topics.map((topic) => (
-                          <Badge
-                            key={topic.id}
-                            size="xs"
-                            variant="outline"
-                            color="gray"
-                          >
-                            {formatTopicName(topic.topicSlug)}
-                          </Badge>
-                        ))
-                      : <Text size="xs" c="dimmed">
-                          -
-                        </Text>
-                      }
+                      <Badge size="sm" color={badgeDifficultyColor}>
+                        {submission.questionDifficulty}
+                      </Badge>
+                      <Badge size="sm" color={badgeAcceptedColor}>
+                        {Math.round(submission.acceptanceRate * 100)}%
+                      </Badge>
                     </Group>
-                    <Text size="sm" fw={500}>
-                      {submission.pointsAwarded} Pts
-                    </Text>
-                  </Group>
-                </Stack>
-              </Card>
-            );
-          })}
+                    <Group justify="space-between">
+                      <Group gap="xs" wrap="wrap">
+                        {submission.topics?.length ?
+                          submission.topics.map((topic) => (
+                            <Badge
+                              key={topic.id}
+                              size="xs"
+                              variant="outline"
+                              color="gray"
+                            >
+                              {formatTopicName(topic.topicSlug)}
+                            </Badge>
+                          ))
+                        : <Text size="xs" c="dimmed">
+                            -
+                          </Text>
+                        }
+                      </Group>
+                      <Text size="sm" fw={500}>
+                        {submission.pointsAwarded} Pts
+                      </Text>
+                    </Group>
+                  </Stack>
+                </Card>
+              );
+            })}
+          </Box>
         </Box>
       </Box>
       <Paginator
