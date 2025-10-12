@@ -18,6 +18,22 @@ COPY js/ ./
 # Build the frontend
 RUN pnpm run build
 
+# ==== Email Build Stage ====
+FROM node:20 AS email-build
+
+WORKDIR /email
+
+COPY email/package.json email/pnpm-lock.yaml ./
+
+RUN npm i -g corepack@latest
+
+RUN corepack enable pnpm && pnpm i --frozen-lockfile
+
+COPY email/ ./
+
+# Export HTML to a directory
+RUN pnpm email export --dir emails --outDir out
+
 # ==== Backend Build Stage ====
 FROM eclipse-temurin:21-jdk-jammy AS backend-build
 
@@ -47,9 +63,12 @@ COPY src ./src
 # Copy frontend build output to backend static resources
 COPY --from=frontend-build /js/dist/ src/main/resources/static/
 
-# Copy react email output to backend static resources
-RUN corepack enable pnpm && cd email && pnpm i --frozen-lockfile && cd ..
-RUN ./email.sh
+# Ensure email static directory exists and reset it
+RUN mkdir -p src/main/resources/static/email 
+RUN rm -f src/main/resources/static/email/*.html
+
+# Copy email build output to backend static resources
+COPY --from=email-build /email/out/*.html src/main/resources/static/email/
 
 # Package the application
 RUN ./mvnw clean package -DskipTests
