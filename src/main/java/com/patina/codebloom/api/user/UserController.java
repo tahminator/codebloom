@@ -19,6 +19,7 @@ import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.question.QuestionDto;
 import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
@@ -71,7 +72,7 @@ public class UserController {
                     """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("{userId}/submissions")
-    public ResponseEntity<ApiResponder<Page<Question>>> getAllQuestionsForUser(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<QuestionDto>>> getAllQuestionsForUser(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize,
@@ -88,7 +89,9 @@ public class UserController {
         int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
         boolean hasNextPage = page < totalPages;
 
-        Page<Question> createdPage = new Page<>(hasNextPage, questions, totalPages, parsedPageSize);
+        List<QuestionDto> questionDtos = questions.stream().map(q -> QuestionDto.fromQuestion(q)).toList();
+
+        Page<QuestionDto> createdPage = new Page<>(hasNextPage, questionDtos, totalPages, parsedPageSize);
 
         return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
     }

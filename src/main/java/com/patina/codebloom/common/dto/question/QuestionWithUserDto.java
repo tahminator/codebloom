@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
-import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
+import com.patina.codebloom.common.dto.question.topic.QuestionTopicDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -55,7 +55,7 @@ public class QuestionWithUserDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String submissionId;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<QuestionTopic> topics;
+    private List<QuestionTopicDto> topics;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String discordName;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
@@ -82,7 +82,7 @@ public class QuestionWithUserDto {
                         .code(questionWithUser.getCode())
                         .language(questionWithUser.getLanguage())
                         .submissionId(questionWithUser.getSubmissionId())
-                        .topics(questionWithUser.getTopics())
+                        .topics(questionWithUser.getTopics().stream().map(q -> QuestionTopicDto.fromQuestionTopic(q)).toList())
                         .discordName(questionWithUser.getDiscordName())
                         .leetcodeUsername(questionWithUser.getLeetcodeUsername())
                         .nickname(questionWithUser.getNickname())
