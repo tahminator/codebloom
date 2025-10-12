@@ -1,8 +1,6 @@
 package com.patina.codebloom.scheduled.leetcode;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -46,8 +44,9 @@ public class LeetcodeQuestionProcessServiceTest {
 
     @AfterAll
     void cleanup() {
-        if (testJob != null && testJob.getId() != null) {
-            jobRepository.deleteJobById(testJob.getId());
+        boolean isSuccessful = jobRepository.deleteJobById(testJob.getId());
+        if (!isSuccessful){
+            fail("failed to clean up Leetcode Processing");
         }
     }
 
