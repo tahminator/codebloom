@@ -19,11 +19,17 @@ import {
 type SchoolEmailProps = {
   linkUrl: string;
 };
+
 export default function SchoolEmail({
   linkUrl = "https://codebloom.patinanetwork.org",
 }: SchoolEmailProps) {
   return (
-    <Html>
+    <Html
+      style={{
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+      }}
+    >
       <Head />
       <Preview>Confirm your email to activate your CodeBloom account</Preview>
       <Tailwind>
