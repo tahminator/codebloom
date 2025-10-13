@@ -8,19 +8,19 @@ import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @SuperBuilder
-@NoArgsConstructor
-@ToString
 @EqualsAndHashCode
+@ToString
 public class Question {
     @NotNullColumn
     private String id;
