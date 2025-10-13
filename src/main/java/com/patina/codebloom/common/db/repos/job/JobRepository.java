@@ -6,10 +6,21 @@ import com.patina.codebloom.common.db.models.job.Job;
 
 public interface JobRepository {
     /**
-     * Creates a new job in the database. The id and createdAt properties of the job
-     * object will be set by this method.
+     * Creates a new job in the database.
      * 
-     * @param job the job to create
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     *
+     * @param job - required fields:
+     * <ul>
+     * <li>questionId</li>
+     * <li>status</li>
+     * </ul>
+     * optional fields:
+     * <ul>
+     * <li>processedAt</li>
+     * <li>completedAt</li>
+     * </ul>
      */
     void createJob(Job job);
 
@@ -32,7 +43,19 @@ public interface JobRepository {
     /**
      * Updates an existing job in the database.
      * 
-     * @param job the job to update
+     * @note - The provided object's methods will be overridden with any returned
+     * data from the database.
+     *
+     * @param job - required fields:
+     * <ul>
+     * <li>id</li>
+     * </ul>
+     * updatable fields:
+     * <ul>
+     * <li>processedAt</li>
+     * <li>completedAt</li>
+     * <li>status</li>
+     * </ul>
      * @return true if the update was successful, false otherwise
      */
     boolean updateJob(Job job);
