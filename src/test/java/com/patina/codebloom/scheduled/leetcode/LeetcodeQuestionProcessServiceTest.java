@@ -48,7 +48,7 @@ public class LeetcodeQuestionProcessServiceTest {
     @AfterAll
     void cleanup() {
         boolean isSuccessful = jobRepository.deleteJobById(testJob.getId());
-        if (!isSuccessful){
+        if (!isSuccessful) {
             fail("failed to clean up Leetcode Processing");
         }
     }
