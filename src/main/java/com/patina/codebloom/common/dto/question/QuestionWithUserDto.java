@@ -82,7 +82,11 @@ public class QuestionWithUserDto {
                         .code(questionWithUser.getCode())
                         .language(questionWithUser.getLanguage())
                         .submissionId(questionWithUser.getSubmissionId())
-                        .topics(questionWithUser.getTopics().stream().map(q -> QuestionTopicDto.fromQuestionTopic(q)).toList())
+                        .topics(questionWithUser.getTopics() != null
+                                        ? questionWithUser.getTopics().stream()
+                                                        .map(QuestionTopicDto::fromQuestionTopic)
+                                                        .toList()
+                                        : List.of())
                         .discordName(questionWithUser.getDiscordName())
                         .leetcodeUsername(questionWithUser.getLeetcodeUsername())
                         .nickname(questionWithUser.getNickname())

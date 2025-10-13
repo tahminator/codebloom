@@ -4,19 +4,19 @@ import java.time.LocalDateTime;
 
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@ToString
+@AllArgsConstructor
+@Builder
 @EqualsAndHashCode
+@ToString
 public class QuestionTopic {
     @NotNullColumn
     private String id;
