@@ -538,7 +538,6 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject("userId", UUID.fromString(userId));
             stmt.setString("title", "%" + query + "%");
             stmt.setBoolean("pointFilter", pointFilter);
-            
             LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
             String[] sqlValues = Arrays.stream(topicEnums)
                             .map(LeetcodeTopicEnum::getLeetcodeEnum)
