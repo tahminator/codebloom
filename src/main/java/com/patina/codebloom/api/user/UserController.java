@@ -85,8 +85,8 @@ public class UserController {
 
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query, pointFilter, topics);
 
-        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query, pointFilter);
-        int totalPages = (int) Math.ceil((double) totalQuestions / SUBMISSIONS_PAGE_SIZE);
+        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query, pointFilter, topics);
+        int totalPages = (int) Math.ceil((double) totalQuestions / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
         List<QuestionDto> questionDtos = questions.stream().map(q -> QuestionDto.fromQuestion(q)).toList();

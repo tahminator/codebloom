@@ -75,11 +75,10 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public QuestionSqlRepository(
-        final DbConnection dbConnection,
-        final UserRepository userRepository,
-        final QuestionTopicRepository questionTopicRepository,
-        final QuestionTopicService questionTopicService
-    ) {
+                    final DbConnection dbConnection,
+                    final UserRepository userRepository,
+                    final QuestionTopicRepository questionTopicRepository,
+                    final QuestionTopicService questionTopicService) {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
@@ -333,8 +332,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
 
             String[] sqlValues = Arrays.stream(topicEnums)
-                .map(LeetcodeTopicEnum::getLeetcodeEnum)
-                .toArray(String[]::new);
+                            .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                            .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
@@ -516,24 +515,36 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public int getQuestionCountByUserId(final String userId, final String query, final boolean pointFilter) {
+    public int getQuestionCountByUserId(final String userId, final String query, final boolean pointFilter, final Set<String> topics) {
         String sql = """
                         SELECT
                             COUNT(*)
                         FROM
-                            "Question"
+                            "Question" q
+                        JOIN "QuestionTopic" qt ON qt."questionId" = q.id
                         WHERE
-                            "userId" = ?
+                            q."userId" = :userId
                         AND
-                            "questionTitle" ILIKE ?
+                            q."questionTitle" ILIKE :title
                         AND
-                            (NOT ? OR "pointsAwarded" <> 0)
+                            (NOT :pointFilter OR q."pointsAwarded" <> 0)
+                        AND (
+                            :topics = '{}'::"LeetcodeTopicEnum"[]
+                            OR qt."topic" = ANY(:topics)
+                        )
                         """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
-            stmt.setString(2, "%" + query + "%");
-            stmt.setBoolean(3, pointFilter);
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("userId", UUID.fromString(userId));
+            stmt.setString("title", "%" + query + "%");
+            stmt.setBoolean("pointFilter", pointFilter);
+            
+            LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
+            String[] sqlValues = Arrays.stream(topicEnums)
+                            .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                            .toArray(String[]::new);
+            Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
+            stmt.setArray("topics", topicsArray);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
