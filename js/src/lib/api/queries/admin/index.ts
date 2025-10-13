@@ -1,4 +1,5 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
 import { Announcement } from "@/lib/api/types/announcement";
@@ -102,18 +103,25 @@ async function toggleUserAdmin({
   // });
   // throw new Error("hi");
 
-  const response = await fetch("/api/admin/user/admin/toggle", {
-    method: "POST",
+  const { url, method, req, res } = ApiURL.create(
+    "/api/admin/user/admin/toggle",
+    {
+      method: "POST",
+    },
+  );
+
+  const response = await fetch(url, {
+    method: method,
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
+    body: req({
       id: userId,
       toggleTo,
     }),
   });
 
-  const json = (await response.json()) as UnknownApiResponse<Api<"UserDto">>;
+  const json = res(await response.json());
 
   return json;
 }
