@@ -75,5 +75,5 @@ public interface QuestionRepository {
 
     boolean questionExistsBySubmissionId(String submissionId);
 
-    int getQuestionCountByUserId(String userId, String query, boolean filterPoints);
+    int getQuestionCountByUserId(String userId, String query, boolean filterPoints, Set<String> topics);
 }
