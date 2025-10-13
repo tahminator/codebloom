@@ -25,22 +25,6 @@ import { Link } from "react-router-dom";
 
 import TopicFilterPopover from "../TopicFilters/TopicFilterPopover";
 
-const sampleSubmissions = [
-  {
-    id: "sub_001",
-    language: "python",
-    questionTitle: "Two Sum",
-    questionDifficulty: "Easy",
-    acceptanceRate: 0.82,
-    pointsAwarded: 50,
-    submittedAt: "2025-10-09T08:30:00Z",
-    topics: [
-      { id: "t1", topicSlug: "array", topic: "ARRAY" },
-      { id: "t2", topicSlug: "hash-table", topic: "HASH_TABLE" },
-    ],
-  },
-];
-
 export default function UserSubmissions({ userId }: { userId?: string }) {
   const {
     data,
@@ -64,7 +48,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   });
 
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const USE_SAMPLE_DATA = true;
 
   if (status === "pending") {
     return (
@@ -80,24 +63,10 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     );
   }
 
-  // if (!data.success) {
-  //   return <>{data.message}</>;
-  // }
-  // const pageData = data.payload;
-  let pageData;
-  if (USE_SAMPLE_DATA) {
-    pageData = {
-      items: sampleSubmissions,
-      pages: 1,
-      pageSize: 10,
-      hasNextPage: false,
-    };
-  } else {
-    if (!data.success) {
-      return <>{data.message}</>;
-    }
-    pageData = data.payload;
+  if (!data.success) {
+    return <>{data.message}</>;
   }
+  const pageData = data.payload;
 
   if (isMobile) {
     return (
