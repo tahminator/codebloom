@@ -28,6 +28,7 @@ import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.email.options.SendEmailOptions;
 import com.patina.codebloom.api.auth.body.EmailBody;
+import com.patina.codebloom.common.email.client.ReactEmailClient;
 import com.patina.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
 import com.patina.codebloom.common.email.error.EmailException;
 import com.patina.codebloom.common.url.ServerUrlUtils;
@@ -65,9 +66,11 @@ public class AuthController {
     private final ServerUrlUtils serverUrlUtils;
     private final UserTagRepository userTagRepository;
     private final Reporter reporter;
+    private final ReactEmailClient reactEmailClient;
 
     public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository,
-                    final OfficialCodebloomEmail emailClient, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository, final Reporter reporter) {
+                    final OfficialCodebloomEmail emailClient, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository, final Reporter reporter,
+                    final ReactEmailClient reactEmailClient) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
@@ -76,6 +79,7 @@ public class AuthController {
         this.serverUrlUtils = serverUrlUtils;
         this.userTagRepository = userTagRepository;
         this.reporter = reporter;
+        this.reactEmailClient = reactEmailClient;
     }
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
@@ -149,10 +153,7 @@ public class AuthController {
                             SendEmailOptions.builder()
                                             .recipientEmail(email)
                                             .subject("Hello from Codebloom!")
-                                            .body(String.format("""
-                                                            Please click on this link to verify your school email with Codebloom: %s.
-                                                            Note: This link will expire in 1 hour. If it expires, you'll need to request a new one.
-                                                            """, verificationLink))
+                                            .body(reactEmailClient.schoolEmailTemplate(verificationLink))
                                             .build());
             return ResponseEntity.ok().body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", Empty.of()));
         } catch (EmailException e) {
