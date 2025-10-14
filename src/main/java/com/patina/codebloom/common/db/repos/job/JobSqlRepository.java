@@ -29,6 +29,7 @@ public class JobSqlRepository implements JobRepository {
                         .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
                         .processedAt(resultSet.getObject("processedAt", OffsetDateTime.class))
                         .completedAt(resultSet.getObject("completedAt", OffsetDateTime.class))
+                        .nextAttemptAt(resultSet.getObject("nextAttemptAt", OffsetDateTime.class))
                         .status(JobStatus.valueOf(resultSet.getString("status")))
                         .questionId(resultSet.getString("questionId"))
                         .build();
@@ -70,6 +71,7 @@ public class JobSqlRepository implements JobRepository {
                             "createdAt",
                             "processedAt",
                             "completedAt",
+                            "nextAttemptAt",
                             status,
                             "questionId"
                         FROM
@@ -101,12 +103,14 @@ public class JobSqlRepository implements JobRepository {
                             "createdAt",
                             "processedAt",
                             "completedAt",
+                            "nextAttemptAt",
                             status,
                             "questionId"
                         FROM
                             "Job"
                         WHERE
                             status = ?
+                            AND ("nextAttemptAt" IS NULL OR "nextAttemptAt" <= NOW())
                         ORDER BY
                             "createdAt" ASC
                         LIMIT ?
@@ -135,6 +139,7 @@ public class JobSqlRepository implements JobRepository {
                         SET
                             "processedAt" = ?,
                             "completedAt" = ?,
+                            "nextAttemptAt" = ?,
                             status = ?
                         WHERE
                             id = ?
@@ -143,8 +148,9 @@ public class JobSqlRepository implements JobRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, job.getProcessedAt());
             stmt.setObject(2, job.getCompletedAt());
-            stmt.setObject(3, job.getStatus().name(), java.sql.Types.OTHER);
-            stmt.setObject(4, UUID.fromString(job.getId()));
+            stmt.setObject(3, job.getNextAttemptAt());
+            stmt.setObject(4, job.getStatus().name(), java.sql.Types.OTHER);
+            stmt.setObject(5, UUID.fromString(job.getId()));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
