@@ -68,150 +68,123 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   }
   const pageData = data.payload;
 
-  if (isMobile) {
+  const submissionCard = (
+    submission: (typeof pageData.items)[0],
+    index: number,
+  ) => {
+    const badgeDifficultyColor = (() => {
+      if (submission.questionDifficulty === "Easy") {
+        return undefined;
+      }
+      if (submission.questionDifficulty === "Medium") {
+        return "yellow";
+      }
+      if (submission.questionDifficulty === "Hard") {
+        return "red";
+      }
+      return undefined;
+    })();
+    const badgeAcceptedColor = (() => {
+      const acceptanceRate = submission.acceptanceRate * 100;
+      if (acceptanceRate >= 75) {
+        return undefined;
+      }
+      if (acceptanceRate >= 50) {
+        return "yellow";
+      }
+      if (acceptanceRate >= 0) {
+        return "red";
+      }
+      return undefined;
+    })();
+    const LanguageIcon =
+      langNameToIcon[submission.language as langNameKey] ||
+      langNameToIcon["default"];
+
     return (
-      <Box pos="relative" px="xs">
-        <Group justify="space-between" align="flex-end" mb="sm" gap="xs">
-          <Box flex={1} miw={0}>
-            <SearchBox
-              query={searchQuery}
-              onChange={(event) => {
-                setSearchQuery(event.currentTarget.value);
-              }}
-              placeholder={"Search for submission title"}
-              w="100%"
-            />
-          </Box>
-          <FilterDropdown buttonName="Filters">
-            <FilterDropdownItem
-              value={pointFilter}
-              toggle={togglePointFilter}
-              switchMode
-              name={
-                <Flex gap="0.5rem" align="center">
-                  Points Received
-                </Flex>
-              }
-            ></FilterDropdownItem>
-          </FilterDropdown>
-        </Group>
-        <Box pos="relative">
-          {isPlaceholderData && (
-            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={3} />
+      <Card
+        key={index}
+        withBorder
+        p={isMobile ? "sm" : "md"}
+        radius="md"
+        w="100%"
+        component={Link}
+        to={`/submission/${submission.id}`}
+        className="transition-all hover:brightness-110"
+      >
+        <Stack gap="xs">
+          <Group justify="space-between" align="flex-start">
+            <Group gap="xs" flex={1} miw={0}>
+              <LanguageIcon
+                size={isMobile ? 20 : 22}
+                width={isMobile ? 20 : 22}
+                height={isMobile ? 20 : 22}
+              />
+              <Text
+                size={isMobile ? "sm" : undefined}
+                fw={isMobile ? 500 : 600}
+                lh={1.3}
+                flex={1}
+              >
+                {submission.questionTitle}
+              </Text>
+            </Group>
+            <Text size="xs" c="dimmed">
+              {timeDiff(new Date(submission.submittedAt))}
+            </Text>
+          </Group>
+          <Group gap="xs" wrap="wrap">
+            <Badge size="sm" color={badgeDifficultyColor}>
+              {submission.questionDifficulty}
+            </Badge>
+            <Badge size="sm" color={badgeAcceptedColor}>
+              {Math.round(submission.acceptanceRate * 100)}%
+            </Badge>
+          </Group>
+          {submission.topics && submission.topics.length > 0 && (
+            <Group justify="space-between">
+              <Group gap="xs" wrap="wrap">
+                {submission.topics.map((topic) => (
+                  <Badge
+                    key={topic.id}
+                    size="xs"
+                    variant={isMobile ? "light" : "filled"}
+                    color={isMobile ? "gray" : "gray.4"}
+                  >
+                    {formatTopicName(topic.topicSlug)}
+                  </Badge>
+                ))}
+              </Group>
+              <Text size="sm" fw={500}>
+                {submission.pointsAwarded} Pts
+              </Text>
+            </Group>
           )}
-          <Stack gap="sm" my="sm">
-            {pageData.items.length === 0 && (
-              <Card withBorder p="md" radius="md" mih={80} w="100%" flex={1}>
-                <Stack gap="xs" justify="center" align="center" h="100%">
-                  <Text fw={500} ta="center" c="dimmed">
-                    Nothing found.
-                  </Text>
-                  <Text size="sm" ta="center" c="dimmed">
-                    No submissions has been entered yet.
-                  </Text>
-                </Stack>
-              </Card>
+          {!isMobile &&
+            !(submission.topics && submission.topics.length === 0) && (
+              <Group justify="space-between">
+                <Text size="xs" c="dimmed">
+                  -
+                </Text>
+                <Text size="sm" fw={500}>
+                  {submission.pointsAwarded} Pts
+                </Text>
+              </Group>
             )}
-            {pageData.items.map((submission, index) => {
-              const badgeDifficultyColor = (() => {
-                if (submission.questionDifficulty === "Easy") {
-                  return undefined;
-                }
-                if (submission.questionDifficulty === "Medium") {
-                  return "yellow";
-                }
-                if (submission.questionDifficulty === "Hard") {
-                  return "red";
-                }
-                return undefined;
-              })();
-              const badgeAcceptedColor = (() => {
-                const acceptanceRate = submission.acceptanceRate * 100;
-                if (acceptanceRate >= 75) {
-                  return undefined;
-                }
-                if (acceptanceRate >= 50) {
-                  return "yellow";
-                }
-                if (acceptanceRate >= 0) {
-                  return "red";
-                }
-                return undefined;
-              })();
-              const LanguageIcon =
-                langNameToIcon[submission.language as langNameKey] ||
-                langNameToIcon["default"];
-              return (
-                <Card
-                  key={index}
-                  withBorder
-                  p="sm"
-                  radius="md"
-                  component={Link}
-                  to={`/submission/${submission.id}`}
-                  className="transition-all hover:brightness-110"
-                >
-                  <Stack gap="xs">
-                    <Group justify="space-between" align="flex-start">
-                      <Group gap="xs" flex={1} miw={0}>
-                        <LanguageIcon size={20} width={20} height={20} />
-                        <Text size="sm" fw={500} flex={1} lh={1.3}>
-                          {submission.questionTitle}
-                        </Text>
-                      </Group>
-                      <Text size="xs" c="dimmed">
-                        {timeDiff(new Date(submission.submittedAt))}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between" wrap="wrap" gap="xs">
-                      <Group gap="xs">
-                        <Badge size="sm" color={badgeDifficultyColor}>
-                          {submission.questionDifficulty}
-                        </Badge>
-                        <Badge size="sm" color={badgeAcceptedColor}>
-                          {Math.round(submission.acceptanceRate * 100)}%
-                        </Badge>
-                      </Group>
-                    </Group>
-                    {submission.topics && submission.topics.length > 0 && (
-                      <Group justify="space-between">
-                        <Group gap="xs" wrap="wrap">
-                          {submission.topics.map((topic) => (
-                            <Badge
-                              key={topic.id}
-                              size="xs"
-                              variant="light"
-                              color="gray"
-                            >
-                              {formatTopicName(topic.topicSlug)}
-                            </Badge>
-                          ))}
-                        </Group>
-                        <Text size="sm" fw={500}>
-                          {submission.pointsAwarded} pts
-                        </Text>
-                      </Group>
-                    )}
-                  </Stack>
-                </Card>
-              );
-            })}
-          </Stack>
-        </Box>
-        <Paginator
-          pages={pageData.pages}
-          currentPage={page}
-          hasNextPage={pageData.hasNextPage}
-          goBack={goBack}
-          goForward={goForward}
-          goTo={goTo}
-        />
-      </Box>
+        </Stack>
+      </Card>
     );
-  }
+  };
+
   return (
-    <>
-      <Box w="100%" maw={925} p="xs" pos="relative">
+    <Box
+      pos="relative"
+      px={isMobile ? "xs" : undefined}
+      w={isMobile ? undefined : "100%"}
+      maw={isMobile ? undefined : 925}
+      p={isMobile ? undefined : "xs"}
+    >
+      {!isMobile && (
         <Box ml="auto" display="block">
           <FilterDropdown buttonName="Filters">
           <TopicFilterPopover
@@ -228,129 +201,67 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                   Points Received
                 </Flex>
               }
-            ></FilterDropdownItem>
+            />
           </FilterDropdown>
         </Box>
-        <Box pt={10}>
+      )}
+      <Group
+        justify="space-between"
+        align="flex-end"
+        mb="sm"
+        gap="xs"
+        pt={isMobile ? undefined : 10}
+      >
+        <Box flex={1} miw={0}>
           <SearchBox
-            style={{ paddingTop: 10 }}
+            pt={isMobile ? undefined : 10}
             query={searchQuery}
-            onChange={(e) => setSearchQuery(e.currentTarget.value)}
-            placeholder={"Search for submission title"}
+            onChange={(event) => setSearchQuery(event.currentTarget.value)}
+            placeholder="Search for submission title"
+            w={isMobile ? "100%" : undefined}
           />
         </Box>
-        <Box pos="relative">
-          {isPlaceholderData && (
-            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={3} />
+        {isMobile && (
+          <FilterDropdown buttonName="Filters">
+            <FilterDropdownItem
+              value={pointFilter}
+              toggle={togglePointFilter}
+              switchMode
+              name={
+                <Flex gap="0.5rem" align="center">
+                  Points Received
+                </Flex>
+              }
+            />
+          </FilterDropdown>
+        )}
+      </Group>
+      <Box pos="relative">
+        {isPlaceholderData && (
+          <Overlay zIndex={1000} backgroundOpacity={0.35} blur={3} />
+        )}
+        <Stack gap="sm" my="sm" align={isMobile ? undefined : "center"}>
+          {pageData.items.length === 0 && (
+            <Card
+              withBorder
+              p="md"
+              radius="md"
+              mih={80}
+              w="100%"
+              flex={isMobile ? 1 : undefined}
+            >
+              <Stack gap="xs" justify="center" align="center" h="100%">
+                <Text fw={500} ta="center" c="dimmed">
+                  Nothing found.
+                </Text>
+                <Text size="sm" ta="center" c="dimmed">
+                  No submissions has been entered yet.
+                </Text>
+              </Stack>
+            </Card>
           )}
-          <Stack gap="sm" my="sm">
-            {pageData.items.length === 0 && (
-              <>
-                <Card withBorder p="md" radius="md" mih={80} w="100%">
-                  <Stack gap="xs" justify="center" align="center" h="100%">
-                    <Text fw={500} ta="center" c="dimmed">
-                      Nothing found.
-                    </Text>
-                    <Text size="sm" ta="center" c="dimmed">
-                      No submissions has been entered yet.
-                    </Text>
-                  </Stack>
-                </Card>
-              </>
-            )}
-          </Stack>
-          <Stack align="center" gap={12} my="md">
-            {pageData.items.map((submission, index) => {
-              const badgeDifficultyColor = (() => {
-                if (submission.questionDifficulty === "Easy") {
-                  return undefined;
-                }
-                if (submission.questionDifficulty === "Medium") {
-                  return "yellow";
-                }
-                if (submission.questionDifficulty === "Hard") {
-                  return "red";
-                }
-                return undefined;
-              })();
-
-              const badgeAcceptedColor = (() => {
-                const acceptanceRate = submission.acceptanceRate * 100;
-                if (acceptanceRate >= 75) {
-                  return undefined;
-                }
-                if (acceptanceRate >= 50) {
-                  return "yellow";
-                }
-                if (acceptanceRate >= 0) {
-                  return "red";
-                }
-                return undefined;
-              })();
-
-              const LanguageIcon =
-                langNameToIcon[submission.language as langNameKey] ||
-                langNameToIcon["default"];
-
-              return (
-                <Card
-                  key={index}
-                  withBorder
-                  p="md"
-                  radius="md"
-                  w="100%"
-                  component={Link}
-                  to={`/submission/${submission.id}`}
-                  className="transition-all hover:brightness-110"
-                >
-                  <Stack gap="xs">
-                    <Group justify="space-between" align="flex-start">
-                      <Group gap="xs" flex={1} miw={0}>
-                        <LanguageIcon size={22} width={22} height={22} />
-                        <Text fw={600} lh={1.35} flex={1}>
-                          {submission.questionTitle}
-                        </Text>
-                      </Group>
-                      <Text size="xs" c="dimmed">
-                        {timeDiff(new Date(submission.submittedAt))}
-                      </Text>
-                    </Group>
-                    <Group gap="xs" wrap="wrap">
-                      <Badge size="sm" color={badgeDifficultyColor}>
-                        {submission.questionDifficulty}
-                      </Badge>
-                      <Badge size="sm" color={badgeAcceptedColor}>
-                        {Math.round(submission.acceptanceRate * 100)}%
-                      </Badge>
-                    </Group>
-                    <Group justify="space-between">
-                      <Group gap="xs" wrap="wrap">
-                        {submission.topics?.length ?
-                          submission.topics.map((topic) => (
-                            <Badge
-                              key={topic.id}
-                              size="xs"
-                              variant="filled"
-                              color="gray.4"
-                            >
-                              {formatTopicName(topic.topicSlug)}
-                            </Badge>
-                          ))
-                        : <Text size="xs" c="dimmed">
-                            -
-                          </Text>
-                        }
-                      </Group>
-                      <Text size="sm" fw={500}>
-                        {submission.pointsAwarded} Pts
-                      </Text>
-                    </Group>
-                  </Stack>
-                </Card>
-              );
-            })}
-          </Stack>
-        </Box>
+          {pageData.items.map(submissionCard)}
+        </Stack>
       </Box>
       <Paginator
         pages={pageData.pages}
@@ -360,6 +271,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
         goForward={goForward}
         goTo={goTo}
       />
-    </>
+    </Box>
   );
 }
