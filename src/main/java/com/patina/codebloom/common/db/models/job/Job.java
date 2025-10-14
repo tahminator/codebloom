@@ -29,6 +29,9 @@ public class Job {
     @NullColumn
     private OffsetDateTime completedAt;
 
+    @NullColumn
+    private OffsetDateTime nextAttemptAt;
+
     @NotNullColumn
     private JobStatus status;
 
