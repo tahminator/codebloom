@@ -54,6 +54,7 @@ public interface JobRepository {
      * <ul>
      * <li>processedAt</li>
      * <li>completedAt</li>
+     * <li>nextAttemptAt</li>
      * <li>status</li>
      * </ul>
      * @return true if the update was successful, false otherwise
