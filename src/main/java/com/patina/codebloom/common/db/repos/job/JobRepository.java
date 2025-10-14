@@ -20,6 +20,7 @@ public interface JobRepository {
      * <ul>
      * <li>processedAt</li>
      * <li>completedAt</li>
+     * <li>nextAttemptAt</li>
      * </ul>
      */
     void createJob(Job job);
