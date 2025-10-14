@@ -1,4 +1,7 @@
-import { QuestionTopicDtoTopic, UserTagTag } from "@/lib/api/types/autogen/schema";
+import {
+  QuestionTopicDtoTopic,
+  UserTagTag,
+} from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
