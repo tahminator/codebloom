@@ -1,8 +1,7 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
-import { QuestionTopicTopic } from "@/lib/api/types/autogen/schema";
-import { Question } from "@/lib/api/types/question";
+import { QuestionTopicDtoTopic } from "@/lib/api/types/autogen/schema";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -66,12 +65,12 @@ export const useUserSubmissionsQuery = ({
   }, [goTo, setPointFilter]);
 
   const topics = useMemo(
-    () => _topics.split(",").filter(Boolean) as QuestionTopicTopic[],
+    () => _topics.split(",").filter(Boolean) as QuestionTopicDtoTopic[],
     [_topics],
   );
 
   const setTopics = useCallback(
-    (topics: QuestionTopicTopic[]) => {
+    (topics: QuestionTopicDtoTopic[]) => {
       _setTopics(topics.join(","));
     },
     [_setTopics],
