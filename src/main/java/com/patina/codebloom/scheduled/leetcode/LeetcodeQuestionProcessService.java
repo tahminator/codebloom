@@ -128,6 +128,8 @@ public class LeetcodeQuestionProcessService {
 
             log.debug("Found question: {} ({})", question.getQuestionTitle(), question.getQuestionSlug());
 
+            boolean dataFound = false;
+
             if (question.getSubmissionId() != null && !question.getSubmissionId().isEmpty()) {
                 try {
                     int submissionId = Integer.parseInt(question.getSubmissionId());
@@ -148,6 +150,7 @@ public class LeetcodeQuestionProcessService {
 
                         questionRepository.updateQuestion(question);
                         log.debug("Successfully updated question ID: {} with submission details", question.getId());
+                        dataFound = true;
                     } else {
                         log.warn("No detailed submission found for submission ID: {}", submissionId);
                     }
@@ -156,15 +159,24 @@ public class LeetcodeQuestionProcessService {
                 }
             }
 
-            job.setStatus(JobStatus.COMPLETE);
-            job.setCompletedAt(StandardizedOffsetDateTime.now());
-            success = jobRepository.updateJob(job);
-            if (!success) {
-                throw new RuntimeException("Failed to update job status to COMPLETE");
+            if (dataFound) {
+                job.setStatus(JobStatus.COMPLETE);
+                job.setCompletedAt(StandardizedOffsetDateTime.now());
+                job.setNextAttemptAt(null);
+
+                log.info("Successfully completed job {} for question: {} (ID: {})",
+                                job.getId(), question.getQuestionTitle(), question.getId());
+            } else {
+                job.setNextAttemptAt(StandardizedOffsetDateTime.now().plusMinutes(30));
+
+                log.info("No submission data found for job {} for question: {} (ID: {}), scheduled for retry in 30 minutes",
+                                job.getId(), question.getQuestionTitle(), question.getId());
             }
 
-            log.info("Successfully completed job {} for question: {} ({})",
-                            job.getId(), question.getQuestionTitle(), question.getQuestionSlug());
+            success = jobRepository.updateJob(job);
+            if (!success) {
+                throw new RuntimeException("Failed to update job");
+            }
 
         } catch (Exception e) {
             job.setStatus(JobStatus.INCOMPLETE);
