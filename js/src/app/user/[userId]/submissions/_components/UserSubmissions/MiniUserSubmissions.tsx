@@ -43,18 +43,14 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
   }
 
   const pageData = data.payload;
+  
   return (
     <Box pos="relative" px="xs">
       {isPlaceholderData && <Overlay zIndex={1000} opacity={0.35} blur={4} />}
       <Stack gap="sm" my="sm">
         {pageData.items.length === 0 && (
           <>
-            <Card
-              withBorder
-              p="md"
-              radius="md"
-              style={{ minHeight: "80px", width: "100%", flex: 1 }}
-            >
+            <Card withBorder p="md" radius="md" mih={80} w="100%" flex={1}>
               <Stack gap="sm" justify="center" align="center" h="100%">
                 <Text fw={500} ta="center" c="dimmed">
                   Nothing found.
@@ -101,34 +97,21 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
               withBorder
               p="md"
               radius="md"
-              style={{
-                width: "100%",
-                maxWidth: "950px",
-                cursor: "pointer",
-                textDecoration: "none",
-                color: "inherit",
-              }}
+              w="100%"
+              maw={950}
               component={Link}
               to={`/submission/${submission.id}`}
               className="transition-all hover:brightness-110"
             >
               <Stack gap="xs">
                 <Group justify="space-between" align="flex-start">
-                  <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                  <Group gap="xs" flex={1} miw={0}>
                     <LanguageIcon size={20} width={20} height={20} />
-                    <Text
-                      size="sm"
-                      fw={500}
-                      style={{
-                        flex: 1,
-                        wordBreak: "break-word",
-                        lineHeight: 1.3,
-                      }}
-                    >
+                    <Text size="sm" fw={500} flex={1} lh={1.3}>
                       {submission.questionTitle}
                     </Text>
                   </Group>
-                  <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                  <Text size="xs" c="dimmed">
                     {timeDiff(new Date(submission.submittedAt))}
                   </Text>
                 </Group>
