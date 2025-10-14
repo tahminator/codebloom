@@ -72,14 +72,14 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     return (
       <Box pos="relative" px="xs">
         <Group justify="space-between" align="flex-end" mb="sm" gap="xs">
-          <Box style={{ flex: 1, minWidth: 0 }}>
+          <Box flex={1} miw={0}>
             <SearchBox
               query={searchQuery}
               onChange={(event) => {
                 setSearchQuery(event.currentTarget.value);
               }}
               placeholder={"Search for submission title"}
-              style={{ width: "100%" }}
+              w="100%"
             />
           </Box>
           <FilterDropdown buttonName="Filters">
@@ -88,12 +88,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               toggle={togglePointFilter}
               switchMode
               name={
-                <Flex
-                  style={{
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
+                <Flex gap="0.5rem" align="center">
                   Points Received
                 </Flex>
               }
@@ -106,12 +101,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           )}
           <Stack gap="sm" my="sm">
             {pageData.items.length === 0 && (
-              <Card
-                withBorder
-                p="md"
-                radius="md"
-                style={{ minHeight: "80px", width: "100%", flex: 1 }}
-              >
+              <Card withBorder p="md" radius="md" mih={80} w="100%" flex={1}>
                 <Stack gap="xs" justify="center" align="center" h="100%">
                   <Text fw={500} ta="center" c="dimmed">
                     Nothing found.
@@ -160,29 +150,16 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                   component={Link}
                   to={`/submission/${submission.id}`}
                   className="transition-all hover:brightness-110"
-                  style={{
-                    cursor: "pointer",
-                    textDecoration: "none",
-                    color: "inherit",
-                  }}
                 >
                   <Stack gap="xs">
                     <Group justify="space-between" align="flex-start">
-                      <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                      <Group gap="xs" flex={1} miw={0}>
                         <LanguageIcon size={20} width={20} height={20} />
-                        <Text
-                          size="sm"
-                          fw={500}
-                          style={{
-                            flex: 1,
-                            wordBreak: "break-word",
-                            lineHeight: 1.3,
-                          }}
-                        >
+                        <Text size="sm" fw={500} flex={1} lh={1.3}>
                           {submission.questionTitle}
                         </Text>
                       </Group>
-                      <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                      <Text size="xs" c="dimmed">
                         {timeDiff(new Date(submission.submittedAt))}
                       </Text>
                     </Group>
@@ -235,37 +212,33 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   return (
     <>
       <Box w="100%" maw={925} p="xs" pos="relative">
-        <FilterDropdown
-          style={{
-            marginLeft: "auto",
-            display: "block",
-          }}
-          buttonName="Filters"
-        >
+        <Box ml="auto" display="block">
+          <FilterDropdown buttonName="Filters">
           <TopicFilterPopover
             value={topics}
             onChange={setTopics}
             onClear={clearTopics}
           />
-          <FilterDropdownItem
-            value={pointFilter}
-            toggle={togglePointFilter}
-            switchMode
-            name={
-              <Box
-                style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-              >
-                Points Received
-              </Box>
-            }
-          ></FilterDropdownItem>
-        </FilterDropdown>
-        <SearchBox
-          style={{ paddingTop: 10 }}
-          query={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder={"Search for submission title"}
-        />
+            <FilterDropdownItem
+              value={pointFilter}
+              toggle={togglePointFilter}
+              switchMode
+              name={
+                <Flex gap="0.5rem" align="center">
+                  Points Received
+                </Flex>
+              }
+            ></FilterDropdownItem>
+          </FilterDropdown>
+        </Box>
+        <Box pt={10}>
+          <SearchBox
+            style={{ paddingTop: 10 }}
+            query={searchQuery}
+            onChange={(e) => setSearchQuery(e.currentTarget.value)}
+            placeholder={"Search for submission title"}
+          />
+        </Box>
         <Box pos="relative">
           {isPlaceholderData && (
             <Overlay zIndex={1000} backgroundOpacity={0.35} blur={3} />
@@ -273,12 +246,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
           <Stack gap="sm" my="sm">
             {pageData.items.length === 0 && (
               <>
-                <Card
-                  withBorder
-                  p="md"
-                  radius="md"
-                  style={{ minHeight: 80, width: "100%" }}
-                >
+                <Card withBorder p="md" radius="md" mih={80} w="100%">
                   <Stack gap="xs" justify="center" align="center" h="100%">
                     <Text fw={500} ta="center" c="dimmed">
                       Nothing found.
@@ -291,15 +259,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               </>
             )}
           </Stack>
-          <Box
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 12,
-            }}
-            my="md"
-          >
+          <Stack align="center" gap={12} my="md">
             {pageData.items.map((submission, index) => {
               const badgeDifficultyColor = (() => {
                 if (submission.questionDifficulty === "Easy") {
@@ -338,32 +298,20 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                   withBorder
                   p="md"
                   radius="md"
-                  style={{
-                    width: "100%",
-                    cursor: "pointer",
-                    textDecoration: "none",
-                    color: "inherit",
-                  }}
+                  w="100%"
                   component={Link}
                   to={`/submission/${submission.id}`}
                   className="transition-all hover:brightness-110"
                 >
                   <Stack gap="xs">
                     <Group justify="space-between" align="flex-start">
-                      <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                      <Group gap="xs" flex={1} miw={0}>
                         <LanguageIcon size={22} width={22} height={22} />
-                        <Text
-                          fw={600}
-                          style={{
-                            flex: 1,
-                            wordBreak: "break-word",
-                            lineHeight: 1.35,
-                          }}
-                        >
+                        <Text fw={600} lh={1.35} flex={1}>
                           {submission.questionTitle}
                         </Text>
                       </Group>
-                      <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                      <Text size="xs" c="dimmed">
                         {timeDiff(new Date(submission.submittedAt))}
                       </Text>
                     </Group>
@@ -401,7 +349,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                 </Card>
               );
             })}
-          </Box>
+          </Stack>
         </Box>
       </Box>
       <Paginator
