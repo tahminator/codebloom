@@ -72,6 +72,7 @@ export default function SchoolEmail({
               <Button
                 href={linkUrl}
                 className="inline-block rounded-xl px-6 py-[12px] no-underline bg-[#00b36a] text-white shadow"
+                id="input-verifyUrl-href"
               >
                 Verify Email
               </Button>
