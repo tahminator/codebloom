@@ -12,15 +12,10 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.models.job.Job;
 import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.models.question.Question;
-import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
-import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
-import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
