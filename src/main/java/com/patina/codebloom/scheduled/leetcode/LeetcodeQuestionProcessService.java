@@ -19,6 +19,7 @@ import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
+import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
@@ -109,8 +110,8 @@ public class LeetcodeQuestionProcessService {
 
     /**
      * Actually processes the job, makes updates to the repo as necessary to
-     * indicate the state that the job is in. This will fetch the data from
-     * leetcode, save it to the question in our db, etc.
+     * indicate the state that the job is in. This will fetch the question from our
+     * backend first, then use the leetcode ID to get submission details.
      */
     private void fetchAndUpdate(final Job job) {
         log.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
@@ -123,74 +124,40 @@ public class LeetcodeQuestionProcessService {
         }
 
         try {
-            log.debug("Fetching question data from Leetcode for slug: {}", job.getQuestionId());
-            LeetcodeQuestion leetcodeQuestion = leetcodeClient.findQuestionBySlug(job.getQuestionId());
+            log.debug("Fetching question from backend with ID: {}", job.getQuestionId());
+            Question question = questionRepository.getQuestionById(job.getQuestionId());
 
-            if (leetcodeQuestion == null) {
-                throw new RuntimeException("No question found on Leetcode for slug: " + job.getQuestionId());
+            if (question == null) {
+                throw new RuntimeException("No question found in backend with ID: " + job.getQuestionId());
             }
 
-            log.debug("Successfully fetched question: {}", leetcodeQuestion.getQuestionTitle());
+            log.debug("Found question: {} ({})", question.getQuestionTitle(), question.getQuestionSlug());
 
-            String slug = leetcodeQuestion.getTitleSlug();
-            var allIncompleteQuestions = questionRepository.getAllIncompleteQuestions();
-            var matchingQuestions = allIncompleteQuestions.stream()
-                            .filter(q -> slug.equals(q.getQuestionSlug()))
-                            .toList();
+            if (question.getSubmissionId() != null && !question.getSubmissionId().isEmpty()) {
+                try {
+                    int submissionId = Integer.parseInt(question.getSubmissionId());
+                    log.debug("Fetching submission details from Leetcode for submission ID: {}", submissionId);
 
-            if (matchingQuestions.isEmpty()) {
-                log.info("No existing questions found with slug: {}", slug);
-            } else {
-                log.info("Found {} question(s) to update with slug: {}", matchingQuestions.size(), slug);
+                    var detailedSubmission = leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
 
-                for (Question existingQuestion : matchingQuestions) {
-                    try {
-                        existingQuestion.setQuestionTitle(leetcodeQuestion.getQuestionTitle());
-                        existingQuestion.setDescription(leetcodeQuestion.getQuestion());
-                        existingQuestion.setAcceptanceRate(leetcodeQuestion.getAcceptanceRate());
-                        existingQuestion.setQuestionLink(leetcodeQuestion.getLink());
-                        existingQuestion.setQuestionNumber(leetcodeQuestion.getQuestionId());
+                    if (detailedSubmission != null) {
+                        log.debug("Successfully fetched submission details for submission ID: {}", submissionId);
 
-                        try {
-                            QuestionDifficulty difficulty = QuestionDifficulty.valueOf(
-                                            leetcodeQuestion.getDifficulty().toUpperCase());
-                            existingQuestion.setQuestionDifficulty(difficulty);
-                        } catch (IllegalArgumentException e) {
-                            log.warn("Unknown difficulty '{}' for question {}",
-                                            leetcodeQuestion.getDifficulty(), existingQuestion.getId());
+                        question.setRuntime(detailedSubmission.getRuntimeDisplay());
+                        question.setMemory(detailedSubmission.getMemoryDisplay());
+                        question.setCode(detailedSubmission.getCode());
+
+                        if (detailedSubmission.getLang() != null) {
+                            question.setLanguage(detailedSubmission.getLang().getName());
                         }
 
-                        questionRepository.updateQuestion(existingQuestion);
-
-                        for (var leetcodeTopicTag : leetcodeQuestion.getTopics()) {
-                            try {
-                                String topicSlug = leetcodeTopicTag.getSlug();
-                                LeetcodeTopicEnum topicEnum = LeetcodeTopicEnum.fromValue(topicSlug);
-
-                                var existingTopic = questionTopicRepository
-                                                .findQuestionTopicByQuestionIdAndTopicEnum(existingQuestion.getId(), topicEnum);
-
-                                if (existingTopic == null) {
-                                    var newQuestionTopic = QuestionTopic.builder()
-                                                    .questionId(existingQuestion.getId())
-                                                    .topicSlug(topicSlug)
-                                                    .topic(topicEnum)
-                                                    .build();
-
-                                    questionTopicRepository.createQuestionTopic(newQuestionTopic);
-                                    log.debug("Added topic '{}' to question {}", topicSlug, existingQuestion.getId());
-                                }
-                            } catch (Exception e) {
-                                log.warn("Failed to process topic '{}' for question {}: {}",
-                                                leetcodeTopicTag.getSlug(), existingQuestion.getId(), e.getMessage());
-                            }
-                        }
-
-                        log.debug("Successfully updated question ID: {}", existingQuestion.getId());
-                    } catch (Exception e) {
-                        log.error("Failed to update question ID: {}", existingQuestion.getId());
-                        e.printStackTrace();
+                        questionRepository.updateQuestion(question);
+                        log.debug("Successfully updated question ID: {} with submission details", question.getId());
+                    } else {
+                        log.warn("No detailed submission found for submission ID: {}", submissionId);
                     }
+                } catch (NumberFormatException e) {
+                    log.warn("Invalid submission ID format '{}' for question {}", question.getSubmissionId(), question.getId());
                 }
             }
 
@@ -202,7 +169,7 @@ public class LeetcodeQuestionProcessService {
             }
 
             log.info("Successfully completed job {} for question: {} ({})",
-                            job.getId(), leetcodeQuestion.getQuestionTitle(), leetcodeQuestion.getTitleSlug());
+                            job.getId(), question.getQuestionTitle(), question.getQuestionSlug());
 
         } catch (Exception e) {
             job.setStatus(JobStatus.INCOMPLETE);
