@@ -521,7 +521,7 @@ public class QuestionSqlRepository implements QuestionRepository {
                             COUNT(*)
                         FROM
                             "Question" q
-                        JOIN "QuestionTopic" qt ON qt."questionId" = q.id
+                        LEFT JOIN "QuestionTopic" qt ON qt."questionId" = q.id
                         WHERE
                             q."userId" = :userId
                         AND
