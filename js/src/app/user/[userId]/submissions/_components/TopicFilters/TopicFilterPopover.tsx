@@ -1,12 +1,12 @@
-import { QuestionTopicTopic } from "@/lib/api/types/autogen/schema";
+import { QuestionTopicDtoTopic } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { Button, Chip, Flex, Popover, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 
 type TopicFilterPopoverProps = {
-  value: QuestionTopicTopic[];
-  onChange: (topics: QuestionTopicTopic[]) => void;
+  value: QuestionTopicDtoTopic[];
+  onChange: (topics: QuestionTopicDtoTopic[]) => void;
   onClear: () => void;
 };
 
@@ -53,7 +53,7 @@ export default function TopicFilterPopover({
           multiple
           value={value}
           onChange={(e) => {
-            onChange(e as QuestionTopicTopic[]);
+            onChange(e as QuestionTopicDtoTopic[]);
           }}
         >
           <Flex
