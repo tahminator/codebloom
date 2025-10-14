@@ -43,7 +43,7 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
   }
 
   const pageData = data.payload;
-  
+
   return (
     <Box pos="relative" px="xs">
       {isPlaceholderData && <Overlay zIndex={1000} opacity={0.35} blur={4} />}
