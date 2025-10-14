@@ -1,8 +1,8 @@
-import { QuestionTopicTopic } from "@/lib/api/types/autogen/schema";
+import { QuestionTopicDtoTopic } from "@/lib/api/types/autogen/schema";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
 export const TOPIC_METADATA_LIST: Record<
-  QuestionTopicTopic,
+  QuestionTopicDtoTopic,
   ApiTypeUtils.QuestionTopicTopicMetadata
 > = {
   STACK: { name: "Stack" },

@@ -1,4 +1,4 @@
-import { QuestionTopicTopic, UserTagTag } from "@/lib/api/types/autogen/schema";
+import { QuestionTopicDtoTopic, UserTagTag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
@@ -91,7 +91,7 @@ export class ApiUtils {
    * ```
    */
   static getAllTopicEntries(): Record<
-    QuestionTopicTopic,
+    QuestionTopicDtoTopic,
     ApiTypeUtils.QuestionTopicTopicMetadata
   > {
     return this._TOPIC_METADATA_LIST;
