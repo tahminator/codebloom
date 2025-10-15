@@ -68,7 +68,7 @@ export default function TopicFilterPopover({
             {filteredTopics.length > 0 ?
               filteredTopics.map(([key, topic]) => (
                 <Chip
-                  key={topic.name}
+                  key={key}
                   value={key}
                   radius="xl"
                   styles={{
