@@ -51,7 +51,7 @@ public interface LobbyRepository {
     List<Lobby> findLobbiesByStatus(LobbyStatus status);
 
     /**
-     * Finds all active lobbies (available for joining).
+     * Finds all available lobbies (available for joining).
      * 
      * @return list of available lobbies
      */
