@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.job.Job;
 import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +47,7 @@ public class JobSqlRepositoryTest {
         testJob = Job.builder()
                         .questionId(mockQuestionId)
                         .status(JobStatus.INCOMPLETE)
-                        .nextAttemptAt(OffsetDateTime.now().minusHours(1))
+                        .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
                         .build();
 
         jobRepository.createJob(testJob);
@@ -67,11 +68,7 @@ public class JobSqlRepositoryTest {
     void testFindJobById() {
         Job foundJob = jobRepository.findJobById(testJob.getId());
         assertNotNull(foundJob);
-        assertEquals(testJob.getId(), foundJob.getId());
-        assertEquals(testJob.getQuestionId(), foundJob.getQuestionId());
-        assertEquals(testJob.getStatus(), foundJob.getStatus());
-        assertNotNull(foundJob.getCreatedAt());
-        assertNotNull(foundJob.getNextAttemptAt());
+        assertEquals(testJob, foundJob);
     }
 
     @Test
@@ -79,18 +76,16 @@ public class JobSqlRepositoryTest {
     void testFindIncompleteJobs() {
         List<Job> incompleteJobs = jobRepository.findIncompleteJobs(10);
         assertNotNull(incompleteJobs);
+        assertTrue(incompleteJobs.contains(testJob));
 
-        boolean foundTestJob = incompleteJobs.stream()
-                        .anyMatch(job -> job.getId().equals(testJob.getId()));
-        assertTrue(foundTestJob, "Test job should be found in incomplete jobs list");
     }
 
     @Test
     @Order(3)
     void testUpdateJob() {
-        testJob.setProcessedAt(OffsetDateTime.now());
-        testJob.setCompletedAt(OffsetDateTime.now().plusMinutes(5));
-        testJob.setNextAttemptAt(OffsetDateTime.now().plusMinutes(30));
+        testJob.setProcessedAt(StandardizedOffsetDateTime.now());
+        testJob.setCompletedAt(StandardizedOffsetDateTime.now().plusMinutes(5));
+        testJob.setNextAttemptAt(StandardizedOffsetDateTime.now().plusMinutes(30));
         testJob.setStatus(JobStatus.COMPLETE);
 
         boolean updateResult = jobRepository.updateJob(testJob);
