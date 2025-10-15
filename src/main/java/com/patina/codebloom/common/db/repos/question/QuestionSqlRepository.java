@@ -518,7 +518,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     public int getQuestionCountByUserId(final String userId, final String query, final boolean pointFilter, final Set<String> topics) {
         String sql = """
                         SELECT
-                            COUNT(*)
+                            COUNT(DISTINCT q.id)
                         FROM
                             "Question" q
                         LEFT JOIN "QuestionTopic" qt ON qt."questionId" = q.id
