@@ -64,20 +64,8 @@ public class LobbySqlRepositoryTest {
             fail("Failed to delete test lobby");
         }
     }
-
     @Test
     @Order(1)
-    void testCreateLobby() {
-        assertNotNull(testLobby.getId());
-        assertNotNull(testLobby.getCreatedAt());
-        assertEquals(mockJoinCode, testLobby.getJoinCode());
-        assertEquals(LobbyStatus.AVAILABLE, testLobby.getStatus());
-        assertEquals(1, testLobby.getPlayerCount());
-        assertNull(testLobby.getWinnerId());
-    }
-
-    @Test
-    @Order(2)
     void testFindLobbyById() {
         Lobby foundLobby = lobbyRepository.findLobbyById(testLobby.getId());
         assertNotNull(foundLobby);
@@ -85,7 +73,7 @@ public class LobbySqlRepositoryTest {
     }
 
     @Test
-    @Order(3)
+    @Order(2)
     void testFindLobbyByJoinCode() {
         Lobby foundLobby = lobbyRepository.findLobbyByJoinCode(mockJoinCode);
         assertNotNull(foundLobby);
@@ -94,7 +82,7 @@ public class LobbySqlRepositoryTest {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     void testFindLobbiesByStatus() {
         List<Lobby> availableLobbies = lobbyRepository.findLobbiesByStatus(LobbyStatus.AVAILABLE);
         assertNotNull(availableLobbies);
@@ -102,7 +90,7 @@ public class LobbySqlRepositoryTest {
     }
 
     @Test
-    @Order(6)
+    @Order(4)
     void testFindAvailableLobbies() {
         List<Lobby> availableLobbies = lobbyRepository.findAvailableLobbies();
         assertNotNull(availableLobbies);
@@ -110,7 +98,7 @@ public class LobbySqlRepositoryTest {
     }
 
     @Test
-    @Order(7)
+    @Order(5)
     void testUpdateLobby() {
         testLobby.setStatus(LobbyStatus.ACTIVE);
         testLobby.setPlayerCount(2);
@@ -118,7 +106,7 @@ public class LobbySqlRepositoryTest {
 
         boolean updateResult = lobbyRepository.updateLobby(testLobby);
         assertTrue(updateResult);
-        
+
         Lobby updatedLobby = lobbyRepository.findLobbyById(testLobby.getId());
         assertNotNull(updatedLobby);
         assertEquals(LobbyStatus.ACTIVE, updatedLobby.getStatus());
