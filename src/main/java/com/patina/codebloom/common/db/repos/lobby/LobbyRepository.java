@@ -72,7 +72,6 @@ public interface LobbyRepository {
      * <li>status</li>
      * <li>expiresAt</li>
      * <li>playerCount</li>
-     * <li>winnerId</li>
      * </ul>
      * @return true if the update was successful, false otherwise
      */
