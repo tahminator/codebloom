@@ -68,7 +68,7 @@ export const useUserSubmissionsQuery = ({
     () => _topics.split(",").filter(Boolean) as QuestionTopicDtoTopic[],
     [_topics],
   );
-  
+
   const setTopics = useCallback(
     (topics: QuestionTopicDtoTopic[]) => {
       _setTopics(topics.join(","));
