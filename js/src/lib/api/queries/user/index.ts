@@ -1,6 +1,4 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
-import { Page } from "@/lib/api/common/page";
-import { Api } from "@/lib/api/types";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { QuestionTopicDtoTopic } from "@/lib/api/types/autogen/schema";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
@@ -10,7 +8,7 @@ import { useCallback, useEffect, useMemo } from "react";
 /**
  * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more.
  */
-export const useUserProfileQuery = ({ userId }: { userId?: string }) => {
+export const useUserProfileQuery = ({ userId }: { userId: string }) => {
   return useQuery({
     queryKey: ["user", "profile", userId],
     queryFn: () => fetchUserProfile({ userId }),
@@ -28,7 +26,7 @@ export const useUserSubmissionsQuery = ({
   tieToUrl = false,
   pageSize = 20,
 }: {
-  userId?: string;
+  userId: string;
   initialPage?: number;
   tieToUrl?: boolean;
   pageSize?: number;
@@ -100,7 +98,7 @@ export const useUserSubmissionsQuery = ({
         query: debouncedQuery,
         pageSize,
         pointFilter,
-        topics: _topics,
+        topics,
       }),
     placeholderData: keepPreviousData,
   });
@@ -178,10 +176,18 @@ export const useGetAllUsersQuery = (
   };
 };
 
-async function fetchUserProfile({ userId }: { userId?: string }) {
-  const response = await fetch(`/api/user/${userId ?? ""}/profile`);
+async function fetchUserProfile({ userId }: { userId: string }) {
+  const { url, method, res } = ApiURL.create("/api/user/{userId}/profile", {
+    method: "GET",
+    params: {
+      userId,
+    },
+  });
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await response.json()) as UnknownApiResponse<Api<"UserDto">>;
+  const json = res(await response.json());
 
   return json;
 }
@@ -195,19 +201,31 @@ async function fetchUserSubmissions({
   topics,
 }: {
   page: number;
-  userId?: string;
+  userId: string;
   query?: string;
   pageSize: number;
   pointFilter: boolean;
-  topics?: string;
+  topics?: string[];
 }) {
-  const response = await fetch(
-    `/api/user/${userId ?? ""}/submissions?page=${page}&query=${query}&pageSize=${pageSize}&pointFilter=${pointFilter}&topics=${topics ?? ""}`,
-  );
+  const { url, method, res } = ApiURL.create("/api/user/{userId}/submissions", {
+    method: "GET",
+    params: {
+      userId,
+    },
+    queries: {
+      page,
+      query,
+      pageSize,
+      pointFilter,
+      topics,
+    },
+  });
 
-  const json = (await response.json()) as UnknownApiResponse<
-    Page<Array<Api<"QuestionDto">>>
-  >;
+  const response = await fetch(url, {
+    method,
+  });
+
+  const json = res(await response.json());
   return json;
 }
 
@@ -220,13 +238,19 @@ async function fetchAllUsers({
   query?: string;
   pageSize: number;
 }) {
-  const response = await fetch(
-    `/api/user/all?page=${page}&query=${query}&pageSize=${pageSize}`,
-  );
+  const { url, method, res } = ApiURL.create("/api/user/all", {
+    method: "GET",
+    queries: {
+      page,
+      query,
+      pageSize,
+    },
+  });
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await response.json()) as UnknownApiResponse<
-    Page<Api<"UserDto">[]>
-  >;
+  const json = res(await response.json());
 
   return json;
 }

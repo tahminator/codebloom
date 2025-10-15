@@ -1,10 +1,10 @@
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import {
-  clubVerificationForm,
   useClubQuery,
   useVerifyPasswordMutation,
 } from "@/lib/api/queries/club";
+import { clubVerificationFormSchema } from "@/lib/api/schema/club";
 import { UserTag } from "@/lib/api/types/usertag";
 import {
   Button,
@@ -44,13 +44,13 @@ export default function ClubSignUpForm({
   const [imgError, setImgError] = useState(false);
 
   const form = useForm({
-    validate: zodResolver(clubVerificationForm),
+    validate: zodResolver(clubVerificationFormSchema),
     initialValues: {
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof clubVerificationForm>) => {
+  const onSubmit = (values: z.infer<typeof clubVerificationFormSchema>) => {
     const id = notifications.show({
       message: "Verifying password... ",
       color: "blue",

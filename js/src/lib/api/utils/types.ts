@@ -23,8 +23,22 @@ export namespace ApiTypeUtils {
 
     /**
      * How the backend expects to receive this tag when passed in as a URL param.
+     *
+     * @note This is currently implemented as an all lowercase version of the enum, but
+     * THIS CAN CHANGE. SO DO NOT DO THE LOGIC OF MAKING THE API KEY YOURSELF.
+     *
+     * Instead, do this:
+     *
+     * @example
+     * ```ts
+     * const metadata = ApiUtils.getMetadataByTagEnum(UserTagTag.Gwc);
+     *
+     * const apiKey = metadata.apiKey; // use this.
+     *
+     * const fetch = (`api/blah/blah?${apiKey}=false`);
+     * ```
      */
-    apiKey: string;
+    apiKey: Lowercase<UserTagTag>;
 
     /**
      * Extra information about the given tag.

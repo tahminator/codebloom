@@ -1,9 +1,4 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { ApiURL } from "@/lib/api/common/apiURL";
-import { Page } from "@/lib/api/common/page";
-import { Api } from "@/lib/api/types";
-import { ApiPaths } from "@/lib/api/types/autogen/schema";
-import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { ApiUtils } from "@/lib/api/utils";
 import {
   TagEnumToBooleanFilterObject,
@@ -357,28 +352,31 @@ async function fetchLeaderboardUsers({
   filters: TagEnumToBooleanFilterObject;
   globalIndex: boolean;
 }) {
-  const url = ApiURL.create("/api/leaderboard/current/user/all", {
-    method: "GET",
-    queries: {
-      page,
-      pageSize,
-      query,
-      globalIndex,
-      ...Object.typedFromEntries(
-        Object.typedEntries(filters).map(([tagEnum, filterEnabled]) => {
-          const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+  const { url, method, res } = ApiURL.create(
+    "/api/leaderboard/current/user/all",
+    {
+      method: "GET",
+      queries: {
+        page,
+        pageSize,
+        query,
+        globalIndex,
+        ...Object.typedFromEntries(
+          Object.typedEntries(filters).map(([tagEnum, filterEnabled]) => {
+            const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
 
-          return [metadata.apiKey, filterEnabled];
-        }),
-      ),
+            return [metadata.apiKey, filterEnabled];
+          }),
+        ),
+      },
     },
+  );
+
+  const response = await fetch(url, {
+    method,
   });
 
-  const response = await fetch(url.url, {
-    method: url.method,
-  });
-
-  const json = url.res(await response.json());
+  const json = res(await response.json());
 
   return json;
 }
@@ -430,38 +428,53 @@ async function fetchLeaderboardUsersByLeaderboardId({
 }
 
 async function useCurrentLeaderboardMetadata() {
-  const response = await fetch(`/api/leaderboard/current/metadata`, {
-    method: "GET",
+  const { url, method, res } = ApiURL.create(
+    "/api/leaderboard/current/metadata",
+    {
+      method: "GET",
+    },
+  );
+  const response = await fetch(url, {
+    method,
   });
 
-  const json = (await response.json()) as UnknownApiResponse<Leaderboard>;
+  const json = res(await response.json());
 
   return json;
 }
 
 async function getLeaderboardMetadataById(leaderboardId: string) {
-  const response = await fetch(`/api/leaderboard/${leaderboardId}/metadata`, {
-    method: "GET",
+  const { url, method, res } = ApiURL.create(
+    "/api/leaderboard/{leaderboardId}/metadata",
+    {
+      method: "GET",
+      params: {
+        leaderboardId,
+      },
+    },
+  );
+  const response = await fetch(url, {
+    method,
   });
 
-  const json = (await response.json()) as UnknownApiResponse<Leaderboard>;
+  const json = res(await response.json());
 
   return json;
 }
 
 async function updateTotalPoints() {
-  const res = await fetch("/api/leetcode/check", {
+  const { url, method, res } = ApiURL.create("/api/leetcode/check", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+  });
+  const response = await fetch(url, {
+    method,
   });
 
-  const json = (await res.json()) as UnknownApiResponse<{
-    acceptedSubmissions: { title: string; points: number }[];
-  }>;
+  const json = res(await response.json());
 
-  if (res.status === 429) {
+  // returns wait-until rate limit number.
+  // TODO - Make it a header
+  if (response.status === 429) {
     return { ...json, message: Number(json.message) };
   }
 
@@ -473,11 +486,20 @@ export async function getMyRecentLeaderboardData({
 }: {
   userId: string;
 }) {
-  const res = await fetch(`/api/leaderboard/current/user/${userId}`);
+  const { url, method, res } = ApiURL.create(
+    "/api/leaderboard/current/user/{userId}",
+    {
+      method: "GET",
+      params: {
+        userId,
+      },
+    },
+  );
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await res.json()) as UnknownApiResponse<
-    Api<"UserDto"> & { totalScore: number }
-  >;
+  const json = res(await response.json());
 
   return json;
 }
@@ -491,16 +513,19 @@ async function fetchAllLeaderboardsMetadata({
   query: string;
   pageSize: number;
 }) {
-  const response = await fetch(
-    `/api/leaderboard/all/metadata?page=${page}&pageSize=${pageSize}&query=${query}`,
-    {
-      method: "GET",
+  const { url, method, res } = ApiURL.create("/api/leaderboard/all/metadata", {
+    method: "GET",
+    queries: {
+      page,
+      pageSize,
+      query,
     },
-  );
+  });
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await response.json()) as UnknownApiResponse<
-    Page<Leaderboard[]>
-  >;
+  const json = res(await response.json());
 
   return json;
 }

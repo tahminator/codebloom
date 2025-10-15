@@ -29,7 +29,7 @@ import classes from "./SubmissionDetailsContent.module.css";
 export default function SubmissionDetailsContent({
   submissionId,
 }: {
-  submissionId?: string;
+  submissionId: string;
 }) {
   const navigate = useNavigate();
 

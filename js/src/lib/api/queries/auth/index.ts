@@ -1,5 +1,4 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
-import { Api } from "@/lib/api/types";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useQuery } from "@tanstack/react-query";
 
 /**
@@ -13,14 +12,15 @@ export const useAuthQuery = () => {
 };
 
 async function validateAuthentication() {
-  const response = await fetch("/api/auth/validate", {
+  const { url, method, res } = ApiURL.create("/api/auth/validate", {
     method: "GET",
   });
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await response.json()) as UnknownApiResponse<{
-    user: Api<"PrivateUserDto">;
-    session: Api<"SessionDto">;
-  }>;
+  const json = res(await response.json());
+
   if (json.success) {
     return {
       session: json.payload.session,

@@ -1,5 +1,5 @@
 import { useVerifySchoolMutation } from "@/lib/api/queries/auth/school";
-import { schoolVerificationForm } from "@/lib/api/schema/school";
+import { schoolVerificationFormSchema } from "@/lib/api/schema/school";
 import { Box, Button, Modal, Text, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -17,13 +17,13 @@ export default function SchoolEmailModal({
 }: SchoolModalProps) {
   const { mutate, status } = useVerifySchoolMutation();
   const form = useForm({
-    validate: zodResolver(schoolVerificationForm),
+    validate: zodResolver(schoolVerificationFormSchema),
     initialValues: {
       email: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof schoolVerificationForm>) => {
+  const onSubmit = (values: z.infer<typeof schoolVerificationFormSchema>) => {
     const id = notifications.show({
       message: "Verifying email... ",
       color: "blue",

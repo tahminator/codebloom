@@ -1,14 +1,16 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export async function verifySchool(email: { email: string }) {
-  const response = await fetch("/api/auth/school/enroll", {
+  const { url, method, req, res } = ApiURL.create("/api/auth/school/enroll", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(email),
+  });
+  const response = await fetch(url, {
+    method,
+    body: req(email),
   });
 
-  const json = (await response.json()) as UnknownApiResponse<string>;
+  const json = res(await response.json());
 
   return json;
 }
