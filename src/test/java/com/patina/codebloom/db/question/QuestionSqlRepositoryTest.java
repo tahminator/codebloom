@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
+import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,7 +110,7 @@ public class QuestionSqlRepositoryTest {
     @Order(3)
     void testGetQuestionsByUserId() {
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
-                        testQuestion.getUserId(), 1, 20, "", false, Collections.emptySet());
+                        testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[]{});
 
         assertNotNull(questions, "Questions list should not be null");
         assertTrue(questions.size() > 0, "Questions list should contain at least one question");

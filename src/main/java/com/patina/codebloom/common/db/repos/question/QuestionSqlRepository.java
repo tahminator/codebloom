@@ -283,7 +283,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query, final boolean pointFilter, final Set<String> topics) {
+    public ArrayList<Question> getQuestionsByUserId(final String userId, final int page, final int pageSize, final String query, final boolean pointFilter, final LeetcodeTopicEnum[] topics) {
         ArrayList<Question> questions = new ArrayList<>();
         String sql = """
                         SELECT *
@@ -329,11 +329,10 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(2, "%" + query + "%");
             stmt.setBoolean(3, pointFilter);
 
-            LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
 
-            String[] sqlValues = Arrays.stream(topicEnums)
-                            .map(LeetcodeTopicEnum::getLeetcodeEnum)
-                            .toArray(String[]::new);
+            String[] sqlValues = Arrays.stream(topics)
+                .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);

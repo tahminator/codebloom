@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.db.models.question.Question;
+import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.db.repos.question.topic.service.QuestionTopicService;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
@@ -41,10 +43,12 @@ public class UserController {
 
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final QuestionTopicService questionTopicService;
 
-    public UserController(final QuestionRepository questionRepository, final UserRepository userRepository) {
+    public UserController(final QuestionRepository questionRepository, final UserRepository userRepository, final QuestionTopicService questionTopicService) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
+        this.questionTopicService = questionTopicService;
     }
 
     @Operation(summary = "Public route that returns the given user's profile", description = """
@@ -82,8 +86,10 @@ public class UserController {
         FakeLag.sleep(500);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
-
-        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query, pointFilter, topics);
+        
+        LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
+        
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query, pointFilter, topicEnums);
 
         int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query, pointFilter, topics);
         int totalPages = (int) Math.ceil((double) totalQuestions / parsedPageSize);
