@@ -1,12 +1,10 @@
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { Avatar, Center } from "@mantine/core";
-import { useParams } from "react-router";
 
 import ProfilePictureSkeleton from "./ProfilePictureSkeleton";
 
-export default function ProfilePicture() {
-  const { userId } = useParams();
+export default function ProfilePicture({ userId }: { userId: string }) {
   const { data, status } = useUserProfileQuery({ userId });
 
   if (status === "pending") {

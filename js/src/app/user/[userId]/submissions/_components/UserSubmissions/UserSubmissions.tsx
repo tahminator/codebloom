@@ -26,7 +26,7 @@ import { Link } from "react-router-dom";
 
 import TopicFilterPopover from "../TopicFilters/TopicFilterPopover";
 
-export default function UserSubmissions({ userId }: { userId?: string }) {
+export default function UserSubmissions({ userId }: { userId: string }) {
   const {
     data,
     status,

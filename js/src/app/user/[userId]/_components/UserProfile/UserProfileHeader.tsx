@@ -10,7 +10,7 @@ import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-export default function UserProfileHeader({ userId }: { userId?: string }) {
+export default function UserProfileHeader({ userId }: { userId: string }) {
   const { data, status } = useUserProfileQuery({ userId });
 
   if (status === "pending") {

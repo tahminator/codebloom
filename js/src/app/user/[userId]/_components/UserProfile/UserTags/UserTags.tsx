@@ -7,7 +7,7 @@ import { IconAlertTriangle } from "@tabler/icons-react";
 
 import UserTagsSkeleton from "./UserTagsSkeleton";
 
-export default function UserTags({ userId }: { userId?: string }) {
+export default function UserTags({ userId }: { userId: string }) {
   const { data, status } = useUserProfileQuery({ userId });
 
   if (status === "pending") {

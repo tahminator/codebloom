@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 
 import MiniUserSubmissionsSkeleton from "./MiniUserSubmissionsSkeleton";
 
-export default function MiniUserSubmissions({ userId }: { userId?: string }) {
+export default function MiniUserSubmissions({ userId }: { userId: string }) {
   const { data, status, isPlaceholderData } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
