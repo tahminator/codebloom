@@ -14,7 +14,6 @@ import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
-import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
@@ -35,7 +34,6 @@ public class LeetcodeQuestionProcessService {
     private final JobRepository jobRepository;
     private final LeetcodeClient leetcodeClient;
     private final QuestionRepository questionRepository;
-    private final QuestionTopicRepository questionTopicRepository;
     private final BlockingBucket rateLimiter;
 
     private BlockingBucket initializeBucket() {
@@ -59,12 +57,10 @@ public class LeetcodeQuestionProcessService {
 
     public LeetcodeQuestionProcessService(final JobRepository jobRepository,
                     final ThrottledLeetcodeClient throttledLeetcodeClient,
-                    final QuestionRepository questionRepository,
-                    final QuestionTopicRepository questionTopicRepository) {
+                    final QuestionRepository questionRepository) {
         this.jobRepository = jobRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.questionRepository = questionRepository;
-        this.questionTopicRepository = questionTopicRepository;
         this.rateLimiter = initializeBucket();
     }
 
