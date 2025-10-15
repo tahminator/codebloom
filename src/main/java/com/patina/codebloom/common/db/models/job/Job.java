@@ -29,7 +29,7 @@ public class Job {
     @NullColumn
     private OffsetDateTime completedAt;
 
-    @NullColumn
+    @NotNullColumn
     private OffsetDateTime nextAttemptAt;
 
     @NotNullColumn
