@@ -34,10 +34,10 @@ public interface JobRepository {
     Job findJobById(String id);
 
     /**
-     * Finds incomplete jobs ordered by creation date (oldest first).
+     * Finds incomplete jobs ordered by nextAttemptAt (earliest first).
      * 
      * @param maxJobs the maximum number of jobs to return
-     * @return list of incomplete jobs ordered by oldest first
+     * @return list of incomplete jobs ordered by earliest nextAttemptAt first
      */
     List<Job> findIncompleteJobs(int maxJobs);
 
