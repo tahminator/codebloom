@@ -34,14 +34,22 @@ export class ApiUtils {
    * Receive @type {ApiTypeUtils.UserTagTagMetadata} from a `tagEnum`.
    *
    * @returns {ApiTypeUtils.UserTagTagMetadata} metadata - Metadata object
-   * @returns {string} metadata.name - Name to use when actually showcasing the tag on the frontend
-   * @returns {string} metadata.icon - Path to image of tag enum. You can pass this directly to anything that loads an image.
-   * @returns {string} metadata.alt - A description of the icon/tag.
    */
   static getMetadataByTagEnum(
     tagEnum: UserTagTag,
   ): ApiTypeUtils.UserTagTagMetadata {
     return ApiUtils._TAG_METADATA_LIST[tagEnum];
+  }
+
+  /**
+   * Receive @type {ApiTypeUtils.QuestionTopicTopicMetadata} from a `topicEnum`.
+   *
+   * @returns {ApiTypeUtils.QuestionTopicTopicMetadata} metadata - Metadata object
+   */
+  static getTopicEnumMetadataByTopicEnum(
+    topicEnum: QuestionTopicDtoTopic,
+  ): ApiTypeUtils.QuestionTopicTopicMetadata {
+    return ApiUtils._TOPIC_METADATA_LIST[topicEnum];
   }
 
   /**
