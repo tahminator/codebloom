@@ -88,7 +88,7 @@ export class ApiUtils {
   }
 
   /**
-   * Return a list of all topic enums. Essentially a shorthand for:
+   * Returns a list of all topic enums. Essentially a shorthand for:
    * ```ts
    * Object.values(QuestionTopicTopic);
    * ```
@@ -101,10 +101,10 @@ export class ApiUtils {
   }
 
   /**
-   * Return a list of all supported tag enums. Essentially a shorthand for:
+   * Returns a mapping of all topic enums to their metadata.
+   * Essentially a shorthand for:
    * ```ts
-   * Object.values(UserTagTag).filter(ApiUtils._isSupportedTagEnum);
-   * ```
+   * ApiUtils._TOPIC_METADATA_LIST
    */
   static getAllSupportedTagEnums(): ApiTypeUtils.FilteredUserTagTag[] {
     return Object.values(UserTagTag).filter(ApiUtils._isSupportedTagEnum);
