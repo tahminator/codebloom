@@ -70,6 +70,7 @@ public class LeetcodeQuestionProcessServiceTest {
         testJob = Job.builder()
                         .questionId(testQuestion.getId())
                         .status(JobStatus.INCOMPLETE)
+                        .nextAttemptAt(java.time.OffsetDateTime.now().minusHours(1))
                         .build();
 
         jobRepository.createJob(testJob);
@@ -77,10 +78,10 @@ public class LeetcodeQuestionProcessServiceTest {
 
     @AfterAll
     void cleanup() {
-            boolean isSuccessful = jobRepository.deleteJobById(testJob.getId()) && questionRepository.deleteQuestionById(testQuestion.getId());
-            if (!isSuccessful) {
-                fail("Failed to clean up test job");
-            }
+        boolean isSuccessful = jobRepository.deleteJobById(testJob.getId()) && questionRepository.deleteQuestionById(testQuestion.getId());
+        if (!isSuccessful) {
+            fail("Failed to clean up test job");
+        }
     }
 
     @Test
@@ -109,6 +110,7 @@ public class LeetcodeQuestionProcessServiceTest {
         Job freshJob = Job.builder()
                         .questionId(tempQuestion.getId())
                         .status(JobStatus.INCOMPLETE)
+                        .nextAttemptAt(java.time.OffsetDateTime.now().minusHours(1))
                         .build();
 
         jobRepository.createJob(freshJob);
@@ -117,13 +119,14 @@ public class LeetcodeQuestionProcessServiceTest {
 
         assertNotNull(incompleteJobs);
         assertTrue(incompleteJobs.size() >= 1);
-        assertTrue(incompleteJobs.contains(freshJob));
+
+        boolean foundFreshJob = incompleteJobs.stream()
+                        .anyMatch(job -> job.getId().equals(freshJob.getId()));
+        assertTrue(foundFreshJob);
 
         jobRepository.deleteJobById(freshJob.getId());
         questionRepository.deleteQuestionById(tempQuestion.getId());
     }
-
-
 
     @Test
     void jobStatusTransitionValid() {
@@ -146,6 +149,7 @@ public class LeetcodeQuestionProcessServiceTest {
         Job processingJob = Job.builder()
                         .questionId(tempQuestion.getId())
                         .status(JobStatus.INCOMPLETE)
+                        .nextAttemptAt(java.time.OffsetDateTime.now().minusHours(1))
                         .build();
 
         jobRepository.createJob(processingJob);
@@ -168,6 +172,6 @@ public class LeetcodeQuestionProcessServiceTest {
 
     @Test
     void drainQueueValid() {
-            service.drainQueue();
+        service.drainQueue();
     }
 }
