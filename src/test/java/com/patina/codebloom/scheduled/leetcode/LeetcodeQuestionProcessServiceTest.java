@@ -21,6 +21,7 @@ import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -70,7 +71,7 @@ public class LeetcodeQuestionProcessServiceTest {
         testJob = Job.builder()
                         .questionId(testQuestion.getId())
                         .status(JobStatus.INCOMPLETE)
-                        .nextAttemptAt(java.time.OffsetDateTime.now().minusHours(1))
+                        .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
                         .build();
 
         jobRepository.createJob(testJob);
@@ -110,7 +111,7 @@ public class LeetcodeQuestionProcessServiceTest {
         Job freshJob = Job.builder()
                         .questionId(tempQuestion.getId())
                         .status(JobStatus.INCOMPLETE)
-                        .nextAttemptAt(java.time.OffsetDateTime.now().minusHours(1))
+                        .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
                         .build();
 
         jobRepository.createJob(freshJob);
@@ -119,11 +120,7 @@ public class LeetcodeQuestionProcessServiceTest {
 
         assertNotNull(incompleteJobs);
         assertTrue(incompleteJobs.size() >= 1);
-
-        boolean foundFreshJob = incompleteJobs.stream()
-                        .anyMatch(job -> job.getId().equals(freshJob.getId()));
-        assertTrue(foundFreshJob);
-
+        assertTrue(incompleteJobs.contains(freshJob));
         jobRepository.deleteJobById(freshJob.getId());
         questionRepository.deleteQuestionById(tempQuestion.getId());
     }
@@ -149,7 +146,7 @@ public class LeetcodeQuestionProcessServiceTest {
         Job processingJob = Job.builder()
                         .questionId(tempQuestion.getId())
                         .status(JobStatus.INCOMPLETE)
-                        .nextAttemptAt(java.time.OffsetDateTime.now().minusHours(1))
+                        .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
                         .build();
 
         jobRepository.createJob(processingJob);
