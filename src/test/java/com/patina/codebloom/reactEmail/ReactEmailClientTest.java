@@ -51,7 +51,7 @@ class ReactEmailClientTest {
     @Test
     void emailTest() throws IOException {
         ReactEmailClient client = new ReactEmailClientImpl();
-        String verifyUrl = "https://example.com";
+        String verifyUrl = "https://example.com/example/href";
 
         String renderedHtml = client.schoolEmailTemplate(verifyUrl);
 

@@ -15,7 +15,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 /**
  * Fetch the users on the current leaderboard. This is a super query
@@ -43,6 +43,13 @@ export const useCurrentLeaderboardUsersQuery = (
     initialPage: initialPage,
     tieToUrl: tieToUrl,
   });
+
+  // hacky impl to track filters changing.
+  const stringifiedFilters = useMemo(() => JSON.stringify(filters), [filters]);
+
+  useEffect(() => {
+    goTo(1);
+  }, [stringifiedFilters, goTo]);
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
@@ -195,6 +202,13 @@ export const useLeaderboardUsersByIdQuery = ({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
   });
+
+  // hacky impl to track filters changing.
+  const stringifiedFilters = useMemo(() => JSON.stringify(filters), [filters]);
+
+  useEffect(() => {
+    goTo(1);
+  }, [stringifiedFilters, goTo]);
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
