@@ -162,7 +162,6 @@ public class LeetcodeQuestionProcessService {
             if (dataFound) {
                 job.setStatus(JobStatus.COMPLETE);
                 job.setCompletedAt(StandardizedOffsetDateTime.now());
-                job.setNextAttemptAt(null);
 
                 log.info("Successfully completed job {} for question: {} (ID: {})",
                                 job.getId(), question.getQuestionTitle(), question.getId());

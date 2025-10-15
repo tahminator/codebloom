@@ -110,9 +110,9 @@ public class JobSqlRepository implements JobRepository {
                             "Job"
                         WHERE
                             status = ?
-                            AND ("nextAttemptAt" IS NULL OR "nextAttemptAt" <= NOW())
+                            AND "nextAttemptAt" <= NOW()
                         ORDER BY
-                            "createdAt" ASC
+                            "nextAttemptAt" ASC
                         LIMIT ?
                         """;
 
