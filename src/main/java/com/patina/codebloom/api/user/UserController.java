@@ -86,9 +86,9 @@ public class UserController {
         FakeLag.sleep(500);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
-        
+
         LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
-        
+
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query, pointFilter, topicEnums);
 
         int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query, pointFilter, topics);
