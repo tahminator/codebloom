@@ -1,23 +1,25 @@
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
 
-import { UnknownApiResponse } from "../../common/apiResponse";
-import { ClubDto } from "../../types/club";
-import { UserTag } from "../../types/usertag";
-
-export const useClubQuery = ({ clubSlug }: { clubSlug?: string }) => {
+export const useClubQuery = ({ clubSlug }: { clubSlug: string }) => {
   return useQuery({
     queryKey: ["club", clubSlug],
     queryFn: () => fetchClubDto({ clubSlug }),
   });
 };
 
-async function fetchClubDto({ clubSlug }: { clubSlug?: string }) {
-  const response = await fetch(`/api/club/${clubSlug}`);
+async function fetchClubDto({ clubSlug }: { clubSlug: string }) {
+  const { url, method, res } = ApiURL.create("/api/club/{clubSlug}", {
+    method: "GET",
+    params: {
+      clubSlug,
+    },
+  });
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await response.json()) as UnknownApiResponse<ClubDto>;
-
-  return json;
+  return res(await response.json());
 }
 
 export const useVerifyPasswordMutation = (clubSlug: string) => {
@@ -40,22 +42,19 @@ async function verifyPassword({
   password: string;
   clubSlug: string;
 }) {
-  const response = await fetch("/api/club/verify", {
+  const { url, method, req, res } = ApiURL.create("/api/club/verify", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  });
+  const response = await fetch(url, {
+    method,
+    body: req({
       userId,
       password,
       clubSlug,
     }),
   });
-  const json = (await response.json()) as UnknownApiResponse<UserTag>;
+
+  const json = res(await response.json());
 
   return json;
 }
-
-export const clubVerificationForm = z.object({
-  password: z.string().trim().min(1).max(230),
-});

@@ -1,5 +1,4 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
-import { Api } from "@/lib/api/types";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useQuery } from "@tanstack/react-query";
 
 /**
@@ -8,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 export const useSubmissionDetailsQuery = ({
   submissionId,
 }: {
-  submissionId?: string;
+  submissionId: string;
 }) => {
   return useQuery({
     queryKey: ["submission", submissionId],
@@ -19,13 +18,21 @@ export const useSubmissionDetailsQuery = ({
 async function fetchSubmissionDetails({
   submissionId,
 }: {
-  submissionId?: string;
+  submissionId: string;
 }) {
-  const res = await fetch(`/api/leetcode/submission/${submissionId}`);
-  const json = (await res.json()) as UnknownApiResponse<
-    Api<"QuestionDto"> &
-      Pick<Api<"UserDto">, "discordName" | "leetcodeUsername" | "nickname">
-  >;
+  const { url, method, res } = ApiURL.create(
+    "/api/leetcode/submission/{submissionId}",
+    {
+      method: "GET",
+      params: {
+        submissionId,
+      },
+    },
+  );
+  const response = await fetch(url, {
+    method,
+  });
+  const json = res(await response.json());
 
   return json;
 }

@@ -92,7 +92,37 @@ export class ApiURL<
     Extract<PathsMethodKey<TPathKey>, string>
   >;
 
-  public static create<
+  /**
+   * Static factory method to create an `ApiURL`.
+   *
+   * @param path - The API URL.
+   * @param {Object} options - Configuration options for the factory.
+   * @param {TCreatePathMethod | PathsKey} options.method - What method will be used for the request.
+   * @param {Object} options.params - An object where each key is a path on the URL **IF URL IS DYNAMIC**. If URL is not dynamic, it can stay undefined with no errors thrown.
+   * @param {Object} options.queries - An object where each key is a query param on the URL.
+   *
+   * @example
+   * ```ts
+                                                      // url has Intellisense, try it!
+      const { url, method, req, res } = ApiURL.create("/api/admin/user/admin/toggle", {
+        method: "POST", // must be a valid method type. If the method doesn't exist in the backend, will throw error.
+      });
+      // pass url into `fetch` (`URL` is actually natively supported by `fetch`).
+      const response = await fetch(url, {
+        // pass method into `fetch` to avoid duplication
+        method: method,
+        // if the backend accepts a body, `req` will validate that what you pass in is what the backend expects.
+        body: req({
+          id: userId,
+          toggleTo,
+        }),
+      });
+
+      // pass `await response.json()` into the `res` function to get automatic type-safety on the response.
+      const json = res(await response.json());
+   * ```
+   */
+  static create<
     const TCreatePathKey extends PathsKey,
     const TCreatePathMethod extends HttpMethodUpper &
       Uppercase<Extract<PathsMethodKey<TCreatePathKey>, string>>,
@@ -103,7 +133,7 @@ export class ApiURL<
       params,
       queries,
     }: {
-      method?: TCreatePathMethod | PathsKey;
+      method: TCreatePathMethod;
     } & MaybeParams<
       PathOperationsToPathParams<
         PathParamToOperations<TCreatePathKey, Lowercase<TCreatePathMethod>>
@@ -115,7 +145,7 @@ export class ApiURL<
       },
   ): ApiURL<TCreatePathKey, Lowercase<TCreatePathMethod>> {
     const opt = {
-      method: (method?.toLowerCase() ?? "get") as Lowercase<TCreatePathMethod> &
+      method: method?.toLowerCase() as Lowercase<TCreatePathMethod> &
         HttpMethodLower,
       params: params ?? {},
       queries: queries ?? {},
@@ -187,16 +217,58 @@ export class ApiURL<
   }
 
   /**
-   * Return final URL state post-creation.
+   * Return final URL state post-creation of dynamic paths and URL query params. You can 
+   * pass this into `fetch`.
+   *
+   * @returns {URL} url - The browser `URL` object.
+   *
+   * @example
+   * ```
+      const { url } = ApiURL.create(//...);
+
+      const response = await fetch(url); // The `URL` object is natively supported by `fetch`.
+    ```
    */
   get url(): URL {
     return this._url;
   }
 
+  /**
+   * Return the `method` passed into the input object, as a way to define `method` on `fetch`.
+   *
+   * @returns {typeof this._method} method - The method of the request.
+   *
+   * @example
+   * ```
+      const { url, method } = ApiURL.create(//...);
+
+      const response = await fetch(url, {
+        method, // will set `fetch.options.method` to `ApiURL.create.method`
+      });
+    ```
+   */
   get method(): typeof this._method {
     return this._method;
   }
 
+  /**
+   * Validate `body` fields on `fetch` based on the body the endpoint would expect.
+   *
+   * @returns {string} stringified - Calls `JSON.stringify(body)` under the hood, but adds types from the 
+   * given backend endpoint.
+   *
+   * @example
+   * ```
+      const { url, method, req } = ApiURL.create(//...);
+
+      const response = await fetch(url, {
+        method,
+        body: req({
+          id: user.id // will validate that `id` exists and `user.id` matches the type it wants.
+        })
+      });
+    ```
+   */
   req(
     body: PathOperationsToPathRequestBody<
       PathParamToOperations<TPathKey, TPathMethod>
@@ -205,6 +277,26 @@ export class ApiURL<
     return JSON.stringify(body);
   }
 
+  /**
+   * Validate `response.json()` at compile-time, with no real overhead.
+   *
+   * @note - This is a no-op, it doesn't do anything in the implementation except return what you passed in 
+   * as an input. However, it is required in order to gain full type-safety.
+   *
+   * @returns {string} stringified - Calls `JSON.stringify(body)` under the hood, but adds types from the 
+   * given backend endpoint.
+   *
+   * @example
+   * ```
+      const { url, res } = ApiURL.create(//...);
+
+      const response = await fetch(url, {
+        // ...
+      });
+
+      const json = res(await response.json()); // json is fully typed at compile-time.
+    ```
+   */
   res(
     response: unknown,
   ): UnknownApiResponse<

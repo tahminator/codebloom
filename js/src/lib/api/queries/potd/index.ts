@@ -1,5 +1,4 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
-import { Api } from "@/lib/api/types";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchPotdQuery = () => {
@@ -10,9 +9,14 @@ export const useFetchPotdQuery = () => {
 };
 
 async function fetchPotd() {
-  const res = await fetch("/api/leetcode/potd");
+  const { url, method, res } = ApiURL.create("/api/leetcode/potd", {
+    method: "GET",
+  });
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await res.json()) as UnknownApiResponse<Api<"PotdDto">>;
+  const json = res(await response.json());
 
   return json;
 }

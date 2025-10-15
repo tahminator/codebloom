@@ -1,4 +1,4 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
@@ -30,33 +30,26 @@ async function updateLeetcodeUsername({
 }: {
   leetcodeUsername: string;
 }) {
-  const res = await fetch("/api/leetcode/set", {
+  const { url, method, req, res } = ApiURL.create("/api/leetcode/set", {
     method: "POST",
-    body: JSON.stringify({
+  });
+  const response = await fetch(url, {
+    method,
+    body: req({
       leetcodeUsername,
     }),
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
 
-  const json = (await res.json()) as UnknownApiResponse<undefined>;
-
-  return { success: json.success, message: json.message };
+  return res(await response.json());
 }
 
 async function getLeetcodeQueryKey() {
-  const res = await fetch("/api/leetcode/key");
+  const { url, method, res } = ApiURL.create("/api/leetcode/key", {
+    method: "GET",
+  });
+  const response = await fetch(url, {
+    method,
+  });
 
-  const json = (await res.json()) as UnknownApiResponse<string>;
-
-  if (!json.success) {
-    return { success: json.success, message: json.message, payload: null };
-  }
-
-  return {
-    success: json.success,
-    message: json.message,
-    payload: json.payload,
-  };
+  return res(await response.json());
 }

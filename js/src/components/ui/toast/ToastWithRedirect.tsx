@@ -13,7 +13,7 @@ export default function ToastWithRedirect({
   message,
   color,
 }: {
-  to: string;
+  to: string | number;
   message: ReactNode;
   color?: DefaultMantineColor;
 }) {
@@ -24,7 +24,11 @@ export default function ToastWithRedirect({
       message,
       color,
     });
-    navigate(to);
+    if (typeof to === "string") {
+      navigate(to);
+    } else {
+      navigate(to);
+    }
   }, [color, message, navigate, to]);
 
   return <></>;

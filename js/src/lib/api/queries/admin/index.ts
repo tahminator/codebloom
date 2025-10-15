@@ -2,8 +2,6 @@ import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { ApiURL } from "@/lib/api/common/apiURL";
 import { Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
-import { Announcement } from "@/lib/api/types/announcement";
-import { Leaderboard } from "@/lib/api/types/leaderboard";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useToggleAdminMutation = () => {
@@ -112,9 +110,6 @@ async function toggleUserAdmin({
 
   const response = await fetch(url, {
     method: method,
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: req({
       id: userId,
       toggleTo,
@@ -127,19 +122,24 @@ async function toggleUserAdmin({
 }
 
 export async function createLeaderboard(leaderboard: { name: string }) {
-  const response = await fetch("/api/admin/leaderboard/create", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(leaderboard),
+  const { url, method, req, res } = ApiURL.create(
+    "/api/admin/leaderboard/create",
+    {
+      method: "POST",
+    },
+  );
+  const response = await fetch(url, {
+    method,
+    body: req(leaderboard),
   });
 
-  const json = (await response.json()) as UnknownApiResponse<Leaderboard>;
+  const json = res(await response.json());
   return json;
 }
 
 export const useCreateLeaderboardMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation<UnknownApiResponse<Leaderboard>, Error, { name: string }>({
+  return useMutation({
     mutationFn: createLeaderboard,
     onSuccess: async (data) => {
       if (data.success) {
@@ -173,19 +173,22 @@ async function createAnnouncement({
   expiresAt: string;
   showTimer: boolean;
 }) {
-  const response = await fetch("/api/admin/announcement/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const { url, method, req, res } = ApiURL.create(
+    "/api/admin/announcement/create",
+    {
+      method: "POST",
     },
-    body: JSON.stringify({
+  );
+  const response = await fetch(url, {
+    method,
+    body: req({
       message,
       expiresAt,
       showTimer,
     }),
   });
 
-  return (await response.json()) as UnknownApiResponse<Announcement>;
+  return res(await response.json());
 }
 
 /**
@@ -206,15 +209,18 @@ export const useDeleteAnnouncementMutation = () => {
 };
 
 async function deleteAnnouncement({ id }: { id: string }) {
-  const response = await fetch("/api/admin/announcement/disable", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const { url, method, req, res } = ApiURL.create(
+    "/api/admin/announcement/disable",
+    {
+      method: "POST",
     },
-    body: JSON.stringify({
+  );
+  const response = await fetch(url, {
+    method,
+    body: req({
       id,
     }),
   });
 
-  return (await response.json()) as UnknownApiResponse<string>;
+  return res(await response.json());
 }
