@@ -68,17 +68,19 @@ export const useUserSubmissionsQuery = ({
     () => _topics.split(",").filter(Boolean) as QuestionTopicDtoTopic[],
     [_topics],
   );
-
+  
   const setTopics = useCallback(
     (topics: QuestionTopicDtoTopic[]) => {
       _setTopics(topics.join(","));
+      goTo(1);
     },
-    [_setTopics],
+    [goTo, _setTopics],
   );
 
   const clearTopics = useCallback(() => {
     _setTopics("");
-  }, [_setTopics]);
+    goTo(1);
+  }, [goTo, _setTopics]);
 
   const query = useQuery({
     queryKey: [
