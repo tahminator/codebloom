@@ -1,11 +1,16 @@
 import UserSubmissions from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissions";
 import Header from "@/components/ui/header/Header";
+import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Button, Flex, Center } from "@mantine/core";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function UserSubmissionsPage() {
   const { userId } = useParams();
   const navigate = useNavigate();
+
+  if (!userId) {
+    return <ToastWithRedirect to={-1} message={"This User ID is not valid."} />;
+  }
 
   return (
     <>
