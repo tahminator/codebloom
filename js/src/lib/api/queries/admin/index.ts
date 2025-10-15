@@ -109,7 +109,7 @@ async function toggleUserAdmin({
   );
 
   const response = await fetch(url, {
-    method: method,
+    method,
     body: req({
       id: userId,
       toggleTo,
