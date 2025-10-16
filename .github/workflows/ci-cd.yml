@@ -42,6 +42,7 @@ jobs:
         needs: backendPreTest
 
         env:
+            REDIS_URL: ${{ secrets.REDIS_URL }}
             DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
             DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
             DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
@@ -130,6 +131,7 @@ jobs:
             - name: Run script
               run: bash .github/scripts/run-frontend-tests.sh
               env:
+                  REDIS_URL: ${{ secrets.REDIS_URL }}
                   DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
                   DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
                   DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
@@ -171,34 +173,6 @@ jobs:
             DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
             DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
             DATABASE_USER: ${{ secrets.DATABASE_USER }}
-            DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-            DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-            DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-            ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
-            GH_USERNAME: ${{ secrets.GH_USERNAME }}
-            GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-            DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
-            DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
-            DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
-            DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
-            DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
-            DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
-            GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
-            GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
-            GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
-            GH_EMAIL_USERNAME: ${{ secrets.GH_EMAIL_USERNAME }}
-            GH_EMAIL_PASSWORD: ${{ secrets.GH_EMAIL_PASSWORD }}
-            CODEBLOOM_EMAIL_HOST: ${{ secrets.CODEBLOOM_EMAIL_HOST }}
-            CODEBLOOM_EMAIL_PORT: ${{ secrets.CODEBLOOM_EMAIL_PORT }}
-            CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
-            CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
-            CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
-            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-            SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-            SKIP: ${{ secrets.SKIP }}
-            VITE_DSN: ${{ secrets.VITE_DSN }}
-            SECRET_KEY: ${{ secrets.SECRET_KEY }}
-            SERVER_URL: ${{ secrets.SERVER_URL }}
 
         steps:
             - name: Checkout Repository
@@ -247,6 +221,7 @@ jobs:
             - name: Run script
               run: bash .github/scripts/build-image.sh
               env:
+                  REDIS_URL: ${{ secrets.REDIS_URL }}
                   DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
                   DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
                   DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
@@ -309,35 +284,6 @@ jobs:
                   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
                   DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
                   DATABASE_USER: ${{ secrets.DATABASE_USER }}
-                  DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-                  DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-                  ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
-                  GH_USERNAME: ${{ secrets.GH_USERNAME }}
-                  GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-                  DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
-                  DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
-                  DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
-                  DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
-                  DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
-                  DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
-                  GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
-                  GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
-                  GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
-                  GH_EMAIL_USERNAME: ${{ secrets.GH_EMAIL_USERNAME }}
-                  GH_EMAIL_PASSWORD: ${{ secrets.GH_EMAIL_PASSWORD }}
-                  CODEBLOOM_EMAIL_HOST: ${{ secrets.CODEBLOOM_EMAIL_HOST }}
-                  CODEBLOOM_EMAIL_PORT: ${{ secrets.CODEBLOOM_EMAIL_PORT }}
-                  CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
-                  CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
-                  CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
-                  TZ: ${{ secrets.TZ }}
-                  SKIP: ${{ secrets.SKIP }}
-                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-                  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-                  VITE_DSN: ${{ secrets.VITE_DSN }}
-                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-                  SERVER_URL: ${{ secrets.SERVER_URL }}
 
             - name: Trigger App Platform Redeploy
               run: |
