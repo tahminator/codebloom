@@ -9,6 +9,7 @@ import com.patina.codebloom.common.env.Env;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.params.SetParams;
 
@@ -17,6 +18,7 @@ import redis.clients.jedis.params.SetParams;
  * Check wiki for details.
  */
 @Component
+@Slf4j
 @EnableConfigurationProperties({ JedisClientConfiguration.class })
 public class JedisClient {
     private final JedisClientConfiguration jedisClientConfiguration;
@@ -59,14 +61,12 @@ public class JedisClient {
     }
 
     /**
-     * Set auth token and when it should be ejected from the cache. Throws
-     * {@link JedisClientNotSupportedException} if not in CI.
-     *
-     * @throws {@link JedisClientNotSupportedException} if not in CI.
+     * Set auth token and when it should be ejected from the cache. If not in CI,
+     * will register an error message, but will no-op.
      */
     public void setAuth(final String auth, final long expires) {
         if (!env.isCi()) {
-            throw new JedisClientNotSupportedException("JedisClient is attempting to be loading in a non-CI environment");
+            log.error("You called JedisClient.setAuth in a non-CI environment. As a result, this operation has failed, but will not error.");
         }
 
         client.set("auth", auth, SetParams.setParams().ex(86400));
