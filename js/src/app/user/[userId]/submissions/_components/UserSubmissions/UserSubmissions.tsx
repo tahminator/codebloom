@@ -9,6 +9,8 @@ import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
+import { components } from "@/lib/api/types/autogen/schema";
+import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
 import {
   Badge,
@@ -23,8 +25,6 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
-import TopicFilterPopover from "../TopicFilters/TopicFilterPopover";
-
 export default function UserSubmissions({ userId }: { userId?: string }) {
   const {
     data,
@@ -38,9 +38,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     setSearchQuery,
     pointFilter,
     togglePointFilter,
-    topics,
-    setTopics,
-    clearTopics,
   } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
@@ -69,8 +66,8 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   const pageData = data.payload;
 
   const submissionCard = (
-    submission: (typeof pageData.items)[0],
-    index: number,
+    submission: components["schemas"]["QuestionDto"],
+    _index: number,
   ) => {
     const badgeDifficultyColor = (() => {
       if (submission.questionDifficulty === "Easy") {
@@ -103,7 +100,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
 
     return (
       <Card
-        key={index}
+        key={submission.id}
         withBorder
         p={isMobile ? "sm" : "md"}
         radius="md"
@@ -122,7 +119,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               />
               <Text
                 size={isMobile ? "sm" : undefined}
-                fw={isMobile ? 500 : 600}
+                fw={500}
                 lh={1.3}
                 flex={1}
               >
@@ -151,7 +148,8 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                     variant={isMobile ? "light" : "filled"}
                     color={isMobile ? "gray" : "gray.4"}
                   >
-                    {formatTopicName(topic.topicSlug)}
+                    {ApiUtils.getTopicEnumMetadataByTopicEnum(topic.topic)
+                      ?.name || topic.topicSlug}
                   </Badge>
                 ))}
               </Group>
@@ -161,7 +159,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
             </Group>
           )}
           {!isMobile &&
-            !(submission.topics && submission.topics.length === 0) && (
+            !(submission.topics && submission.topics.length > 0) && (
               <Group justify="space-between">
                 <Text size="xs" c="dimmed">
                   -
@@ -187,11 +185,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
       {!isMobile && (
         <Box ml="auto" display="block">
           <FilterDropdown buttonName="Filters">
-          <TopicFilterPopover
-            value={topics}
-            onChange={setTopics}
-            onClear={clearTopics}
-          />
             <FilterDropdownItem
               value={pointFilter}
               toggle={togglePointFilter}
@@ -260,7 +253,9 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               </Stack>
             </Card>
           )}
-          {pageData.items.map(submissionCard)}
+          {(pageData.items as components["schemas"]["QuestionDto"][]).map(
+            submissionCard,
+          )}
         </Stack>
       </Box>
       <Paginator
