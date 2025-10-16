@@ -57,95 +57,96 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
             </Card>
           </>
         )}
-        {(pageData.items as QuestionDto[]).map(
-          (submission, _index) => {
-            const badgeDifficultyColor = (() => {
-              if (submission.questionDifficulty === "Easy") {
-                return undefined;
-              }
-              if (submission.questionDifficulty === "Medium") {
-                return "yellow";
-              }
-              if (submission.questionDifficulty === "Hard") {
-                return "red";
-              }
+        {(pageData.items as QuestionDto[]).map((submission, _index) => {
+          const badgeDifficultyColor = (() => {
+            if (submission.questionDifficulty === "Easy") {
               return undefined;
-            })();
-            const badgeAcceptedColor = (() => {
-              const acceptanceRate = submission.acceptanceRate * 100;
-              if (acceptanceRate >= 75) {
-                return undefined;
-              }
-              if (acceptanceRate >= 50) {
-                return "yellow";
-              }
-              if (acceptanceRate >= 0) {
-                return "red";
-              }
+            }
+            if (submission.questionDifficulty === "Medium") {
+              return "yellow";
+            }
+            if (submission.questionDifficulty === "Hard") {
+              return "red";
+            }
+            return undefined;
+          })();
+          const badgeAcceptedColor = (() => {
+            const acceptanceRate = submission.acceptanceRate * 100;
+            if (acceptanceRate >= 75) {
               return undefined;
-            })();
-            const LanguageIcon =
-              langNameToIcon[submission.language as langNameKey] ||
-              langNameToIcon["default"];
-            return (
-              <Card
-                key={submission.id}
-                withBorder
-                p="md"
-                radius="md"
-                w="100%"
-                maw={950}
-                component={Link}
-                to={`/submission/${submission.id}`}
-                className="transition-all hover:brightness-110"
-              >
-                <Stack gap="xs">
-                  <Group justify="space-between" align="flex-start">
-                    <Group gap="xs" flex={1} miw={0}>
-                      <LanguageIcon size={20} width={20} height={20} />
-                      <Text size="sm" fw={500} flex={1} lh={1.3}>
-                        {submission.questionTitle}
-                      </Text>
-                    </Group>
-                    <Text size="xs" c="dimmed">
-                      {timeDiff(new Date(submission.submittedAt))}
+            }
+            if (acceptanceRate >= 50) {
+              return "yellow";
+            }
+            if (acceptanceRate >= 0) {
+              return "red";
+            }
+            return undefined;
+          })();
+          const LanguageIcon =
+            langNameToIcon[submission.language as langNameKey] ||
+            langNameToIcon["default"];
+          return (
+            <Card
+              key={submission.id}
+              withBorder
+              p="md"
+              radius="md"
+              w="100%"
+              maw={950}
+              component={Link}
+              to={`/submission/${submission.id}`}
+              className="transition-all hover:brightness-110"
+            >
+              <Stack gap="xs">
+                <Group justify="space-between" align="flex-start">
+                  <Group gap="xs" flex={1} miw={0}>
+                    <LanguageIcon size={20} width={20} height={20} />
+                    <Text size="sm" fw={500} flex={1} lh={1.3}>
+                      {submission.questionTitle}
                     </Text>
                   </Group>
-                  <Group justify="space-between" wrap="wrap" gap="xs">
-                    <Group gap="xs">
-                      <Badge size="sm" color={badgeDifficultyColor}>
-                        {submission.questionDifficulty}
-                      </Badge>
-                      <Badge size="sm" color={badgeAcceptedColor}>
-                        {Math.round(submission.acceptanceRate * 100)}%
-                      </Badge>
-                    </Group>
+                  <Text size="xs" c="dimmed">
+                    {timeDiff(new Date(submission.submittedAt))}
+                  </Text>
+                </Group>
+                <Group justify="space-between" wrap="wrap" gap="xs">
+                  <Group gap="xs">
+                    <Badge size="sm" color={badgeDifficultyColor}>
+                      {submission.questionDifficulty}
+                    </Badge>
+                    <Badge size="sm" color={badgeAcceptedColor}>
+                      {Math.round(submission.acceptanceRate * 100)}%
+                    </Badge>
                   </Group>
-                  {submission.topics && submission.topics.length > 0 && (
-                    <Group justify="space-between">
-                      <Group gap="xs" wrap="wrap">
-                        {submission.topics.map((topic: QuestionTopicDto) => (
-                            <Badge
-                              key={topic.id}
-                              size="xs"
-                              variant={"filled"}
-                              color={"gray.4"}
-                            >
-                              {ApiUtils.getTopicEnumMetadataByTopicEnum(topic.topic).name}
-                            </Badge>
-                          )
-                        )}
-                      </Group>
-                      <Text size="sm" fw={500}>
-                        {submission.pointsAwarded} pts
-                      </Text>
+                </Group>
+                {submission.topics && submission.topics.length > 0 && (
+                  <Group justify="space-between">
+                    <Group gap="xs" wrap="wrap">
+                      {submission.topics.map((topic: QuestionTopicDto) => (
+                        <Badge
+                          key={topic.id}
+                          size="xs"
+                          variant={"filled"}
+                          color={"gray.4"}
+                        >
+                          {
+                            ApiUtils.getTopicEnumMetadataByTopicEnum(
+                              topic.topic,
+                            ).name
+                          }
+                        </Badge>
+                      ))}
                     </Group>
-                  )}
-                </Stack>
-              </Card>
-            );
-          },
-        )}
+                    <Text size="sm" fw={500}>
+                      {submission.pointsAwarded} pts
+                    </Text>
+                  </Group>
+                )}
+              </Stack>
+            </Card>
+          );
+        })}
       </Stack>
     </Box>
   );

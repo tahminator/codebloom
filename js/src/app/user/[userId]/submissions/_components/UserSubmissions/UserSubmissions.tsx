@@ -65,10 +65,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
   }
   const pageData = data.payload;
 
-    const submissionCard = (
-      submission: QuestionDto,
-      _index: number,
-    ) => {
+  const submissionCard = (submission: QuestionDto, _index: number) => {
     const badgeDifficultyColor = (() => {
       if (submission.questionDifficulty === "Easy") {
         return undefined;
