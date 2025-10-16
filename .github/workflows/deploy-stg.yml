@@ -328,6 +328,7 @@ jobs:
               run: bash .github/scripts/build-image.sh
               env:
                   TAG_PREFIX: staging-
+                  DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT }}
                   REDIS_URL: ${{ secrets.REDIS_URL }}
                   DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
                   DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
@@ -351,10 +352,7 @@ jobs:
                   CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
                   CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
                   CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
-                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-                  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
                   SKIP: ${{ secrets.SKIP }}
-                  VITE_DSN: ${{ secrets.VITE_DSN }}
                   SECRET_KEY: ${{ secrets.SECRET_KEY }}
                   SERVER_URL: ${{ secrets.SERVER_URL }}
 
