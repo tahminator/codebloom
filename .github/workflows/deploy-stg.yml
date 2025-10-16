@@ -307,17 +307,9 @@ jobs:
         if: needs.checkExistingImage.outputs.image-exists == 'false'
         environment: staging
 
-        env:
-            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-            SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-            SKIP: ${{ secrets.SKIP }}
-            VITE_DSN: ${{ secrets.VITE_DSN }}
-
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
 
             - name: Set up OpenJDK 21
               uses: actions/setup-java@v4
@@ -332,17 +324,11 @@ jobs:
                   javac -version
                   echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Start backend instance
-              run: |
-                  ./mvnw -Dspring-boot.run.profiles=ci spring-boot:run > backend.log 2>&1 &
-                  echo $! > spring_pid.txt
+            - name: Run script
+              run: bash .github/scripts/build-image.sh
               env:
+                  TAG_PREFIX: staging-
                   REDIS_URL: ${{ secrets.REDIS_URL }}
-                  DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-                  DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-                  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-                  DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-                  DATABASE_USER: ${{ secrets.DATABASE_USER }}
                   DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
                   DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
                   DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
@@ -371,72 +357,6 @@ jobs:
                   VITE_DSN: ${{ secrets.VITE_DSN }}
                   SECRET_KEY: ${{ secrets.SECRET_KEY }}
                   SERVER_URL: ${{ secrets.SERVER_URL }}
-
-            - name: Wait for backend to start
-              run: |
-                  for i in {1..30}; do
-                     if curl -s http://localhost:8080/api | grep -q '"success":true'; then
-                        echo "Backend is up!";
-                        exit 0
-                     fi;
-                        echo "Waiting for backend... ($i/30)";
-                     sleep 2;
-                  done
-                  echo "Backend failed to start in time."
-                  cat spring_pid.txt | xargs -r kill || true
-                  exit 1
-
-            - name: Fix a bug with corepack by installing corepack globally
-              run: npm i -g corepack@latest
-              working-directory: js
-
-            - name: Install Dependencies
-              run: corepack enable pnpm && pnpm i --frozen-lockfile
-              working-directory: js
-
-            # This step needs to be completed in buildImage because we now utilize non-erasable types
-            # which means we actually need to generate the schema file before running the Dockerfile.
-            # TODO: Move this to inside of the Dockerfile; it's much harder to reason about when the image building process
-            # is split across two different places
-            - name: Generate types
-              run: pnpm run generate
-              working-directory: js
-
-            - name: Log in to DigitalOcean Container Registry
-              uses: docker/login-action@v3
-              with:
-                  registry: docker.io
-                  username: tahminator
-                  password: ${{ secrets.DOCKER_HUB_PAT }}
-
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
-
-            - name: Set Timezone
-              uses: szenius/set-timezone@v2.0
-              with:
-                  timezoneLinux: "America/New_York"
-
-            - name: Set image tags
-              run: |
-                  echo "TIMESTAMP=$(date +%Y.%m.%d-%H.%M.%S)" >> $GITHUB_ENV
-                  echo "GIT_SHA=$(echo "${{ needs.getPRHead.outputs.sha }}" | cut -c1-7)" >> $GITHUB_ENV
-
-            - name: Build and push Docker image
-              uses: docker/build-push-action@v5
-              with:
-                  context: .
-                  file: infra/Dockerfile
-                  push: true
-                  tags: |
-                      tahminator/codebloom:staging-latest
-                      tahminator/codebloom:staging-${{ env.TIMESTAMP }}
-                      tahminator/codebloom:staging-${{ env.GIT_SHA }}
-                  build-args: |
-                      SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
-                      SENTRY_DSN=${{ env.SENTRY_DSN }}
-                      SKIP=${{ env.SKIP }}
-                      VITE_DSN=${{ env.VITE_DSN }}
 
     redeploy:
         name: Redeploy on DigitalOcean
