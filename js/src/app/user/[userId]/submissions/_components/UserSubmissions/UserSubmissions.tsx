@@ -9,7 +9,7 @@ import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
-import { QuestionDto, QuestionTopicDto } from "@/lib/api/types/Submission";
+import { QuestionDto, QuestionTopicDto } from "@/lib/api/types/submission";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
 import {
