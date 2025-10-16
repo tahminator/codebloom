@@ -36,8 +36,8 @@ import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 public class LeetcodeAuthStealer {
     private static final Logger LOGGER = LoggerFactory.getLogger(LeetcodeAuthStealer.class);
 
-    private String cookie;
-    private String csrf;
+    private volatile String cookie;
+    private volatile String csrf;
 
     /**
      * So we don't report that a csrf token is missing more than once per machine
