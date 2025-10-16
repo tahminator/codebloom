@@ -98,10 +98,13 @@ public class LeetcodeAuthStealer {
             LOGGER.info("auth token in redis = {}", authToken.isPresent());
 
             if (authToken.isPresent()) {
+                LOGGER.info("auth token found in redis client");
                 cookie = authToken.get();
                 csrf = null; // don't care in ci.
                 return;
             }
+
+            LOGGER.info("auth token not found in redis client");
         }
 
         LOGGER.info("Auth token is missing/expired. Attempting to receive token...");
