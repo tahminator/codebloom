@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 backend_cleanup() {
     if kill $(cat spring_pid.txt) >/dev/null 2>&1; then
         echo "Backend process killed successfully."
