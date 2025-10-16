@@ -14,7 +14,8 @@ echo "JAVA_HOME=$JAVA_HOME"
 
 ./mvnw checkstyle:check -Denv.SKIP=true
 
-./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps firefox"
+./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
+./mvnw exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
 
 corepack enable pnpm
 cd email
