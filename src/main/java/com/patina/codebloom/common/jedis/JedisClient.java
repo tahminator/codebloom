@@ -1,0 +1,74 @@
+package com.patina.codebloom.common.jedis;
+
+import java.util.Optional;
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import com.patina.codebloom.common.env.Env;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import redis.clients.jedis.UnifiedJedis;
+import redis.clients.jedis.params.SetParams;
+
+/**
+ * <b>The client is only loaded in CI.</b> That may change at a later date.
+ * Check wiki for details.
+ */
+@Component
+@EnableConfigurationProperties({ JedisClientConfiguration.class })
+public class JedisClient {
+    private final JedisClientConfiguration jedisClientConfiguration;
+
+    private UnifiedJedis client;
+    private Env env;
+
+    public JedisClient(final JedisClientConfiguration jedisClientConfiguration, final Env env) {
+        this.jedisClientConfiguration = jedisClientConfiguration;
+        this.env = env;
+    }
+
+    @PostConstruct
+    private void open() {
+        if (!env.isCi()) {
+            return;
+        }
+
+        if (client == null) {
+            client = new UnifiedJedis(jedisClientConfiguration.getUrl());
+        }
+    }
+
+    @PreDestroy
+    private void close() {
+        if (client != null) {
+            client.close();
+        }
+    }
+
+    /**
+     * Get auth token. Will return empty {@link Optional} if not in CI.
+     */
+    public Optional<String> getAuth() {
+        if (!env.isCi()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(client.get("auth"));
+    }
+
+    /**
+     * Set auth token and when it should be ejected from the cache. Throws
+     * {@link JedisClientNotSupportedException} if not in CI.
+     *
+     * @throws {@link JedisClientNotSupportedException} if not in CI.
+     */
+    public void setAuth(final String auth, final long expires) {
+        if (!env.isCi()) {
+            throw new JedisClientNotSupportedException("JedisClient is attempting to be loading in a non-CI environment");
+        }
+
+        client.set("auth", auth, SetParams.setParams().ex(86400));
+    }
+}

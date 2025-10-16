@@ -3,6 +3,7 @@ package com.patina.codebloom.scheduled.auth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import com.patina.codebloom.common.email.Email;
 import com.patina.codebloom.common.email.Message;
 import com.patina.codebloom.common.email.client.github.GithubOAuthEmail;
 import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.jedis.JedisClient;
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.report.location.Location;
@@ -49,12 +51,18 @@ public class LeetcodeAuthStealer {
     @Value("${github.password}")
     private String githubPassword;
 
+    private final JedisClient jedisClient;
     private final AuthRepository authRepository;
     private final Email email;
     private final Reporter reporter;
     private final Env env;
 
-    public LeetcodeAuthStealer(final AuthRepository authRepository, final GithubOAuthEmail email, final Reporter reporter, final Env env) {
+    public LeetcodeAuthStealer(final JedisClient jedisClient,
+                    final AuthRepository authRepository,
+                    final GithubOAuthEmail email,
+                    final Reporter reporter,
+                    final Env env) {
+        this.jedisClient = jedisClient;
         this.authRepository = authRepository;
         this.email = email;
         this.reporter = reporter;
@@ -76,7 +84,24 @@ public class LeetcodeAuthStealer {
             LOGGER.info("Auth token already exists, using token from database.");
             cookie = mostRecentAuth.getToken();
             csrf = mostRecentAuth.getCsrf();
+            if (env.isCi()) {
+                LOGGER.info("in ci, stealing token and putting it in cache for 1 day");
+                jedisClient.setAuth(cookie, 7200); // 2 hours
+            }
             return;
+        }
+
+        if (env.isCi()) {
+            LOGGER.info("in ci env, checking redis client...");
+            Optional<String> authToken = jedisClient.getAuth();
+
+            LOGGER.info("auth token in redis = {}", authToken.isPresent());
+
+            if (authToken.isPresent()) {
+                cookie = authToken.get();
+                csrf = null; // don't care in ci.
+                return;
+            }
         }
 
         LOGGER.info("Auth token is missing/expired. Attempting to receive token...");
@@ -176,6 +201,10 @@ public class LeetcodeAuthStealer {
                                     .token(sessionToken)
                                     .csrf(cookieMap.get("csrftoken"))
                                     .build());
+                    if (env.isCi()) {
+                        LOGGER.info("in ci, stored in redis as well");
+                        jedisClient.setAuth(sessionToken, 7200); // 2 hours.
+                    }
                     this.cookie = sessionToken;
                 }
             } else {
