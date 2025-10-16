@@ -1,4 +1,4 @@
-set -euo pipefail
+#!/usr/bin/env bash
 
 db_cleanup() {
     echo "Stopping and removing postgres container..."
