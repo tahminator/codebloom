@@ -29,7 +29,7 @@ TAGS=(
 echo "Building image with tags:"
 printf '  - %s\n' "${TAGS[@]}"
 
-docker login -u "tahminator" -p "${DOCKER_HUB_PAT}"
+echo "${DOCKER_HUB_PAT}" | docker login -u "tahminator" --password-stdin
 
 docker buildx create --use --name codebloom-builder || docker buildx use codebloom-builder
 

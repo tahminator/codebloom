@@ -67,8 +67,9 @@ public class JedisClient {
     public void setAuth(final String auth, final long expires) {
         if (!env.isCi()) {
             log.error("You called JedisClient.setAuth in a non-CI environment. As a result, this operation has failed, but will not error.");
+            return;
         }
 
-        client.set("auth", auth, SetParams.setParams().ex(86400));
+        client.set("auth", auth, SetParams.setParams().ex(expires));
     }
 }
