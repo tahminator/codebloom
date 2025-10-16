@@ -4,7 +4,7 @@ import {
 } from "@/components/ui/langname-to-icon/LangNameToIcon";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
-import { components } from "@/lib/api/types/autogen/schema";
+import { QuestionDto, QuestionTopicDto } from "@/lib/api/types/Submission";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
 import { Badge, Box, Overlay, Text, Group, Card, Stack } from "@mantine/core";
@@ -57,7 +57,7 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
             </Card>
           </>
         )}
-        {(pageData.items as components["schemas"]["QuestionDto"][]).map(
+        {(pageData.items as QuestionDto[]).map(
           (submission, _index) => {
             const badgeDifficultyColor = (() => {
               if (submission.questionDifficulty === "Easy") {
@@ -124,21 +124,16 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
                   {submission.topics && submission.topics.length > 0 && (
                     <Group justify="space-between">
                       <Group gap="xs" wrap="wrap">
-                        {submission.topics.map(
-                          (
-                            topic: components["schemas"]["QuestionTopicDto"],
-                          ) => (
+                        {submission.topics.map((topic: QuestionTopicDto) => (
                             <Badge
                               key={topic.id}
                               size="xs"
                               variant={"filled"}
                               color={"gray.4"}
                             >
-                              {ApiUtils.getTopicEnumMetadataByTopicEnum(
-                                topic.topic,
-                              )?.name || topic.topicSlug}
+                              {ApiUtils.getTopicEnumMetadataByTopicEnum(topic.topic).name}
                             </Badge>
-                          ),
+                          )
                         )}
                       </Group>
                       <Text size="sm" fw={500}>
