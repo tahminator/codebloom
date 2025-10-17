@@ -70,7 +70,9 @@ export default function ProblemOfTheDay() {
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Center>
-        <Title order={3}>Problem of the day</Title>
+        <Title style={{ textAlign: "center" }} order={3}>
+          Problem of the day
+        </Title>
       </Center>
       <Center>
         <Title order={6}> POTD resets at 8:00 EDT everyday</Title>
@@ -83,7 +85,9 @@ export default function ProblemOfTheDay() {
         w={"100%"}
         h={"100%"}
       >
-        <Title order={4}>{json.title}</Title>
+        <Title style={{ textAlign: "center" }} order={4}>
+          {json.title}
+        </Title>
         <Badge
           variant={"gradient"}
           gradient={{ from: "blue.8", to: "green.8" }}
