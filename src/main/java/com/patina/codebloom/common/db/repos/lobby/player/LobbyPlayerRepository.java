@@ -61,7 +61,7 @@ public interface LobbyPlayerRepository {
      * Deletes all players from a specific lobby.
      * 
      * @param lobbyId the lobby ID
-     * @return deleted all players from lobby
+     * @return true if all players were successfully deleted from the lobby, false otherwise
      */
     boolean deletePlayersByLobbyId(String lobbyId);
 }
