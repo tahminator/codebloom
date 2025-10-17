@@ -24,6 +24,8 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
+import TopicFilterPopover from "../TopicFilters/TopicFilterPopover";
+
 export default function UserSubmissions({ userId }: { userId?: string }) {
   const {
     data,
@@ -37,6 +39,9 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     setSearchQuery,
     pointFilter,
     togglePointFilter,
+    topics,
+    setTopics,
+    clearTopics
   } = useUserSubmissionsQuery({
     userId,
     tieToUrl: true,
@@ -66,6 +71,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
 
   return (
     <Box
+      mt={10}
       pos="relative"
       px={isMobile ? "xs" : undefined}
       w={isMobile ? undefined : "100%"}
@@ -73,8 +79,13 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
       p={isMobile ? undefined : "xs"}
     >
       {!isMobile && (
-        <Box ml="auto" display="block">
+        <Box display="block" style={{ textAlign: "right" }}>
           <FilterDropdown buttonName="Filters">
+            <TopicFilterPopover
+            value={topics}
+            onChange={setTopics}
+            onClear={clearTopics}
+            />
             <FilterDropdownItem
               value={pointFilter}
               toggle={togglePointFilter}
@@ -97,7 +108,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
       >
         <Box flex={1} miw={0}>
           <SearchBox
-            pt={isMobile ? undefined : 10}
+            pt={isMobile ? undefined : 0}
             query={searchQuery}
             onChange={(event) => setSearchQuery(event.currentTarget.value)}
             placeholder="Search for submission title"
