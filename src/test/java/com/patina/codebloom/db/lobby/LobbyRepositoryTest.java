@@ -32,14 +32,14 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class LobbySqlRepositoryTest {
+public class LobbyRepositoryTest {
     private LobbyRepository lobbyRepository;
     private Lobby testLobby;
     private String mockJoinCode = "TEST-" + UUID.randomUUID().toString().substring(0, 8);
     private String mockWinnerId = UUID.randomUUID().toString();
 
     @Autowired
-    public LobbySqlRepositoryTest(final LobbyRepository lobbyRepository) {
+    public LobbyRepositoryTest(final LobbyRepository lobbyRepository) {
         this.lobbyRepository = lobbyRepository;
     }
 
