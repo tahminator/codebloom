@@ -172,7 +172,7 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
             const LanguageIcon =
               langNameToIcon[submission.language as langNameKey] ||
               langNameToIcon["default"];
-              return (
+            return (
               <Card
                 key={submission.id}
                 withBorder
@@ -222,7 +222,11 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
                             variant={isMobile ? "light" : "filled"}
                             color={isMobile ? "gray" : "gray.4"}
                           >
-                            {ApiUtils.getTopicEnumMetadataByTopicEnum(topic.topic).name}
+                            {
+                              ApiUtils.getTopicEnumMetadataByTopicEnum(
+                                topic.topic,
+                              ).name
+                            }
                           </Badge>
                         ))}
                       </Group>
