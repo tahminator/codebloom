@@ -35,9 +35,9 @@ export default function LeaderboardCard({
   isLoading?: boolean;
 }) {
   const borderColor = (() => {
-    if (placeString === "1st") return "border-yellow-300";
-    if (placeString === "2nd") return "border-gray-400";
-    if (placeString === "3rd") return "border-yellow-800";
+    if (placeString === "1st") return "!border-yellow-300";
+    if (placeString === "2nd") return "!border-gray-400";
+    if (placeString === "3rd") return "!border-yellow-800";
   })();
 
   const height = (() => {
