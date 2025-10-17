@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.models.lobby.player;
 
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
-import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
