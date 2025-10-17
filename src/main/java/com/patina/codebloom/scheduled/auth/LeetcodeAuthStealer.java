@@ -57,7 +57,7 @@ public class LeetcodeAuthStealer {
     private final Reporter reporter;
     private final Env env;
 
-    private final String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
+    private static final String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
 
     public LeetcodeAuthStealer(final JedisClient jedisClient,
                     final AuthRepository authRepository,
