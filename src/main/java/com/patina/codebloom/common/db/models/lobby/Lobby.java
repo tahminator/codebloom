@@ -33,7 +33,7 @@ public class Lobby {
     private OffsetDateTime expiresAt;
 
     @NotNullColumn
-    private Integer playerCount;
+    private int playerCount;
 
     @NullColumn
     private String winnerId;
