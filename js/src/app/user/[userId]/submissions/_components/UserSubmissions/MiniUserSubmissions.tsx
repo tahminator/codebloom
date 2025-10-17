@@ -4,7 +4,6 @@ import {
 } from "@/components/ui/langname-to-icon/LangNameToIcon";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
-import { QuestionDto, QuestionTopicDto } from "@/lib/api/types/submission";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
 import { Badge, Box, Overlay, Text, Group, Card, Stack } from "@mantine/core";
@@ -57,7 +56,7 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
             </Card>
           </>
         )}
-        {(pageData.items as QuestionDto[]).map((submission, _index) => {
+        {pageData.items.map((submission) => {
           const badgeDifficultyColor = (() => {
             if (submission.questionDifficulty === "Easy") {
               return undefined;
@@ -123,7 +122,7 @@ export default function MiniUserSubmissions({ userId }: { userId?: string }) {
                 {submission.topics && submission.topics.length > 0 && (
                   <Group justify="space-between">
                     <Group gap="xs" wrap="wrap">
-                      {submission.topics.map((topic: QuestionTopicDto) => (
+                      {submission.topics.map((topic) => (
                         <Badge
                           key={topic.id}
                           size="xs"

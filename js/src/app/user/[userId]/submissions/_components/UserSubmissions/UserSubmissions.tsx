@@ -9,7 +9,6 @@ import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
-import { QuestionDto, QuestionTopicDto } from "@/lib/api/types/submission";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
 import {
@@ -64,111 +63,6 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
     return <>{data.message}</>;
   }
   const pageData = data.payload;
-
-  const submissionCard = (submission: QuestionDto, _index: number) => {
-    const badgeDifficultyColor = (() => {
-      if (submission.questionDifficulty === "Easy") {
-        return undefined;
-      }
-      if (submission.questionDifficulty === "Medium") {
-        return "yellow";
-      }
-      if (submission.questionDifficulty === "Hard") {
-        return "red";
-      }
-      return undefined;
-    })();
-    const badgeAcceptedColor = (() => {
-      const acceptanceRate = submission.acceptanceRate * 100;
-      if (acceptanceRate >= 75) {
-        return undefined;
-      }
-      if (acceptanceRate >= 50) {
-        return "yellow";
-      }
-      if (acceptanceRate >= 0) {
-        return "red";
-      }
-      return undefined;
-    })();
-    const LanguageIcon =
-      langNameToIcon[submission.language as langNameKey] ||
-      langNameToIcon["default"];
-
-    return (
-      <Card
-        key={submission.id}
-        withBorder
-        p={isMobile ? "sm" : "md"}
-        radius="md"
-        w="100%"
-        component={Link}
-        to={`/submission/${submission.id}`}
-        className="transition-all hover:brightness-110"
-      >
-        <Stack gap="xs">
-          <Group justify="space-between" align="flex-start">
-            <Group gap="xs" flex={1} miw={0}>
-              <LanguageIcon
-                size={isMobile ? 20 : 22}
-                width={isMobile ? 20 : 22}
-                height={isMobile ? 20 : 22}
-              />
-              <Text
-                size={isMobile ? "sm" : undefined}
-                fw={500}
-                lh={1.3}
-                flex={1}
-              >
-                {submission.questionTitle}
-              </Text>
-            </Group>
-            <Text size="xs" c="dimmed">
-              {timeDiff(new Date(submission.submittedAt))}
-            </Text>
-          </Group>
-          <Group gap="xs" wrap="wrap">
-            <Badge size="sm" color={badgeDifficultyColor}>
-              {submission.questionDifficulty}
-            </Badge>
-            <Badge size="sm" color={badgeAcceptedColor}>
-              {Math.round(submission.acceptanceRate * 100)}%
-            </Badge>
-          </Group>
-          {submission.topics && submission.topics.length > 0 && (
-            <Group justify="space-between">
-              <Group gap="xs" wrap="wrap">
-                {submission.topics.map((topic: QuestionTopicDto) => (
-                  <Badge
-                    key={topic.id}
-                    size="xs"
-                    variant={isMobile ? "light" : "filled"}
-                    color={isMobile ? "gray" : "gray.4"}
-                  >
-                    {ApiUtils.getTopicEnumMetadataByTopicEnum(topic.topic).name}
-                  </Badge>
-                ))}
-              </Group>
-              <Text size="sm" fw={500}>
-                {submission.pointsAwarded} Pts
-              </Text>
-            </Group>
-          )}
-          {!isMobile &&
-            !(submission.topics && submission.topics.length > 0) && (
-              <Group justify="space-between">
-                <Text size="xs" c="dimmed">
-                  -
-                </Text>
-                <Text size="sm" fw={500}>
-                  {submission.pointsAwarded} Pts
-                </Text>
-              </Group>
-            )}
-        </Stack>
-      </Card>
-    );
-  };
 
   return (
     <Box
@@ -249,7 +143,109 @@ export default function UserSubmissions({ userId }: { userId?: string }) {
               </Stack>
             </Card>
           )}
-          {(pageData.items as QuestionDto[]).map(submissionCard)}
+          {pageData.items.map((submission) => {
+            const badgeDifficultyColor = (() => {
+              if (submission.questionDifficulty === "Easy") {
+                return undefined;
+              }
+              if (submission.questionDifficulty === "Medium") {
+                return "yellow";
+              }
+              if (submission.questionDifficulty === "Hard") {
+                return "red";
+              }
+              return undefined;
+            })();
+            const badgeAcceptedColor = (() => {
+              const acceptanceRate = submission.acceptanceRate * 100;
+              if (acceptanceRate >= 75) {
+                return undefined;
+              }
+              if (acceptanceRate >= 50) {
+                return "yellow";
+              }
+              if (acceptanceRate >= 0) {
+                return "red";
+              }
+              return undefined;
+            })();
+            const LanguageIcon =
+              langNameToIcon[submission.language as langNameKey] ||
+              langNameToIcon["default"];
+              return (
+              <Card
+                key={submission.id}
+                withBorder
+                p={isMobile ? "sm" : "md"}
+                radius="md"
+                w="100%"
+                component={Link}
+                to={`/submission/${submission.id}`}
+                className="transition-all hover:brightness-110"
+              >
+                <Stack gap="xs">
+                  <Group justify="space-between" align="flex-start">
+                    <Group gap="xs" flex={1} miw={0}>
+                      <LanguageIcon
+                        size={isMobile ? 20 : 22}
+                        width={isMobile ? 20 : 22}
+                        height={isMobile ? 20 : 22}
+                      />
+                      <Text
+                        size={isMobile ? "sm" : undefined}
+                        fw={500}
+                        lh={1.3}
+                        flex={1}
+                      >
+                        {submission.questionTitle}
+                      </Text>
+                    </Group>
+                    <Text size="xs" c="dimmed">
+                      {timeDiff(new Date(submission.submittedAt))}
+                    </Text>
+                  </Group>
+                  <Group gap="xs" wrap="wrap">
+                    <Badge size="sm" color={badgeDifficultyColor}>
+                      {submission.questionDifficulty}
+                    </Badge>
+                    <Badge size="sm" color={badgeAcceptedColor}>
+                      {Math.round(submission.acceptanceRate * 100)}%
+                    </Badge>
+                  </Group>
+                  {submission.topics && submission.topics.length > 0 && (
+                    <Group justify="space-between">
+                      <Group gap="xs" wrap="wrap">
+                        {submission.topics.map((topic) => (
+                          <Badge
+                            key={topic.id}
+                            size="xs"
+                            variant={isMobile ? "light" : "filled"}
+                            color={isMobile ? "gray" : "gray.4"}
+                          >
+                            {ApiUtils.getTopicEnumMetadataByTopicEnum(topic.topic).name}
+                          </Badge>
+                        ))}
+                      </Group>
+                      <Text size="sm" fw={500}>
+                        {submission.pointsAwarded} Pts
+                      </Text>
+                    </Group>
+                  )}
+                  {!isMobile &&
+                    !(submission.topics && submission.topics.length > 0) && (
+                      <Group justify="space-between">
+                        <Text size="xs" c="dimmed">
+                          -
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {submission.pointsAwarded} Pts
+                        </Text>
+                      </Group>
+                    )}
+                </Stack>
+              </Card>
+            );
+          })}
         </Stack>
       </Box>
       <Paginator
