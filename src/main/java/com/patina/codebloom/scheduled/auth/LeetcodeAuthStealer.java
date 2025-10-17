@@ -57,6 +57,8 @@ public class LeetcodeAuthStealer {
     private final Reporter reporter;
     private final Env env;
 
+    private final String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
+
     public LeetcodeAuthStealer(final JedisClient jedisClient,
                     final AuthRepository authRepository,
                     final GithubOAuthEmail email,
@@ -109,11 +111,11 @@ public class LeetcodeAuthStealer {
 
         LOGGER.info("Auth token is missing/expired. Attempting to receive token...");
 
-        try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
-            BrowserContext context = browser.newContext(new NewContextOptions()
-                            .setUserAgent("Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9")
-                            .setStorageState(null));
+        try (Playwright playwright = Playwright.create();
+                        Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
+                        BrowserContext context = browser.newContext(new NewContextOptions()
+                                        .setUserAgent(USER_AGENT)
+                                        .setStorageState(null))) {
             context.clearCookies();
 
             LOGGER.info("Loaded browser context");
@@ -213,9 +215,6 @@ public class LeetcodeAuthStealer {
             } else {
                 LOGGER.info("Should be authenticated but not authenticated.");
             }
-
-            context.close();
-            browser.close();
         }
     }
 
