@@ -71,6 +71,7 @@ public class LobbyPlayerRepositoryTest {
 
     @AfterAll
     void cleanup() {
+        // Tests Delete By Lobby Id
         boolean isSuccessful = lobbyPlayerRepository.deletePlayersByLobbyId(testLobby.getId()) && lobbyRepository.deleteLobbyById(testLobby.getId());
 
         if (!isSuccessful) {
@@ -93,9 +94,16 @@ public class LobbyPlayerRepositoryTest {
         assertNotNull(players);
         assertTrue(players.contains(testLobbyPlayer));
     }
-
     @Test
     @Order(3)
+    void testFindLobbyPlayerByPlayerId() {
+        LobbyPlayer foundPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(mockPlayerId);
+        assertNotNull(foundPlayer);
+        assertEquals(foundPlayer, testLobbyPlayer);
+    }
+
+    @Test
+    @Order(4)
     void testUpdateLobbyPlayer() {
         int newPoints = 250;
         testLobbyPlayer.setPoints(newPoints);
@@ -106,5 +114,27 @@ public class LobbyPlayerRepositoryTest {
         LobbyPlayer updatedLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(testLobbyPlayer.getId());
         assertNotNull(updatedLobbyPlayer);
         assertEquals(newPoints, updatedLobbyPlayer.getPoints());
+    }
+
+    @Test
+    @Order(5)
+    void testDeleteLobbyPlayerById() {
+        LobbyPlayer deletableLobbyPlayer = LobbyPlayer.builder()
+                        .lobbyId(testLobby.getId())
+                        .playerId(mockPlayerId)
+                        .points(200)
+                        .build();
+
+        lobbyPlayerRepository.createLobbyPlayer(deletableLobbyPlayer);
+
+        LobbyPlayer found = lobbyPlayerRepository.findLobbyPlayerById(deletableLobbyPlayer.getId());
+        assertNotNull(found);
+        assertEquals(deletableLobbyPlayer.getId(), found.getId());
+
+        boolean deleted = lobbyPlayerRepository.deleteLobbyPlayerById(deletableLobbyPlayer.getId());
+        assertTrue(deleted);
+
+        LobbyPlayer deletedFetched = lobbyPlayerRepository.findLobbyPlayerById(deletableLobbyPlayer.getId());
+        assertNull(deletedFetched);
     }
 }
