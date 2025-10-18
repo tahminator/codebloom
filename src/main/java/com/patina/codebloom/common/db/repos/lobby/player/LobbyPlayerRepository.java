@@ -32,6 +32,14 @@ public interface LobbyPlayerRepository {
     LobbyPlayer findLobbyPlayerById(String id);
 
     /**
+     * Finds a lobby player for a specific player ID.
+     * 
+     * @param playerId the player ID
+     * @return the lobby player for the specified player, null if not found
+     */
+    LobbyPlayer findLobbyPlayerByPlayerId(String playerId);
+
+    /**
      * Finds all players in a specific lobby.
      * 
      * @param lobbyId the lobby ID
@@ -61,7 +69,16 @@ public interface LobbyPlayerRepository {
      * Deletes all players from a specific lobby.
      * 
      * @param lobbyId the lobby ID
-     * @return true if all players were successfully deleted from the lobby, false otherwise
+     * @return true if all players were successfully deleted from the lobby, false
+     * otherwise
      */
     boolean deletePlayersByLobbyId(String lobbyId);
+
+    /**
+     * Deletes a single lobby player by its ID.
+     * 
+     * @param id the lobby player ID to delete
+     * @return true if the lobby player was deleted successfully, false otherwise
+     */
+    boolean deleteLobbyPlayerById(String id);
 }

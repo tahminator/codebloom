@@ -82,6 +82,34 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
     }
 
     @Override
+    public LobbyPlayer findLobbyPlayerByPlayerId(final String playerId) {
+        String sql = """
+                        SELECT
+                            id,
+                            "lobbyId",
+                            "playerId",
+                            points
+                        FROM
+                            "LobbyPlayer"
+                        WHERE
+                            "playerId" = :playerId
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("playerId", UUID.fromString(playerId));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetToLobbyPlayer(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find lobby player by player id", e);
+        }
+
+        return null;
+    }
+
+    @Override
     public List<LobbyPlayer> findPlayersByLobbyId(final String lobbyId) {
         List<LobbyPlayer> result = new ArrayList<>();
         String sql = """
@@ -148,6 +176,23 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             return rowsAffected > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete players by lobby id", e);
+        }
+    }
+
+    @Override
+    public boolean deleteLobbyPlayerById(final String id) {
+        String sql = """
+                        DELETE FROM "LobbyPlayer"
+                        WHERE id = :id
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete lobby player by id", e);
         }
     }
 }
