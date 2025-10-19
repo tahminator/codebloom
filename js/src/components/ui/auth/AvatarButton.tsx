@@ -12,7 +12,7 @@ export default function AvatarDropdown({
 }: {
   src: string;
   initial?: string;
-  userId: string;
+  userId?: string;
 }) {
   const showInitial = !src || src === DEFAULT_AVATAR_URL;
 
