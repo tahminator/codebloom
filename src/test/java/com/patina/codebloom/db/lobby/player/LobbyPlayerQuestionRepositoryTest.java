@@ -86,7 +86,7 @@ public class LobbyPlayerQuestionRepositoryTest {
     @AfterAll
     void cleanup() {
         // Tests Delete By Lobby Player Id
-        boolean isSuccessful = lobbyPlayerQuestionRepository.deleteQuestionsByLobbyPlayerId(testLobbyPlayer.getId())
+        boolean isSuccessful = lobbyPlayerQuestionRepository.deleteLobbyPlayerQuestionByLobbyPlayerId(testLobbyPlayer.getId())
                         && lobbyPlayerRepository.deleteLobbyPlayerById(testLobbyPlayer.getId())
                         && lobbyRepository.deleteLobbyById(testLobby.getId());
 

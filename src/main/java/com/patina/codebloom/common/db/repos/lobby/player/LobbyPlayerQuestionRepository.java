@@ -71,7 +71,7 @@ public interface LobbyPlayerQuestionRepository {
      * @param lobbyPlayerId the lobby player ID
      * @return true if all questions were successfully deleted, false otherwise
      */
-    boolean deleteQuestionsByLobbyPlayerId(String lobbyPlayerId);
+    boolean deleteLobbyPlayerQuestionByLobbyPlayerId(String lobbyPlayerId);
 
     /**
      * Deletes a single lobby player question by its ID.
