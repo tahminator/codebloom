@@ -12,7 +12,7 @@ export default function AvatarDropdown({
 }: {
   src: string;
   initial?: string;
-  userId?: string;
+  userId: string;
 }) {
   const showInitial = !src || src === DEFAULT_AVATAR_URL;
 
@@ -28,9 +28,15 @@ export default function AvatarDropdown({
       <Menu.Dropdown>
         {schoolFF && (
           <>
-            <Menu.Item component={Link} to={`/user/${userId}`} w-full>
-              My Profile
-            </Menu.Item>
+            {userId && (
+              <Menu.Item
+                component={Link}
+                to={`/user/${userId}`}
+                className="w-full"
+              >
+                My Profile
+              </Menu.Item>
+            )}
             <Menu.Divider />
             <Menu.Item component={Link} to={"/settings"} w-full>
               Settings
