@@ -34,7 +34,13 @@ export default function Header() {
       const profileUrl = data.user.profileUrl;
       const initial =
         data.user.nickname ? data.user.nickname.charAt(0).toUpperCase() : "?";
-      return <AvatarButton src={profileUrl ?? ""} initial={initial} userId={data.user.id}/>;
+      return (
+        <AvatarButton
+          src={profileUrl ?? ""}
+          initial={initial}
+          userId={data.user.id}
+        />
+      );
     }
 
     return (
