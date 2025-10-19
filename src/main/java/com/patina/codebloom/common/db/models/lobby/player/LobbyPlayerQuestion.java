@@ -25,5 +25,5 @@ public class LobbyPlayerQuestion {
     private String questionId;
 
     @NullColumn
-    private int points;
+    private Integer points;
 }
