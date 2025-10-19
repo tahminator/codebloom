@@ -165,7 +165,7 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
     }
 
     @Override
-    public boolean deleteQuestionsByLobbyPlayerId(final String lobbyPlayerId) {
+    public boolean deleteLobbyPlayerQuestionByLobbyPlayerId(final String lobbyPlayerId) {
         String sql = """
                         DELETE FROM "LobbyPlayerQuestion"
                         WHERE "lobbyPlayerId" = :lobbyPlayerId
