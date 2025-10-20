@@ -10,6 +10,12 @@ import org.springframework.stereotype.Service;
  * The first parameter of `index` is used to determine a specific index to
  * utilize, similar to `REDIS_INSTANCE/0`. Within each index you can use all the
  * same features that you may normally use, such as putting and getting.
+ * 
+ * Databases (indices):
+ * 
+ * 0 - Submission Refresh
+ * 
+ * 1 - Verification Email Sending
  */
 @Service
 public class SimpleRedis {
