@@ -1,4 +1,4 @@
-package com.patina.codebloom.utilities;
+package com.patina.codebloom.utilities.generator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,21 +12,21 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("dev")
 @Component
 @Slf4j
-public class EmailToHTMLGenerator implements CommandLineRunner {
+public class JSTypesGenerator implements CommandLineRunner {
     @Autowired
     private ApplicationContext applicationContext;
 
     @Override
     public void run(final String... args) throws Exception {
-        log.info("Generating HTML from React email template.");
-        Process process = new ProcessBuilder("just", "email-gen")
+        log.info("Type generation command starting...");
+        Process process = new ProcessBuilder("just", "type-gen")
                         .inheritIO()
                         .start();
         int exitCode = process.waitFor();
         if (exitCode == 0) {
-            log.info("HTML generation completed successfully.");
+            log.info("Type generation command completed successfully.");
         } else {
-            log.error("HTML generation command failed with exit code {}", exitCode);
+            log.error("Type generation command failed with exit code {}", exitCode);
             int springExitCode = SpringApplication.exit(applicationContext, () -> exitCode);
             System.exit(springExitCode);
         }

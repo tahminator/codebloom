@@ -7,16 +7,10 @@
     "editor.formatOnSave": true,
     "java.checkstyle.configuration": "./checkstyle.xml",
     "java.format.settings.url": "./java-formatter.xml",
-    "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
     "java.checkstyle.version": "10.21.2",
     "gitlens.advanced.blame.customArguments": [
         "--ignore-revs-file",
         ".git-blame-ignore-revs"
-    ],
-    "[makefile]": {
-        "editor.tabSize": 4,
-        "editor.insertSpaces": false
-    }
+    ]
 }
 
