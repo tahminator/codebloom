@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.email.client;
+package com.patina.codebloom.common.email.template;
 
 import java.io.IOException;
 

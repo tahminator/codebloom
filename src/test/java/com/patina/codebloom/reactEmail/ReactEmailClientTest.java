@@ -6,12 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
+import com.patina.codebloom.common.email.template.ReactEmailClient;
+import com.patina.codebloom.common.email.template.ReactEmailClientImpl;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-import com.patina.codebloom.common.email.client.ReactEmailClient;
-import com.patina.codebloom.common.email.client.ReactEmailClientImpl;
 
 class ReactEmailClientTest {
 
