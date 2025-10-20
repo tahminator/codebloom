@@ -9,11 +9,11 @@
         <version>3.4.1</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.example</groupId>
+    <groupId>com.patina</groupId>
     <artifactId>codebloom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>codebloom</name>
-    <description>Demo project for Spring Boot</description>
+    <description>The backend of CodeBloom, the LeetCode leaderboard platform.</description>
     <url />
     <licenses>
         <license />
@@ -29,7 +29,7 @@
     </scm>
     <properties>
         <checkstyle.config.location>./checkstyle.xml</checkstyle.config.location>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -148,7 +148,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
+            <version>1.18.42</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
@@ -179,10 +179,11 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.38</version>
+		                    <version>1.18.42</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+                <version>3.14.1</version>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
