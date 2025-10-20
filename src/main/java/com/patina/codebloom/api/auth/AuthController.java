@@ -26,6 +26,7 @@ import com.patina.codebloom.common.schools.magic.MagicLink;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.Protector;
 import com.patina.codebloom.common.security.annotation.Protected;
+import com.patina.codebloom.common.simpleredis.SimpleRedis;
 import com.patina.codebloom.common.email.options.SendEmailOptions;
 import com.patina.codebloom.api.auth.body.EmailBody;
 import com.patina.codebloom.common.email.client.ReactEmailClient;
@@ -58,6 +59,8 @@ import com.patina.codebloom.common.db.models.usertag.UserTag;
 @Tag(name = "Authentication Routes")
 @RequestMapping("/api/auth")
 public class AuthController {
+    private static final double SECONDS_TO_WAIT = 10;
+
     private final SessionRepository sessionRepository;
     private final Protector protector;
     private final JWTClient jwtClient;
@@ -67,10 +70,11 @@ public class AuthController {
     private final UserTagRepository userTagRepository;
     private final Reporter reporter;
     private final ReactEmailClient reactEmailClient;
+    private final SimpleRedis simpleRedis;
 
     public AuthController(final SessionRepository sessionRepository, final Protector protector, final JWTClient jwtClient, final UserRepository userRepository,
                     final OfficialCodebloomEmail emailClient, final ServerUrlUtils serverUrlUtils, final UserTagRepository userTagRepository, final Reporter reporter,
-                    final ReactEmailClient reactEmailClient) {
+                    final ReactEmailClient reactEmailClient, final SimpleRedis simpleRedis) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
@@ -80,6 +84,7 @@ public class AuthController {
         this.userTagRepository = userTagRepository;
         this.reporter = reporter;
         this.reactEmailClient = reactEmailClient;
+        this.simpleRedis = simpleRedis;
     }
 
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
@@ -128,6 +133,23 @@ public class AuthController {
     @PostMapping("/school/enroll")
     public ResponseEntity<ApiResponder<Empty>> enrollSchool(@Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
+        User user = authenticationObject.getUser();
+        String userId = user.getId();
+
+        // 10 second rate limit
+        if (simpleRedis.containsKey(1, userId)) {
+            long timeThen = (long) simpleRedis.get(1, userId);
+            long timeNow = System.currentTimeMillis();
+            long difference = (timeNow - timeThen) / 1000;
+
+            if (difference < SECONDS_TO_WAIT) {
+                long remainingTime = (long) SECONDS_TO_WAIT - difference;
+                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Please try again in " + Long.toString(remainingTime) + " seconds.");
+            }
+        }
+
+        simpleRedis.put(1, user.getId(), System.currentTimeMillis());
+
         String email = emailBody.getEmail();
         String domain = email.substring(email.indexOf("@")).toLowerCase();
         Set<String> supportedDomains = Stream.of(SchoolEnum.values())
@@ -140,9 +162,6 @@ public class AuthController {
                             HttpStatus.BAD_REQUEST,
                             "The email is not part of our supported schools domains: " + supportedSchools);
         }
-
-        User user = authenticationObject.getUser();
-        String userId = user.getId();
 
         MagicLink magicLink = new MagicLink(email, userId);
         try {
