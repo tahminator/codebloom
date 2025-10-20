@@ -136,6 +136,19 @@ public class AuthController {
         User user = authenticationObject.getUser();
         String userId = user.getId();
 
+        String email = emailBody.getEmail();
+        String domain = email.substring(email.indexOf("@")).toLowerCase();
+        Set<String> supportedDomains = Stream.of(SchoolEnum.values())
+                        .map(school -> school.getEmailDomain())
+                        .collect(Collectors.toSet());
+
+        if (!supportedDomains.contains(domain)) {
+            String supportedSchools = String.join(", ", supportedDomains);
+            throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "The email is not part of our supported schools domains: " + supportedSchools);
+        }
+
         // 10 second rate limit
         if (simpleRedis.containsKey(1, userId)) {
             long timeThen = (long) simpleRedis.get(1, userId);
@@ -149,19 +162,6 @@ public class AuthController {
         }
 
         simpleRedis.put(1, user.getId(), System.currentTimeMillis());
-
-        String email = emailBody.getEmail();
-        String domain = email.substring(email.indexOf("@")).toLowerCase();
-        Set<String> supportedDomains = Stream.of(SchoolEnum.values())
-                        .map(school -> school.getEmailDomain())
-                        .collect(Collectors.toSet());
-
-        if (!supportedDomains.contains(domain)) {
-            String supportedSchools = String.join(", ", supportedDomains);
-            throw new ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "The email is not part of our supported schools domains: " + supportedSchools);
-        }
 
         MagicLink magicLink = new MagicLink(email, userId);
         try {
