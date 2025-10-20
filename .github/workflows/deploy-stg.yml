@@ -2,7 +2,7 @@ name: Deploying to staging
 run-name: Deploying to staging
 
 concurrency:
-    group: deploy-staging-pr-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
+    group: deploy-staging-pr-${{ github.event.client_payload.slash_command.args.named.prId }}
     cancel-in-progress: true
 
 on:
