@@ -37,7 +37,6 @@ export default function AvatarDropdown({
                 My Profile
               </Menu.Item>
             )}
-            <Menu.Divider />
             <Menu.Item component={Link} to={"/settings"} w-full>
               Settings
             </Menu.Item>
