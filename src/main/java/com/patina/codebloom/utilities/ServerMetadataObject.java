@@ -13,7 +13,7 @@ public class ServerMetadataObject {
         this.name = "Codebloom";
         this.version = "v1.0.0";
         this.description = "LeetCode leaderboard for Patina Network members to track progress and motivate each other.";
-        this.authors = new ArrayList<>(Arrays.asList("Alisha Zaman", "Alfardil Alam", "Angela Yu", "Tahmid Ahmed"));
+        this.authors = new ArrayList<>(Arrays.asList("Alisha Zaman", "Alfardil Alam", "Angela Yu", "Tahmid Ahmed", "Arshadul Monir", "Nancy Huang"));
     }
 
     public String getName() {
