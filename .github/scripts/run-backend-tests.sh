@@ -20,9 +20,8 @@ echo "JAVA_HOME=$JAVA_HOME"
 corepack enable pnpm
 cd email
 pnpm i --frozen-lockfile
-cd ..
-
 ./email.sh
+cd ..
 
 db_startup
 
