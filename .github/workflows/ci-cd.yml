@@ -161,6 +161,65 @@ jobs:
                   SECRET_KEY: ${{ secrets.SECRET_KEY }}
                   SERVER_URL: ${{ secrets.SERVER_URL }}
 
+    testBuildImage:
+        name: Build Test Docker Image
+        runs-on: ubuntu-latest
+        needs: backendPreTest
+
+        if: github.ref_name != 'main'
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up OpenJDK 21
+              uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
+                  cache: "maven"
+
+            - name: Verify Java version
+              run: |
+                  java -version
+                  javac -version
+                  echo "JAVA_HOME=$JAVA_HOME"
+
+            - name: Run script
+              run: bash .github/scripts/build-image.sh
+              env:
+                  DOCKER_UPLOAD: false
+                  REDIS_URL: ${{ secrets.REDIS_URL }}
+                  DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT }}
+                  DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+                  DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+                  ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
+                  GH_USERNAME: ${{ secrets.GH_USERNAME }}
+                  GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
+                  DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
+                  DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
+                  DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
+                  DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
+                  DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
+                  DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
+                  GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
+                  GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
+                  GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
+                  GH_EMAIL_USERNAME: ${{ secrets.GH_EMAIL_USERNAME }}
+                  GH_EMAIL_PASSWORD: ${{ secrets.GH_EMAIL_PASSWORD }}
+                  CODEBLOOM_EMAIL_HOST: ${{ secrets.CODEBLOOM_EMAIL_HOST }}
+                  CODEBLOOM_EMAIL_PORT: ${{ secrets.CODEBLOOM_EMAIL_PORT }}
+                  CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
+                  CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
+                  CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
+                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+                  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+                  SKIP: ${{ secrets.SKIP }}
+                  VITE_DSN: ${{ secrets.VITE_DSN }}
+                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+                  SERVER_URL: ${{ secrets.SERVER_URL }}
+
     validateDBSchema:
         name: Validate DB Schema on Prod DB
         runs-on: ubuntu-latest
