@@ -35,7 +35,7 @@ COPY email/ ./
 RUN pnpm email export --dir emails --outDir out
 
 # ==== Backend Build Stage ====
-FROM eclipse-temurin:21-jdk-jammy AS backend-build
+FROM eclipse-temurin:25-jdk-jammy AS backend-build
 
 WORKDIR /app
 
@@ -75,7 +75,7 @@ RUN ./mvnw clean package -DskipTests
 
 
 # ==== Runtime Stage ====
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:25-jre-jammy
 
 WORKDIR /app
 
