@@ -161,7 +161,7 @@ public class AuthController {
             }
         }
 
-        simpleRedis.put(1, user.getId(), System.currentTimeMillis());
+        simpleRedis.put(1, userId, System.currentTimeMillis());
 
         MagicLink magicLink = new MagicLink(email, userId);
         try {
