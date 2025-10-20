@@ -36,8 +36,14 @@ echo "${DOCKER_HUB_PAT}" | docker login -u "tahminator" --password-stdin
 
 docker buildx create --use --name codebloom-builder || docker buildx use codebloom-builder
 
+if [[ "${DOCKER_UPLOAD:-true}" == "true" ]]; then
+    BUILD_MODE="--push"
+else
+    BUILD_MODE="--load"
+fi
+
 docker buildx build \
-    --push \
+    $BUILD_MODE \
     --file infra/Dockerfile \
     --build-arg SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN:-}" \
     --build-arg SENTRY_DSN="${SENTRY_DSN:-}" \
