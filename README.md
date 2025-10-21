@@ -89,12 +89,12 @@ Error Reporting:
 
 ## Authors
 
--   [Tahmid Ahmed](https://github.com/tahminator)
--   [Alfardil Alam](https://github.com/alfardil)
--   [Alisha Zaman](https://github.com/az2924)
--   [Angela Yu](https://github.com/angelayu0530)
--   [Arshadul Monir](https://github.com/Arshadul-Monir)
--   [Nancy Huang](https://github.com/naanci)
+-   [Tahmid Ahmed](https://github.com/tahminator) - Lead Developer
+-   [Alfardil Alam](https://github.com/alfardil) - Developer
+-   [Alisha Zaman](https://github.com/az2924) - Developer
+-   [Angela Yu](https://github.com/angelayu0530) - Developer
+-   [Arshadul Monir](https://github.com/Arshadul-Monir) - Developer
+-   [Nancy Huang](https://github.com/naanci) - Developer
 
 ---
 
