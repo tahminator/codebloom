@@ -54,3 +54,9 @@ backend-install *args:
 # Run backend tests
 backend-test *args:
   dotenvx run -- ./mvnw checkstyle:check test -Dspring.profiles.active=ci {{args}}
+
+# Triggers a deploy to staging command for the following environment. Must be authenticated on gh.
+# NOTE: Triggering staging deployment this way can cause a buildup of tasks (broken concurrency group).
+# As such, this should only be used in one branch at a time.
+ci-test-stg pr_name pr_id:
+  gh workflow run .github/workflows/deploy-stg.yml --ref {{pr_name}} --field prId={{pr_id}}
