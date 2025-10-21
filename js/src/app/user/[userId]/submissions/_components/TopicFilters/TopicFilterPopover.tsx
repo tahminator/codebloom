@@ -20,11 +20,18 @@ export default function TopicFilterPopover({
   const [opened, { toggle }] = useDisclosure(false);
   const [search, setSearch] = useState("");
 
-  function matchTopic(topic: { name: string; aliases?: string[]}, query: string) {
+  function matchTopic(
+    topic: { name: string; aliases?: string[] },
+    query: string,
+  ) {
     const lowerQuery = query.trim().toLowerCase();
-    if(!lowerQuery) return true;
-    const allMatches = [topic.name, ...(topic.aliases ?? [])].map((s) => s.toLowerCase());
-    return allMatches.some((term) => term.includes(lowerQuery) || lowerQuery.includes(term));
+    if (!lowerQuery) return true;
+    const allMatches = [topic.name, ...(topic.aliases ?? [])].map((s) =>
+      s.toLowerCase(),
+    );
+    return allMatches.some(
+      (term) => term.includes(lowerQuery) || lowerQuery.includes(term),
+    );
   }
   const filteredTopics = useMemo(
     () =>
