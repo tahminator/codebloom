@@ -178,7 +178,6 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
         <!-- See https://checkstyle.org/config_misc.html -->
         <module name="ArrayTypeStyle" />
         <module name="FinalParameters" />
-        <module name="TodoComment" />
         <module name="UpperEll" />
 
         <!-- https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
