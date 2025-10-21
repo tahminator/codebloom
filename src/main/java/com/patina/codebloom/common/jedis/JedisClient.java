@@ -1,5 +1,6 @@
 package com.patina.codebloom.common.jedis;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -71,5 +72,13 @@ public class JedisClient {
         }
 
         client.set("auth", auth, SetParams.setParams().ex(expires));
+    }
+
+    /**
+     * Set auth token and when it should be ejected from the cache. If not in CI,
+     * will register an error message, but will no-op.
+     */
+    public void setAuth(final String auth, final long units, final ChronoUnit chronoUnit) {
+        setAuth(auth, chronoUnit.getDuration().multipliedBy(units).toSeconds());
     }
 }

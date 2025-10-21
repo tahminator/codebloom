@@ -1,6 +1,6 @@
 package com.patina.codebloom.common.db.models.auth;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
@@ -29,5 +29,5 @@ public class Auth {
     private String csrf;
 
     @NotNullColumn
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 }

@@ -4,11 +4,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +33,7 @@ import com.patina.codebloom.common.jedis.JedisClient;
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.report.location.Location;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 @Component
 public class LeetcodeAuthStealer {
@@ -77,20 +80,20 @@ public class LeetcodeAuthStealer {
      * code is stored in the database and can then be used to run authenticated
      * queries such as used to retrieve code from our user submissions.
      */
-    @Scheduled(cron = "0 0 0 * * *")
-    public synchronized void stealAuthCookie() {
+    @Scheduled(initialDelay = 0, fixedDelay = 4, timeUnit = TimeUnit.HOURS)
+    public synchronized String stealAuthCookie() {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
         // The auth token should be refreshed every day.
-        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(StandardizedLocalDateTime.now().minus(1, ChronoUnit.DAYS))) {
+        if (mostRecentAuth != null && mostRecentAuth.getCreatedAt().isAfter(StandardizedOffsetDateTime.now().minus(4, ChronoUnit.HOURS))) {
             LOGGER.info("Auth token already exists, using token from database.");
             cookie = mostRecentAuth.getToken();
             csrf = mostRecentAuth.getCsrf();
             if (env.isCi()) {
                 LOGGER.info("in ci, stealing token and putting it in cache for 1 day");
-                jedisClient.setAuth(cookie, 7200); // 2 hours
+                jedisClient.setAuth(cookie, 4, ChronoUnit.HOURS); // 2 hours
             }
-            return;
+            return null;
         }
 
         if (env.isCi()) {
@@ -103,7 +106,7 @@ public class LeetcodeAuthStealer {
                 LOGGER.info("auth token found in redis client");
                 cookie = authToken.get();
                 csrf = null; // don't care in ci.
-                return;
+                return null;
             }
 
             LOGGER.info("auth token not found in redis client");
@@ -208,29 +211,35 @@ public class LeetcodeAuthStealer {
                                     .build());
                     if (env.isCi()) {
                         LOGGER.info("in ci, stored in redis as well");
-                        jedisClient.setAuth(sessionToken, 7200); // 2 hours.
+                        jedisClient.setAuth(sessionToken, 4, ChronoUnit.HOURS); // 2 hours.
                     }
                     this.cookie = sessionToken;
+                    return sessionToken;
                 }
             } else {
                 LOGGER.info("Should be authenticated but not authenticated.");
             }
         }
+
+        return null;
     }
 
     /**
      * There are some cases where leetcode.com may not respect the token anymore. If
      * that is the case, it is best to try to steal a new cookie and replace the
      * current one.
+     *
+     * You may await the `CompletableFuture` and receive the brand new token, or
+     * call-and-forget.
      */
-    public synchronized void reloadCookie() {
-        stealAuthCookie();
+    @Async
+    public synchronized CompletableFuture<Optional<String>> reloadCookie() {
+        return CompletableFuture.supplyAsync(() -> {
+            return Optional.ofNullable(stealAuthCookie());
+        });
     }
 
     public synchronized String getCookie() {
-        if (cookie == null) {
-            stealAuthCookie();
-        }
         return cookie;
     }
 
