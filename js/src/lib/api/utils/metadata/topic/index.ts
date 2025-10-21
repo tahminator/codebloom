@@ -14,7 +14,7 @@ export const TOPIC_METADATA_LIST: Record<
   PROBABILITY_AND_STATISTICS: { name: "Probability and Statistics" },
   MINIMUM_SPANNING_TREE: {
     name: "Minimum Spanning Tree",
-    aliases: ["MST", "mst"],
+    aliases: ["MST"],
   },
   LINE_SWEEP: { name: "Line Sweep" },
   NUMBER_THEORY: { name: "Number Theory" },
@@ -57,7 +57,7 @@ export const TOPIC_METADATA_LIST: Record<
   BITMASK: { name: "Bitmask" },
   BREADTH_FIRST_SEARCH: {
     name: "Breadth-First Search",
-    aliases: ["BFS", "bfs"],
+    aliases: ["BFS"],
   },
   STRING_MATCHING: { name: "String Matching" },
   GREEDY: { name: "Greedy" },
