@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class AuthSqlRepository implements AuthRepository {
                         .id(rs.getString("id"))
                         .token(rs.getString("token"))
                         .csrf(rs.getString("csrf"))
-                        .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                        .createdAt(rs.getObject("createdAt", OffsetDateTime.class))
                         .build();
     }
 
@@ -48,7 +49,7 @@ public class AuthSqlRepository implements AuthRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    auth.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                    auth.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
                 }
             }
         } catch (SQLException e) {

@@ -37,6 +37,10 @@ import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
+/**
+ * TODO: Add an input to determine whether the request must be processed quickly
+ * or not.
+ */
 @Component
 @Primary
 public class LeetcodeClientImpl implements LeetcodeClient {
@@ -68,6 +72,30 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         }
 
         return String.join("; ", cookies);
+    }
+
+    /**
+     * leetcode.com does not always throw correct errors, so this is our best guess
+     * for what a throttled response status could be.
+     *
+     */
+    private boolean isThrottled(final int statusCode) {
+        // 5xx errors
+        if (statusCode >= 500) {
+            return true;
+        }
+
+        // not 100% sure, but thrown consistently from cf
+        if (statusCode == 302) {
+            return true;
+        }
+
+        // cf error
+        if (statusCode == 403) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -104,6 +132,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                if (isThrottled(statusCode)) {
+                    leetcodeAuthStealer.reloadCookie();
+                }
                 reporter.log(Report.builder()
                                 .data(String.format("""
                                                     Leetcode client failed to find question by slug due to status code of %d
@@ -180,6 +211,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                if (isThrottled(statusCode)) {
+                    leetcodeAuthStealer.reloadCookie();
+                }
                 reporter.log(Report.builder()
                                 .data(String.format("""
                                                     Leetcode client failed to find submission by username due to status code of %d
@@ -243,6 +277,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                if (isThrottled(statusCode)) {
+                    leetcodeAuthStealer.reloadCookie();
+                }
                 reporter.log(Report.builder()
                                 .data(String.format("""
                                                     Leetcode client failed to find submission detail by submission ID due to status code of %d
@@ -299,6 +336,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                if (isThrottled(statusCode)) {
+                    leetcodeAuthStealer.reloadCookie();
+                }
                 reporter.log(Report.builder()
                                 .data(String.format("""
                                                     Leetcode client failed to get POTD due to status code of %d
@@ -343,6 +383,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                if (isThrottled(statusCode)) {
+                    leetcodeAuthStealer.reloadCookie();
+                }
                 reporter.log(Report.builder()
                                 .data(String.format("""
                                                     Leetcode client failed to get user profile by username due to status code of %d
@@ -384,6 +427,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String body = response.body();
 
             if (statusCode != 200) {
+                if (isThrottled(statusCode)) {
+                    leetcodeAuthStealer.reloadCookie();
+                }
                 reporter.log(Report.builder()
                                 .data(String.format("""
                                                     Leetcode client failed to get all topic tags due to status code of %d
