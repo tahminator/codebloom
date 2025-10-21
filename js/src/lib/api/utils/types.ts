@@ -72,5 +72,6 @@ export namespace ApiTypeUtils {
    */
   export type QuestionTopicTopicMetadata = {
     name: string;
+    aliases?: string[];
   };
 }
