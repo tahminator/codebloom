@@ -505,11 +505,11 @@ jobs:
 
                       let statusMessage;
                        if (failedJobs.length > 0 && cancelledJobs.length > 0) {
-                           statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}\n\n**Failed job(s):** ${failedJobs.join(', ')}\n**Cancelled job(s):** ${cancelledJobs.join(', ')}`;
+                           statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}\n\n**`;
                        } else if (failedJobs.length > 0) {
-                           statusMessage = `**Staging deployment failed** for commit ${commitHash}\n\n**Failed job(s):** ${failedJobs.join(', ')}`;
+                           statusMessage = `**Staging deployment failed** for commit ${commitHash}\n\n**`;
                        } else if (cancelledJobs.length > 0) {
-                           statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}\n\n**Cancelled job(s):** ${cancelledJobs.join(', ')}`;
+                           statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}\n\n`;
                        } else {
                            statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
                        }
