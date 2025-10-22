@@ -80,7 +80,7 @@ public class LeetcodeAuthStealer {
      * code is stored in the database and can then be used to run authenticated
      * queries such as used to retrieve code from our user submissions.
      */
-    @Scheduled(initialDelay = 0, fixedDelay = 4, timeUnit = TimeUnit.HOURS)
+    @Scheduled(initialDelay = 0, fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     public synchronized String stealAuthCookie() {
         Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
