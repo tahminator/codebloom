@@ -91,7 +91,7 @@ public class LeetcodeAuthStealer {
             csrf = mostRecentAuth.getCsrf();
             if (env.isCi()) {
                 LOGGER.info("in ci, stealing token and putting it in cache for 1 day");
-                jedisClient.setAuth(cookie, 4, ChronoUnit.HOURS); // 2 hours
+                jedisClient.setAuth(cookie, 4, ChronoUnit.HOURS); // 4 hours.
             }
             return null;
         }
@@ -211,7 +211,7 @@ public class LeetcodeAuthStealer {
                                     .build());
                     if (env.isCi()) {
                         LOGGER.info("in ci, stored in redis as well");
-                        jedisClient.setAuth(sessionToken, 4, ChronoUnit.HOURS); // 2 hours.
+                        jedisClient.setAuth(sessionToken, 4, ChronoUnit.HOURS); // 4 hours.
                     }
                     this.cookie = sessionToken;
                     return sessionToken;
@@ -234,9 +234,7 @@ public class LeetcodeAuthStealer {
      */
     @Async
     public synchronized CompletableFuture<Optional<String>> reloadCookie() {
-        return CompletableFuture.supplyAsync(() -> {
-            return Optional.ofNullable(stealAuthCookie());
-        });
+        return CompletableFuture.completedFuture(Optional.ofNullable(stealAuthCookie()));
     }
 
     public synchronized String getCookie() {
