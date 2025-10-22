@@ -56,7 +56,7 @@ public interface LobbyPlayerQuestionRepository {
      * <ul>
      * <li>id</li>
      * </ul>
-     * updatable fields:
+     * overridable fields:
      * <ul>
      * <li>points</li>
      * <li>questionId</li>
