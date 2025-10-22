@@ -82,7 +82,15 @@ export const useCurrentLeaderboardUsersQuery = (
   }, [goTo, setGlobalIndex]);
 
   const query = useQuery({
-    queryKey: ["leaderboard", "users", page, pageSize, debouncedQuery, filters],
+    queryKey: [
+      "leaderboard",
+      "users",
+      page,
+      pageSize,
+      debouncedQuery,
+      filters,
+      globalIndex,
+    ],
     queryFn: () =>
       fetchLeaderboardUsers({
         page,
