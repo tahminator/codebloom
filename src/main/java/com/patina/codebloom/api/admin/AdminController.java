@@ -208,7 +208,7 @@ public class AdminController {
 
         ArrayList<QuestionWithUser> incompleteQuestions = questionRepository.getAllIncompleteQuestionsWithUser();
 
-        if (incompleteQuestions.size () == 0){
+        if (incompleteQuestions.size() == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Incomplete Questions");
         }
 
