@@ -330,8 +330,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setBoolean(3, pointFilter);
 
             String[] sqlValues = Arrays.stream(topics)
-                            .map(LeetcodeTopicEnum::getLeetcodeEnum)
-                            .toArray(String[]::new);
+                .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
@@ -649,7 +649,7 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     @Override
     public ArrayList<QuestionWithUser> getAllIncompleteQuestionsWithUser() {
-        ArrayList<QuestionWithUser> result = new ArrayList<>();
+        ArrayList<QuestionWithUser> questions = new ArrayList<>();
         String sql = """
                         SELECT
                             q.id,
@@ -734,13 +734,13 @@ public class QuestionSqlRepository implements QuestionRepository {
                                     .topics(questionTopicRepository.findQuestionTopicsByQuestionId(questionId))
                                     .build();
 
-                    result.add(question);
+                    questions.add(question);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve all incomplete questions with user", e);
         }
 
-        return result;
+        return questions;
     }
 }
