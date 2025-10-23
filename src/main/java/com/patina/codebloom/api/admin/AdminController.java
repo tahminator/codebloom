@@ -1,8 +1,10 @@
 package com.patina.codebloom.api.admin;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +18,11 @@ import com.patina.codebloom.api.admin.body.UpdateAdminBody;
 import com.patina.codebloom.api.admin.helper.PatinaDiscordMessageHelper;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
+import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
@@ -43,6 +47,7 @@ public class AdminController {
     private final UserRepository userRepository;
     private final LeaderboardRepository leaderboardRepository;
     private final AnnouncementRepository announcementRepository;
+    private final QuestionRepository questionRepository;
     private final Protector protector;
     private final PatinaDiscordMessageHelper patinaDiscordMessageHelper;
 
@@ -51,11 +56,13 @@ public class AdminController {
                     final Protector protector,
                     final UserRepository userRepository,
                     final AnnouncementRepository announcementRepository,
+                    final QuestionRepository questionRepository,
                     final PatinaDiscordMessageHelper patinaDiscordMessageHelper) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
         this.userRepository = userRepository;
         this.announcementRepository = announcementRepository;
+        this.questionRepository = questionRepository;
         this.patinaDiscordMessageHelper = patinaDiscordMessageHelper;
     }
 
@@ -185,6 +192,22 @@ public class AdminController {
                             .body(ApiResponder.failure("Hmm, something went wrong."));
         }
         return ResponseEntity.ok(ApiResponder.success("Announcement successfully disabled!", Empty.of()));
+    }
+
+    @Operation(summary = "Get all incomplete questions with user information", description = """
+                    Returns all questions that are missing runtime, memory, code, or language information,
+                    ordered by most recently submitted. Only accessible to admins.
+                    """)
+    @GetMapping("/questions/incomplete")
+    public ResponseEntity<ApiResponder<ArrayList<QuestionWithUser>>> getIncompleteQuestions(
+                    final HttpServletRequest request) {
+        protector.validateAdminSession(request);
+
+        ArrayList<QuestionWithUser> incompleteQuestions = questionRepository.getAllIncompleteQuestionsWithUser();
+
+        return ResponseEntity.ok(ApiResponder.success(
+                        "Retrieved " + incompleteQuestions.size() + " incomplete questions.",
+                        incompleteQuestions));
     }
 
 }
