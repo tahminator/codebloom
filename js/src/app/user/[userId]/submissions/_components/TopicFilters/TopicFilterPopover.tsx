@@ -20,13 +20,13 @@ export default function TopicFilterPopover({
   const [opened, { toggle }] = useDisclosure(false);
   const [search, setSearch] = useState("");
 
-const filteredTopics = useMemo(
-  () =>
-    Object.entries(leetcodeTopics).filter(([_, topic]) =>
-      ApiUtils.matchTopic(topic, search),
-    ),
-  [search],
-);
+  const filteredTopics = useMemo(
+    () =>
+      Object.entries(leetcodeTopics).filter(([_, topic]) =>
+        ApiUtils.matchTopic(topic, search),
+      ),
+    [search],
+  );
 
   return (
     <Popover
