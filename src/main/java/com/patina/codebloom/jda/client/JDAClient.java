@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
  */
 @Component
 @Slf4j
-@EnableConfigurationProperties({ JDAPatinaProperties.class, JDAErrorReportingProperties.class, JDALogReportingProperties.class })
+@EnableConfigurationProperties({ JDAPatinaProperties.class, JDAErrorReportingProperties.class, JDALogReportingProperties.class, JDAScoreReportingProperties.class })
 public class JDAClient {
     private final JDAInitializer jdaInitializer;
     private JDA jda;
