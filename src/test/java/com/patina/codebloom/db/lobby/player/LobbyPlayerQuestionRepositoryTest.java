@@ -121,11 +121,11 @@ public class LobbyPlayerQuestionRepositoryTest {
 
     @Test
     @Order(4)
-    void testUpdateLobbyPlayerQuestion() {
+    void testUpdateLobbyPlayerQuestionById() {
         int newPoints = 250;
         testLobbyPlayerQuestion.setPoints(newPoints);
 
-        boolean updateResult = lobbyPlayerQuestionRepository.updateLobbyPlayerQuestion(testLobbyPlayerQuestion);
+        boolean updateResult = lobbyPlayerQuestionRepository.updateLobbyPlayerQuestionById(testLobbyPlayerQuestion);
         assertTrue(updateResult);
 
         LobbyPlayerQuestion updatedLobbyPlayerQuestion = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(testLobbyPlayerQuestion.getId());

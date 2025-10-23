@@ -142,7 +142,7 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
     }
 
     @Override
-    public boolean updateLobbyPlayerQuestion(final LobbyPlayerQuestion lobbyPlayerQuestion) {
+    public boolean updateLobbyPlayerQuestionById(final LobbyPlayerQuestion lobbyPlayerQuestion) {
         String sql = """
                         UPDATE "LobbyPlayerQuestion"
                         SET
