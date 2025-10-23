@@ -197,13 +197,20 @@ public class AdminController {
     @Operation(summary = "Get all incomplete questions with user information", description = """
                     Returns all questions that are missing runtime, memory, code, or language information,
                     ordered by most recently submitted. Only accessible to admins.
-                    """)
+                    """, responses = {
+            @ApiResponse(responseCode = "200", description = "Retrieved incomplete questions"),
+            @ApiResponse(responseCode = "404", description = "No Incomplete Questions", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    })
     @GetMapping("/questions/incomplete")
     public ResponseEntity<ApiResponder<ArrayList<QuestionWithUser>>> getIncompleteQuestions(
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
         ArrayList<QuestionWithUser> incompleteQuestions = questionRepository.getAllIncompleteQuestionsWithUser();
+
+        if (incompleteQuestions.size () == 0){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Incomplete Questions");
+        }
 
         return ResponseEntity.ok(ApiResponder.success(
                         "Retrieved " + incompleteQuestions.size() + " incomplete questions.",
