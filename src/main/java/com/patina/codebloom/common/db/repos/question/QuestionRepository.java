@@ -71,6 +71,16 @@ public interface QuestionRepository {
      */
     List<Question> getAllQuestionsWithNoTopics();
 
+    /**
+     * @note - Returns all incomplete questions with user information, ordered by
+     * most recently submitted. Incomplete questions are those missing either a
+     * runtime, memory, code, or language.
+     * 
+     * @return all incomplete questions with user details, sorted by submittedAt
+     * DESC
+     */
+    ArrayList<QuestionWithUser> getAllIncompleteQuestionsWithUser();
+
     boolean deleteQuestionById(String id);
 
     Question getQuestionBySlugAndUserId(String slug, String userId);
