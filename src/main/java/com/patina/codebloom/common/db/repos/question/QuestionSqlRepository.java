@@ -329,10 +329,9 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setString(2, "%" + query + "%");
             stmt.setBoolean(3, pointFilter);
 
-
             String[] sqlValues = Arrays.stream(topics)
-                .map(LeetcodeTopicEnum::getLeetcodeEnum)
-                .toArray(String[]::new);
+                            .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                            .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
@@ -646,5 +645,102 @@ public class QuestionSqlRepository implements QuestionRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get all questions with no topics", e);
         }
+    }
+
+    @Override
+    public ArrayList<QuestionWithUser> getAllIncompleteQuestionsWithUser() {
+        ArrayList<QuestionWithUser> result = new ArrayList<>();
+        String sql = """
+                        SELECT
+                            q.id,
+                            q."userId",
+                            q."questionSlug",
+                            q."questionDifficulty",
+                            q."questionNumber",
+                            q."questionLink",
+                            q."pointsAwarded",
+                            q."questionTitle",
+                            q.description,
+                            q."acceptanceRate",
+                            q."createdAt",
+                            q."submittedAt",
+                            q.runtime,
+                            q.memory,
+                            q.code,
+                            q.language,
+                            q."submissionId",
+                            u."discordName",
+                            u."leetcodeUsername",
+                            u.nickname
+                        FROM
+                            "Question" q
+                        JOIN
+                            "User" u ON q."userId" = u.id
+                        WHERE
+                            (q."runtime" IS NULL OR q."runtime" = '')
+                            OR (q."memory" IS NULL OR q."memory" = '')
+                            OR (q."code" IS NULL OR q."code" = '')
+                            OR (q."language" IS NULL OR q."language" = '')
+                        ORDER BY
+                            q."submittedAt" DESC
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    var questionId = rs.getString("id");
+                    var userId = rs.getString("userId");
+                    var questionSlug = rs.getString("questionSlug");
+                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
+                    var questionNumber = rs.getInt("questionNumber");
+                    var questionLink = rs.getString("questionLink");
+                    int points = rs.getInt("pointsAwarded");
+                    Integer pointsAwarded = rs.wasNull() ? null : points;
+                    var questionTitle = rs.getString("questionTitle");
+                    var description = rs.getString("description");
+                    var acceptanceRate = rs.getFloat("acceptanceRate");
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+                    var runtime = rs.getString("runtime");
+                    var memory = rs.getString("memory");
+                    var code = rs.getString("code");
+                    var language = rs.getString("language");
+                    var submissionId = rs.getString("submissionId");
+                    var discordName = rs.getString("discordName");
+                    var leetcodeUsername = rs.getString("leetcodeUsername");
+                    var nickname = rs.getString("nickname");
+
+                    QuestionWithUser question = QuestionWithUser.builder()
+                                    .id(questionId)
+                                    .userId(userId)
+                                    .questionSlug(questionSlug)
+                                    .questionDifficulty(questionDifficulty)
+                                    .questionNumber(questionNumber)
+                                    .questionLink(questionLink)
+                                    .pointsAwarded(pointsAwarded)
+                                    .questionTitle(questionTitle)
+                                    .description(description)
+                                    .acceptanceRate(acceptanceRate)
+                                    .createdAt(createdAt)
+                                    .submittedAt(submittedAt)
+                                    .runtime(runtime)
+                                    .memory(memory)
+                                    .code(code)
+                                    .language(language)
+                                    .submissionId(submissionId)
+                                    .discordName(discordName)
+                                    .leetcodeUsername(leetcodeUsername)
+                                    .nickname(nickname)
+                                    .topics(questionTopicRepository.findQuestionTopicsByQuestionId(questionId))
+                                    .build();
+
+                    result.add(question);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve all incomplete questions with user", e);
+        }
+
+        return result;
     }
 }
