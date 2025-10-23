@@ -52,10 +52,8 @@ public interface LobbyPlayerQuestionRepository {
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
-     * @param lobbyPlayerQuestion - required fields:
-     * <ul>
-     * <li>id</li>
-     * </ul>
+     * @param lobbyPlayerQuestion
+     * 
      * overridable fields:
      * <ul>
      * <li>points</li>
@@ -63,7 +61,7 @@ public interface LobbyPlayerQuestionRepository {
      * </ul>
      * @return true if the update was successful, false otherwise
      */
-    boolean updateLobbyPlayerQuestion(LobbyPlayerQuestion lobbyPlayerQuestion);
+    boolean updateLobbyPlayerQuestionById(LobbyPlayerQuestion lobbyPlayerQuestion);
 
     /**
      * Deletes all questions for a specific lobby player.
