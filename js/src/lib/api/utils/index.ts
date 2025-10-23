@@ -133,7 +133,7 @@ export class ApiUtils {
   ): ApiTypeUtils.FilteredUserTagTag[] {
     return tagEnums.filter(ApiUtils._isSupportedTagEnum);
   }
-  
+
   static matchTopic(
     topic: { name: string; aliases?: string[] },
     query: string,
