@@ -74,6 +74,54 @@ public class QuestionSqlRepository implements QuestionRepository {
                         .build();
     }
 
+    private QuestionWithUser mapResultSetToQuestionWithUser(final ResultSet rs) throws SQLException {
+        var questionId = rs.getString("id");
+        var userId = rs.getString("userId");
+        var questionSlug = rs.getString("questionSlug");
+        var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
+        var questionNumber = rs.getInt("questionNumber");
+        var questionLink = rs.getString("questionLink");
+        int points = rs.getInt("pointsAwarded");
+        Integer pointsAwarded = rs.wasNull() ? null : points;
+        var questionTitle = rs.getString("questionTitle");
+        var description = rs.getString("description");
+        var acceptanceRate = rs.getFloat("acceptanceRate");
+        var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+        var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
+        var runtime = rs.getString("runtime");
+        var memory = rs.getString("memory");
+        var code = rs.getString("code");
+        var language = rs.getString("language");
+        var submissionId = rs.getString("submissionId");
+        var discordName = rs.getString("discordName");
+        var leetcodeUsername = rs.getString("leetcodeUsername");
+        var nickname = rs.getString("nickname");
+
+        return QuestionWithUser.builder()
+                        .id(questionId)
+                        .userId(userId)
+                        .questionSlug(questionSlug)
+                        .questionDifficulty(questionDifficulty)
+                        .questionNumber(questionNumber)
+                        .questionLink(questionLink)
+                        .pointsAwarded(pointsAwarded)
+                        .questionTitle(questionTitle)
+                        .description(description)
+                        .acceptanceRate(acceptanceRate)
+                        .createdAt(createdAt)
+                        .submittedAt(submittedAt)
+                        .runtime(runtime)
+                        .memory(memory)
+                        .code(code)
+                        .language(language)
+                        .submissionId(submissionId)
+                        .discordName(discordName)
+                        .leetcodeUsername(leetcodeUsername)
+                        .nickname(nickname)
+                        .topics(questionTopicRepository.findQuestionTopicsByQuestionId(questionId))
+                        .build();
+    }
+
     public QuestionSqlRepository(
                     final DbConnection dbConnection,
                     final UserRepository userRepository,
@@ -330,8 +378,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setBoolean(3, pointFilter);
 
             String[] sqlValues = Arrays.stream(topics)
-                .map(LeetcodeTopicEnum::getLeetcodeEnum)
-                .toArray(String[]::new);
+                            .map(LeetcodeTopicEnum::getLeetcodeEnum)
+                            .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
@@ -688,52 +736,7 @@ public class QuestionSqlRepository implements QuestionRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    var questionId = rs.getString("id");
-                    var userId = rs.getString("userId");
-                    var questionSlug = rs.getString("questionSlug");
-                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
-                    var questionNumber = rs.getInt("questionNumber");
-                    var questionLink = rs.getString("questionLink");
-                    int points = rs.getInt("pointsAwarded");
-                    Integer pointsAwarded = rs.wasNull() ? null : points;
-                    var questionTitle = rs.getString("questionTitle");
-                    var description = rs.getString("description");
-                    var acceptanceRate = rs.getFloat("acceptanceRate");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    var runtime = rs.getString("runtime");
-                    var memory = rs.getString("memory");
-                    var code = rs.getString("code");
-                    var language = rs.getString("language");
-                    var submissionId = rs.getString("submissionId");
-                    var discordName = rs.getString("discordName");
-                    var leetcodeUsername = rs.getString("leetcodeUsername");
-                    var nickname = rs.getString("nickname");
-
-                    QuestionWithUser question = QuestionWithUser.builder()
-                                    .id(questionId)
-                                    .userId(userId)
-                                    .questionSlug(questionSlug)
-                                    .questionDifficulty(questionDifficulty)
-                                    .questionNumber(questionNumber)
-                                    .questionLink(questionLink)
-                                    .pointsAwarded(pointsAwarded)
-                                    .questionTitle(questionTitle)
-                                    .description(description)
-                                    .acceptanceRate(acceptanceRate)
-                                    .createdAt(createdAt)
-                                    .submittedAt(submittedAt)
-                                    .runtime(runtime)
-                                    .memory(memory)
-                                    .code(code)
-                                    .language(language)
-                                    .submissionId(submissionId)
-                                    .discordName(discordName)
-                                    .leetcodeUsername(leetcodeUsername)
-                                    .nickname(nickname)
-                                    .topics(questionTopicRepository.findQuestionTopicsByQuestionId(questionId))
-                                    .build();
-
+                    QuestionWithUser question = mapResultSetToQuestionWithUser(rs);
                     questions.add(question);
                 }
             }

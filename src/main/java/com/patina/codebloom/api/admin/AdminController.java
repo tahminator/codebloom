@@ -2,6 +2,7 @@ package com.patina.codebloom.api.admin;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.dto.question.QuestionWithUserDto;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
@@ -202,7 +204,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "No Incomplete Questions", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     })
     @GetMapping("/questions/incomplete")
-    public ResponseEntity<ApiResponder<ArrayList<QuestionWithUser>>> getIncompleteQuestions(
+    public ResponseEntity<ApiResponder<List<QuestionWithUserDto>>> getIncompleteQuestions(
                     final HttpServletRequest request) {
         protector.validateAdminSession(request);
 
@@ -212,9 +214,13 @@ public class AdminController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Incomplete Questions");
         }
 
+        List<QuestionWithUserDto> incompleteQuestionsDto = incompleteQuestions.stream()
+                        .map(QuestionWithUserDto::fromQuestionWithUser)
+                        .toList();
+
         return ResponseEntity.ok(ApiResponder.success(
-                        "Retrieved " + incompleteQuestions.size() + " incomplete questions.",
-                        incompleteQuestions));
+                        "Retrieved " + incompleteQuestionsDto.size() + " incomplete questions.",
+                        incompleteQuestionsDto));
     }
 
 }
