@@ -2,7 +2,9 @@ package com.patina.codebloom.common.db.models.achievements;
 
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,28 +22,28 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Achievement {
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String userId;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private String iconUrl;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String title;
 
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
+    @NullColumn
     private String description;
 
     @Builder.Default
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private boolean isActive = true;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime createdAt;
 
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
+    @NullColumn
     private LocalDateTime deletedAt;
 }

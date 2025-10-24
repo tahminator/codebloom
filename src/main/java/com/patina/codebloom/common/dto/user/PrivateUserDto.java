@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
+import com.patina.codebloom.common.dto.achievement.AchievementDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -42,6 +43,8 @@ public class PrivateUserDto {
     private String verifyKey;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String schoolEmail;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<AchievementDto> achievements;
 
     public static PrivateUserDto fromUser(final User user) {
         return PrivateUserDto.builder()
@@ -55,6 +58,7 @@ public class PrivateUserDto {
                         .tags(user.getTags())
                         .verifyKey(user.getVerifyKey())
                         .schoolEmail(user.getSchoolEmail())
+                        .achievements(user.getAchievements().stream().map(AchievementDto::fromAchievement).toList())
                         .build();
     }
 }
