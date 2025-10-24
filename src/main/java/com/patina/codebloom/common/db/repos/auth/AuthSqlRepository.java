@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.auth.Auth;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 
 @Component
@@ -26,7 +27,7 @@ public class AuthSqlRepository implements AuthRepository {
                         .id(rs.getString("id"))
                         .token(rs.getString("token"))
                         .csrf(rs.getString("csrf"))
-                        .createdAt(rs.getObject("createdAt", OffsetDateTime.class))
+                        .createdAt(StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class)))
                         .build();
     }
 
@@ -49,7 +50,7 @@ public class AuthSqlRepository implements AuthRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    auth.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
+                    auth.setCreatedAt(StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class)));
                 }
             }
         } catch (SQLException e) {

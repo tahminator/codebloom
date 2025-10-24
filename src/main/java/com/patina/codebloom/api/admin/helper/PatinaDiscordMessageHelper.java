@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.microsoft.playwright.Browser;
@@ -41,6 +42,7 @@ public class PatinaDiscordMessageHelper {
      * Loads the Patina page, takes a screenshot, and sends a final Discord message
      * with the winners of the leaderboard.
      */
+    @Async
     public void sendLatestLeaderboardDiscordMessage() {
         log.info("Connecting to JDA client...");
         jdaClient.connect();

@@ -13,6 +13,7 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
+import com.patina.codebloom.common.db.repos.achievements.AchievementRepository;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 
@@ -20,10 +21,12 @@ import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 public class UserSqlRepository implements UserRepository {
     private Connection conn;
     private final UserTagRepository userTagRepository;
+    private final AchievementRepository achievementRepository;
 
-    public UserSqlRepository(final DbConnection dbConnection, final UserTagRepository userTagRepository) {
+    public UserSqlRepository(final DbConnection dbConnection, final UserTagRepository userTagRepository, final AchievementRepository achievementRepository) {
         this.conn = dbConnection.getConn();
         this.userTagRepository = userTagRepository;
+        this.achievementRepository = achievementRepository;
     }
 
     private User parseResultSetToUser(final ResultSet rs) throws SQLException {
@@ -39,6 +42,7 @@ public class UserSqlRepository implements UserRepository {
                         .schoolEmail(rs.getString("schoolEmail"))
                         .profileUrl(rs.getString("profileUrl"))
                         .tags(userTagRepository.findTagsByUserId(id))
+                        .achievements(achievementRepository.getAchievementsByUserId(id))
                         .build();
     }
 
@@ -55,6 +59,7 @@ public class UserSqlRepository implements UserRepository {
                         .schoolEmail(rs.getString("schoolEmail"))
                         .profileUrl(rs.getString("profileUrl"))
                         .tags(userTagRepository.findTagsByUserId(id))
+                        .achievements(achievementRepository.getAchievementsByUserId(id))
                         .totalScore(rs.getInt("totalScore"))
                         .build();
     }

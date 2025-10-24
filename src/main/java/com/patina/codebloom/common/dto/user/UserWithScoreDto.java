@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
+import com.patina.codebloom.common.dto.achievement.AchievementDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -35,6 +36,8 @@ public class UserWithScoreDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private List<UserTag> tags;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<AchievementDto> achievements;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private int totalScore;
 
     public static UserWithScoreDto fromUserWithScore(final UserWithScore user) {
@@ -47,6 +50,7 @@ public class UserWithScoreDto {
                         .admin(user.isAdmin())
                         .profileUrl(user.getProfileUrl())
                         .tags(user.getTags())
+                        .achievements(user.getAchievements().stream().map(AchievementDto::fromAchievement).toList())
                         .totalScore(user.getTotalScore())
                         .build();
     }
