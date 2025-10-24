@@ -63,7 +63,9 @@ public class ThrottledReporter extends Reporter {
     @Override
     @Async
     public void error(final Report report) {
-        if (!checkToken()) return;
+        if (!checkToken()) {
+            return;
+        }
         super.error(report);
     }
 
@@ -73,7 +75,9 @@ public class ThrottledReporter extends Reporter {
     @Override
     @Async
     public void log(final Report report) {
-        if (!checkToken()) return;
+        if (!checkToken()) {
+            return;
+        }
         super.log(report);
     }
 }
