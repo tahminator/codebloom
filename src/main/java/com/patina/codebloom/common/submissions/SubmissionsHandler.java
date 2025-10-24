@@ -30,6 +30,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
+import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.throttled.ThrottledReporter;
 
@@ -46,7 +47,7 @@ public class SubmissionsHandler {
     private final POTDRepository potdRepository;
     private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
-    private final ThrottledReporter throttledReporter;
+    private final Reporter throttledReporter;
 
     private boolean isValid(final LocalDateTime createdAt) {
         // TODO - Replace EST locked functionality.
