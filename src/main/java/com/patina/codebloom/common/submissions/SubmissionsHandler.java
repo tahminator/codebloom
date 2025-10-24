@@ -113,13 +113,12 @@ public class SubmissionsHandler {
 
             boolean isTooLate = recentLeaderboard.getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
 
-            int basePoints;
-            switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
-                case "EASY" -> basePoints = 100;
-                case "MEDIUM" -> basePoints = 300;
-                case "HARD" -> basePoints = 600;
-                default -> basePoints = 0;
-            }
+            int basePoints = switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
+                case "EASY" -> 100;
+                case "MEDIUM" -> 300;
+                case "HARD" -> 600;
+                default -> 0;
+            };
 
             int points;
             if (question != null || isTooLate) {
