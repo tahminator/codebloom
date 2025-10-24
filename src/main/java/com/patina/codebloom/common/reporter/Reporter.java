@@ -19,7 +19,7 @@ import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
  */
 @Component
 public class Reporter {
-    private final JDAClient jdaClient;
+    protected final JDAClient jdaClient;
 
     public Reporter(final JDAClient jdaClient) {
         this.jdaClient = jdaClient;
