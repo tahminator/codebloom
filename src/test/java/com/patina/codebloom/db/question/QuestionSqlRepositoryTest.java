@@ -110,7 +110,7 @@ public class QuestionSqlRepositoryTest {
     @Order(3)
     void testGetQuestionsByUserId() {
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
-                        testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[]{});
+                        testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {});
 
         assertNotNull(questions, "Questions list should not be null");
         assertTrue(questions.size() > 0, "Questions list should contain at least one question");
@@ -191,5 +191,14 @@ public class QuestionSqlRepositoryTest {
 
         assertNotNull(questions);
         assertTrue(questions.size() > 0);
+    }
+
+    @Test
+    @Order(9)
+    void testGetAllIncompleteQuestionsWithUser() {
+        ArrayList<QuestionWithUser> incompleteQuestions = questionRepository.getAllIncompleteQuestionsWithUser();
+
+        assertNotNull(incompleteQuestions);
+        assertTrue(incompleteQuestions.size() >= 0);
     }
 }
