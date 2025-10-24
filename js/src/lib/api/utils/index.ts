@@ -135,7 +135,7 @@ export class ApiUtils {
   }
 
   static matchTopic(
-    topic: { name: string; aliases?: string[] },
+    topic: ApiTypeUtils.QuestionTopicTopicMetadata,
     query: string,
   ) {
     const lowerQuery = query.trim().toLowerCase();
