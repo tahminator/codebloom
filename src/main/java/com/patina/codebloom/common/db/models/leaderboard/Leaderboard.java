@@ -14,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode
 @ToString
