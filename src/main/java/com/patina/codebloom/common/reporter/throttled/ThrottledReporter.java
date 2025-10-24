@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
-import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -56,42 +54,27 @@ public class ThrottledReporter extends Reporter {
         }
     }
 
-    @Override
-    public void error(final Report report) {
-        super.error(report);
-    }
-
-    @Override
-    public void log(final Report report) {
-        super.log(report);
-    }
-
     /**
-     * Report score distribution.
+     * Report an error.
      */
+    @Override
     @Async
-    public void reportScore(final Report report) {
+    public void error(final Report report) {
         if (!rateLimiter.tryConsume(1)) {
             return;
         }
-        String description = String.format("""
-                        Score Distribution Report
+        super.error(report);
+    }
 
-                        Active environment(s): %s
-                        Current Time: %s
-
-                        Check attachment for data.""",
-                        report.getEnvironments(),
-                        StandardizedLocalDateTime.now().toString());
-        jdaClient.sendEmbedWithImage(
-                        EmbeddedMessageOptions.builder()
-                                        .guildId(jdaClient.getJdaLogReportingProperties().getGuildId())
-                                        .channelId(jdaClient.getJdaLogReportingProperties().getChannelId())
-                                        .title("Score Distribution")
-                                        .description(description)
-                                        .color(Color.GREEN)
-                                        .fileName("scores.txt")
-                                        .fileBytes(report.getData().getBytes())
-                                        .build());
+    /**
+     * Report a log.
+     */
+    @Override
+    @Async
+    public void log(final Report report) {
+        if (!rateLimiter.tryConsume(1)) {
+            return;
+        }
+        super.log(report);
     }
 }

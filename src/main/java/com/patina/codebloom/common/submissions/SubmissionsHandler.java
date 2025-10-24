@@ -128,7 +128,7 @@ public class SubmissionsHandler {
                 points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
             }
 
-            throttledReporter.reportScore(Report.builder()
+            throttledReporter.log(Report.builder()
                                             .data(String.format("""
                                                 Score Distribution Report
 
