@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import com.patina.codebloom.common.db.helper.annotations.NullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 
 @Getter
 @Setter
@@ -18,7 +18,7 @@ import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class LeaderboardWithUsers extends Leaderboard {
-    @NullColumn
+    @NotNullColumn
     private ArrayList<UserWithScore> users;
 
     public void addUser(final UserWithScore user) {

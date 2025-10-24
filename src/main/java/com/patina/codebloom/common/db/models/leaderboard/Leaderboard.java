@@ -29,6 +29,6 @@ public class Leaderboard {
     @NullColumn
     private LocalDateTime deletedAt;
 
-    @NotNullColumn
+    @NullColumn
     private LocalDateTime shouldExpireBy;
 }
