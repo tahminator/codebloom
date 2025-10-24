@@ -89,7 +89,7 @@ public class ThrottledReporter extends Reporter {
                         EmbeddedMessageOptions.builder()
                                         .guildId(jdaClient.getJdaLogReportingProperties().getGuildId())
                                         .channelId(jdaClient.getJdaLogReportingProperties().getChannelId())
-                                        .title("Score Disribution")
+                                        .title("Score Distribution")
                                         .description(description)
                                         .color(Color.GREEN)
                                         .fileName("scores.txt")
