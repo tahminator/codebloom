@@ -34,6 +34,10 @@ public class ThrottledReporter extends Reporter {
                         .build();
     }
 
+    private boolean checkToken() {
+        return rateLimiter.tryConsume(1);
+    }
+
     public ThrottledReporter(final JDAClient jdaClient) {
         super(jdaClient);
         this.rateLimiter = initializeBucket();
@@ -59,9 +63,7 @@ public class ThrottledReporter extends Reporter {
     @Override
     @Async
     public void error(final Report report) {
-        if (!rateLimiter.tryConsume(1)) {
-            return;
-        }
+        if (!checkToken()) return;
         super.error(report);
     }
 
@@ -71,9 +73,7 @@ public class ThrottledReporter extends Reporter {
     @Override
     @Async
     public void log(final Report report) {
-        if (!rateLimiter.tryConsume(1)) {
-            return;
-        }
+        if (!checkToken()) return;
         super.log(report);
     }
 }
