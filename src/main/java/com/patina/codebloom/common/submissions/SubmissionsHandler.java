@@ -30,6 +30,9 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
+import com.patina.codebloom.common.reporter.report.Report;
+import com.patina.codebloom.common.reporter.throttled.ThrottledReporter;
+
 
 /**
  * The submission logic is abstracted because it gets reused in two different
@@ -43,6 +46,7 @@ public class SubmissionsHandler {
     private final POTDRepository potdRepository;
     private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
+    private final ThrottledReporter throttledReporter;
 
     private boolean isValid(final LocalDateTime createdAt) {
         // TODO - Replace EST locked functionality.
@@ -59,13 +63,14 @@ public class SubmissionsHandler {
     }
 
     public SubmissionsHandler(final QuestionRepository questionRepository, final ThrottledLeetcodeClient throttledLeetcodeClient, final LeaderboardRepository leaderboardRepository,
-                    final POTDRepository potdRepository, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository) {
+                    final POTDRepository potdRepository, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository, final ThrottledReporter throttledReporter) {
         this.questionRepository = questionRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.leaderboardRepository = leaderboardRepository;
         this.potdRepository = potdRepository;
         this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
+        this.throttledReporter = throttledReporter;
     }
 
     public ArrayList<AcceptedSubmission> handleSubmissions(final List<LeetcodeSubmission> leetcodeSubmissions, final User user) {
@@ -108,12 +113,39 @@ public class SubmissionsHandler {
 
             boolean isTooLate = recentLeaderboard.getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
 
+            int basePoints;
+            switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
+                case "EASY" -> basePoints = 100;
+                case "MEDIUM" -> basePoints = 300;
+                case "HARD" -> basePoints = 600;
+                default -> basePoints = 0;
+            }
+
             int points;
             if (question != null || isTooLate) {
                 points = 0;
             } else {
                 points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
             }
+
+            throttledReporter.reportScore(Report.builder()
+                                            .data(String.format("""
+                                                Score Distribution Report
+
+                                                Leetcode Username: %s
+                                                Difficulty: %s (%d pts)
+                                                Acceptance Rate: %.2f
+                                                Question Multiplier: %.2f
+                                                Total: %d
+                                                """,
+                                                user.getLeetcodeUsername(),
+                                                leetcodeQuestion.getDifficulty(), 
+                                                basePoints,
+                                                leetcodeQuestion.getAcceptanceRate(),
+                                                multiplier,
+                                                points
+                                                ))
+                                            .build());
 
             Question newQuestion = Question.builder()
                             .userId(user.getId())
