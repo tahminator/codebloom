@@ -71,9 +71,7 @@ public class ThrottledReporter extends Reporter {
      */
     @Async
     public void reportScore(final Report report) {
-        System.out.println("Available tokens: " + rateLimiter.getAvailableTokens());
         if (!rateLimiter.tryConsume(1)) {
-            System.out.println("TERMINATION");
             return;
         }
         String description = String.format("""
