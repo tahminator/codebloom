@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
  * Can either report an error or log data that can only be viewed in Discord.
  */
 @Component
+@Primary
 public class Reporter {
     protected final JDAClient jdaClient;
 
