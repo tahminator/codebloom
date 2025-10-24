@@ -26,7 +26,7 @@ public class ThrottledReporter extends Reporter {
     private Bucket initializeBucket() {
         var bandwidth = Bandwidth.builder()
                         .capacity(1L)
-                        .refillIntervally(1L, Duration.ofMillis(120000))
+                        .refillIntervally(1L, Duration.ofMinutes(2))
                         .build();
 
         return Bucket.builder()
