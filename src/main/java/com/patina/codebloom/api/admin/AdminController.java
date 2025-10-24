@@ -17,6 +17,7 @@ import com.patina.codebloom.api.admin.body.DeleteAnnouncementBody;
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
 import com.patina.codebloom.api.admin.body.UpdateAdminBody;
 import com.patina.codebloom.api.admin.helper.PatinaDiscordMessageHelper;
+import com.patina.codebloom.common.components.LeaderboardManager;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
@@ -52,6 +53,7 @@ public class AdminController {
     private final QuestionRepository questionRepository;
     private final Protector protector;
     private final PatinaDiscordMessageHelper patinaDiscordMessageHelper;
+    private final LeaderboardManager leaderboardManager;
 
     public AdminController(
                     final LeaderboardRepository leaderboardRepository,
@@ -59,13 +61,15 @@ public class AdminController {
                     final UserRepository userRepository,
                     final AnnouncementRepository announcementRepository,
                     final QuestionRepository questionRepository,
-                    final PatinaDiscordMessageHelper patinaDiscordMessageHelper) {
+                    final PatinaDiscordMessageHelper patinaDiscordMessageHelper,
+                    final LeaderboardManager leaderboardManager) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
         this.userRepository = userRepository;
         this.announcementRepository = announcementRepository;
         this.questionRepository = questionRepository;
         this.patinaDiscordMessageHelper = patinaDiscordMessageHelper;
+        this.leaderboardManager = leaderboardManager;
     }
 
     @Operation(summary = "Drops current leaderboard and add new one", description = """
@@ -90,6 +94,7 @@ public class AdminController {
         Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
         if (currentLeaderboard != null) {
             patinaDiscordMessageHelper.sendLatestLeaderboardDiscordMessage();
+            leaderboardManager.generateAchievementsForAllWinners();
             leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
         }
 
