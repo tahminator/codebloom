@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
