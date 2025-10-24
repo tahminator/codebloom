@@ -13,7 +13,6 @@ import com.patina.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
 import com.patina.codebloom.jda.properties.patina.JDAPatinaProperties;
 import com.patina.codebloom.jda.properties.reporting.JDAErrorReportingProperties;
 import com.patina.codebloom.jda.properties.reporting.JDALogReportingProperties;
-import com.patina.codebloom.jda.properties.reporting.JDAScoreReportingProperties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,19 +43,14 @@ public class JDAClient {
     @Getter
     private final JDALogReportingProperties jdaLogReportingProperties;
 
-    @Getter
-    private final JDAScoreReportingProperties jdaScoreReportingProperties;
-
     JDAClient(final JDAInitializer jdaInitializer,
                     final JDAPatinaProperties jdaPatinaProperties,
                     final JDAErrorReportingProperties jdaReportingProperties,
-                    final JDALogReportingProperties jdaLogReportingProperties,
-                    final JDAScoreReportingProperties jdaScoreReportingProperties) {
+                    final JDALogReportingProperties jdaLogReportingProperties) {
         this.jdaInitializer = jdaInitializer;
         this.jdaPatinaProperties = jdaPatinaProperties;
         this.jdaErrorReportingProperties = jdaReportingProperties;
         this.jdaLogReportingProperties = jdaLogReportingProperties;
-        this.jdaScoreReportingProperties = jdaScoreReportingProperties;
     }
 
     private void isJdaReadyOrThrow() {
