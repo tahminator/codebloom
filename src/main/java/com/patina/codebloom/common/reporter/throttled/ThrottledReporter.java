@@ -19,8 +19,8 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 
 /**
- * Attaches a rate limiter over {@link Reporter} to avoid too many
- * user submission reports
+ * Attaches a rate limiter over {@link Reporter} to avoid too many user
+ * submission reports
  */
 @Component
 public class ThrottledReporter extends Reporter {
@@ -29,7 +29,7 @@ public class ThrottledReporter extends Reporter {
     private Bucket initializeBucket() {
         var bandwidth = Bandwidth.builder()
                         .capacity(1L)
-                        .refillIntervally(1L, Duration.ofMillis(10000L))
+                        .refillIntervally(1L, Duration.ofMillis(120000))
                         .build();
 
         return Bucket.builder()
@@ -37,7 +37,7 @@ public class ThrottledReporter extends Reporter {
                         .build();
     }
 
-    public ThrottledReporter(JDAClient jdaClient){
+    public ThrottledReporter(JDAClient jdaClient) {
         super(jdaClient);
         this.rateLimiter = initializeBucket();
     }
@@ -57,12 +57,12 @@ public class ThrottledReporter extends Reporter {
     }
 
     @Override
-    public void error(final Report report){
+    public void error(final Report report) {
         super.error(report);
     }
 
     @Override
-    public void log(final Report report){
+    public void log(final Report report) {
         super.log(report);
     }
 
@@ -73,6 +73,7 @@ public class ThrottledReporter extends Reporter {
     public void reportScore(final Report report) {
         System.out.println("Available tokens: " + rateLimiter.getAvailableTokens());
         if (!rateLimiter.tryConsume(1)) {
+            System.out.println("TERMINATION");
             return;
         }
         String description = String.format("""
