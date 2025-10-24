@@ -25,7 +25,7 @@ public class LeaderboardDto {
     private LocalDateTime createdAt;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private LocalDateTime deletedAt;
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private LocalDateTime shouldExpireBy;
 
     public static LeaderboardDto fromLeaderboard(final Leaderboard leaderboard) {
