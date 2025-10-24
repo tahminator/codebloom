@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.reporter.throttled;
 
-import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +34,7 @@ public class ThrottledReporter extends Reporter {
                         .build();
     }
 
-    public ThrottledReporter(JDAClient jdaClient) {
+    public ThrottledReporter(final JDAClient jdaClient) {
         super(jdaClient);
         this.rateLimiter = initializeBucket();
     }

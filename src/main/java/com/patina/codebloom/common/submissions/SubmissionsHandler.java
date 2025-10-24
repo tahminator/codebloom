@@ -138,7 +138,7 @@ public class SubmissionsHandler {
                                                 Total: %d
                                                 """,
                                                 user.getLeetcodeUsername(),
-                                                leetcodeQuestion.getDifficulty(), 
+                                                leetcodeQuestion.getDifficulty(),
                                                 basePoints,
                                                 leetcodeQuestion.getAcceptanceRate(),
                                                 multiplier,
