@@ -19,6 +19,7 @@ import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.leaderboard.LeaderboardDto;
 import com.patina.codebloom.common.dto.user.UserWithScoreDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.security.AuthenticationObject;
@@ -55,7 +56,7 @@ public class LeaderboardController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
 
-    public ResponseEntity<ApiResponder<Leaderboard>> getLeaderboardMetadataByLeaderboardId(
+    public ResponseEntity<ApiResponder<LeaderboardDto>> getLeaderboardMetadataByLeaderboardId(
                     final @PathVariable String leaderboardId,
                     final HttpServletRequest request) {
         FakeLag.sleep(650);
@@ -66,7 +67,7 @@ public class LeaderboardController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Leaderboard cannot be found or does not exist.");
         }
 
-        return ResponseEntity.ok().body(ApiResponder.success("Leaderboard metadata found!", leaderboardData));
+        return ResponseEntity.ok().body(ApiResponder.success("Leaderboard metadata found!", LeaderboardDto.fromLeaderboard(leaderboardData)));
     }
 
     @GetMapping("/{leaderboardId}/user/all")
@@ -141,12 +142,12 @@ public class LeaderboardController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
 
-    public ResponseEntity<ApiResponder<Leaderboard>> getCurrentLeaderboardMetadata(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<LeaderboardDto>> getCurrentLeaderboardMetadata(final HttpServletRequest request) {
         FakeLag.sleep(650);
 
         Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
-        return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", leaderboardData));
+        return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", LeaderboardDto.fromLeaderboard(leaderboardData)));
     }
 
     @GetMapping("/current/user/all")
@@ -304,7 +305,7 @@ public class LeaderboardController {
     @GetMapping("/all/metadata")
     @Operation(summary = "Returns the metadata for all leaderboards.", responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
-    public ResponseEntity<ApiResponder<Page<Leaderboard>>> getAllLeaderboardMetadata(final HttpServletRequest request,
+    public ResponseEntity<ApiResponder<Page<LeaderboardDto>>> getAllLeaderboardMetadata(final HttpServletRequest request,
                     @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
                     @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
                     @Parameter(description = "Page size (maximum of " + MAX_LEADERBOARD_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + MAX_LEADERBOARD_PAGE_SIZE) final int pageSize) {
@@ -324,7 +325,9 @@ public class LeaderboardController {
         int totalPages = (int) Math.ceil((double) totalLeaderboards / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        Page<Leaderboard> createdPage = new Page<>(hasNextPage, leaderboardMetaData, totalPages, parsedPageSize);
+        List<LeaderboardDto> leaderboardDtos = leaderboardMetaData.stream().map(l -> LeaderboardDto.fromLeaderboard(l)).toList();
+
+        Page<LeaderboardDto> createdPage = new Page<>(hasNextPage, leaderboardDtos, totalPages, parsedPageSize);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboard metadatas have been found!", createdPage));
     }
