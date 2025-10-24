@@ -2,33 +2,35 @@ package com.patina.codebloom.common.db.models.leaderboard;
 
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
+
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
 
 @Getter
 @Setter
-@Jacksonized
+@AllArgsConstructor
 @SuperBuilder
-@ToString
 @EqualsAndHashCode
+@ToString
 public class Leaderboard {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private String name;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNullColumn
     private LocalDateTime createdAt;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NullColumn
     private LocalDateTime deletedAt;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    @NotNullColumn
     private LocalDateTime shouldExpireBy;
 }
