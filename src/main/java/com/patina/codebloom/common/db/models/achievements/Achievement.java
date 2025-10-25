@@ -1,15 +1,14 @@
 package com.patina.codebloom.common.db.models.achievements;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
+import com.patina.codebloom.common.db.models.usertag.Tag;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -18,8 +17,6 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
-@NoArgsConstructor
-@AllArgsConstructor
 public class Achievement {
 
     @NotNullColumn
@@ -28,8 +25,14 @@ public class Achievement {
     @NotNullColumn
     private String userId;
 
+    @NotNullColumn
+    private AchievementPlaceEnum place;
+
+    /**
+     * `null` indicates global leaderboard.
+     */
     @NullColumn
-    private String iconUrl;
+    private Tag leaderboard;
 
     @NotNullColumn
     private String title;
@@ -42,8 +45,8 @@ public class Achievement {
     private boolean isActive = true;
 
     @NotNullColumn
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @NullColumn
-    private LocalDateTime deletedAt;
+    private OffsetDateTime deletedAt;
 }
