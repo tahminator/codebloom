@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
 import com.patina.codebloom.common.db.repos.weekly.WeeklyMessageRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class WeeklyMessageRepositoryTest {
+public class WeeklyMessageRepositoryTest extends BaseRepositoryTest {
     private WeeklyMessageRepository weeklyMessageRepository;
     private WeeklyMessage testWeeklyMessage;
 

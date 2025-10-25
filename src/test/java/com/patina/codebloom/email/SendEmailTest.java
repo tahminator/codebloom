@@ -23,12 +23,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 
+import com.patina.codebloom.config.NoJdaRequired;
 import com.patina.codebloom.config.TestProtector;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import(TestProtector.class)
-public class SendEmailTest {
+public class SendEmailTest extends NoJdaRequired {
     @LocalServerPort
     private int port;
 

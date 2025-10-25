@@ -23,11 +23,12 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.config.NoJdaRequired;
 
 @SpringBootTest
 @ActiveProfiles("ci")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class LeetcodeClientTest {
+public class LeetcodeClientTest extends NoJdaRequired {
     private final LeetcodeClient leetcodeClient;
 
     @Autowired

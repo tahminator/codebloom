@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import javassist.expr.NewArray;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class UserRepositoryTest {
+public class UserRepositoryTest extends BaseRepositoryTest {
     private UserRepository userRepository;
 
     private User testUser;

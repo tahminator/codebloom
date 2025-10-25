@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class AnnouncementRepositoryTest {
+public class AnnouncementRepositoryTest extends BaseRepositoryTest {
     private AnnouncementRepository announcementRepository;
     private Announcement testAnnouncement;
 

@@ -10,11 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.club.Club;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.club.ClubSqlRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-public class ClubRepositoryTest {
+public class ClubRepositoryTest extends BaseRepositoryTest {
 
     private ClubSqlRepository repo;
     private Club testClub;

@@ -15,11 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.achievements.Achievement;
 import com.patina.codebloom.common.db.repos.achievements.AchievementSqlRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-public class AchievementRepositoryTest {
+public class AchievementRepositoryTest extends BaseRepositoryTest {
 
     private AchievementSqlRepository repo;
     private Achievement testAchievement;
@@ -76,15 +77,15 @@ public class AchievementRepositoryTest {
     @Order(3)
     void testUpdateAchievement() {
         Achievement updatedAchievement = Achievement.builder()
-            .id(testAchievement.getId())
-            .userId(testAchievement.getUserId())
-            .iconUrl(testAchievement.getIconUrl())
-            .title("Updated Title")
-            .description("Updated Description")
-            .isActive(false)
-            .createdAt(testAchievement.getCreatedAt())
-            .deletedAt(testAchievement.getDeletedAt())
-            .build();
+                        .id(testAchievement.getId())
+                        .userId(testAchievement.getUserId())
+                        .iconUrl(testAchievement.getIconUrl())
+                        .title("Updated Title")
+                        .description("Updated Description")
+                        .isActive(false)
+                        .createdAt(testAchievement.getCreatedAt())
+                        .deletedAt(testAchievement.getDeletedAt())
+                        .build();
 
         Achievement result = repo.updateAchievement(updatedAchievement);
 

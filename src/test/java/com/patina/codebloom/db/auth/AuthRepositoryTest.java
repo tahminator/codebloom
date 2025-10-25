@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.auth.Auth;
 import com.patina.codebloom.common.db.repos.auth.AuthRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-public class AuthRepositoryTest {
+public class AuthRepositoryTest extends BaseRepositoryTest {
     private AuthRepository authRepository;
     private Auth testAuth;
 

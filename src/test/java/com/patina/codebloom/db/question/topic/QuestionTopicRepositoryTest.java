@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
+
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class QuestionTopicRepositoryTest {
+public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
     private QuestionTopicRepository questionTopicRepository;
     private final String mockQuestionId = "c9857a8a-9d0b-4d2e-b73c-3af2425bdca6";
 

@@ -27,6 +27,7 @@ import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class LobbyPlayerQuestionRepositoryTest {
+public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
     private LobbyPlayerRepository lobbyPlayerRepository;
     private LobbyRepository lobbyRepository;
