@@ -17,6 +17,9 @@ public class StandardizedOffsetDateTime {
      * milliseconds precision.
      */
     public static OffsetDateTime normalize(final OffsetDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
         return dateTime.withOffsetSameInstant(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
     }
 }

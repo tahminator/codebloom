@@ -1,5 +1,6 @@
 package com.patina.codebloom.common.db.models.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
@@ -8,6 +9,7 @@ import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.achievements.Achievement;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,14 +56,16 @@ public class User {
      * {@link com.patina.codebloom.common.db.repos.usertag.UserTagRepository}
      */
     @JoinColumn
-    private List<UserTag> tags;
+    @Builder.Default
+    private List<UserTag> tags = new ArrayList<>();
 
     /**
      * If you want to update tags in the database, you have to use the
      * {@link com.patina.codebloom.common.db.repos.achievements.AchievementRepository}
      */
     @JoinColumn
-    private List<Achievement> achievements;
+    @Builder.Default
+    private List<Achievement> achievements = new ArrayList<>();
 
     /**
      * This operation is permitted, but the tag will not be used in update
