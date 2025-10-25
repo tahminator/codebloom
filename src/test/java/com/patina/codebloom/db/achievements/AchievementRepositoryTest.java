@@ -37,7 +37,7 @@ public class AchievementRepositoryTest extends BaseRepositoryTest {
 
     @BeforeAll
     void createAchievement() {
-        var t = Achievement.builder()
+        testAchievement = Achievement.builder()
                         .userId(mockUserId)
                         .place(AchievementPlaceEnum.ONE)
                         .leaderboard(null)
