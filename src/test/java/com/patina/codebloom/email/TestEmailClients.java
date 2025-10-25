@@ -7,9 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
 import com.patina.codebloom.common.email.client.github.GithubOAuthEmail;
 import com.patina.codebloom.common.email.error.EmailException;
+import com.patina.codebloom.config.NoJdaRequired;
 
 @SpringBootTest
-public class TestEmailClients {
+public class TestEmailClients extends NoJdaRequired {
     private final GithubOAuthEmail githubOAuthEmail;
     private final OfficialCodebloomEmail officialCodebloomEmail;
 

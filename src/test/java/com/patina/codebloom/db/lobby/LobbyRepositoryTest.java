@@ -25,6 +25,7 @@ import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class LobbyRepositoryTest {
+public class LobbyRepositoryTest extends BaseRepositoryTest {
     private LobbyRepository lobbyRepository;
     private Lobby testLobby;
     private String mockJoinCode = "TEST-" + UUID.randomUUID().toString().substring(0, 8);
@@ -64,6 +65,7 @@ public class LobbyRepositoryTest {
             fail("Failed to delete test lobby");
         }
     }
+
     @Test
     @Order(1)
     void testFindLobbyById() {

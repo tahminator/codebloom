@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class SessionRepositoryTest {
+public class SessionRepositoryTest extends BaseRepositoryTest {
     private SessionRepository sessionRepository;
     private Session testSession;
     private String mockUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";

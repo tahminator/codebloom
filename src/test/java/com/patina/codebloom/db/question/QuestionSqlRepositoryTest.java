@@ -18,6 +18,8 @@ import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
+
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class QuestionSqlRepositoryTest {
+public class QuestionSqlRepositoryTest extends BaseRepositoryTest {
     private QuestionRepository questionRepository;
     private Question testQuestion;
     private String mockSuperUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";

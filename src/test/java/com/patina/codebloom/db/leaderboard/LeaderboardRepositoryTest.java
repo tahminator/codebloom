@@ -26,6 +26,7 @@ import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-public class LeaderboardRepositoryTest {
+public class LeaderboardRepositoryTest extends BaseRepositoryTest {
     private Leaderboard previousLeaderboard;
     private final LeaderboardRepository leaderboardRepository;
     private final UserRepository userRepository;

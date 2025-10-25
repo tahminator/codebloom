@@ -17,10 +17,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class POTDRepositoryTest {
+public class POTDRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private POTDRepository potdRepository;

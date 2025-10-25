@@ -25,6 +25,7 @@ import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 import com.patina.codebloom.common.db.repos.usertag.UserTagRepository;
 import com.patina.codebloom.common.db.repos.usertag.options.UserTagFilterOptions;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class UserTagRepositoryTest {
+public class UserTagRepositoryTest extends BaseRepositoryTest {
     private UserTagRepository userTagRepository;
     private UserTag testUserTag;
     private UserTag deletableUserTag;

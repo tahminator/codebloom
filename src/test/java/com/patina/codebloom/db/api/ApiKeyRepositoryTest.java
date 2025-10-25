@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.api.ApiKey;
 import com.patina.codebloom.common.db.repos.api.ApiKeyRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class ApiKeyRepositoryTest {
+public class ApiKeyRepositoryTest extends BaseRepositoryTest {
     private final ApiKeyRepository apiKeyRepository;
     private ApiKey testApiKey;
     private ApiKey deletableApiKey;
@@ -44,11 +45,11 @@ public class ApiKeyRepositoryTest {
         UUID.fromString(mockedUpdatedBy);
 
         ApiKey tempApiKey = ApiKey.builder()
-                .id(UUID.randomUUID().toString())
-                .apiKey(UUID.randomUUID().toString())
-                .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
-                .updatedBy(mockedUpdatedBy)
-                .build();
+                        .id(UUID.randomUUID().toString())
+                        .apiKey(UUID.randomUUID().toString())
+                        .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                        .updatedBy(mockedUpdatedBy)
+                        .build();
 
         apiKeyRepository.createApiKey(tempApiKey);
 
@@ -69,14 +70,12 @@ public class ApiKeyRepositoryTest {
     }
 
     /**
-     * @note this could possibly fail via race condition if you create a new
-     *       apiKey in the few seconds while this test suite is running, overriding
-     *       the test apiKey. If you do, let the test suite finish and let
-     *       `@AfterAll` delete the test apiKey and then just run the test suite
-     *       again.
+     * @note this could possibly fail via race condition if you create a new apiKey
+     * in the few seconds while this test suite is running, overriding the test
+     * apiKey. If you do, let the test suite finish and let `@AfterAll` delete the
+     * test apiKey and then just run the test suite again.
      *
-     *       We run this test first just to make sure that we don't run into that
-     *       issue.
+     * We run this test first just to make sure that we don't run into that issue.
      */
     @Test
     @Order(1)
@@ -133,11 +132,11 @@ public class ApiKeyRepositoryTest {
     @Order(4)
     void updateApiKeyByIdTest() {
         ApiKey updatedApiKey = ApiKey.builder()
-                .id(testApiKey.getId())
-                .apiKey(testApiKey.getApiKey())
-                .expiresAt(testApiKey.getExpiresAt())
-                .updatedBy(testApiKey.getUpdatedBy())
-                .build();
+                        .id(testApiKey.getId())
+                        .apiKey(testApiKey.getApiKey())
+                        .expiresAt(testApiKey.getExpiresAt())
+                        .updatedBy(testApiKey.getUpdatedBy())
+                        .build();
 
         boolean result = apiKeyRepository.updateApiKeyById(updatedApiKey);
 
@@ -157,11 +156,11 @@ public class ApiKeyRepositoryTest {
     @Test
     void testDeleteApiKeyByHash() {
         deletableApiKey = ApiKey.builder()
-                .id(UUID.randomUUID().toString())
-                .apiKey(UUID.randomUUID().toString())
-                .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
-                .updatedBy(mockedUpdatedBy)
-                .build();
+                        .id(UUID.randomUUID().toString())
+                        .apiKey(UUID.randomUUID().toString())
+                        .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                        .updatedBy(mockedUpdatedBy)
+                        .build();
 
         apiKeyRepository.createApiKey(deletableApiKey);
 

@@ -25,6 +25,7 @@ import com.patina.codebloom.common.db.models.job.Job;
 import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class JobSqlRepositoryTest {
+public class JobSqlRepositoryTest extends BaseRepositoryTest {
     private JobRepository jobRepository;
     private Job testJob;
     private String mockQuestionId = UUID.randomUUID().toString();

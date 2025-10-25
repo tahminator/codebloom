@@ -14,9 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.patina.codebloom.common.jwt.JWTClient;
+import com.patina.codebloom.config.NoJdaRequired;
 
 @SpringBootTest
-public class JWTTest {
+public class JWTTest extends NoJdaRequired {
     private final JWTClient jwtClient;
 
     @Autowired

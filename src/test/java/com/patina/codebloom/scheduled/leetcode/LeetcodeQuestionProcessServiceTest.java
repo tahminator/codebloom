@@ -23,12 +23,13 @@ import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.config.NoJdaRequired;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class LeetcodeQuestionProcessServiceTest {
+public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
 
     private final JobRepository jobRepository;
     private final LeetcodeQuestionProcessService service;
