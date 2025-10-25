@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.user.UserDto;
+import com.patina.codebloom.config.NoJdaRequired;
 import com.patina.codebloom.config.TestProtector;
 
 import io.restassured.RestAssured;
@@ -27,7 +28,7 @@ import io.restassured.common.mapper.TypeRef;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Import(TestProtector.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AdminControllerTest {
+public class AdminControllerTest extends NoJdaRequired {
     @LocalServerPort
     private int port;
 
