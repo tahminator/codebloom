@@ -25,6 +25,7 @@ import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.announcement.AnnouncementDto;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.config.NoJdaRequired;
 import com.patina.codebloom.config.TestProtector;
 
 import io.restassured.RestAssured;
@@ -35,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import(TestProtector.class)
 @Slf4j
-public class AnnouncementControllerTest {
+public class AnnouncementControllerTest extends NoJdaRequired {
     @LocalServerPort
     private int port;
 
