@@ -1,8 +1,10 @@
 package com.patina.codebloom.common.dto.achievement;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import com.patina.codebloom.common.db.models.achievements.Achievement;
+import com.patina.codebloom.common.db.models.achievements.AchievementPlaceEnum;
+import com.patina.codebloom.common.db.models.usertag.Tag;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -24,8 +26,11 @@ public class AchievementDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String userId;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private AchievementPlaceEnum place;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
-    private String iconUrl;
+    private Tag leaderboard;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String title;
@@ -37,16 +42,17 @@ public class AchievementDto {
     private boolean isActive;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
-    private LocalDateTime deletedAt;
+    private OffsetDateTime deletedAt;
 
     public static AchievementDto fromAchievement(final Achievement achievement) {
         return AchievementDto.builder()
                         .id(achievement.getId())
                         .userId(achievement.getUserId())
-                        .iconUrl(achievement.getIconUrl())
+                        .leaderboard(achievement.getLeaderboard())
+                        .place(achievement.getPlace())
                         .title(achievement.getTitle())
                         .description(achievement.getDescription())
                         .isActive(achievement.isActive())

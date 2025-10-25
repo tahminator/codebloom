@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.achievements.Achievement;
+import com.patina.codebloom.common.db.models.achievements.AchievementPlaceEnum;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.models.usertag.Tag;
@@ -28,8 +29,11 @@ public class LeaderboardManager {
         this.achievementRepository = achievementRepository;
     }
 
+    public static final int MIN_POSSIBLE_WINNERS = 0;
+    public static final int MAX_POSSIBLE_WINNERS = 3;
+
     private int maxWinners(final int size) {
-        return Math.min(Math.max(size, 0), 3);
+        return Math.min(Math.max(size, MIN_POSSIBLE_WINNERS), MAX_POSSIBLE_WINNERS);
     }
 
     private String calculatePlaceString(final int place) {
@@ -44,7 +48,12 @@ public class LeaderboardManager {
     public void generateAchievementsForAllWinners() {
         log.info("generating achievements for all winners...");
         Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-        List<Pair<LeaderboardFilterOptions, Tag>> filterOptsAndTags = LeaderboardFilterGenerator.generateAllSchoolTagToggles();
+
+        if (currentLeaderboard == null) {
+            return;
+        }
+
+        List<Pair<LeaderboardFilterOptions, Tag>> filterOptsAndTags = LeaderboardFilterGenerator.generateAllSupportedTagToggles();
 
         for (var pair : filterOptsAndTags) {
             log.info("on leaderboard for {}", pair.getRight().getResolvedName());
@@ -58,7 +67,8 @@ public class LeaderboardManager {
                 UserWithScore user = winners.get(i).getItem();
                 Achievement achievement = Achievement.builder()
                                 .userId(user.getId())
-                                .iconUrl(String.format("/badge/%s/%s_place.jpg", pair.getRight().name(), placeString))
+                                .place(AchievementPlaceEnum.fromInteger(place))
+                                .leaderboard(pair.getRight())
                                 .title(String.format("%s - %s - %s Place", currentLeaderboard.getName(), pair.getRight().getResolvedName(), placeString))
                                 .build();
                 achievementRepository.createAchievement(achievement);
@@ -76,7 +86,8 @@ public class LeaderboardManager {
             UserWithScore user = winners.get(i).getItem();
             Achievement achievement = Achievement.builder()
                             .userId(user.getId())
-                            .iconUrl(String.format("/badge/%s_place.jpg", placeString))
+                            .place(AchievementPlaceEnum.fromInteger(place))
+                            .leaderboard(null)
                             .title(String.format("%s - %s Place", currentLeaderboard.getName(), placeString))
                             .build();
             achievementRepository.createAchievement(achievement);
