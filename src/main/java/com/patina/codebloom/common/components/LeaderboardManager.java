@@ -81,7 +81,7 @@ public class LeaderboardManager {
 
         for (int i = 0; i < winners.size(); i++) {
             int place = i + 1;
-            log.info("on leaderboard for {} for global winner #{}", place);
+            log.info("on leaderboard for {} for global winner #{}", currentLeaderboard.getName(), place);
             String placeString = calculatePlaceString(place);
             UserWithScore user = winners.get(i).getItem();
             Achievement achievement = Achievement.builder()
