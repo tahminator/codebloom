@@ -60,7 +60,7 @@ public class User {
     private List<UserTag> tags = new ArrayList<>();
 
     /**
-     * If you want to update tags in the database, you have to use the
+     * If you want to update achievements in the database, you have to use the
      * {@link com.patina.codebloom.common.db.repos.achievements.AchievementRepository}
      */
     @JoinColumn
