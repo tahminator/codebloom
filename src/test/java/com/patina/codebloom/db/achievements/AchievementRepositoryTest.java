@@ -1,21 +1,24 @@
 package com.patina.codebloom.db.achievements;
 
+// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
+// CHECKSTYLE:ON
 
-import java.security.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
+// CHECKSTYLE:OFF
 import org.junit.jupiter.api.*;
+// CHECKSTYLE:ON
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.achievements.Achievement;
+import com.patina.codebloom.common.db.models.achievements.AchievementPlaceEnum;
+import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.achievements.AchievementSqlRepository;
 import com.patina.codebloom.db.BaseRepositoryTest;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -34,13 +37,14 @@ public class AchievementRepositoryTest extends BaseRepositoryTest {
 
     @BeforeAll
     void createAchievement() {
-        testAchievement = Achievement.builder()
+        var t = Achievement.builder()
                         .userId(mockUserId)
-                        .iconUrl("")
+                        .place(AchievementPlaceEnum.ONE)
+                        .leaderboard(null)
                         .title("Test Achievement")
                         .description("Integration test achievement")
                         .isActive(true)
-                        .createdAt(LocalDateTime.now())
+                        .createdAt(StandardizedOffsetDateTime.now())
                         .deletedAt(null)
                         .build();
 
@@ -79,7 +83,8 @@ public class AchievementRepositoryTest extends BaseRepositoryTest {
         Achievement updatedAchievement = Achievement.builder()
                         .id(testAchievement.getId())
                         .userId(testAchievement.getUserId())
-                        .iconUrl(testAchievement.getIconUrl())
+                        .place(AchievementPlaceEnum.THREE)
+                        .leaderboard(Tag.Patina)
                         .title("Updated Title")
                         .description("Updated Description")
                         .isActive(false)
@@ -101,11 +106,12 @@ public class AchievementRepositoryTest extends BaseRepositoryTest {
     void testDeleteAchievementById() {
         deletableAchievement = Achievement.builder()
                         .userId(mockUserId)
-                        .iconUrl("")
+                        .place(AchievementPlaceEnum.ONE)
+                        .leaderboard(null)
                         .title("Deletable Achievement")
                         .description("Should be deleted")
                         .isActive(true)
-                        .createdAt(LocalDateTime.now())
+                        .createdAt(StandardizedOffsetDateTime.now())
                         .deletedAt(null)
                         .build();
 
