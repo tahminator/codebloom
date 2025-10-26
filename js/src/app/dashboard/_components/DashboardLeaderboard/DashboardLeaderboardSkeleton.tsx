@@ -16,9 +16,8 @@ export default function DashboardLeaderboardSkeleton() {
           .fill(0)
           .map((_, idx) => {
             return (
-              <Skeleton>
+              <Skeleton key={idx}>
                 <Flex
-                  key={idx}
                   direction={"row"}
                   justify={"space-between"}
                   style={{
