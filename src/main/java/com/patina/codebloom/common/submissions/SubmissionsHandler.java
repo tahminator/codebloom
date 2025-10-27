@@ -114,12 +114,12 @@ public class SubmissionsHandler {
 
             boolean isTooLate = recentLeaderboard.getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
 
-            int basePoints = switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
-                case "EASY" -> 100;
-                case "MEDIUM" -> 300;
-                case "HARD" -> 600;
-                default -> 0;
-            };
+            // int basePoints = switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
+            //     case "EASY" -> 100;
+            //     case "MEDIUM" -> 300;
+            //     case "HARD" -> 600;
+            //     default -> 0;
+            // };
 
             int points;
             if (question != null || isTooLate) {
@@ -128,24 +128,24 @@ public class SubmissionsHandler {
                 points = ScoreCalculator.calculateScore(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()), leetcodeQuestion.getAcceptanceRate(), multiplier);
             }
 
-            throttledReporter.log(Report.builder()
-                                            .data(String.format("""
-                                                Score Distribution Report
+            // throttledReporter.log(Report.builder()
+            //                                 .data(String.format("""
+            //                                     Score Distribution Report
 
-                                                Leetcode Username: %s
-                                                Difficulty: %s (%d pts)
-                                                Acceptance Rate: %.2f
-                                                Question Multiplier: %.2f
-                                                Total: %d
-                                                """,
-                                                user.getLeetcodeUsername(),
-                                                leetcodeQuestion.getDifficulty(),
-                                                basePoints,
-                                                leetcodeQuestion.getAcceptanceRate(),
-                                                multiplier,
-                                                points
-                                                ))
-                                            .build());
+            //                                     Leetcode Username: %s
+            //                                     Difficulty: %s (%d pts)
+            //                                     Acceptance Rate: %.2f
+            //                                     Question Multiplier: %.2f
+            //                                     Total: %d
+            //                                     """,
+            //                                     user.getLeetcodeUsername(),
+            //                                     leetcodeQuestion.getDifficulty(),
+            //                                     basePoints,
+            //                                     leetcodeQuestion.getAcceptanceRate(),
+            //                                     multiplier,
+            //                                     points
+            //                                     ))
+            //                                 .build());
 
             Question newQuestion = Question.builder()
                             .userId(user.getId())
