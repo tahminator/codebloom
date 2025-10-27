@@ -39,6 +39,7 @@ export default function LeaderboardIndex() {
     debouncedQuery,
     filters,
     toggleFilter,
+    clearFilters,
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
@@ -152,6 +153,20 @@ export default function LeaderboardIndex() {
             </Box>
           }
         />
+        <Button
+          variant="subtle"
+          color="red"
+          onClick={() => {
+            clearFilters();
+            if (globalIndex) {
+              toggleGlobalIndex();
+            }
+          }}
+          fullWidth
+          disabled={!Object.values(filters).some(Boolean) && !globalIndex}
+        >
+          Clear Filters
+        </Button>
       </FilterDropdown>
       <SearchBox
         query={searchQuery}
