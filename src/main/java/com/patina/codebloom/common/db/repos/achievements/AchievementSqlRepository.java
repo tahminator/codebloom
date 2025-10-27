@@ -182,8 +182,8 @@ public class AchievementSqlRepository implements AchievementRepository {
                             "userId",
                             place,
                             leaderboard,
-                            "title",
-                            "description",
+                            title,
+                            description,
                             "isActive",
                             "createdAt",
                             "deletedAt"
