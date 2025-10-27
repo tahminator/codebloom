@@ -35,7 +35,7 @@ export const useCurrentLeaderboardUsersQuery = (
     defaultGwc: false,
   },
 ) => {
-  const { filters, toggleFilter } = useFilters();
+  const { filters, toggleFilter, clearFilters } = useFilters();
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
@@ -113,6 +113,7 @@ export const useCurrentLeaderboardUsersQuery = (
     setSearchQuery,
     filters,
     toggleFilter,
+    clearFilters,
     debouncedQuery,
     pageSize,
     toggleGlobalIndex,

@@ -80,5 +80,19 @@ export function useFilters() {
     [filters, setFilters, setSearchParams],
   );
 
-  return { filters, toggleFilter };
+  const clearFilters = useCallback(() => {
+    setFilters((prev) => {
+      for (const tagEnum of ApiUtils.getAllSupportedTagEnums()) {
+        prev[tagEnum] = false;
+      }
+    });
+
+    const newSearchParams = new URLSearchParams(searchParams);
+    for (const tagEnum of ApiUtils.getAllSupportedTagEnums()) {
+      newSearchParams.delete(getUrlKey(tagEnum));
+    }
+    setSearchParams(newSearchParams);
+  }, [setFilters, searchParams, setSearchParams]);
+
+  return { filters, toggleFilter, clearFilters };
 }
