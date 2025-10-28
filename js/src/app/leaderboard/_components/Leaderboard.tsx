@@ -39,9 +39,10 @@ export default function LeaderboardIndex() {
     debouncedQuery,
     filters,
     toggleFilter,
-    clearFilters,
+    isAnyFilterEnabled,
     globalIndex,
     toggleGlobalIndex,
+    onReset,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery();
 
@@ -143,7 +144,7 @@ export default function LeaderboardIndex() {
         <FilterDropdownItem
           value={globalIndex}
           toggle={toggleGlobalIndex}
-          disabled={!Object.values(filters).some(Boolean)}
+          disabled={!isAnyFilterEnabled}
           switchMode
           name={
             <Box
@@ -156,14 +157,9 @@ export default function LeaderboardIndex() {
         <Button
           variant="subtle"
           color="red"
-          onClick={() => {
-            clearFilters();
-            if (globalIndex) {
-              toggleGlobalIndex();
-            }
-          }}
+          onClick={() => onReset()}
           fullWidth
-          disabled={!Object.values(filters).some(Boolean) && !globalIndex}
+          disabled={!isAnyFilterEnabled && !globalIndex}
         >
           Clear Filters
         </Button>
