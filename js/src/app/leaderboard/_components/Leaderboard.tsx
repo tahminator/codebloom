@@ -42,7 +42,7 @@ export default function LeaderboardIndex() {
     isAnyFilterEnabled,
     globalIndex,
     toggleGlobalIndex,
-    onReset,
+    onFilterReset,
     isPlaceholderData,
   } = useCurrentLeaderboardUsersQuery();
 
@@ -157,7 +157,7 @@ export default function LeaderboardIndex() {
         <Button
           variant="subtle"
           color="red"
-          onClick={() => onReset()}
+          onClick={() => onFilterReset()}
           fullWidth
           disabled={!isAnyFilterEnabled && !globalIndex}
         >

@@ -103,7 +103,7 @@ export const useCurrentLeaderboardUsersQuery = (
     placeholderData: keepPreviousData,
   });
 
-  const onReset = useCallback(() => {
+  const onFilterReset = useCallback(() => {
     clearFilters();
 
     if (globalIndex) {
@@ -123,7 +123,7 @@ export const useCurrentLeaderboardUsersQuery = (
     filters,
     toggleFilter,
     isAnyFilterEnabled,
-    onReset,
+    onFilterReset,
     debouncedQuery,
     pageSize,
     toggleGlobalIndex,
