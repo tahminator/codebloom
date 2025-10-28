@@ -1,6 +1,6 @@
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useImmer } from "use-immer";
 
@@ -82,17 +82,21 @@ export function useFilters() {
 
   const clearFilters = useCallback(() => {
     setFilters((prev) => {
-      for (const tagEnum of ApiUtils.getAllSupportedTagEnums()) {
-        prev[tagEnum] = false;
+      for (const tagEnum of Object.typedKeys(prev)) {
+        if (prev[tagEnum] == true) prev[tagEnum] = false;
       }
     });
 
     const newSearchParams = new URLSearchParams(searchParams);
-    for (const tagEnum of ApiUtils.getAllSupportedTagEnums()) {
+    for (const tagEnum of Object.typedKeys(filters)) {
       newSearchParams.delete(getUrlKey(tagEnum));
     }
     setSearchParams(newSearchParams);
-  }, [setFilters, searchParams, setSearchParams]);
+  }, [filters, setFilters, searchParams, setSearchParams]);
 
-  return { filters, toggleFilter, clearFilters };
+  const isAnyFilterEnabled: boolean = useMemo(() => {
+    return Object.values(filters).some(Boolean);
+  }, [filters]);
+
+  return { filters, toggleFilter, clearFilters, isAnyFilterEnabled };
 }
