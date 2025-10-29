@@ -11,15 +11,34 @@ public class ScoreCalculator {
 
     public static int calculateScore(final QuestionDifficulty questionDifficulty, final float acceptanceRate, final float multiplier) {
         int baseScore = switch (questionDifficulty) {
-            case Easy -> (int) Math.floor(EASY_MULTIPLIER * (1.0 - acceptanceRate));
-            case Medium -> (int) Math.floor(MEDIUM_MULTIPLIER * (1.0 - acceptanceRate));
-            case Hard -> (int) Math.floor(HARD_MULTIPLIER * (1.0 - acceptanceRate));
+            case Easy -> (int) Math.floor(EASY_MULTIPLIER * (1.0 - acceptanceRate/400));
+
+            case Medium -> {
+                if (Math.random() < 0.5) {
+                    yield (int) Math.floor(MEDIUM_MULTIPLIER * (1.0 / (acceptanceRate / 100 + 1)));
+                } else {
+                    yield (int) Math.floor(MEDIUM_MULTIPLIER * (1.0 / (2 * Math.pow(acceptanceRate / 100 + 1, 2)) + 0.5));
+                }
+            }
+
+            case Hard -> {
+                if (Math.random() < 0.5) {
+                    yield (int) Math.floor(HARD_MULTIPLIER * (1.0 / (acceptanceRate / 100 + 1)));
+                } else {
+                    yield (int) Math.floor(HARD_MULTIPLIER * (1.0 / (2 * Math.pow(acceptanceRate / 100 + 1, 2)) + 0.5));
+                }
+            }
+
             default -> 0;
         };
 
         // Apply a 5% deviation
         double deviation = ThreadLocalRandom.current().nextDouble(0.95, 1.05);
         return (int) Math.floor(baseScore * deviation * multiplier);
+    }
+
+    public static float pointMultiplier(final QuestionDifficulty questionDifficulty, final float acceptanceRate) {
+        return 0;
     }
 
     public static float calculateMultiplier(final QuestionDifficulty questionDifficulty) {
