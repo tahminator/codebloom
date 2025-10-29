@@ -37,6 +37,7 @@ export default tseslint.config(
           allowMultilines: false,
         },
       ],
+      "react/jsx-key": [2, { checkFragmentShorthand: true }],
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
