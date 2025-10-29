@@ -97,6 +97,12 @@ jobs:
             - name: Run script
               run: bash .github/scripts/run-backend-tests.sh
 
+            - name: Upload JaCoCo HTML report
+              uses: actions/upload-artifact@v4
+              with:
+                name: jacoco-report
+                path: target/site/jacoco/
+
     frontendTests:
         name: Frontend Tests
         runs-on: ubuntu-latest

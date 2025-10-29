@@ -25,4 +25,4 @@ cd ..
 
 db_startup
 
-./mvnw test -Dspring.profiles.active=ci
+./mvnw clean verify -Dspring.profiles.active=ci
