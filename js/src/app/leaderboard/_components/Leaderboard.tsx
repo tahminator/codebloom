@@ -123,6 +123,7 @@ export default function LeaderboardIndex() {
         {schoolFF &&
           ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
             <FilterDropdownItem
+              key={tagEnum}
               name={() => {
                 const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
 
