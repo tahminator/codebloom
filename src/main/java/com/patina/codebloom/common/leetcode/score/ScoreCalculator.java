@@ -11,7 +11,7 @@ public class ScoreCalculator {
 
     public static int calculateScore(final QuestionDifficulty questionDifficulty, final float acceptanceRate, final float multiplier) {
         int baseScore = switch (questionDifficulty) {
-            case Easy -> (int) Math.floor(EASY_MULTIPLIER * (1.0 - acceptanceRate/400));
+            case Easy -> (int) Math.floor(EASY_MULTIPLIER * (1.0 - acceptanceRate / 400));
 
             case Medium -> {
                 if (Math.random() < 0.5) {
