@@ -37,10 +37,6 @@ public class ScoreCalculator {
         return (int) Math.floor(baseScore * deviation * multiplier);
     }
 
-    public static float pointMultiplier(final QuestionDifficulty questionDifficulty, final float acceptanceRate) {
-        return 0;
-    }
-
     public static float calculateMultiplier(final QuestionDifficulty questionDifficulty) {
         float baseMultiplier = switch (questionDifficulty) {
             case Easy -> 1.3f;
