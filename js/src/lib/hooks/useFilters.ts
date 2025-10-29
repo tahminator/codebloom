@@ -81,18 +81,12 @@ export function useFilters() {
   );
 
   const clearFilters = useCallback(() => {
-    setFilters((prev) => {
-      for (const tagEnum of Object.typedKeys(prev)) {
-        if (prev[tagEnum] == true) prev[tagEnum] = false;
-      }
-    });
-
-    const newSearchParams = new URLSearchParams(searchParams);
     for (const tagEnum of Object.typedKeys(filters)) {
-      newSearchParams.delete(getUrlKey(tagEnum));
+      if (filters[tagEnum]) {
+        toggleFilter(tagEnum);
+      }
     }
-    setSearchParams(newSearchParams);
-  }, [filters, setFilters, searchParams, setSearchParams]);
+  }, [filters, toggleFilter]);
 
   const isAnyFilterEnabled: boolean = useMemo(() => {
     return Object.values(filters).some(Boolean);
