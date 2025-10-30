@@ -253,6 +253,7 @@ public class LeetcodeAuthStealer {
                                 .collect(Collectors.toMap(cookie -> cookie.name, cookie -> cookie.value));
 
                 String sessionToken = cookieMap.get("LEETCODE_SESSION");
+                String csrf = cookieMap.get("csrftoken");
                 if (sessionToken != null) {
                     log.info("Cookie found!");
                     authRepository.createAuth(Auth
@@ -265,6 +266,7 @@ public class LeetcodeAuthStealer {
                         jedisClient.setAuth(sessionToken, 4, ChronoUnit.HOURS); // 4 hours.
                     }
                     this.cookie = sessionToken;
+                    this.csrf = csrf;
                     return sessionToken;
                 }
             } else {
