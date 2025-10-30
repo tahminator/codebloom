@@ -115,13 +115,13 @@ public class LeetcodeAuthStealer {
 
                 log.info("auth token not found in redis client");
             }
+            log.info("Auth token is missing/expired. Attempting to receive token...");
+
+            stealCookieImpl();
         } finally {
             LOCK.writeLock().unlock();
         }
 
-        log.info("Auth token is missing/expired. Attempting to receive token...");
-
-        stealCookieImpl();
     }
 
     /**
