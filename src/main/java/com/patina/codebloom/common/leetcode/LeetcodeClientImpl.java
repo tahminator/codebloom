@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.leetcode.models.Lang;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
@@ -307,6 +308,12 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String langName = baseNode.path("lang").path("name").asText();
             String langVerboseName = baseNode.path("lang").path("verboseName").asText();
             Lang lang = (langName != null && langVerboseName != null) ? new Lang(langName, langVerboseName) : null;
+
+            // if any of these are empty, then extremely likely that we're throttled.
+            if (Strings.isNullOrEmpty(runtimeDisplay)
+                            || Strings.isNullOrEmpty(memoryDisplay)) {
+                leetcodeAuthStealer.reloadCookie();
+            }
 
             LeetcodeDetailedQuestion question = new LeetcodeDetailedQuestion(runtime, runtimeDisplay, runtimePercentile, memory, memoryDisplay, memoryPercentile, code, lang);
 

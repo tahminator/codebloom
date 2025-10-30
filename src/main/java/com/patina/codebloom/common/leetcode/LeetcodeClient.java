@@ -16,6 +16,9 @@ public interface LeetcodeClient {
 
     List<LeetcodeSubmission> findSubmissionsByUsername(String username);
 
+    /**
+     * @implNote requires authentication
+     */
     LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(int submissionId);
 
     POTD getPotd();
