@@ -1,6 +1,7 @@
 package com.patina.codebloom.db.leaderboard;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -251,6 +252,7 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    @Order(12)
     void testLeaderboardUserCountById() {
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
                         .query("")
@@ -261,12 +263,14 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    @Order(13)
     void testLeaderboardCount() {
         int leaderboardCount = leaderboardRepository.getLeaderboardCount();
         assertTrue(leaderboardCount > 0);
     }
 
     @Test
+    @Order(14)
     void testGetAllLeaderboards() {
 
         LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
@@ -277,5 +281,19 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
         var leaderboards = leaderboardRepository.getAllLeaderboardsShallow(options);
         assertTrue(leaderboards != null);
         assertTrue(leaderboards.size() > 0);
+    }
+
+    @Test
+    @Order(15)
+    void testDisableLeaderboardById() {
+        boolean isSuccessful = leaderboardRepository.disableLeaderboardById(mockLeaderboard.getId());
+        assertTrue(isSuccessful);
+    }
+
+    @Test
+    @Order(15)
+    void testDisableLeaderboardByIdAgin() {
+        boolean isSuccessful = leaderboardRepository.disableLeaderboardById(mockLeaderboard.getId());
+        assertFalse(isSuccessful);
     }
 }
