@@ -11,24 +11,9 @@ public class ScoreCalculator {
 
     public static int calculateScore(final QuestionDifficulty questionDifficulty, final float acceptanceRate, final float multiplier) {
         int baseScore = switch (questionDifficulty) {
-            case Easy -> (int) Math.floor(EASY_MULTIPLIER * MultiplierFunctions.purpleFunction(acceptanceRate));
-
-            case Medium -> {
-                if (Math.random() < 0.5) {
-                    yield (int) Math.floor(MEDIUM_MULTIPLIER * MultiplierFunctions.orangeFunction(acceptanceRate));
-                } else {
-                    yield (int) Math.floor(MEDIUM_MULTIPLIER * MultiplierFunctions.greenFunction(acceptanceRate));
-                }
-            }
-
-            case Hard -> {
-                if (Math.random() < 0.5) {
-                    yield (int) Math.floor(HARD_MULTIPLIER * MultiplierFunctions.orangeFunction(acceptanceRate));
-                } else {
-                    yield (int) Math.floor(HARD_MULTIPLIER * MultiplierFunctions.greenFunction(acceptanceRate));
-                }
-            }
-
+            case Easy -> (int) Math.floor(EASY_MULTIPLIER * (1.0 - acceptanceRate));
+            case Medium -> (int) Math.floor(MEDIUM_MULTIPLIER * (1.0 - acceptanceRate));
+            case Hard -> (int) Math.floor(HARD_MULTIPLIER * (1.0 - acceptanceRate));
             default -> 0;
         };
 
