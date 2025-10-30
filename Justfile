@@ -29,7 +29,10 @@ backend-install *args:
 
 # Run backend tests
 backend-test *args:
-  dotenvx run -- ./mvnw checkstyle:check test -Dspring.profiles.active=ci {{args}}
+  dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
+
+backend-coverage *args:
+  just backend-test && open target/site/jacoco/index.html
 
 # Run the frontend 
 frontend-dev *args:
