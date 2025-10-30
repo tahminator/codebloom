@@ -62,6 +62,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             "deletedAt" = NOW()
                         WHERE
                             id = :id
+                        AND
+                            "deletedAt" IS NULL
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -479,7 +481,6 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("columbia", options.isColumbia());
             stmt.setBoolean("cornell", options.isCornell());
             stmt.setBoolean("bmcc", options.isBmcc());
-
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
