@@ -30,13 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-public class LeaderoardRepositoryRankTest extends BaseRepositoryTest {
+public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
     private final LeaderboardRepository leaderboardRepository;
 
     private final Leaderboard currentLeaderboard;
 
     @Autowired
-    public LeaderoardRepositoryRankTest(final LeaderboardRepository leaderboardRepository) {
+    public LeaderboardRepositoryRankTest(final LeaderboardRepository leaderboardRepository) {
         this.leaderboardRepository = leaderboardRepository;
         this.currentLeaderboard = this.leaderboardRepository.getRecentLeaderboardMetadata();
     }
