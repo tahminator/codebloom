@@ -1,6 +1,5 @@
 package com.patina.codebloom.leetcode;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.google.common.base.Strings;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
@@ -23,16 +23,20 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.common.utils.function.FunctionUtils;
+import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 @SpringBootTest
 @ActiveProfiles("ci")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class LeetcodeClientTest {
     private final LeetcodeClient leetcodeClient;
+    private final LeetcodeAuthStealer leetcodeAuthStealer;
 
     @Autowired
-    public LeetcodeClientTest(final ThrottledLeetcodeClient throttledLeetcodeClient) {
+    public LeetcodeClientTest(final ThrottledLeetcodeClient throttledLeetcodeClient, final LeetcodeAuthStealer leetcodeAuthStealer) {
         this.leetcodeClient = throttledLeetcodeClient;
+        this.leetcodeAuthStealer = leetcodeAuthStealer;
     }
 
     @Test
@@ -63,7 +67,10 @@ public class LeetcodeClientTest {
 
     @Test
     void submissionIdValid() {
-        LeetcodeDetailedQuestion submission = leetcodeClient.findSubmissionDetailBySubmissionId(1588648200);
+        LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
+                        () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
+                        res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
+                        () -> leetcodeAuthStealer.reloadCookie().join());
 
         assertTrue(submission != null);
 
