@@ -93,4 +93,16 @@ public class LeaderboardManager {
             achievementRepository.createAchievement(achievement);
         }
     }
+
+    // get metadata of leaderboard if no id is specified
+    public Leaderboard getLeaderboardMetadata() {
+        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
+        return leaderboardData;
+    }
+
+    // get leaderboard metadata given id
+    public Leaderboard getLeaderboardMetadata(final String id) {
+        Leaderboard leaderboardData = leaderboardRepository.getLeaderboardMetadataById(id);
+        return leaderboardData;
+    }
 }
