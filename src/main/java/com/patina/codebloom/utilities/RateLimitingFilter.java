@@ -18,13 +18,13 @@ import java.time.Duration;
 
 @Component
 public class RateLimitingFilter implements Filter {
-    private static final long REQUESTS_OVER_TIME = 1L;
-    private static final long MILLISECONDS_TO_WAIT = 100L;
+    private static final long RATE_LIMIT_CAPACITY = 1L;
+    private static final long REFILL_INTERVAL_MILLIS = 100L;
 
     private Bucket createNewBucket() {
         var bandwidth = Bandwidth.builder()
-                        .capacity(REQUESTS_OVER_TIME)
-                        .refillIntervally(REQUESTS_OVER_TIME, Duration.ofMillis(MILLISECONDS_TO_WAIT))
+                        .capacity(RATE_LIMIT_CAPACITY)
+                        .refillIntervally(RATE_LIMIT_CAPACITY, Duration.ofMillis(REFILL_INTERVAL_MILLIS))
                         .build();
 
         return Bucket.builder()
@@ -50,13 +50,19 @@ public class RateLimitingFilter implements Filter {
             return;
         }
 
-        HttpSession session = httpRequest.getSession(true);
-
+        HttpSession session = httpRequest.getSession(false);
         String remoteAddr = request.getRemoteAddr();
-        Bucket bucket = (Bucket) session.getAttribute(remoteAddr);
+        Bucket bucket = null;
+
+        if (session != null) {
+            bucket = (Bucket) session.getAttribute(remoteAddr);
+        }
 
         if (bucket == null) {
             bucket = createNewBucket();
+            if (session == null) {
+                session = httpRequest.getSession(true);
+            }
             session.setAttribute(remoteAddr, bucket);
         }
 
