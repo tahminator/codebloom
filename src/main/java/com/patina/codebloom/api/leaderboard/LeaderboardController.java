@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.patina.codebloom.common.components.LeaderboardManager;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
@@ -44,11 +45,13 @@ public class LeaderboardController {
     private final LeaderboardRepository leaderboardRepository;
     private final UserRepository userRepository;
     private final Protector protector;
+    private final LeaderboardManager leaderboardManager;
 
-    public LeaderboardController(final LeaderboardRepository leaderboardRepository, final UserRepository userRepository, final Protector protector) {
+    public LeaderboardController(final LeaderboardRepository leaderboardRepository, final UserRepository userRepository, final Protector protector, final LeaderboardManager leaderboardManager) {
         this.leaderboardRepository = leaderboardRepository;
         this.userRepository = userRepository;
         this.protector = protector;
+        this.leaderboardManager = leaderboardManager;
     }
 
     @GetMapping("/{leaderboardId}/metadata")
@@ -61,7 +64,7 @@ public class LeaderboardController {
                     final HttpServletRequest request) {
         FakeLag.sleep(650);
 
-        Leaderboard leaderboardData = leaderboardRepository.getLeaderboardMetadataById(leaderboardId);
+        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata(leaderboardId);
 
         if (leaderboardData == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Leaderboard cannot be found or does not exist.");
@@ -145,7 +148,7 @@ public class LeaderboardController {
     public ResponseEntity<ApiResponder<LeaderboardDto>> getCurrentLeaderboardMetadata(final HttpServletRequest request) {
         FakeLag.sleep(650);
 
-        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
+        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata();
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", LeaderboardDto.fromLeaderboard(leaderboardData)));
     }
