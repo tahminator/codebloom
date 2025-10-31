@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.stream;
+package com.patina.codebloom.common.utils.stream;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
