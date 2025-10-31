@@ -40,8 +40,8 @@ public class RateLimitingFilter implements Filter {
 
     private void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
                     throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = request;
+        HttpServletResponse httpResponse = response;
 
         String path = httpRequest.getServletPath();
 
