@@ -32,6 +32,7 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
     private final LeaderboardRepository leaderboardRepository;
 
     private final Leaderboard currentLeaderboard;
+    private static final String EXPIRED_LEADERBOARD_ID = "8fc363b2-b5be-4f1a-9e0e-ea4844fc919c";
 
     @Autowired
     public LeaderboardRepositoryRankTest(final LeaderboardRepository leaderboardRepository) {
@@ -49,9 +50,9 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
         List<Indexed<UserWithScore>> users = leaderboardRepository.getRankedIndexedLeaderboardUsersById(currentLeaderboard.getId(), opts);
 
         users.forEach(i -> {
-            var ni = leaderboardRepository.getFilteredRankedUserById(currentLeaderboard.getId(), i.getItem().getId(), opts);
-            var user = ni.getItem();
-            assertEquals(ni.getIndex(),
+            var indexed = leaderboardRepository.getFilteredRankedUserById(currentLeaderboard.getId(), i.getItem().getId(), opts);
+            var user = indexed.getItem();
+            assertEquals(indexed.getIndex(),
                             users.stream()
                                             .filter(u -> {
                                                 var possibleUser = u.getItem();
@@ -70,9 +71,9 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
         List<Indexed<UserWithScore>> users = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(currentLeaderboard.getId(), opts);
 
         users.forEach(i -> {
-            var ni = leaderboardRepository.getGlobalRankedUserById(currentLeaderboard.getId(), i.getItem().getId());
-            var user = ni.getItem();
-            assertEquals(ni.getIndex(),
+            var indexed = leaderboardRepository.getGlobalRankedUserById(currentLeaderboard.getId(), i.getItem().getId());
+            var user = indexed.getItem();
+            assertEquals(indexed.getIndex(),
                             users.stream()
                                             .filter(u -> {
                                                 var possibleUser = u.getItem();
@@ -94,5 +95,94 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
 
         Indexed<UserWithScore> i = leaderboardRepository.getFilteredRankedUserById(currentLeaderboard.getId(), gwcUserId, opts);
         assertNull(i);
+    }
+
+    @Test
+    @DisplayName("Assert ranking handles tied scores correctly")
+    void assertTiedScoresRankingCorrectly() {
+        // Test users with identical scores are ranked by leetcodeUsername presence and
+        // createdAt
+        var opts = LeaderboardFilterOptions.DEFAULT;
+        var indexedUserList = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(currentLeaderboard.getId(), opts);
+
+        // Validate ranking rules by checking each adjacent pair
+        for (int i = 0; i < indexedUserList.size() - 1; i++) {
+            var current = indexedUserList.get(i).getItem();
+            var next = indexedUserList.get(i + 1).getItem();
+
+            // Rule 1: Higher scores rank first
+            if (current.getTotalScore() != next.getTotalScore()) {
+                assertTrue(current.getTotalScore() > next.getTotalScore(),
+                                String.format("User %s (score: %d) should rank before user %s (score: %d)",
+                                                current.getId(), current.getTotalScore(), next.getId(), next.getTotalScore()));
+            } else {
+                // Rule 2: For tied scores, check zero-score leetcode username logic
+                if (current.getTotalScore() == 0) {
+                    boolean currentHasLeetcode = current.getLeetcodeUsername() != null;
+                    boolean nextHasLeetcode = next.getLeetcodeUsername() != null;
+
+                    if (currentHasLeetcode != nextHasLeetcode) {
+                        assertTrue(currentHasLeetcode,
+                                        String.format("Zero-score user %s with leetcode should rank before user %s without",
+                                                        current.getId(), next.getId()));
+                    }
+                }
+
+                // TODO: Add logic to fetch Metadata.
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Assert filtered ranking when user has multiple tags")
+    void assertMultipleTagsFiltering() {
+        String multiTagUserId = "6b8579ca-2d67-42ab-89e9-e75656493f3e"; // Has both Patina and Baruch tags
+
+        var patinaOpts = LeaderboardFilterOptions.builder().patina(true).build();
+        var baruchOpts = LeaderboardFilterOptions.builder().baruch(true).build();
+
+        System.out.println("start ur engines");
+
+        var patinaResult = leaderboardRepository.getFilteredRankedUserById(EXPIRED_LEADERBOARD_ID, multiTagUserId, patinaOpts);
+        var baruchResult = leaderboardRepository.getFilteredRankedUserById(EXPIRED_LEADERBOARD_ID, multiTagUserId, baruchOpts);
+
+        System.out.println(patinaResult);
+        System.out.println(baruchResult);
+
+        assertNotNull(patinaResult, "User with Patina tag should appear in Patina filter");
+        assertNotNull(baruchResult, "User with Baruch tag should appear in Baruch filter");
+        assertEquals(patinaResult.getItem(), baruchResult.getItem(), "Same user should be returned in both filters");
+    }
+
+    @Test
+    @DisplayName("Assert filtered ranking excludes users created after leaderboard deletion")
+    void assertUserTagCreationDateFiltering() {
+        String userWithOldTag = "6b8579ca-2d67-42ab-89e9-e75656493f3e"; // Tag created before leaderboard deletion
+        String userWithNewTag = "71bbe3f2-2f09-4726-8f79-04554ce561e0"; // Tag created after leaderboard deletion
+
+        var hunterOpts = LeaderboardFilterOptions.builder().patina(true).hunter(true).build();
+
+        var oldTagResult = leaderboardRepository.getFilteredRankedUserById(EXPIRED_LEADERBOARD_ID, userWithOldTag, hunterOpts);
+        var newTagResult = leaderboardRepository.getFilteredRankedUserById(EXPIRED_LEADERBOARD_ID, userWithNewTag, hunterOpts);
+
+        assertNotNull(oldTagResult, "User with tag created before leaderboard deletion should be included");
+        assertNull(newTagResult, "User with tag created after leaderboard deletion should be excluded");
+    }
+
+    @Test
+    @DisplayName("Assert ranking consistency with all filter options disabled")
+    void assertAllFiltersDisabledBehavior() {
+        // Test that when all tag filters are false, all users are included (OR
+        // condition at end of SQL)
+        var allFalseOpts = LeaderboardFilterOptions.builder()
+                        .patina(false).hunter(false).nyu(false).baruch(false)
+                        .rpi(false).gwc(false).sbu(false).ccny(false)
+                        .columbia(false).cornell(false).bmcc(false)
+                        .build();
+
+        List<Indexed<UserWithScore>> filteredUsers = leaderboardRepository.getRankedIndexedLeaderboardUsersById(currentLeaderboard.getId(), allFalseOpts);
+        List<Indexed<UserWithScore>> globalUsers = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(currentLeaderboard.getId(), LeaderboardFilterOptions.DEFAULT);
+
+        assertEquals(globalUsers.size(), filteredUsers.size(), "When all filters are false, should include all users");
     }
 }
