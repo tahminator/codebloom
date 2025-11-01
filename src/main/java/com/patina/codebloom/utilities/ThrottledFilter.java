@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.time.Duration;
 
 @Component
-public class RateLimitingFilter implements Filter {
+public class ThrottledFilter implements Filter {
     private static final long RATE_LIMIT_CAPACITY = 1L;
     private static final long REFILL_INTERVAL_MILLIS = 100L;
 
@@ -40,8 +40,8 @@ public class RateLimitingFilter implements Filter {
 
     private void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
                     throws IOException, ServletException {
-        HttpServletRequest httpRequest = request;
-        HttpServletResponse httpResponse = response;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String path = httpRequest.getServletPath();
 
