@@ -17,14 +17,17 @@ import java.io.IOException;
 import java.time.Duration;
 
 @Component
-public class ThrottledFilter implements Filter {
-    private static final long RATE_LIMIT_CAPACITY = 1L;
-    private static final long REFILL_INTERVAL_MILLIS = 100L;
+public class RateLimitingFilter implements Filter {
+    private static final long API_RATE_LIMIT_CAPACITY = 1L;
+    private static final long API_REFILL_INTERVAL_MILLIS = 100L;
 
-    private Bucket createNewBucket() {
+    private static final long STATIC_RATE_LIMIT_CAPACITY = 10L;
+    private static final long STATIC_REFILL_INTERVAL_MILLIS = 1000L;
+
+    private Bucket createNewBucket(long capacity, long refillIntervalMillis) {
         var bandwidth = Bandwidth.builder()
-                        .capacity(RATE_LIMIT_CAPACITY)
-                        .refillIntervally(RATE_LIMIT_CAPACITY, Duration.ofMillis(REFILL_INTERVAL_MILLIS))
+                        .capacity(capacity)
+                        .refillIntervally(capacity, Duration.ofMillis(refillIntervalMillis))
                         .build();
 
         return Bucket.builder()
@@ -44,26 +47,35 @@ public class ThrottledFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String path = httpRequest.getServletPath();
+        String remoteAddr = request.getRemoteAddr();
 
-        if (!path.startsWith("/api")) {
-            chain.doFilter(request, response);
-            return;
+        long rateLimitCapacity;
+        long refillInterval;
+        String bucketKey;
+
+        if (path.startsWith("/api")) {
+            rateLimitCapacity = API_RATE_LIMIT_CAPACITY;
+            refillInterval = API_REFILL_INTERVAL_MILLIS;
+            bucketKey = remoteAddr + ":api";
+        } else {
+            rateLimitCapacity = STATIC_RATE_LIMIT_CAPACITY;
+            refillInterval = STATIC_REFILL_INTERVAL_MILLIS;
+            bucketKey = remoteAddr + ":static";
         }
 
         HttpSession session = httpRequest.getSession(false);
-        String remoteAddr = request.getRemoteAddr();
         Bucket bucket = null;
 
         if (session != null) {
-            bucket = (Bucket) session.getAttribute(remoteAddr);
+            bucket = (Bucket) session.getAttribute(bucketKey);
         }
 
         if (bucket == null) {
-            bucket = createNewBucket();
+            bucket = createNewBucket(rateLimitCapacity, refillInterval);
             if (session == null) {
                 session = httpRequest.getSession(true);
             }
-            session.setAttribute(remoteAddr, bucket);
+            session.setAttribute(bucketKey, bucket);
         }
 
         if (bucket.tryConsume(1)) {
