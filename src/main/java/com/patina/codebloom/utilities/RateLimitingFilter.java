@@ -24,7 +24,7 @@ public class RateLimitingFilter implements Filter {
     private static final long STATIC_RATE_LIMIT_CAPACITY = 10L;
     private static final long STATIC_REFILL_INTERVAL_MILLIS = 1000L;
 
-    private Bucket createNewBucket(long capacity, long refillIntervalMillis) {
+    private Bucket createNewBucket(final long capacity, final long refillIntervalMillis) {
         var bandwidth = Bandwidth.builder()
                         .capacity(capacity)
                         .refillIntervally(capacity, Duration.ofMillis(refillIntervalMillis))
