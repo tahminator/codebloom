@@ -49,8 +49,8 @@ public class RateLimitingFilter implements Filter {
         String path = httpRequest.getServletPath();
         String remoteAddr = request.getRemoteAddr();
 
-        long rateLimitCapacity;
-        long refillInterval;
+        final long rateLimitCapacity;
+        final long refillInterval;
         String bucketKey;
 
         if (path.startsWith("/api")) {
