@@ -203,6 +203,9 @@
                                 <format>HTML</format>
                                 <format>XML</format>
                             </formats>
+                            <excludes>
+                                <exclude>com/patina/codebloom/common/utils/**</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
