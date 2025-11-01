@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class LeetcodeAuthStealer {
-    private static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
+    static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
 
     private volatile String cookie;
     private volatile String csrf;
@@ -163,7 +163,7 @@ public class LeetcodeAuthStealer {
         return csrf;
     }
 
-    private String stealCookieImpl() {
+    String stealCookieImpl() {
         LOCK.writeLock().lock();
         try (Playwright playwright = Playwright.create();
                         Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(true).setTimeout(40000));
