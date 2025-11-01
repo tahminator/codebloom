@@ -291,7 +291,7 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     void testDisableLeaderboardByIdAgain() {
         boolean isSuccessful = leaderboardRepository.disableLeaderboardById(mockLeaderboard.getId());
         assertFalse(isSuccessful);
