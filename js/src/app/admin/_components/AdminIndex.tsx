@@ -3,7 +3,8 @@ import UserAdminList from "@/app/admin/_components/users/UserAdminList";
 import { Flex, Title } from "@mantine/core";
 
 import DeleteAnnouncementButton from "./announcements/DeleteAnnouncementButton";
-import AllLeaderboardsPage from "./leaderboards/pagination/AllLeaderboardAdmin";
+import IncompleteQuestionList from "./incomplete/IncompleteQuestionList";
+import AllLeaderboardAdmin from "./leaderboards/pagination/AllLeaderboardAdmin";
 
 export default function AdminIndex() {
   return (
@@ -25,7 +26,16 @@ export default function AdminIndex() {
           m={"sm"}
         >
           <Title order={4}>Leaderboards</Title>
-          <AllLeaderboardsPage />
+          <AllLeaderboardAdmin />
+        </Flex>
+        <Flex
+          w={{ base: "100%", sm: "50%" }}
+          direction={"column"}
+          ta={"center"}
+          m={"sm"}
+        >
+          <Title order={4}>IncompleteQuestions</Title>
+          <IncompleteQuestionList />
         </Flex>
         <Flex
           w={{ base: "100%", sm: "50%" }}
