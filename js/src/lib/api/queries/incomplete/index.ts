@@ -10,7 +10,6 @@ export const useIncompleteQuestionQuery = () => {
 };
 
 async function fetchIncompleteQuestions() {
-
   const { url, method, res } = ApiURL.create(
     "/api/admin/questions/incomplete",
     {

@@ -1,8 +1,20 @@
-import { langNameToIcon, langNameKey } from "@/components/ui/langname-to-icon/LangNameToIcon";
+import {
+  langNameToIcon,
+  langNameKey,
+} from "@/components/ui/langname-to-icon/LangNameToIcon";
 import { useIncompleteQuestionQuery } from "@/lib/api/queries/incomplete";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
-import { Badge, Box, Card, Group, Overlay, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+  Badge,
+  Box,
+  Card,
+  Group,
+  Overlay,
+  ScrollArea,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { Link } from "react-router-dom";
 
 import IncompleteQuestionListSkeleton from "./IncompleteQuestionListSkeleton";
@@ -28,14 +40,7 @@ export default function IncompleteQuestionList() {
   const pageData = data.payload;
 
   return (
-    <Box
-      mt={10}
-      pos="relative"
-      w="100%"
-      maw={925}
-      p="xs"
-      mx="auto"
-    >
+    <Box mt={10} pos="relative" w="100%" maw={925} p="xs" mx="auto">
       <Box pos="relative">
         {isPlaceholderData && (
           <Overlay zIndex={1000} backgroundOpacity={0.35} blur={3} />
@@ -54,13 +59,7 @@ export default function IncompleteQuestionList() {
         >
           <Stack gap="sm" align="center">
             {pageData.length === 0 && (
-              <Card
-                withBorder
-                p="md"
-                radius="md"
-                mih={80}
-                w="100%"
-              >
+              <Card withBorder p="md" radius="md" mih={80} w="100%">
                 <Stack gap="xs" justify="center" align="center" h="100%">
                   <Text fw={500} ta="center" c="dimmed">
                     Nothing found.
@@ -134,7 +133,7 @@ export default function IncompleteQuestionList() {
                             >
                               {
                                 ApiUtils.getTopicEnumMetadataByTopicEnum(
-                                  topic.topic
+                                  topic.topic,
                                 ).name
                               }
                             </Badge>
