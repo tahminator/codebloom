@@ -34,7 +34,7 @@ export default function AdminIndex() {
           ta={"center"}
           m={"sm"}
         >
-          <Title order={4}>IncompleteQuestions</Title>
+          <Title order={4}>Incomplete Questions</Title>
           <IncompleteQuestionList />
         </Flex>
         <Flex

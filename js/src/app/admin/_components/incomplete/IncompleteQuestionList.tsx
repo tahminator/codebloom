@@ -65,7 +65,7 @@ export default function IncompleteQuestionList() {
                     Nothing found.
                   </Text>
                   <Text size="sm" ta="center" c="dimmed">
-                    No submissions have been entered yet.
+                    No incomplete questions have been found.
                   </Text>
                 </Stack>
               </Card>
