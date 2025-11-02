@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import AllLeaderboardAdminSkeleton from "./AllLeaderboardAdminSkeleton";
 import NewLeaderboardForm from "./new-leaderboard/NewLeaderBoardFormBody";
 
-export default function AllLeaderboardsPage() {
+export default function AllLeaderboardAdmin() {
   const {
     data,
     status,
