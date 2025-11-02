@@ -38,37 +38,19 @@ public class RateLimitingFilter implements Filter {
     @Override
     public final void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
                     throws IOException, ServletException {
-        doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
-    }
-
-    private void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
-                    throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String path = httpRequest.getServletPath();
-        String remoteAddr = request.getRemoteAddr();
+        String remoteAddr = httpRequest.getRemoteAddr();
 
-        final long rateLimitCapacity;
-        final long refillInterval;
-        String bucketKey;
-
-        if (path.startsWith("/api")) {
-            rateLimitCapacity = API_RATE_LIMIT_CAPACITY;
-            refillInterval = API_REFILL_INTERVAL_MILLIS;
-            bucketKey = remoteAddr + ":api";
-        } else {
-            rateLimitCapacity = STATIC_RATE_LIMIT_CAPACITY;
-            refillInterval = STATIC_REFILL_INTERVAL_MILLIS;
-            bucketKey = remoteAddr + ":static";
-        }
+        boolean isApiPath = path.startsWith("/api");
+        final long rateLimitCapacity = isApiPath ? API_RATE_LIMIT_CAPACITY : STATIC_RATE_LIMIT_CAPACITY;
+        final long refillInterval = isApiPath ? API_REFILL_INTERVAL_MILLIS : STATIC_REFILL_INTERVAL_MILLIS;
+        String bucketKey = remoteAddr + (isApiPath ? ":api" : ":static");
 
         HttpSession session = httpRequest.getSession(false);
-        Bucket bucket = null;
-
-        if (session != null) {
-            bucket = (Bucket) session.getAttribute(bucketKey);
-        }
+        Bucket bucket = (session != null) ? (Bucket) session.getAttribute(bucketKey) : null;
 
         if (bucket == null) {
             bucket = createNewBucket(rateLimitCapacity, refillInterval);
