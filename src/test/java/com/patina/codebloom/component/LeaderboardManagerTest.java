@@ -393,13 +393,21 @@ public class LeaderboardManagerTest {
     @Test
     void testGetLeaderboardMetadata() {
         String testId = UUID.randomUUID().toString();
-        var leaderboard = Leaderboard.builder()
+        Leaderboard leaderboard = Leaderboard.builder()
                         .id(testId)
                         .name("Testing Leaderboard")
                         .createdAt(StandardizedLocalDateTime.now())
                         .build();
 
+        when(leaderboardRepository.getLeaderboardMetadataById(testId)).thenReturn(leaderboard);
+
         Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata(testId);
-        assertEquals(leaderboard, leaderboardData);
+
+        assertNotNull(leaderboardData);
+        assertEquals(leaderboard.getId(), leaderboardData.getId());
+        assertEquals(leaderboard.getName(), leaderboardData.getName());
+        assertEquals(leaderboard.getCreatedAt(), leaderboardData.getCreatedAt());
+
+        verify(leaderboardRepository, times(1)).getLeaderboardMetadataById(testId);
     }
 }
