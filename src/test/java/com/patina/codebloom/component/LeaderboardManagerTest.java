@@ -389,4 +389,17 @@ public class LeaderboardManagerTest {
         assertAchievement(userOneAchievement, null, AchievementPlaceEnum.ONE, winners.get(0).getItem().getId());
         assertAchievement(userTwoAchievement, null, AchievementPlaceEnum.TWO, winners.get(1).getItem().getId());
     }
+
+    @Test
+    void testGetLeaderboardMetadata() {
+        String testId = UUID.randomUUID().toString();
+        var leaderboard = Leaderboard.builder()
+                        .id(testId)
+                        .name("Testing Leaderboard")
+                        .createdAt(StandardizedLocalDateTime.now())
+                        .build();
+
+        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata(testId);
+        assertEquals(leaderboard, leaderboardData);
+    }
 }
