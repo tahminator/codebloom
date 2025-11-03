@@ -8,10 +8,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -39,7 +40,6 @@ public class RateLimitingFilter implements Filter {
     public final void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
                     throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String path = httpRequest.getServletPath();
         String remoteAddr = httpRequest.getRemoteAddr();
@@ -49,23 +49,17 @@ public class RateLimitingFilter implements Filter {
         final long refillInterval = isApiPath ? API_REFILL_INTERVAL_MILLIS : STATIC_REFILL_INTERVAL_MILLIS;
         String bucketKey = remoteAddr + (isApiPath ? ":api" : ":static");
 
-        HttpSession session = httpRequest.getSession(false);
-        Bucket bucket = (session != null) ? (Bucket) session.getAttribute(bucketKey) : null;
-
+        HttpSession session = httpRequest.getSession();
+        Bucket bucket = (Bucket) session.getAttribute(bucketKey);
         if (bucket == null) {
             bucket = createNewBucket(rateLimitCapacity, refillInterval);
-            if (session == null) {
-                session = httpRequest.getSession(true);
-            }
             session.setAttribute(bucketKey, bucket);
         }
 
         if (bucket.tryConsume(1)) {
             chain.doFilter(request, response);
         } else {
-            httpResponse.setContentType("text/plain");
-            httpResponse.setStatus(429);
-            httpResponse.getWriter().append("Number of requests exceeds the limit");
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests");
         }
     }
 }
