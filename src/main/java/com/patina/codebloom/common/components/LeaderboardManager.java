@@ -94,14 +94,6 @@ public class LeaderboardManager {
         }
     }
 
-    public Leaderboard getLeaderboardMetadata() {
-        Leaderboard leaderboardMetaData = leaderboardRepository.getRecentLeaderboardMetadata();
-        String id = leaderboardMetaData.getId();
-
-        return getLeaderboardMetadata(id);
-    }
-
-    // get leaderboard metadata given id
     public Leaderboard getLeaderboardMetadata(final String id) {
         Leaderboard leaderboardData = leaderboardRepository.getLeaderboardMetadataById(id);
         return leaderboardData;

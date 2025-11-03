@@ -148,7 +148,7 @@ public class LeaderboardController {
     public ResponseEntity<ApiResponder<LeaderboardDto>> getCurrentLeaderboardMetadata(final HttpServletRequest request) {
         FakeLag.sleep(650);
 
-        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata();
+        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata(leaderboardRepository.getRecentLeaderboardMetadata().getId());
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", LeaderboardDto.fromLeaderboard(leaderboardData)));
     }
@@ -194,7 +194,7 @@ public class LeaderboardController {
                         .bmcc(bmcc)
                         .build();
 
-        Leaderboard currLeaderboard = leaderboardManager.getLeaderboardMetadata();
+        Leaderboard currLeaderboard = leaderboardManager.getLeaderboardMetadata(leaderboardRepository.getRecentLeaderboardMetadata().getId());
         int totalUsers = leaderboardRepository.getLeaderboardUserCountById(currLeaderboard.getId(), options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
