@@ -12,6 +12,7 @@ public interface LeaderboardRepository {
 
     Leaderboard getLeaderboardMetadataById(String id);
 
+    @Deprecated
     List<UserWithScore> getRecentLeaderboardUsers(LeaderboardFilterOptions options);
 
     List<UserWithScore> getLeaderboardUsersById(String id, LeaderboardFilterOptions options);
@@ -100,6 +101,7 @@ public interface LeaderboardRepository {
 
     boolean updateUserPointsFromLeaderboard(String leaderboardId, String userId, int totalScore);
 
+    @Deprecated
     int getRecentLeaderboardUserCount(LeaderboardFilterOptions options);
 
     int getLeaderboardUserCountById(String id, LeaderboardFilterOptions options);

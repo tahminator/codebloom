@@ -194,7 +194,8 @@ public class LeaderboardController {
                         .bmcc(bmcc)
                         .build();
 
-        int totalUsers = leaderboardRepository.getRecentLeaderboardUserCount(options);
+        Leaderboard currLeaderboard = leaderboardManager.getLeaderboardMetadata();
+        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(currLeaderboard.getId(), options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 

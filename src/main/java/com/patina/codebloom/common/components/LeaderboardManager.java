@@ -94,10 +94,11 @@ public class LeaderboardManager {
         }
     }
 
-    // get metadata of leaderboard if no id is specified
     public Leaderboard getLeaderboardMetadata() {
-        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
-        return leaderboardData;
+        Leaderboard leaderboardMetaData = leaderboardRepository.getRecentLeaderboardMetadata();
+        String id = leaderboardMetaData.getId();
+
+        return getLeaderboardMetadata(id);
     }
 
     // get leaderboard metadata given id
