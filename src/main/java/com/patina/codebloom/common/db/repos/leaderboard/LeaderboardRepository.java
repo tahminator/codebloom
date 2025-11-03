@@ -12,6 +12,10 @@ public interface LeaderboardRepository {
 
     Leaderboard getLeaderboardMetadataById(String id);
 
+    /**
+     * @deprecated This method is no longer recommended. Use
+     * {@link #getLeaderboardUsersById} instead.
+     */
     @Deprecated
     List<UserWithScore> getRecentLeaderboardUsers(LeaderboardFilterOptions options);
 
@@ -101,6 +105,10 @@ public interface LeaderboardRepository {
 
     boolean updateUserPointsFromLeaderboard(String leaderboardId, String userId, int totalScore);
 
+    /**
+     * @deprecated This method is no longer recommended. Use
+     * {@link #getLeaderboardUserCountById} instead.
+     */
     @Deprecated
     int getRecentLeaderboardUserCount(LeaderboardFilterOptions options);
 
