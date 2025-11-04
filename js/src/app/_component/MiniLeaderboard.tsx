@@ -7,9 +7,9 @@ import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
   Button,
+  Flex,
   Overlay,
   SegmentedControl,
-  Table,
   Text,
   Tooltip,
 } from "@mantine/core";
@@ -41,7 +41,6 @@ export default function MiniLeaderboardDesktop() {
   }
 
   const [first, second, third] = leaderboardData.items;
-
   return (
     <>
       <SegmentedControl
@@ -63,12 +62,12 @@ export default function MiniLeaderboardDesktop() {
             radius={"md"}
           />
         )}
-        <div
-          className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-          style={{
-            marginBottom: "2rem",
-            marginTop: "1rem",
-          }}
+        <Flex
+          className="flex-col sm:flex-row items-center sm:items-end"
+          justify="center"
+          gap="md"
+          mb="2rem"
+          mt="1rem"
         >
           {second && (
             <LeaderboardCard
@@ -109,72 +108,126 @@ export default function MiniLeaderboardDesktop() {
               isLoading={isPlaceholderData}
             />
           )}
-        </div>
+        </Flex>
         {leaderboardData.items.length > 3 && (
-          <Table horizontalSpacing="xl">
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th></Table.Th>
-                <Table.Th>Name </Table.Th>
-                <Table.Th>Total Points</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {leaderboardData.items.map((entry, index) => {
-                if ([0, 1, 2].includes(index)) return null;
-                return (
-                  <Table.Tr key={index}>
-                    <Table.Td>{index + 1}</Table.Td>
-                    <Table.Td>
-                      <div style={{ display: "flex", flexDirection: "column" }}>
+          <Flex direction="column" gap="xs" mt="1rem" mb="1rem">
+            {leaderboardData.items.map((entry, index) => {
+              if ([0, 1, 2].includes(index)) return null;
+              return (
+                <Flex
+                  key={entry.id}
+                  bg={theme.colors.dark[7]}
+                  style={{
+                    borderColor: theme.colors.dark[3],
+                    border: "1px solid",
+                    borderRadius: "8px",
+                    padding: "1rem 1.25rem",
+                    transition: "all 0.2s",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => (window.location.href = `/user/${entry.id}`)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 6px rgba(0, 0, 0, 0.1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <Flex
+                    justify="space-between"
+                    align="center"
+                    gap="md"
+                    style={{ width: "100%" }}
+                  >
+                    <Flex align="center" gap="md" miw={0}>
+                      <Text
+                        size="lg"
+                        fw={700}
+                        c={theme.colors.patina[4]}
+                        style={{ minWidth: "50px" }}
+                      >
+                        #{entry.index}
+                      </Text>
+                      <Flex direction="column" gap="xs" miw={0}>
                         {entry.nickname && (
-                          <span
-                            style={{ fontSize: "18px", lineHeight: "28px" }}
-                          >
+                          <Flex align="center" gap={6}>
                             <Tooltip
-                              label={
-                                "This user is a member of the Patina Discord server."
-                              }
-                              color={"dark.4"}
+                              label="This user is a verified member of the Patina Discord server."
+                              color="dark.4"
                             >
-                              <Text>
+                              <Flex align="center" gap={6}>
                                 <IconCircleCheckFilled
-                                  className="inline"
                                   color={theme.colors.patina[4]}
-                                  z={5000000}
-                                  size={20}
-                                />{" "}
-                                {entry.nickname}
-                              </Text>
+                                  size={18}
+                                />
+                                <Text
+                                  fw={600}
+                                  size="md"
+                                  style={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {entry.nickname}
+                                </Text>
+                              </Flex>
                             </Tooltip>
-                          </span>
+                          </Flex>
                         )}
-                        <span style={{ fontSize: "18px", lineHeight: "28px" }}>
-                          <FaDiscord style={{ display: "inline" }} />{" "}
-                          {entry.discordName}
-                        </span>
-                        <span>
-                          <SiLeetcode style={{ display: "inline" }} />{" "}
-                          {entry.leetcodeUsername}
-                        </span>
-                      </div>
-                    </Table.Td>
-                    <Table.Td>{entry.totalScore}</Table.Td>
-                  </Table.Tr>
-                );
-              })}
-            </Table.Tbody>
-          </Table>
+                        <Flex gap="md" wrap="wrap">
+                          <Flex align="center" gap={6}>
+                            <FaDiscord size={16} />
+                            <Text
+                              size="sm"
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {entry.discordName}
+                            </Text>
+                          </Flex>
+                          <Flex align="center" gap={6}>
+                            <SiLeetcode size={16} />
+                            <Text
+                              size="sm"
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {entry.leetcodeUsername}
+                            </Text>
+                          </Flex>
+                        </Flex>
+                      </Flex>
+                    </Flex>
+                    <Text
+                      size="md"
+                      fw={600}
+                      style={{ minWidth: "90px", textAlign: "right" }}
+                    >
+                      {entry.totalScore} Pts
+                    </Text>
+                  </Flex>
+                </Flex>
+              );
+            })}
+          </Flex>
         )}
+        <Button
+          variant={"light"}
+          w={"100%"}
+          component={Link}
+          to={`/leaderboard?patina=${filters.Patina}`}
+        >
+          View All
+        </Button>
       </div>
-      <Button
-        variant={"light"}
-        w={"100%"}
-        component={Link}
-        to={`/leaderboard?patina=${filters.Patina}`}
-      >
-        View All
-      </Button>
     </>
   );
 }

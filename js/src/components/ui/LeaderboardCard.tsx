@@ -74,23 +74,28 @@ export default function LeaderboardCard({
           label={"This user is a verified member of the Patina Discord server."}
           color={"dark.4"}
         >
-          <Text
-            ta="center"
-            fw={700}
-            style={{
-              fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            <IconCircleCheckFilled
-              className="inline"
-              color={theme.colors.patina[4]}
-              z={5000000}
-            />{" "}
-            {nickname}
-          </Text>
+          <Flex align="center" justify="center" gap="xs">
+            <Text
+              ta="center"
+              fw={700}
+              style={{
+                fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              <IconCircleCheckFilled
+                className="inline"
+                color={theme.colors.patina[4]}
+                z={5000000}
+              />{" "}
+              {nickname}
+            </Text>
+            {tagFF && tags && tags.length > 0 && (
+              <TagList tags={tags} size={14} gap="xs" />
+            )}
+          </Flex>
         </Tooltip>
       )}
       <Flex align="center" gap="xs" justify="center">
@@ -106,7 +111,6 @@ export default function LeaderboardCard({
         >
           <FaDiscord className="inline" /> {discordName}
         </Text>
-        {tagFF && tags && <TagList tags={tags} size={14} gap="xs" />}
       </Flex>
       <Text ta="center" style={{ whiteSpace: "nowrap" }}>
         <SiLeetcode className="inline" /> {leetcodeUsername}
