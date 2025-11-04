@@ -194,19 +194,19 @@ public class LeaderboardController {
                         .bmcc(bmcc)
                         .build();
 
-        Leaderboard currLeaderboard = leaderboardManager.getLeaderboardMetadata(leaderboardRepository.getRecentLeaderboardMetadata().getId());
-        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(currLeaderboard.getId(), options);
+        String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
+
+        int totalUsers = leaderboardManager.getLeaderboardUserCountById(currentLeaderboardId, options);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 
-        String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
         List<Indexed<UserWithScore>> leaderboardData;
         // don't use globalIndex when there are no filters enabled.
         if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell || bmcc)) {
-            leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
+            leaderboardData = leaderboardManager.getGlobalRankedIndexedLeaderboardUsersById(
                             currentLeaderboardId, options);
         } else {
-            leaderboardData = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+            leaderboardData = leaderboardManager.getRankedIndexedLeaderboardUsersById(
                             currentLeaderboardId, options);
         }
 

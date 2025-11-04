@@ -95,7 +95,18 @@ public class LeaderboardManager {
     }
 
     public Leaderboard getLeaderboardMetadata(final String id) {
-        Leaderboard leaderboardData = leaderboardRepository.getLeaderboardMetadataById(id);
-        return leaderboardData;
+        return leaderboardRepository.getLeaderboardMetadataById(id);
+    }
+
+    public int getLeaderboardUserCountById(final String leaderboardId, final LeaderboardFilterOptions options) {
+        return leaderboardRepository.getLeaderboardUserCountById(leaderboardId, options);
+    }
+
+    public List<Indexed<UserWithScore>> getGlobalRankedIndexedLeaderboardUsersById(final String leaderboardId, final LeaderboardFilterOptions options) {
+        return leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options);
+    }
+
+    public List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(final String leaderboardId, final LeaderboardFilterOptions options) {
+        return leaderboardRepository.getRankedIndexedLeaderboardUsersById(leaderboardId, options);
     }
 }
