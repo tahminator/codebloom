@@ -14,11 +14,13 @@ import { theme } from "@/lib/theme";
 import {
   Box,
   Button,
+  Card,
   Center,
   Flex,
   Image,
   Overlay,
-  Table,
+  Stack,
+  Text,
   Tooltip,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
@@ -60,6 +62,12 @@ export default function LeaderboardIndex() {
 
   const pageData = data.payload;
   const [first, second, third] = pageData.items;
+  const cardItems = pageData.items.filter((_, index) => {
+    if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index)) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -133,7 +141,7 @@ export default function LeaderboardIndex() {
                     <Image
                       src={metadata.icon}
                       alt={metadata.alt}
-                      style={{ height: "2em", width: "auto" }}
+                      className="h-[2em] w-auto"
                     />
                   </Flex>
                 );
@@ -172,80 +180,107 @@ export default function LeaderboardIndex() {
         }}
         placeholder={"Search for User"}
       />
-      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
-        <Table
-          verticalSpacing={"lg"}
-          horizontalSpacing={"xs"}
-          withRowBorders={false}
-          striped
-          my={"sm"}
-          pos={"relative"}
-        >
-          {isPlaceholderData && (
-            <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
-          )}
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>#</Table.Th>
-              <Table.Th>Name</Table.Th>
-              <Table.Th>Pts</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {pageData.items.map(({ index: rank, ...entry }, index) => {
-              if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index))
-                return null;
-              return (
-                <Table.Tr key={index}>
-                  <Table.Td>{rank}</Table.Td>
-                  <Table.Td>
-                    <Flex
-                      direction={"column"}
-                      component={Link}
-                      to={`/user/${entry.id}`}
-                      className="group"
+      <Box pos="relative" my="lg">
+        {isPlaceholderData && (
+          <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
+        )}
+        <Stack gap="md">
+          {cardItems.map((entry) => {
+            return (
+              <Card
+                key={entry.id}
+                component={Link}
+                to={`/user/${entry.id}`}
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+                style={{
+                  backgroundColor: theme.colors.dark[7],
+                  borderColor: theme.colors.dark[5],
+                }}
+              >
+                <Flex
+                  direction="row"
+                  justify="space-between"
+                  align="center"
+                  gap="md"
+                >
+                  <Flex className="flex flex-1 item-center gap-4">
+                    <Text
+                      size="xl"
+                      fw={700}
+                      c={theme.colors.patina[4]}
+                      className="min-w-[50px]"
                     >
+                      #{entry.index}
+                    </Text>
+                    <Flex direction="column" gap="xs">
                       {entry.nickname && (
-                        <Flex align="center" gap="xs">
+                        <Flex align="center" gap={5}>
                           <Tooltip
-                            label={
-                              "This user is a verified member of the Patina Discord server."
-                            }
-                            color={"dark.4"}
+                            label="This user is a verified member of the Patina Discord server."
+                            color="dark.4"
                           >
-                            <span className="transition-all group-hover:text-blue-500 w-max">
+                            <Flex align="center" gap={4}>
                               <IconCircleCheckFilled
-                                className="inline"
                                 color={theme.colors.patina[4]}
-                                z={5000000}
-                                size={20}
-                              />{" "}
-                              {entry.nickname}
-                            </span>
+                                size={18}
+                              />
+                              <Text
+                                fw={600}
+                                size="md"
+                                className="transition-all group-hover:text-blue-500"
+                              >
+                                {entry.nickname}
+                              </Text>
+                            </Flex>
                           </Tooltip>
+                          {tagFF && entry.tags && entry.tags.length > 0 && (
+                            <Box mt={4}>
+                              <TagList tags={entry.tags} size={16} gap="xs" />
+                            </Box>
+                          )}
                         </Flex>
                       )}
-                      <Flex align="center" gap="xs">
-                        <span className="transition-all group-hover:text-blue-500 w-max">
-                          <FaDiscord style={{ display: "inline" }} />{" "}
-                          {entry.discordName}
-                        </span>
-                        {tagFF && (
-                          <TagList tags={entry.tags} size={16} gap="xs" />
-                        )}
+                      <Flex
+                        direction={{ base: "column", xs: "row" }}
+                        gap={{ base: "xs", xs: "md" }}
+                        align={{ base: "flex-start", xs: "center" }}
+                      >
+                        <Flex align="center" gap={6}>
+                          <FaDiscord size={16} />
+                          <Text
+                            size="sm"
+                            className="transition-all group-hover:text-blue-500"
+                          >
+                            {entry.discordName}
+                          </Text>
+                        </Flex>
+                        <Flex align="center" gap={6}>
+                          <SiLeetcode size={16} />
+                          <Text
+                            size="sm"
+                            className="transition-all group-hover:text-blue-500"
+                          >
+                            {entry.leetcodeUsername}
+                          </Text>
+                        </Flex>
                       </Flex>
-                      <span className="transition-all group-hover:text-blue-500 w-max">
-                        <SiLeetcode style={{ display: "inline" }} />{" "}
-                        {entry.leetcodeUsername}
-                      </span>
                     </Flex>
-                  </Table.Td>
-                  <Table.Td>{entry.totalScore}</Table.Td>
-                </Table.Tr>
-              );
-            })}
-          </Table.Tbody>
-        </Table>
+                  </Flex>
+                  <Text
+                    size="lg"
+                    fw={600}
+                    className="transition-all group-hover:text-white min-w-[100px] text-right"
+                  >
+                    {entry.totalScore} Pts
+                  </Text>
+                </Flex>
+              </Card>
+            );
+          })}
+        </Stack>
       </Box>
       <Center my={"sm"}>
         <Flex direction={"row"} gap={"sm"}>
