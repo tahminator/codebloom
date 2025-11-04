@@ -1,6 +1,9 @@
 package com.patina.codebloom.component;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -19,6 +22,7 @@ import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 import com.patina.codebloom.common.db.repos.achievements.AchievementRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.page.Indexed;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.db.leaderboard.options.LeaderboardFilterGeneratorTest;
@@ -35,6 +39,51 @@ public class LeaderboardManagerTest {
     public LeaderboardManagerTest() {
         this.leaderboardManager = new LeaderboardManager(leaderboardRepository, achievementRepository);
         this.faker = Faker.instance();
+    }
+
+    @Test
+    void testDelegationForUserCountAndUserLists() {
+        String leaderboardId = UUID.randomUUID().toString();
+        LeaderboardFilterOptions options = LeaderboardFilterOptions.DEFAULT;
+
+        int expectedCount = 7;
+        when(leaderboardRepository.getLeaderboardUserCountById(leaderboardId, options))
+                        .thenReturn(expectedCount);
+
+        List<Indexed<UserWithScore>> globalUsers = Indexed.ofDefaultList(
+                        List.of(
+                                        randomPartialUserWithScore()
+                                                        .totalScore(100_000)
+                                                        .build(),
+                                        randomPartialUserWithScore()
+                                                        .totalScore(90_000)
+                                                        .build()));
+
+        List<Indexed<UserWithScore>> filteredUsers = Indexed.ofDefaultList(
+                        List.of(
+                                        randomPartialUserWithScore()
+                                                        .totalScore(80_000)
+                                                        .build()));
+
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options))
+                        .thenReturn(globalUsers);
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(leaderboardId, options))
+                        .thenReturn(filteredUsers);
+
+        int count = leaderboardManager.getLeaderboardUserCountById(leaderboardId, options);
+        var returnedGlobal = leaderboardManager.getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options);
+        var returnedFiltered = leaderboardManager.getRankedIndexedLeaderboardUsersById(leaderboardId, options);
+
+        assertEquals(expectedCount, count);
+        assertEquals(globalUsers, returnedGlobal);
+        assertEquals(filteredUsers, returnedFiltered);
+
+        verify(leaderboardRepository, times(1))
+                        .getLeaderboardUserCountById(leaderboardId, options);
+        verify(leaderboardRepository, times(1))
+                        .getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options);
+        verify(leaderboardRepository, times(1))
+                        .getRankedIndexedLeaderboardUsersById(leaderboardId, options);
     }
 
     private String randomSnowflake() {
