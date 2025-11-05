@@ -11,12 +11,10 @@ export TZ="America/New_York"
 db_startup
 backend_startup
 
-cd js
-npm install -g corepack@latest
 corepack enable pnpm
-pnpm i --frozen-lockfile
-pnpm run generate
-cd ..
+pnpm --dir js i --frozen-lockfile
+pnpm --dir js run generate
+pnpm --dir js run test
 
 TIMESTAMP="$(date +%Y.%m.%d-%H.%M.%S)"
 GIT_SHA="$(git rev-parse --short HEAD)"
@@ -45,10 +43,6 @@ fi
 docker buildx build \
     $BUILD_MODE \
     --file infra/Dockerfile \
-    --build-arg SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN:-}" \
-    --build-arg SENTRY_DSN="${SENTRY_DSN:-}" \
-    --build-arg SKIP="${SKIP:-}" \
-    --build-arg VITE_DSN="${VITE_DSN:-}" \
     $(printf -- '--tag %s ' "${TAGS[@]}") \
     .
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 backend_cleanup() {
+    echo "[INFO] ===== BACKEND LOGS START ====="
+    cat backend.log || echo "[WARN] backend.log not found"
+    echo "[INFO] ===== BACKEND LOGS END ====="
     if kill $(cat spring_pid.txt) >/dev/null 2>&1; then
         echo "Backend process killed successfully."
     else
@@ -24,7 +27,7 @@ backend_startup() {
             break
         fi
         echo "Waiting for backend... ($i/30)"
-        sleep 2
+        sleep 5
     done
 
     if [ "$backend_started" = false ]; then
