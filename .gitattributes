@@ -1,0 +1,9 @@
+.env.shared filter=git-crypt-l1 diff=git-crypt-l1
+
+.env.ci filter=git-crypt-l2 diff=git-crypt-l2
+.env.ci-app filter=git-crypt-l2 diff=git-crypt-l2
+.env.staging filter=git-crypt-l2 diff=git-crypt-l2
+.env.production-ro filter=git-crypt-l2 diff=git-crypt-l2
+
+.env.production filter=git-crypt-l3 diff=git-crypt-l3
+infra/.env.production filter=git-crypt-l3 diff=git-crypt-l3
