@@ -1,0 +1,32 @@
+{
+    "name": "@codebloom/scripts",
+    "version": "1.0.0",
+    "description": "Collection of Ink scripts used in development",
+    "scripts": {
+        "git-crypt-add-user": "pnpx esbuild git-crypt/add-user/source.tsx --outfile=git-crypt/add-user/index.js --banner:js=\"#!/usr/bin/env node\nimport { createRequire as topLevelCreateRequire } from 'module';\n const require = topLevelCreateRequire(import.meta.url);\" --bundle --minify=false --splitting=false --format=esm --platform=node --target=esnext --define:process.env.DEV='\"false\"'",
+        "git-crypt-generate-key": "pnpx esbuild git-crypt/generate-key/source.tsx --outfile=git-crypt/generate-key/index.js --banner:js=\"#!/usr/bin/env node\nimport { createRequire as topLevelCreateRequire } from 'module';\n const require = topLevelCreateRequire(import.meta.url);\" --bundle --minify=false --splitting=false --format=esm --platform=node --target=esnext --define:process.env.DEV='\"false\"'"
+    },
+    "type": "module",
+    "packageManager": "pnpm@10.15.1",
+    "devDependencies": {
+        "@babel/preset-react": "^7.28.5",
+        "@eslint/js": "^9.39.1",
+        "@types/node": "^24.10.0",
+        "@types/react": "^19.2.2",
+        "eslint": "^9.39.1",
+        "eslint-plugin-perfectionist": "^4.15.1",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "eslint-plugin-react-refresh": "^0.4.24",
+        "globals": "^16.5.0",
+        "react": "^19.2.0",
+        "react-devtools": "^7.0.1",
+        "typescript-eslint": "^8.46.3"
+    },
+    "dependencies": {
+        "@inkjs/ui": "^2.0.0",
+        "ink": "^6.4.0",
+        "ink-select-input": "^6.2.0",
+        "ink-text-input": "^6.0.0"
+    }
+}
