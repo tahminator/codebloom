@@ -92,7 +92,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                         if (profile != null && profile.getUserAvatar() != null) {
                             existingUser.setProfileUrl(profile.getUserAvatar());
                         }
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         LOGGER.warn("LeetCode lookup failed for {}", existingUser.getLeetcodeUsername(), ex);
                     }
                 }
