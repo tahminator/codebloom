@@ -2,7 +2,7 @@ import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
-import { Card, Text, Tooltip, Flex, LoadingOverlay } from "@mantine/core";
+import { Card, Text, Tooltip, Flex, LoadingOverlay, Stack } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
@@ -34,10 +34,22 @@ export default function LeaderboardCard({
   tags?: UserTag[];
   isLoading?: boolean;
 }) {
+  const isTopThree = sizeOrder <= 3;
   const borderColor = (() => {
-    if (placeString === "1st") return "!border-yellow-300";
-    if (placeString === "2nd") return "!border-gray-400";
-    if (placeString === "3rd") return "!border-yellow-800";
+    if (placeString === "1st") return "!border-yellow-400"; 
+    if (placeString === "2nd") return "!border-slate-300";
+    if (placeString === "3rd") return "!border-amber-700";
+    return "";
+  })();
+
+  const boxShadow = (() => {
+    if (placeString === "1st") 
+      return "0 0 15px rgba(250, 204, 21, 0.4), 0 0 30px rgba(250, 204, 21, 0.2), 0 0 45px rgba(34, 197, 94, 0.1)";
+    if (placeString === "2nd") 
+      return "0 0 12px rgba(203, 213, 225, 0.35), 0 0 25px rgba(148, 163, 184, 0.2)";
+    if (placeString === "3rd") 
+      return "0 0 12px rgba(217, 119, 6, 0.25), 0 0 25px rgba(217, 119, 6, 0.12)";
+    return undefined;
   })();
 
   const height = (() => {
@@ -47,75 +59,74 @@ export default function LeaderboardCard({
       case 2:
         return "200px";
       case 3:
-        return "185px";
+        return "195px";
     }
   })();
-
-  return (
+return (
     <Card
       withBorder
       shadow="sm"
       radius="md"
-      className={`border-2 flex flex-col items-center justify-center ${borderColor}`}
+      className={`${isTopThree ? `border-4 ${borderColor}` : "border-2"} flex flex-col items-center justify-between relative`}
       style={{
         height,
         width,
-        position: "relative",
+        padding: "1.25rem 1rem",
+        boxShadow,
       }}
       component={Link}
       to={`/user/${userId}`}
     >
       <LoadingOverlay visible={isLoading} />
-      <Text ta="center" size="xl">
+      <Text ta="center" size="xl" fw={isTopThree ? 800 : 500}>
         {placeString}
       </Text>
-      {nickname && (
-        <Tooltip
-          label={"This user is a verified member of the Patina Discord server."}
-          color={"dark.4"}
-        >
-          <Flex align="center" justify="center" gap="xs">
-            <Text
-              ta="center"
-              fw={700}
-              style={{
-                fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              <IconCircleCheckFilled
-                className="inline"
-                color={theme.colors.patina[4]}
-                z={5000000}
-              />{" "}
-              {nickname}
-            </Text>
-            {tagFF && tags && tags.length > 0 && (
-              <TagList tags={tags} size={14} gap="xs" />
-            )}
-          </Flex>
-        </Tooltip>
-      )}
-      <Flex align="center" gap="xs" justify="center">
+      <Stack gap={4} align="center" className="my-auto">
+        {nickname && (
+          <Tooltip
+            label={"This user is a verified member of the Patina Discord server."}
+            color={"dark.4"}
+          >
+            <Flex align="center" justify="center" gap="xs">
+              <Text
+                ta="center"
+                fw={isTopThree ? 700 : 600}
+                className="whitespace-nowrap overflow-hidden text-ellipsis"
+                style={{
+                  fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
+                }}
+              >
+                <IconCircleCheckFilled
+                  className="inline"
+                  color={theme.colors.patina[4]}
+                />{" "}
+                {nickname}
+              </Text>
+              {tagFF && tags && tags.length > 0 && (
+                <TagList tags={tags} size={14} gap="xs" />
+              )}
+            </Flex>
+          </Tooltip>
+        )}
         <Text
           ta="center"
-          fw={700}
+          fw={isTopThree ? 600 : 500}
+          className="whitespace-nowrap overflow-hidden text-ellipsis"
           style={{
-            fontSize: `clamp(1rem, ${100 / (discordName.length + 5)}vw, 1.25rem)`,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            fontSize: `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
           }}
         >
           <FaDiscord className="inline" /> {discordName}
         </Text>
-      </Flex>
-      <Text ta="center" style={{ whiteSpace: "nowrap" }}>
-        <SiLeetcode className="inline" /> {leetcodeUsername}
-      </Text>
-      <Text ta="center" fw={500} size="md">
+        <Text 
+          ta="center" 
+          fw={isTopThree ? 500 : 400}
+          className="whitespace-nowrap text-[0.95rem]"
+        >
+          <SiLeetcode className="inline" /> {leetcodeUsername}
+        </Text>
+      </Stack>
+      <Text ta="center" fw={isTopThree ? 700 : 500} size="lg">
         {totalScore} Points
       </Text>
     </Card>
