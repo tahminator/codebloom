@@ -2,7 +2,14 @@ import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
-import { Card, Text, Tooltip, Flex, LoadingOverlay, Stack } from "@mantine/core";
+import {
+  Card,
+  Text,
+  Tooltip,
+  Flex,
+  LoadingOverlay,
+  Stack,
+} from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
@@ -36,18 +43,18 @@ export default function LeaderboardCard({
 }) {
   const isTopThree = sizeOrder <= 3;
   const borderColor = (() => {
-    if (placeString === "1st") return "!border-yellow-400"; 
+    if (placeString === "1st") return "!border-yellow-400";
     if (placeString === "2nd") return "!border-slate-300";
     if (placeString === "3rd") return "!border-amber-700";
     return "";
   })();
 
   const boxShadow = (() => {
-    if (placeString === "1st") 
+    if (placeString === "1st")
       return "0 0 15px rgba(250, 204, 21, 0.4), 0 0 30px rgba(250, 204, 21, 0.2), 0 0 45px rgba(34, 197, 94, 0.1)";
-    if (placeString === "2nd") 
+    if (placeString === "2nd")
       return "0 0 12px rgba(203, 213, 225, 0.35), 0 0 25px rgba(148, 163, 184, 0.2)";
-    if (placeString === "3rd") 
+    if (placeString === "3rd")
       return "0 0 12px rgba(217, 119, 6, 0.25), 0 0 25px rgba(217, 119, 6, 0.12)";
     return undefined;
   })();
@@ -62,7 +69,7 @@ export default function LeaderboardCard({
         return "195px";
     }
   })();
-return (
+  return (
     <Card
       withBorder
       shadow="sm"
@@ -84,7 +91,9 @@ return (
       <Stack gap={4} align="center" className="my-auto">
         {nickname && (
           <Tooltip
-            label={"This user is a verified member of the Patina Discord server."}
+            label={
+              "This user is a verified member of the Patina Discord server."
+            }
             color={"dark.4"}
           >
             <Flex align="center" justify="center" gap="xs">
@@ -118,8 +127,8 @@ return (
         >
           <FaDiscord className="inline" /> {discordName}
         </Text>
-        <Text 
-          ta="center" 
+        <Text
+          ta="center"
           fw={isTopThree ? 500 : 400}
           className="whitespace-nowrap text-[0.95rem]"
         >
