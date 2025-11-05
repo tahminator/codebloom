@@ -195,26 +195,7 @@ public class LeaderboardController {
                         .build();
 
         String currentLeaderboardId = leaderboardRepository.getRecentLeaderboardMetadata().getId();
-
-        int totalUsers = leaderboardManager.getLeaderboardUserCountById(currentLeaderboardId, options);
-        int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
-        boolean hasNextPage = page < totalPages;
-
-        List<Indexed<UserWithScore>> leaderboardData;
-        // don't use globalIndex when there are no filters enabled.
-        if (globalIndex && (patina || nyu || hunter || baruch || rpi || gwc || sbu || ccny || columbia || cornell || bmcc)) {
-            leaderboardData = leaderboardManager.getGlobalRankedIndexedLeaderboardUsersById(
-                            currentLeaderboardId, options);
-        } else {
-            leaderboardData = leaderboardManager.getRankedIndexedLeaderboardUsersById(
-                            currentLeaderboardId, options);
-        }
-
-        List<Indexed<UserWithScoreDto>> indexedUserWithScoreDtos = leaderboardData.stream()
-                        .map(indexed -> Indexed.of(UserWithScoreDto.fromUserWithScore(indexed.getItem()), indexed.getIndex()))
-                        .toList();
-
-        Page<Indexed<UserWithScoreDto>> createdPage = new Page<>(hasNextPage, indexedUserWithScoreDtos, totalPages, MAX_LEADERBOARD_PAGE_SIZE);
+        Page<Indexed<UserWithScoreDto>> createdPage = leaderboardManager.getLeaderboardUsers(currentLeaderboardId, options, globalIndex);
 
         return ResponseEntity.ok().body(ApiResponder.success("All leaderboards found!", createdPage));
     }

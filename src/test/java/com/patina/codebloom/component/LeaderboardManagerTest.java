@@ -42,22 +42,13 @@ public class LeaderboardManagerTest {
     }
 
     @Test
-    void testDelegationForUserCountAndUserLists() {
+    void testGetLeaderboardUsersDelegation() {
         String leaderboardId = UUID.randomUUID().toString();
         LeaderboardFilterOptions options = LeaderboardFilterOptions.DEFAULT;
 
-        int expectedCount = 7;
+        int expectedCount = 1;
         when(leaderboardRepository.getLeaderboardUserCountById(leaderboardId, options))
                         .thenReturn(expectedCount);
-
-        List<Indexed<UserWithScore>> globalUsers = Indexed.ofDefaultList(
-                        List.of(
-                                        randomPartialUserWithScore()
-                                                        .totalScore(100_000)
-                                                        .build(),
-                                        randomPartialUserWithScore()
-                                                        .totalScore(90_000)
-                                                        .build()));
 
         List<Indexed<UserWithScore>> filteredUsers = Indexed.ofDefaultList(
                         List.of(
@@ -65,25 +56,21 @@ public class LeaderboardManagerTest {
                                                         .totalScore(80_000)
                                                         .build()));
 
-        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options))
-                        .thenReturn(globalUsers);
         when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(leaderboardId, options))
                         .thenReturn(filteredUsers);
 
-        int count = leaderboardManager.getLeaderboardUserCountById(leaderboardId, options);
-        var returnedGlobal = leaderboardManager.getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options);
-        var returnedFiltered = leaderboardManager.getRankedIndexedLeaderboardUsersById(leaderboardId, options);
+        var page = leaderboardManager.getLeaderboardUsers(leaderboardId, options, false);
 
-        assertEquals(expectedCount, count);
-        assertEquals(globalUsers, returnedGlobal);
-        assertEquals(filteredUsers, returnedFiltered);
+        assertNotNull(page);
+        assertEquals(filteredUsers.size(), page.getItems().size());
+        assertEquals(filteredUsers.get(0).getItem().getId(), page.getItems().get(0).getItem().getId());
 
         verify(leaderboardRepository, times(1))
                         .getLeaderboardUserCountById(leaderboardId, options);
         verify(leaderboardRepository, times(1))
-                        .getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options);
-        verify(leaderboardRepository, times(1))
                         .getRankedIndexedLeaderboardUsersById(leaderboardId, options);
+        verify(leaderboardRepository, times(0))
+                        .getGlobalRankedIndexedLeaderboardUsersById(any(), any());
     }
 
     private String randomSnowflake() {

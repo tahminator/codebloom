@@ -13,7 +13,9 @@ import com.patina.codebloom.common.db.repos.achievements.AchievementRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterGenerator;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
+import com.patina.codebloom.common.dto.user.UserWithScoreDto;
 import com.patina.codebloom.common.page.Indexed;
+import com.patina.codebloom.common.page.Page;
 import com.patina.codebloom.common.utils.pair.Pair;
 
 import lombok.extern.slf4j.Slf4j;
@@ -102,11 +104,32 @@ public class LeaderboardManager {
         return leaderboardRepository.getLeaderboardUserCountById(leaderboardId, options);
     }
 
-    public List<Indexed<UserWithScore>> getGlobalRankedIndexedLeaderboardUsersById(final String leaderboardId, final LeaderboardFilterOptions options) {
-        return leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(leaderboardId, options);
-    }
+    public Page<Indexed<UserWithScoreDto>> getLeaderboardUsers(final String currentLeaderboardId, final LeaderboardFilterOptions options, final boolean globalIndex) {
+        final int page = options.getPage();
+        final int parsedPageSize = options.getPageSize();
 
-    public List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(final String leaderboardId, final LeaderboardFilterOptions options) {
-        return leaderboardRepository.getRankedIndexedLeaderboardUsersById(leaderboardId, options);
+        int totalUsers = leaderboardRepository.getLeaderboardUserCountById(currentLeaderboardId, options);
+        int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
+        boolean hasNextPage = page < totalPages;
+
+        List<Indexed<UserWithScore>> leaderboardData;
+        // don't use globalIndex when there are no filters enabled.
+        if (globalIndex && (options.isPatina() || options.isNyu() || options.isHunter() || options.isBaruch() || options.isRpi() || options.isGwc() || options.isSbu() || options.isCcny()
+                        || options.isColumbia()
+                        || options.isCornell()
+                        || options.isBmcc())) {
+            leaderboardData = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
+                            currentLeaderboardId, options);
+        } else {
+            leaderboardData = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                            currentLeaderboardId, options);
+        }
+
+        List<Indexed<UserWithScoreDto>> indexedUserWithScoreDtos = leaderboardData.stream()
+                        .map(indexed -> Indexed.of(UserWithScoreDto.fromUserWithScore(indexed.getItem()), indexed.getIndex()))
+                        .toList();
+
+        Page<Indexed<UserWithScoreDto>> createdPage = new Page<>(hasNextPage, indexedUserWithScoreDtos, totalPages, parsedPageSize);
+        return createdPage;
     }
 }
