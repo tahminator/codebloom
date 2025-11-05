@@ -19,10 +19,10 @@ import java.time.Duration;
 
 @Component
 public class RateLimitingFilter implements Filter {
-    private static final long API_RATE_LIMIT_CAPACITY = 1L;
-    private static final long API_REFILL_INTERVAL_MILLIS = 100L;
+    private static final long API_RATE_LIMIT_CAPACITY = 15L;
+    private static final long API_REFILL_INTERVAL_MILLIS = 1000L;
 
-    private static final long STATIC_RATE_LIMIT_CAPACITY = 10L;
+    private static final long STATIC_RATE_LIMIT_CAPACITY = 100L;
     private static final long STATIC_REFILL_INTERVAL_MILLIS = 1000L;
 
     private Bucket createNewBucket(final long capacity, final long refillIntervalMillis) {
