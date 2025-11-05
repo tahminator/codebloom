@@ -32,6 +32,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles successful OAuth2 login by either creating a new user or referencing
@@ -43,6 +45,8 @@ import net.dv8tion.jda.api.entities.Member;
  */
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
+
     // 30 days expiration
     private final int maxAgeSeconds = 60 * 60 * 24 * 30;
 
@@ -83,8 +87,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             if (existingUser != null) {
                 existingUser.setDiscordName(discordName);
                 if (existingUser.getLeetcodeUsername() != null) {
-                    UserProfile leetcodeUserProfile = leetcodeClient.getUserProfile(existingUser.getLeetcodeUsername());
-                    existingUser.setProfileUrl(leetcodeUserProfile.getUserAvatar());
+                    try {
+                        UserProfile profile = leetcodeClient.getUserProfile(existingUser.getLeetcodeUsername());
+                        if (profile != null && profile.getUserAvatar() != null) {
+                            existingUser.setProfileUrl(profile.getUserAvatar());
+                        }
+                    } catch (Exception ex) {
+                        LOGGER.warn("LeetCode lookup failed for {}", existingUser.getLeetcodeUsername(), ex);
+                    }
                 }
                 userRepository.updateUser(existingUser);
             } else {
