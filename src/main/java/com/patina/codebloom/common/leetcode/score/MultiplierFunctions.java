@@ -1,5 +1,9 @@
 package com.patina.codebloom.common.leetcode.score;
 
+/*
+ Link to the functions on desmos:
+ https://www.desmos.com/calculator/snbtjxxsbt
+ */
 public class MultiplierFunctions {
     public static float purpleFunction(final float acceptanceRate) {
         return 1.0f - acceptanceRate / 400;
