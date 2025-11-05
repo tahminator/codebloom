@@ -99,12 +99,19 @@ jobs:
         needs: checkExistingImage
         if: needs.checkExistingImage.outputs.image-exists == 'true'
         steps:
+            - name: Load secrets
+              uses: ./.github/composite/load-secrets
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UNLOAD_ENVIRONMENTS: ci
+
             - name: Log in to Docker Hub
               uses: docker/login-action@v3
               with:
                   registry: docker.io
                   username: tahminator
-                  password: ${{ secrets.DOCKER_HUB_PAT }}
+                  password: ${{ env.DOCKER_HUB_PAT }}
 
             - name: Promote existing image
               run: |
@@ -148,37 +155,6 @@ jobs:
         needs: [getPRHead, checkExistingImage, backendPreTest]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
 
-        env:
-            REDIS_URL: ${{ secrets.REDIS_URL }}
-            DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-            DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-            DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-            ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
-            GH_USERNAME: ${{ secrets.GH_USERNAME }}
-            GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-            DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
-            DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
-            DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
-            DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
-            DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
-            DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
-            GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
-            GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
-            GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
-            GH_EMAIL_USERNAME: ${{ secrets.GH_EMAIL_USERNAME }}
-            GH_EMAIL_PASSWORD: ${{ secrets.GH_EMAIL_PASSWORD }}
-            CODEBLOOM_EMAIL_HOST: ${{ secrets.CODEBLOOM_EMAIL_HOST }}
-            CODEBLOOM_EMAIL_PORT: ${{ secrets.CODEBLOOM_EMAIL_PORT }}
-            CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
-            CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
-            CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
-            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-            SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-            SKIP: ${{ secrets.SKIP }}
-            VITE_DSN: ${{ secrets.VITE_DSN }}
-            SECRET_KEY: ${{ secrets.SECRET_KEY }}
-            SERVER_URL: ${{ secrets.SERVER_URL }}
-
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
@@ -202,6 +178,13 @@ jobs:
                   java -version
                   javac -version
                   echo "JAVA_HOME=$JAVA_HOME"
+
+            - name: Load secrets
+              uses: ./.github/composite/load-secrets
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UNLOAD_ENVIRONMENTS: ci-app
 
             - name: Run script
               run: bash .github/scripts/run-backend-tests.sh
@@ -240,52 +223,21 @@ jobs:
               run: npm i -g corepack@latest
               working-directory: js
 
+            - name: Load secrets
+              uses: ./.github/composite/load-secrets
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UNLOAD_ENVIRONMENTS: ci-app
+
             - name: Run script
               run: bash .github/scripts/run-frontend-tests.sh
-              env:
-                  REDIS_URL: ${{ secrets.REDIS_URL }}
-                  DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-                  DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-                  ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
-                  GH_USERNAME: ${{ secrets.GH_USERNAME }}
-                  GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-                  DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
-                  DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
-                  DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
-                  DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
-                  DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
-                  DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
-                  GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
-                  GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
-                  GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
-                  GH_EMAIL_USERNAME: ${{ secrets.GH_EMAIL_USERNAME }}
-                  GH_EMAIL_PASSWORD: ${{ secrets.GH_EMAIL_PASSWORD }}
-                  CODEBLOOM_EMAIL_HOST: ${{ secrets.CODEBLOOM_EMAIL_HOST }}
-                  CODEBLOOM_EMAIL_PORT: ${{ secrets.CODEBLOOM_EMAIL_PORT }}
-                  CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
-                  CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
-                  CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
-                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-                  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-                  SKIP: ${{ secrets.SKIP }}
-                  VITE_DSN: ${{ secrets.VITE_DSN }}
-                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-                  SERVER_URL: ${{ secrets.SERVER_URL }}
 
     validateDBSchema:
         name: Validate DB Schema on Staging DB
         runs-on: ubuntu-latest
         needs: [getPRHead, checkExistingImage, backendPreTest]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
-        environment: staging
-
-        env:
-            DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-            DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-            DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-            DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-            DATABASE_USER: ${{ secrets.DATABASE_USER }}
 
         steps:
             - name: Checkout Repository
@@ -305,6 +257,13 @@ jobs:
                   java -version
                   javac -version
                   echo "JAVA_HOME=$JAVA_HOME"
+
+            - name: Load secrets
+              uses: ./.github/composite/load-secrets
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UNLOAD_ENVIRONMENTS: staging
 
             - name: Validate DB Schema
               run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
@@ -322,7 +281,6 @@ jobs:
                 backendPreTest,
             ]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
-        environment: staging
 
         steps:
             - name: Checkout Repository
@@ -343,44 +301,23 @@ jobs:
                   javac -version
                   echo "JAVA_HOME=$JAVA_HOME"
 
+            - name: Load secrets
+              uses: ./.github/composite/load-secrets
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UNLOAD_ENVIRONMENTS: ci,ci-app
+
             - name: Run script
               run: bash .github/scripts/build-image.sh
               env:
                   TAG_PREFIX: staging-
-                  DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT }}
-                  REDIS_URL: ${{ secrets.REDIS_URL }}
-                  DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-                  DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-                  ENABLE_DOCUMENTATION: ${{ secrets.ENABLE_DOCUMENTATION }}
-                  GH_USERNAME: ${{ secrets.GH_USERNAME }}
-                  GH_PASSWORD: ${{ secrets.GH_PASSWORD }}
-                  DISCORD_PATINA_GUILD_ID: ${{ secrets.DISCORD_PATINA_GUILD_ID }}
-                  DISCORD_PATINA_LEETCODE_CHANNEL_ID: ${{ secrets.DISCORD_PATINA_LEETCODE_CHANNEL_ID }}
-                  DISCORD_REPORTING_GUILD_ID: ${{ secrets.DISCORD_REPORTING_GUILD_ID }}
-                  DISCORD_REPORTING_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_CHANNEL_ID }}
-                  DISCORD_REPORTING_LOG_GUILD_ID: ${{ secrets.DISCORD_REPORTING_LOG_GUILD_ID }}
-                  DISCORD_REPORTING_LOG_CHANNEL_ID: ${{ secrets.DISCORD_REPORTING_LOG_CHANNEL_ID }}
-                  GH_EMAIL_HOST: ${{ secrets.GH_EMAIL_HOST }}
-                  GH_EMAIL_PORT: ${{ secrets.GH_EMAIL_PORT }}
-                  GH_EMAIL_TYPE: ${{ secrets.GH_EMAIL_TYPE }}
-                  GH_EMAIL_USERNAME: ${{ secrets.GH_EMAIL_USERNAME }}
-                  GH_EMAIL_PASSWORD: ${{ secrets.GH_EMAIL_PASSWORD }}
-                  CODEBLOOM_EMAIL_HOST: ${{ secrets.CODEBLOOM_EMAIL_HOST }}
-                  CODEBLOOM_EMAIL_PORT: ${{ secrets.CODEBLOOM_EMAIL_PORT }}
-                  CODEBLOOM_EMAIL_TYPE: ${{ secrets.CODEBLOOM_EMAIL_TYPE }}
-                  CODEBLOOM_EMAIL_USERNAME: ${{ secrets.CODEBLOOM_EMAIL_USERNAME }}
-                  CODEBLOOM_EMAIL_PASSWORD: ${{ secrets.CODEBLOOM_EMAIL_PASSWORD }}
-                  SKIP: ${{ secrets.SKIP }}
-                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-                  SERVER_URL: ${{ secrets.SERVER_URL }}
 
     redeploy:
         name: Redeploy on DigitalOcean
         runs-on: ubuntu-latest
         needs: [buildImage, promoteExisting, getPRHead]
         if: always() && (needs.buildImage.result == 'success' || needs.promoteExisting.result == 'success')
-        environment: staging
 
         steps:
             - name: Checkout Repository
@@ -401,22 +338,35 @@ jobs:
                   javac -version
                   echo "JAVA_HOME=$JAVA_HOME"
 
+            - name: Load secrets
+              uses: ./.github/composite/load-secrets
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UNLOAD_ENVIRONMENTS: ci,staging
+
+            - name: Install doctl
+              uses: digitalocean/action-doctl@v2
+              with:
+                token: ${{ env.DIGITAL_OCEAN_PAT }}
+
             - name: Migrate Staging DB
               run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
-              env:
-                  DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-                  DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-                  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-                  DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-                  DATABASE_USER: ${{ secrets.DATABASE_USER }}
+
+            - name: Transform App Spec with secrets
+              run: bash .github/scripts/transform-yaml-with-env.sh .do/stg/app.yml .env.staging
+
+            - name: Update App Spec on DigitalOcean
+              run: |
+                doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml
 
             - name: Trigger App Platform Redeploy
               run: |
                   RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
                   -X POST \
-                  -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
+                  -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
                   -H "Content-Type: application/json" \
-                  https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments)
+                  https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments)
 
                   HTTP_BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//g')
                   HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
@@ -445,8 +395,8 @@ jobs:
                   for i in {1..60}; do
                       RESPONSE=$(curl -s -X GET \
                           -H "Content-Type: application/json" \
-                          -H "Authorization: Bearer ${{ secrets.DIGITAL_OCEAN_PAT }}" \
-                          "https://api.digitalocean.com/v2/apps/${{ secrets.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
+                          -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
+                          "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
 
                       PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
 
@@ -504,15 +454,15 @@ jobs:
                       const successJobs = jobNames.filter((name, index) => results[index] === 'success');
 
                       let statusMessage;
-                       if (failedJobs.length > 0 && cancelledJobs.length > 0) {
-                           statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}\n\n**`;
-                       } else if (failedJobs.length > 0) {
-                           statusMessage = `**Staging deployment failed** for commit ${commitHash}\n\n**`;
-                       } else if (cancelledJobs.length > 0) {
-                           statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}\n\n`;
-                       } else {
-                           statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
-                       }
+                      if (failedJobs.length > 0 && cancelledJobs.length > 0) {
+                         statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}\n\n**`;
+                      } else if (failedJobs.length > 0) {
+                         statusMessage = `**Staging deployment failed** for commit ${commitHash}\n\n**`;
+                      } else if (cancelledJobs.length > 0) {
+                         statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}\n\n`;
+                      } else {
+                         statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
+                      }
 
                       await github.rest.issues.createComment({
                           owner: context.repo.owner,

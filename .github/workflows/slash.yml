@@ -15,10 +15,17 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Load secrets
+              uses: ./.github/composite/load-secrets
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UNLOAD_ENVIRONMENTS: ci
+
             - name: Slash Command Dispatch
               uses: peter-evans/slash-command-dispatch@v4
               with:
-                  token: ${{ secrets.GH_PAT }}
+                  token: ${{ env.GH_PAT }}
                   commands: |
                       deploy
                   static-args: |

@@ -9,9 +9,7 @@ trap 'backend_cleanup; db_cleanup' EXIT
 db_startup
 backend_startup
 
-cd js
-corepack enable pnpm && pnpm i --frozen-lockfile
-
-pnpm run generate
-
-pnpm run test
+corepack enable pnpm
+pnpm --dir js i --frozen-lockfile
+pnpm --dir js run generate
+pnpm --dir js run test
