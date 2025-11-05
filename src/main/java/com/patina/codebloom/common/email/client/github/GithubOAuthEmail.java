@@ -34,6 +34,9 @@ public class GithubOAuthEmail extends Email {
         final Properties properties = new Properties();
         properties.setProperty("mail.imap.host", emailProperties.getHost());
         properties.setProperty("mail.imap.port", emailProperties.getPort());
+        properties.setProperty("mail.imap.ssl.enable", "true");
+        properties.setProperty("mail.imap.auth", "true");
+        properties.setProperty("mail.store.protocol", "imap");
 
         session = Session.getDefaultInstance(properties);
     }
