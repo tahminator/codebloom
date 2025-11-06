@@ -2,10 +2,10 @@ package com.patina.codebloom.common.util;
 
 import java.security.SecureRandom;
 
-
 public class PartyCodeGenerator {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 6;
+    private static final int MAX_ATTEMPTS = 10;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     /**
@@ -15,9 +15,8 @@ public class PartyCodeGenerator {
      * @return A unique party code (e.g., "ABC123")
      */
     public static String generateUniqueCode(final java.util.function.Predicate<String> existingCodeChecker) {
-        final int maxAttempts = 10;
 
-        for (int attempts = 0; attempts < maxAttempts; attempts++) {
+        for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
             StringBuilder codeBuilder = new StringBuilder(CODE_LENGTH);
             for (int i = 0; i < CODE_LENGTH; i++) {
                 codeBuilder.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
@@ -29,6 +28,6 @@ public class PartyCodeGenerator {
             }
         }
 
-        throw new RuntimeException("Failed to generate unique party code after " + maxAttempts + " attempts");
+        throw new RuntimeException("Failed to generate unique party code after " + MAX_ATTEMPTS + " attempts");
     }
 }
