@@ -1,5 +1,7 @@
 package com.patina.codebloom.api.duel;
 
+import java.time.OffsetDateTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,13 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.components.DuelManager;
+import com.patina.codebloom.common.db.models.lobby.Lobby;
+import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.security.AuthenticationObject;
+import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.common.util.PartyCodeGenerator;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Tag(name = "Live duel routes", description = """
@@ -24,10 +36,17 @@ public class DuelController {
 
     private final Env env;
     private final DuelManager duelManager;
+    private final LobbyRepository lobbyRepository;
+    private final LobbyPlayerRepository lobbyPlayerRepository;
+    private final Protector protector;
 
-    public DuelController(final Env env, final DuelManager duelManager) {
+    public DuelController(final Env env, final DuelManager duelManager, final LobbyRepository lobbyRepository,
+                    final LobbyPlayerRepository lobbyPlayerRepository, final Protector protector) {
         this.env = env;
         this.duelManager = duelManager;
+        this.lobbyRepository = lobbyRepository;
+        this.lobbyPlayerRepository = lobbyPlayerRepository;
+        this.protector = protector;
     }
 
     @Operation(summary = "Join party", description = "WIP")
@@ -52,14 +71,47 @@ public class DuelController {
         return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
     }
 
-    @Operation(summary = "Create party", description = "WIP")
-    @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
+    @Operation(summary = "Create party", description = "Create a new lobby and become the host")
+    @ApiResponse(responseCode = "200", description = "Lobby created successfully")
+    @ApiResponse(responseCode = "400", description = "Player is already in a lobby")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
     @PostMapping("/party/create")
-    public ResponseEntity<ApiResponder<Empty>> createParty() {
+    public ResponseEntity<ApiResponder<Empty>> createParty(final HttpServletRequest request) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
+        AuthenticationObject authObject = protector.validateSession(request);
+        String playerId = authObject.getUser().getId();
+
+        LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
+        if (existingLobbyPlayer != null) {
+            return ResponseEntity.badRequest()
+                            .body(ApiResponder.failure("You are already in a lobby. Leave your current lobby first."));
+        }
+
+        String joinCode = PartyCodeGenerator.generateUniqueCode(code -> lobbyRepository.findLobbyByJoinCode(code) != null);
+
+        OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
+
+        Lobby lobby = Lobby.builder()
+                        .joinCode(joinCode)
+                        .status(LobbyStatus.AVAILABLE)
+                        .expiresAt(expiresAt)
+                        .playerCount(1)
+                        .winnerId(null)
+                        .build();
+
+        lobbyRepository.createLobby(lobby);
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                        .lobbyId(lobby.getId())
+                        .playerId(playerId)
+                        .points(0)
+                        .build();
+
+        lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
+
+        return ResponseEntity.ok(ApiResponder.success("Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
     }
 }
