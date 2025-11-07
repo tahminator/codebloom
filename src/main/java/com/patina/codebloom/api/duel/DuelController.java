@@ -20,14 +20,13 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
-import com.patina.codebloom.common.security.Protector;
+import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.util.PartyCodeGenerator;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Tag(name = "Live duel routes", description = """
@@ -39,15 +38,13 @@ public class DuelController {
     private final DuelManager duelManager;
     private final LobbyRepository lobbyRepository;
     private final LobbyPlayerRepository lobbyPlayerRepository;
-    private final Protector protector;
 
     public DuelController(final Env env, final DuelManager duelManager, final LobbyRepository lobbyRepository,
-                    final LobbyPlayerRepository lobbyPlayerRepository, final Protector protector) {
+                    final LobbyPlayerRepository lobbyPlayerRepository) {
         this.env = env;
         this.duelManager = duelManager;
         this.lobbyRepository = lobbyRepository;
         this.lobbyPlayerRepository = lobbyPlayerRepository;
-        this.protector = protector;
     }
 
     @Operation(summary = "Join party", description = "WIP")
@@ -76,20 +73,20 @@ public class DuelController {
     @ApiResponse(responseCode = "200", description = "Lobby created successfully")
     @ApiResponse(responseCode = "400", description = "Player is already in a lobby")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
+    @Protected
     @PostMapping("/party/create")
-    public ResponseEntity<ApiResponder<Empty>> createParty(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<Empty>> createParty(final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
         String playerId = user.getId();
 
         LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
         if (existingLobbyPlayer != null) {
             return ResponseEntity.badRequest()
-                            .body(ApiResponder.failure("You are already in a lobby. Leave your current lobby first."));
+                            .body(ApiResponder.failure("You are already in a lobby. Please leave your current lobby before creating a new one."));
         }
 
         String joinCode = PartyCodeGenerator.generateUniqueCode(code -> lobbyRepository.findLobbyByJoinCode(code) != null);
