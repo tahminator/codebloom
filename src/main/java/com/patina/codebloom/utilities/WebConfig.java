@@ -11,14 +11,14 @@ import com.patina.codebloom.common.security.annotation.ProtectedResolver;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final ProtectedResolver protectorResolver;
+    private final ProtectedResolver protectedResolver;
 
-    public WebConfig(final ProtectedResolver protectorResolver) {
-        this.protectorResolver = protectorResolver;
+    public WebConfig(final ProtectedResolver protectedResolver) {
+        this.protectedResolver = protectedResolver;
     }
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(protectorResolver);
+        resolvers.add(protectedResolver);
     }
 }
