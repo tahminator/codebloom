@@ -89,7 +89,7 @@ public class DuelController {
                             .body(ApiResponder.failure("You are already in a lobby. Please leave your current lobby before creating a new one."));
         }
 
-        String joinCode = PartyCodeGenerator.generateUniqueCode(code -> lobbyRepository.findLobbyByJoinCode(code) != null);
+        String joinCode = PartyCodeGenerator.generateCode();
 
         OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
 
