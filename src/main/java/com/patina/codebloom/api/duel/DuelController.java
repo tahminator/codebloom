@@ -1,7 +1,5 @@
 package com.patina.codebloom.api.duel;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
