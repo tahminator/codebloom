@@ -13,11 +13,11 @@ import com.patina.codebloom.common.security.Protector;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Component
-public class ProtectorResolver implements HandlerMethodArgumentResolver {
+public class ProtectedResolver implements HandlerMethodArgumentResolver {
 
     private final Protector protector;
 
-    public ProtectorResolver(final Protector protector) {
+    public ProtectedResolver(final Protector protector) {
         this.protector = protector;
     }
 
@@ -34,6 +34,6 @@ public class ProtectorResolver implements HandlerMethodArgumentResolver {
                     final NativeWebRequest webRequest,
                     final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return protector.validateSession(request); // your logic to build AuthenticationObject
+        return protector.validateSession(request);
     }
 }
