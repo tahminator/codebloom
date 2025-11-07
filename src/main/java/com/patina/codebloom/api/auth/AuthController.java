@@ -90,7 +90,7 @@ public class AuthController {
     @Operation(summary = "Validate if the user is authenticated or not.", responses = { @ApiResponse(responseCode = "200", description = "Authenticated"),
             @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @GetMapping("/validate")
-    public ResponseEntity<ApiResponder<AuthenticationObjectDto>> validateAuth(@Protected final AuthenticationObject authenticationObject ) {
+    public ResponseEntity<ApiResponder<AuthenticationObjectDto>> validateAuth(@Protected final AuthenticationObject authenticationObject) {
         FakeLag.sleep(350);
 
         return ResponseEntity.ok().body(ApiResponder.success("You are authenticated!",
