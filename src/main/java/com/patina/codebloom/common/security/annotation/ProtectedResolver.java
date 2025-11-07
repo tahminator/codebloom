@@ -34,6 +34,8 @@ public class ProtectedResolver implements HandlerMethodArgumentResolver {
                     final NativeWebRequest webRequest,
                     final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return protector.validateSession(request);
+        Protected protectedAnnotation = parameter.getParameterAnnotation(Protected.class);
+
+        return protectedAnnotation.admin() ? protector.validateAdminSession(request) : protector.validateSession(request);
     }
 }
