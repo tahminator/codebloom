@@ -73,9 +73,8 @@ public class DuelController {
     @ApiResponse(responseCode = "200", description = "Lobby created successfully")
     @ApiResponse(responseCode = "400", description = "Player is already in a lobby")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
-    @Protected
     @PostMapping("/party/create")
-    public ResponseEntity<ApiResponder<Empty>> createParty(final AuthenticationObject authenticationObject) {
+    public ResponseEntity<ApiResponder<Empty>> createParty( @Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
@@ -90,7 +89,6 @@ public class DuelController {
         }
 
         String joinCode = PartyCodeGenerator.generateCode();
-
         OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
 
         Lobby lobby = Lobby.builder()
