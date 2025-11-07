@@ -5,29 +5,18 @@ import java.security.SecureRandom;
 public class PartyCodeGenerator {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 6;
-    private static final int MAX_ATTEMPTS = 10;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     /**
-     * Generates a unique party code by checking against existing codes.
+     * Generates a random party code
      * 
-     * @param existingCodeChecker Function to check if a code already exists
-     * @return A unique party code (e.g., "ABC123")
+     * @return A random party code (e.g., "ABC123")
      */
-    public static String generateUniqueCode(final java.util.function.Predicate<String> existingCodeChecker) {
-
-        for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
-            StringBuilder codeBuilder = new StringBuilder(CODE_LENGTH);
-            for (int i = 0; i < CODE_LENGTH; i++) {
-                codeBuilder.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
-            }
-            String code = codeBuilder.toString();
-
-            if (!existingCodeChecker.test(code)) {
-                return code;
-            }
+    public static String generateCode() {
+        StringBuilder codeBuilder = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            codeBuilder.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
         }
-
-        throw new RuntimeException("Failed to generate unique party code after " + MAX_ATTEMPTS + " attempts");
+        return codeBuilder.toString();
     }
 }
