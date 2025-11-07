@@ -74,7 +74,7 @@ public class DuelController {
     @ApiResponse(responseCode = "400", description = "Player is already in a lobby")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
     @PostMapping("/party/create")
-    public ResponseEntity<ApiResponder<Empty>> createParty( @Protected final AuthenticationObject authenticationObject) {
+    public ResponseEntity<ApiResponder<Empty>> createParty(@Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
