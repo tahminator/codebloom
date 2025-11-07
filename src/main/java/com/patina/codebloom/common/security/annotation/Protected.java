@@ -26,7 +26,7 @@ import java.lang.annotation.*;
  * "https://github.com/tahminator/codebloom/blob/main/docs/backend/auth.md">Authentication
  * Documentation</a>
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Protected {
