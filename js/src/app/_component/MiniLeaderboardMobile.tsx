@@ -163,11 +163,7 @@ export default function MiniLeaderboardMobile() {
                                 <Text
                                   fw={600}
                                   size="sm"
-                                  style={{
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                  }}
+                                  className="whitespace-nowrap overflow-hidden text-ellipsis"
                                 >
                                   {entry.nickname}
                                 </Text>
@@ -180,12 +176,8 @@ export default function MiniLeaderboardMobile() {
                             <FaDiscord size={14} />
                             <Text
                               size="xs"
-                              style={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                maxWidth: "120px",
-                              }}
+                              className="whitespace-nowrap overflow-hidden text-ellipsis"
+                              maw={120}
                             >
                               {entry.discordName}
                             </Text>
@@ -194,12 +186,7 @@ export default function MiniLeaderboardMobile() {
                             <SiLeetcode size={14} />
                             <Text
                               size="xs"
-                              style={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                maxWidth: "120px",
-                              }}
+                              className="whitespace-nowrap overflow-hidden text-ellipsis"
                             >
                               {entry.leetcodeUsername}
                             </Text>
