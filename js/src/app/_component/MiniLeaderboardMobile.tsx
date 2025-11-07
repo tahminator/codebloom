@@ -7,9 +7,9 @@ import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
   Button,
+  Flex,
   Overlay,
   SegmentedControl,
-  Table,
   Text,
   Tooltip,
 } from "@mantine/core";
@@ -108,70 +108,128 @@ export default function MiniLeaderboardMobile() {
           )}
         </div>
         {leaderboardData.items.length > 3 && (
-          <Table>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th></Table.Th>
-                <Table.Th>Name</Table.Th>
-                <Table.Th>Total Points</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {leaderboardData.items.map((entry, index) => {
-                if ([0, 1, 2].includes(index)) return null;
-                return (
-                  <Table.Tr key={entry.discordName}>
-                    <Table.Td>{index + 1}</Table.Td>
-                    <Table.Td>
-                      <div style={{ display: "flex", flexDirection: "column" }}>
+          <Flex direction="column" gap="xs" mt="1rem" mb="1rem">
+            {leaderboardData.items.map((entry, index) => {
+              if ([0, 1, 2].includes(index)) return null;
+              return (
+                <Flex
+                  key={entry.id}
+                  bg={theme.colors.dark[7]}
+                  style={{
+                    borderColor: theme.colors.dark[3],
+                    border: "1px solid",
+                    borderRadius: "8px",
+                    padding: "0.75rem 1rem",
+                    transition: "all 0.2s",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => (window.location.href = `/user/${entry.id}`)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 6px rgba(0, 0, 0, 0.1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <Flex
+                    justify="space-between"
+                    align="center"
+                    gap="sm"
+                    w="100%"
+                  >
+                    <Flex align="center" gap="sm" miw={0}>
+                      <Text
+                        size="lg"
+                        fw={700}
+                        c={theme.colors.patina[4]}
+                        miw="35px"
+                        fz="16px"
+                      >
+                        #{entry.index}
+                      </Text>
+                      <Flex direction="column" gap={4} miw={0}>
                         {entry.nickname && (
-                          <span
-                            style={{ fontSize: "18px", lineHeight: "28px" }}
-                          >
+                          <Flex align="center" gap={6}>
                             <Tooltip
-                              label={
-                                "This user is a member of the Patina Discord server."
-                              }
-                              color={"dark.4"}
+                              label="This user is a verified member of the Patina Discord server."
+                              color="dark.4"
                             >
-                              <Text>
+                              <Flex align="center" gap={6}>
                                 <IconCircleCheckFilled
-                                  className="inline"
                                   color={theme.colors.patina[4]}
-                                  z={5000000}
-                                  size={20}
-                                />{" "}
-                                {entry.nickname}
-                              </Text>
+                                  size={16}
+                                />
+                                <Text
+                                  fw={600}
+                                  size="sm"
+                                  style={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {entry.nickname}
+                                </Text>
+                              </Flex>
                             </Tooltip>
-                          </span>
+                          </Flex>
                         )}
-                        <span style={{ fontSize: "18px", lineHeight: "28px" }}>
-                          <FaDiscord style={{ display: "inline" }} />{" "}
-                          {entry.discordName}
-                        </span>
-                        <span>
-                          <SiLeetcode style={{ display: "inline" }} />{" "}
-                          {entry.leetcodeUsername}
-                        </span>
-                      </div>
-                    </Table.Td>
-                    <Table.Td>{entry.totalScore}</Table.Td>
-                  </Table.Tr>
-                );
-              })}
-            </Table.Tbody>
-          </Table>
+                        <Flex gap="sm" wrap="wrap">
+                          <Flex align="center" gap={4}>
+                            <FaDiscord size={14} />
+                            <Text
+                              size="xs"
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                maxWidth: "120px",
+                              }}
+                            >
+                              {entry.discordName}
+                            </Text>
+                          </Flex>
+                          <Flex align="center" gap={4}>
+                            <SiLeetcode size={14} />
+                            <Text
+                              size="xs"
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                maxWidth: "120px",
+                              }}
+                            >
+                              {entry.leetcodeUsername}
+                            </Text>
+                          </Flex>
+                        </Flex>
+                      </Flex>
+                    </Flex>
+                    <Text
+                      size="sm"
+                      fw={600}
+                      miw={70}
+                      style={{ textAlign: "right" }}
+                    >
+                      {entry.totalScore} Pts
+                    </Text>
+                  </Flex>
+                </Flex>
+              );
+            })}
+          </Flex>
         )}
+        <Button
+          variant={"light"}
+          w={"100%"}
+          component={Link}
+          to={`/leaderboard?patina=${filters.Patina}`}
+        >
+          View all
+        </Button>
       </div>
-      <Button
-        variant={"light"}
-        w={"100%"}
-        component={Link}
-        to={`/leaderboard?patina=${filters.Patina}`}
-      >
-        View all
-      </Button>
     </>
   );
 }
