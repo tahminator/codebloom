@@ -164,11 +164,7 @@ export default function MiniLeaderboardDesktop() {
                                 <Text
                                   fw={600}
                                   size="md"
-                                  style={{
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                  }}
+                                  className="whitespace-nowrap overflow-hidden text-ellipsis"
                                 >
                                   {entry.nickname}
                                 </Text>
@@ -181,11 +177,7 @@ export default function MiniLeaderboardDesktop() {
                             <FaDiscord size={16} />
                             <Text
                               size="sm"
-                              style={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
+                              className="whitespace-nowrap overflow-hidden text-ellipsis"
                             >
                               {entry.discordName}
                             </Text>
@@ -194,11 +186,7 @@ export default function MiniLeaderboardDesktop() {
                             <SiLeetcode size={16} />
                             <Text
                               size="sm"
-                              style={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
+                              className="whitespace-nowrap overflow-hidden text-ellipsis"
                             >
                               {entry.leetcodeUsername}
                             </Text>
