@@ -1,12 +1,10 @@
 package com.patina.codebloom.scheduled.leetcode;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.question.Question;
