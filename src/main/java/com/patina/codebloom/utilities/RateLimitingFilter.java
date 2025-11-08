@@ -10,10 +10,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.http.entity.ContentType;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patina.codebloom.common.dto.ApiResponder;
@@ -52,7 +49,6 @@ public class RateLimitingFilter implements Filter {
     @Override
     public final void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
                     throws IOException, ServletException {
-        System.out.println("filter hit");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -63,7 +59,6 @@ public class RateLimitingFilter implements Filter {
         final long rateLimitCapacity = isApiPath ? API_RATE_LIMIT_CAPACITY : STATIC_RATE_LIMIT_CAPACITY;
         final long refillInterval = isApiPath ? API_REFILL_INTERVAL_MILLIS : STATIC_REFILL_INTERVAL_MILLIS;
         String bucketKey = remoteAddr + (isApiPath ? ":api" : ":static");
-        System.out.println("bucket key " + bucketKey);
 
         Bucket bucket;
         synchronized (this) {
@@ -75,11 +70,8 @@ public class RateLimitingFilter implements Filter {
         }
 
         if (bucket.tryConsume(1)) {
-            System.out.println("filter passed forward, token left: " + bucket.getAvailableTokens());
             chain.doFilter(request, response);
         } else {
-            System.out.println("filter fail");
-
             var apiResponder = ApiResponder.failure("Too Many Requests");
 
             httpResponse.setContentType("application/json");
