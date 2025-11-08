@@ -17,4 +17,6 @@ public class UserFilterOptions {
      */
     @Builder.Default
     private OffsetDateTime pointOfTime = null;
+
+    public static final UserFilterOptions DEFAULT = builder().build();
 }

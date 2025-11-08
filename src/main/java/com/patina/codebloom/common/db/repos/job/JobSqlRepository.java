@@ -39,11 +39,11 @@ public class JobSqlRepository implements JobRepository {
     public void createJob(final Job job) {
         String sql = """
                         INSERT INTO "Job"
-                            (id, "questionId", status, "nextAttemptAt")
+                            (id, "questionId", status)
                         VALUES
-                            (?, ?, ?, ?)
+                            (?, ?, ?)
                         RETURNING
-                            "createdAt"
+                            "createdAt", "nextAttemptAt"
                         """;
 
         job.setId(UUID.randomUUID().toString());
@@ -52,11 +52,11 @@ public class JobSqlRepository implements JobRepository {
             stmt.setObject(1, UUID.fromString(job.getId()));
             stmt.setString(2, job.getQuestionId());
             stmt.setObject(3, job.getStatus().name(), java.sql.Types.OTHER);
-            stmt.setObject(4, job.getNextAttemptAt());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     job.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
+                    job.setNextAttemptAt(rs.getObject("nextAttemptAt", OffsetDateTime.class));
                 }
             }
         } catch (SQLException e) {

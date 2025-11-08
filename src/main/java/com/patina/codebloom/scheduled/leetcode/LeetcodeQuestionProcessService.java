@@ -4,8 +4,10 @@ package com.patina.codebloom.scheduled.leetcode;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Profile("!ci")
 public class LeetcodeQuestionProcessService {
+    private static final ReentrantLock LOCK = new ReentrantLock();
+
     private static final int MAX_JOBS_PER_RUN = 10;
     private static final long REQUESTS_OVER_TIME = 1L;
     private static final long MILLISECONDS_TO_WAIT = 100L;
@@ -74,28 +78,38 @@ public class LeetcodeQuestionProcessService {
         return jobRepository.findIncompleteJobs(maxSize);
     }
 
-    @Scheduled(initialDelay = 0, fixedDelay = 5, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(initialDelay = 0, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
+    @Async
     public void drainQueue() {
-        while (true) {
-            List<Job> jobs = claimBatch(MAX_JOBS_PER_RUN);
+        if (!LOCK.tryLock()) {
+            log.info("thread attempted to drain queue, but queue is already being drained.");
+            return;
+        }
 
-            if (jobs.isEmpty()) {
-                log.info("No more work to do");
-                break;
-            }
+        try {
+            while (true) {
+                List<Job> jobs = claimBatch(MAX_JOBS_PER_RUN);
 
-            log.info("Found {} jobs to process", jobs.size());
+                if (jobs.isEmpty()) {
+                    log.info("No more work to do");
+                    break;
+                }
 
-            for (Job job : jobs) {
-                try {
-                    waitForToken();
-                    fetchAndUpdate(job);
-                } catch (Exception e) {
-                    log.error("Failed to process job with id: {} for questionId: {}",
-                                    job.getId(), job.getQuestionId());
-                    e.printStackTrace();
+                log.info("Found {} jobs to process", jobs.size());
+
+                for (Job job : jobs) {
+                    try {
+                        waitForToken();
+                        fetchAndUpdate(job);
+                    } catch (Exception e) {
+                        log.error("Failed to process job with id: {} for questionId: {}",
+                                        job.getId(), job.getQuestionId());
+                        e.printStackTrace();
+                    }
                 }
             }
+        } finally {
+            LOCK.unlock();
         }
     }
 

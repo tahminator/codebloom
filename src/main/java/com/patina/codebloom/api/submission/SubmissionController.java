@@ -41,6 +41,7 @@ import com.patina.codebloom.common.simpleredis.SimpleRedis;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.common.utils.log.LogExecutionTime;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -161,6 +162,7 @@ public class SubmissionController {
             @ApiResponse(responseCode = "429", description = "Rate limited", content = @Content(schema = @Schema(implementation = UnsafeRateLimitResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid username", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
     @PostMapping("/check")
+    @LogExecutionTime
     public ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> checkLatestSubmissions(final HttpServletRequest request) {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
