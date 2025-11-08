@@ -2,358 +2,357 @@ name: CI/CD
 run-name: Running CI/CD on ${{ github.actor }}'s commits
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
+  push:
+    branches:
+      - main
+  pull_request:
 
 permissions:
-    contents: write
-    issues: write
-    pull-requests: write
+  contents: write
+  issues: write
+  pull-requests: write
 
 concurrency:
-    group: ci-${{ github.ref }}
-    cancel-in-progress: true
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    testing:
-        name: Test
-        runs-on: ubuntu-latest
+  testing:
+    name: Test
+    runs-on: ubuntu-latest
 
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-          - name: Load secrets
-            uses: ./.github/composite/load-secrets
-            with:
-              GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-              GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-              UNLOAD_ENVIRONMENTS: ci,ci-app
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci,ci-app
 
-          - name: Test env
-            run: env
+      - name: Test env
+        run: env
 
+  backendPreTest:
+    name: Backend Compile Test
+    runs-on: ubuntu-latest
 
-    backendPreTest:
-        name: Backend Compile Test
-        runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Verify that there are no compile time errors in the backend
+        run: ./mvnw -B verify -Dmaven.test.skip=true --no-transfer-progress -Denv.SKIP=true
 
-            - name: Verify that there are no compile time errors in the backend
-              run: ./mvnw -B verify -Dmaven.test.skip=true --no-transfer-progress -Denv.SKIP=true
+  backendTests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-    backendTests:
-        name: Backend Tests
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci-app
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
+      - name: Run script
+        run: bash .github/scripts/run-backend-tests.sh
 
-            - name: Run script
-              run: bash .github/scripts/run-backend-tests.sh
+      - name: Upload JaCoCo HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
 
-            - name: Upload JaCoCo HTML report
-              uses: actions/upload-artifact@v4
-              with:
-                name: jacoco-report
-                path: target/site/jacoco/
+      - name: Add JaCoCo PR comment
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: |
+            target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 80
 
-            - name: Add JaCoCo PR comment
-              id: jacoco
-              uses: madrapps/jacoco-report@v1.7.2
-              with:
-                paths: |
-                  target/site/jacoco/jacoco.xml
-                token: ${{ secrets.GITHUB_TOKEN }}
-                min-coverage-overall: 40
-                min-coverage-changed-files: 80
+  frontendTests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-    frontendTests:
-        name: Frontend Tests
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Fix a bug with corepack by installing corepack globally
+        run: npm i -g corepack@latest
+        working-directory: js
 
-            - name: Fix a bug with corepack by installing corepack globally
-              run: npm i -g corepack@latest
-              working-directory: js
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci-app
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
+      - name: Run script
+        run: bash .github/scripts/run-frontend-tests.sh
 
-            - name: Run script
-              run: bash .github/scripts/run-frontend-tests.sh
+  testBuildImage:
+    name: Build Test Docker Image
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-    testBuildImage:
-        name: Build Test Docker Image
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+    if: github.ref_name != 'main'
 
-        if: github.ref_name != 'main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci,ci-app
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
+      - name: Run script
+        run: bash .github/scripts/build-image.sh
 
-            - name: Run script
-              run: bash .github/scripts/build-image.sh
+  validateDBSchema:
+    name: Validate DB Schema on Prod DB
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-    validateDBSchema:
-        name: Validate DB Schema on Prod DB
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: production-ro
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: production-ro
+      - name: Validate DB Schema
+        run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
 
-            - name: Validate DB Schema
-              run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
+  buildImage:
+    name: Build Docker Image & Upload to Registry
+    runs-on: ubuntu-latest
+    needs: [validateDBSchema, backendTests, frontendTests]
 
-    buildImage:
-        name: Build Docker Image & Upload to Registry
-        runs-on: ubuntu-latest
-        needs: [validateDBSchema, backendTests, frontendTests]
+    if: github.ref_name == 'main'
 
-        if: github.ref_name == 'main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci,ci-app
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
+      - name: Run script
+        run: bash .github/scripts/build-image.sh
 
-            - name: Run script
-              run: bash .github/scripts/build-image.sh
+  redeploy:
+    name: Redeploy on DigitalOcean
+    runs-on: ubuntu-latest
+    needs: buildImage
+    environment: production
 
-    redeploy:
-        name: Redeploy on DigitalOcean
-        runs-on: ubuntu-latest
-        needs: buildImage
-        environment: production
+    if: github.ref_name == 'main'
 
-        if: github.ref_name == 'main'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci,production
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: production
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ env.DIGITAL_OCEAN_PAT }}
 
-            - name: Install doctl
-              uses: digitalocean/action-doctl@v2
-              with:
-                token: ${{ env.DIGITAL_OCEAN_PAT }}
+      - name: Migrate Production DB
+        run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
 
-            - name: Migrate Production DB
-              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
+      - name: Transform App Spec with secrets
+        run: bash .github/scripts/transform-yaml-with-env.sh .do/stg/app.yml .env.staging
 
-            - name: Transform App Spec with secrets
-              run: bash .github/scripts/transform-yaml-with-env.sh .do/stg/app.yml .env.staging
+      - name: Update App Spec on DigitalOcean
+        run: |
+          doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml
 
-            - name: Update App Spec on DigitalOcean
-              run: |
-                doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml
+      - name: Trigger App Platform Redeploy
+        run: |
+          RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
+          -X POST \
+          -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
+          -H "Content-Type: application/json" \
+          https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments)
 
-            - name: Trigger App Platform Redeploy
-              run: |
-                  RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
-                  -X POST \
-                  -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
+          HTTP_BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//g')
+          HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+          echo "$HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+              exit 1
+          fi
+
+          DEPLOYMENT_ID=$(echo "$HTTP_BODY" | jq -r '.deployment.id')
+
+          echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_ENV
+
+      - name: Poll Deployment Status
+        run: |
+          DEPLOYMENT_ID="$deployment_id"
+
+           if [ -z "$DEPLOYMENT_ID" ]; then
+               echo "Deployment ID is empty."
+               exit 1
+           fi
+
+          echo "Waiting for deployment to be promoted."
+
+          for i in {1..60}; do
+              RESPONSE=$(curl -s -X GET \
                   -H "Content-Type: application/json" \
-                  https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments)
+                  -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
+                  "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
 
-                  HTTP_BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//g')
-                  HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+              PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
 
-                  echo "$HTTP_STATUS"
+              echo "Deployment phase: $PHASE"
 
-                  if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
-                      exit 1
-                  fi
-
-                  DEPLOYMENT_ID=$(echo "$HTTP_BODY" | jq -r '.deployment.id')
-
-                  echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_ENV
-
-            - name: Poll Deployment Status
-              run: |
-                  DEPLOYMENT_ID="$deployment_id"
-
-                   if [ -z "$DEPLOYMENT_ID" ]; then
-                       echo "Deployment ID is empty."
-                       exit 1
-                   fi
-
-                  echo "Waiting for deployment to be promoted."
-
-                  for i in {1..60}; do
-                      RESPONSE=$(curl -s -X GET \
-                          -H "Content-Type: application/json" \
-                          -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
-                          "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
-
-                      PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
-
-                      echo "Deployment phase: $PHASE"
-
-                      if [ "$PHASE" == "ACTIVE" ]; then
-                          echo "Deployment is active."
-                          exit 0
-                      elif [ "$PHASE" == "SUPERSEDED" ] || [ "$PHASE" == "ERROR" ] || [ "$PHASE" == "CANCELED" ]; then
-                          echo "Deployment failed with phase: $PHASE"
-                          exit 1
-                      fi
-
-                      echo "Waiting for deployment to complete, sleep 10... ($i/60)"
-                      sleep 10
-                  done
-
-                  echo "Deployment did not reach a valid state within 10 minutes."
+              if [ "$PHASE" == "ACTIVE" ]; then
+                  echo "Deployment is active."
+                  exit 0
+              elif [ "$PHASE" == "SUPERSEDED" ] || [ "$PHASE" == "ERROR" ] || [ "$PHASE" == "CANCELED" ]; then
+                  echo "Deployment failed with phase: $PHASE"
                   exit 1
+              fi
+
+              echo "Waiting for deployment to complete, sleep 10... ($i/60)"
+              sleep 10
+          done
+
+          echo "Deployment did not reach a valid state within 10 minutes."
+          exit 1

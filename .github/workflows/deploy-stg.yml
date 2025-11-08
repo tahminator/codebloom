@@ -2,471 +2,470 @@ name: Deploying to staging
 run-name: Deploying to staging
 
 concurrency:
-    group: deploy-staging-pr-${{ github.event.client_payload.slash_command.args.named.prId }}
-    cancel-in-progress: true
+  group: deploy-staging-pr-${{ github.event.client_payload.slash_command.args.named.prId }}
+  cancel-in-progress: true
 
 on:
-    repository_dispatch:
-        types: [deploy-command]
-    # this should only be used for testing purposes.
-    workflow_dispatch:
-        inputs:
-            prId:
-                description: "PR to deploy"
-                required: true
-
+  repository_dispatch:
+    types: [deploy-command]
+  # this should only be used for testing purposes.
+  workflow_dispatch:
+    inputs:
+      prId:
+        description: "PR to deploy"
+        required: true
 
 permissions:
-    contents: write
-    issues: write
-    pull-requests: write
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
-    getPRHead:
-        name: Get PR head SHA
-        runs-on: ubuntu-latest
-        outputs:
-            sha: ${{ steps.pr-head.outputs.result }}
-        steps:
-            - name: Get PR head SHA
-              id: pr-head
-              uses: actions/github-script@v7
-              with:
-                  result-encoding: string
-                  script: |
-                      const prId = ${{ 
-                        (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
-                        || github.event.inputs.prId 
-                      }};
-                      const { data: pr } = await github.rest.pulls.get({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          pull_number: parseInt(prId, 10)
-                      });
-                       return pr.head.sha;
+  getPRHead:
+    name: Get PR head SHA
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.pr-head.outputs.result }}
+    steps:
+      - name: Get PR head SHA
+        id: pr-head
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const prId = ${{ 
+              (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
+              || github.event.inputs.prId 
+            }};
+            const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: parseInt(prId, 10)
+            });
+             return pr.head.sha;
 
-    sendMessage:
-        name: Send deploying to staging message
-        runs-on: ubuntu-latest
-        needs: getPRHead
+  sendMessage:
+    name: Send deploying to staging message
+    runs-on: ubuntu-latest
+    needs: getPRHead
 
-        steps:
-            - name: Comment on PR
-              uses: actions/github-script@v7
-              with:
-                  script: |
-                      const prId = ${{ 
-                        (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
-                        || github.event.inputs.prId 
-                      }};
-                      const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-                      const commitHash = '${{ needs.getPRHead.outputs.sha }}';
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prId = ${{ 
+              (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
+              || github.event.inputs.prId 
+            }};
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const commitHash = '${{ needs.getPRHead.outputs.sha }}';
 
-                      await github.rest.issues.createComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          issue_number: parseInt(prId, 10),
-                          body: `The command to deploy to staging for the commit ${commitHash} has been triggered. [View action run](${runUrl})`
-                      });
+            await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: parseInt(prId, 10),
+                body: `The command to deploy to staging for the commit ${commitHash} has been triggered. [View action run](${runUrl})`
+            });
 
-    checkExistingImage:
-        name: Check if image already exists
-        runs-on: ubuntu-latest
-        needs: [getPRHead, sendMessage]
-        outputs:
-            image-exists: ${{ steps.check-image.outputs.exists }}
-            git-sha: ${{ steps.set-sha.outputs.sha }}
-        steps:
-            - name: Set SHA
-              id: set-sha
-              run: echo "sha=$(echo "${{ needs.getPRHead.outputs.sha }}" | cut -c1-7)" >> $GITHUB_OUTPUT
+  checkExistingImage:
+    name: Check if image already exists
+    runs-on: ubuntu-latest
+    needs: [getPRHead, sendMessage]
+    outputs:
+      image-exists: ${{ steps.check-image.outputs.exists }}
+      git-sha: ${{ steps.set-sha.outputs.sha }}
+    steps:
+      - name: Set SHA
+        id: set-sha
+        run: echo "sha=$(echo "${{ needs.getPRHead.outputs.sha }}" | cut -c1-7)" >> $GITHUB_OUTPUT
 
-            - name: Check if Docker image exists
-              id: check-image
-              run: |
-                  SHA7=$(echo "${{ needs.getPRHead.outputs.sha }}" | cut -c1-7)
-                  if docker manifest inspect tahminator/codebloom:staging-$SHA7 > /dev/null 2>&1; then
-                      echo "exists=true" >> $GITHUB_OUTPUT
-                      echo "Image staging-$SHA7 already exists"
-                  else
-                      echo "exists=false" >> $GITHUB_OUTPUT
-                      echo "Image staging-$SHA7 does not exist"
-                  fi
+      - name: Check if Docker image exists
+        id: check-image
+        run: |
+          SHA7=$(echo "${{ needs.getPRHead.outputs.sha }}" | cut -c1-7)
+          if docker manifest inspect tahminator/codebloom:staging-$SHA7 > /dev/null 2>&1; then
+              echo "exists=true" >> $GITHUB_OUTPUT
+              echo "Image staging-$SHA7 already exists"
+          else
+              echo "exists=false" >> $GITHUB_OUTPUT
+              echo "Image staging-$SHA7 does not exist"
+          fi
 
-    promoteExisting:
-        name: Promote existing image to staging-latest
-        runs-on: ubuntu-latest
-        needs: checkExistingImage
-        if: needs.checkExistingImage.outputs.image-exists == 'true'
-        steps:
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci
+  promoteExisting:
+    name: Promote existing image to staging-latest
+    runs-on: ubuntu-latest
+    needs: checkExistingImage
+    if: needs.checkExistingImage.outputs.image-exists == 'true'
+    steps:
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci
 
-            - name: Log in to Docker Hub
-              uses: docker/login-action@v3
-              with:
-                  registry: docker.io
-                  username: tahminator
-                  password: ${{ env.DOCKER_HUB_PAT }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: tahminator
+          password: ${{ env.DOCKER_HUB_PAT }}
 
-            - name: Promote existing image
-              run: |
-                  SHA7=${{ needs.checkExistingImage.outputs.git-sha }}
-                  docker pull tahminator/codebloom:staging-$SHA7
-                  docker tag tahminator/codebloom:staging-$SHA7 tahminator/codebloom:staging-latest
-                  docker push tahminator/codebloom:staging-latest
-                  echo "Promoted staging-$SHA7 to staging-latest"
+      - name: Promote existing image
+        run: |
+          SHA7=${{ needs.checkExistingImage.outputs.git-sha }}
+          docker pull tahminator/codebloom:staging-$SHA7
+          docker tag tahminator/codebloom:staging-$SHA7 tahminator/codebloom:staging-latest
+          docker push tahminator/codebloom:staging-latest
+          echo "Promoted staging-$SHA7 to staging-latest"
 
-    backendPreTest:
-        name: Backend Compile Test
-        runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
+  backendPreTest:
+    name: Backend Compile Test
+    runs-on: ubuntu-latest
+    needs: [getPRHead, checkExistingImage]
+    if: needs.checkExistingImage.outputs.image-exists == 'false'
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Verify that there are no compile time errors in the backend
-              run: ./mvnw -B verify -Dmaven.test.skip=true --no-transfer-progress -Denv.SKIP=true
+      - name: Verify that there are no compile time errors in the backend
+        run: ./mvnw -B verify -Dmaven.test.skip=true --no-transfer-progress -Denv.SKIP=true
 
-    backendTests:
-        name: Backend Tests
-        runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendPreTest]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
+  backendTests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: [getPRHead, checkExistingImage, backendPreTest]
+    if: needs.checkExistingImage.outputs.image-exists == 'false'
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci-app
 
-            - name: Run script
-              run: bash .github/scripts/run-backend-tests.sh
+      - name: Run script
+        run: bash .github/scripts/run-backend-tests.sh
 
-    frontendTests:
-        name: Frontend Tests
-        runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendPreTest]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
+  frontendTests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: [getPRHead, checkExistingImage, backendPreTest]
+    if: needs.checkExistingImage.outputs.image-exists == 'false'
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Fix a bug with corepack by installing corepack globally
-              run: npm i -g corepack@latest
-              working-directory: js
+      - name: Fix a bug with corepack by installing corepack globally
+        run: npm i -g corepack@latest
+        working-directory: js
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci-app
 
-            - name: Run script
-              run: bash .github/scripts/run-frontend-tests.sh
+      - name: Run script
+        run: bash .github/scripts/run-frontend-tests.sh
 
-    validateDBSchema:
-        name: Validate DB Schema on Staging DB
-        runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendPreTest]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
+  validateDBSchema:
+    name: Validate DB Schema on Staging DB
+    runs-on: ubuntu-latest
+    needs: [getPRHead, checkExistingImage, backendPreTest]
+    if: needs.checkExistingImage.outputs.image-exists == 'false'
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: staging
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: staging
 
-            - name: Validate DB Schema
-              run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
+      - name: Validate DB Schema
+        run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
 
-    buildImage:
-        name: Build Docker Image & Upload to Registry
-        runs-on: ubuntu-latest
-        needs:
-            [
-                getPRHead,
-                checkExistingImage,
-                frontendTests,
-                backendTests,
-                validateDBSchema,
-                backendPreTest,
-            ]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
+  buildImage:
+    name: Build Docker Image & Upload to Registry
+    runs-on: ubuntu-latest
+    needs:
+      [
+        getPRHead,
+        checkExistingImage,
+        frontendTests,
+        backendTests,
+        validateDBSchema,
+        backendPreTest,
+      ]
+    if: needs.checkExistingImage.outputs.image-exists == 'false'
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci,ci-app
 
-            - name: Run script
-              run: bash .github/scripts/build-image.sh
-              env:
-                  TAG_PREFIX: staging-
+      - name: Run script
+        run: bash .github/scripts/build-image.sh
+        env:
+          TAG_PREFIX: staging-
 
-    redeploy:
-        name: Redeploy on DigitalOcean
-        runs-on: ubuntu-latest
-        needs: [buildImage, promoteExisting, getPRHead]
-        if: always() && (needs.buildImage.result == 'success' || needs.promoteExisting.result == 'success')
+  redeploy:
+    name: Redeploy on DigitalOcean
+    runs-on: ubuntu-latest
+    needs: [buildImage, promoteExisting, getPRHead]
+    if: always() && (needs.buildImage.result == 'success' || needs.promoteExisting.result == 'success')
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
+      - name: Verify Java version
+        run: |
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,staging
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci,staging
 
-            - name: Install doctl
-              uses: digitalocean/action-doctl@v2
-              with:
-                token: ${{ env.DIGITAL_OCEAN_PAT }}
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ env.DIGITAL_OCEAN_PAT }}
 
-            - name: Migrate Staging DB
-              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
+      - name: Migrate Staging DB
+        run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
 
-            - name: Transform App Spec with secrets
-              run: bash .github/scripts/transform-yaml-with-env.sh .do/stg/app.yml .env.staging
+      - name: Transform App Spec with secrets
+        run: bash .github/scripts/transform-yaml-with-env.sh .do/stg/app.yml .env.staging
 
-            - name: Update App Spec on DigitalOcean
-              run: |
-                doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml
+      - name: Update App Spec on DigitalOcean
+        run: |
+          doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml
 
-            - name: Trigger App Platform Redeploy
-              run: |
-                  RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
-                  -X POST \
-                  -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
+      - name: Trigger App Platform Redeploy
+        run: |
+          RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
+          -X POST \
+          -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
+          -H "Content-Type: application/json" \
+          https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments)
+
+          HTTP_BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//g')
+          HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+          echo "$HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+              exit 1
+          fi
+
+          DEPLOYMENT_ID=$(echo "$HTTP_BODY" | jq -r '.deployment.id')
+
+          echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_ENV
+
+      - name: Poll Deployment Status
+        run: |
+          DEPLOYMENT_ID="$deployment_id"
+
+           if [ -z "$DEPLOYMENT_ID" ]; then
+               echo "Deployment ID is empty."
+               exit 1
+           fi
+
+          echo "Waiting for deployment to be promoted."
+
+          for i in {1..60}; do
+              RESPONSE=$(curl -s -X GET \
                   -H "Content-Type: application/json" \
-                  https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments)
+                  -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
+                  "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
 
-                  HTTP_BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//g')
-                  HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+              PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
 
-                  echo "$HTTP_STATUS"
+              echo "Deployment phase: $PHASE"
 
-                  if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
-                      exit 1
-                  fi
-
-                  DEPLOYMENT_ID=$(echo "$HTTP_BODY" | jq -r '.deployment.id')
-
-                  echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_ENV
-
-            - name: Poll Deployment Status
-              run: |
-                  DEPLOYMENT_ID="$deployment_id"
-
-                   if [ -z "$DEPLOYMENT_ID" ]; then
-                       echo "Deployment ID is empty."
-                       exit 1
-                   fi
-
-                  echo "Waiting for deployment to be promoted."
-
-                  for i in {1..60}; do
-                      RESPONSE=$(curl -s -X GET \
-                          -H "Content-Type: application/json" \
-                          -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
-                          "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
-
-                      PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
-
-                      echo "Deployment phase: $PHASE"
-
-                      if [ "$PHASE" == "ACTIVE" ]; then
-                          echo "Deployment is active."
-                          exit 0
-                      elif [ "$PHASE" == "SUPERSEDED" ] || [ "$PHASE" == "ERROR" ] || [ "$PHASE" == "CANCELED" ]; then
-                          echo "Deployment failed with phase: $PHASE"
-                          exit 1
-                      fi
-
-                      echo "Waiting for deployment to complete, sleep 10... ($i/60)"
-                      sleep 10
-                  done
-
-                  echo "Deployment did not reach a valid state within 10 minutes."
+              if [ "$PHASE" == "ACTIVE" ]; then
+                  echo "Deployment is active."
+                  exit 0
+              elif [ "$PHASE" == "SUPERSEDED" ] || [ "$PHASE" == "ERROR" ] || [ "$PHASE" == "CANCELED" ]; then
+                  echo "Deployment failed with phase: $PHASE"
                   exit 1
+              fi
 
-    notifyStatus:
-        name: Notify on deployment status
-        runs-on: ubuntu-latest
-        needs:
-            [
-                getPRHead,
-                checkExistingImage,
-                sendMessage,
-                backendTests,
-                backendPreTest,
-                frontendTests,
-                validateDBSchema,
-                buildImage,
-                promoteExisting,
-                redeploy,
-            ]
-        if: always()
+              echo "Waiting for deployment to complete, sleep 10... ($i/60)"
+              sleep 10
+          done
 
-        steps:
-            - name: Comment on PR about deployment status
-              uses: actions/github-script@v7
-              with:
-                  script: |
-                      const prId = ${{ 
-                        (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
-                        || github.event.inputs.prId 
-                      }};
-                      const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-                      const commitHash = '${{ needs.getPRHead.outputs.sha }}';
+          echo "Deployment did not reach a valid state within 10 minutes."
+          exit 1
 
-                      const results = ${{ toJSON(needs.*.result) }};
-                      const jobNames = ['getPRHead', 'checkExistingImage', 'sendMessage', 'backendTests', 'frontendTests', 'validateDBSchema', 'buildImage', 'promoteExisting', 'redeploy'];
-                      const failedJobs = jobNames.filter((name, index) => results[index] === 'failure');
-                      const cancelledJobs = jobNames.filter((name, index) => results[index] === 'cancelled');
-                      const successJobs = jobNames.filter((name, index) => results[index] === 'success');
+  notifyStatus:
+    name: Notify on deployment status
+    runs-on: ubuntu-latest
+    needs:
+      [
+        getPRHead,
+        checkExistingImage,
+        sendMessage,
+        backendTests,
+        backendPreTest,
+        frontendTests,
+        validateDBSchema,
+        buildImage,
+        promoteExisting,
+        redeploy,
+      ]
+    if: always()
 
-                      let statusMessage;
-                      if (failedJobs.length > 0 && cancelledJobs.length > 0) {
-                         statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}\n\n**`;
-                      } else if (failedJobs.length > 0) {
-                         statusMessage = `**Staging deployment failed** for commit ${commitHash}\n\n**`;
-                      } else if (cancelledJobs.length > 0) {
-                         statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}\n\n`;
-                      } else {
-                         statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
-                      }
+    steps:
+      - name: Comment on PR about deployment status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prId = ${{ 
+              (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
+              || github.event.inputs.prId 
+            }};
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const commitHash = '${{ needs.getPRHead.outputs.sha }}';
 
-                      await github.rest.issues.createComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          issue_number: parseInt(prId, 10),
-                          body: `${statusMessage}\n\n[View run](${runUrl})`
-                      });
+            const results = ${{ toJSON(needs.*.result) }};
+            const jobNames = ['getPRHead', 'checkExistingImage', 'sendMessage', 'backendTests', 'frontendTests', 'validateDBSchema', 'buildImage', 'promoteExisting', 'redeploy'];
+            const failedJobs = jobNames.filter((name, index) => results[index] === 'failure');
+            const cancelledJobs = jobNames.filter((name, index) => results[index] === 'cancelled');
+            const successJobs = jobNames.filter((name, index) => results[index] === 'success');
+
+            let statusMessage;
+            if (failedJobs.length > 0 && cancelledJobs.length > 0) {
+               statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}\n\n**`;
+            } else if (failedJobs.length > 0) {
+               statusMessage = `**Staging deployment failed** for commit ${commitHash}\n\n**`;
+            } else if (cancelledJobs.length > 0) {
+               statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}\n\n`;
+            } else {
+               statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
+            }
+
+            await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: parseInt(prId, 10),
+                body: `${statusMessage}\n\n[View run](${runUrl})`
+            });
