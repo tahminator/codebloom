@@ -182,12 +182,7 @@ export default function MiniLeaderboardDesktop() {
                         </Flex>
                       </Flex>
                     </Flex>
-                    <Text
-                      size="md"
-                      fw={600}
-                      miw={90}
-                      className="text-right"
-                    >
+                    <Text size="md" fw={600} miw={90} className="text-right">
                       {entry.totalScore} Pts
                     </Text>
                   </Flex>

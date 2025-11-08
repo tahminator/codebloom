@@ -63,9 +63,7 @@ export default function MiniLeaderboardMobile() {
             radius={"md"}
           />
         )}
-        <div
-          className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4 mt=4 mb-8"
-          >
+        <div className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4 mt=4 mb-8">
           {first && (
             <LeaderboardCard
               placeString={getOrdinal(first.index)}
@@ -181,12 +179,7 @@ export default function MiniLeaderboardMobile() {
                         </Flex>
                       </Flex>
                     </Flex>
-                    <Text
-                      size="sm"
-                      fw={600}
-                      miw={70}
-                      className="text-right"
-                    >
+                    <Text size="sm" fw={600} miw={70} className="text-right">
                       {entry.totalScore} Pts
                     </Text>
                   </Flex>

@@ -121,10 +121,7 @@ export default function LeaderboardIndex() {
           />
         )}
       </Flex>
-      <FilterDropdown
-        className="ml-auto block"
-        buttonName="Filters"
-      >
+      <FilterDropdown className="ml-auto block" buttonName="Filters">
         {schoolFF &&
           ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
             <FilterDropdownItem
@@ -153,11 +150,7 @@ export default function LeaderboardIndex() {
           disabled={!isAnyFilterEnabled}
           switchMode
           name={
-            <Box
-              className="flex gap-2 items-center"
-            >
-              Toggle Global Rank
-            </Box>
+            <Box className="flex gap-2 items-center">Toggle Global Rank</Box>
           }
         />
         <Button
