@@ -50,10 +50,14 @@ public class RateLimitingFilter implements Filter {
         String bucketKey = remoteAddr + (isApiPath ? ":api" : ":static");
 
         HttpSession session = httpRequest.getSession();
-        Bucket bucket = (Bucket) session.getAttribute(bucketKey);
-        if (bucket == null) {
-            bucket = createNewBucket(rateLimitCapacity, refillInterval);
-            session.setAttribute(bucketKey, bucket);
+
+        Bucket bucket;
+        synchronized (session) {
+            bucket = (Bucket) session.getAttribute(bucketKey);
+            if (bucket == null) {
+                bucket = createNewBucket(rateLimitCapacity, refillInterval);
+                session.setAttribute(bucketKey, bucket);
+            }
         }
 
         if (bucket.tryConsume(1)) {
