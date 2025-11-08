@@ -22,10 +22,14 @@ export default function TopicFilterPopover({
 
   const filteredTopics = useMemo(
     () =>
-      Object.entries(leetcodeTopics).filter(([_, topic]) =>
-        ApiUtils.matchTopic(topic, search),
-      ),
-    [search],
+      Object.entries(leetcodeTopics).filter(([key, topic]) => {
+        if (value.includes(key as QuestionTopicDtoTopic)) {
+          return true;
+        }
+
+        return ApiUtils.matchTopic(topic, search);
+      }),
+    [value, search],
   );
 
   return (
