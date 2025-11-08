@@ -17,10 +17,8 @@ public interface JobRepository {
      * <li>status</li>
      * </ul>
      * optional fields:
-     * <ul>
-     * <li>processedAt</li>
-     * <li>completedAt</li>
      * <li>nextAttemptAt</li>
+     * <ul>
      * </ul>
      */
     void createJob(Job job);

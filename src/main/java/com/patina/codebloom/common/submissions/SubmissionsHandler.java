@@ -6,9 +6,12 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
+import com.patina.codebloom.common.db.models.job.Job;
+import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.models.question.Question;
@@ -17,6 +20,7 @@ import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
+import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
@@ -24,22 +28,20 @@ import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicReposito
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
+import com.patina.codebloom.common.utils.pair.Pair;
 import com.patina.codebloom.common.reporter.Reporter;
-// import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.throttled.ThrottledReporter;
-
 
 /**
  * The submission logic is abstracted because it gets reused in two different
  * parts of the app: the submissions API and the automated recurring task.
  */
-@Controller
+@Component
 public class SubmissionsHandler {
     private final QuestionRepository questionRepository;
     private final LeetcodeClient leetcodeClient;
@@ -47,6 +49,7 @@ public class SubmissionsHandler {
     private final POTDRepository potdRepository;
     private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
+    private final JobRepository jobRepository;
     private final Reporter throttledReporter;
 
     private boolean isValid(final LocalDateTime createdAt) {
@@ -63,34 +66,47 @@ public class SubmissionsHandler {
         return now.isBefore(cutoff);
     }
 
-    public SubmissionsHandler(final QuestionRepository questionRepository, final ThrottledLeetcodeClient throttledLeetcodeClient, final LeaderboardRepository leaderboardRepository,
-                    final POTDRepository potdRepository, final UserRepository userRepository, final QuestionTopicRepository questionTopicRepository, final ThrottledReporter throttledReporter) {
+    public SubmissionsHandler(final QuestionRepository questionRepository,
+                    final ThrottledLeetcodeClient throttledLeetcodeClient,
+                    final LeaderboardRepository leaderboardRepository,
+                    final POTDRepository potdRepository,
+                    final UserRepository userRepository,
+                    final QuestionTopicRepository questionTopicRepository,
+                    final ThrottledReporter throttledReporter,
+                    final JobRepository jobRepository) {
         this.questionRepository = questionRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.leaderboardRepository = leaderboardRepository;
         this.potdRepository = potdRepository;
         this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
+        this.jobRepository = jobRepository;
         this.throttledReporter = throttledReporter;
     }
 
     public ArrayList<AcceptedSubmission> handleSubmissions(final List<LeetcodeSubmission> leetcodeSubmissions, final User user) {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
+        POTD potd = potdRepository.getCurrentPOTD();
+
+        var questionMap = leetcodeSubmissions.parallelStream()
+                        .map(s -> Pair.of(
+                                        s.getTitleSlug(), leetcodeClient.findQuestionBySlug(s.getTitleSlug())))
+                        .collect(Collectors.toMap(
+                                        p -> p.getLeft(),
+                                        p -> p.getRight()));
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
             if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
                 continue;
             }
 
-            Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
             if (questionRepository.questionExistsBySubmissionId(String.valueOf(leetcodeSubmission.getId()))) {
                 continue;
             }
 
+            Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
+
             float multiplier;
-
-            POTD potd = potdRepository.getCurrentPOTD();
-
             if (potd == null
                             || !isValid(potd.getCreatedAt())
                             || !Objects.equals(potd.getSlug(), leetcodeSubmission.getTitleSlug())) {
@@ -99,9 +115,7 @@ public class SubmissionsHandler {
                 multiplier = potd.getMultiplier();
             }
 
-            LeetcodeQuestion leetcodeQuestion = leetcodeClient.findQuestionBySlug(leetcodeSubmission.getTitleSlug());
-
-            LeetcodeDetailedQuestion detailedQuestion = leetcodeClient.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
+            LeetcodeQuestion leetcodeQuestion = questionMap.get(leetcodeSubmission.getTitleSlug());
 
             // If the submission is before the leaderboard started, points awarded = 0
             Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
@@ -115,10 +129,10 @@ public class SubmissionsHandler {
             boolean isTooLate = recentLeaderboard.getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
 
             // int basePoints = switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
-            //     case "EASY" -> 100;
-            //     case "MEDIUM" -> 300;
-            //     case "HARD" -> 600;
-            //     default -> 0;
+            // case "EASY" -> 100;
+            // case "MEDIUM" -> 300;
+            // case "HARD" -> 600;
+            // default -> 0;
             // };
 
             int points;
@@ -129,23 +143,23 @@ public class SubmissionsHandler {
             }
 
             // throttledReporter.log(Report.builder()
-            //                                 .data(String.format("""
-            //                                     Score Distribution Report
+            // .data(String.format("""
+            // Score Distribution Report
 
-            //                                     Leetcode Username: %s
-            //                                     Difficulty: %s (%d pts)
-            //                                     Acceptance Rate: %.2f
-            //                                     Question Multiplier: %.2f
-            //                                     Total: %d
-            //                                     """,
-            //                                     user.getLeetcodeUsername(),
-            //                                     leetcodeQuestion.getDifficulty(),
-            //                                     basePoints,
-            //                                     leetcodeQuestion.getAcceptanceRate(),
-            //                                     multiplier,
-            //                                     points
-            //                                     ))
-            //                                 .build());
+            // Leetcode Username: %s
+            // Difficulty: %s (%d pts)
+            // Acceptance Rate: %.2f
+            // Question Multiplier: %.2f
+            // Total: %d
+            // """,
+            // user.getLeetcodeUsername(),
+            // leetcodeQuestion.getDifficulty(),
+            // basePoints,
+            // leetcodeQuestion.getAcceptanceRate(),
+            // multiplier,
+            // points
+            // ))
+            // .build());
 
             Question newQuestion = Question.builder()
                             .userId(user.getId())
@@ -158,14 +172,17 @@ public class SubmissionsHandler {
                             .pointsAwarded(points)
                             .acceptanceRate(leetcodeQuestion.getAcceptanceRate())
                             .submittedAt(leetcodeSubmission.getTimestamp())
-                            .runtime(detailedQuestion.getRuntimeDisplay())
-                            .memory(detailedQuestion.getMemoryDisplay())
-                            .code(detailedQuestion.getCode())
-                            .language(detailedQuestion.getLang().getName())
                             .submissionId(String.valueOf(leetcodeSubmission.getId()))
                             .build();
 
             questionRepository.createQuestion(newQuestion);
+
+            Job newJob = Job.builder()
+                            .questionId(newQuestion.getId())
+                            .status(JobStatus.INCOMPLETE)
+                            .build();
+
+            jobRepository.createJob(newJob);
 
             leetcodeQuestion.getTopics().stream().forEach(topic -> questionTopicRepository.createQuestionTopic(
                             QuestionTopic.builder()
@@ -176,67 +193,11 @@ public class SubmissionsHandler {
 
             acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
-            UserWithScore recentUserMetadata = userRepository.getUserWithScoreByIdAndLeaderboardId(user.getId(), recentLeaderboard.getId(), UserFilterOptions.builder().build());
+            UserWithScore recentUserMetadata = userRepository.getUserWithScoreByIdAndLeaderboardId(user.getId(), recentLeaderboard.getId(), UserFilterOptions.DEFAULT);
 
             leaderboardRepository.updateUserPointsFromLeaderboard(recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }
 
         return acceptedSubmissions;
-    }
-
-    // Uncomment this if you need to run the script. The 5 second delay allows the
-    // LeetcodeAuthStealer to run it's method first.
-    // @Scheduled(initialDelay = 5000, fixedDelay = 1000000)
-    public void updateSubmissions() {
-        System.out.println("Migration script activated. DO NOT LEAVE THIS ON IN PRODUCTION.");
-        List<User> users = userRepository.getAllUsers();
-        for (User user : users) {
-            System.out.println("Starting migration for user ID " + user.getId());
-            List<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
-
-            for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
-                if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
-                    continue;
-                }
-
-                Question question = questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
-
-                if (question == null || question.getCode() != null) {
-                    continue;
-                }
-
-                LeetcodeDetailedQuestion detailedQuestion = leetcodeClient.findSubmissionDetailBySubmissionId(leetcodeSubmission.getId());
-
-                if (detailedQuestion == null) {
-                    continue;
-                }
-
-                System.out.println("Attempting to update User ID" + user.getId() + " with question of " + question.getQuestionSlug());
-
-                Question newQuestion = Question.builder()
-                                .id(question.getId())
-                                .userId(question.getUserId())
-                                .questionSlug(question.getQuestionSlug())
-                                .questionDifficulty(question.getQuestionDifficulty())
-                                .questionNumber(question.getQuestionNumber())
-                                .questionLink(question.getQuestionLink())
-                                .pointsAwarded(question.getPointsAwarded())
-                                .questionTitle(question.getQuestionTitle())
-                                .description(question.getDescription())
-                                .acceptanceRate(question.getAcceptanceRate())
-                                .createdAt(question.getCreatedAt())
-                                .submittedAt(question.getSubmittedAt())
-                                .runtime(detailedQuestion.getRuntimeDisplay())
-                                .memory(detailedQuestion.getMemoryDisplay())
-                                .code(detailedQuestion.getCode())
-                                .language(detailedQuestion.getLang().getName())
-                                .submissionId(String.valueOf(leetcodeSubmission.getId()))
-                                .build();
-
-                questionRepository.updateQuestion(newQuestion);
-            }
-        }
-
-        System.out.println("Exiting migration script.");
     }
 }
