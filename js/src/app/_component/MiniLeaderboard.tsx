@@ -116,36 +116,24 @@ export default function MiniLeaderboardDesktop() {
               return (
                 <Flex
                   key={entry.id}
+                  component={Link}
+                  to={`/user/${entry.id}`}
                   bg={theme.colors.dark[7]}
-                  style={{
-                    borderColor: theme.colors.dark[3],
-                    border: "1px solid",
-                    borderRadius: "8px",
-                    padding: "1rem 1.25rem",
-                    transition: "all 0.2s",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => (window.location.href = `/user/${entry.id}`)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 6px rgba(0, 0, 0, 0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
+                  p="lg"
+                  className="border border-dark-3 rounded-lg transition-all cursor-pointer no-underline text-inherit hover:shadow-md"
                 >
                   <Flex
                     justify="space-between"
                     align="center"
                     gap="md"
-                    style={{ width: "100%" }}
+                    w="100%"
                   >
                     <Flex align="center" gap="md" miw={0}>
                       <Text
                         size="lg"
                         fw={700}
                         c={theme.colors.patina[4]}
-                        style={{ minWidth: "50px" }}
+                        miw={50}
                       >
                         #{entry.index}
                       </Text>
@@ -197,7 +185,8 @@ export default function MiniLeaderboardDesktop() {
                     <Text
                       size="md"
                       fw={600}
-                      style={{ minWidth: "90px", textAlign: "right" }}
+                      miw={90}
+                      className="text-right"
                     >
                       {entry.totalScore} Pts
                     </Text>
