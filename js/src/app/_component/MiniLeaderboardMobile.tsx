@@ -64,9 +64,8 @@ export default function MiniLeaderboardMobile() {
           />
         )}
         <div
-          className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4"
-          style={{ marginBottom: "2rem", marginTop: "1rem" }}
-        >
+          className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4 mt=4 mb-8"
+          >
           {first && (
             <LeaderboardCard
               placeString={getOrdinal(first.index)}
@@ -114,23 +113,11 @@ export default function MiniLeaderboardMobile() {
               return (
                 <Flex
                   key={entry.id}
+                  component={Link}
+                  to={`/user/${entry.id}`}
                   bg={theme.colors.dark[7]}
-                  style={{
-                    borderColor: theme.colors.dark[3],
-                    border: "1px solid",
-                    borderRadius: "8px",
-                    padding: "0.75rem 1rem",
-                    transition: "all 0.2s",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => (window.location.href = `/user/${entry.id}`)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 6px rgba(0, 0, 0, 0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
+                  p="lg"
+                  className="border border-dark-3 rounded-lg transition-all cursor-pointer no-underline text-inherit hover:shadow-md"
                 >
                   <Flex
                     justify="space-between"
@@ -198,7 +185,7 @@ export default function MiniLeaderboardMobile() {
                       size="sm"
                       fw={600}
                       miw={70}
-                      style={{ textAlign: "right" }}
+                      className="text-right"
                     >
                       {entry.totalScore} Pts
                     </Text>

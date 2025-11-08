@@ -122,10 +122,7 @@ export default function LeaderboardIndex() {
         )}
       </Flex>
       <FilterDropdown
-        style={{
-          marginLeft: "auto",
-          display: "block",
-        }}
+        className="ml-auto block"
         buttonName="Filters"
       >
         {schoolFF &&
@@ -157,7 +154,7 @@ export default function LeaderboardIndex() {
           switchMode
           name={
             <Box
-              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+              className="flex gap-2 items-center"
             >
               Toggle Global Rank
             </Box>
@@ -195,10 +192,8 @@ export default function LeaderboardIndex() {
                 padding="lg"
                 radius="md"
                 withBorder
-                style={{
-                  backgroundColor: theme.colors.dark[7],
-                  borderColor: theme.colors.dark[5],
-                }}
+                bg={theme.colors.dark[7]}
+                className="boarder-dark-5"
               >
                 <Flex
                   direction="row"
