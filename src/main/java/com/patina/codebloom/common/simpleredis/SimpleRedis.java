@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
  * 0 - Submission Refresh
  * 
  * 1 - Verification Email Sending
+ *
+ * 2 - Global rate limiting
  */
 @Service
 public class SimpleRedis {

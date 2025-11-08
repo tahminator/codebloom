@@ -8,11 +8,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 
+import org.apache.http.entity.ContentType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.simpleredis.SimpleRedis;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -24,6 +29,14 @@ public class RateLimitingFilter implements Filter {
 
     private static final long STATIC_RATE_LIMIT_CAPACITY = 100L;
     private static final long STATIC_REFILL_INTERVAL_MILLIS = 1000L;
+
+    private final SimpleRedis redis;
+    private final ObjectMapper objectMapper;
+
+    public RateLimitingFilter(final SimpleRedis redis, final ObjectMapper objectMapper) {
+        this.redis = redis;
+        this.objectMapper = objectMapper;
+    }
 
     private Bucket createNewBucket(final long capacity, final long refillIntervalMillis) {
         var bandwidth = Bandwidth.builder()
@@ -39,7 +52,9 @@ public class RateLimitingFilter implements Filter {
     @Override
     public final void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
                     throws IOException, ServletException {
+        System.out.println("filter hit");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String path = httpRequest.getServletPath();
         String remoteAddr = httpRequest.getRemoteAddr();
@@ -48,22 +63,28 @@ public class RateLimitingFilter implements Filter {
         final long rateLimitCapacity = isApiPath ? API_RATE_LIMIT_CAPACITY : STATIC_RATE_LIMIT_CAPACITY;
         final long refillInterval = isApiPath ? API_REFILL_INTERVAL_MILLIS : STATIC_REFILL_INTERVAL_MILLIS;
         String bucketKey = remoteAddr + (isApiPath ? ":api" : ":static");
-
-        HttpSession session = httpRequest.getSession();
+        System.out.println("bucket key " + bucketKey);
 
         Bucket bucket;
-        synchronized (session) {
-            bucket = (Bucket) session.getAttribute(bucketKey);
+        synchronized (this) {
+            bucket = (Bucket) redis.get(2, bucketKey);
             if (bucket == null) {
-                bucket = createNewBucket(rateLimitCapacity, refillInterval);
-                session.setAttribute(bucketKey, bucket);
+                redis.put(2, bucketKey, createNewBucket(rateLimitCapacity, refillInterval));
+                bucket = (Bucket) redis.get(2, bucketKey);
             }
         }
 
         if (bucket.tryConsume(1)) {
+            System.out.println("filter passed forward, token left: " + bucket.getAvailableTokens());
             chain.doFilter(request, response);
         } else {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests");
+            System.out.println("filter fail");
+
+            var apiResponder = ApiResponder.failure("Too Many Requests");
+
+            httpResponse.setContentType("application/json");
+            httpResponse.setStatus(429);
+            objectMapper.writeValue(httpResponse.getWriter(), apiResponder);
         }
     }
 }
