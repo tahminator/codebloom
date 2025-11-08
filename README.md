@@ -100,9 +100,9 @@ Error Reporting:
 
 <!-- INSTRUCTIONS -->
 
-### Instructions:
+### Wiki:
 
-For setup instructions, click [here](https://github.com/tahminator/codebloom/blob/main/docs/setup/local.md).
+For setup instructions as well as technical documentation (and much more), click [here](https://github.com/tahminator/codebloom/wiki) to reach our wiki page!
 
 ---
 
@@ -113,9 +113,6 @@ For setup instructions, click [here](https://github.com/tahminator/codebloom/blo
 </a>
 
 <br />
-<br />
-
-To read more detailed documentation, click [here](https://github.com/tahminator/codebloom/tree/main/docs).
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
