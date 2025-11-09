@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -24,11 +25,13 @@ import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.utils.function.FunctionUtils;
+import com.patina.codebloom.config.TestJobNotifyListener;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 @SpringBootTest
 @ActiveProfiles("ci")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@Import(TestJobNotifyListener.class)
 public class LeetcodeClientTest {
     private final LeetcodeClient leetcodeClient;
     private final LeetcodeAuthStealer leetcodeAuthStealer;
