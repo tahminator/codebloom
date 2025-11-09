@@ -47,8 +47,9 @@ public class JobNotifyListenerTest {
     }
 
     @AfterAll
-    void cleanup() {
-        jobNotifyListener.shutdown();
+    static void cleanup() {
+        // force clean up or else the virtual thread will run indefinitely.
+        JobNotifyListener.forceShutDown();
     }
 
     @Test
@@ -57,7 +58,7 @@ public class JobNotifyListenerTest {
                 MockNotification.builder()
                                 .PID(1)
                                 .name("Mock notification")
-                                .parameter("N/A")
+                                .parameter("HEY")
                                 .build()
         };
 

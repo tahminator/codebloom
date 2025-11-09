@@ -49,8 +49,13 @@ public class JobNotifyListener {
     }
 
     @PreDestroy
-    void shutdown() {
-        VTPOOL.close();
+    private void shutdown() {
+        VTPOOL.shutdown();
+    }
+
+    // used for testing only, hence package-private
+    static void forceShutDown() {
+        VTPOOL.shutdown();
     }
 
     void listenLoop() {
