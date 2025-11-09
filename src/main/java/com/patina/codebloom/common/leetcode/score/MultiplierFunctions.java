@@ -13,7 +13,8 @@ public class MultiplierFunctions {
         return 1.0f / (acceptanceRate / 100 + 1);
     }
 
-    public static float greenFunction(final float acceptanceRate) {
+    public static float blueFunction(final float acceptanceRate) {
         return (float) (1.0 / (2 * Math.pow(acceptanceRate / 100 + 1, 2)) + 0.5);
     }
+
 }
