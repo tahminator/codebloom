@@ -90,4 +90,8 @@ public class JobNotifyListener {
         log.info("PAYLOAD CALLED! - {}", payload);
         leetcodeQuestionProcessService.drainQueue();
     }
+
+    void shutdown() {
+        VTPOOL.close();
+    }
 }
