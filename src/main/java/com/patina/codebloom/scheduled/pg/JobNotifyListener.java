@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.reporter.Reporter;
+import com.patina.codebloom.common.reporter.report.Report;
+import com.patina.codebloom.common.reporter.report.location.Location;
 import com.patina.codebloom.scheduled.leetcode.LeetcodeQuestionProcessService;
 
 import jakarta.annotation.PostConstruct;
@@ -24,44 +28,65 @@ public class JobNotifyListener {
     private static final ExecutorService VTPOOL = Executors.newVirtualThreadPerTaskExecutor();
 
     private final LeetcodeQuestionProcessService leetcodeQuestionProcessService;
+    private final Reporter reporter;
+    private final Env env;
     private final Connection conn;
 
-    public JobNotifyListener(final DbConnection dbConn, final LeetcodeQuestionProcessService leetcodeQuestionProcessService) {
+    public JobNotifyListener(final DbConnection dbConn,
+                    final LeetcodeQuestionProcessService leetcodeQuestionProcessService,
+                    final Reporter reporter,
+                    final Env env) {
         this.leetcodeQuestionProcessService = leetcodeQuestionProcessService;
+        this.reporter = reporter;
+        this.env = env;
         this.conn = dbConn.getConn();
     }
 
     @PostConstruct
-    public void init() {
-        VTPOOL.submit(this::listen);
+    void init() {
+        VTPOOL.submit(this::listenLoop);
     }
 
-    private void listen() {
-        try {
-            PGConnection pgConn = conn.unwrap(PGConnection.class);
+    void listenLoop() {
+        while (true) {
+            try {
+                PGConnection pgConn = conn.unwrap(PGConnection.class);
 
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute("LISTEN \"jobInsertChannel\"");
-                log.info("Subscribed to jobInsertChannel");
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute("LISTEN \"jobInsertChannel\"");
+                    log.info("Subscribed to jobInsertChannel");
 
-                while (true) {
-                    Optional<PGNotification[]> notifications = Optional.ofNullable(pgConn.getNotifications(500));
-                    notifications.ifPresent(notis -> {
-                        for (var n : notis) {
-                            String payload = n.getParameter();
-                            handleNotification(payload);
-                        }
-                    });
+                    while (true) {
+                        Optional<PGNotification[]> notifications = Optional.ofNullable(pgConn.getNotifications(500));
+                        notifications.ifPresent(notis -> {
+                            for (var n : notis) {
+                                String payload = n.getParameter();
+                                handleNotification(payload);
+                            }
+                        });
 
-                    Thread.sleep(1000);
+                        Thread.sleep(1000);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Failed to listen to notifications", e);
+                reporter.error(Report.builder()
+                                .environments(env.getActiveProfiles())
+                                .location(Location.BACKEND)
+                                .data(Reporter.throwableToString(e))
+                                .build());
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException _) {
+                    Thread.currentThread().interrupt();
+                    return;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    private void handleNotification(final String payload) {
+    void handleNotification(final String payload) {
         log.info("PAYLOAD CALLED! - {}", payload);
         leetcodeQuestionProcessService.drainQueue();
     }
