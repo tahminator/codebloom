@@ -5,7 +5,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -84,11 +88,17 @@ public class SubmissionsHandler {
         this.throttledReporter = throttledReporter;
     }
 
+    public static <T> Predicate<T> distinctByKey(final Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
     public ArrayList<AcceptedSubmission> handleSubmissions(final List<LeetcodeSubmission> leetcodeSubmissions, final User user) {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
         POTD potd = potdRepository.getCurrentPOTD();
 
         var questionMap = leetcodeSubmissions.parallelStream()
+                        .filter(distinctByKey(LeetcodeSubmission::getTitleSlug))
                         .map(s -> Pair.of(
                                         s.getTitleSlug(), leetcodeClient.findQuestionBySlug(s.getTitleSlug())))
                         .collect(Collectors.toMap(
