@@ -299,7 +299,7 @@ jobs:
 
             - name: Update App Spec on DigitalOcean
               run: |
-                doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml
+                doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/prod/app.yml
 
             - name: Trigger App Platform Redeploy
               run: |
