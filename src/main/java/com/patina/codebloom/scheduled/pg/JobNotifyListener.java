@@ -19,6 +19,7 @@ import com.patina.codebloom.common.reporter.report.location.Location;
 import com.patina.codebloom.scheduled.leetcode.LeetcodeQuestionProcessService;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -45,6 +46,11 @@ public class JobNotifyListener {
     @PostConstruct
     void init() {
         VTPOOL.submit(this::listenLoop);
+    }
+
+    @PreDestroy
+    void shutdown() {
+        VTPOOL.close();
     }
 
     void listenLoop() {
@@ -89,9 +95,5 @@ public class JobNotifyListener {
     void handleNotification(final String payload) {
         log.info("PAYLOAD CALLED! - {}", payload);
         leetcodeQuestionProcessService.drainQueue();
-    }
-
-    void shutdown() {
-        VTPOOL.close();
     }
 }
