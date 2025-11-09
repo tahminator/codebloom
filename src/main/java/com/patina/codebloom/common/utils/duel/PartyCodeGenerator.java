@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.util;
+package com.patina.codebloom.common.utils.duel;
 
 import java.security.SecureRandom;
 
