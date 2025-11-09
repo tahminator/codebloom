@@ -22,7 +22,7 @@ import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
-import com.patina.codebloom.common.util.PartyCodeGenerator;
+import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
