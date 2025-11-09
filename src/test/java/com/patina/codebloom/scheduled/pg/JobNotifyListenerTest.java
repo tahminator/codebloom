@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.postgresql.PGConnection;
 import org.postgresql.PGNotification;
@@ -43,6 +44,11 @@ public class JobNotifyListenerTest {
         } catch (SQLException e) {
             fail(e);
         }
+    }
+
+    @AfterAll
+    void cleanup() {
+        jobNotifyListener.shutdown();
     }
 
     @Test
