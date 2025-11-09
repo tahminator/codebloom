@@ -2,7 +2,6 @@ package com.patina.codebloom.scheduled.pg;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -44,22 +43,22 @@ public class JobNotifyListener {
     }
 
     @PostConstruct
-    void init() {
+    protected void init() {
         VTPOOL.submit(this::listenLoop);
     }
 
     @PreDestroy
-    private void shutdown() {
-        VTPOOL.shutdown();
+    protected void shutdown() {
+        VTPOOL.shutdownNow();
     }
 
     // used for testing only, hence package-private
     static void forceShutDown() {
-        VTPOOL.shutdown();
+        VTPOOL.shutdownNow();
     }
 
     void listenLoop() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 PGConnection pgConn = conn.unwrap(PGConnection.class);
 
@@ -67,19 +66,25 @@ public class JobNotifyListener {
                     stmt.execute("LISTEN \"jobInsertChannel\"");
                     log.info("Subscribed to jobInsertChannel");
 
-                    while (true) {
-                        Optional<PGNotification[]> notifications = Optional.ofNullable(pgConn.getNotifications(500));
-                        notifications.ifPresent(notis -> {
-                            for (var n : notis) {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        PGNotification[] notifications = pgConn.getNotifications(500);
+
+                        if (notifications != null) {
+                            for (var n : notifications) {
                                 String payload = n.getParameter();
                                 handleNotification(payload);
                             }
-                        });
+                        }
 
                         Thread.sleep(1000);
                     }
                 }
             } catch (Exception e) {
+                if (Thread.currentThread().isInterrupted()) {
+                    log.info("Listener interrupted, closing...");
+                    break;
+                }
+
                 log.error("Failed to listen to notifications", e);
                 reporter.error(Report.builder()
                                 .environments(env.getActiveProfiles())
@@ -98,7 +103,6 @@ public class JobNotifyListener {
     }
 
     void handleNotification(final String payload) {
-        log.info("PAYLOAD CALLED! - {}", payload);
         leetcodeQuestionProcessService.drainQueue();
     }
 }

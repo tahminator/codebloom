@@ -52,7 +52,6 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
     }
 
     @Override
-    @LogExecutionTime
     public LeetcodeQuestion findQuestionBySlug(final String slug) {
         waitForToken();
         return super.findQuestionBySlug(slug);

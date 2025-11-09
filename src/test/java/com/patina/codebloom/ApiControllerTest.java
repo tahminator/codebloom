@@ -11,8 +11,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.config.TestJobNotifyListener;
 import com.patina.codebloom.utilities.ServerMetadataObject;
 
 import io.restassured.RestAssured;
@@ -20,6 +22,7 @@ import io.restassured.common.mapper.TypeRef;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Import(TestJobNotifyListener.class)
 public class ApiControllerTest {
     @LocalServerPort
     private int port;

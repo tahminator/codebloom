@@ -96,4 +96,16 @@ public class JobNotifyListenerTest {
         verify(jobNotifyListener, times(1)).listenLoop();
         verify(jobNotifyListener, times(2)).handleNotification(any());
     }
+
+    @Test
+    void expectExceptionToTriggerReporterError() throws Exception {
+        SQLException sqlException = new SQLException("Simulated failure");
+        when(conn.unwrap(any())).thenThrow(sqlException);
+
+        jobNotifyListener.init();
+
+        Thread.sleep(500);
+
+        verify(reporter, atLeastOnce()).error(argThat(report -> report.getData().contains("Simulated failure")));
+    }
 }
