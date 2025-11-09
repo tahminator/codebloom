@@ -295,7 +295,7 @@ jobs:
               run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
 
             - name: Transform App Spec with secrets
-              run: bash .github/scripts/transform-yaml-with-env.sh .do/prod/app.yml .env.staging
+              run: bash .github/scripts/transform-yaml-with-env.sh .do/prod/app.yml .env.production
 
             - name: Update App Spec on DigitalOcean
               run: |
