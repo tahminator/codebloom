@@ -74,8 +74,6 @@ class RateLimitingFilterTest extends NoJdaRequired {
 
                 var apiResponder = RestAssured.given()
                                 .when()
-                                // Everyone should have this user ID on their dev db from the repeated
-                                // migration.
                                 .header("Content-Type", "application/json")
                                 .get("/api")
                                 .then()
