@@ -41,13 +41,15 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
     }
 
     @Override
-    public DiscordClub createDiscordClub(final DiscordClub discordClub) {
+    public void createDiscordClub(final DiscordClub discordClub) {
         discordClub.setId(UUID.randomUUID().toString());
         String sql = """
                         INSERT INTO "DiscordClub"
-                            (id, name, description, tag, createdAt)
+                            (id, name, description, tag)
                         VALUES
-                            (:id, :name, :description, :tag, :createdAt)
+                            (:id, :name, :description, :tag)
+                        RETURNING
+                            "createdAt"
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -61,8 +63,6 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                     discordClub.setCreatedAt(StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class)));
                 }
             }
-            stmt.executeUpdate();
-            return discordClub;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create DiscordClub", e);
         }
@@ -102,7 +102,7 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                             "DiscordClub"
                         SET
                             "name" = :name,
-                            "description" = :description
+                            "description" = :description,
                             "tag" = :tag
                         WHERE
                             id = :id
