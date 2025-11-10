@@ -130,9 +130,9 @@ export default function MiniLeaderboardDesktop() {
                     },
                   }}
                   style={{
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer',
-                    textDecoration: 'none',
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                    textDecoration: "none",
                   }}
                 >
                   <Flex
@@ -162,11 +162,7 @@ export default function MiniLeaderboardDesktop() {
                                   color={theme.colors.patina[4]}
                                   size={18}
                                 />
-                                <Text
-                                  fw={600}
-                                  size="md"
-                                  truncate
-                                >
+                                <Text fw={600} size="md" truncate>
                                   {entry.nickname}
                                 </Text>
                               </Flex>
@@ -176,19 +172,13 @@ export default function MiniLeaderboardDesktop() {
                         <Flex gap="md" wrap="wrap">
                           <Flex align="center" gap={6}>
                             <FaDiscord size={16} />
-                            <Text
-                              size="sm"
-                              truncate
-                            >
+                            <Text size="sm" truncate>
                               {entry.discordName}
                             </Text>
                           </Flex>
                           <Flex align="center" gap={6}>
                             <SiLeetcode size={16} />
-                            <Text
-                              size="sm"
-                              truncate
-                            >
+                            <Text size="sm" truncate>
                               {entry.leetcodeUsername}
                             </Text>
                           </Flex>

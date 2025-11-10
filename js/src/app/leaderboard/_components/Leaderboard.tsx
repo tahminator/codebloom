@@ -128,48 +128,53 @@ export default function LeaderboardIndex() {
         direction={{ base: "column", sm: "row" }}
         gap="md"
       >
-        <FilterDropdown style={{ marginLeft: 'auto', display: 'block' }} buttonName="Filters">
-        {schoolFF &&
-          ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
-            <FilterDropdownItem
-              key={tagEnum}
-              name={() => {
-                const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
-
-                return (
-                  <Flex gap={"xs"} align={"center"}>
-                    {metadata.shortName}
-                    <Image
-                      src={metadata.icon}
-                      alt={metadata.alt}
-                      style={{ height: '2em', width: 'auto' }}
-                    />
-                  </Flex>
-                );
-              }}
-              value={filters[tagEnum]}
-              toggle={() => toggleFilter(tagEnum)}
-            />
-          ))}
-        <FilterDropdownItem
-          value={globalIndex}
-          toggle={toggleGlobalIndex}
-          disabled={!isAnyFilterEnabled}
-          switchMode
-          name={
-            <Flex gap="xs" align="center">Toggle Global Rank</Flex>
-          }
-        />
-        <Button
-          variant="subtle"
-          color="red"
-          onClick={() => onFilterReset()}
-          fullWidth
-          disabled={!isAnyFilterEnabled && !globalIndex}
+        <FilterDropdown
+          style={{ marginLeft: "auto", display: "block" }}
+          buttonName="Filters"
         >
-          Clear Filters
-        </Button>
-      </FilterDropdown>
+          {schoolFF &&
+            ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
+              <FilterDropdownItem
+                key={tagEnum}
+                name={() => {
+                  const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+
+                  return (
+                    <Flex gap={"xs"} align={"center"}>
+                      {metadata.shortName}
+                      <Image
+                        src={metadata.icon}
+                        alt={metadata.alt}
+                        style={{ height: "2em", width: "auto" }}
+                      />
+                    </Flex>
+                  );
+                }}
+                value={filters[tagEnum]}
+                toggle={() => toggleFilter(tagEnum)}
+              />
+            ))}
+          <FilterDropdownItem
+            value={globalIndex}
+            toggle={toggleGlobalIndex}
+            disabled={!isAnyFilterEnabled}
+            switchMode
+            name={
+              <Flex gap="xs" align="center">
+                Toggle Global Rank
+              </Flex>
+            }
+          />
+          <Button
+            variant="subtle"
+            color="red"
+            onClick={() => onFilterReset()}
+            fullWidth
+            disabled={!isAnyFilterEnabled && !globalIndex}
+          >
+            Clear Filters
+          </Button>
+        </FilterDropdown>
       </Flex>
       <SearchBox
         query={searchQuery}
@@ -200,8 +205,8 @@ export default function LeaderboardIndex() {
                   },
                 }}
                 style={{
-                  transition: 'all 0.2s ease',
-                  textDecoration: 'none',
+                  transition: "all 0.2s ease",
+                  textDecoration: "none",
                 }}
               >
                 <Flex
@@ -231,10 +236,7 @@ export default function LeaderboardIndex() {
                                 color={theme.colors.patina[4]}
                                 size={18}
                               />
-                              <Text
-                                fw={600}
-                                size="md"
-                              >
+                              <Text fw={600} size="md">
                                 {entry.nickname}
                               </Text>
                             </Flex>
@@ -253,29 +255,16 @@ export default function LeaderboardIndex() {
                       >
                         <Flex align="center" gap={6}>
                           <FaDiscord size={16} />
-                          <Text
-                            size="sm"
-                          >
-                            {entry.discordName}
-                          </Text>
+                          <Text size="sm">{entry.discordName}</Text>
                         </Flex>
                         <Flex align="center" gap={6}>
                           <SiLeetcode size={16} />
-                          <Text
-                            size="sm"
-                          >
-                            {entry.leetcodeUsername}
-                          </Text>
+                          <Text size="sm">{entry.leetcodeUsername}</Text>
                         </Flex>
                       </Flex>
                     </Flex>
                   </Flex>
-                  <Text
-                    size="lg"
-                    fw={600}
-                    miw={100}
-                    ta="right"
-                  >
+                  <Text size="lg" fw={600} miw={100} ta="right">
                     {entry.totalScore} Pts
                   </Text>
                 </Flex>
