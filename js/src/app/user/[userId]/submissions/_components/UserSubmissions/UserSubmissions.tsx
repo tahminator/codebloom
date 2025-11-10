@@ -22,6 +22,7 @@ import {
   Flex,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import TopicFilterPopover from "../TopicFilters/TopicFilterPopover";
@@ -47,6 +48,8 @@ export default function UserSubmissions({ userId }: { userId: string }) {
     tieToUrl: true,
     pageSize: 15,
   });
+
+  const selectedTopicsSet = useMemo(() => new Set(topics), [topics]);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -83,6 +86,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
           <FilterDropdown buttonName="Filters">
             <TopicFilterPopover
               value={topics}
+              selectedTopicsSet={selectedTopicsSet}
               onChange={setTopics}
               onClear={clearTopics}
             />
