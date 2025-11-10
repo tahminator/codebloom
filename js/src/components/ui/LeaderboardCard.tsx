@@ -88,7 +88,7 @@ export default function LeaderboardCard({
       <Text ta="center" size="xl" fw={isTopThree ? 800 : 500}>
         {placeString}
       </Text>
-      <Stack gap={4} align="center" className="my-auto">
+      <Stack gap={4} align="center" my="auto">
         {nickname && (
           <Tooltip
             label={
@@ -100,7 +100,7 @@ export default function LeaderboardCard({
               <Text
                 ta="center"
                 fw={isTopThree ? 700 : 600}
-                className="whitespace-nowrap overflow-hidden text-ellipsis"
+                truncate
                 style={{
                   fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
                 }}
@@ -120,7 +120,7 @@ export default function LeaderboardCard({
         <Text
           ta="center"
           fw={isTopThree ? 600 : 500}
-          className="whitespace-nowrap overflow-hidden text-ellipsis"
+          truncate
           style={{
             fontSize: `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
           }}
@@ -130,7 +130,7 @@ export default function LeaderboardCard({
         <Text
           ta="center"
           fw={isTopThree ? 500 : 400}
-          className="whitespace-nowrap text-[0.95rem]"
+          style={{ fontSize: "0.95rem" }}
         >
           <SiLeetcode className="inline" /> {leetcodeUsername}
         </Text>

@@ -12,6 +12,7 @@ import {
   SegmentedControl,
   Text,
   Tooltip,
+  Card,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
@@ -63,7 +64,14 @@ export default function MiniLeaderboardMobile() {
             radius={"md"}
           />
         )}
-        <div className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-4 mt=4 mb-8">
+        <Flex 
+          direction={{ base: "column", sm: "row" }}
+          align={{ base: "center", sm: "flex-end" }}
+          justify="center"
+          gap="md"
+          mt="md"
+          mb="xl"
+        >
           {first && (
             <LeaderboardCard
               placeString={getOrdinal(first.index)}
@@ -103,20 +111,31 @@ export default function MiniLeaderboardMobile() {
               isLoading={isPlaceholderData}
             />
           )}
-        </div>
+        </Flex>
         {leaderboardData.items.length > 3 && (
-          <Flex direction="column" gap="xs" mt="1rem" mb="1rem">
+          <Flex direction="column" gap="xs" mt="md" mb="md">
             {leaderboardData.items.map((entry, index) => {
               if ([0, 1, 2].includes(index)) return null;
               return (
-                <Flex
+                <Card
                   key={entry.id}
                   component={Link}
                   to={`/user/${entry.id}`}
+                  withBorder
+                  radius="md"
+                  padding="lg"
                   bg={theme.colors.dark[7]}
-                  p="lg"
-                  className="border border-dark-3 rounded-lg transition-all cursor-pointer no-underline text-inherit hover:shadow-md"
-                >
+                  styles={{
+                    root: {
+                      borderColor: theme.colors.dark[2],
+                    },
+                  }}
+                  style={{
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                  }}
+                  >
                   <Flex
                     justify="space-between"
                     align="center"
@@ -148,7 +167,7 @@ export default function MiniLeaderboardMobile() {
                                 <Text
                                   fw={600}
                                   size="sm"
-                                  className="whitespace-nowrap overflow-hidden text-ellipsis"
+                                  truncate
                                 >
                                   {entry.nickname}
                                 </Text>
@@ -161,7 +180,7 @@ export default function MiniLeaderboardMobile() {
                             <FaDiscord size={14} />
                             <Text
                               size="xs"
-                              className="whitespace-nowrap overflow-hidden text-ellipsis"
+                              truncate
                               maw={120}
                             >
                               {entry.discordName}
@@ -171,7 +190,7 @@ export default function MiniLeaderboardMobile() {
                             <SiLeetcode size={14} />
                             <Text
                               size="xs"
-                              className="whitespace-nowrap overflow-hidden text-ellipsis"
+                              truncate
                             >
                               {entry.leetcodeUsername}
                             </Text>
@@ -179,11 +198,11 @@ export default function MiniLeaderboardMobile() {
                         </Flex>
                       </Flex>
                     </Flex>
-                    <Text size="sm" fw={600} miw={70} className="text-right">
+                    <Text size="sm" fw={600} miw={70} ta="right">
                       {entry.totalScore} Pts
                     </Text>
                   </Flex>
-                </Flex>
+                </Card>
               );
             })}
           </Flex>
@@ -196,7 +215,7 @@ export default function MiniLeaderboardMobile() {
         >
           View all
         </Button>
-      </div>
+        </div>
     </>
   );
 }
