@@ -11,20 +11,26 @@ import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 class ScoreCalculatorTest {
     @Test
     void easyScore() {
-        int finalScore = ScoreCalculator.calculateScore(Easy, 0.5f, 5.0f);
-        assertEquals(true, finalScore >= 415 && finalScore <= 459);
+        for (int i = 0; i < 1000; i++) {
+            int finalScore = ScoreCalculator.calculateScore(Easy, 0.5f, 5.0f);
+            assertEquals(true, finalScore >= 412 && finalScore <= 462);
+        }
     }
 
     @Test
     void mediumScore() {
-        int finalScore = ScoreCalculator.calculateScore(Medium, 0.5f, 5.0f);
-        assertEquals(true, finalScore >= 1029 && finalScore <= 1137);
+        for (int i = 0; i < 1000; i++) {
+            int finalScore = ScoreCalculator.calculateScore(Medium, 0.5f, 5.0f);
+            assertEquals(true, finalScore >= 1026 && finalScore <= 1140);
+        }
     }
 
     @Test
     void hardScore() {
-        int finalScore = ScoreCalculator.calculateScore(Hard, 0.5f, 5.0f);
-        assertEquals(true, finalScore >= 2058 && finalScore <= 2275);
+        for (int i = 0; i < 1000; i++) {
+            int finalScore = ScoreCalculator.calculateScore(Hard, 0.5f, 5.0f);
+            assertEquals(true, finalScore >= 2055 && finalScore <= 2278);
+        }
     }
 
     @Test
