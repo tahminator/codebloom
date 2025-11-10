@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 
 type TopicFilterPopoverProps = {
   value: QuestionTopicDtoTopic[];
+  selectedTopicsSet: Set<QuestionTopicDtoTopic>;
   onChange: (topics: QuestionTopicDtoTopic[]) => void;
   onClear: () => void;
 };
@@ -14,6 +15,7 @@ const leetcodeTopics = ApiUtils.getAllTopicEntries();
 
 export default function TopicFilterPopover({
   value,
+  selectedTopicsSet,
   onChange,
   onClear,
 }: TopicFilterPopoverProps) {
@@ -23,13 +25,13 @@ export default function TopicFilterPopover({
   const filteredTopics = useMemo(
     () =>
       Object.entries(leetcodeTopics).filter(([key, topic]) => {
-        if (value.includes(key as QuestionTopicDtoTopic)) {
+        if (selectedTopicsSet.has(key as QuestionTopicDtoTopic)) {
           return true;
         }
 
         return ApiUtils.matchTopic(topic, search);
       }),
-    [value, search],
+    [selectedTopicsSet, search],
   );
 
   return (
