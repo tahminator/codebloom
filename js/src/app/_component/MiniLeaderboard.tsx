@@ -126,7 +126,7 @@ export default function MiniLeaderboardDesktop() {
                   bg={theme.colors.dark[7]}
                   styles={{
                     root: {
-                      borderColor: theme.colors.dark[2],
+                      borderColor: theme.colors.dark[3],
                     },
                   }}
                   style={{
