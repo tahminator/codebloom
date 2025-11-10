@@ -2,6 +2,7 @@ package com.patina.codebloom.common.db.models.discord;
 
 import java.time.OffsetDateTime;
 
+import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.usertag.Tag;
@@ -24,6 +25,7 @@ public class DiscordClub {
     @NotNullColumn
     private String name;
 
+    @NullColumn
     private String description;
 
     @NotNullColumn
@@ -34,5 +36,8 @@ public class DiscordClub {
 
     @NullColumn
     private OffsetDateTime deletedAt;
+
+    @JoinColumn
+    private DiscordClubMetadata discordClubMetadata;
 
 }

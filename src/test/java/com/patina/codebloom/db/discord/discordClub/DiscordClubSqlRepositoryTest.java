@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.discord.DiscordClub;
+import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.discord.discordClub.DiscordClubSqlRepository;
+import com.patina.codebloom.common.db.repos.discord.discordClubMetadata.DiscordClubMetadataSqlRepository;
 import com.patina.codebloom.db.BaseRepositoryTest;
 
 @SpringBootTest
@@ -29,34 +31,57 @@ import com.patina.codebloom.db.BaseRepositoryTest;
 public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
 
     private DiscordClubSqlRepository repo;
+    private DiscordClubMetadataSqlRepository metadataRepo;
+
     private DiscordClub testDiscordClub;
     private DiscordClub deletableDiscordClub;
+    private DiscordClubMetadata testDiscordClubMetadata;
 
     @Autowired
-    public DiscordClubSqlRepositoryTest(final DiscordClubSqlRepository repo) {
+    public DiscordClubSqlRepositoryTest(final DiscordClubSqlRepository repo, final DiscordClubMetadataSqlRepository metadataRepo) {
         this.repo = repo;
+        this.metadataRepo = metadataRepo;
     }
 
     @BeforeAll
     void createDiscordClub() {
         long timestamp = System.currentTimeMillis();
+
         testDiscordClub = DiscordClub.builder()
                         .name("Test Discord Club")
                         .description("Integration test Discord Club at " + timestamp)
                         .tag(Tag.Nyu)
                         .createdAt(OffsetDateTime.now())
                         .build();
+
         repo.createDiscordClub(testDiscordClub);
+
+        DiscordClubMetadata metadata = DiscordClubMetadata.builder()
+                        .guildId("test guildId")
+                        .leaderboardChannelId("test leaderboardChannelId")
+                        .discordClubId(testDiscordClub.getId())
+                        .build();
+
+        metadataRepo.createDiscordClubMetadata(metadata);
+
         testDiscordClub = repo.getDiscordClubById(testDiscordClub.getId());
-        assertNotNull(testDiscordClub, "Test discord club should be created and retrievable.");
+        assertNotNull(testDiscordClub.getDiscordClubMetadata(), "Metadata should be attached to the club after fetching.");
+        assertEquals("test guildId", testDiscordClub.getDiscordClubMetadata().getGuildId());
     }
 
     @AfterAll
     void cleanUp() {
+        if (testDiscordClubMetadata != null && testDiscordClubMetadata.getId() != null) {
+            boolean isSuccessful = metadataRepo.deleteDiscordClubMetadataById(testDiscordClubMetadata.getId());
+            if (!isSuccessful) {
+                fail("Failed deleting discord club metadata by id.");
+            }
+        }
+
         if (testDiscordClub != null && testDiscordClub.getId() != null) {
             boolean isSuccessful = repo.deleteDiscordClubById(testDiscordClub.getId());
             if (!isSuccessful) {
-                fail("Failed deleting club by id.");
+                fail("Failed deleting discord club by id.");
             }
         }
     }
@@ -72,6 +97,20 @@ public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(2)
+    void testGetMetadataByClubId() {
+        String clubId = testDiscordClub.getId();
+        assertNotNull(clubId, "Discord club id should not be null.");
+
+        DiscordClubMetadata foundMetadata = metadataRepo.getMetadataByClubId(clubId);
+
+        assertNotNull(foundMetadata, "Metadata should be found for the given club ID.");
+        assertEquals(testDiscordClubMetadata.getGuildId(), foundMetadata.getGuildId());
+        assertEquals(testDiscordClubMetadata.getLeaderboardChannelId(), foundMetadata.getLeaderboardChannelId());
+        assertEquals(clubId, foundMetadata.getDiscordClubId());
+    }
+
+    @Test
+    @Order(3)
     void testUpdateDiscordClub() {
         DiscordClub updatedDiscordClub = DiscordClub.builder()
                         .id(testDiscordClub.getId())
@@ -89,7 +128,7 @@ public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     void testDeleteDiscordClubById() {
         long timestamp = System.currentTimeMillis();
         deletableDiscordClub = DiscordClub.builder()

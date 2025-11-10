@@ -127,4 +127,30 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
         }
     }
 
+    @Override
+    public DiscordClubMetadata getMetadataByClubId(final String id) {
+        String sql = """
+                        SELECT
+                            id,
+                            "guildId",
+                            "leaderboardChannelId",
+                            "discordClubId"
+                        FROM
+                            "DiscordClubMetadata"
+                        WHERE
+                            "discordClubId" = :id
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetToDiscordClubMetadata(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get metadata by club id", e);
+        }
+        return null;
+    }
+
 }

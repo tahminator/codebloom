@@ -19,4 +19,5 @@ public interface DiscordClubRepository {
     DiscordClub updateDiscordClub(DiscordClub discordClub);
 
     boolean deleteDiscordClubById(String id);
+
 }
