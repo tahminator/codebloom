@@ -24,7 +24,7 @@ jobs:
             const ME = context.payload.pull_request.user.login;
             const OWNER = 'tahminator';
             const GUARDIANS_OF_THE_GALAXY = (() => {
-              let initialGuardians = ['angelayu0530', 'Arshadul-Monir'];
+              let initialGuardians = ['angelayu0530'];
 
               initialGuardians = initialGuardians.filter(name => name !== ME);
 
