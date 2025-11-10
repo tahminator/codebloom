@@ -28,8 +28,10 @@ import java.util.List;
 public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
     private QuestionTopicRepository questionTopicRepository;
     private final String mockQuestionId = "c9857a8a-9d0b-4d2e-b73c-3af2425bdca6";
+    private final String mockQuestionBankId = "165dd000-c310-11f0-8d3a-461b1b1abee8";
 
     private QuestionTopic testQuestionTopic;
+    private QuestionTopic testQuestionBankTopic;
 
     @Autowired
     public QuestionTopicRepositoryTest(final QuestionTopicRepository questionTopicRepository) {
@@ -44,12 +46,20 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
                         .topicSlug("array")
                         .build();
 
+        testQuestionBankTopic = QuestionTopic.builder()
+                        .questionBankId(mockQuestionBankId)
+                        .topic(LeetcodeTopicEnum.ARRAY)
+                        .topicSlug("array")
+                        .build();
+
         questionTopicRepository.createQuestionTopic(testQuestionTopic);
+        questionTopicRepository.createQuestionTopic(testQuestionBankTopic);
     }
 
     @AfterAll
     void cleanUp() {
-        boolean isSuccessful = questionTopicRepository.deleteQuestionTopicById(testQuestionTopic.getId());
+        boolean isSuccessful = questionTopicRepository.deleteQuestionTopicById(testQuestionTopic.getId())
+                            && questionTopicRepository.deleteQuestionTopicById(testQuestionBankTopic.getId());
         if (!isSuccessful) {
             fail("Failed to delete test question");
         }
@@ -117,6 +127,20 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
             log.info("newQuestionTopic: {}", newQuestionTopic);
             log.info("testQuestionTopic: {}", testQuestionTopic);
             fail("testFindQuestionTopicById failed: newQuestionTopic does not equal to testQuestionTopic");
+        }
+    }
+
+    @Test
+    @Order(5)
+    void testFindQuestionTopicsByQuestionBankId() {
+        List<QuestionTopic> questionBankTopics = questionTopicRepository.findQuestionTopicsByQuestionBankId(mockQuestionBankId);
+
+        assertNotNull(questionBankTopics, "Retrieved question topic list should not be null");
+
+        if (!questionBankTopics.contains(testQuestionBankTopic)) {
+            log.info("questionBankTopics: {}", questionBankTopics);
+            log.info("testQuestionBankTopic: {}", testQuestionBankTopic);
+            fail("testFindQuestionTopicsByQuestionBankId failed: testQuestionBankTopic is not in questionTopics");
         }
     }
 }

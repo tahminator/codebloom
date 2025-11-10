@@ -23,6 +23,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                         .id(resultSet.getString("id"))
                         .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
                         .questionId(resultSet.getString("questionId"))
+                        .questionBankId(resultSet.getString("questionBankId"))
                         .topicSlug(resultSet.getString("topicSlug"))
                         .topic(LeetcodeTopicEnum.fromValue(resultSet.getString("topic")))
                         .build();
@@ -71,6 +72,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                                 SELECT
                                     id,
                                     "questionId",
+                                    "questionBankId",
                                     "topicSlug",
                                     "createdAt",
                                     "topic"
@@ -133,9 +135,9 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
     public void createQuestionTopic(final QuestionTopic questionTopic) {
         String sql = """
                                         INSERT INTO "QuestionTopic"
-                                            ("id", "questionId", "topicSlug", "topic")
+                                            ("id", "questionId", "questionBankId" "topicSlug", "topic")
                                         VALUES
-                                            (:id, :questionId, :topicSlug, :topic)
+                                            (:id, :questionId, :questionBankId, :topicSlug, :topic)
                                         RETURNING
                                             "createdAt"
                         """;
@@ -144,7 +146,19 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
-            stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
+            
+            if (questionTopic.getQuestionId() == null) {
+                stmt.setNull("questionId", java.sql.Types.NULL);
+            } else {
+                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
+            }
+            
+            if (questionTopic.getQuestionBankId() == null) {
+                stmt.setNull("questionBankId", java.sql.Types.NULL);
+            } else {
+                stmt.setObject("questionBankId", UUID.fromString(questionTopic.getQuestionBankId()));
+            }
+
             stmt.setString("topicSlug", questionTopic.getTopicSlug());
             stmt.setObject("topic", questionTopic.getTopic().getLeetcodeEnum(), java.sql.Types.OTHER);
 
@@ -166,6 +180,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                                             "QuestionTopic"
                                         SET
                                             "questionId" = :questionId,
+                                            "questionBankId" = :questionBankId,
                                             "topicSlug" = :topicSlug,
                                             "topic"  = :topic
                                         WHERE
@@ -174,7 +189,19 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
-            stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
+
+            if (questionTopic.getQuestionId() == null) {
+                stmt.setNull("questionId", java.sql.Types.NULL);
+            } else {
+                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
+            }
+            
+            if (questionTopic.getQuestionBankId() == null) {
+                stmt.setNull("questionId", java.sql.Types.NULL);
+            } else {
+                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionBankId()));
+            }
+
             stmt.setString("topicSlug", questionTopic.getTopicSlug());
             stmt.setObject("topic", questionTopic.getTopic().getLeetcodeEnum(), java.sql.Types.OTHER);
 
