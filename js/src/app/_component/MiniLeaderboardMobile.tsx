@@ -64,7 +64,7 @@ export default function MiniLeaderboardMobile() {
             radius={"md"}
           />
         )}
-        <Flex 
+        <Flex
           direction={{ base: "column", sm: "row" }}
           align={{ base: "center", sm: "flex-end" }}
           justify="center"
@@ -131,11 +131,11 @@ export default function MiniLeaderboardMobile() {
                     },
                   }}
                   style={{
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer',
-                    textDecoration: 'none',
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                    textDecoration: "none",
                   }}
-                  >
+                >
                   <Flex
                     justify="space-between"
                     align="center"
@@ -164,11 +164,7 @@ export default function MiniLeaderboardMobile() {
                                   color={theme.colors.patina[4]}
                                   size={16}
                                 />
-                                <Text
-                                  fw={600}
-                                  size="sm"
-                                  truncate
-                                >
+                                <Text fw={600} size="sm" truncate>
                                   {entry.nickname}
                                 </Text>
                               </Flex>
@@ -178,20 +174,13 @@ export default function MiniLeaderboardMobile() {
                         <Flex gap="sm" wrap="wrap">
                           <Flex align="center" gap={4}>
                             <FaDiscord size={14} />
-                            <Text
-                              size="xs"
-                              truncate
-                              maw={120}
-                            >
+                            <Text size="xs" truncate maw={120}>
                               {entry.discordName}
                             </Text>
                           </Flex>
                           <Flex align="center" gap={4}>
                             <SiLeetcode size={14} />
-                            <Text
-                              size="xs"
-                              truncate
-                            >
+                            <Text size="xs" truncate>
                               {entry.leetcodeUsername}
                             </Text>
                           </Flex>
@@ -215,7 +204,7 @@ export default function MiniLeaderboardMobile() {
         >
           View all
         </Button>
-        </div>
+      </div>
     </>
   );
 }
