@@ -12,7 +12,7 @@ public interface DiscordClubRepository {
      * <li>tag</li>
      * </ul>
      */
-    DiscordClub createDiscordClub(DiscordClub discordClub);
+    void createDiscordClub(DiscordClub discordClub);
 
     DiscordClub getDiscordClubById(String id);
 
