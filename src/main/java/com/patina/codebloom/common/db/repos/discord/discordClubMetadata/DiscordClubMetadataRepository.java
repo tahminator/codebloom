@@ -10,4 +10,6 @@ public interface DiscordClubMetadataRepository {
     DiscordClubMetadata updateDiscordClubMetadata(DiscordClubMetadata discordClubMetadata);
 
     boolean deleteDiscordClubMetadataById(String id);
+
+    DiscordClubMetadata getMetadataByClubId(String id);
 }

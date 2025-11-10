@@ -12,15 +12,19 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.discord.DiscordClub;
 import com.patina.codebloom.common.db.models.usertag.Tag;
+import com.patina.codebloom.common.db.repos.discord.discordClubMetadata.DiscordClubMetadataSqlRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 @Component
 public class DiscordClubSqlRepository implements DiscordClubRepository {
 
+    private final DiscordClubMetadataSqlRepository discordClubMetadataSqlRepository;
+
     private Connection conn;
 
-    public DiscordClubSqlRepository(final DbConnection dbConnection) {
+    public DiscordClubSqlRepository(final DbConnection dbConnection, final DiscordClubMetadataSqlRepository discordClubMetadataSqlRepository) {
         this.conn = dbConnection.getConn();
+        this.discordClubMetadataSqlRepository = discordClubMetadataSqlRepository;
     }
 
     private DiscordClub parseResultSetTDiscordClub(final ResultSet rs) throws SQLException {
@@ -36,6 +40,7 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                         .name(name)
                         .description(description)
                         .tag(tag)
+                        .discordClubMetadata(discordClubMetadataSqlRepository.getMetadataByClubId(id))
                         .createdAt(createdAt)
                         .build();
     }
