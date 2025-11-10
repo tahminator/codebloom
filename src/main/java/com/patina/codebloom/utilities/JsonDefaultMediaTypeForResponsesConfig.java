@@ -6,7 +6,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -15,16 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class JsonDefaultMediaTypeForResponsesConfig implements WebMvcConfigurer {
-    @Override
-    public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
-        configurer
-                        .favorParameter(false)
-                        .ignoreAcceptHeader(false)
-                        .defaultContentType(MediaType.APPLICATION_JSON)
-                        .mediaType("json", MediaType.APPLICATION_JSON)
-                        .mediaType("html", MediaType.TEXT_HTML);
-    }
-
     @Override
     public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
         for (HttpMessageConverter<?> converter : converters) {
