@@ -39,7 +39,7 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
         discordClubMetadata.setId(UUID.randomUUID().toString());
         String sql = """
                         INSERT INTO "DiscordClubMetadata"
-                            (id, guildId, leaderboardChannelId, discordClubId)
+                            (id, "guildId", "leaderboardChannelId", "discordClubId")
                         VALUES
                             (:id, :guildId, :leaderboardChannelId, :discordClubId)
                         """;
@@ -48,7 +48,7 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
             stmt.setObject("id", UUID.fromString(discordClubMetadata.getId()));
             stmt.setString("guildId", discordClubMetadata.getGuildId());
             stmt.setString("leaderboardChannelId", discordClubMetadata.getLeaderboardChannelId());
-            stmt.setObject("discordClubId", discordClubMetadata.getDiscordClubId());
+            stmt.setObject("discordClubId", UUID.fromString(discordClubMetadata.getDiscordClubId()));
 
             stmt.executeUpdate();
             return discordClubMetadata;
@@ -62,10 +62,14 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
     public DiscordClubMetadata getDiscordClubMetadataById(final String id) {
         String sql = """
                         SELECT
-                        id,
-                        "guildId",
-                        "leaderboardChannelId",
-                        "discordClubId"
+                            id,
+                            "guildId",
+                            "leaderboardChannelId",
+                            "discordClubId"
+                        FROM
+                            "DiscordClubMetadata"
+                        WHERE
+                            id = :id
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
@@ -86,8 +90,8 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
                         UPDATE
                             "DiscordClubMetadata"
                         SET
-                            "guildId" = :guildId
-                            "leaderboardChannelId" = :leaderboardChannelId
+                            "guildId" = :guildId,
+                            "leaderboardChannelId" = :leaderboardChannelId,
                             "discordClubId" = :discordClubId
                         WHERE
                             id = :id
@@ -97,7 +101,7 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
             stmt.setObject("id", UUID.fromString(discordClubMetadata.getId()));
             stmt.setString("guildId", discordClubMetadata.getGuildId());
             stmt.setString("leaderboardChannelId", discordClubMetadata.getLeaderboardChannelId());
-            stmt.setString("discordClubId", discordClubMetadata.getDiscordClubId());
+            stmt.setObject("discordClubId", UUID.fromString(discordClubMetadata.getDiscordClubId()));
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
                 return getDiscordClubMetadataById(discordClubMetadata.getId());
