@@ -1,6 +1,6 @@
 package com.patina.codebloom.common.db.models.discord;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
@@ -30,9 +30,9 @@ public class DiscordClub {
     private Tag tag;
 
     @NotNullColumn
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @NullColumn
-    private LocalDateTime deletedAt;
+    private OffsetDateTime deletedAt;
 
 }

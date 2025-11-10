@@ -5,25 +5,25 @@ import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepository {
 
     @Override
-    public DiscordClubMetadata createDiscordClubMetadata() {
+    public DiscordClubMetadata createDiscordClubMetadata(final DiscordClubMetadata discordClubMetadata) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'createDiscordClubMetadata'");
     }
 
     @Override
-    public DiscordClubMetadata getDiscordClubMetadataById(String id) {
+    public DiscordClubMetadata getDiscordClubMetadataById(final String id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getDiscordClubMetadataById'");
     }
 
     @Override
-    public void updateDiscordClubMetadata(DiscordClubMetadata discordClubMetadata) {
+    public void updateDiscordClubMetadata(final DiscordClubMetadata discordClubMetadata) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateDiscordClubMetadata'");
     }
 
     @Override
-    public void deleteDiscordClubMetadata(DiscordClubMetadata discordClubMetadata) {
+    public void deleteDiscordClubMetadata(final DiscordClubMetadata discordClubMetadata) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteDiscordClubMetadata'");
     }
