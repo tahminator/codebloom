@@ -121,7 +121,14 @@ export default function LeaderboardIndex() {
           />
         )}
       </Flex>
-      <FilterDropdown className="ml-auto block" buttonName="Filters">
+      <Flex
+        justify="space-between"
+        align="center"
+        mb="md"
+        direction={{ base: "column", sm: "row" }}
+        gap="md"
+      >
+        <FilterDropdown style={{ marginLeft: 'auto', display: 'block' }} buttonName="Filters">
         {schoolFF &&
           ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
             <FilterDropdownItem
@@ -135,7 +142,7 @@ export default function LeaderboardIndex() {
                     <Image
                       src={metadata.icon}
                       alt={metadata.alt}
-                      className="h-[2em] w-auto"
+                      style={{ height: '2em', width: 'auto' }}
                     />
                   </Flex>
                 );
@@ -150,7 +157,7 @@ export default function LeaderboardIndex() {
           disabled={!isAnyFilterEnabled}
           switchMode
           name={
-            <Box className="flex gap-2 items-center">Toggle Global Rank</Box>
+            <Flex gap="xs" align="center">Toggle Global Rank</Flex>
           }
         />
         <Button
@@ -163,6 +170,7 @@ export default function LeaderboardIndex() {
           Clear Filters
         </Button>
       </FilterDropdown>
+      </Flex>
       <SearchBox
         query={searchQuery}
         onChange={(event) => {
@@ -186,7 +194,15 @@ export default function LeaderboardIndex() {
                 radius="md"
                 withBorder
                 bg={theme.colors.dark[7]}
-                className="boarder-dark-5"
+                styles={{
+                  root: {
+                    borderColor: theme.colors.dark[5],
+                  },
+                }}
+                style={{
+                  transition: 'all 0.2s ease',
+                  textDecoration: 'none',
+                }}
               >
                 <Flex
                   direction="row"
@@ -194,12 +210,12 @@ export default function LeaderboardIndex() {
                   align="center"
                   gap="md"
                 >
-                  <Flex className="flex flex-1 item-center gap-4">
+                  <Flex align="center" gap="md">
                     <Text
                       size="xl"
                       fw={700}
                       c={theme.colors.patina[4]}
-                      className="min-w-[50px]"
+                      miw={50}
                     >
                       #{entry.index}
                     </Text>
@@ -218,7 +234,6 @@ export default function LeaderboardIndex() {
                               <Text
                                 fw={600}
                                 size="md"
-                                className="transition-all group-hover:text-blue-500"
                               >
                                 {entry.nickname}
                               </Text>
@@ -240,7 +255,6 @@ export default function LeaderboardIndex() {
                           <FaDiscord size={16} />
                           <Text
                             size="sm"
-                            className="transition-all group-hover:text-blue-500"
                           >
                             {entry.discordName}
                           </Text>
@@ -249,7 +263,6 @@ export default function LeaderboardIndex() {
                           <SiLeetcode size={16} />
                           <Text
                             size="sm"
-                            className="transition-all group-hover:text-blue-500"
                           >
                             {entry.leetcodeUsername}
                           </Text>
@@ -260,7 +273,8 @@ export default function LeaderboardIndex() {
                   <Text
                     size="lg"
                     fw={600}
-                    className="transition-all group-hover:text-white min-w-[100px] text-right"
+                    miw={100}
+                    ta="right"
                   >
                     {entry.totalScore} Pts
                   </Text>

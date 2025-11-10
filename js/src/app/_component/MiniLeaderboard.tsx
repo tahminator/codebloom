@@ -12,6 +12,7 @@ import {
   SegmentedControl,
   Text,
   Tooltip,
+  Card,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
@@ -63,11 +64,12 @@ export default function MiniLeaderboardDesktop() {
           />
         )}
         <Flex
-          className="flex-col sm:flex-row items-center sm:items-end"
+          direction={{ base: "column", sm: "row" }}
+          align={{ base: "center", sm: "flex-end" }}
           justify="center"
           gap="md"
-          mb="2rem"
-          mt="1rem"
+          mb="xl"
+          mt="md"
         >
           {second && (
             <LeaderboardCard
@@ -110,17 +112,28 @@ export default function MiniLeaderboardDesktop() {
           )}
         </Flex>
         {leaderboardData.items.length > 3 && (
-          <Flex direction="column" gap="xs" mt="1rem" mb="1rem">
+          <Flex direction="column" gap="xs" mt="md" mb="md">
             {leaderboardData.items.map((entry, index) => {
               if ([0, 1, 2].includes(index)) return null;
               return (
-                <Flex
+                <Card
                   key={entry.id}
                   component={Link}
                   to={`/user/${entry.id}`}
+                  withBorder
+                  radius="md"
+                  padding="lg"
                   bg={theme.colors.dark[7]}
-                  p="lg"
-                  className="border border-dark-3 rounded-lg transition-all cursor-pointer no-underline text-inherit hover:shadow-md"
+                  styles={{
+                    root: {
+                      borderColor: theme.colors.dark[2],
+                    },
+                  }}
+                  style={{
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                  }}
                 >
                   <Flex
                     justify="space-between"
@@ -152,7 +165,7 @@ export default function MiniLeaderboardDesktop() {
                                 <Text
                                   fw={600}
                                   size="md"
-                                  className="whitespace-nowrap overflow-hidden text-ellipsis"
+                                  truncate
                                 >
                                   {entry.nickname}
                                 </Text>
@@ -165,7 +178,7 @@ export default function MiniLeaderboardDesktop() {
                             <FaDiscord size={16} />
                             <Text
                               size="sm"
-                              className="whitespace-nowrap overflow-hidden text-ellipsis"
+                              truncate
                             >
                               {entry.discordName}
                             </Text>
@@ -174,7 +187,7 @@ export default function MiniLeaderboardDesktop() {
                             <SiLeetcode size={16} />
                             <Text
                               size="sm"
-                              className="whitespace-nowrap overflow-hidden text-ellipsis"
+                              truncate
                             >
                               {entry.leetcodeUsername}
                             </Text>
@@ -182,11 +195,11 @@ export default function MiniLeaderboardDesktop() {
                         </Flex>
                       </Flex>
                     </Flex>
-                    <Text size="md" fw={600} miw={90} className="text-right">
+                    <Text size="md" fw={600} miw={90} ta="right">
                       {entry.totalScore} Pts
                     </Text>
                   </Flex>
-                </Flex>
+                </Card>
               );
             })}
           </Flex>
