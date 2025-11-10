@@ -149,7 +149,7 @@ public class DuelManagerTest {
     }
 
     @Test
-    void testLeavePartySuccessWhenLobbyDoesNotExists() {
+    void testLeavePartySuccessWhenLobbyDoesNotExist() {
         when(env.isProd()).thenReturn(false);
 
         User user = createRandomUser();
