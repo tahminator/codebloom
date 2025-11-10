@@ -5,3 +5,9 @@ header {
     border-bottom: solid 1px grey;
     padding: 10px;
 }
+
+header > :nth-child(2) {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
