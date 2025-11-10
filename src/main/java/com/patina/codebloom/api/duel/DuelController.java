@@ -126,15 +126,47 @@ public class DuelController {
         return ResponseEntity.ok(ApiResponder.success("Party successfully joined!", Empty.of()));
     }
 
-    @Operation(summary = "Leave party", description = "WIP")
-    @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
+    @Operation(summary = "Leave party", description = "Leave the current lobby")
+    @ApiResponse(responseCode = "200", description = "Lobby left successfully")
+    @ApiResponse(responseCode = "400", description = "Player is not in a lobby")
+    @ApiResponse(responseCode = "500", description = "Failed to leave the lobby")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
     @PostMapping("/party/leave")
-    public ResponseEntity<ApiResponder<Empty>> leaveParty() {
+    public ResponseEntity<ApiResponder<Empty>> leaveParty(@Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
+        User user = authenticationObject.getUser();
+        String playerId = user.getId();
+
+        LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
+        if (existingLobbyPlayer == null) {
+            return ResponseEntity.badRequest()
+                            .body(ApiResponder.failure("You are not currently in a lobby."));
+        }
+
+        String lobbyId = existingLobbyPlayer.getLobbyId();
+
+        boolean deletedLobby = lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId());
+        if (!deletedLobby) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(ApiResponder.failure("Failed to leave the lobby. Please try again."));
+        }
+
+        Lobby lobby = lobbyRepository.findLobbyById(lobbyId);
+        if (lobby != null) {
+            int updatedPlayerCount = lobby.getPlayerCount() - 1;
+
+            if (updatedPlayerCount <= 0) {
+                lobbyRepository.deleteLobbyById(lobbyId);
+                return ResponseEntity.ok(ApiResponder.success("Successfully left the lobby.", Empty.of()));
+            } else {
+                lobby.setPlayerCount(updatedPlayerCount);
+                lobbyRepository.updateLobby(lobby);
+            }
+        }
+        return ResponseEntity.ok(ApiResponder.success("Successfully left the lobby.", Empty.of()));
     }
 
     @Operation(summary = "Create party", description = "Create a new lobby and become the host")
