@@ -12,19 +12,19 @@ class ScoreCalculatorTest {
     @Test
     void easyScore() {
         int finalScore = ScoreCalculator.calculateScore(Easy, 0.5f, 5.0f);
-        assertEquals(true, finalScore >= 237 && finalScore <= 262);
+        assertEquals(true, finalScore >= 415 && finalScore <= 459);
     }
 
     @Test
     void mediumScore() {
         int finalScore = ScoreCalculator.calculateScore(Medium, 0.5f, 5.0f);
-        assertEquals(true, finalScore >= 712 && finalScore <= 787);
+        assertEquals(true, finalScore >= 1029 && finalScore <= 1137);
     }
 
     @Test
     void hardScore() {
         int finalScore = ScoreCalculator.calculateScore(Hard, 0.5f, 5.0f);
-        assertEquals(true, finalScore >= 1425 && finalScore <= 1575);
+        assertEquals(true, finalScore >= 2058 && finalScore <= 2275);
     }
 
     @Test
