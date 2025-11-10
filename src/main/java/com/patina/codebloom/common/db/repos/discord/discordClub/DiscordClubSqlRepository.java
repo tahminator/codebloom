@@ -23,7 +23,7 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private DiscordClub mapRowTDiscordClub(final ResultSet rs) throws SQLException {
+    private DiscordClub parseResultSetTDiscordClub(final ResultSet rs) throws SQLException {
         var id = rs.getString("id");
         var name = rs.getString("name");
         var description = rs.getString("description");
@@ -70,20 +70,71 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
 
     @Override
     public DiscordClub getDiscordClubById(final String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDiscordClubById'");
+        String sql = """
+                        SELECT
+                            id,
+                            "name",
+                            "description",
+                            "tag",
+                            "createdAt"
+                        FROM
+                            "DiscordClub"
+                        WHERE
+                            id = :id
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetTDiscordClub(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get DiscordClub by id", e);
+        }
+        return null;
     }
 
     @Override
-    public void updateDiscordClub(final DiscordClub discordClub) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateDiscordClub'");
+    public DiscordClub updateDiscordClub(final DiscordClub discordClub) {
+        String sql = """
+                        UPDATE
+                            "DiscordClub"
+                        SET
+                            "name" = :name,
+                            "description" = :description
+                            "tag" = :tag
+                        WHERE
+                            id = :id
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(discordClub.getId()));
+            stmt.setString("name", discordClub.getName());
+            stmt.setString("description", discordClub.getDescription());
+            stmt.setObject("tag", discordClub.getTag() != null ? discordClub.getTag().name() : null, java.sql.Types.OTHER);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                return getDiscordClubById(discordClub.getId());
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update DiscordClub", e);
+        }
     }
 
     @Override
-    public void deleteDiscordClub(final DiscordClub discordClub) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteDiscordClub'");
+    public boolean deleteDiscordClubById(final String id) {
+        String sql = """
+                        DELETE FROM "DiscordClub"
+                        WHERE id = :id
+                        """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete DiscordClub by id", e);
+        }
     }
 
 }
