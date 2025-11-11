@@ -26,8 +26,6 @@ jobs:
             const GUARDIANS_OF_THE_GALAXY = (() => {
               let initialGuardians = ['angelayu0530'];
 
-              initialGuardians = initialGuardians.filter(name => name !== ME);
-
               return initialGuardians;
             })();
 
@@ -49,7 +47,8 @@ jobs:
 
             const hasOwner = ME === OWNER || approved.includes(OWNER);
 
-            const hasGuardian = GUARDIANS_OF_THE_GALAXY.some(u => approved.includes(u));
+            const guardiansWhoCanApprove = GUARDIANS_OF_THE_GALAXY.filter(u => u !== ME);
+            const hasGuardian = guardiansWhoCanApprove.length === 0 || guardiansWhoCanApprove.some(u => approved.includes(u));
 
             let state, description;
 
