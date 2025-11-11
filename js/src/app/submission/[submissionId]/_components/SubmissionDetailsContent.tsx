@@ -97,6 +97,8 @@ export default function SubmissionDetailsContent({
     if (!language) return undefined;
     return language === "python3" ? "python" : language;
   })();
+  const isProcessing =
+    !code || !language || language === "Unknown" || !runtime || !memory;
 
   return (
     <>
@@ -187,22 +189,46 @@ export default function SubmissionDetailsContent({
             />
           </Card>
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">
-            <Flex direction={"column"} gap={"md"} align={"center"}>
-              <Title order={3}>{capitalize(language ?? "Unknown")}</Title>
-              <Text>Runtime: {runtime ?? ""}</Text>
-              <Text>Memory: {memory ?? ""}</Text>
-            </Flex>
-            <SyntaxHighlighter
-              style={gruvboxDark}
-              customStyle={{
-                overflow: "auto",
-                minWidth: 0,
-                borderRadius: "8px",
-              }}
-              language={parsedLanguage}
-            >
-              {code ?? "No code available."}
-            </SyntaxHighlighter>
+            {isProcessing ?
+              <Flex
+                direction={"column"}
+                align={"center"}
+                gap={"lg"}
+                justify={"center"}
+                py={"xl"}
+              >
+                <Title order={4} style={{ color: "rgb(75,233,167)" }}>
+                  Data Currently Not Available
+                </Title>
+                <Text
+                  size="sm"
+                  style={{ color: "rgb(75,233,167)" }}
+                  ta="center"
+                >
+                  This submission is still being processed.
+                  <br />
+                  Please check back later.
+                </Text>
+              </Flex>
+            : <>
+                <Flex direction={"column"} gap={"md"} align={"center"}>
+                  <Title order={3}>{capitalize(language ?? "Unknown")}</Title>
+                  <Text>Runtime: {runtime ?? ""}</Text>
+                  <Text>Memory: {memory ?? ""}</Text>
+                </Flex>
+                <SyntaxHighlighter
+                  style={gruvboxDark}
+                  customStyle={{
+                    overflow: "auto",
+                    minWidth: 0,
+                    borderRadius: "8px",
+                  }}
+                  language={parsedLanguage}
+                >
+                  {code ?? "No code available."}
+                </SyntaxHighlighter>
+              </>
+            }
           </Card>
         </div>
       </Box>
