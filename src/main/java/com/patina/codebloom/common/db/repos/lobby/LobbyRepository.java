@@ -40,7 +40,7 @@ public interface LobbyRepository {
      * @param joinCode the lobby join code
      * @return the lobby if found, null otherwise
      */
-    Lobby findLobbyByJoinCode(String joinCode);
+    Lobby findLobbyByJoinCodeAndStatus(String joinCode, LobbyStatus status);
 
     /**
      * Finds all lobbies with a specific status.

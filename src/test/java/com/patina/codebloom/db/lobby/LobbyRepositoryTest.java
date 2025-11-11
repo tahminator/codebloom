@@ -108,11 +108,12 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(2)
-    void testFindLobbyByJoinCode() {
-        Lobby foundLobby = lobbyRepository.findLobbyByJoinCode(mockJoinCode);
+    void testFindLobbyByJoinCodeAndStatus() {
+        Lobby foundLobby = lobbyRepository.findLobbyByJoinCodeAndStatus(mockJoinCode, LobbyStatus.AVAILABLE);
         assertNotNull(foundLobby);
         assertEquals(testLobby.getId(), foundLobby.getId());
         assertEquals(mockJoinCode, foundLobby.getJoinCode());
+        assertEquals(LobbyStatus.AVAILABLE, foundLobby.getStatus());
     }
 
     @Test

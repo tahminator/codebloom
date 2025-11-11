@@ -98,7 +98,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Lobby findLobbyByJoinCode(final String joinCode) {
+    public Lobby findLobbyByJoinCodeAndStatus(final String joinCode, final LobbyStatus status) {
         String sql = """
                         SELECT
                             id,
@@ -112,17 +112,19 @@ public class LobbySqlRepository implements LobbyRepository {
                             "Lobby"
                         WHERE
                             "joinCode" = :joinCode
+                            AND status = :status
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("joinCode", joinCode);
+            stmt.setObject("status", status.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToLobby(rs);
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find lobby by join code", e);
+            throw new RuntimeException("Failed to find lobby by join code and status", e);
         }
 
         return null;
