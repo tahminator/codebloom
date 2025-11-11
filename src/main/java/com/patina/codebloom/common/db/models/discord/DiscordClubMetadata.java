@@ -8,12 +8,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 
 @Setter
 @Getter
 @Builder
 @ToString
 @EqualsAndHashCode
+@Jacksonized
 public class DiscordClubMetadata {
     @NotNullColumn
     private String id;

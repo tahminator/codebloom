@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,7 +50,6 @@ public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
         long timestamp = System.currentTimeMillis();
 
         testDiscordClub = DiscordClub.builder()
-                        .id(UUID.randomUUID().toString())
                         .name("Test Discord Club")
                         .description("Integration test Discord Club at " + timestamp)
                         .tag(Tag.Nyu)

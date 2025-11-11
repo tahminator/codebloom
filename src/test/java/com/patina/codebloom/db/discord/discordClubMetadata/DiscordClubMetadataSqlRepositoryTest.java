@@ -2,9 +2,9 @@ package com.patina.codebloom.db.discord.discordClubMetadata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,7 +43,6 @@ public class DiscordClubMetadataSqlRepositoryTest {
     @BeforeAll
     void createDiscordClubMetadata() {
         testDiscordClub = DiscordClub.builder()
-                        .id(UUID.randomUUID().toString())
                         .name("test club")
                         .description("test parent club")
                         .tag(Tag.Cornell)
@@ -113,7 +112,21 @@ public class DiscordClubMetadataSqlRepositoryTest {
         deletableDiscordClubMetadata = DiscordClubMetadata.builder()
                         .guildId("deletable metadata guildId")
                         .leaderboardChannelId("deletable metadata leaderboardChannelId")
-                        .discordClubId(null)
+                        .discordClubId(testDiscordClub.getId())
                         .build();
+
+        repo.createDiscordClubMetadata(deletableDiscordClubMetadata);
+        deletableDiscordClubMetadata = repo.getDiscordClubMetadataById(deletableDiscordClubMetadata.getId());
+
+        DiscordClubMetadata found = repo.getDiscordClubMetadataById(deletableDiscordClubMetadata.getId());
+        assertNotNull(found);
+        assertEquals(deletableDiscordClubMetadata.getId(), found.getId());
+        assertEquals(deletableDiscordClubMetadata.getGuildId(), found.getGuildId());
+
+        boolean deleted = repo.deleteDiscordClubMetadataById(deletableDiscordClubMetadata.getId());
+        assertTrue(deleted);
+
+        DiscordClubMetadata deletedFetched = repo.getDiscordClubMetadataById(deletableDiscordClubMetadata.getId());
+        assertNull(deletedFetched);
     }
 }

@@ -35,7 +35,7 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
     }
 
     @Override
-    public DiscordClubMetadata createDiscordClubMetadata(final DiscordClubMetadata discordClubMetadata) {
+    public void createDiscordClubMetadata(final DiscordClubMetadata discordClubMetadata) {
         discordClubMetadata.setId(UUID.randomUUID().toString());
         String sql = """
                         INSERT INTO "DiscordClubMetadata"
@@ -51,7 +51,6 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
             stmt.setObject("discordClubId", UUID.fromString(discordClubMetadata.getDiscordClubId()));
 
             stmt.executeUpdate();
-            return discordClubMetadata;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create DiscordClubMetadata", e);
         }

@@ -11,11 +11,23 @@ public interface DiscordClubRepository {
      * <li>name</li>
      * <li>tag</li>
      * </ul>
+     * optional fields:
+     * <ul>
+     * <li>description</li>
+     * </ul>
      */
     void createDiscordClub(DiscordClub discordClub);
 
     DiscordClub getDiscordClubById(String id);
 
+    /**
+     * @param discordClub - overridable fields:
+     * <ul>
+     * <li>name</li>
+     * <li>description</li>
+     * <li>tag</li>
+     * </ul>
+     */
     DiscordClub updateDiscordClub(DiscordClub discordClub);
 
     boolean deleteDiscordClubById(String id);
