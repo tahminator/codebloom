@@ -259,7 +259,7 @@ public class LobbySqlRepository implements LobbyRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find active lobby by lobby player id", e);
+            throw new RuntimeException("Failed to find available lobby by lobby player id", e);
         }
 
         return null;

@@ -166,7 +166,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void testFindAvailableLobbyByLobbyPlayerIdMocked() {
         Lobby activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
         assertNull(activeLobby);

@@ -66,7 +66,7 @@ public interface LobbyRepository {
     Lobby findActiveLobbyByLobbyPlayerId(String lobbyPlayerId);
 
     /**
-     * Finds active lobby for the given `Player` with a status of AVAILABLE.
+     * Finds available lobby for the given `Player` with a status of AVAILABLE.
      *
      * @param lobbyPlayerId the lobby player ID
      * @return the lobby if found, null otherwise
