@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.db.repos.discord.discordClubMetadata;
+package com.patina.codebloom.common.db.repos.discord.club.metadata;
 
 import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 

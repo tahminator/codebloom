@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.db.repos.discord.discordClubMetadata;
+package com.patina.codebloom.common.db.repos.discord.club.metadata;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

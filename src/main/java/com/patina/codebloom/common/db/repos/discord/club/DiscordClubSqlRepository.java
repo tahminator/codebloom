@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.db.repos.discord.discordClub;
+package com.patina.codebloom.common.db.repos.discord.club;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,7 +12,7 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.discord.DiscordClub;
 import com.patina.codebloom.common.db.models.usertag.Tag;
-import com.patina.codebloom.common.db.repos.discord.discordClubMetadata.DiscordClubMetadataSqlRepository;
+import com.patina.codebloom.common.db.repos.discord.club.metadata.DiscordClubMetadataSqlRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 @Component
