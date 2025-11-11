@@ -55,3 +55,36 @@ Object.typedFromEntries = function <
 >(entries: T) {
   return Object.fromEntries(entries) as { [K in T[number] as K[0]]: K[1] };
 };
+
+// monkey patch `fetch` to apply `Content-Type: application/json` if not defined.
+
+const originalFetch = window.fetch;
+
+window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  try {
+    const isApi = (() => {
+      if (typeof input === "string") {
+        return input.startsWith("/api");
+      } else if (input instanceof URL) {
+        return input.pathname.startsWith("/api");
+      }
+
+      throw new Error("fetch does not currently support Request.");
+    })();
+
+    if (isApi) {
+      const headers = new Headers(init?.headers);
+
+      if (!headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+      }
+
+      return originalFetch(input, { ...init, headers });
+    }
+
+    return originalFetch(input, init);
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+};
