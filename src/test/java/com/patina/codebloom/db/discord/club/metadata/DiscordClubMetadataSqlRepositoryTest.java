@@ -1,4 +1,4 @@
-package com.patina.codebloom.db.discord.discordClubMetadata;
+package com.patina.codebloom.db.discord.club.metadata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,8 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.patina.codebloom.common.db.models.discord.DiscordClub;
 import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 import com.patina.codebloom.common.db.models.usertag.Tag;
-import com.patina.codebloom.common.db.repos.discord.discordClub.DiscordClubSqlRepository;
-import com.patina.codebloom.common.db.repos.discord.discordClubMetadata.DiscordClubMetadataSqlRepository;
+import com.patina.codebloom.common.db.repos.discord.club.DiscordClubSqlRepository;
+import com.patina.codebloom.common.db.repos.discord.club.metadata.DiscordClubMetadataSqlRepository;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
