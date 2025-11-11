@@ -17,25 +17,6 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    testing:
-        name: Test
-        runs-on: ubuntu-latest
-
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v4
-
-          - name: Load secrets
-            uses: ./.github/composite/load-secrets
-            with:
-              GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-              GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-              UNLOAD_ENVIRONMENTS: ci,ci-app
-
-          - name: Test env
-            run: env
-
-
     backendPreTest:
         name: Backend Compile Test
         runs-on: ubuntu-latest

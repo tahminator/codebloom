@@ -1,0 +1,8 @@
+name: "Disable man-db"
+description: "Disable unnecessary man-db triggers (speed up CI time)"
+runs:
+  using: "composite"
+  steps:
+    - name: Check GPG secret key & passphrase exists
+      shell: bash
+      run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
