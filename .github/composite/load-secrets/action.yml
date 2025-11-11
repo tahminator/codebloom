@@ -12,6 +12,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Disable man-db
+      uses: ./.github/composite/disable-mandb
+
     - name: Check GPG secret key & passphrase exists
       shell: bash
       run: |
