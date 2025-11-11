@@ -23,7 +23,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.db.BaseRepositoryTest;
 
@@ -35,17 +39,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LobbyRepositoryTest extends BaseRepositoryTest {
     private LobbyRepository lobbyRepository;
+    private LobbyPlayerRepository lobbyPlayerRepository;
+    private UserRepository userRepository;
     private Lobby testLobby;
+    private User testUser;
     private String mockJoinCode = "TEST-" + UUID.randomUUID().toString().substring(0, 8);
     private String mockWinnerId = UUID.randomUUID().toString();
 
     @Autowired
-    public LobbyRepositoryTest(final LobbyRepository lobbyRepository) {
+    public LobbyRepositoryTest(final LobbyRepository lobbyRepository,
+                    final LobbyPlayerRepository lobbyPlayerRepository,
+                    final UserRepository userRepository) {
         this.lobbyRepository = lobbyRepository;
+        this.lobbyPlayerRepository = lobbyPlayerRepository;
+        this.userRepository = userRepository;
     }
 
     @BeforeAll
     void setup() {
+        testUser = User.builder()
+                        .id(UUID.randomUUID().toString())
+                        .discordId(String.valueOf(System.currentTimeMillis()))
+                        .discordName("TestUser")
+                        .admin(false)
+                        .verifyKey(UUID.randomUUID().toString())
+                        .build();
+
+        userRepository.createUser(testUser);
+
         testLobby = Lobby.builder()
                         .joinCode(mockJoinCode)
                         .status(LobbyStatus.AVAILABLE)
@@ -55,14 +76,29 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                         .build();
 
         lobbyRepository.createLobby(testLobby);
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                        .id(UUID.randomUUID().toString())
+                        .lobbyId(testLobby.getId())
+                        .playerId(testUser.getId())
+                        .points(0)
+                        .build();
+
+        lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
     }
 
     @AfterAll
     void cleanup() {
-        boolean isSuccessful = lobbyRepository.deleteLobbyById(testLobby.getId());
+        boolean lobbyDeleted = lobbyRepository.deleteLobbyById(testLobby.getId());
 
-        if (!isSuccessful) {
+        if (!lobbyDeleted) {
             fail("Failed to delete test lobby");
+        }
+
+        boolean userDeleted = userRepository.deleteUserById(testUser.getId());
+
+        if (!userDeleted) {
+            fail("Failed to delete test user");
         }
     }
 
@@ -114,5 +150,15 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         assertEquals(LobbyStatus.ACTIVE, updatedLobby.getStatus());
         assertEquals(2, updatedLobby.getPlayerCount());
         assertNull(updatedLobby.getWinnerId());
+    }
+
+    @Test
+    @Order(6)
+    void testFindActiveLobbyByLobbyPlayerId() {
+        Lobby activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(testUser.getId());
+        assertNotNull(activeLobby);
+        assertEquals(testLobby.getId(), activeLobby.getId());
+        assertEquals(LobbyStatus.ACTIVE, activeLobby.getStatus());
+        assertEquals(mockJoinCode, activeLobby.getJoinCode());
     }
 }
