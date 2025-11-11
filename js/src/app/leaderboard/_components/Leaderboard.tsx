@@ -242,8 +242,8 @@ export default function LeaderboardIndex() {
                             </Flex>
                           </Tooltip>
                           {tagFF && entry.tags && entry.tags.length > 0 && (
-                          <TagList tags={entry.tags} size={16} gap="xs" />
-                        )}
+                            <TagList tags={entry.tags} size={16} gap="xs" />
+                          )}
                         </Flex>
                       )}
                       <Flex

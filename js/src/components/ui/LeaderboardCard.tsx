@@ -89,7 +89,7 @@ export default function LeaderboardCard({
         {placeString}
       </Text>
       <Stack gap={4} align="center" my="auto">
-        {nickname ? (
+        {nickname ?
           <Tooltip
             label={
               "This user is a verified member of the Patina Discord server."
@@ -116,11 +116,9 @@ export default function LeaderboardCard({
               )}
             </Flex>
           </Tooltip>
-        ) : (
-          tagFF && tags && tags.length > 0 ? (
-            <TagList tags={tags} size={14} gap="xs" />
-          ) : null
-        )}
+        : tagFF && tags && tags.length > 0 ?
+          <TagList tags={tags} size={14} gap="xs" />
+        : null}
         <Text
           ta="center"
           fw={isTopThree ? 600 : 500}
