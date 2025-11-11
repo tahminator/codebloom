@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.microsoft.playwright.Browser;
@@ -41,8 +40,12 @@ public class PatinaDiscordMessageHelper {
     /**
      * Loads the Patina page, takes a screenshot, and sends a final Discord message
      * with the winners of the leaderboard.
+     *
+     * CANNOT BE ASYNC, WILL BREAK THE FLOW.
+     *
+     * TODO:
+     * https://codebloom.notion.site/Refactor-create-new-leaderboard-to-load-new-leaderboard-first-then-take-screenshots-of-the-old-page-2a87c85563aa809a9ca6dc23a31b0ab2?pvs=74
      */
-    @Async
     public void sendLatestLeaderboardDiscordMessage() {
         log.info("Connecting to JDA client...");
         jdaClient.connect();
