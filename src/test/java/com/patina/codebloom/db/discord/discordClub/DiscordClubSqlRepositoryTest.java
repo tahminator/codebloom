@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,8 +35,10 @@ public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
     private DiscordClubMetadataSqlRepository metadataRepo;
 
     private DiscordClub testDiscordClub;
-    private DiscordClub deletableDiscordClub;
     private DiscordClubMetadata testDiscordClubMetadata;
+
+    private DiscordClub deletableDiscordClub;
+    private DiscordClubMetadata deleteableDiscordClubMetadata;
 
     @Autowired
     public DiscordClubSqlRepositoryTest(final DiscordClubSqlRepository repo, final DiscordClubMetadataSqlRepository metadataRepo) {
@@ -48,6 +51,7 @@ public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
         long timestamp = System.currentTimeMillis();
 
         testDiscordClub = DiscordClub.builder()
+                        .id(UUID.randomUUID().toString())
                         .name("Test Discord Club")
                         .description("Integration test Discord Club at " + timestamp)
                         .tag(Tag.Nyu)
@@ -56,17 +60,18 @@ public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
 
         repo.createDiscordClub(testDiscordClub);
 
-        DiscordClubMetadata metadata = DiscordClubMetadata.builder()
+        testDiscordClubMetadata = DiscordClubMetadata.builder()
                         .guildId("test guildId")
                         .leaderboardChannelId("test leaderboardChannelId")
                         .discordClubId(testDiscordClub.getId())
                         .build();
 
-        metadataRepo.createDiscordClubMetadata(metadata);
+        metadataRepo.createDiscordClubMetadata(testDiscordClubMetadata);
 
         testDiscordClub = repo.getDiscordClubById(testDiscordClub.getId());
         assertNotNull(testDiscordClub.getDiscordClubMetadata(), "Metadata should be attached to the club after fetching.");
         assertEquals("test guildId", testDiscordClub.getDiscordClubMetadata().getGuildId());
+        assertEquals("test guildId", testDiscordClubMetadata.getGuildId());
     }
 
     @AfterAll
