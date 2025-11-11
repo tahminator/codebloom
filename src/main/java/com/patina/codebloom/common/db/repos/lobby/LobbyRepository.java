@@ -58,6 +58,14 @@ public interface LobbyRepository {
     List<Lobby> findAvailableLobbies();
 
     /**
+     * Finds active lobby for the given `Player` with a status of ACTIVE.
+     *
+     * @param lobbyPlayerId the lobby player ID
+     * @return the lobby if found, null otherwise
+     */
+    Lobby findActiveLobbyByLobbyPlayerId(String lobbyPlayerId);
+
+    /**
      * Updates an existing lobby in the database.
      * 
      * @note - The provided object's methods will be overridden with any returned
