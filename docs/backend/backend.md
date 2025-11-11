@@ -4,6 +4,9 @@
 
 ```bash
 mvn spring-boot:run
+or 
+```
+just backend-dev
 ```
 
 ## Naming conventions
