@@ -34,13 +34,14 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
         var tagValue = rs.getString("tag");
         var createdAt = StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class));
         Tag tag = tagValue != null ? Tag.valueOf(tagValue) : null;
+        var metadata = discordClubMetadataSqlRepository.getMetadataByClubId(id);
 
         return DiscordClub.builder()
                         .id(id)
                         .name(name)
                         .description(description)
                         .tag(tag)
-                        .discordClubMetadata(discordClubMetadataSqlRepository.getMetadataByClubId(id))
+                        .discordClubMetadata(metadata)
                         .createdAt(createdAt)
                         .build();
     }
