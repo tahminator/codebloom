@@ -98,7 +98,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Lobby findLobbyByJoinCodeAndStatus(final String joinCode, final LobbyStatus status) {
+    public Lobby findAvailableLobbyByJoinCode(final String joinCode) {
         String sql = """
                         SELECT
                             id,
@@ -117,7 +117,7 @@ public class LobbySqlRepository implements LobbyRepository {
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("joinCode", joinCode);
-            stmt.setObject("status", status.name(), java.sql.Types.OTHER);
+            stmt.setObject("status", LobbyStatus.AVAILABLE.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToLobby(rs);
