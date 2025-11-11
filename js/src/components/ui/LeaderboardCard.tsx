@@ -62,13 +62,15 @@ export default function LeaderboardCard({
   const height = (() => {
     switch (sizeOrder) {
       case 1:
-        return "220px";
+        return "225px";
       case 2:
-        return "200px";
+        return "215px";
       case 3:
-        return "195px";
+        return "210px";
     }
   })();
+  const displayTags = tags?.slice(0, 3);
+
   return (
     <Card
       withBorder
@@ -89,46 +91,44 @@ export default function LeaderboardCard({
         {placeString}
       </Text>
       <Stack gap={4} align="center" my="auto">
-        {nickname ?
+        {nickname && (
           <Tooltip
             label={
               "This user is a verified member of the Patina Discord server."
             }
             color={"dark.4"}
           >
-            <Flex align="center" justify="center" gap="xs">
-              <Text
-                ta="center"
-                fw={isTopThree ? 700 : 600}
-                truncate
-                style={{
-                  fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
-                }}
-              >
-                <IconCircleCheckFilled
-                  className="inline"
-                  color={theme.colors.patina[4]}
-                />{" "}
-                {nickname}
-              </Text>
-              {tagFF && tags && tags.length > 0 && (
-                <TagList tags={tags} size={14} gap="xs" />
-              )}
-            </Flex>
+            <Text
+              ta="center"
+              fw={isTopThree ? 700 : 600}
+              truncate
+              style={{
+                fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
+              }}
+            >
+              <IconCircleCheckFilled
+                className="inline"
+                color={theme.colors.patina[4]}
+              />{" "}
+              {nickname}
+            </Text>
           </Tooltip>
-        : tagFF && tags && tags.length > 0 ?
-          <TagList tags={tags} size={14} gap="xs" />
-        : null}
-        <Text
-          ta="center"
-          fw={isTopThree ? 600 : 500}
-          truncate
-          style={{
-            fontSize: `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
-          }}
-        >
-          <FaDiscord className="inline" /> {discordName}
-        </Text>
+        )}
+        <Flex align="center" justify="center" gap="xs">
+          <Text
+            ta="center"
+            fw={isTopThree ? 600 : 500}
+            truncate
+            style={{
+              fontSize: `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
+            }}
+          >
+            <FaDiscord className="inline" /> {discordName}
+          </Text>
+          {tagFF && displayTags && displayTags.length > 0 && (
+            <TagList tags={displayTags} size={14} gap="xs" />
+          )}
+        </Flex>
         <Text
           ta="center"
           fw={isTopThree ? 500 : 400}
