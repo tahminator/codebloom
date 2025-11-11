@@ -1,13 +1,9 @@
 package com.patina.codebloom.db.lobby;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+// CHECKSTYLE:OFF
+import static org.junit.jupiter.api.Assertions.*;
+// CHECKSTYLE:ON
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -160,5 +156,19 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         assertEquals(testLobby.getId(), activeLobby.getId());
         assertEquals(LobbyStatus.ACTIVE, activeLobby.getStatus());
         assertEquals(mockJoinCode, activeLobby.getJoinCode());
+    }
+
+    @Test
+    @Order(7)
+    void testFindAvailableLobbyByLobbyPlayerIdEmpty() {
+        Lobby activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
+        assertNull(activeLobby);
+    }
+
+    @Test
+    @Order(7)
+    void testFindAvailableLobbyByLobbyPlayerIdMocked() {
+        Lobby activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
+        assertNull(activeLobby);
     }
 }
