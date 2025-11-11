@@ -236,6 +236,36 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
+    public Lobby findAvailableLobbyByLobbyPlayerId(final String lobbyPlayerId) {
+        String sql = """
+                        SELECT
+                            l.*
+                        FROM
+                            "Lobby" l
+                        JOIN
+                            "LobbyPlayer" lp ON l.id = lp."lobbyId"
+                        WHERE
+                            l.status = 'AVAILABLE'
+                        AND
+                            lp."playerId" = :playerId
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("playerId", UUID.fromString(lobbyPlayerId));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return parseResultSetToLobby(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find active lobby by lobby player id", e);
+        }
+
+        return null;
+    }
+
+    @Override
     public boolean updateLobby(final Lobby lobby) {
         String sql = """
                         UPDATE "Lobby"
