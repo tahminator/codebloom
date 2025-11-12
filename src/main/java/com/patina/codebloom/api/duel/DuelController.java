@@ -5,10 +5,12 @@ import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.patina.codebloom.api.duel.body.JoinPartyBody;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -27,6 +29,7 @@ import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @Tag(name = "Live duel routes", description = """
@@ -47,15 +50,53 @@ public class DuelController {
         this.lobbyPlayerRepository = lobbyPlayerRepository;
     }
 
+    private void validatePlayerNotInLobby(final String playerId) {
+        var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(playerId);
+
+        if (availableLobby != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already in a party. Please leave the party, then try again.");
+        }
+
+        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(playerId);
+
+        if (activeLobby != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You are currently in a duel. Please forfeit the duel, then try again.");
+        }
+    }
+
     @Operation(summary = "Join party", description = "WIP")
     @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
     @PostMapping("/party/join")
-    public ResponseEntity<ApiResponder<Empty>> joinParty() {
+    public ResponseEntity<ApiResponder<Empty>> joinParty(@Protected final AuthenticationObject authenticationObject,
+                    @Valid @RequestBody final JoinPartyBody joinPartyBody) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
+        var user = authenticationObject.getUser();
+
+        var lobby = lobbyRepository.findLobbyByJoinCode(joinPartyBody.getPartyCode());
+
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The party with the given code cannot be found.");
+        }
+
+        validatePlayerNotInLobby(user.getId());
+
+        lobbyPlayerRepository.createLobbyPlayer(
+                        LobbyPlayer.builder()
+                                        .lobbyId(lobby.getId())
+                                        .playerId(user.getId())
+                                        .build());
+
+        lobby.setPlayerCount(lobby.getPlayerCount() + 1);
+        boolean isSuccessful = lobbyRepository.updateLobby(lobby);
+
+        if (!isSuccessful) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Failed to join party. Please try again later.");
+        }
+
+        return ResponseEntity.ok(ApiResponder.success("Party successfully joined!", Empty.of()));
     }
 
     @Operation(summary = "Leave party", description = "WIP")

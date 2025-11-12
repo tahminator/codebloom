@@ -1,4 +1,4 @@
-package com.patina.codebloom.api.duel.dto;
+package com.patina.codebloom.common.dto.lobby;
 
 import java.time.OffsetDateTime;
 
