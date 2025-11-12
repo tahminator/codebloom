@@ -204,6 +204,7 @@
                             </formats>
                             <excludes>
                                 <exclude>com/patina/codebloom/common/utils/**</exclude>
+                                <exclude>com/patina/codebloom/common/dto/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>
