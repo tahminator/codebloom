@@ -162,14 +162,19 @@ export default function MiniLeaderboardDesktop() {
                           >
                             <Flex align="center" gap={6}>
                               <FaDiscord size={16} />
-                              <Text size="md" fw={600}>{entry.discordName}</Text>
+                              <Text size="md" fw={600}>
+                                {entry.discordName}
+                              </Text>
                             </Flex>
                             <Flex align="center" gap={6}>
                               <SiLeetcode size={16} />
-                              <Text size="md" fw={600}>{entry.leetcodeUsername}</Text>
+                              <Text size="md" fw={600}>
+                                {entry.leetcodeUsername}
+                              </Text>
                             </Flex>
                           </Flex>
-                          {(entry.nickname || (tagFF && entry.tags && entry.tags.length > 0)) && (
+                          {(entry.nickname ||
+                            (tagFF && entry.tags && entry.tags.length > 0)) && (
                             <Flex align="center" gap={5}>
                               {entry.nickname && (
                                 <Tooltip
@@ -181,9 +186,7 @@ export default function MiniLeaderboardDesktop() {
                                       color={theme.colors.patina[4]}
                                       size={18}
                                     />
-                                    <Text size="sm">
-                                      {entry.nickname}
-                                    </Text>
+                                    <Text size="sm">{entry.nickname}</Text>
                                   </Flex>
                                 </Tooltip>
                               )}
