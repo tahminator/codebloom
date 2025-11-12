@@ -1,8 +1,10 @@
 import MiniLeaderboardSkeleton from "@/app/_component/skeletons/MiniLeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
+import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -13,6 +15,7 @@ import {
   Text,
   Tooltip,
   Card,
+  Stack,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
@@ -151,38 +154,45 @@ export default function MiniLeaderboardDesktop() {
                         #{entry.index}
                       </Text>
                       <Flex direction="column" gap="xs" miw={0}>
-                        {entry.nickname && (
-                          <Flex align="center" gap={6}>
-                            <Tooltip
-                              label="This user is a verified member of the Patina Discord server."
-                              color="dark.4"
-                            >
-                              <Flex align="center" gap={6}>
-                                <IconCircleCheckFilled
-                                  color={theme.colors.patina[4]}
-                                  size={18}
-                                />
-                                <Text fw={600} size="md" truncate>
-                                  {entry.nickname}
-                                </Text>
-                              </Flex>
-                            </Tooltip>
+                        <Stack gap="xs">
+                          <Flex
+                            direction={{ base: "column", xs: "row" }}
+                            gap={{ base: "xs", xs: "md" }}
+                            align={{ base: "flex-start", xs: "center" }}
+                          >
+                            <Flex align="center" gap={6}>
+                              <FaDiscord size={16} />
+                              <Text size="md" fw={600}>{entry.discordName}</Text>
+                            </Flex>
+                            <Flex align="center" gap={6}>
+                              <SiLeetcode size={16} />
+                              <Text size="md" fw={600}>{entry.leetcodeUsername}</Text>
+                            </Flex>
                           </Flex>
-                        )}
-                        <Flex gap="md" wrap="wrap">
-                          <Flex align="center" gap={6}>
-                            <FaDiscord size={16} />
-                            <Text size="sm" truncate>
-                              {entry.discordName}
-                            </Text>
-                          </Flex>
-                          <Flex align="center" gap={6}>
-                            <SiLeetcode size={16} />
-                            <Text size="sm" truncate>
-                              {entry.leetcodeUsername}
-                            </Text>
-                          </Flex>
-                        </Flex>
+                          {(entry.nickname || (tagFF && entry.tags && entry.tags.length > 0)) && (
+                            <Flex align="center" gap={5}>
+                              {entry.nickname && (
+                                <Tooltip
+                                  label="This user is a verified member of the Patina Discord server."
+                                  color="dark.4"
+                                >
+                                  <Flex align="center" gap={5}>
+                                    <IconCircleCheckFilled
+                                      color={theme.colors.patina[4]}
+                                      size={18}
+                                    />
+                                    <Text size="sm">
+                                      {entry.nickname}
+                                    </Text>
+                                  </Flex>
+                                </Tooltip>
+                              )}
+                              {tagFF && entry.tags && entry.tags.length > 0 && (
+                                <TagList tags={entry.tags} size={16} gap="xs" />
+                              )}
+                            </Flex>
+                          )}
+                        </Stack>
                       </Flex>
                     </Flex>
                     <Text size="md" fw={600} miw={90} ta="right">
