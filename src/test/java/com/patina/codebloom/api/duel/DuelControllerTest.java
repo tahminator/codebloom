@@ -580,4 +580,38 @@ public class DuelControllerTest {
         verify(lobbyPlayerRepository, times(0)).createLobbyPlayer(any());
         verify(lobbyRepository, times(0)).updateLobby(any());
     }
+
+    @Test
+    @DisplayName("Join lobby - lobby has expired")
+    void joinLobbyExpiredLobby() {
+        when(env.isProd()).thenReturn(false);
+
+        var joinPartyBody = JoinLobbyBody.builder()
+                        .partyCode("ABC123")
+                        .build();
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        OffsetDateTime pastTime = OffsetDateTime.now().minusMinutes(5);
+        Lobby expiredLobby = Lobby.builder()
+                        .id(randomUUID())
+                        .joinCode("ABC123")
+                        .status(LobbyStatus.AVAILABLE)
+                        .playerCount(1)
+                        .expiresAt(pastTime)
+                        .build();
+
+        when(lobbyRepository.findAvailableLobbyByJoinCode("ABC123")).thenReturn(expiredLobby);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.joinLobby(authObj, joinPartyBody);
+        });
+
+        assertEquals(HttpStatus.GONE.value(), exception.getStatusCode().value());
+        assertEquals("The lobby has expired and cannot be joined.", exception.getReason());
+
+        verify(lobbyPlayerRepository, times(0)).createLobbyPlayer(any());
+        verify(lobbyRepository, times(0)).updateLobby(any());
+    }
 }
