@@ -227,42 +227,45 @@ export default function LeaderboardIndex() {
                     <Flex direction="column" gap="xs">
                       <Stack gap="xs">
                         <Flex
-                        direction={{ base: "column", xs: "row" }}
-                        gap={{ base: "xs", xs: "md" }}
-                        align={{ base: "flex-start", xs: "center" }}
-                      >
-                        <Flex align="center" gap={6}>
-                          <FaDiscord size={16} />
-                          <Text size="md" fw={600}>{entry.discordName}</Text>
+                          direction={{ base: "column", xs: "row" }}
+                          gap={{ base: "xs", xs: "md" }}
+                          align={{ base: "flex-start", xs: "center" }}
+                        >
+                          <Flex align="center" gap={6}>
+                            <FaDiscord size={16} />
+                            <Text size="md" fw={600}>
+                              {entry.discordName}
+                            </Text>
+                          </Flex>
+                          <Flex align="center" gap={6}>
+                            <SiLeetcode size={16} />
+                            <Text size="md" fw={600}>
+                              {entry.leetcodeUsername}
+                            </Text>
+                          </Flex>
                         </Flex>
-                        <Flex align="center" gap={6}>
-                          <SiLeetcode size={16} />
-                          <Text size="md" fw={600}>{entry.leetcodeUsername}</Text>
-                        </Flex>
-                      </Flex>
-                      {(entry.nickname || (tagFF && entry.tags && entry.tags.length > 0)) && (
-                        <Flex align="center" gap={5}>
-                          {entry.nickname && (
-                            <Tooltip
-                              label="This user is a verified member of the Patina Discord server."
-                              color="dark.4"
-                            >
-                              <Flex align="center" gap={5}>
-                                <IconCircleCheckFilled
-                                  color={theme.colors.patina[4]}
-                                  size={18}
-                                />
-                                <Text size="sm">
-                                  {entry.nickname}
-                                </Text>
-                              </Flex>
-                            </Tooltip>
-                          )}
-                          {tagFF && entry.tags && entry.tags.length > 0 && (
-                            <TagList tags={entry.tags} size={16} gap="xs" />
-                          )}
-                        </Flex>
-                      )}
+                        {(entry.nickname ||
+                          (tagFF && entry.tags && entry.tags.length > 0)) && (
+                          <Flex align="center" gap={5}>
+                            {entry.nickname && (
+                              <Tooltip
+                                label="This user is a verified member of the Patina Discord server."
+                                color="dark.4"
+                              >
+                                <Flex align="center" gap={5}>
+                                  <IconCircleCheckFilled
+                                    color={theme.colors.patina[4]}
+                                    size={18}
+                                  />
+                                  <Text size="sm">{entry.nickname}</Text>
+                                </Flex>
+                              </Tooltip>
+                            )}
+                            {tagFF && entry.tags && entry.tags.length > 0 && (
+                              <TagList tags={entry.tags} size={16} gap="xs" />
+                            )}
+                          </Flex>
+                        )}
                       </Stack>
                     </Flex>
                   </Flex>
