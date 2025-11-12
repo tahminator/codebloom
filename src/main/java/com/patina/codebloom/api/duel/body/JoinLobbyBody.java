@@ -26,5 +26,5 @@ public class JoinLobbyBody {
         if (code.length() != 6) {
             throw new ValidationException("Lobby code must be exactly 6 characters.");
         }
-    };
+    }
 }
