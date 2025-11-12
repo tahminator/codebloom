@@ -3,6 +3,7 @@ package com.patina.codebloom.common.db.models.question.topic;
 import java.time.LocalDateTime;
 
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +22,11 @@ public class QuestionTopic {
     @NotNullColumn
     private String id;
 
-    @NotNullColumn
+    @NullColumn
     private String questionId;
+
+    @NullColumn
+    private String questionBankId;
 
     @NotNullColumn
     private String topicSlug;
