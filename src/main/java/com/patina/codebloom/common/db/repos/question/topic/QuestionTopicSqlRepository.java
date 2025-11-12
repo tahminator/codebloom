@@ -41,6 +41,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                             SELECT
                                 id,
                                 "questionId",
+                                "questionBankId",
                                 "topicSlug",
                                 "createdAt",
                                 "topic"
@@ -62,6 +63,39 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find question topics by question ID", e);
+        }
+    }
+
+    @Override
+    public List<QuestionTopic> findQuestionTopicsByQuestionBankId(final String questionBankId) {
+        List<QuestionTopic> result = new ArrayList<>();
+
+        String sql = """
+                            SELECT
+                                id,
+                                "questionId",
+                                "questionBankId",
+                                "topicSlug",
+                                "createdAt",
+                                "topic"
+                            FROM
+                                "QuestionTopic" qt
+                            WHERE
+                                qt."questionBankId" = :questionBankId
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("questionBankId", UUID.fromString(questionBankId));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(mapResultSetToQuestionTopic(rs));
+                }
+            }
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find question topics by question bank ID", e);
         }
     }
 
@@ -104,6 +138,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                             SELECT
                                 id,
                                 "questionId",
+                                "questionBankId",
                                 "topicSlug",
                                 "createdAt",
                                 "topic"
@@ -134,13 +169,13 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
     @Override
     public void createQuestionTopic(final QuestionTopic questionTopic) {
         String sql = """
-                                        INSERT INTO "QuestionTopic"
-                                            ("id", "questionId", "questionBankId" "topicSlug", "topic")
-                                        VALUES
-                                            (:id, :questionId, :questionBankId, :topicSlug, :topic)
-                                        RETURNING
-                                            "createdAt"
-                        """;
+                        INSERT INTO "QuestionTopic"
+                            ("id", "questionId", "questionBankId", "topicSlug", "topic")
+                        VALUES
+                            (:id, :questionId, :questionBankId, :topicSlug, :topic)
+                        RETURNING
+                            "createdAt"
+                    """;
 
         questionTopic.setId(UUID.randomUUID().toString());
 
@@ -197,9 +232,9 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
             }
             
             if (questionTopic.getQuestionBankId() == null) {
-                stmt.setNull("questionId", java.sql.Types.NULL);
+                stmt.setNull("questionBankId", java.sql.Types.NULL);
             } else {
-                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionBankId()));
+                stmt.setObject("questionBankId", UUID.fromString(questionTopic.getQuestionBankId()));
             }
 
             stmt.setString("topicSlug", questionTopic.getTopicSlug());
