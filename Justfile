@@ -32,7 +32,7 @@ backend-test *args:
   dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
 
 backend-coverage *args:
-  just backend-test && open target/site/jacoco/index.html
+  just backend-test {{args}} && open target/site/jacoco/index.html
 
 # Run the frontend 
 frontend-dev *args:
