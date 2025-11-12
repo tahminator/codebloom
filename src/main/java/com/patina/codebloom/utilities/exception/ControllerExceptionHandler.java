@@ -34,6 +34,11 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponder.failure(String.join(", ", errors)));
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ApiResponder<?>> handleMethodArgumentNotValid(final ValidationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponder.failure(ex.getMessage()));
+    }
+
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiResponder<?>> handleThrowable(final Throwable rx) {
         rx.printStackTrace();
