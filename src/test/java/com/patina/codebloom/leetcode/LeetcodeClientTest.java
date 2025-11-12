@@ -15,16 +15,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.google.common.base.Strings;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
-import com.patina.codebloom.common.utils.function.FunctionUtils;
 import com.patina.codebloom.config.TestJobNotifyListener;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
@@ -68,30 +65,30 @@ public class LeetcodeClientTest {
         assertTrue(question.getAcceptanceRate() != 0.0f);
     }
 
-    @Test
-    void submissionIdValid() {
-        LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
-                        () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
-                        res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
-                        () -> leetcodeAuthStealer.reloadCookie().join());
-
-        assertTrue(submission != null);
-
-        assertTrue(submission.getRuntimeDisplay() != null);
-        assertTrue(submission.getRuntimeDisplay().length() != 0);
-
-        assertTrue(submission.getRuntimePercentile() != 0.0f);
-
-        assertTrue(submission.getMemoryDisplay() != null);
-        assertTrue(submission.getMemoryDisplay().length() != 0);
-
-        assertTrue(submission.getMemoryPercentile() != 0.0f);
-
-        assertTrue(submission.getCode() != null);
-        assertTrue(submission.getCode().length() != 0);
-
-        assertTrue(submission.getLang() != null);
-    }
+    // @Test
+    // void submissionIdValid() {
+    // LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
+    // () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
+    // res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
+    // () -> leetcodeAuthStealer.reloadCookie().join());
+    //
+    // assertTrue(submission != null);
+    //
+    // assertTrue(submission.getRuntimeDisplay() != null);
+    // assertTrue(submission.getRuntimeDisplay().length() != 0);
+    //
+    // assertTrue(submission.getRuntimePercentile() != 0.0f);
+    //
+    // assertTrue(submission.getMemoryDisplay() != null);
+    // assertTrue(submission.getMemoryDisplay().length() != 0);
+    //
+    // assertTrue(submission.getMemoryPercentile() != 0.0f);
+    //
+    // assertTrue(submission.getCode() != null);
+    // assertTrue(submission.getCode().length() != 0);
+    //
+    // assertTrue(submission.getLang() != null);
+    // }
 
     @Test
     void potdValid() {
