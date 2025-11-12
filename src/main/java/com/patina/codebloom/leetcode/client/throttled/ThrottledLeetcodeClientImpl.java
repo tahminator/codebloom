@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.leetcode.throttled;
+package com.patina.codebloom.leetcode.client.throttled;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -6,14 +6,14 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.patina.codebloom.common.leetcode.LeetcodeClientImpl;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
-import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
-import com.patina.codebloom.common.leetcode.models.POTD;
-import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.reporter.Reporter;
+import com.patina.codebloom.leetcode.client.LeetcodeClientImpl;
+import com.patina.codebloom.leetcode.client.models.LeetcodeDetailedQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeSubmission;
+import com.patina.codebloom.leetcode.client.models.LeetcodeTopicTag;
+import com.patina.codebloom.leetcode.client.models.POTD;
+import com.patina.codebloom.leetcode.client.models.UserProfile;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 import io.github.bucket4j.Bandwidth;

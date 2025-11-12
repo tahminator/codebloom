@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.leetcode.score;
+package com.patina.codebloom.leetcode.client.score;
 
 import java.util.concurrent.ThreadLocalRandom;
 

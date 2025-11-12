@@ -1,7 +1,6 @@
 spring:
   application:
     name: codebloom
-
   security:
     oauth2:
       client:
@@ -18,13 +17,10 @@ spring:
             token-uri: https://discord.com/api/oauth2/token
             user-info-uri: https://discord.com/api/users/@me
             user-name-attribute: username
-
   mvc:
     throw-exception-if-no-handler-found: true
-
   resources:
     add-mappings: false
-
   web:
     resources:
       cache:
@@ -43,17 +39,26 @@ db:
   postgres:
     connection: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?user=${DATABASE_USER}&password=${DATABASE_PASSWORD}
 
-strategy:
-
-github:
-  username: ${GH_USERNAME}
-  password: ${GH_PASSWORD}
-  email:
-    host: ${GH_EMAIL_HOST}
-    port: ${GH_EMAIL_PORT}
-    type: ${GH_EMAIL_TYPE}
-    username: ${GH_EMAIL_USERNAME}
-    password: ${GH_EMAIL_PASSWORD}
+thief:
+  strategy: ${THIEF_STRATEGY}
+  github:
+    username: ${GH_USERNAME}
+    password: ${GH_PASSWORD}
+    email:
+      host: ${GH_EMAIL_HOST}
+      port: ${GH_EMAIL_PORT}
+      type: ${GH_EMAIL_TYPE}
+      username: ${GH_EMAIL_USERNAME}
+      password: ${GH_EMAIL_PASSWORD}
+  facebook:
+    username: ${FB_USERNAME}
+    password: ${FB_PASSWORD}
+    email:
+      host: ${FB_EMAIL_HOST}
+      port: ${FB_EMAIL_PORT}
+      type: ${FB_EMAIL_TYPE}
+      username: ${FB_EMAIL_USERNAME}
+      password: ${FB_EMAIL_PASSWORD}
 
 jda:
   discord:

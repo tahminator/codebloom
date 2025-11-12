@@ -16,8 +16,8 @@ import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
-import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.leetcode.client.LeetcodeClient;
+import com.patina.codebloom.leetcode.client.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 import io.github.bucket4j.Bandwidth;

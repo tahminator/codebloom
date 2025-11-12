@@ -1,4 +1,4 @@
-package com.patina.codebloom.leetcode;
+package com.patina.codebloom.leetcode.client.score;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import static com.patina.codebloom.common.db.models.question.QuestionDifficulty.Easy;
 import static com.patina.codebloom.common.db.models.question.QuestionDifficulty.Hard;
 import static com.patina.codebloom.common.db.models.question.QuestionDifficulty.Medium;
-import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
 
 class ScoreCalculatorTest {
     @Test

@@ -1,8 +1,7 @@
-package com.patina.codebloom.common.leetcode.score;
+package com.patina.codebloom.leetcode.client.score;
 
 /*
- Link to the functions on desmos:
- https://www.desmos.com/calculator/snbtjxxsbt
+ * Link to the functions on desmos: https://www.desmos.com/calculator/snbtjxxsbt
  */
 public class MultiplierFunctions {
     public static float purpleFunction(final float acceptanceRate) {

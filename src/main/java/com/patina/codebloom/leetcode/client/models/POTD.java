@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.leetcode.models;
+package com.patina.codebloom.leetcode.client.models;
 
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 

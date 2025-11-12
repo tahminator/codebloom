@@ -1,4 +1,4 @@
-package com.patina.codebloom.leetcode;
+package com.patina.codebloom.leetcode.client;
 
 import java.util.List;
 import java.util.Set;
@@ -16,14 +16,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.google.common.base.Strings;
-import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
-import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
-import com.patina.codebloom.common.leetcode.models.POTD;
-import com.patina.codebloom.common.leetcode.models.UserProfile;
-import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.leetcode.client.models.LeetcodeDetailedQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeSubmission;
+import com.patina.codebloom.leetcode.client.models.LeetcodeTopicTag;
+import com.patina.codebloom.leetcode.client.models.POTD;
+import com.patina.codebloom.leetcode.client.models.UserProfile;
+import com.patina.codebloom.leetcode.client.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.utils.function.FunctionUtils;
 import com.patina.codebloom.config.TestJobNotifyListener;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;

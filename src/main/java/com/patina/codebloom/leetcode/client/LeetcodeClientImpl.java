@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.leetcode;
+package com.patina.codebloom.leetcode.client;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,21 +21,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
-import com.patina.codebloom.common.leetcode.models.Lang;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
-import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
-import com.patina.codebloom.common.leetcode.models.POTD;
-import com.patina.codebloom.common.leetcode.models.UserProfile;
-import com.patina.codebloom.common.leetcode.queries.GetPotd;
-import com.patina.codebloom.common.leetcode.queries.GetSubmissionDetails;
-import com.patina.codebloom.common.leetcode.queries.GetTopics;
-import com.patina.codebloom.common.leetcode.queries.GetUserProfile;
-import com.patina.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
-import com.patina.codebloom.common.leetcode.queries.SelectProblemQuery;
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
+import com.patina.codebloom.leetcode.client.models.Lang;
+import com.patina.codebloom.leetcode.client.models.LeetcodeDetailedQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeSubmission;
+import com.patina.codebloom.leetcode.client.models.LeetcodeTopicTag;
+import com.patina.codebloom.leetcode.client.models.POTD;
+import com.patina.codebloom.leetcode.client.models.UserProfile;
+import com.patina.codebloom.leetcode.client.queries.GetPotd;
+import com.patina.codebloom.leetcode.client.queries.GetSubmissionDetails;
+import com.patina.codebloom.leetcode.client.queries.GetTopics;
+import com.patina.codebloom.leetcode.client.queries.GetUserProfile;
+import com.patina.codebloom.leetcode.client.queries.SelectAcceptedSubmisisonsQuery;
+import com.patina.codebloom.leetcode.client.queries.SelectProblemQuery;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 /**

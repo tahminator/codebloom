@@ -1,14 +1,14 @@
-package com.patina.codebloom.common.leetcode;
+package com.patina.codebloom.leetcode.client;
 
 import java.util.List;
 import java.util.Set;
 
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
-import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
-import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
-import com.patina.codebloom.common.leetcode.models.POTD;
-import com.patina.codebloom.common.leetcode.models.UserProfile;
+import com.patina.codebloom.leetcode.client.models.LeetcodeDetailedQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeQuestion;
+import com.patina.codebloom.leetcode.client.models.LeetcodeSubmission;
+import com.patina.codebloom.leetcode.client.models.LeetcodeTopicTag;
+import com.patina.codebloom.leetcode.client.models.POTD;
+import com.patina.codebloom.leetcode.client.models.UserProfile;
 
 public interface LeetcodeClient {
 

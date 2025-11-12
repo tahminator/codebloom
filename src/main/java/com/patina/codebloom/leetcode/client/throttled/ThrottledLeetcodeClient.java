@@ -1,6 +1,6 @@
-package com.patina.codebloom.common.leetcode.throttled;
+package com.patina.codebloom.leetcode.client.throttled;
 
-import com.patina.codebloom.common.leetcode.LeetcodeClient;
+import com.patina.codebloom.leetcode.client.LeetcodeClient;
 
 /**
  * Attaches a rate limiter over {@link LeetcodeClient} to avoid getting

@@ -1,4 +1,4 @@
-package com.patina.codebloom.common.leetcode.queries;
+package com.patina.codebloom.leetcode.client.queries;
 
 import java.util.HashMap;
 import java.util.Map;

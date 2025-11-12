@@ -1,8 +1,8 @@
-package com.patina.codebloom.leetcode;
+package com.patina.codebloom.leetcode.client.score;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import com.patina.codebloom.common.leetcode.score.MultiplierFunctions;
 
 public class MultiplierFunctionsTest {
     @Test
@@ -38,5 +38,5 @@ public class MultiplierFunctionsTest {
         assertEquals(433, (int) (baseHard * MultiplierFunctions.blueFunction(0.5f)));
         assertEquals(397, (int) (baseHard * MultiplierFunctions.blueFunction(0.75f)));
     }
-    
+
 }
