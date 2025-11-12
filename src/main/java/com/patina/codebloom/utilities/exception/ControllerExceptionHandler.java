@@ -2,6 +2,7 @@ package com.patina.codebloom.utilities.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +26,12 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiResponder<?>> handleResponseStatusException(final ResponseStatusException ex) {
         return ResponseEntity.status(ex.getStatusCode()).body(ApiResponder.failure(ex.getReason()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponder<?>> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
+        var errors = ex.getFieldErrors().stream().map(e -> e.getDefaultMessage()).toList();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponder.failure(String.join(", ", errors)));
     }
 
     @ExceptionHandler(Throwable.class)
