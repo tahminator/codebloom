@@ -20,9 +20,10 @@ import lombok.ToString;
 public class QuestionTopic {
     @NotNullColumn
     private String id;
-
-    @NotNullColumn
+    
     private String questionId;
+
+    private String questionBankId;
 
     @NotNullColumn
     private String topicSlug;
