@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
-import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
-import com.patina.codebloom.common.leetcode.LeetcodeClient;
+import com.patina.codebloom.leetcode.client.models.LeetcodeDetailedQuestion;
+import com.patina.codebloom.leetcode.client.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.leetcode.client.LeetcodeClient;
 
 @Component
 @Profile("!ci")

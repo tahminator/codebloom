@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.potd.POTD;
 import com.patina.codebloom.common.db.repos.potd.POTDRepository;
-import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
-import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.leetcode.client.LeetcodeClient;
+import com.patina.codebloom.leetcode.client.score.ScoreCalculator;
+import com.patina.codebloom.leetcode.client.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 
 @Component
@@ -28,7 +28,7 @@ public class PotdSetter {
 
     @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60 * 5)
     public void setPotd() {
-        com.patina.codebloom.common.leetcode.models.POTD leetcodePotd = leetcodeClient.getPotd();
+        com.patina.codebloom.leetcode.client.models.POTD leetcodePotd = leetcodeClient.getPotd();
 
         if (leetcodePotd == null) {
             LOGGER.warn("No POTD was been returned.");

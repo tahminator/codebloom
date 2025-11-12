@@ -12,9 +12,9 @@ import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
-import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
-import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.leetcode.client.LeetcodeClient;
+import com.patina.codebloom.leetcode.client.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.leetcode.client.models.LeetcodeQuestion;
 
 import lombok.extern.slf4j.Slf4j;
 

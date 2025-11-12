@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
-import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
-import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.leetcode.client.LeetcodeClient;
+import com.patina.codebloom.leetcode.client.models.LeetcodeSubmission;
+import com.patina.codebloom.leetcode.client.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
 
 @Component
