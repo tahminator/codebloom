@@ -14,6 +14,7 @@ import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 @Component
 public class LobbySqlRepository implements LobbyRepository {
@@ -52,7 +53,7 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("id", UUID.fromString(lobby.getId()));
             stmt.setString("joinCode", lobby.getJoinCode());
             stmt.setObject("status", lobby.getStatus().name(), java.sql.Types.OTHER);
-            stmt.setObject("expiresAt", lobby.getExpiresAt());
+            stmt.setObject("expiresAt", StandardizedOffsetDateTime.normalize(lobby.getExpiresAt()));
             stmt.setInt("playerCount", lobby.getPlayerCount());
             stmt.setObject("winnerId", lobby.getWinnerId() != null ? UUID.fromString(lobby.getWinnerId()) : null);
 

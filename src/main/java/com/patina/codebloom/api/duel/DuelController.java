@@ -69,6 +69,13 @@ public class DuelController {
     }
 
     private void validateLobby(final Lobby lobby) {
+        var now = StandardizedOffsetDateTime.now();
+        if (lobby.getExpiresAt() != null && lobby.getExpiresAt().isBefore(now)) {
+            // TODO: Could possibly invalidate this party here if it hasn't been invalidated
+            // yet.
+            throw new ResponseStatusException(HttpStatus.GONE, "The lobby has expired and cannot be joined.");
+        }
+
         if (lobby.getPlayerCount() == MAX_PLAYER_COUNT) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This lobby already has the maximum number of players");
         }
