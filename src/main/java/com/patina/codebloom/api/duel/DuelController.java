@@ -5,10 +5,12 @@ import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.patina.codebloom.api.duel.body.JoinLobbyBody;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -18,6 +20,7 @@ import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
+import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.annotation.Protected;
@@ -25,7 +28,10 @@ import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -33,6 +39,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
                 This controller houses the logic for live Leetcode duels. """)
 @RequestMapping("/api/duel")
 public class DuelController {
+    private static final int MAX_PLAYER_COUNT = 2;
 
     private final Env env;
     private final DuelManager duelManager;
@@ -47,15 +54,76 @@ public class DuelController {
         this.lobbyPlayerRepository = lobbyPlayerRepository;
     }
 
-    @Operation(summary = "Join party", description = "WIP")
-    @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
-    @PostMapping("/party/join")
-    public ResponseEntity<ApiResponder<Empty>> joinParty() {
+    private void validatePlayerNotInLobby(final String playerId) {
+        var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(playerId);
+
+        if (availableLobby != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already in a party. Please leave the party, then try again.");
+        }
+
+        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(playerId);
+
+        if (activeLobby != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You are currently in a duel. Please forfeit the duel, then try again.");
+        }
+    }
+
+    private void validateLobby(final Lobby lobby) {
+        var now = StandardizedOffsetDateTime.now();
+        if (lobby.getExpiresAt() != null && lobby.getExpiresAt().isBefore(now)) {
+            // TODO: Could possibly invalidate this party here if it hasn't been invalidated
+            // yet.
+            throw new ResponseStatusException(HttpStatus.GONE, "The lobby has expired and cannot be joined.");
+        }
+
+        if (lobby.getPlayerCount() == MAX_PLAYER_COUNT) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This lobby already has the maximum number of players");
+        }
+    }
+
+    @Operation(summary = "Join lobby", description = "Join a lobby by providing the lobby code.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Party with the given code cannot be found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "409", description = """
+                            There is a conflict with the request; check message""", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Lobby has been successfully joined!"),
+    })
+    @PostMapping("/lobby/join")
+    public ResponseEntity<ApiResponder<Empty>> joinLobby(@Protected final AuthenticationObject authenticationObject,
+                    @RequestBody final JoinLobbyBody joinPartyBody) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
+        joinPartyBody.validate();
+
+        var user = authenticationObject.getUser();
+
+        var lobby = lobbyRepository.findAvailableLobbyByJoinCode(joinPartyBody.getPartyCode());
+
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The party with the given code cannot be found.");
+        }
+
+        validateLobby(lobby);
+        validatePlayerNotInLobby(user.getId());
+
+        lobbyPlayerRepository.createLobbyPlayer(
+                        LobbyPlayer.builder()
+                                        .lobbyId(lobby.getId())
+                                        .playerId(user.getId())
+                                        .build());
+
+        lobby.setPlayerCount(lobby.getPlayerCount() + 1);
+        boolean isSuccessful = lobbyRepository.updateLobby(lobby);
+
+        if (!isSuccessful) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to join party. Please try again later.");
+        }
+
+        return ResponseEntity.ok(ApiResponder.success("Party successfully joined!", Empty.of()));
     }
 
     @Operation(summary = "Leave party", description = "WIP")

@@ -62,6 +62,8 @@ public interface LobbyRepository {
      *
      * @param lobbyPlayerId the lobby player ID
      * @return the lobby if found, null otherwise
+     *
+     * TODO: Union with {@code LobbyRepository.findAvailableLobbyByLobbyPlayerId}
      */
     Lobby findActiveLobbyByLobbyPlayerId(String lobbyPlayerId);
 
@@ -70,6 +72,8 @@ public interface LobbyRepository {
      *
      * @param lobbyPlayerId the lobby player ID
      * @return the lobby if found, null otherwise
+     *
+     * TODO: Union with {@code LobbyRepository.findActiveLobbyByLobbyPlayerId}
      */
     Lobby findAvailableLobbyByLobbyPlayerId(String lobbyPlayerId);
 
