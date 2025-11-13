@@ -211,10 +211,12 @@ public class DuelController {
 
         try {
             emitter.send(SseEmitter.event().data(duelData).build());
-            emitter.complete();
+
+            if (lobby.getWinnerId() != null) {
+                emitter.complete();
+            }
         } catch (Exception e) {
             emitter.completeWithError(e);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to establish SSE connection");
         }
 
         return emitter;
