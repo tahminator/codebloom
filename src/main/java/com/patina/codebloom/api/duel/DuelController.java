@@ -38,11 +38,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Live duel routes", description = """
                 This controller houses the logic for live Leetcode duels. """)
 @RequestMapping("/api/duel")
+@Slf4j
 public class DuelController {
     private static final int MAX_PLAYER_COUNT = 2;
 
@@ -216,6 +218,7 @@ public class DuelController {
                 emitter.complete();
             }
         } catch (Exception e) {
+            log.error("Failed to send SSE data", e);
             emitter.completeWithError(e);
         }
 
