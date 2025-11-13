@@ -157,13 +157,14 @@ public class DuelController {
         Lobby lobby = lobbyRepository.findLobbyById(lobbyId);
         if (lobby != null) {
             int updatedPlayerCount = lobby.getPlayerCount() - 1;
+            lobby.setPlayerCount(updatedPlayerCount);
 
             if (updatedPlayerCount == 0) {
-                lobbyRepository.deleteLobbyById(lobbyId);
+                lobby.setStatus(LobbyStatus.CLOSED);
             } else {
-                lobby.setPlayerCount(updatedPlayerCount);
-                lobbyRepository.updateLobby(lobby);
+                lobby.setStatus(LobbyStatus.AVAILABLE);
             }
+            lobbyRepository.updateLobby(lobby);
         }
         return ResponseEntity.ok(ApiResponder.success("Successfully left the lobby.", Empty.of()));
     }
