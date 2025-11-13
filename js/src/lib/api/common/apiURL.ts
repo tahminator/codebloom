@@ -45,7 +45,10 @@ type PathOperationsToPathResponseBody<TOperationsKey extends OperationsKey> =
   Extract<
     OperationsPath<TOperationsKey>["responses"],
     { 200: unknown }
-  >[200]["content"]["*/*"];
+  >[200]["content"][keyof Extract<
+    OperationsPath<TOperationsKey>["responses"],
+    { 200: unknown }
+  >[200]["content"]];
 
 type PathOperationsToPathResponsePayload<TOperationsKey extends OperationsKey> =
   Extract<
