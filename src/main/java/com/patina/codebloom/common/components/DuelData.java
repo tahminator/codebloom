@@ -1,4 +1,6 @@
-package com.patina.codebloom.api.duel.dto;
+package com.patina.codebloom.common.components;
+
+import com.patina.codebloom.common.dto.lobby.LobbyDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
