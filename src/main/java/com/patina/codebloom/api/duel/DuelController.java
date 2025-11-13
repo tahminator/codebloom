@@ -3,12 +3,17 @@ package com.patina.codebloom.api.duel;
 import java.time.OffsetDateTime;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import com.patina.codebloom.api.duel.dto.DuelData;
 
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
 import com.patina.codebloom.common.components.DuelManager;
@@ -210,5 +215,40 @@ public class DuelController {
         lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
 
         return ResponseEntity.ok(ApiResponder.success("Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
+    }
+
+    @Operation(summary = "SSE endpoint for duel data", description = "Server-sent events endpoint for real-time duel updates")
+    @ApiResponse(responseCode = "200", description = "Sending live duel data", content = @Content(mediaType = MediaType.TEXT_EVENT_STREAM_VALUE, schema = @Schema(implementation = DuelData.class)))
+    @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection")
+    @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter getDuelData() {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+
+        SseEmitter emitter = new SseEmitter(1_800_000L);
+
+        String joinCode = PartyCodeGenerator.generateCode();
+        OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
+
+        Lobby lobby = Lobby.builder()
+                        .joinCode(joinCode)
+                        .status(LobbyStatus.AVAILABLE)
+                        .expiresAt(expiresAt)
+                        .playerCount(1)
+                        .winnerId(null)
+                        .build();
+
+        DuelData duelData = duelManager.generateDuelData(lobby);
+
+        try {
+            emitter.send(SseEmitter.event().data(duelData).build());
+            emitter.complete();
+        } catch (Exception e) {
+            emitter.completeWithError(e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to establish SSE connection");
+        }
+
+        return emitter;
     }
 }
