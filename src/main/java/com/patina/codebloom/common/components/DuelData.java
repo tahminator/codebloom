@@ -17,4 +17,6 @@ import lombok.extern.jackson.Jacksonized;
 public class DuelData {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LobbyDto lobby;
+
+    public static final DuelData DEFAULT = builder().build();
 }
