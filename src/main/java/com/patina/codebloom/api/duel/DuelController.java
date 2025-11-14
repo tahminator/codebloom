@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.patina.codebloom.common.components.DuelData;
 
@@ -31,6 +30,7 @@ import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
+import com.patina.codebloom.common.utils.sse.SseWrapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -223,12 +223,12 @@ public class DuelController {
     @ApiResponse(responseCode = "200", description = "Sending live duel data")
     @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter getDuelData() {
+    public SseWrapper<ApiResponder<DuelData>> getDuelData() {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        SseEmitter emitter = new SseEmitter(1_800_000L);
+        SseWrapper<ApiResponder<DuelData>> emitter = new SseWrapper<>(1_800_000L);
 
         String joinCode = PartyCodeGenerator.generateCode();
         OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
@@ -244,7 +244,7 @@ public class DuelController {
         DuelData duelData = duelManager.generateDuelData(lobby.getId());
 
         try {
-            emitter.send(SseEmitter.event().data(duelData).build());
+            emitter.sendData(ApiResponder.success("Successfully fetched!", duelData));
 
             if (lobby.getWinnerId() != null) {
                 emitter.complete();
