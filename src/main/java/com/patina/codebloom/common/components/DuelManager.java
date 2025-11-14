@@ -16,8 +16,6 @@ public class DuelManager {
 
     public DuelData generateDuelData(final String lobbyId) {
         Lobby fetchedLobby = lobbyRepository.findLobbyById(lobbyId);
-
-
         return DuelData.builder()
                         .lobby(LobbyDto.fromLobby(fetchedLobby))
                         .build();

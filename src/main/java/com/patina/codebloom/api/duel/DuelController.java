@@ -31,6 +31,7 @@ import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
+import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,13 +53,15 @@ public class DuelController {
     private final DuelManager duelManager;
     private final LobbyRepository lobbyRepository;
     private final LobbyPlayerRepository lobbyPlayerRepository;
+    private final LobbyNotifyHandler lobbyNotifyHandler;
 
     public DuelController(final Env env, final DuelManager duelManager, final LobbyRepository lobbyRepository,
-                    final LobbyPlayerRepository lobbyPlayerRepository) {
+                    final LobbyPlayerRepository lobbyPlayerRepository, final LobbyNotifyHandler lobbyNotifyHandler) {
         this.env = env;
         this.duelManager = duelManager;
         this.lobbyRepository = lobbyRepository;
         this.lobbyPlayerRepository = lobbyPlayerRepository;
+        this.lobbyNotifyHandler = lobbyNotifyHandler;
     }
 
     private void validatePlayerNotInLobby(final String playerId) {
@@ -241,6 +244,10 @@ public class DuelController {
                         .winnerId(null)
                         .build();
 
+        lobbyRepository.createLobby(lobby);
+
+        lobbyNotifyHandler.register(lobby.getId(), emitter);
+
         DuelData duelData = duelManager.generateDuelData(lobby.getId());
 
         try {
@@ -252,6 +259,7 @@ public class DuelController {
         } catch (Exception e) {
             log.error("Failed to send SSE data", e);
             emitter.completeWithError(e);
+            lobbyNotifyHandler.deregister(lobby.getId());
         }
 
         return emitter;
