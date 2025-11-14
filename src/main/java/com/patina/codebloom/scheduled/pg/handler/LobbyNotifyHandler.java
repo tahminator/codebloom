@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.patina.codebloom.common.components.DuelData;
+import com.patina.codebloom.common.components.DuelManager;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,9 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("!ci")
 public class LobbyNotifyHandler {
     private final ConcurrentHashMap<String, SseEmitter> partyIdToSseEmitter;
+    private final DuelManager duelManager;
 
-    public LobbyNotifyHandler() {
+    public LobbyNotifyHandler(final DuelManager duelManager) {
         this.partyIdToSseEmitter = new ConcurrentHashMap<>();
+        this.duelManager = duelManager;
     }
 
     public void register(final String partyId, final SseEmitter sseEmitter) {
@@ -32,14 +35,14 @@ public class LobbyNotifyHandler {
 
     @Async
     public void handle(final String partyId) throws IOException {
-        // TODO: Call method here. Get data, then pass to sse emitter.
         if (!partyIdToSseEmitter.containsKey(partyId)) {
             log.error("Failed to find SSE emitter for the given party");
             return;
         }
         var sseEmitter = partyIdToSseEmitter.get(partyId);
         if (sseEmitter != null) {
-            sseEmitter.send(DuelData.DEFAULT);
+            DuelData duelData = duelManager.generateDuelData(partyId);
+            sseEmitter.send(SseEmitter.event().data(duelData).build());
         }
     }
 }

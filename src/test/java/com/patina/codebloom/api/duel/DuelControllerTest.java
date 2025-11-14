@@ -38,6 +38,7 @@ import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
+import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import com.patina.codebloom.utilities.exception.ValidationException;
 
 public class DuelControllerTest {
@@ -48,9 +49,10 @@ public class DuelControllerTest {
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
     private LobbyPlayerRepository lobbyPlayerRepository = mock(LobbyPlayerRepository.class);
     private Env env = mock(Env.class);
+    private LobbyNotifyHandler lobbyNotifyHandler = mock(LobbyNotifyHandler.class);
 
     public DuelControllerTest() {
-        this.duelController = new DuelController(env, duelManager, lobbyRepository, lobbyPlayerRepository);
+        this.duelController = new DuelController(env, duelManager, lobbyRepository, lobbyPlayerRepository, lobbyNotifyHandler);
         this.faker = Faker.instance();
     }
 
