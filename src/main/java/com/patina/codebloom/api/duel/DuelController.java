@@ -220,8 +220,8 @@ public class DuelController {
     }
 
     @Operation(summary = "SSE endpoint for duel data", description = "Server-sent events endpoint for real-time duel updates")
-    @ApiResponse(responseCode = "200", description = "Sending live duel data", content = @Content(mediaType = MediaType.TEXT_EVENT_STREAM_VALUE, schema = @Schema(implementation = DuelData.class)))
-    @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection")
+    @ApiResponse(responseCode = "200", description = "Sending live duel data")
+    @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter getDuelData() {
         if (env.isProd()) {
