@@ -4,15 +4,22 @@ import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
+import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 
 @Component
 public class DuelManager {
-    public DuelManager() {
+    private final LobbyRepository lobbyRepository;
+
+    public DuelManager(final LobbyRepository lobbyRepository) {
+        this.lobbyRepository = lobbyRepository;
     }
 
-    public DuelData generateDuelData(final Lobby lobby) {
+    public DuelData generateDuelData(final String lobbyId) {
+        Lobby fetchedLobby = lobbyRepository.findLobbyById(lobbyId);
+
+
         return DuelData.builder()
-                        .lobby(LobbyDto.fromLobby(lobby))
+                        .lobby(LobbyDto.fromLobby(fetchedLobby))
                         .build();
     }
 }
