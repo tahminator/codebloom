@@ -39,10 +39,12 @@ if [[ "${DOCKER_UPLOAD:-true}" == "true" ]]; then
 else
     BUILD_MODE="--load"
 fi
+SPRING_PROFILES="${SPRING_PROFILES:-prod}"
 
 docker buildx build \
     $BUILD_MODE \
     --file infra/Dockerfile \
+    --build-arg SPRING_PROFILES="$SPRING_PROFILES" \
     $(printf -- '--tag %s ' "${TAGS[@]}") \
     .
 
