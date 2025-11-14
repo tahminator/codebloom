@@ -241,7 +241,7 @@ public class DuelController {
                         .winnerId(null)
                         .build();
 
-        DuelData duelData = duelManager.generateDuelData(lobby);
+        DuelData duelData = duelManager.generateDuelData(lobby.getId());
 
         try {
             emitter.send(SseEmitter.event().data(duelData).build());
