@@ -312,6 +312,7 @@ jobs:
               run: bash .github/scripts/build-image.sh
               env:
                   TAG_PREFIX: staging-
+                  SPRING_PROFILES: stg
 
     redeploy:
         name: Redeploy on DigitalOcean

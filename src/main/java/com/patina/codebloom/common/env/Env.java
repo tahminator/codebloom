@@ -22,6 +22,10 @@ public class Env {
         return isProfileActive("prod");
     }
 
+    public boolean isStg() {
+        return isProfileActive("stg");
+    }
+
     public boolean isDev() {
         return isProfileActive("dev");
     }
