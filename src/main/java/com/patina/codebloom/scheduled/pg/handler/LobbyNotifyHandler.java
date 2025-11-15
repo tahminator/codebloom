@@ -1,6 +1,9 @@
 package com.patina.codebloom.scheduled.pg.handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.context.annotation.Profile;
@@ -18,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("!ci")
 @Slf4j
 public class LobbyNotifyHandler {
-    private final ConcurrentHashMap<String, SseWrapper<ApiResponder<DuelData>>> partyIdToSseEmitter;
+    private final ConcurrentHashMap<String, Set<SseWrapper<ApiResponder<DuelData>>>> partyIdToSseEmitters;
     private final DuelManager duelManager;
 
     public LobbyNotifyHandler(final DuelManager duelManager) {
-        this.partyIdToSseEmitter = new ConcurrentHashMap<>();
+        this.partyIdToSseEmitters = new ConcurrentHashMap<>();
         this.duelManager = duelManager;
     }
 
@@ -38,28 +41,50 @@ public class LobbyNotifyHandler {
 
     @Async
     public void register(final String partyId, final SseWrapper<ApiResponder<DuelData>> sseEmitter) {
-        partyIdToSseEmitter.computeIfAbsent(partyId, _ -> sseEmitter);
+        var emitterSet = partyIdToSseEmitters.computeIfAbsent(partyId, _ -> ConcurrentHashMap.newKeySet());
+        if (!emitterSet.contains(sseEmitter)) {
+            emitterSet.add(sseEmitter);
+        }
         try {
             sseEmitter.sendData(getData(partyId));
         } catch (Exception e) {
             sseEmitter.completeWithError(e);
-            partyIdToSseEmitter.remove(partyId);
+            emitterSet.remove(sseEmitter);
+            if (emitterSet.isEmpty()) {
+                partyIdToSseEmitters.remove(partyId);
+            }
         }
     }
 
     public void deregister(final String partyId) {
-        partyIdToSseEmitter.remove(partyId);
+        partyIdToSseEmitters.remove(partyId);
     }
 
     @Async
     public void handle(final String partyId) throws IOException {
-        if (!partyIdToSseEmitter.containsKey(partyId)) {
-            log.error("Failed to find SSE emitter for the given party");
+        var emitterSet = partyIdToSseEmitters.get(partyId);
+        if (emitterSet == null || emitterSet.isEmpty()) {
+            log.error("Failed to find SSE emitters for the given party");
             return;
         }
-        var sseEmitter = partyIdToSseEmitter.get(partyId);
-        if (sseEmitter != null) {
-            sseEmitter.sendData(getData(partyId));
+
+        List<SseWrapper<ApiResponder<DuelData>>> failedEmitters = new ArrayList<>();
+
+        for (var sseEmitter : emitterSet) {
+            try {
+                sseEmitter.sendData(getData(partyId));
+            } catch (Exception e) {
+                log.error("Failed to send SSE data to emitter", e);
+                failedEmitters.add(sseEmitter);
+            }
+        }
+
+        for (var failedEmitter : failedEmitters) {
+            emitterSet.remove(failedEmitter);
+        }
+
+        if (emitterSet.isEmpty()) {
+            partyIdToSseEmitters.remove(partyId);
         }
     }
 }
