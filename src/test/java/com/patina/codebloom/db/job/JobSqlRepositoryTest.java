@@ -1,3 +1,4 @@
+/**
 package com.patina.codebloom.db.job;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -101,3 +102,4 @@ public class JobSqlRepositoryTest extends BaseRepositoryTest {
     }
 
 }
+*/

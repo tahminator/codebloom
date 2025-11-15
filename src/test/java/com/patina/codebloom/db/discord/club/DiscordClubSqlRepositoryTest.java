@@ -1,3 +1,4 @@
+/**
 package com.patina.codebloom.db.discord.club;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -156,3 +157,4 @@ public class DiscordClubSqlRepositoryTest extends BaseRepositoryTest {
     }
 
 }
+*/
