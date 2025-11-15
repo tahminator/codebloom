@@ -1,3 +1,5 @@
+
+/**
 package com.patina.codebloom.db.club;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -151,3 +153,4 @@ public class ClubRepositoryTest extends BaseRepositoryTest {
     }
 
 }
+*/

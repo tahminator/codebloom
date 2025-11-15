@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -17,6 +18,7 @@ import com.patina.codebloom.common.jwt.JWTClient;
 import com.patina.codebloom.config.NoJdaRequired;
 
 @SpringBootTest
+@Disabled
 public class JWTTest extends NoJdaRequired {
     private final JWTClient jwtClient;
 

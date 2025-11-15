@@ -2,13 +2,17 @@ package com.patina.codebloom.api.duel;
 
 import java.time.OffsetDateTime;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.patina.codebloom.common.components.DuelData;
 
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
 import com.patina.codebloom.common.components.DuelManager;
@@ -26,6 +30,8 @@ import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
+import com.patina.codebloom.common.utils.sse.SseWrapper;
+import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,11 +39,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Live duel routes", description = """
                 This controller houses the logic for live Leetcode duels. """)
 @RequestMapping("/api/duel")
+@Profile("!ci")
+@Slf4j
 public class DuelController {
     private static final int MAX_PLAYER_COUNT = 2;
 
@@ -45,13 +54,15 @@ public class DuelController {
     private final DuelManager duelManager;
     private final LobbyRepository lobbyRepository;
     private final LobbyPlayerRepository lobbyPlayerRepository;
+    private final LobbyNotifyHandler lobbyNotifyHandler;
 
     public DuelController(final Env env, final DuelManager duelManager, final LobbyRepository lobbyRepository,
-                    final LobbyPlayerRepository lobbyPlayerRepository) {
+                    final LobbyPlayerRepository lobbyPlayerRepository, final LobbyNotifyHandler lobbyNotifyHandler) {
         this.env = env;
         this.duelManager = duelManager;
         this.lobbyRepository = lobbyRepository;
         this.lobbyPlayerRepository = lobbyPlayerRepository;
+        this.lobbyNotifyHandler = lobbyNotifyHandler;
     }
 
     private void validatePlayerNotInLobby(final String playerId) {
@@ -178,5 +189,47 @@ public class DuelController {
         lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
 
         return ResponseEntity.ok(ApiResponder.success("Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
+    }
+
+    @Operation(summary = "SSE endpoint for duel data", description = """
+                    Server-sent events endpoint for real-time duel updates
+
+                    NOTE - Our application runs on DigitalOcean, which does not allow SSE over GET requests. As a result, we are forced
+                    to use a non-standard SSE implementation over a POST method.
+                    See https://ideas.digitalocean.com/app-platform/p/http-response-streaming-in-app-platform-for-sse-support.
+                    """)
+    @ApiResponse(responseCode = "200", description = "Sending live duel data")
+    @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    @PostMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseWrapper<ApiResponder<DuelData>> getDuelData(
+                    @Protected final AuthenticationObject authenticationObject) {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+
+        var user = authenticationObject.getUser();
+
+        var lobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId());
+
+        if (lobby == null) {
+            // TODO: Consolidate this
+            lobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId());
+        }
+
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in a lobby and/or duel.");
+        }
+        DuelData duelData = duelManager.generateDuelData(lobby.getId());
+
+        SseWrapper<ApiResponder<DuelData>> emitter = new SseWrapper<>(1_800_000L);
+        try {
+            lobbyNotifyHandler.register(lobby.getId(), emitter);
+        } catch (Exception e) {
+            log.error("Failed to send SSE data", e);
+            emitter.completeWithError(e);
+            lobbyNotifyHandler.deregister(lobby.getId());
+        }
+
+        return emitter;
     }
 }

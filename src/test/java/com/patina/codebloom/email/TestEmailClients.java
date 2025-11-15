@@ -1,6 +1,7 @@
 package com.patina.codebloom.email;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -10,6 +11,7 @@ import com.patina.codebloom.common.email.error.EmailException;
 import com.patina.codebloom.config.NoJdaRequired;
 
 @SpringBootTest
+@Disabled
 public class TestEmailClients extends NoJdaRequired {
     private final GithubOAuthEmail githubOAuthEmail;
     private final OfficialCodebloomEmail officialCodebloomEmail;

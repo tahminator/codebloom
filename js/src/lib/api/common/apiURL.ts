@@ -1,5 +1,6 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { operations, paths } from "@/lib/api/types/autogen/schema";
+import { If } from "@/lib/reporter/types/optional";
 
 type MaybeParams<T> =
   keyof T extends never ? { params?: undefined } : { params: T };
@@ -41,11 +42,29 @@ type PathOperationsToPathParams<TOperationsKey extends OperationsKey> =
 type PathOperationsToPathQueries<TOperationsKey extends OperationsKey> =
   OperationsPath<TOperationsKey>["parameters"]["query"];
 
-type PathOperationsToPathResponseBody<TOperationsKey extends OperationsKey> =
+type PathOperationsToPathResponseContent<TOperationsKey extends OperationsKey> =
   Extract<
     OperationsPath<TOperationsKey>["responses"],
     { 200: unknown }
-  >[200]["content"]["*/*"];
+  >[200]["content"];
+
+type PathOperationsToPathResponseBody<TOperationsKey extends OperationsKey> =
+  If<
+    Extract<
+      PathOperationsToPathResponseContent<TOperationsKey>,
+      { "*/*": unknown }
+    > extends never ?
+      true
+    : false,
+    Extract<
+      PathOperationsToPathResponseContent<TOperationsKey>,
+      { "text/event-stream": unknown }
+    >["text/event-stream"],
+    Extract<
+      PathOperationsToPathResponseContent<TOperationsKey>,
+      { "*/*": unknown }
+    >["*/*"]
+  >;
 
 type PathOperationsToPathResponsePayload<TOperationsKey extends OperationsKey> =
   Extract<
