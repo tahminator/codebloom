@@ -89,9 +89,10 @@ RUN ./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exe
 RUN ./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
 
 ARG SERVER_PROFILES=prod
+ENV SPRING_PROFILES_ACTIVE=${SERVER_PROFILES}
 
 # Expose backend port
 EXPOSE 8080
 
 # Start the application
-ENTRYPOINT java -Dspring.profiles.active=${SERVER_PROFILES} -jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
