@@ -2,6 +2,7 @@ package com.patina.codebloom.api.duel;
 
 import java.time.OffsetDateTime;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Live duel routes", description = """
                 This controller houses the logic for live Leetcode duels. """)
 @RequestMapping("/api/duel")
+@Profile("!ci")
 @Slf4j
 public class DuelController {
     private static final int MAX_PLAYER_COUNT = 2;
