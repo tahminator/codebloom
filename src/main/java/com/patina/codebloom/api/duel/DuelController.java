@@ -228,36 +228,30 @@ public class DuelController {
     @ApiResponse(responseCode = "200", description = "Sending live duel data")
     @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseWrapper<ApiResponder<DuelData>> getDuelData() {
+    public SseWrapper<ApiResponder<DuelData>> getDuelData(
+                    @Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        SseWrapper<ApiResponder<DuelData>> emitter = new SseWrapper<>(1_800_000L);
+        var user = authenticationObject.getUser();
 
-        String joinCode = PartyCodeGenerator.generateCode();
-        OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
+        var lobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId());
 
-        Lobby lobby = Lobby.builder()
-                        .joinCode(joinCode)
-                        .status(LobbyStatus.AVAILABLE)
-                        .expiresAt(expiresAt)
-                        .playerCount(1)
-                        .winnerId(null)
-                        .build();
+        if (lobby == null) {
+            // TODO: Consolidate this
+            lobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId());
+        }
 
-        lobbyRepository.createLobby(lobby);
-
-        lobbyNotifyHandler.register(lobby.getId(), emitter);
-
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in a lobby and/or duel.");
+        }
         DuelData duelData = duelManager.generateDuelData(lobby.getId());
 
+        SseWrapper<ApiResponder<DuelData>> emitter = new SseWrapper<>(1_800_000L);
+        lobbyNotifyHandler.register(lobby.getId(), emitter);
         try {
             emitter.sendData(ApiResponder.success("Successfully fetched!", duelData));
-
-            if (lobby.getWinnerId() != null) {
-                emitter.complete();
-            }
         } catch (Exception e) {
             log.error("Failed to send SSE data", e);
             emitter.completeWithError(e);
