@@ -14,8 +14,8 @@ import com.patina.codebloom.common.components.DuelManager;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@Slf4j
 @Profile("!ci")
+@Slf4j
 public class LobbyNotifyHandler {
     private final ConcurrentHashMap<String, SseEmitter> partyIdToSseEmitter;
     private final DuelManager duelManager;
