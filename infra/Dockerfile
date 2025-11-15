@@ -94,5 +94,4 @@ ARG SERVER_PROFILES=prod
 EXPOSE 8080
 
 # Start the application
-#
 ENTRYPOINT java -Dspring.profiles.active=${SERVER_PROFILES} -jar app.jar

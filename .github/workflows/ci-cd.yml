@@ -253,6 +253,8 @@ jobs:
 
             - name: Run script
               run: bash .github/scripts/build-image.sh
+              env:
+                  SERVER_PROFILES: stg
 
     redeploy:
         name: Redeploy on DigitalOcean
