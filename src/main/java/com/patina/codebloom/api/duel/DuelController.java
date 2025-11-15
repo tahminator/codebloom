@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -224,10 +223,16 @@ public class DuelController {
         return ResponseEntity.ok(ApiResponder.success("Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
     }
 
-    @Operation(summary = "SSE endpoint for duel data", description = "Server-sent events endpoint for real-time duel updates")
+    @Operation(summary = "SSE endpoint for duel data", description = """
+                    Server-sent events endpoint for real-time duel updates
+
+                    NOTE - Our application runs on DigitalOcean, which does not allow SSE over GET requests. As a result, we are forced
+                    to use a non-standard SSE implementation over a POST method.
+                    See https://ideas.digitalocean.com/app-platform/p/http-response-streaming-in-app-platform-for-sse-support.
+                    """)
     @ApiResponse(responseCode = "200", description = "Sending live duel data")
     @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
-    @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseWrapper<ApiResponder<DuelData>> getDuelData(
                     @Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
