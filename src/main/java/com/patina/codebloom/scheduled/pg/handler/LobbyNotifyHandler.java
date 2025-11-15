@@ -6,10 +6,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.patina.codebloom.common.components.DuelData;
 import com.patina.codebloom.common.components.DuelManager;
+import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.utils.sse.SseWrapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("!ci")
 @Slf4j
 public class LobbyNotifyHandler {
-    private final ConcurrentHashMap<String, SseEmitter> partyIdToSseEmitter;
+    private final ConcurrentHashMap<String, SseWrapper<ApiResponder<DuelData>>> partyIdToSseEmitter;
     private final DuelManager duelManager;
 
     public LobbyNotifyHandler(final DuelManager duelManager) {
@@ -25,8 +26,25 @@ public class LobbyNotifyHandler {
         this.duelManager = duelManager;
     }
 
-    public void register(final String partyId, final SseEmitter sseEmitter) {
+    private ApiResponder<DuelData> getData(final String partyId) {
+        try {
+            DuelData duelData = duelManager.generateDuelData(partyId);
+            return ApiResponder.success("Data retrieved!", duelData);
+        } catch (Exception e) {
+            log.error("failed to get duel data", e);
+            return ApiResponder.failure(String.format("Something went wrong: %s", e.getMessage()));
+        }
+    }
+
+    @Async
+    public void register(final String partyId, final SseWrapper<ApiResponder<DuelData>> sseEmitter) {
         partyIdToSseEmitter.computeIfAbsent(partyId, _ -> sseEmitter);
+        try {
+            sseEmitter.sendData(getData(partyId));
+        } catch (Exception e) {
+            sseEmitter.completeWithError(e);
+            partyIdToSseEmitter.remove(partyId);
+        }
     }
 
     public void deregister(final String partyId) {
@@ -41,8 +59,7 @@ public class LobbyNotifyHandler {
         }
         var sseEmitter = partyIdToSseEmitter.get(partyId);
         if (sseEmitter != null) {
-            DuelData duelData = duelManager.generateDuelData(partyId);
-            sseEmitter.send(SseEmitter.event().data(duelData).build());
+            sseEmitter.sendData(getData(partyId));
         }
     }
 }
