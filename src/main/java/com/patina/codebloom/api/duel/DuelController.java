@@ -249,9 +249,8 @@ public class DuelController {
         DuelData duelData = duelManager.generateDuelData(lobby.getId());
 
         SseWrapper<ApiResponder<DuelData>> emitter = new SseWrapper<>(1_800_000L);
-        lobbyNotifyHandler.register(lobby.getId(), emitter);
         try {
-            emitter.sendData(ApiResponder.success("Successfully fetched!", duelData));
+            lobbyNotifyHandler.register(lobby.getId(), emitter);
         } catch (Exception e) {
             log.error("Failed to send SSE data", e);
             emitter.completeWithError(e);
