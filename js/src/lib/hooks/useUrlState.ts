@@ -1,5 +1,5 @@
 import { useDebouncedValue } from "@mantine/hooks";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 
 type UseUrlStateOptions = {
@@ -34,47 +34,76 @@ export function useURLState<T>(
     debounce = defaultProps.debounce,
   }: UseUrlStateOptions = defaultProps,
 ) {
-  const [initial, setInitial] = useState(true);
-  const [value, setValue] = useState<T>(() => defaultValue);
-  const [debouncedValue] = useDebouncedValue<T>(value, debounce);
   const [searchParams, setSearchParams] = useSearchParams();
+  const mountedRef = useRef(false);
+  const lastUpdateTimeRef = useRef<number>(0);
+  const updateCooldownMs = 50;
 
-  // On initial mount, update the state with the URL params. This hook will not run if the hook is not enabled or the initial value has already been provided.
+  const [value, setValue] = useState<T>(() => {
+    if (!enabled) {
+      return defaultValue;
+    }
+    
+    const param = searchParams.get(name);
+    
+    if (param == null) {
+      return defaultValue;
+    }
+
+    const val = coerce(param, defaultValue);
+    const result = typeof val === "symbol" ? defaultValue : val;
+    return result;
+  });
+  
+  const [debouncedValue] = useDebouncedValue<T>(value, debounce);
+
   useEffect(() => {
-    if (!enabled || !initial) {
+    if (!enabled || !mountedRef.current) {
+      return;
+    }
+
+    const timeSinceLastUpdate = Date.now() - lastUpdateTimeRef.current;
+    if (timeSinceLastUpdate < updateCooldownMs) {
       return;
     }
 
     const param = searchParams.get(name);
+    const urlValue = param == null ? defaultValue : (() => {
+      const val = coerce(param, defaultValue);
+      return typeof val === "symbol" ? defaultValue : val;
+    })();
 
-    // No value found in the URL.
-    if (param == null) {
-      setValue(defaultValue);
-      setInitial(false);
-      return;
+    const urlValueStr = String(urlValue);
+    const currentValueStr = String(value);
+    
+    if (urlValueStr !== currentValueStr) {
+      setValue(urlValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, name, enabled, defaultValue]);
 
-    const val = coerce(param, defaultValue);
-    // If coercion of type fails, it will return Symbol.
-    setValue(typeof val === "symbol" ? defaultValue : val);
-    setInitial(false);
-  }, [defaultValue, name, searchParams, enabled, initial]);
-
-  // Update the URL with the new state, only if the initial value hasn't been set already and if the hook is enabled.
   useEffect(() => {
-    if (!enabled || initial) {
+    if (!enabled) {
       return;
     }
 
-    if (debouncedValue != value) {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
       return;
     }
 
-    // If resetOnDefault is enabled, clear the key.
-    if (debouncedValue === defaultValue && resetOnDefault) {
+    if (debounce > 0 && debouncedValue !== value) {
+      return;
+    }
+
+    lastUpdateTimeRef.current = Date.now();
+
+    if (resetOnDefault && String(debouncedValue) === String(defaultValue)) {
       setSearchParams(
         (prev) => {
-          prev.delete(name);
+          if (prev.has(name)) {
+            prev.delete(name);
+          }
           return prev;
         },
         { replace: true },
@@ -84,20 +113,25 @@ export function useURLState<T>(
 
     setSearchParams(
       (prev) => {
-        prev.set(name, String(debouncedValue));
+        const currentValue = prev.get(name);
+        const newValue = String(debouncedValue);
+        
+        if (currentValue !== newValue) {
+          prev.set(name, newValue);
+        }
         return prev;
       },
       { replace: true },
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     debouncedValue,
     defaultValue,
     enabled,
-    initial,
     name,
     resetOnDefault,
     setSearchParams,
-    value,
+    debounce,
   ]);
 
   return [value, setValue, debouncedValue] as [
@@ -106,6 +140,7 @@ export function useURLState<T>(
     T,
   ];
 }
+
 
 /**
  * This function allows us to coerce the URL param value string to the type of our default value. If coercion fails, a Symbol is returned so that the error case can be handled.
