@@ -43,9 +43,9 @@ export function useURLState<T>(
     if (!enabled) {
       return defaultValue;
     }
-    
+
     const param = searchParams.get(name);
-    
+
     if (param == null) {
       return defaultValue;
     }
@@ -54,7 +54,7 @@ export function useURLState<T>(
     const result = typeof val === "symbol" ? defaultValue : val;
     return result;
   });
-  
+
   const [debouncedValue] = useDebouncedValue<T>(value, debounce);
 
   useEffect(() => {
@@ -68,14 +68,17 @@ export function useURLState<T>(
     }
 
     const param = searchParams.get(name);
-    const urlValue = param == null ? defaultValue : (() => {
-      const val = coerce(param, defaultValue);
-      return typeof val === "symbol" ? defaultValue : val;
-    })();
+    const urlValue =
+      param == null ? defaultValue : (
+        (() => {
+          const val = coerce(param, defaultValue);
+          return typeof val === "symbol" ? defaultValue : val;
+        })()
+      );
 
     const urlValueStr = String(urlValue);
     const currentValueStr = String(value);
-    
+
     if (urlValueStr !== currentValueStr) {
       setValue(urlValue);
     }
@@ -115,7 +118,7 @@ export function useURLState<T>(
       (prev) => {
         const currentValue = prev.get(name);
         const newValue = String(debouncedValue);
-        
+
         if (currentValue !== newValue) {
           prev.set(name, newValue);
         }
@@ -140,7 +143,6 @@ export function useURLState<T>(
     T,
   ];
 }
-
 
 /**
  * This function allows us to coerce the URL param value string to the type of our default value. If coercion fails, a Symbol is returned so that the error case can be handled.
