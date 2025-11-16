@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.patina.codebloom.common.db.models.job.Job;
@@ -26,6 +27,7 @@ import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
+@ActiveProfiles({ "ci", "thread" })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
 public class NotifyListenerTest extends BaseRepositoryTest {

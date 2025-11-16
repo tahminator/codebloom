@@ -28,7 +28,7 @@ import com.patina.codebloom.config.NoJdaRequired;
 import com.patina.codebloom.config.TestJobNotifyListener;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles({ "ci", "thread" })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Import(TestJobNotifyListener.class)
