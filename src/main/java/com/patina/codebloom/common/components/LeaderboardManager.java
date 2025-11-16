@@ -126,7 +126,7 @@ public class LeaderboardManager {
         }
 
         List<Indexed<UserWithScoreDto>> indexedUserWithScoreDtos = leaderboardData.stream()
-                        .map(indexed -> Indexed.of(UserWithScoreDto.fromUserWithScore(indexed.getItem()), indexed.getIndex()))
+                        .map(indexed -> indexed.map(UserWithScoreDto::fromUserWithScore))
                         .toList();
 
         Page<Indexed<UserWithScoreDto>> createdPage = new Page<>(hasNextPage, indexedUserWithScoreDtos, totalPages, parsedPageSize);

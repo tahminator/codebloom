@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.page;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -90,5 +91,11 @@ public class Indexed<T> {
                         .mapToObj(i -> Indexed.of(items.get(i), i + startIndex))
                         .toList();
 
+    }
+
+    public <R> Indexed<R> map(final Function<? super T, ? extends R> mapper) {
+        final R newItem = (this.item == null) ? null : mapper.apply(this.item);
+
+        return Indexed.of(newItem, this.index);
     }
 }
