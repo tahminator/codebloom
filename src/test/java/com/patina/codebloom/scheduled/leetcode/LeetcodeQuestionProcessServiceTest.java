@@ -49,6 +49,7 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
 
     @BeforeAll
     void setup() {
+        jobRepository.deleteAllJobs();
         String uniqueSubmissionId = "test-submission-" + System.currentTimeMillis();
 
         testQuestion = Question.builder()
@@ -86,6 +87,7 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
         if (!isSuccessful) {
             fail("Failed to clean up test job");
         }
+        jobRepository.deleteAllJobs();
     }
 
     @Test

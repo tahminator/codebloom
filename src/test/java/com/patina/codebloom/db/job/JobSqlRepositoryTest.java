@@ -1,13 +1,10 @@
 package com.patina.codebloom.db.job;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,6 +59,10 @@ public class JobSqlRepositoryTest extends BaseRepositoryTest {
         if (!isSuccessful) {
             fail("Failed to delete test job");
         }
+
+        // would return false, but it's ok - super simple method - we just call it to
+        // make sure it works.
+        jobRepository.deleteAllJobs();
     }
 
     @Test
