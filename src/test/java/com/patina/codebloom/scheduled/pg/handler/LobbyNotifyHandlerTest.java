@@ -36,7 +36,7 @@ public class LobbyNotifyHandlerTest {
         duelManager = mock(DuelManager.class);
         sseWrapper = mock(SseWrapper.class);
         lobbyNotifyHandler = new LobbyNotifyHandler(duelManager);
-        partyIdToSseEmitters = lobbyNotifyHandler.partyIdToSseEmitters;
+        partyIdToSseEmitters = lobbyNotifyHandler.getPartyIdToSseEmitters();
     }
 
     @Test
