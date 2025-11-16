@@ -12,6 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.Getter;
 
+/**
+ * Use {@code SseWrapper} instead of {@code SseEmitter} to:
+ *
+ * <ul>
+ * <li>Enforce type-safety in the backend.</li>
+ * <li>“Trick” Springdoc into generating a concrete schema for SSE
+ * endpoints.</li>
+ * </ul>
+ */
 public class SseWrapper<T> extends SseEmitter {
     @Schema(requiredMode = RequiredMode.REQUIRED)
     @Getter

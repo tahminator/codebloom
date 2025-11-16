@@ -6,6 +6,9 @@ import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * PG NOTIFY channels.
+ */
 @Getter
 @ToString
 public enum PgChannel {

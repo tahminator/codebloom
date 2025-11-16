@@ -52,12 +52,12 @@ public class NotifyListener {
     }
 
     @PostConstruct
-    private void init() {
+    protected void init() {
         vtpool.submit(this::listenLoop);
     }
 
     @PreDestroy
-    private void shutdown() {
+    protected void shutdown() {
         vtpool.shutdownNow();
     }
 

@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("!ci")
 @Slf4j
 public class LobbyNotifyHandler {
-    private final ConcurrentHashMap<String, Set<SseWrapper<ApiResponder<DuelData>>>> partyIdToSseEmitters;
+    final ConcurrentHashMap<String, Set<SseWrapper<ApiResponder<DuelData>>>> partyIdToSseEmitters;
     private final DuelManager duelManager;
 
     public LobbyNotifyHandler(final DuelManager duelManager) {
