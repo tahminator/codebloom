@@ -67,4 +67,11 @@ public interface JobRepository {
      * @return true if the job was deleted successfully, false otherwise
      */
     boolean deleteJobById(String id);
+
+    /**
+     * Delete all jobs. <b>BE CAREFUL.</b>
+     *
+     * @return boolean indicating if all jobs were deleted successfully or not.
+     */
+    boolean deleteAllJobs();
 }

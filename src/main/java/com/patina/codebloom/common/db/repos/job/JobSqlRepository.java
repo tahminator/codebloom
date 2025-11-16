@@ -176,4 +176,18 @@ public class JobSqlRepository implements JobRepository {
             throw new RuntimeException("Failed to delete job", e);
         }
     }
+
+    @Override
+    public boolean deleteAllJobs() {
+        String sql = """
+                        DELETE FROM "Job"
+                        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete job", e);
+        }
+    }
 }
