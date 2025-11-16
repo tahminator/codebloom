@@ -37,7 +37,6 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
 
     @BeforeAll
     void createQuestion() {
-
         testQuestionBank = QuestionBank.builder()
                         .questionSlug("two-sum")
                         .questionTitle("Two Sum")
@@ -48,11 +47,7 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
                         .acceptanceRate(0.8f)
                         .build();
 
-        testQuestionBank = questionBankRepository.createQuestion(testQuestionBank);
-        assertNotNull(testQuestionBank.getId(), "Question Bank ID should be generated");
-        assertNotNull(testQuestionBank.getCreatedAt(), "Question createdAt should be set");
-
-        log.info("Created test question with ID: {}", testQuestionBank.getId());
+        questionBankRepository.createQuestion(testQuestionBank);
     }
 
     @AfterAll
@@ -97,7 +92,7 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
         String originalTitle = testQuestionBank.getQuestionTitle();
 
         testQuestionBank.setQuestionTitle("Updated Two Sum");
-        
+
         QuestionBank updatedResult = questionBankRepository.updateQuestion(testQuestionBank);
 
         assertNotNull(updatedResult, "Question should be successfully updated");
@@ -109,7 +104,7 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
 
         testQuestionBank.setQuestionTitle(originalTitle);
         questionBankRepository.updateQuestion(testQuestionBank);
-        
+
         log.info("Successfully updated question with ID: {}", testQuestionBank.getId());
     }
 

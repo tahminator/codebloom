@@ -10,11 +10,11 @@ public interface QuestionBankRepository {
     void createQuestion(QuestionBank question);
 
     QuestionBank getQuestionById(String id);
-    
+
     QuestionBank getQuestionBySlug(String slug);
-    
+
     QuestionBank updateQuestion(QuestionBank question);
-    
+
     boolean deleteQuestionById(String id);
 
     QuestionBank getRandomQuestion();
@@ -22,5 +22,4 @@ public interface QuestionBankRepository {
     List<QuestionBank> getQuestionsByTopic(LeetcodeTopicEnum topic);
 
     List<QuestionBank> getQuestionsByDifficulty(QuestionDifficulty difficulty);
-
 }

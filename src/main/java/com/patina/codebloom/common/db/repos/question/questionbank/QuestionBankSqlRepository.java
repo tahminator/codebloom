@@ -82,6 +82,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
             stmt.setString("desc", question.getDescription());
             stmt.setObject("ac", question.getAcceptanceRate());
 
+            stmt.executeUpdate();
+
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create question", e);
         }

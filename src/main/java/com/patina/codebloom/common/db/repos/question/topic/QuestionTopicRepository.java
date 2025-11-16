@@ -7,7 +7,7 @@ import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 
 public interface QuestionTopicRepository {
     List<QuestionTopic> findQuestionTopicsByQuestionId(String questionId);
-    
+
     List<QuestionTopic> findQuestionTopicsByQuestionBankId(String questionBankId);
 
     QuestionTopic findQuestionTopicById(String id);

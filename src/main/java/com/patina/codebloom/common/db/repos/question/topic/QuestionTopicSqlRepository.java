@@ -181,13 +181,13 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
-            
+
             if (questionTopic.getQuestionId() == null) {
                 stmt.setNull("questionId", java.sql.Types.NULL);
             } else {
                 stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
             }
-            
+
             if (questionTopic.getQuestionBankId() == null) {
                 stmt.setNull("questionBankId", java.sql.Types.NULL);
             } else {
@@ -230,7 +230,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
             } else {
                 stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
             }
-            
+
             if (questionTopic.getQuestionBankId() == null) {
                 stmt.setNull("questionBankId", java.sql.Types.NULL);
             } else {
