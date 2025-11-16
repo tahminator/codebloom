@@ -12,7 +12,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
 /**
  * Fetch the users on the current leaderboard. This is a super query
@@ -41,13 +41,24 @@ export const useCurrentLeaderboardUsersQuery = (
     initialPage: initialPage,
     tieToUrl: tieToUrl,
   });
+  const isInitialMount = useRef(true);
 
   // hacky impl to track filters changing.
   const stringifiedFilters = useMemo(() => JSON.stringify(filters), [filters]);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      return;
+    }
     goTo(1);
   }, [stringifiedFilters, goTo]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      isInitialMount.current = false;
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
@@ -67,19 +78,22 @@ export const useCurrentLeaderboardUsersQuery = (
 
   /**
    * Abstracted function so that we can also reset the page back to 1 whenever we update the query.
-   * TODO - Move these side effects within the useURLState function, which will make it easier to deal with.
    */
   const setSearchQuery = useCallback(
     (query: string) => {
       _setSearchQuery(query);
-      goTo(1);
+      if (!isInitialMount.current) {
+        goTo(1);
+      }
     },
     [_setSearchQuery, goTo],
   );
 
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
-    goTo(1);
+    if (!isInitialMount.current) {
+      goTo(1);
+    }
   }, [goTo, setGlobalIndex]);
 
   const query = useQuery({
