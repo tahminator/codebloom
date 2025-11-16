@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.postgresql.PGConnection;
 import org.postgresql.PGNotification;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.DbConnection;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
+@Profile("!ci | thread")
 public class NotifyListener {
     private final ExecutorService vtpool;
     private final List<PgChannel> channels;

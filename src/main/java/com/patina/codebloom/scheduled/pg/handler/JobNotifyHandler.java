@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-@Profile("!ci")
+@Profile("!ci | thread")
 public class JobNotifyHandler {
     private final LeetcodeQuestionProcessService leetcodeQuestionProcessService;
 

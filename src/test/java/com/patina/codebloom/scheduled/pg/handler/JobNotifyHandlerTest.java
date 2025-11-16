@@ -23,32 +23,32 @@ public class JobNotifyHandlerTest {
     @Test
     void testHandleCallsDrainQueue() {
         String testPayload = "test-payload";
-        
+
         jobNotifyHandler.handle(testPayload);
-        
+
         verify(leetcodeQuestionProcessService, times(1)).drainQueue();
     }
 
     @Test
     void testHandleWithNullPayload() {
         jobNotifyHandler.handle(null);
-        
+
         verify(leetcodeQuestionProcessService, times(1)).drainQueue();
     }
 
     @Test
     void testHandleWithEmptyPayload() {
         jobNotifyHandler.handle("");
-        
+
         verify(leetcodeQuestionProcessService, times(1)).drainQueue();
     }
 
     @Test
     void testHandleWithValidPayload() {
         String jsonPayload = "{\"id\": 123, \"type\": \"process\"}";
-        
+
         jobNotifyHandler.handle(jsonPayload);
-        
+
         verify(leetcodeQuestionProcessService, times(1)).drainQueue();
     }
 
@@ -57,7 +57,7 @@ public class JobNotifyHandlerTest {
         jobNotifyHandler.handle("payload1");
         jobNotifyHandler.handle("payload2");
         jobNotifyHandler.handle("payload3");
-        
+
         verify(leetcodeQuestionProcessService, times(3)).drainQueue();
     }
 }

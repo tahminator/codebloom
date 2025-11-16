@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-@Profile("!ci")
+@Profile("!ci | thread")
 public class LeetcodeQuestionProcessService {
     private static final ReentrantLock LOCK = new ReentrantLock();
 
