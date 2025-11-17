@@ -14,6 +14,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
@@ -89,23 +90,27 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testUpdateQuestion() {
-        String originalTitle = testQuestionBank.getQuestionTitle();
 
-        testQuestionBank.setQuestionTitle("Updated Two Sum");
+        QuestionBank updatedQuestionBank = QuestionBank.builder()
+                .id(testQuestionBank.getId())
+                .questionSlug(testQuestionBank.getQuestionSlug())
+                .questionTitle("Updated Two Sum")
+                .questionDifficulty(testQuestionBank.getQuestionDifficulty())
+                .questionNumber(testQuestionBank.getQuestionNumber())
+                .questionLink(testQuestionBank.getQuestionLink())
+                .description(testQuestionBank.getDescription())
+                .acceptanceRate(testQuestionBank.getAcceptanceRate())
+                .build();
 
-        QuestionBank updatedResult = questionBankRepository.updateQuestion(testQuestionBank);
+        boolean result = questionBankRepository.updateQuestion(updatedQuestionBank);
 
-        assertNotNull(updatedResult, "Question should be successfully updated");
+        if (!result) {
+            fail("Failed to update question");
+        }
 
-        String questionId = testQuestionBank.getId();
-        QuestionBank updatedQuestion = questionBankRepository.getQuestionById(questionId);
-        assertNotNull(updatedQuestion, "Updated question should not be null");
-        assertEquals("Updated Two Sum", updatedQuestion.getQuestionTitle(), "Question title should be updated");
-
-        testQuestionBank.setQuestionTitle(originalTitle);
-        questionBankRepository.updateQuestion(testQuestionBank);
-
-        log.info("Successfully updated question with ID: {}", testQuestionBank.getId());
+        testQuestionBank = questionBankRepository.getQuestionById(testQuestionBank.getId());
+        assertNotNull(testQuestionBank, "Updated question should not be null");
+        assertEquals("Updated Two Sum", testQuestionBank.getQuestionTitle(), "Question title should be updated");
     }
 
     @Test
