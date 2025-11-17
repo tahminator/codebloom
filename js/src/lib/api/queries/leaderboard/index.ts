@@ -12,7 +12,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 /**
  * Fetch the users on the current leaderboard. This is a super query
@@ -35,30 +35,17 @@ export const useCurrentLeaderboardUsersQuery = (
     defaultGwc: false,
   },
 ) => {
-  const { filters, toggleFilter, clearFilters, isAnyFilterEnabled } =
-    useFilters();
+  const {
+    filters,
+    toggleFilter: _toggleFilter,
+    clearFilters,
+    isAnyFilterEnabled,
+  } = useFilters();
+
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
   });
-  const isInitialMount = useRef(true);
-
-  // hacky impl to track filters changing.
-  const stringifiedFilters = useMemo(() => JSON.stringify(filters), [filters]);
-
-  useEffect(() => {
-    if (isInitialMount.current) {
-      return;
-    }
-    goTo(1);
-  }, [stringifiedFilters, goTo]);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      isInitialMount.current = false;
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.
@@ -83,19 +70,23 @@ export const useCurrentLeaderboardUsersQuery = (
   const setSearchQuery = useCallback(
     (query: string) => {
       _setSearchQuery(query);
-      if (!isInitialMount.current) {
-        goTo(1);
-      }
+      goTo(1);
     },
     [_setSearchQuery, goTo],
   );
 
   const toggleGlobalIndex = useCallback(() => {
     setGlobalIndex((prev) => !prev);
-    if (!isInitialMount.current) {
+    goTo(1);
+  }, [setGlobalIndex, goTo]);
+
+  const toggleFilter = useCallback(
+    (...args: Parameters<typeof _toggleFilter>) => {
+      _toggleFilter(...args);
       goTo(1);
-    }
-  }, [goTo, setGlobalIndex]);
+    },
+    [_toggleFilter, goTo],
+  );
 
   const query = useQuery({
     queryKey: [
@@ -120,11 +111,12 @@ export const useCurrentLeaderboardUsersQuery = (
 
   const onFilterReset = useCallback(() => {
     clearFilters();
+    goTo(1);
 
     if (globalIndex) {
-      toggleGlobalIndex();
+      setGlobalIndex(false);
     }
-  }, [clearFilters, globalIndex, toggleGlobalIndex]);
+  }, [clearFilters, globalIndex, setGlobalIndex, goTo]);
 
   return {
     ...query,
