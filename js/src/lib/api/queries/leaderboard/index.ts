@@ -78,6 +78,7 @@ export const useCurrentLeaderboardUsersQuery = (
 
   /**
    * Abstracted function so that we can also reset the page back to 1 whenever we update the query.
+   * TODO - Move these side effects within the useURLState function, which will make it easier to deal with.
    */
   const setSearchQuery = useCallback(
     (query: string) => {
