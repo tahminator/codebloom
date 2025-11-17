@@ -1,5 +1,5 @@
 import { useDebouncedValue } from "@mantine/hooks";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 type UseUrlStateOptions = {
@@ -34,79 +34,47 @@ export function useURLState<T>(
     debounce = defaultProps.debounce,
   }: UseUrlStateOptions = defaultProps,
 ) {
+  const [initial, setInitial] = useState(true);
+  const [value, setValue] = useState<T>(() => defaultValue);
+  const [debouncedValue] = useDebouncedValue<T>(value, debounce);
   const [searchParams, setSearchParams] = useSearchParams();
-  const mountedRef = useRef(false);
-  const lastUpdateTimeRef = useRef<number>(0);
-  const updateCooldownMs = 50;
 
-  const [value, setValue] = useState<T>(() => {
-    if (!enabled) {
-      return defaultValue;
+  // On initial mount, update the state with the URL params. This hook will not run if the hook is not enabled or the initial value has already been provided.
+  useEffect(() => {
+    if (!enabled || !initial) {
+      return;
     }
 
     const param = searchParams.get(name);
 
+    // No value found in the URL.
     if (param == null) {
-      return defaultValue;
+      setValue(defaultValue);
+      setInitial(false);
+      return;
     }
 
     const val = coerce(param, defaultValue);
-    const result = typeof val === "symbol" ? defaultValue : val;
-    return result;
-  });
+    // If coercion of type fails, it will return Symbol.
+    setValue(typeof val === "symbol" ? defaultValue : val);
+    setInitial(false);
+  }, [defaultValue, name, searchParams, enabled, initial]);
 
-  const [debouncedValue] = useDebouncedValue<T>(value, debounce);
-
+  // Update the URL with the new state, only if the initial value hasn't been set already and if the hook is enabled.
   useEffect(() => {
-    if (!enabled || !mountedRef.current) {
+    if (!enabled || initial) {
       return;
     }
 
-    const timeSinceLastUpdate = Date.now() - lastUpdateTimeRef.current;
-    if (timeSinceLastUpdate < updateCooldownMs) {
+    if (debouncedValue != value) {
       return;
     }
 
-    const param = searchParams.get(name);
-    const urlValue =
-      param == null ? defaultValue : (
-        (() => {
-          const val = coerce(param, defaultValue);
-          return typeof val === "symbol" ? defaultValue : val;
-        })()
-      );
-
-    const urlValueStr = String(urlValue);
-    const currentValueStr = String(value);
-
-    if (urlValueStr !== currentValueStr) {
-      setValue(urlValue);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, name, enabled, defaultValue]);
-
-  useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-
-    if (!mountedRef.current) {
-      mountedRef.current = true;
-      return;
-    }
-
-    if (debounce > 0 && debouncedValue !== value) {
-      return;
-    }
-
-    lastUpdateTimeRef.current = Date.now();
-
-    if (resetOnDefault && String(debouncedValue) === String(defaultValue)) {
+    // If resetOnDefault is enabled, clear the key.
+    if (debouncedValue === defaultValue && resetOnDefault) {
       setSearchParams(
         (prev) => {
-          if (prev.has(name)) {
-            prev.delete(name);
-          }
+          prev.delete(name);
           return prev;
         },
         { replace: true },
@@ -116,25 +84,20 @@ export function useURLState<T>(
 
     setSearchParams(
       (prev) => {
-        const currentValue = prev.get(name);
-        const newValue = String(debouncedValue);
-
-        if (currentValue !== newValue) {
-          prev.set(name, newValue);
-        }
+        prev.set(name, String(debouncedValue));
         return prev;
       },
       { replace: true },
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     debouncedValue,
     defaultValue,
     enabled,
+    initial,
     name,
     resetOnDefault,
     setSearchParams,
-    debounce,
+    value,
   ]);
 
   return [value, setValue, debouncedValue] as [
