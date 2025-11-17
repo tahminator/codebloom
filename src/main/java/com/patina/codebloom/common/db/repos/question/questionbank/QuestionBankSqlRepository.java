@@ -161,7 +161,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
     }
 
     @Override
-    public QuestionBank updateQuestion(final QuestionBank inputQuestion) {
+    public boolean updateQuestion(final QuestionBank inputQuestion) {
         String sql = """
                             UPDATE "QuestionBank"
                             SET
@@ -186,9 +186,9 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
             stmt.setObject("ac", inputQuestion.getAcceptanceRate());
             stmt.setObject("id", UUID.fromString(inputQuestion.getId()));
 
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
 
-            return getQuestionById(inputQuestion.getId());
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update question", e);
         }
