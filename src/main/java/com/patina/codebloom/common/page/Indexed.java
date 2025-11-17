@@ -93,6 +93,11 @@ public class Indexed<T> {
 
     }
 
+    /**
+     * This method will apply the given function to this {@code Indexed} object, if
+     * not null. Otherwise return {@code Indexed} with a null item.
+     * 
+     */
     public <R> Indexed<R> map(final Function<? super T, ? extends R> mapper) {
         final R newItem = (this.item == null) ? null : mapper.apply(this.item);
 
