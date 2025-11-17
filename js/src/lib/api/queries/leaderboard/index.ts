@@ -12,7 +12,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback } from "react";
 
 /**
  * Fetch the users on the current leaderboard. This is a super query
@@ -35,13 +35,12 @@ export const useCurrentLeaderboardUsersQuery = (
     defaultGwc: false,
   },
 ) => {
-  const {
-    filters,
-    toggleFilter: _toggleFilter,
-    clearFilters,
-    isAnyFilterEnabled,
-  } = useFilters();
-
+  const { filters, toggleFilter, clearFilters, isAnyFilterEnabled } =
+    useFilters({
+      onFilterChange: () => {
+        goTo(1);
+      },
+    });
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
@@ -80,14 +79,6 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [setGlobalIndex, goTo]);
 
-  const toggleFilter = useCallback(
-    (...args: Parameters<typeof _toggleFilter>) => {
-      _toggleFilter(...args);
-      goTo(1);
-    },
-    [_toggleFilter, goTo],
-  );
-
   const query = useQuery({
     queryKey: [
       "leaderboard",
@@ -114,9 +105,9 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
 
     if (globalIndex) {
-      setGlobalIndex(false);
+      toggleGlobalIndex();
     }
-  }, [clearFilters, globalIndex, setGlobalIndex, goTo]);
+  }, [clearFilters, goTo, globalIndex, toggleGlobalIndex]);
 
   return {
     ...query,
@@ -220,18 +211,15 @@ export const useLeaderboardUsersByIdQuery = ({
   tieToUrl?: boolean;
   leaderboardId: string;
 }) => {
-  const { filters, toggleFilter } = useFilters();
+  const { filters, toggleFilter } = useFilters({
+    onFilterChange: () => {
+      goTo(1);
+    },
+  });
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
   });
-
-  // hacky impl to track filters changing.
-  const stringifiedFilters = useMemo(() => JSON.stringify(filters), [filters]);
-
-  useEffect(() => {
-    goTo(1);
-  }, [stringifiedFilters, goTo]);
 
   /**
    * We wrap _setSearchQuery with a setSearchQuery because we need to run a side effect anytime we update the query.

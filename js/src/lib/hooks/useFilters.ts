@@ -27,6 +27,10 @@ function getUrlKey(tagEnum: ApiTypeUtils.FilteredUserTagTag) {
  * Furthermore, this hook automatically initializes the filter state from the current
  * URL params and updates whenever filters are toggled.
  *
+ * @param {Object} options - Configuration options for the hook.
+ * @param {(tagEnum: ApiTypeUtils.FilteredUserTagTag) => void} options.onFilterChange - (Optional) When `toggleFilter` is called, `onFilterChange` will be triggered 
+ * to run any side-effects.
+ *
  * @returns An object containing:
  * - `filters`: an object with each key of `UserTagTag` mapping to a value to its current enabled/disabled state
  * - `toggleFilter`: a function to toggle an individual tag filter
@@ -47,7 +51,13 @@ function getUrlKey(tagEnum: ApiTypeUtils.FilteredUserTagTag) {
  * );
  * ```
  */
-export function useFilters() {
+export function useFilters({
+  onFilterChange,
+}:
+  | {
+      onFilterChange?: (tagEnum: ApiTypeUtils.FilteredUserTagTag) => void;
+    }
+  | undefined = {}) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useImmer<TagEnumToBooleanFilterObject>(() => {
     const kvTuples = ApiUtils.getAllSupportedTagEnums().map((tagEnum) => [
@@ -76,8 +86,10 @@ export function useFilters() {
         }
         return prev;
       });
+
+      onFilterChange?.(tagEnum);
     },
-    [filters, setFilters, setSearchParams],
+    [filters, onFilterChange, setFilters, setSearchParams],
   );
 
   const clearFilters = useCallback(() => {
