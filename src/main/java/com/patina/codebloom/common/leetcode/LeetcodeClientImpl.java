@@ -198,7 +198,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
         String requestBody;
         try {
-            requestBody = SelectAcceptedSubmisisonsQuery.body(username);
+            requestBody = SelectAcceptedSubmisisonsQuery.body(username, 20);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }
