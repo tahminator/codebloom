@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.github.javafaker.Faker;
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
+import com.patina.codebloom.common.components.DuelData;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -38,6 +41,7 @@ import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
+import com.patina.codebloom.common.utils.sse.SseWrapper;
 import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import com.patina.codebloom.utilities.exception.ValidationException;
 
@@ -861,4 +865,111 @@ public class DuelControllerTest {
         verify(lobbyPlayerRepository, times(0)).createLobbyPlayer(any());
         verify(lobbyRepository, times(0)).updateLobby(any());
     }
+
+    @Test
+    @DisplayName("SSE endpoint - fails in production environment")
+    void getDuelDataFailsInProduction() {
+        when(env.isProd()).thenReturn(true);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.getDuelData(authObj);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
+        assertEquals("Endpoint is currently non-functional", exception.getReason());
+
+        verify(lobbyRepository, times(0)).findActiveLobbyByLobbyPlayerId(any());
+        verify(lobbyRepository, times(0)).findAvailableLobbyByLobbyPlayerId(any());
+        verify(duelManager, times(0)).generateDuelData(any());
+        verify(lobbyNotifyHandler, times(0)).register(any(), any());
+    }
+
+    @Test
+    @DisplayName("SSE endpoint - player not in any lobby")
+    void getDuelDataPlayerNotInAnyLobby() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId())).thenReturn(null);
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId())).thenReturn(null);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.getDuelData(authObj);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), exception.getStatusCode().value());
+        assertEquals("Player is not currently in a lobby and/or duel.", exception.getReason());
+
+        verify(lobbyRepository, times(1)).findActiveLobbyByLobbyPlayerId(user.getId());
+        verify(lobbyRepository, times(1)).findAvailableLobbyByLobbyPlayerId(user.getId());
+        verify(duelManager, times(0)).generateDuelData(any());
+        verify(lobbyNotifyHandler, times(0)).register(any(), any());
+    }
+
+    @Test
+    @DisplayName("SSE endpoint - player in active lobby")
+    void getDuelDataPlayerInActiveLobby() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        Lobby activeLobby = Lobby.builder()
+                        .id(lobbyId)
+                        .joinCode(PartyCodeGenerator.generateCode())
+                        .status(LobbyStatus.ACTIVE)
+                        .playerCount(2)
+                        .build();
+
+        DuelData mockDuelData = DuelData.builder().build();
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId())).thenReturn(activeLobby);
+        when(duelManager.generateDuelData(lobbyId)).thenReturn(mockDuelData);
+        doNothing().when(lobbyNotifyHandler).register(eq(lobbyId), any());
+
+        SseWrapper<ApiResponder<DuelData>> result = duelController.getDuelData(authObj);
+
+        assertNotNull(result);
+        verify(lobbyRepository, times(1)).findActiveLobbyByLobbyPlayerId(user.getId());
+        verify(lobbyRepository, times(0)).findAvailableLobbyByLobbyPlayerId(user.getId());
+        verify(duelManager, times(1)).generateDuelData(lobbyId);
+        verify(lobbyNotifyHandler, times(1)).register(eq(lobbyId), any());
+    }
+
+    @Test
+    @DisplayName("SSE endpoint - player in available lobby ")
+    void getDuelDataPlayerInAvailableLobby() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        Lobby availableLobby = Lobby.builder()
+                        .id(lobbyId)
+                        .joinCode(PartyCodeGenerator.generateCode())
+                        .status(LobbyStatus.AVAILABLE)
+                        .playerCount(1)
+                        .build();
+
+        DuelData mockDuelData = DuelData.builder().build();
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId())).thenReturn(null);
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId())).thenReturn(availableLobby);
+        when(duelManager.generateDuelData(lobbyId)).thenReturn(mockDuelData);
+        doNothing().when(lobbyNotifyHandler).register(eq(lobbyId), any());
+
+        SseWrapper<ApiResponder<DuelData>> result = duelController.getDuelData(authObj);
+
+        assertNotNull(result);
+        verify(lobbyRepository, times(1)).findActiveLobbyByLobbyPlayerId(user.getId());
+        verify(lobbyRepository, times(1)).findAvailableLobbyByLobbyPlayerId(user.getId());
+        verify(duelManager, times(1)).generateDuelData(lobbyId);
+        verify(lobbyNotifyHandler, times(1)).register(eq(lobbyId), any());
+    }
+
 }
