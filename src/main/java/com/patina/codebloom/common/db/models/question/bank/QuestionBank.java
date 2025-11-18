@@ -4,20 +4,19 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
+import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
+@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@SuperBuilder
 @EqualsAndHashCode
 @ToString
 public class QuestionBank {
@@ -39,7 +38,7 @@ public class QuestionBank {
     @NotNullColumn
     private String questionLink;
 
-    @NotNullColumn
+    @NullColumn
     private String description;
 
     @NotNullColumn
