@@ -11,9 +11,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.patina.codebloom.common.components.DuelData;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
 
 import lombok.AccessLevel;

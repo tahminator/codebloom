@@ -1,6 +1,4 @@
-package com.patina.codebloom.common.components;
-
-import com.patina.codebloom.common.dto.lobby.LobbyDto;
+package com.patina.codebloom.common.dto.lobby;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
