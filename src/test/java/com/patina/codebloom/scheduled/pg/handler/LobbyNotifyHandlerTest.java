@@ -19,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.patina.codebloom.common.components.DuelData;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
 
 public class LobbyNotifyHandlerTest {

@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.patina.codebloom.common.components.DuelData;
-
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
@@ -25,6 +23,7 @@ import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
+import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.annotation.Protected;

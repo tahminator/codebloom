@@ -9,11 +9,11 @@ import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
 
 import com.github.javafaker.Faker;
-import com.patina.codebloom.common.components.DuelData;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 
 public class DuelManagerTest {

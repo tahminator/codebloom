@@ -28,7 +28,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.github.javafaker.Faker;
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
-import com.patina.codebloom.common.components.DuelData;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -38,6 +37,7 @@ import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
+import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
