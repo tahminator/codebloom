@@ -135,8 +135,16 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(5)
     void testDeleteLobbyPlayerQuestionById() {
+        LobbyPlayer secondLobbyPlayer = LobbyPlayer.builder()
+                        .lobbyId(testLobby.getId())
+                        .playerId("76f0090c-883f-4be7-bcf3-303e2d594b6d")
+                        .points(100)
+                        .build();
+
+        lobbyPlayerRepository.createLobbyPlayer(secondLobbyPlayer);
+
         LobbyPlayerQuestion deletableLobbyPlayerQuestion = LobbyPlayerQuestion.builder()
-                        .lobbyPlayerId(testLobbyPlayer.getId())
+                        .lobbyPlayerId(secondLobbyPlayer.getId())
                         .questionId(mockQuestionId)
                         .points(Optional.of(200))
                         .build();
