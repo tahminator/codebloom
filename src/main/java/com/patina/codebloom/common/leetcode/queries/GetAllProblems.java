@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GetAllProblems {
     public static final String QUERY = """
+        #graphql
         query problemsetQuestionListV2 {
             problemsetQuestionListV2 {
                 questions {
