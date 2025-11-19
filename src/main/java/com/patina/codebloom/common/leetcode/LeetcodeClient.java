@@ -14,7 +14,7 @@ public interface LeetcodeClient {
 
     LeetcodeQuestion findQuestionBySlug(String slug);
 
-    List<LeetcodeSubmission> findSubmissionsByUsername(String username);
+    List<LeetcodeSubmission> findSubmissionsByUsername(String username, int limit);
 
     /**
      * @implNote requires authentication
