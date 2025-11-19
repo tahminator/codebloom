@@ -62,7 +62,6 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
                         .status(LobbyStatus.AVAILABLE)
                         .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                         .playerCount(1)
-                        .winnerId(null)
                         .build();
 
         lobbyRepository.createLobby(testLobby);

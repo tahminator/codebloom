@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +43,7 @@ public class DuelManagerTest {
                         .status(LobbyStatus.ACTIVE)
                         .expiresAt(OffsetDateTime.now().plusHours(1))
                         .playerCount(2)
-                        .winnerId(null)
+                        .winnerId(Optional.empty())
                         .build();
 
         when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);
@@ -68,7 +69,7 @@ public class DuelManagerTest {
                         .status(LobbyStatus.COMPLETED)
                         .expiresAt(OffsetDateTime.now())
                         .playerCount(2)
-                        .winnerId(winnerId)
+                        .winnerId(Optional.of(winnerId))
                         .build();
 
         when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);
@@ -110,7 +111,7 @@ public class DuelManagerTest {
                         .createdAt(createdAt)
                         .expiresAt(expiresAt)
                         .playerCount(4)
-                        .winnerId(winnerId)
+                        .winnerId(Optional.of(winnerId))
                         .build();
 
         when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);

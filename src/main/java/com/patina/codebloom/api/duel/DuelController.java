@@ -1,11 +1,12 @@
 package com.patina.codebloom.api.duel;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -111,11 +112,8 @@ public class DuelController {
 
         var user = authenticationObject.getUser();
 
-        var lobby = lobbyRepository.findAvailableLobbyByJoinCode(joinPartyBody.getPartyCode());
-
-        if (lobby == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The party with the given code cannot be found.");
-        }
+        var lobby = lobbyRepository.findAvailableLobbyByJoinCode(joinPartyBody.getPartyCode())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The party with the given code cannot be found."));
 
         validateLobby(lobby);
         validatePlayerNotInLobby(user.getId());
@@ -206,7 +204,7 @@ public class DuelController {
                         .status(LobbyStatus.AVAILABLE)
                         .expiresAt(expiresAt)
                         .playerCount(1)
-                        .winnerId(null)
+                        .winnerId(Optional.empty())
                         .build();
 
         lobbyRepository.createLobby(lobby);
@@ -231,26 +229,16 @@ public class DuelController {
                     """)
     @ApiResponse(responseCode = "200", description = "Sending live duel data")
     @ApiResponse(responseCode = "404", description = "Failed to establish SSE connection", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
-    @PostMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/{lobbyCode}/sse")
     public SseWrapper<ApiResponder<DuelData>> getDuelData(
-                    @Protected final AuthenticationObject authenticationObject) {
+                    @PathVariable final String lobbyCode) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        var user = authenticationObject.getUser();
-
-        var lobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId());
-
-        if (lobby == null) {
-            // TODO: Consolidate this
-            lobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId());
-        }
-
-        if (lobby == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in a lobby and/or duel.");
-        }
-        DuelData duelData = duelManager.generateDuelData(lobby.getId());
+        var lobby = lobbyRepository.findActiveLobbyByJoinCode(lobbyCode)
+                        .or(() -> lobbyRepository.findAvailableLobbyByJoinCode(lobbyCode))
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "A duel/party with the given code cannot be found."));
 
         SseWrapper<ApiResponder<DuelData>> emitter = new SseWrapper<>(1_800_000L);
         try {

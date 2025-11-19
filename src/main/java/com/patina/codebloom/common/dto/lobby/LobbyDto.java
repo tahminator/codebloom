@@ -41,7 +41,7 @@ public class LobbyDto {
                         .expiresAt(lobby.getExpiresAt())
                         .createdAt(lobby.getCreatedAt())
                         .playerCount(lobby.getPlayerCount())
-                        .winnerId(lobby.getWinnerId())
+                        .winnerId(lobby.getWinnerId().orElse(null))
                         .build();
     }
 }

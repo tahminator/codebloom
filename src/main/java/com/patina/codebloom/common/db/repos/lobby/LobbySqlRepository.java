@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class LobbySqlRepository implements LobbyRepository {
                         .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
                         .expiresAt(resultSet.getObject("expiresAt", OffsetDateTime.class))
                         .playerCount(resultSet.getInt("playerCount"))
-                        .winnerId(resultSet.getString("winnerId"))
+                        .winnerId(Optional.ofNullable(resultSet.getString("winnerId")))
                         .build();
     }
 
@@ -55,7 +56,7 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("status", lobby.getStatus().name(), java.sql.Types.OTHER);
             stmt.setObject("expiresAt", StandardizedOffsetDateTime.normalize(lobby.getExpiresAt()));
             stmt.setInt("playerCount", lobby.getPlayerCount());
-            stmt.setObject("winnerId", lobby.getWinnerId() != null ? UUID.fromString(lobby.getWinnerId()) : null);
+            stmt.setObject("winnerId", lobby.getWinnerId().map(UUID::fromString).orElse(null));
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -99,7 +100,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Lobby findAvailableLobbyByJoinCode(final String joinCode) {
+    public Optional<Lobby> findAvailableLobbyByJoinCode(final String joinCode) {
         String sql = """
                         SELECT
                             id,
@@ -121,14 +122,46 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("status", LobbyStatus.AVAILABLE.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLobby(rs);
+                    return Optional.of(parseResultSetToLobby(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find lobby by join code and status", e);
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Lobby> findActiveLobbyByJoinCode(final String joinCode) {
+        String sql = """
+                        SELECT
+                            id,
+                            "joinCode",
+                            status,
+                            "createdAt",
+                            "expiresAt",
+                            "playerCount",
+                            "winnerId"
+                        FROM
+                            "Lobby"
+                        WHERE
+                            "joinCode" = :joinCode
+                            AND status = 'ACTIVE'
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setString("joinCode", joinCode);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(parseResultSetToLobby(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find lobby by join code and status", e);
+        }
+
+        return Optional.empty();
     }
 
     @Override
