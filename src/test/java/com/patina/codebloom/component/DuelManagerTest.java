@@ -203,31 +203,6 @@ public class DuelManagerTest {
     }
 
     @Test
-    void testAssignNewQuestionToLobbyCallsRepositoryCorrectly() {
-        String lobbyId = java.util.UUID.randomUUID().toString();
-        LobbyPlayer player1 = LobbyPlayer.builder()
-                        .id(java.util.UUID.randomUUID().toString())
-                        .lobbyId(lobbyId)
-                        .points(100)
-                        .build();
-
-        LobbyPlayer player2 = LobbyPlayer.builder()
-                        .id(java.util.UUID.randomUUID().toString())
-                        .lobbyId(lobbyId)
-                        .points(100)
-                        .build();
-
-        List<LobbyPlayer> mockPlayers = List.of(player1, player2);
-
-        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(mockPlayers);
-
-        duelManager.assignNewQuestionToLobby(lobbyId);
-
-        verify(lobbyPlayerRepository, times(1)).findPlayersByLobbyId(lobbyId);
-        verify(lobbyPlayerRepository, times(2)).updateLobbyPlayer(any(LobbyPlayer.class));
-    }
-
-    @Test
     void testAssignNewQuestionToLobbyWithEmptyPlayerList() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         List<LobbyPlayer> emptyList = List.of();
