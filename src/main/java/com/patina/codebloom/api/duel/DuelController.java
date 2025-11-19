@@ -149,8 +149,9 @@ public class DuelController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Lobby has been successfully started!"),
     })
-    @PostMapping("lobby/start")
+    @PostMapping("/lobby/start")
     public ResponseEntity<ApiResponder<Empty>> startLobby(@Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
@@ -160,7 +161,7 @@ public class DuelController {
         LobbyPlayer player = lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId());
 
         if (player == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not currently in a lobby!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!");
         }
 
         Lobby lobby = lobbyRepository.findLobbyById(player.getLobbyId());
