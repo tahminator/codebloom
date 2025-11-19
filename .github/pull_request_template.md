@@ -1,4 +1,4 @@
-## Notion ticket (use public link, not private)
+## Notion Ticket (use public link, not private)
 
 <!-- https://codebloom.notion.site/Render-achievements-to-user-profile-page-2a87c85563aa806ab7c0efa9cca47309 -->
 
