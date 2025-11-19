@@ -185,7 +185,7 @@ public class SubmissionController {
 
         simpleRedis.put(0, user.getId(), System.currentTimeMillis());
 
-        List<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
+        List<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername(), 20);
 
         return ResponseEntity.ok().body(ApiResponder.success("Successfully checked all recent submissions!",
                         submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
