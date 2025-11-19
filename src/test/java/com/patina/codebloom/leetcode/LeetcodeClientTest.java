@@ -1,13 +1,12 @@
 package com.patina.codebloom.leetcode;
-/* 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+// import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+// import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,16 +14,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.google.common.base.Strings;
+// import com.google.common.base.Strings;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
-import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
+// import com.patina.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
-import com.patina.codebloom.common.utils.function.FunctionUtils;
+// import com.patina.codebloom.common.utils.function.FunctionUtils;
 import com.patina.codebloom.config.TestJobNotifyListener;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
@@ -68,30 +67,30 @@ public class LeetcodeClientTest {
         assertTrue(question.getAcceptanceRate() != 0.0f);
     }
 
-    @Test
-    void submissionIdValid() {
-        LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
-                        () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
-                        res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
-                        () -> leetcodeAuthStealer.reloadCookie().join());
+    // @Test
+    // void submissionIdValid() {
+    //     LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
+    //                     () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
+    //                     res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
+    //                     () -> leetcodeAuthStealer.reloadCookie().join());
 
-        assertTrue(submission != null);
+    //     assertTrue(submission != null);
 
-        assertTrue(submission.getRuntimeDisplay() != null);
-        assertTrue(submission.getRuntimeDisplay().length() != 0);
+    //     assertTrue(submission.getRuntimeDisplay() != null);
+    //     assertTrue(submission.getRuntimeDisplay().length() != 0);
 
-        assertTrue(submission.getRuntimePercentile() != 0.0f);
+    //     assertTrue(submission.getRuntimePercentile() != 0.0f);
 
-        assertTrue(submission.getMemoryDisplay() != null);
-        assertTrue(submission.getMemoryDisplay().length() != 0);
+    //     assertTrue(submission.getMemoryDisplay() != null);
+    //     assertTrue(submission.getMemoryDisplay().length() != 0);
 
-        assertTrue(submission.getMemoryPercentile() != 0.0f);
+    //     assertTrue(submission.getMemoryPercentile() != 0.0f);
 
-        assertTrue(submission.getCode() != null);
-        assertTrue(submission.getCode().length() != 0);
+    //     assertTrue(submission.getCode() != null);
+    //     assertTrue(submission.getCode().length() != 0);
 
-        assertTrue(submission.getLang() != null);
-    }
+    //     assertTrue(submission.getLang() != null);
+    // }
 
     @Test
     void potdValid() {
@@ -139,44 +138,44 @@ public class LeetcodeClientTest {
         assertNotNull(userList, "Expecting a non-zero list of submissions");
     }
 
-    @Test
-    void stressTestConcurrent() throws InterruptedException {
-        int threadCount = 100;
-        int requestsPerThread = 27;
+    // @Test
+    // void stressTestConcurrent() throws InterruptedException {
+    //     int threadCount = 100;
+    //     int requestsPerThread = 27;
 
-        Thread[] threads = new Thread[threadCount];
-        AtomicInteger tries = new AtomicInteger();
-        AtomicInteger failures = new AtomicInteger();
+    //     Thread[] threads = new Thread[threadCount];
+    //     AtomicInteger tries = new AtomicInteger();
+    //     AtomicInteger failures = new AtomicInteger();
 
-        for (int t = 0; t < threadCount; t++) {
-            threads[t] = new Thread(() -> {
-                for (int i = 0; i < requestsPerThread; i++) {
-                    try {
-                        if (tries.get() % 100 == 0) {
-                            System.out.println("tries (ongoing): " + tries.get());
-                        }
-                        tries.incrementAndGet();
-                        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
-                        assertNotNull(userList);
-                    } catch (Exception e) {
-                        System.out.println("tries (failed): " + tries.get());
-                        failures.incrementAndGet();
-                    }
-                }
-            });
-            threads[t].start();
-        }
+    //     for (int t = 0; t < threadCount; t++) {
+    //         threads[t] = new Thread(() -> {
+    //             for (int i = 0; i < requestsPerThread; i++) {
+    //                 try {
+    //                     if (tries.get() % 100 == 0) {
+    //                         System.out.println("tries (ongoing): " + tries.get());
+    //                     }
+    //                     tries.incrementAndGet();
+    //                     List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
+    //                     assertNotNull(userList);
+    //                 } catch (Exception e) {
+    //                     System.out.println("tries (failed): " + tries.get());
+    //                     failures.incrementAndGet();
+    //                 }
+    //             }
+    //         });
+    //         threads[t].start();
+    //     }
 
-        for (Thread thread : threads) {
-            thread.join();
-        }
+    //     for (Thread thread : threads) {
+    //         thread.join();
+    //     }
 
-        // TODO: Figure out why the failures are always around 1 to 5. For now, do not
-        // fail tests with anything over 10 requests.
-        if (failures.get() > 10) {
-            fail("Failed to reach 5000 requests from leetcode client. Failures: " + failures.get());
-        }
-    }
+    //     // TODO: Figure out why the failures are always around 1 to 5. For now, do not
+    //     // fail tests with anything over 10 requests.
+    //     if (failures.get() > 10) {
+    //         fail("Failed to reach 5000 requests from leetcode client. Failures: " + failures.get());
+    //     }
+    // }
 
     @Test
     void assertAllAvailableTopics() {
@@ -195,4 +194,3 @@ public class LeetcodeClientTest {
         assertTrue(questions.size() > 0);
     }
 }
-*/
