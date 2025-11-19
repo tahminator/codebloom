@@ -235,33 +235,25 @@ public class DuelController {
 
     @Operation(summary = "Submit question", description = "Submit a question for the current duel")
     @ApiResponse(responseCode = "200", description = "Question has been successfully submitted!")
-    @ApiResponse(responseCode = "400", description = "Invalid request or lobby player not found")
+    @ApiResponse(responseCode = "400", description = "lobby player not found")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
     @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
     @ApiResponse(responseCode = "404", description = "Player is not in a duel")
     @ApiResponse(responseCode = "500", description = "Failed to update question submission")
     @PostMapping("/question/submit")
-    public ResponseEntity<ApiResponder<Empty>> submitQuestion(@Protected final AuthenticationObject authenticationObject,
-                    @RequestBody final Map<String, String> requestBody) {
+    public ResponseEntity<ApiResponder<Empty>> submitQuestion(@Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
-        String lobbyPlayerId = requestBody.get("lobbyPlayerId");
-        if (lobbyPlayerId == null || lobbyPlayerId.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby player ID is required and cannot be empty");
-        }
-
         User user = authenticationObject.getUser();
+        String playerId = user.getId();
 
-        LobbyPlayer lobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(lobbyPlayerId);
+        LobbyPlayer lobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(playerId);
         if (lobbyPlayer == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby player not found");
         }
 
-        if (!lobbyPlayer.getPlayerId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This lobby player does not belong to you");
-        }
 
         Lobby lobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(lobbyPlayer.getId());
         if (lobby == null) {
@@ -287,12 +279,10 @@ public class DuelController {
             try {
                 List<LeetcodeSubmission> recentSubmissions = throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
-                LocalDateTime twentySecondsAgo = LocalDateTime.now().minusSeconds(20);
-
-                for (LeetcodeSubmission submission : recentSubmissions) {
-                    if (submission.getTimestamp().isAfter(twentySecondsAgo)) {
-                        log.info("Found recent LeetCode submission: {} at {}", submission.getTitle(), submission.getTimestamp());
-                    }
+                int start = Math.max(0, recentSubmissions.size() - 20);
+                for (int i = start; i < recentSubmissions.size(); i++) {
+                    LeetcodeSubmission submission = recentSubmissions.get(i);
+                    log.info("Found recent LeetCode submission: {} at {}", submission.getTitle(), submission.getTimestamp());
                 }
             } catch (Exception e) {
                 log.warn("Failed to query LeetCode submissions: {}", e.getMessage());
