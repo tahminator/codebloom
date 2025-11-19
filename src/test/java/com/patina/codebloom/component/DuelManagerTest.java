@@ -178,7 +178,7 @@ public class DuelManagerTest {
     }
 
     @Test
-    void testAssignNewQuestionToLobbySetsPointsToNegativeOne() {
+    void testAssignNewQuestionToLobbySetsPointsToNull() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         LobbyPlayer player1 = LobbyPlayer.builder()
                         .id(java.util.UUID.randomUUID().toString())
@@ -198,8 +198,8 @@ public class DuelManagerTest {
 
         duelManager.assignNewQuestionToLobby(lobbyId);
 
-        assertEquals(-1, player1.getPoints());
-        assertEquals(-1, player2.getPoints());
+        assertNull(player1.getPoints());
+        assertNull(player2.getPoints());
     }
 
     @Test

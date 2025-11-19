@@ -252,7 +252,7 @@ public class DuelController {
 
         List<LobbyPlayer> allPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobby.getId());
 
-        boolean allCompleted = allPlayers.stream().allMatch(player -> player.getPoints() >= 0);
+        boolean allCompleted = allPlayers.stream().allMatch(player -> player.getPoints() != null);
 
         if (!allCompleted) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Not all players have completed the current question.");

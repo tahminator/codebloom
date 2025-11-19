@@ -919,7 +919,7 @@ public class DuelControllerTest {
                         .id(randomUUID())
                         .lobbyId(lobbyId)
                         .playerId(randomUUID())
-                        .points(50)
+                        .points(100)
                         .build();
 
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(lobbyPlayer);
@@ -1030,7 +1030,7 @@ public class DuelControllerTest {
                         .id(randomUUID())
                         .lobbyId(lobbyId)
                         .playerId(randomUUID())
-                        .points(-1)
+                        .points(null)
                         .build();
 
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(lobbyPlayer);
@@ -1078,7 +1078,7 @@ public class DuelControllerTest {
                         .id(randomUUID())
                         .lobbyId(lobbyId)
                         .playerId(user.getId())
-                        .points(100)
+                        .points(150)
                         .build();
 
         LobbyPlayer player2 = LobbyPlayer.builder()

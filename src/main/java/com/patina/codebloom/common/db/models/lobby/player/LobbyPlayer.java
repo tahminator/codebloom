@@ -24,5 +24,5 @@ public class LobbyPlayer {
     private String playerId;
 
     @NotNullColumn
-    private int points;
+    private Integer points;
 }

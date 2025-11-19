@@ -33,7 +33,7 @@ public class DuelManager {
         List<LobbyPlayer> players = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
 
         for (LobbyPlayer player : players) {
-            player.setPoints(-1);
+            player.setPoints(null);
             lobbyPlayerRepository.updateLobbyPlayer(player);
         }
     }
