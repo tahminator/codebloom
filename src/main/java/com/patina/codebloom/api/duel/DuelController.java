@@ -1,6 +1,7 @@
 package com.patina.codebloom.api.duel;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Profile;
@@ -18,9 +19,13 @@ import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
+import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
+import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
@@ -55,14 +60,20 @@ public class DuelController {
     private final LobbyRepository lobbyRepository;
     private final LobbyPlayerRepository lobbyPlayerRepository;
     private final LobbyNotifyHandler lobbyNotifyHandler;
+    private final QuestionBankRepository questionBankRepository;
+    private final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
 
     public DuelController(final Env env, final DuelManager duelManager, final LobbyRepository lobbyRepository,
-                    final LobbyPlayerRepository lobbyPlayerRepository, final LobbyNotifyHandler lobbyNotifyHandler) {
+                    final LobbyPlayerRepository lobbyPlayerRepository, final LobbyNotifyHandler lobbyNotifyHandler, final QuestionBankRepository questionBankRepository,
+                    final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository) {
         this.env = env;
         this.duelManager = duelManager;
         this.lobbyRepository = lobbyRepository;
         this.lobbyPlayerRepository = lobbyPlayerRepository;
         this.lobbyNotifyHandler = lobbyNotifyHandler;
+        this.questionBankRepository = questionBankRepository;
+        this.lobbyPlayerQuestionRepository = lobbyPlayerQuestionRepository;
+
     }
 
     private void validatePlayerNotInLobby(final String playerId) {
@@ -140,13 +151,41 @@ public class DuelController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
     })
     @PostMapping("lobby/start")
-    public ResponseEntity<ApiResponder<Empty>> startLobby() {
+    public ResponseEntity<ApiResponder<Empty>> startLobby(@Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
-        // TODO: Implement start lobby functionality.
 
-        // check if there's more than 1 player in the lobby
+        var user = authenticationObject.getUser();
+        LobbyPlayer player = lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId());
+
+        if (player == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not currently in a lobby!");
+        }
+
+        Lobby lobby = lobbyRepository.findLobbyById(player.getLobbyId());
+
+        if (lobby.getStatus() != LobbyStatus.AVAILABLE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby is not available!");
+        }
+
+        if (lobby.getPlayerCount() < 2) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must have at least 2 players!");
+        }
+
+        lobby.setStatus(LobbyStatus.ACTIVE);
+
+        QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
+        List<LobbyPlayer> lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobby.getId());
+
+        for (LobbyPlayer lobbyPlayer : lobbyPlayers) {
+            LobbyPlayerQuestion lobbyPlayerQuestion = LobbyPlayerQuestion.builder()
+                            .lobbyPlayerId(lobbyPlayer.getId())
+                            .questionId(randomQuestion.getId())
+                            .build();
+
+            lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(lobbyPlayerQuestion);
+        }
 
         return ResponseEntity.ok(ApiResponder.success("Party successfully started!", Empty.of()));
     }
