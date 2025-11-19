@@ -1,10 +1,10 @@
 name: Approvals
 
-on:
-  pull_request_review:
-    types: [submitted]
-  pull_request:
-    types: [opened, reopened, synchronize]
+on: {}
+#  pull_request_review:
+#    types: [submitted]
+#  pull_request:
+#    types: [opened, reopened, synchronize]
 
 permissions:
   pull-requests: read
