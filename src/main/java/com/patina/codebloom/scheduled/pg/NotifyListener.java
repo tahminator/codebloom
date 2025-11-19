@@ -88,6 +88,10 @@ public class NotifyListener {
                         Thread.sleep(1000);
                     }
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.info("Listener interrupted, closing...");
+                break;
             } catch (Exception e) {
                 if (Thread.currentThread().isInterrupted()) {
                     log.info("Listener interrupted, closing...");

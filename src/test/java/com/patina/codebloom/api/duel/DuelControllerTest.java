@@ -32,13 +32,17 @@ import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
@@ -52,11 +56,15 @@ public class DuelControllerTest {
     private DuelManager duelManager = mock(DuelManager.class);
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
     private LobbyPlayerRepository lobbyPlayerRepository = mock(LobbyPlayerRepository.class);
+    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(LobbyPlayerQuestionRepository.class);
     private Env env = mock(Env.class);
     private LobbyNotifyHandler lobbyNotifyHandler = mock(LobbyNotifyHandler.class);
+    private ThrottledLeetcodeClient throttledLeetcodeClient = mock(ThrottledLeetcodeClient.class);
+    private QuestionRepository questionRepository = mock(QuestionRepository.class);
 
     public DuelControllerTest() {
-        this.duelController = new DuelController(env, duelManager, lobbyRepository, lobbyPlayerRepository, lobbyNotifyHandler);
+        this.duelController = new DuelController(env, duelManager, lobbyRepository, lobbyPlayerRepository, lobbyPlayerQuestionRepository, lobbyNotifyHandler, throttledLeetcodeClient,
+                        questionRepository);
         this.faker = Faker.instance();
     }
 

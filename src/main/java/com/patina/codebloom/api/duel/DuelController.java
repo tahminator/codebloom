@@ -3,8 +3,10 @@ package com.patina.codebloom.api.duel;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +24,11 @@ import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
@@ -63,12 +67,14 @@ public class DuelController {
     private final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
     private final LobbyNotifyHandler lobbyNotifyHandler;
     private final ThrottledLeetcodeClient throttledLeetcodeClient;
+    private final QuestionRepository questionRepository;
 
     public DuelController(final Env env, final DuelManager duelManager, final LobbyRepository lobbyRepository,
                     final LobbyPlayerRepository lobbyPlayerRepository,
                     final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
                     final LobbyNotifyHandler lobbyNotifyHandler,
-                    final ThrottledLeetcodeClient throttledLeetcodeClient) {
+                    final ThrottledLeetcodeClient throttledLeetcodeClient,
+                    final QuestionRepository questionRepository) {
         this.env = env;
         this.duelManager = duelManager;
         this.lobbyRepository = lobbyRepository;
@@ -76,16 +82,22 @@ public class DuelController {
         this.lobbyPlayerQuestionRepository = lobbyPlayerQuestionRepository;
         this.lobbyNotifyHandler = lobbyNotifyHandler;
         this.throttledLeetcodeClient = throttledLeetcodeClient;
+        this.questionRepository = questionRepository;
     }
 
     private void validatePlayerNotInLobby(final String playerId) {
-        var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(playerId);
+        LobbyPlayer lobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
+        if (lobbyPlayer == null) {
+            return; // Player is not in any lobby
+        }
+
+        var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(lobbyPlayer.getId());
 
         if (availableLobby != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already in a party. Please leave the party, then try again.");
         }
 
-        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(playerId);
+        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(lobbyPlayer.getId());
 
         if (activeLobby != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You are currently in a duel. Please forfeit the duel, then try again.");
@@ -249,13 +261,12 @@ public class DuelController {
         User user = authenticationObject.getUser();
         String playerId = user.getId();
 
-        LobbyPlayer lobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(playerId);
+        LobbyPlayer lobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
         if (lobbyPlayer == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby player not found");
         }
 
-
-        Lobby lobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(lobbyPlayer.getId());
+        Lobby lobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(playerId);
         if (lobby == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in an active duel");
         }
@@ -275,6 +286,8 @@ public class DuelController {
                             .body(ApiResponder.failure("No unassigned questions found for this player"));
         }
 
+        boolean submissionFound = false;
+
         if (user.getLeetcodeUsername() != null && !user.getLeetcodeUsername().isBlank()) {
             try {
                 List<LeetcodeSubmission> recentSubmissions = throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
@@ -283,14 +296,27 @@ public class DuelController {
                 for (int i = start; i < recentSubmissions.size(); i++) {
                     LeetcodeSubmission submission = recentSubmissions.get(i);
                     log.info("Found recent LeetCode submission: {} at {}", submission.getTitle(), submission.getTimestamp());
+
+                    if (oldestQuestion.getQuestionId() != null && submission.getTitleSlug().equals(oldestQuestion.getQuestionId())) {
+                        submissionFound = true;
+
+                        Question question = questionRepository.getQuestionById(oldestQuestion.getQuestionId());
+                        if (question != null) {
+                            question.setSubmissionId(String.valueOf(submission.getId()));
+                            question.setSubmittedAt(submission.getTimestamp());
+                            questionRepository.updateQuestion(question);
+                            log.info("Updated Question table for question ID: {}", oldestQuestion.getQuestionId());
+                        }
+
+                        break;
+                    }
                 }
             } catch (Exception e) {
                 log.warn("Failed to query LeetCode submissions: {}", e.getMessage());
             }
         }
 
-        oldestQuestion.setQuestionId(null);
-        oldestQuestion.setPoints(0);
+        oldestQuestion.setPoints(submissionFound ? 1 : 0);
 
         boolean updateSuccessful = lobbyPlayerQuestionRepository.updateLobbyPlayerQuestionById(oldestQuestion);
         if (!updateSuccessful) {
@@ -299,6 +325,7 @@ public class DuelController {
         }
 
         try {
+            log.info("Submitting question - lobby.getId() = {}", lobby.getId());
             lobbyNotifyHandler.handle(lobby.getId());
         } catch (IOException e) {
             log.error("Failed to notify lobby clients via SSE", e);
