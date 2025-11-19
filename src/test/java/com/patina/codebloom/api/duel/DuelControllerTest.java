@@ -10,13 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
@@ -864,6 +862,246 @@ public class DuelControllerTest {
 
         verify(lobbyPlayerRepository, times(0)).createLobbyPlayer(any());
         verify(lobbyRepository, times(0)).updateLobby(any());
+    }
+
+    @Test
+    @DisplayName("New Question endpoint - getting new question fails in production")
+    void getNewQuestionFailsInProduction() throws IOException {
+        when(env.isProd()).thenReturn(true);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.getNewQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
+        assertEquals("Endpoint is currently non-functional", exception.getReason());
+
+        verify(lobbyPlayerRepository, times(0)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, times(0)).findLobbyById(any());
+        verify(duelManager, times(0)).assignNewQuestionToLobby(any());
+        verify(lobbyNotifyHandler, times(0)).handle(any());
+    }
+
+    @Test
+    @DisplayName("New Question endpoint - succeeds when all players completed current question")
+    void getNewQuestionSuccessAllPlayersCompleted() throws Exception {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(user.getId())
+                        .points(50)
+                        .build();
+
+        Lobby lobby = Lobby.builder()
+                        .id(lobbyId)
+                        .joinCode(PartyCodeGenerator.generateCode())
+                        .status(LobbyStatus.ACTIVE)
+                        .playerCount(2)
+                        .build();
+
+        LobbyPlayer player1 = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(user.getId())
+                        .points(50)
+                        .build();
+
+        LobbyPlayer player2 = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(randomUUID())
+                        .points(50)
+                        .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(lobbyPlayer);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(lobby);
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(List.of(player1, player2));
+        doNothing().when(duelManager).assignNewQuestionToLobby(lobbyId);
+        doNothing().when(lobbyNotifyHandler).handle(lobbyId);
+
+        ResponseEntity<ApiResponder<Empty>> response = duelController.getNewQuestion(authObj);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("New question assigned to all players.", response.getBody().getMessage());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(user.getId());
+        verify(lobbyRepository, times(1)).findLobbyById(lobbyId);
+        verify(lobbyPlayerRepository, times(1)).findPlayersByLobbyId(lobbyId);
+        verify(duelManager, times(1)).assignNewQuestionToLobby(lobbyId);
+        verify(lobbyNotifyHandler, times(1)).handle(lobbyId);
+    }
+
+    @Test
+    @DisplayName("New Question endpoint - lobby not found")
+    void getNewQuestionLobbyNotFound() throws IOException {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(user.getId())
+                        .points(100)
+                        .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(lobbyPlayer);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(null);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.getNewQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), exception.getStatusCode().value());
+        assertEquals("Lobby not found.", exception.getReason());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(user.getId());
+        verify(lobbyRepository, times(1)).findLobbyById(lobbyId);
+        verify(duelManager, times(0)).assignNewQuestionToLobby(any());
+        verify(lobbyNotifyHandler, times(0)).handle(any());
+    }
+
+    @Test
+    @DisplayName("New Question endpoint - player is not in lobby")
+    void getNewQuestionPlayerNotInLobby() throws IOException {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(null);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.getNewQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), exception.getStatusCode().value());
+        assertEquals("You are not currently in a lobby.", exception.getReason());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(user.getId());
+        verify(lobbyRepository, times(0)).findLobbyById(any());
+        verify(duelManager, times(0)).assignNewQuestionToLobby(any());
+        verify(lobbyNotifyHandler, times(0)).handle(any());
+    }
+
+    @Test
+    @DisplayName("New Question endpoint - not all players completed current question")
+    void getNewQuestionNotAllPlayersCompleted() throws IOException {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(user.getId())
+                        .points(100)
+                        .build();
+
+        Lobby lobby = Lobby.builder()
+                        .id(lobbyId)
+                        .joinCode(PartyCodeGenerator.generateCode())
+                        .status(LobbyStatus.ACTIVE)
+                        .playerCount(2)
+                        .build();
+
+        LobbyPlayer player1 = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(user.getId())
+                        .points(100)
+                        .build();
+
+        LobbyPlayer player2 = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(randomUUID())
+                        .points(-1)
+                        .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(lobbyPlayer);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(lobby);
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(List.of(player1, player2));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.getNewQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.CONFLICT.value(), exception.getStatusCode().value());
+        assertEquals("Not all players have completed the current question.", exception.getReason());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(user.getId());
+        verify(lobbyRepository, times(1)).findLobbyById(lobbyId);
+        verify(lobbyPlayerRepository, times(1)).findPlayersByLobbyId(lobbyId);
+        verify(duelManager, times(0)).assignNewQuestionToLobby(any());
+        verify(lobbyNotifyHandler, times(0)).handle(any());
+    }
+
+    @Test
+    @DisplayName("New Question endpoint - SSE notification failure for new question")
+    void getNewQuestionSSENotificationFailure() throws Exception {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(user.getId())
+                        .points(100)
+                        .build();
+
+        Lobby lobby = Lobby.builder()
+                        .id(lobbyId)
+                        .joinCode(PartyCodeGenerator.generateCode())
+                        .status(LobbyStatus.ACTIVE)
+                        .playerCount(2)
+                        .build();
+
+        LobbyPlayer player1 = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(user.getId())
+                        .points(100)
+                        .build();
+
+        LobbyPlayer player2 = LobbyPlayer.builder()
+                        .id(randomUUID())
+                        .lobbyId(lobbyId)
+                        .playerId(randomUUID())
+                        .points(100)
+                        .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(lobbyPlayer);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(lobby);
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(List.of(player1, player2));
+        doNothing().when(duelManager).assignNewQuestionToLobby(lobbyId);
+        doThrow(new IOException("SSE connection failed")).when(lobbyNotifyHandler).handle(lobbyId);
+
+        ResponseEntity<ApiResponder<Empty>> response = duelController.getNewQuestion(authObj);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("New question assigned to all players.", response.getBody().getMessage());
+
+        verify(duelManager, times(1)).assignNewQuestionToLobby(lobbyId);
+        verify(lobbyNotifyHandler, times(1)).handle(lobbyId);
     }
 
     @Test
