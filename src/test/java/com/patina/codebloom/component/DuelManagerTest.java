@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,9 @@ import com.github.javafaker.Faker;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 
@@ -21,9 +24,10 @@ public class DuelManagerTest {
     private final Faker faker;
 
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
+    private LobbyPlayerRepository lobbyPlayerRepository = mock(LobbyPlayerRepository.class);
 
     public DuelManagerTest() {
-        this.duelManager = new DuelManager(lobbyRepository);
+        this.duelManager = new DuelManager(lobbyRepository, lobbyPlayerRepository);
         this.faker = Faker.instance();
     }
 
@@ -146,5 +150,93 @@ public class DuelManagerTest {
         assertNotNull(result2);
         assertEquals(result1.getLobby().getId(), result2.getLobby().getId());
         verify(lobbyRepository, times(2)).findLobbyById(lobbyId);
+    }
+
+    @Test
+    void testSuccessAssignNewQuestionToLobby() {
+        String lobbyId = java.util.UUID.randomUUID().toString();
+        LobbyPlayer player1 = LobbyPlayer.builder()
+                        .id(java.util.UUID.randomUUID().toString())
+                        .lobbyId(lobbyId)
+                        .points(100)
+                        .build();
+
+        LobbyPlayer player2 = LobbyPlayer.builder()
+                        .id(java.util.UUID.randomUUID().toString())
+                        .lobbyId(lobbyId)
+                        .points(100)
+                        .build();
+
+        List<LobbyPlayer> mockPlayers = List.of(player1, player2);
+
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(mockPlayers);
+
+        duelManager.assignNewQuestionToLobby(lobbyId);
+
+        verify(lobbyPlayerRepository, times(1)).findPlayersByLobbyId(lobbyId);
+        verify(lobbyPlayerRepository, times(2)).updateLobbyPlayer(any(LobbyPlayer.class));
+    }
+
+    @Test
+    void testAssignNewQuestionToLobbySetsPointsToNegativeOne() {
+        String lobbyId = java.util.UUID.randomUUID().toString();
+        LobbyPlayer player1 = LobbyPlayer.builder()
+                        .id(java.util.UUID.randomUUID().toString())
+                        .lobbyId(lobbyId)
+                        .points(100)
+                        .build();
+
+        LobbyPlayer player2 = LobbyPlayer.builder()
+                        .id(java.util.UUID.randomUUID().toString())
+                        .lobbyId(lobbyId)
+                        .points(0)
+                        .build();
+
+        List<LobbyPlayer> mockPlayers = List.of(player1, player2);
+
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(mockPlayers);
+
+        duelManager.assignNewQuestionToLobby(lobbyId);
+
+        assertEquals(-1, player1.getPoints());
+        assertEquals(-1, player2.getPoints());
+    }
+
+    @Test
+    void testAssignNewQuestionToLobbyCallsRepositoryCorrectly() {
+        String lobbyId = java.util.UUID.randomUUID().toString();
+        LobbyPlayer player1 = LobbyPlayer.builder()
+                        .id(java.util.UUID.randomUUID().toString())
+                        .lobbyId(lobbyId)
+                        .points(100)
+                        .build();
+
+        LobbyPlayer player2 = LobbyPlayer.builder()
+                        .id(java.util.UUID.randomUUID().toString())
+                        .lobbyId(lobbyId)
+                        .points(100)
+                        .build();
+
+        List<LobbyPlayer> mockPlayers = List.of(player1, player2);
+
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(mockPlayers);
+
+        duelManager.assignNewQuestionToLobby(lobbyId);
+
+        verify(lobbyPlayerRepository, times(1)).findPlayersByLobbyId(lobbyId);
+        verify(lobbyPlayerRepository, times(2)).updateLobbyPlayer(any(LobbyPlayer.class));
+    }
+
+    @Test
+    void testAssignNewQuestionToLobbyWithEmptyPlayerList() {
+        String lobbyId = java.util.UUID.randomUUID().toString();
+        List<LobbyPlayer> emptyList = List.of();
+
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(emptyList);
+
+        duelManager.assignNewQuestionToLobby(lobbyId);
+
+        verify(lobbyPlayerRepository, times(1)).findPlayersByLobbyId(lobbyId);
+        verify(lobbyPlayerRepository, never()).updateLobbyPlayer(any(LobbyPlayer.class));
     }
 }

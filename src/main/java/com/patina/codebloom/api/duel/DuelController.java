@@ -1,6 +1,8 @@
 package com.patina.codebloom.api.duel;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -220,6 +222,51 @@ public class DuelController {
         lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
 
         return ResponseEntity.ok(ApiResponder.success("Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
+    }
+
+    @Operation(summary = "Get new question", description = "Checks if all players have completed current questions and assigns a new one if so")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Question status checked successfully"),
+            @ApiResponse(responseCode = "404", description = "Player is not in a lobby"),
+            @ApiResponse(responseCode = "409", description = "Not all players have completed the current question"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    })
+    @PostMapping("/new/question")
+    public ResponseEntity<ApiResponder<Empty>> getNewQuestion(@Protected final AuthenticationObject authenticationObject) {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+
+        User user = authenticationObject.getUser();
+        String playerId = user.getId();
+
+        LobbyPlayer lobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
+        if (lobbyPlayer == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby.");
+        }
+
+        Lobby lobby = lobbyRepository.findLobbyById(lobbyPlayer.getLobbyId());
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lobby not found.");
+        }
+
+        List<LobbyPlayer> allPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobby.getId());
+
+        boolean allCompleted = allPlayers.stream().allMatch(player -> player.getPoints() >= 0);
+
+        if (!allCompleted) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Not all players have completed the current question.");
+        }
+
+        duelManager.assignNewQuestionToLobby(lobby.getId());
+
+        try {
+            lobbyNotifyHandler.handle(lobby.getId());
+        } catch (IOException e) {
+            log.error("Failed to notify lobby clients via SSE", e);
+        }
+
+        return ResponseEntity.ok(ApiResponder.success("New question assigned to all players.", Empty.of()));
     }
 
     @Operation(summary = "SSE endpoint for duel data", description = """
