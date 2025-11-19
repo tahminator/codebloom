@@ -68,7 +68,6 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                         .status(LobbyStatus.AVAILABLE)
                         .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                         .playerCount(1)
-                        .winnerId(null)
                         .build();
 
         lobbyRepository.createLobby(testLobby);
@@ -109,8 +108,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void testfindAvailableLobbyByJoinCode() {
-        Lobby foundLobby = lobbyRepository.findAvailableLobbyByJoinCode(mockJoinCode);
-        assertNotNull(foundLobby);
+        Lobby foundLobby = lobbyRepository.findAvailableLobbyByJoinCode(mockJoinCode).orElseThrow();
         assertEquals(testLobby.getId(), foundLobby.getId());
         assertEquals(mockJoinCode, foundLobby.getJoinCode());
         assertEquals(LobbyStatus.AVAILABLE, foundLobby.getStatus());
@@ -118,6 +116,24 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(3)
+    void testFindActiveLobbyByJoinCode() {
+        Lobby newActiveLobby = Lobby
+                        .builder()
+                        .joinCode("ABC123")
+                        .status(LobbyStatus.ACTIVE)
+                        .expiresAt(StandardizedOffsetDateTime.now())
+                        .build();
+
+        lobbyRepository.createLobby(newActiveLobby);
+
+        Lobby foundLobby = lobbyRepository.findActiveLobbyByJoinCode("ABC123").orElseThrow();
+        assertEquals(newActiveLobby, foundLobby);
+
+        lobbyRepository.deleteLobbyById(newActiveLobby.getId());
+    }
+
+    @Test
+    @Order(4)
     void testFindLobbiesByStatus() {
         List<Lobby> availableLobbies = lobbyRepository.findLobbiesByStatus(LobbyStatus.AVAILABLE);
         assertNotNull(availableLobbies);
@@ -125,7 +141,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void testFindAvailableLobbies() {
         List<Lobby> availableLobbies = lobbyRepository.findAvailableLobbies();
         assertNotNull(availableLobbies);
@@ -133,7 +149,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void testUpdateLobby() {
         testLobby.setStatus(LobbyStatus.ACTIVE);
         testLobby.setPlayerCount(2);
@@ -146,11 +162,11 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         assertNotNull(updatedLobby);
         assertEquals(LobbyStatus.ACTIVE, updatedLobby.getStatus());
         assertEquals(2, updatedLobby.getPlayerCount());
-        assertNull(updatedLobby.getWinnerId());
+        assertTrue(updatedLobby.getWinnerId().isEmpty());
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     void testFindActiveLobbyByLobbyPlayerId() {
         Lobby activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(testUser.getId());
         assertNotNull(activeLobby);
@@ -160,14 +176,14 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void testFindAvailableLobbyByLobbyPlayerIdEmpty() {
         Lobby activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
         assertNull(activeLobby);
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     void testFindAvailableLobbyByLobbyPlayerIdMocked() {
         Lobby activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
         assertNull(activeLobby);

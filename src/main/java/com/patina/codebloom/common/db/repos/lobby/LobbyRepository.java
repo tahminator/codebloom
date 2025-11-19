@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.db.repos.lobby;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -35,12 +36,22 @@ public interface LobbyRepository {
     Lobby findLobbyById(String id);
 
     /**
-     * Finds a lobby by its join code.
+     * Finds a lobby by its join code and status of {@code AVAILABLE}
      * 
      * @param joinCode the lobby join code
-     * @return the lobby if found, null otherwise
+     * @return an {@code Optional} containing the lobby if found, or
+     * {@code Optional.empty()} otherwise
      */
-    Lobby findAvailableLobbyByJoinCode(String joinCode);
+    Optional<Lobby> findAvailableLobbyByJoinCode(String joinCode);
+
+    /**
+     * Finds a lobby by its join code and status of {@code ACTIVE}
+     * 
+     * @param joinCode the lobby join code
+     * @return an {@code Optional} containing the lobby if found, or
+     * {@code Optional.empty()} otherwise
+     */
+    Optional<Lobby> findActiveLobbyByJoinCode(String joinCode);
 
     /**
      * Finds all lobbies with a specific status.

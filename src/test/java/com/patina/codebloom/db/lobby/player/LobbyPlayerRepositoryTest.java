@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterAll;
@@ -56,7 +57,7 @@ public class LobbyPlayerRepositoryTest extends BaseRepositoryTest {
                         .status(LobbyStatus.AVAILABLE)
                         .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                         .playerCount(1)
-                        .winnerId(null)
+                        .winnerId(Optional.empty())
                         .build();
 
         lobbyRepository.createLobby(testLobby);
