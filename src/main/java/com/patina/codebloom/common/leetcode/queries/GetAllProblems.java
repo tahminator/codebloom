@@ -8,17 +8,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GetAllProblems {
     public static final String QUERY = """
-        query problemsetQuestionListV2($filters: QuestionFilterInput, $limit: Int, $skip: Int) {
-            problemsetQuestionListV2(
-                filters: $filters
-                limit: $limit
-                skip: $skip
-            ) {
+        query problemsetQuestionListV2 {
+            problemsetQuestionListV2 {
                 questions {
                 id
                 titleSlug
                 title
-                translatedTitle
                 questionFrontendId
                 paidOnly
                 difficulty
@@ -37,7 +32,7 @@ public class GetAllProblems {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("query", QUERY); 
+        requestBodyMap.put("query", QUERY);
 
         return objectMapper.writeValueAsString(requestBodyMap);
     }

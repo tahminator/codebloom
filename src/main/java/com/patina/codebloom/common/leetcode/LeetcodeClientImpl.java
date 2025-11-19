@@ -28,6 +28,7 @@ import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
 import com.patina.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import com.patina.codebloom.common.leetcode.models.POTD;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
+import com.patina.codebloom.common.leetcode.queries.GetAllProblems;
 import com.patina.codebloom.common.leetcode.queries.GetPotd;
 import com.patina.codebloom.common.leetcode.queries.GetSubmissionDetails;
 import com.patina.codebloom.common.leetcode.queries.GetTopics;
@@ -470,6 +471,65 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
         } catch (Exception e) {
             throw new RuntimeException("Error getting topics from Leetcode API", e);
+        }
+    }
+
+    public List<LeetcodeQuestion> getAllProblems() {
+        try {
+            HttpRequest request = getGraphQLRequestBuilder()
+                            .POST(BodyPublishers.ofString(GetAllProblems.body()))
+                            .build();
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String body = response.body();
+            if (statusCode != 200) {
+                if (isThrottled(statusCode)) {
+                    leetcodeAuthStealer.reloadCookie();
+                }
+                reporter.log(Report.builder()
+                                .data(String.format("""
+                                                    Leetcode client failed to get all leetcode questions due to status code of %d
+
+                                                    Body: %s
+
+                                                    Header(s): %s
+                                                """, statusCode, body, response.headers().toString()))
+                                .build());
+                throw new RuntimeException("Non-successful response getting all questions from Leetcode API. Status code: " + statusCode);
+            }
+
+            JsonNode json = mapper.readTree(body);
+            JsonNode allQuestions = json.path("data").path("problemsetQuestionListV2").path("questions");
+
+            if (!allQuestions.isArray()) {
+                throw new RuntimeException("The expected shape of getting topics did not match the received body");
+            }
+
+            List<LeetcodeQuestion> result = new ArrayList<>();
+            for (JsonNode question : allQuestions) {
+                JsonNode topicTags = question.get("topicTags");
+
+                List<LeetcodeTopicTag> tags = new ArrayList<>();
+                for (JsonNode tag : topicTags) {
+                    tags.add(LeetcodeTopicTag.builder()
+                    .name(tag.get("name").asText())
+                    .slug(tag.get("slug").asText())
+                    .build());
+                }
+
+                result.add(LeetcodeQuestion.builder()
+                    .link("https://leetcode.com/problems/" + question.get("titleSlug").asText())
+                    .questionId(question.get("questionFrontendId").asInt())
+                    .questionTitle(question.get("title").asText())
+                    .titleSlug(question.get("titleSlug").asText())
+                    .difficulty(question.get("difficulty").asText())
+                    .acceptanceRate((float) question.get("acRate").asDouble())
+                    .topics(tags)
+                    .build());
+            }
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting all problems from Leetcode API", e);
         }
     }
 }
