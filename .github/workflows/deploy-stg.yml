@@ -133,6 +133,9 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
+            - name: Disable man-db
+              uses: ./.github/composite/disable-mandb
+
             - name: Set up OpenJDK 25
               uses: actions/setup-java@v4
               with:
@@ -160,6 +163,9 @@ jobs:
               uses: actions/checkout@v4
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
+
+            - name: Disable man-db
+              uses: ./.github/composite/disable-mandb
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
@@ -200,6 +206,9 @@ jobs:
               uses: actions/checkout@v4
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
+
+            - name: Disable man-db
+              uses: ./.github/composite/disable-mandb
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
@@ -245,6 +254,9 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
+            - name: Disable man-db
+              uses: ./.github/composite/disable-mandb
+
             - name: Set up OpenJDK 25
               uses: actions/setup-java@v4
               with:
@@ -288,6 +300,9 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
+            - name: Disable man-db
+              uses: ./.github/composite/disable-mandb
+
             - name: Set up OpenJDK 25
               uses: actions/setup-java@v4
               with:
@@ -325,6 +340,9 @@ jobs:
               uses: actions/checkout@v4
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
+
+            - name: Disable man-db
+              uses: ./.github/composite/disable-mandb
 
             - name: Set up OpenJDK 25
               uses: actions/setup-java@v4
