@@ -36,6 +36,8 @@ import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
+import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.lobby.DuelData;
@@ -56,9 +58,11 @@ public class DuelControllerTest {
     private LobbyPlayerRepository lobbyPlayerRepository = mock(LobbyPlayerRepository.class);
     private Env env = mock(Env.class);
     private LobbyNotifyHandler lobbyNotifyHandler = mock(LobbyNotifyHandler.class);
+    private QuestionBankRepository questionBankRepository = mock(QuestionBankRepository.class);
+    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(LobbyPlayerQuestionRepository.class);
 
     public DuelControllerTest() {
-        this.duelController = new DuelController(env, duelManager, lobbyRepository, lobbyPlayerRepository, lobbyNotifyHandler);
+        this.duelController = new DuelController(env, duelManager, lobbyRepository, lobbyPlayerRepository, lobbyNotifyHandler, questionBankRepository, lobbyPlayerQuestionRepository);
         this.faker = Faker.instance();
     }
 
