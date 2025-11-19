@@ -45,7 +45,7 @@ public class SubmissionScheduler {
             }
 
             List<LeetcodeSubmission> leetcodeSubmissions = leetcodeClient
-                            .findSubmissionsByUsername(user.getLeetcodeUsername());
+                            .findSubmissionsByUsername(user.getLeetcodeUsername(), 20);
 
             submissionsHandler.handleSubmissions(leetcodeSubmissions, user);
             LOGGER.info("User with id of {} has been completed", user.getId());
