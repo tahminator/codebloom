@@ -187,5 +187,12 @@ public class LeetcodeClientTest {
         Set<LeetcodeTopicTag> topicTags = leetcodeClient.getAllTopicTags();
         assertEquals(expectedTagsCount, topicTags.size());
     }
+
+    @Test
+    void assertAllLeetcodeProblems() {
+        List<LeetcodeQuestion> questions = leetcodeClient.getAllProblems();
+
+        assertTrue(questions.size() > 0);
+    }
 }
 */

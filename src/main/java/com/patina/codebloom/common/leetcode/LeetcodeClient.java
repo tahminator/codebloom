@@ -26,4 +26,6 @@ public interface LeetcodeClient {
     UserProfile getUserProfile(String username);
 
     Set<LeetcodeTopicTag> getAllTopicTags();
+
+    List<LeetcodeQuestion> getAllProblems();
 }
