@@ -134,6 +134,23 @@ public class DuelController {
         return ResponseEntity.ok(ApiResponder.success("Party successfully joined!", Empty.of()));
     }
 
+    @Operation(summary = "Start lobby", description = "Start a lobby")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+    })
+    @PostMapping("lobby/start")
+    public ResponseEntity<ApiResponder<Empty>> startLobby() {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+        // TODO: Implement start lobby functionality.
+
+        // check if there's more than 1 player in the lobby
+
+        return ResponseEntity.ok(ApiResponder.success("Party successfully started!", Empty.of()));
+    }
+
     @Operation(summary = "Leave party", description = "Leave the current lobby")
     @ApiResponse(responseCode = "200", description = "Lobby left successfully")
     @ApiResponse(responseCode = "400", description = "Player is not in a lobby")
