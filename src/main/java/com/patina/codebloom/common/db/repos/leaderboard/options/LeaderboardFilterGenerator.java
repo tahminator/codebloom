@@ -30,6 +30,22 @@ public class LeaderboardFilterGenerator {
         return list;
     }
 
+    public static LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder builderWithTag(final Tag tag) {
+        return switch (tag) {
+            case Patina -> LeaderboardFilterOptions.builder().patina(true);
+            case Hunter -> LeaderboardFilterOptions.builder().hunter(true);
+            case Nyu -> LeaderboardFilterOptions.builder().nyu(true);
+            case Baruch -> LeaderboardFilterOptions.builder().baruch(true);
+            case Rpi -> LeaderboardFilterOptions.builder().rpi(true);
+            case Gwc -> LeaderboardFilterOptions.builder().gwc(true);
+            case Sbu -> LeaderboardFilterOptions.builder().sbu(true);
+            case Ccny -> LeaderboardFilterOptions.builder().ccny(true);
+            case Columbia -> LeaderboardFilterOptions.builder().columbia(true);
+            case Cornell -> LeaderboardFilterOptions.builder().cornell(true);
+            case Bmcc -> LeaderboardFilterOptions.builder().bmcc(true);
+        };
+    }
+
     private static LeaderboardFilterOptions withOnlyTrue(
                     final Consumer<LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder> flagSetter) {
 
