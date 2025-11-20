@@ -193,6 +193,11 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     }
 
     @Override
+    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username) {
+        return findSubmissionsByUsername(username, 20);
+    }
+
+    @Override
     public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username, final int limit) {
         ArrayList<LeetcodeSubmission> submissions = new ArrayList<>();
 
