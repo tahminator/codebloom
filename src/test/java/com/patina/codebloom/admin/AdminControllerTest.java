@@ -1,76 +1,212 @@
 package com.patina.codebloom.admin;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+// CHECKSTYLE:OFF
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+// CHECKSTYLE:ON
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.api.admin.AdminController;
+import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
+import com.patina.codebloom.common.components.DiscordClubManager;
+import com.patina.codebloom.common.components.LeaderboardManager;
+import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
+import com.patina.codebloom.common.db.repos.announcement.AnnouncementRepository;
+import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.common.dto.user.UserDto;
-import com.patina.codebloom.config.NoJdaRequired;
-import com.patina.codebloom.config.TestProtector;
+import com.patina.codebloom.common.dto.Empty;
+import com.patina.codebloom.common.security.Protector;
 
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
+import jakarta.servlet.http.HttpServletRequest;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Import(TestProtector.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AdminControllerTest extends NoJdaRequired {
-    @LocalServerPort
-    private int port;
+public class AdminControllerTest {
+    private final UserRepository userRepository = mock(UserRepository.class);
+    private final LeaderboardRepository leaderboardRepository = mock(LeaderboardRepository.class);
+    private final AnnouncementRepository announcementRepository = mock(AnnouncementRepository.class);
+    private final QuestionRepository questionRepository = mock(QuestionRepository.class);
+    private final Protector protector = mock(Protector.class);
+    private final DiscordClubManager discordClubManager = mock(DiscordClubManager.class);
+    private final LeaderboardManager leaderboardManager = mock(LeaderboardManager.class);
+    private final HttpServletRequest request = mock(HttpServletRequest.class);
+
+    private final AdminController adminController;
+
+    public AdminControllerTest() {
+        adminController = spy(
+                        new AdminController(
+                                        leaderboardRepository,
+                                        protector,
+                                        userRepository,
+                                        announcementRepository,
+                                        questionRepository,
+                                        discordClubManager,
+                                        leaderboardManager));
+    }
 
     @BeforeEach
-    void setUpPort() {
-        RestAssured.port = port;
-    }
-
-    @BeforeAll
-    static void setUpUri() {
-        RestAssured.baseURI = "http://localhost";
-    }
-
-    private String buildTestAdminToggleBody(final String id, final boolean toggleTo) throws JsonProcessingException {
-        Map<String, Object> body = new HashMap<>();
-        body.put("id", id);
-        body.put("toggleTo", toggleTo);
-
-        return new ObjectMapper().writeValueAsString(body);
+    void setUp() {
+        reset(userRepository, leaderboardRepository, announcementRepository,
+                        questionRepository, protector, discordClubManager, leaderboardManager, request);
     }
 
     @Test
-    void testAdminToggle() throws JsonProcessingException {
-        ApiResponder<UserDto> apiResponder = RestAssured
-                        .given()
-                        .when()
-                        // Everyone should have this user ID on their dev db from the repeated
-                        // migration.
-                        .header("Content-Type", "application/json")
-                        .body(buildTestAdminToggleBody("e0b45c9a-9c8f-4a39-9373-39cf2a5f8055", false))
-                        .post("/api/admin/user/admin/toggle")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .as(new TypeRef<ApiResponder<UserDto>>() {
-                        });
+    void testCreateLeaderboardSuccessNoExistingLeaderboard() {
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                        .name("Spring 2024 Challenge")
+                        .build();
 
-        assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
-        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
-        assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
-        UserDto user = apiResponder.getPayload();
-        assertTrue(user != null, "Expected user to not be equal to null");
-        assertTrue(!user.isAdmin(), "Expected user to not be admin");
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+        assertEquals(Empty.of(), response.getBody().getPayload());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository).getRecentLeaderboardMetadata();
+        verify(leaderboardRepository).addNewLeaderboard(any(Leaderboard.class));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+        verify(discordClubManager, never()).sendLeaderboardCompletedDiscordMessageToAllClubs();
+        verify(leaderboardManager, never()).generateAchievementsForAllWinners();
+        verify(leaderboardRepository, never()).disableLeaderboardById(anyString());
+    }
+
+    @Test
+    void testCreateLeaderboardSuccessWithExistingLeaderboard() {
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                        .name("Fall 2024 Challenge")
+                        .build();
+
+        Leaderboard existingLeaderboard = Leaderboard.builder()
+                        .id("existing-id")
+                        .name("Old Leaderboard")
+                        .build();
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(existingLeaderboard);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+        assertEquals(Empty.of(), response.getBody().getPayload());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository).getRecentLeaderboardMetadata();
+        verify(discordClubManager).sendLeaderboardCompletedDiscordMessageToAllClubs();
+        verify(leaderboardManager).generateAchievementsForAllWinners();
+        verify(leaderboardRepository).disableLeaderboardById("existing-id");
+        verify(leaderboardRepository).addNewLeaderboard(any(Leaderboard.class));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+    }
+
+    @Test
+    void testCreateLeaderboardEmptyName() {
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                        .name("")
+                        .build();
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals("Leaderboard name must be between 1 and 512 characters.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository, never()).getRecentLeaderboardMetadata();
+        verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
+    }
+
+    @Test
+    void testCreateLeaderboardWhitespaceOnlyName() {
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                        .name("   ")
+                        .build();
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals("Leaderboard name must be between 1 and 512 characters.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository, never()).getRecentLeaderboardMetadata();
+        verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
+    }
+
+    @Test
+    void testCreateLeaderboardNameTooLong() {
+        String longName = "a".repeat(513);
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                        .name(longName)
+                        .build();
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals("Leaderboard name must be between 1 and 512 characters.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository, never()).getRecentLeaderboardMetadata();
+        verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
+    }
+
+    @Test
+    void testCreateLeaderboardMaxValidName() {
+        String maxName = "a".repeat(512);
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                        .name(maxName)
+                        .build();
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository).getRecentLeaderboardMetadata();
+        verify(leaderboardRepository).addNewLeaderboard(any(Leaderboard.class));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+    }
+
+    @Test
+    void testCreateLeaderboardNameWithLeadingAndTrailingSpaces() {
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                        .name("  Challenge 2024  ")
+                        .build();
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository).getRecentLeaderboardMetadata();
+        verify(leaderboardRepository).addNewLeaderboard(argThat(leaderboard -> "Challenge 2024".equals(leaderboard.getName())));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
     }
 }

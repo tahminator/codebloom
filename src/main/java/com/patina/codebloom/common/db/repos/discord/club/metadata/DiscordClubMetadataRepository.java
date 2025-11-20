@@ -1,5 +1,7 @@
 package com.patina.codebloom.common.db.repos.discord.club.metadata;
 
+import java.util.Optional;
+
 import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 
 public interface DiscordClubMetadataRepository {
@@ -20,7 +22,9 @@ public interface DiscordClubMetadataRepository {
      */
     void createDiscordClubMetadata(DiscordClubMetadata discordClubMetadata);
 
-    DiscordClubMetadata getDiscordClubMetadataById(String id);
+    Optional<DiscordClubMetadata> getDiscordClubMetadataById(String id);
+
+    Optional<DiscordClubMetadata> getDiscordClubMetadataByClubId(String clubId);
 
     /**
      * @param discordClubMetadata - overridable fields:
@@ -30,9 +34,8 @@ public interface DiscordClubMetadataRepository {
      * <li>discordClubId</li>
      * </ul>
      */
-    DiscordClubMetadata updateDiscordClubMetadata(DiscordClubMetadata discordClubMetadata);
+    boolean updateDiscordClubMetadata(DiscordClubMetadata discordClubMetadata);
 
     boolean deleteDiscordClubMetadataById(String id);
 
-    DiscordClubMetadata getMetadataByClubId(String id);
 }

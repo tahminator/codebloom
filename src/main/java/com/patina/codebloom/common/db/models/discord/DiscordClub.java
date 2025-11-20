@@ -1,10 +1,9 @@
 package com.patina.codebloom.common.db.models.discord;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
-import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
-import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 
 import lombok.Builder;
@@ -21,25 +20,21 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 public class DiscordClub {
-    @NotNullColumn
     private String id;
 
-    @NotNullColumn
     private String name;
 
-    @NullColumn
-    private String description;
+    @Builder.Default
+    private Optional<String> description = Optional.empty();
 
-    @NotNullColumn
     private Tag tag;
 
-    @NotNullColumn
     private OffsetDateTime createdAt;
 
-    @NullColumn
-    private OffsetDateTime deletedAt;
+    @Builder.Default
+    private Optional<OffsetDateTime> deletedAt = Optional.empty();
 
     @JoinColumn
-    private DiscordClubMetadata discordClubMetadata;
-
+    @Builder.Default
+    private Optional<DiscordClubMetadata> discordClubMetadata = Optional.empty();
 }
