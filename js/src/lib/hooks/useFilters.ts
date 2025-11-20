@@ -1,3 +1,4 @@
+import { UserTagTag } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { useCallback, useMemo } from "react";
@@ -13,7 +14,7 @@ export type ToggleTagEnumFn = (
   tagEnum: ApiTypeUtils.FilteredUserTagTag,
 ) => void;
 
-function getUrlKey(tagEnum: ApiTypeUtils.FilteredUserTagTag) {
+function getUrlKey(tagEnum: UserTagTag) {
   return ApiUtils.getMetadataByTagEnum(tagEnum).apiKey;
 }
 
@@ -60,7 +61,10 @@ export function useFilters({
   | undefined = {}) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useImmer<TagEnumToBooleanFilterObject>(() => {
-    const kvTuples = ApiUtils.getAllSupportedTagEnums().map((tagEnum) => [
+    // NOTE: We allow all enums so that if a user manually forces a param into the URL
+    // (e.g. our backend loading the frontend to take screenshots) it WILL be allowed. However, it will NOT
+    // be generated as a filter list or usable in the UI whatsoever.
+    const kvTuples = ApiUtils.getAllTagEnums().map((tagEnum) => [
       tagEnum,
       searchParams.get(getUrlKey(tagEnum)) === "true",
     ]) as [ApiTypeUtils.FilteredUserTagTag, boolean][]; // slight type trickery because TS

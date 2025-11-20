@@ -16,7 +16,7 @@ import com.patina.codebloom.api.admin.body.CreateAnnouncementBody;
 import com.patina.codebloom.api.admin.body.DeleteAnnouncementBody;
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
 import com.patina.codebloom.api.admin.body.UpdateAdminBody;
-import com.patina.codebloom.api.admin.helper.PatinaDiscordMessageHelper;
+import com.patina.codebloom.api.admin.helper.LeaderboardDiscordMessageHelper;
 import com.patina.codebloom.common.components.LeaderboardManager;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
@@ -52,7 +52,7 @@ public class AdminController {
     private final AnnouncementRepository announcementRepository;
     private final QuestionRepository questionRepository;
     private final Protector protector;
-    private final PatinaDiscordMessageHelper patinaDiscordMessageHelper;
+    private final LeaderboardDiscordMessageHelper patinaDiscordMessageHelper;
     private final LeaderboardManager leaderboardManager;
 
     public AdminController(
@@ -61,7 +61,7 @@ public class AdminController {
                     final UserRepository userRepository,
                     final AnnouncementRepository announcementRepository,
                     final QuestionRepository questionRepository,
-                    final PatinaDiscordMessageHelper patinaDiscordMessageHelper,
+                    final LeaderboardDiscordMessageHelper patinaDiscordMessageHelper,
                     final LeaderboardManager leaderboardManager) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
@@ -93,7 +93,7 @@ public class AdminController {
         // deactivated, not deleted).
         Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
         if (currentLeaderboard != null) {
-            patinaDiscordMessageHelper.sendLatestLeaderboardDiscordMessage();
+            patinaDiscordMessageHelper.sendLatestLeaderboardDiscordMessageToAllClubs();
             leaderboardManager.generateAchievementsForAllWinners();
             leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
         }
