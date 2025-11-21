@@ -1,11 +1,6 @@
 package com.patina.codebloom.scheduled.discord;
 
-import java.awt.Color;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;

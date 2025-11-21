@@ -1,7 +1,5 @@
 package com.patina.codebloom.common.db.repos.leaderboard.options;
 
-import com.patina.codebloom.common.db.models.usertag.Tag;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
