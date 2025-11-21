@@ -1,8 +1,9 @@
 package com.patina.codebloom.common.dto.lobby;
 
 import java.util.List;
+import java.util.Map;
 
-import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
+import com.patina.codebloom.common.db.models.question.Question;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -21,8 +22,11 @@ public class DuelData {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LobbyDto lobby;
 
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private List<LobbyPlayerQuestion> questions;
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true, description = "Unique questions being worked on in this duel")
+    private List<Question> questions;
+
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true, description = "Map of player IDs to the questions they have solved")
+    private Map<String, List<Question>> playerQuestions;
 
     public static final DuelData DEFAULT = builder().build();
 }

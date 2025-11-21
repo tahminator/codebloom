@@ -274,4 +274,35 @@ public class LobbyPlayerQuestionSqlRepository
             );
         }
     }
+
+    @Override
+    public List<String> findUniqueQuestionIdsByLobbyId(final String lobbyId) {
+        List<String> result = new ArrayList<>();
+        String sql = """
+                        SELECT DISTINCT "questionId"
+                        FROM
+                            "LobbyPlayerQuestion"
+                        WHERE
+                            "lobbyPlayerId" IN (
+                                SELECT id FROM "LobbyPlayer" WHERE "lobbyId" = :lobbyId
+                            )
+                        AND "questionId" IS NOT NULL
+                        ORDER BY
+                            "questionId"
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("lobbyId", UUID.fromString(lobbyId));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(rs.getString("questionId"));
+                }
+            }
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find unique question IDs by lobby id", e);
+        }
+    }
 }
