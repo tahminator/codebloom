@@ -311,4 +311,32 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
 
         return questions;
     }
+
+    @Override
+    public List<QuestionBank> getAllQuestions() {
+        List<QuestionBank> questions = new ArrayList<>();
+        String sql = """
+                        SELECT
+                            id,
+                            "questionSlug",
+                            "questionDifficulty",
+                            "questionNumber",
+                            "questionLink",
+                            "questionTitle",
+                            description,
+                            "acceptanceRate",
+                            "createdAt"
+                        FROM "QuestionBank"
+                """;
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    questions.add(mapResultSetToQuestion(rs));
+                }
+                return questions;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve questions by difficulty", e);
+        }
+    }
 }
