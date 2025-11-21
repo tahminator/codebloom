@@ -194,11 +194,11 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(6)
-    void testFindUniqueQuestionsByLobbyId() {
-        List<LobbyPlayerQuestion> uniqueQuestions = lobbyPlayerQuestionRepository.findUniqueQuestionsByLobbyId(testLobby.getId());
-        assertNotNull(uniqueQuestions);
-        assertTrue(uniqueQuestions.size() > 0);
-        assertTrue(uniqueQuestions.stream().anyMatch(q -> q.getQuestionId().equals(mockQuestionId)));
+    void testFindUniqueQuestionIdsByLobbyId() {
+        List<String> uniqueQuestionIds = lobbyPlayerQuestionRepository.findUniqueQuestionIdsByLobbyId(testLobby.getId());
+        assertNotNull(uniqueQuestionIds);
+        assertTrue(uniqueQuestionIds.size() > 0);
+        assertTrue(uniqueQuestionIds.contains(mockQuestionId.get()));
     }
 
 }
