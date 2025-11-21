@@ -79,4 +79,12 @@ public interface LobbyPlayerQuestionRepository {
      * otherwise
      */
     boolean deleteLobbyPlayerQuestionById(String id);
+
+    /**
+     * Finds all unique questions for a specific lobby.
+     * 
+     * @param lobbyId the lobby ID
+     * @return list of unique questions for the specified lobby
+     */
+    List<LobbyPlayerQuestion> findUniqueQuestionsByLobbyId(String lobbyId);
 }
