@@ -1,6 +1,8 @@
 package com.patina.codebloom.db.question.bank;
 
+// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
+// CHECKSTYLE:ON
 
 import java.util.List;
 
@@ -14,7 +16,6 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.patina.codebloom.common.db.models.announcement.Announcement;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
@@ -159,5 +160,13 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
 
         assertTrue(foundTestQuestion, "Test question should be found in the list of questions with EASY difficulty");
         log.info("Successfully retrieved {} question(s) by difficulty: EASY, including test question", questions.size());
+    }
+
+    @Test
+    @Order(7)
+    void testGetAllQuestions() {
+        List<QuestionBank> questions = questionBankRepository.getAllQuestions();
+        assertTrue(questions.size() > 0, "There should at least be one question retrieved");
+
     }
 }

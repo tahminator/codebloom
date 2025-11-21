@@ -37,4 +37,6 @@ public interface QuestionBankRepository {
     List<QuestionBank> getQuestionsByTopic(LeetcodeTopicEnum topic);
 
     List<QuestionBank> getQuestionsByDifficulty(QuestionDifficulty difficulty);
+
+    List<QuestionBank> getAllQuestions();
 }
