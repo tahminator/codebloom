@@ -21,7 +21,7 @@ public class DuelData {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LobbyDto lobby;
 
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private List<LobbyPlayerQuestion> questions;
 
     public static final DuelData DEFAULT = builder().build();
