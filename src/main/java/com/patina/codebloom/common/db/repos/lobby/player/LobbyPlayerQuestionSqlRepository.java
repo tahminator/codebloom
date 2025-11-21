@@ -197,4 +197,36 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
             throw new RuntimeException("Failed to delete lobby player question by id", e);
         }
     }
+
+    @Override
+    public List<LobbyPlayerQuestion> findUniqueQuestionsByLobbyId(final String lobbyId) {
+        List<LobbyPlayerQuestion> result = new ArrayList<>();
+        String sql = """
+                        SELECT DISTINCT
+                            lpq.id,
+                            lpq."lobbyPlayerId",
+                            lpq."questionId",
+                            lpq.points
+                        FROM
+                            "LobbyPlayerQuestion" lpq
+                        JOIN
+                            "LobbyPlayer" lp ON lpq."lobbyPlayerId" = lp.id
+                        WHERE
+                            lp."lobbyId" = :lobbyId
+                        """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("lobbyId", UUID.fromString(lobbyId));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(parseResultSetToLobbyPlayerQuestion(rs));
+                }
+            }
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find unique questions by lobby id", e);
+        }
+    }
 }
