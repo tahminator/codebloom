@@ -26,6 +26,19 @@ public class LeaderboardFilterGeneratorTest {
                     Tag.Nyu,
                     Tag.Rpi);
 
+    public static final Set<Tag> ALL_LEADERBOARD_TAGS = Set.of(
+                    Tag.Patina,
+                    Tag.Gwc,
+                    Tag.Baruch,
+                    Tag.Bmcc,
+                    Tag.Ccny,
+                    Tag.Sbu,
+                    Tag.Columbia,
+                    Tag.Cornell,
+                    Tag.Hunter,
+                    Tag.Nyu,
+                    Tag.Rpi);
+
     @Test
     void expectLeaderboardFilterGeneratorToReturnAllValidTags() {
         var leaderboardTags = new HashSet<>();
@@ -40,5 +53,70 @@ public class LeaderboardFilterGeneratorTest {
         }
 
         assertEquals(0, leaderboardTags.size());
+    }
+
+    @Test
+    void expectBuilderWithTagToCreateCorrectFilterOptions() {
+        for (Tag tag : ALL_LEADERBOARD_TAGS) {
+            LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(tag).build();
+
+            switch (tag) {
+                case Patina -> assertTrue(options.isPatina());
+                case Gwc -> assertTrue(options.isGwc());
+                case Baruch -> assertTrue(options.isBaruch());
+                case Bmcc -> assertTrue(options.isBmcc());
+                case Ccny -> assertTrue(options.isCcny());
+                case Sbu -> assertTrue(options.isSbu());
+                case Columbia -> assertTrue(options.isColumbia());
+                case Cornell -> assertTrue(options.isCornell());
+                case Hunter -> assertTrue(options.isHunter());
+                case Nyu -> assertTrue(options.isNyu());
+                case Rpi -> assertTrue(options.isRpi());
+            }
+        }
+    }
+
+    @Test
+    void expectBuilderWithTagToSetOnlyOneTagTrue() {
+        for (Tag tag : ALL_LEADERBOARD_TAGS) {
+            LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(tag).build();
+
+            int trueCount = 0;
+            if (options.isPatina()) {
+                trueCount++;
+            }
+            if (options.isGwc()) {
+                trueCount++;
+            }
+            if (options.isBaruch()) {
+                trueCount++;
+            }
+            if (options.isBmcc()) {
+                trueCount++;
+            }
+            if (options.isCcny()) {
+                trueCount++;
+            }
+            if (options.isSbu()) {
+                trueCount++;
+            }
+            if (options.isColumbia()) {
+                trueCount++;
+            }
+            if (options.isCornell()) {
+                trueCount++;
+            }
+            if (options.isHunter()) {
+                trueCount++;
+            }
+            if (options.isNyu()) {
+                trueCount++;
+            }
+            if (options.isRpi()) {
+                trueCount++;
+            }
+
+            assertEquals(1, trueCount, "Expected exactly one tag to be true for tag: " + tag.getResolvedName());
+        }
     }
 }

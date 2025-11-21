@@ -16,7 +16,6 @@ import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.User;
-import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 import com.patina.codebloom.common.db.repos.discord.club.DiscordClubRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
