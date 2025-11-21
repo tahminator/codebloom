@@ -14,6 +14,7 @@ import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 
@@ -22,9 +23,10 @@ public class DuelManagerTest {
     private final Faker faker;
 
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
+    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(LobbyPlayerQuestionRepository.class);
 
     public DuelManagerTest() {
-        this.duelManager = new DuelManager(lobbyRepository);
+        this.duelManager = new DuelManager(lobbyRepository, lobbyPlayerQuestionRepository);
         this.faker = Faker.instance();
     }
 
