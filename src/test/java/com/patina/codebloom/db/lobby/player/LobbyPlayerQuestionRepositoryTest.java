@@ -191,4 +191,14 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
             );
         assertTrue(deletedFetched.isEmpty());
     }
+
+    @Test
+    @Order(6)
+    void testFindUniqueQuestionsByLobbyId() {
+        List<LobbyPlayerQuestion> uniqueQuestions = lobbyPlayerQuestionRepository.findUniqueQuestionsByLobbyId(testLobby.getId());
+        assertNotNull(uniqueQuestions);
+        assertTrue(uniqueQuestions.size() > 0);
+        assertTrue(uniqueQuestions.stream().anyMatch(q -> q.getQuestionId().equals(mockQuestionId)));
+    }
+
 }
