@@ -69,7 +69,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Lobby findLobbyById(final String id) {
+    public Optional<Lobby> findLobbyById(final String id) {
         String sql = """
                         SELECT
                             id,
@@ -89,14 +89,14 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLobby(rs);
+                    return Optional.of(parseResultSetToLobby(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find lobby by id", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -236,7 +236,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Lobby findActiveLobbyByLobbyPlayerId(final String lobbyPlayerId) {
+    public Optional<Lobby> findActiveLobbyByLobbyPlayerId(final String lobbyPlayerId) {
         String sql = """
                         SELECT
                             l.id,
@@ -261,7 +261,7 @@ public class LobbySqlRepository implements LobbyRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLobby(rs);
+                    return Optional.of(parseResultSetToLobby(rs));
                 }
             }
         } catch (SQLException e) {
@@ -272,7 +272,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Lobby findAvailableLobbyByLobbyPlayerId(final String lobbyPlayerId) {
+    public Optional<Lobby> findAvailableLobbyByLobbyPlayerId(final String lobbyPlayerId) {
         String sql = """
                         SELECT
                             l.*
@@ -291,14 +291,14 @@ public class LobbySqlRepository implements LobbyRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLobby(rs);
+                    return Optional.of(parseResultSetToLobby(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find available lobby by lobby player id", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override

@@ -33,7 +33,7 @@ public interface LobbyRepository {
      * @param id the lobby ID
      * @return the lobby if found, null otherwise
      */
-    Lobby findLobbyById(String id);
+    Optional<Lobby> findLobbyById(String id);
 
     /**
      * Finds a lobby by its join code and status of {@code AVAILABLE}
@@ -76,7 +76,7 @@ public interface LobbyRepository {
      *
      * TODO: Union with {@code LobbyRepository.findAvailableLobbyByLobbyPlayerId}
      */
-    Lobby findActiveLobbyByLobbyPlayerId(String lobbyPlayerId);
+    Optional<Lobby> findActiveLobbyByLobbyPlayerId(String lobbyPlayerId);
 
     /**
      * Finds available lobby for the given `Player` with a status of AVAILABLE.
@@ -86,7 +86,7 @@ public interface LobbyRepository {
      *
      * TODO: Union with {@code LobbyRepository.findActiveLobbyByLobbyPlayerId}
      */
-    Lobby findAvailableLobbyByLobbyPlayerId(String lobbyPlayerId);
+    Optional<Lobby> findAvailableLobbyByLobbyPlayerId(String lobbyPlayerId);
 
     /**
      * Updates an existing lobby in the database.
