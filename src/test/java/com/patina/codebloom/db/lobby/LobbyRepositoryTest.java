@@ -39,6 +39,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     private UserRepository userRepository;
     private Lobby testLobby;
     private User testUser;
+    private LobbyPlayer testLobbyPlayer;
     private String mockJoinCode = "TEST-" + UUID.randomUUID().toString().substring(0, 8);
     private String mockWinnerId = UUID.randomUUID().toString();
 
@@ -54,11 +55,8 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void setup() {
         testUser = User.builder()
-                        .id(UUID.randomUUID().toString())
                         .discordId(String.valueOf(System.currentTimeMillis()))
                         .discordName("TestUser")
-                        .admin(false)
-                        .verifyKey(UUID.randomUUID().toString())
                         .build();
 
         userRepository.createUser(testUser);
@@ -72,18 +70,18 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
 
         lobbyRepository.createLobby(testLobby);
 
-        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
-                        .id(UUID.randomUUID().toString())
+        testLobbyPlayer = LobbyPlayer.builder()
                         .lobbyId(testLobby.getId())
                         .playerId(testUser.getId())
-                        .points(0)
                         .build();
 
-        lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
+        lobbyPlayerRepository.createLobbyPlayer(testLobbyPlayer);
     }
 
     @AfterAll
     void cleanup() {
+        assertTrue(lobbyPlayerRepository.deleteLobbyPlayerById(testLobbyPlayer.getId()));
+
         boolean lobbyDeleted = lobbyRepository.deleteLobbyById(testLobby.getId());
 
         if (!lobbyDeleted) {
@@ -162,21 +160,50 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(7)
     void testFindActiveLobbyByLobbyPlayerId() {
-        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(testUser.getId()).orElseThrow();
+        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(testUser.getId()).orElseThrow();
         assertEquals(testLobby, activeLobby);
     }
 
     @Test
     @Order(8)
     void testFindAvailableLobbyByLobbyPlayerIdEmpty() {
-        var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
+        var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(testUser.getId());
         assertTrue(activeLobby.isEmpty());
     }
 
     @Test
     @Order(9)
     void testFindAvailableLobbyByLobbyPlayerIdMocked() {
-        var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
-        assertTrue(activeLobby.isEmpty());
+        var u = User.builder()
+                        .discordId(String.valueOf(System.currentTimeMillis()))
+                        .discordName("TestUser2")
+                        .build();
+
+        userRepository.createUser(u);
+
+        var l = Lobby.builder()
+                        .joinCode("ABC123")
+                        .status(LobbyStatus.AVAILABLE)
+                        .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                        .playerCount(1)
+                        .build();
+
+        lobbyRepository.createLobby(l);
+
+        var lp = LobbyPlayer.builder()
+                        .lobbyId(l.getId())
+                        .playerId(u.getId())
+                        .build();
+
+        lobbyPlayerRepository.createLobbyPlayer(lp);
+
+        // try {
+        // Thread.sleep(100000);
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
+
+        var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(u.getId()).orElseThrow();
+        assertEquals(l, activeLobby);
     }
 }

@@ -660,8 +660,8 @@ public class DuelControllerTest {
                         .build();
 
         when(lobbyRepository.findAvailableLobbyByJoinCode("ABC123")).thenReturn(Optional.of(mockLobby));
-        when(lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId())).thenReturn(Optional.empty());
-        when(lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
         when(lobbyRepository.updateLobby(any(Lobby.class))).thenReturn(true);
 
         ResponseEntity<ApiResponder<Empty>> response = duelController.joinLobby(authObj, joinPartyBody);
@@ -734,7 +734,7 @@ public class DuelControllerTest {
                         .build();
 
         when(lobbyRepository.findAvailableLobbyByJoinCode("ABC123")).thenReturn(Optional.of(mockLobby));
-        when(lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId())).thenReturn(Optional.of(existingLobby));
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(existingLobby));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             duelController.joinLobby(authObj, joinPartyBody);
@@ -774,8 +774,8 @@ public class DuelControllerTest {
                         .build();
 
         when(lobbyRepository.findAvailableLobbyByJoinCode("ABC123")).thenReturn(Optional.of(mockLobby));
-        when(lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId())).thenReturn(Optional.empty());
-        when(lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId())).thenReturn(Optional.of(activeLobby));
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(activeLobby));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             duelController.joinLobby(authObj, joinPartyBody);
@@ -809,8 +809,8 @@ public class DuelControllerTest {
                         .build();
 
         when(lobbyRepository.findAvailableLobbyByJoinCode("ABC123")).thenReturn(Optional.of(mockLobby));
-        when(lobbyRepository.findAvailableLobbyByLobbyPlayerId(user.getId())).thenReturn(Optional.empty());
-        when(lobbyRepository.findActiveLobbyByLobbyPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
         when(lobbyRepository.updateLobby(any(Lobby.class))).thenReturn(false);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
@@ -895,8 +895,8 @@ public class DuelControllerTest {
         assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
         assertEquals("Endpoint is currently non-functional", exception.getReason());
 
-        verify(lobbyRepository, times(0)).findActiveLobbyByLobbyPlayerId(any());
-        verify(lobbyRepository, times(0)).findAvailableLobbyByLobbyPlayerId(any());
+        verify(lobbyRepository, times(0)).findActiveLobbyByLobbyPlayerPlayerId(any());
+        verify(lobbyRepository, times(0)).findAvailableLobbyByLobbyPlayerPlayerId(any());
         verify(lobbyNotifyHandler, times(0)).register(any(), any());
     }
 

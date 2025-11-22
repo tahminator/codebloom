@@ -72,24 +72,26 @@ public interface LobbyRepository {
     /**
      * Finds active lobby for the given `Player` with a status of ACTIVE.
      *
-     * @param lobbyPlayerId the lobby player ID
+     * @param lobbyPlayerPlayerId the player ID ({@code User.id}) on
+     * {@code LobbyPlayer}
      * @return an {@code Optional} containing the lobby if found, or
      * {@code Optional.empty()} otherwise
      *
      * TODO: Union with {@code LobbyRepository.findAvailableLobbyByLobbyPlayerId}
      */
-    Optional<Lobby> findActiveLobbyByLobbyPlayerId(String lobbyPlayerId);
+    Optional<Lobby> findActiveLobbyByLobbyPlayerPlayerId(String lobbyPlayerPlayerId);
 
     /**
      * Finds available lobby for the given `Player` with a status of AVAILABLE.
      *
-     * @param lobbyPlayerId the lobby player ID
+     * @param lobbyPlayerPlayerId the player ID ({@code User.id}) on
+     * {@code LobbyPlayer}
      * @return an {@code Optional} containing the lobby if found, or
      * {@code Optional.empty()} otherwise
      *
      * TODO: Union with {@code LobbyRepository.findActiveLobbyByLobbyPlayerId}
      */
-    Optional<Lobby> findAvailableLobbyByLobbyPlayerId(String lobbyPlayerId);
+    Optional<Lobby> findAvailableLobbyByLobbyPlayerPlayerId(String lobbyPlayerPlayerId);
 
     /**
      * Updates an existing lobby in the database.

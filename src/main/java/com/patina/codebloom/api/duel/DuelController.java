@@ -66,13 +66,13 @@ public class DuelController {
     }
 
     private void validatePlayerNotInLobby(final String playerId) {
-        var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(playerId);
+        var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(playerId);
 
         if (availableLobby.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already in a party. Please leave the party, then try again.");
         }
 
-        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(playerId);
+        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(playerId);
 
         if (activeLobby.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You are currently in a duel. Please forfeit the duel, then try again.");
