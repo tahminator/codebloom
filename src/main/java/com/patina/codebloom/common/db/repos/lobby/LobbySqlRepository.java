@@ -268,7 +268,7 @@ public class LobbySqlRepository implements LobbyRepository {
             throw new RuntimeException("Failed to find active lobby by lobby player id", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
