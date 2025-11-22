@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,7 +99,6 @@ public class DuelControllerTest {
         Lobby lobby = Lobby.builder()
                         .id(lobbyId)
                         .joinCode(PartyCodeGenerator.generateCode())
-                        .expiresAt(StandardizedOffsetDateTime.now().plus(1, ChronoUnit.HOURS))
                         .status(LobbyStatus.AVAILABLE)
                         .expiresAt(OffsetDateTime.now().plusMinutes(30))
                         .playerCount(3)
@@ -195,8 +193,6 @@ public class DuelControllerTest {
                         .thenReturn(Optional.of(lobby));
 
         ResponseEntity<ApiResponder<Empty>> response = duelController.leaveParty(authObj);
-
-        System.out.println(response);
 
         assertEquals(200, response.getStatusCode().value());
         assertTrue(response.getBody().isSuccess());
@@ -387,7 +383,7 @@ public class DuelControllerTest {
                         ResponseStatusException.class,
                         () -> duelController.createParty(authObj));
 
-        assertEquals(HttpStatus.NOT_FOUND.value(), exception.getStatusCode().value());
+        assertEquals(HttpStatus.CONFLICT.value(), exception.getStatusCode().value());
         assertEquals("You are already in a lobby. Please leave your current lobby before creating a new one.",
                         exception.getReason());
 
@@ -864,7 +860,6 @@ public class DuelControllerTest {
         Lobby expiredLobby = Lobby.builder()
                         .id(randomUUID())
                         .joinCode("ABC123")
-                        .expiresAt(StandardizedOffsetDateTime.now().plus(1, ChronoUnit.HOURS))
                         .status(LobbyStatus.AVAILABLE)
                         .playerCount(1)
                         .expiresAt(pastTime)
