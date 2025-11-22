@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.db.repos.lobby;
 
 import java.util.Optional;
+import java.util.List;
 
 import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 
@@ -22,22 +23,21 @@ public interface LobbyQuestionRepository {
 
     Optional<LobbyQuestion> findLobbyQuestionById(String id);
 
-    Optional<LobbyQuestion> findLobbyQuestionByLobbyId(String lobbyId);
+    List<LobbyQuestion> findLobbyQuestionsByLobbyId(String lobbyId);
 
-    Optional<LobbyQuestion> findLobbyQuestionByQuestionBankId(String questionBankId);
+    List<LobbyQuestion> findLobbyQuestionByLobbyIdAndQuestionBankId(String lobbyId, String questionBankId);
 
-    Optional<LobbyQuestion> findLobbyRecentQuestionByLobbyId(String lobbyId);
+    Optional<LobbyQuestion> findMostRecentLobbyQuestionByLobbyId(String lobbyId);
 
-    List <
+    List<LobbyQuestion> findAllLobbyQuestions();
 
-
-        /**
+    /**
      * Updates an existing lobby in the database.
      * 
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
-     * @param LobbyQuestion  - required fields:
+     * @param LobbyQuestion - required fields:
      * <ul>
      * <li>id</li>
      * </ul>
@@ -49,7 +49,6 @@ public interface LobbyQuestionRepository {
      * @return true if the update was successful, false otherwise
      */
     boolean updateQuestionLobby(LobbyQuestion lobbyQuestion);
-
 
     boolean deleteLobbyQuestionById(String id);
 
