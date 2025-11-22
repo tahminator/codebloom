@@ -62,7 +62,6 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                             "createdAt"
                         """;
 
-        
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(discordClub.getId()));
             stmt.setString("name", discordClub.getName());
