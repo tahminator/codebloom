@@ -194,11 +194,16 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     @Override
     public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username) {
+        return findSubmissionsByUsername(username, 20);
+    }
+
+    @Override
+    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username, final int limit) {
         ArrayList<LeetcodeSubmission> submissions = new ArrayList<>();
 
         String requestBody;
         try {
-            requestBody = SelectAcceptedSubmisisonsQuery.body(username);
+            requestBody = SelectAcceptedSubmisisonsQuery.body(username, limit);
         } catch (Exception e) {
             throw new RuntimeException("Error building the request body");
         }

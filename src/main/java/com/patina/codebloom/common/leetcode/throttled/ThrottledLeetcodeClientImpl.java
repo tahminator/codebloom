@@ -63,6 +63,12 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
     }
 
     @Override
+    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username, final int limit) {
+        waitForToken();
+        return super.findSubmissionsByUsername(username, limit);
+    }
+
+    @Override
     public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(final int submissionId) {
         waitForToken();
         return super.findSubmissionDetailBySubmissionId(submissionId);

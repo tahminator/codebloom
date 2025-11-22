@@ -1,4 +1,5 @@
 package com.patina.codebloom.leetcode;
+
 import java.util.List;
 import java.util.Set;
 // import java.util.concurrent.atomic.AtomicInteger;
@@ -69,27 +70,27 @@ public class LeetcodeClientTest {
 
     // @Test
     // void submissionIdValid() {
-    //     LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
-    //                     () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
-    //                     res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
-    //                     () -> leetcodeAuthStealer.reloadCookie().join());
+    // LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
+    // () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
+    // res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
+    // () -> leetcodeAuthStealer.reloadCookie().join());
 
-    //     assertTrue(submission != null);
+    // assertTrue(submission != null);
 
-    //     assertTrue(submission.getRuntimeDisplay() != null);
-    //     assertTrue(submission.getRuntimeDisplay().length() != 0);
+    // assertTrue(submission.getRuntimeDisplay() != null);
+    // assertTrue(submission.getRuntimeDisplay().length() != 0);
 
-    //     assertTrue(submission.getRuntimePercentile() != 0.0f);
+    // assertTrue(submission.getRuntimePercentile() != 0.0f);
 
-    //     assertTrue(submission.getMemoryDisplay() != null);
-    //     assertTrue(submission.getMemoryDisplay().length() != 0);
+    // assertTrue(submission.getMemoryDisplay() != null);
+    // assertTrue(submission.getMemoryDisplay().length() != 0);
 
-    //     assertTrue(submission.getMemoryPercentile() != 0.0f);
+    // assertTrue(submission.getMemoryPercentile() != 0.0f);
 
-    //     assertTrue(submission.getCode() != null);
-    //     assertTrue(submission.getCode().length() != 0);
+    // assertTrue(submission.getCode() != null);
+    // assertTrue(submission.getCode().length() != 0);
 
-    //     assertTrue(submission.getLang() != null);
+    // assertTrue(submission.getLang() != null);
     // }
 
     @Test
@@ -140,41 +141,44 @@ public class LeetcodeClientTest {
 
     // @Test
     // void stressTestConcurrent() throws InterruptedException {
-    //     int threadCount = 100;
-    //     int requestsPerThread = 27;
+    // int threadCount = 100;
+    // int requestsPerThread = 27;
 
-    //     Thread[] threads = new Thread[threadCount];
-    //     AtomicInteger tries = new AtomicInteger();
-    //     AtomicInteger failures = new AtomicInteger();
+    // Thread[] threads = new Thread[threadCount];
+    // AtomicInteger tries = new AtomicInteger();
+    // AtomicInteger failures = new AtomicInteger();
 
-    //     for (int t = 0; t < threadCount; t++) {
-    //         threads[t] = new Thread(() -> {
-    //             for (int i = 0; i < requestsPerThread; i++) {
-    //                 try {
-    //                     if (tries.get() % 100 == 0) {
-    //                         System.out.println("tries (ongoing): " + tries.get());
-    //                     }
-    //                     tries.incrementAndGet();
-    //                     List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
-    //                     assertNotNull(userList);
-    //                 } catch (Exception e) {
-    //                     System.out.println("tries (failed): " + tries.get());
-    //                     failures.incrementAndGet();
-    //                 }
-    //             }
-    //         });
-    //         threads[t].start();
-    //     }
+    // for (int t = 0; t < threadCount; t++) {
+    // threads[t] = new Thread(() -> {
+    // for (int i = 0; i < requestsPerThread; i++) {
+    // try {
+    // if (tries.get() % 100 == 0) {
+    // System.out.println("tries (ongoing): " + tries.get());
+    // }
+    // tries.incrementAndGet();
+    // List<LeetcodeSubmission> userList =
+    // leetcodeClient.findSubmissionsByUsername("az2924");
+    // assertNotNull(userList);
+    // } catch (Exception e) {
+    // System.out.println("tries (failed): " + tries.get());
+    // failures.incrementAndGet();
+    // }
+    // }
+    // });
+    // threads[t].start();
+    // }
 
-    //     for (Thread thread : threads) {
-    //         thread.join();
-    //     }
+    // for (Thread thread : threads) {
+    // thread.join();
+    // }
 
-    //     // TODO: Figure out why the failures are always around 1 to 5. For now, do not
-    //     // fail tests with anything over 10 requests.
-    //     if (failures.get() > 10) {
-    //         fail("Failed to reach 5000 requests from leetcode client. Failures: " + failures.get());
-    //     }
+    // // TODO: Figure out why the failures are always around 1 to 5. For now, do
+    // not
+    // // fail tests with anything over 10 requests.
+    // if (failures.get() > 10) {
+    // fail("Failed to reach 5000 requests from leetcode client. Failures: " +
+    // failures.get());
+    // }
     // }
 
     @Test
@@ -192,5 +196,29 @@ public class LeetcodeClientTest {
         List<LeetcodeQuestion> questions = leetcodeClient.getAllProblems();
 
         assertTrue(questions.size() > 0);
+    }
+
+    @Test
+    void assertTwentyReturnedSubmissions() {
+        List<LeetcodeSubmission> submissions = leetcodeClient.findSubmissionsByUsername("az2924");
+        // make sure we are getting 20 submissions
+        int count = 0;
+        for (LeetcodeSubmission submission : submissions) {
+            assertNotNull(submission);
+            count++;
+        }
+        assertEquals(20, count);
+    }
+
+    @Test
+    void assertFiveReturnedSubmissions() {
+        List<LeetcodeSubmission> submissions = leetcodeClient.findSubmissionsByUsername("az2924", 5);
+        // make sure we are getting 5 submissions
+        int count = 0;
+        for (LeetcodeSubmission submission : submissions) {
+            assertNotNull(submission);
+            count++;
+        }
+        assertEquals(5, count);
     }
 }

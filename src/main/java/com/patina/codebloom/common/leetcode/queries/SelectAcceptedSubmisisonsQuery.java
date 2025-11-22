@@ -21,9 +21,14 @@ public class SelectAcceptedSubmisisonsQuery {
                     }
                     """;
 
-    public static String body(final String username) throws JsonProcessingException {
+    public static String body(final String username, final int limit) throws JsonProcessingException {
         // API doesn't let you get more than this amount.
-        int limit = 20;
+        int submissionsLimit;
+        if (limit < 1 || limit > 20) {
+            submissionsLimit = 20;
+        } else {
+            submissionsLimit = limit;
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -32,7 +37,7 @@ public class SelectAcceptedSubmisisonsQuery {
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("username", username);
-        variables.put("limit", limit);
+        variables.put("limit", submissionsLimit);
         requestBodyMap.put("variables", variables);
 
         return objectMapper.writeValueAsString(requestBodyMap);
