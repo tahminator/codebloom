@@ -191,7 +191,7 @@ public class DuelController {
         var existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
 
         if (existingLobbyPlayer.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are already in a lobby. Please leave your current lobby before creating a new one.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already in a lobby. Please leave your current lobby before creating a new one.");
         }
 
         String joinCode = PartyCodeGenerator.generateCode();
