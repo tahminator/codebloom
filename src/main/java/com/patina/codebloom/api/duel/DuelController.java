@@ -174,6 +174,7 @@ public class DuelController {
         }
 
         lobby.setStatus(LobbyStatus.ACTIVE);
+        lobbyRepository.updateLobby(lobby);
 
         QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
         List<LobbyPlayer> lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobby.getId());
