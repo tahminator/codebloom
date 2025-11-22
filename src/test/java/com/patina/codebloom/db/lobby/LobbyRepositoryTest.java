@@ -197,12 +197,6 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
 
         lobbyPlayerRepository.createLobbyPlayer(lp);
 
-        // try {
-        // Thread.sleep(100000);
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
-
         var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(u.getId()).orElseThrow();
         assertEquals(l, activeLobby);
     }
