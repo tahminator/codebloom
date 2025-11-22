@@ -39,12 +39,14 @@ public class FetchAllLeetcodeQuestions {
 
     @Scheduled(cron = "0 0 */3 * * *")
     public void updateQuestionBank() {
-        OffsetDateTime recentLeetcodeSyncTime = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.LEETCODE_QUESTION_BANK).getCompletedAt();
-        Duration diff = Duration.between(recentLeetcodeSyncTime.toInstant(), OffsetDateTime.now());
-
-        if (diff.toHours() <= 16) {
-            log.error("Not time yet to resync question bank");
-            return;
+        BackgroundTask recentLeetcodeTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
+        if (recentLeetcodeTask != null) {
+            OffsetDateTime recentLeetcodeSyncTime = recentLeetcodeTask.getCompletedAt();
+            Duration diff = Duration.between(recentLeetcodeSyncTime.toInstant(), OffsetDateTime.now());
+            if (diff.toHours() <= 16) {
+                log.error("Not time yet to resync question bank");
+                return;
+            }
         }
 
         List<LeetcodeQuestion> leetcodeQuestions = leetcodeClient.getAllProblems();

@@ -336,7 +336,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 return questions;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to retrieve questions by difficulty", e);
+            throw new RuntimeException("Failed to retrieve all questions", e);
         }
     }
 }
