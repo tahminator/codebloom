@@ -133,7 +133,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     continue;
                 }
 
-                var member = guildIdToMembersMap.get(guildId.get()).stream().filter(m -> m.getId().equals(userDiscordId)).findFirst();
+                var memberList = guildIdToMembersMap.get(guildId.get());
+                if (memberList == null) {
+                    continue;
+                }
+                var member = memberList.stream().filter(m -> m.getId().equals(userDiscordId)).findFirst();
 
                 if (member.isEmpty()) {
                     continue;
@@ -148,7 +152,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
                 // override to handle nicknames
                 // TODO: Abstract this logic into `DiscordClub`
-                if (club.getName() == "Patina Network") {
+                if ("Patina Network".equals(club.getName())) {
                     if (member.get().getNickname() != null) {
                         existingUser.setNickname(member.get().getNickname());
                     } else if (member.get().getUser().getGlobalName() != null) {

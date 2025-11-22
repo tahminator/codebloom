@@ -31,6 +31,7 @@ public interface DiscordClubRepository {
      * <li>name</li>
      * <li>description</li>
      * <li>tag</li>
+     * <li>deletedAt</li>
      * </ul>
      */
     boolean updateDiscordClubById(DiscordClub discordClub);

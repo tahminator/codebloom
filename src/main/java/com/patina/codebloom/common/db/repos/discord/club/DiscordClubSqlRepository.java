@@ -62,7 +62,7 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                             "createdAt"
                         """;
 
-        discordClub.setId(UUID.randomUUID().toString());
+        
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(discordClub.getId()));
             stmt.setString("name", discordClub.getName());
@@ -165,7 +165,7 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get DiscordClub by id", e);
+            throw new RuntimeException("Failed to get all active Discord clubs", e);
         }
         return result;
     }

@@ -33,7 +33,7 @@ backend-test *args:
 
 # Run backend tests with a debugger
 backend-testd *args:
-  dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
+  dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
 
 # Run backend tests and launch Jacoco test coverage viewer if tests pass
 backend-coverage *args:
