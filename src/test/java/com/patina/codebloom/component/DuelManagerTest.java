@@ -1,8 +1,9 @@
 package com.patina.codebloom.component;
 
+// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+// CHECKSTYLE:ON
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class DuelManagerTest {
                         .winnerId(Optional.empty())
                         .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result = duelManager.generateDuelData(lobbyId);
 
@@ -72,7 +73,7 @@ public class DuelManagerTest {
                         .winnerId(Optional.of(winnerId))
                         .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result = duelManager.generateDuelData(lobbyId);
 
@@ -91,7 +92,7 @@ public class DuelManagerTest {
                         .playerCount(1)
                         .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         duelManager.generateDuelData(lobbyId);
 
@@ -114,7 +115,7 @@ public class DuelManagerTest {
                         .winnerId(Optional.of(winnerId))
                         .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result = duelManager.generateDuelData(lobbyId);
         LobbyDto resultDto = result.getLobby();
@@ -138,7 +139,7 @@ public class DuelManagerTest {
                         .playerCount(2)
                         .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(mockLobby);
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result1 = duelManager.generateDuelData(lobbyId);
         DuelData result2 = duelManager.generateDuelData(lobbyId);

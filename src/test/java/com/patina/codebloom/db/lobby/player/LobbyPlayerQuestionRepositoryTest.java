@@ -2,11 +2,11 @@ package com.patina.codebloom.db.lobby.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterAll;
@@ -25,7 +25,7 @@ import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
-import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.db.BaseRepositoryTest;
 
@@ -43,7 +43,7 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     private LobbyPlayer testLobbyPlayer;
     private Lobby testLobby;
     private String mockPlayerId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
-    private String mockQuestionId = "c9857a8a-9d0b-4d2e-b73c-3af2425bdca6";
+    private Optional<String> mockQuestionId = Optional.of("c9857a8a-9d0b-4d2e-b73c-3af2425bdca6");
     private String mockJoinCode = "QUESTION-TEST-" + UUID.randomUUID().toString().substring(0, 8);
 
     @Autowired
@@ -77,7 +77,7 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
         testLobbyPlayerQuestion = LobbyPlayerQuestion.builder()
                         .lobbyPlayerId(testLobbyPlayer.getId())
                         .questionId(mockQuestionId)
-                        .points(50)
+                        .points(Optional.of(50))
                         .build();
 
         lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(testLobbyPlayerQuestion);
@@ -98,9 +98,9 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testFindLobbyPlayerQuestionById() {
-        LobbyPlayerQuestion foundLobbyPlayerQuestion = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(testLobbyPlayerQuestion.getId());
-        assertNotNull(foundLobbyPlayerQuestion);
-        assertEquals(foundLobbyPlayerQuestion, testLobbyPlayerQuestion);
+        var foundLobbyPlayerQuestion = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(testLobbyPlayerQuestion.getId());
+        assertTrue(foundLobbyPlayerQuestion.isPresent());
+        assertEquals(testLobbyPlayerQuestion, foundLobbyPlayerQuestion.get());
     }
 
     @Test
@@ -114,7 +114,7 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testFindLobbyPlayerQuestionsByQuestionId() {
-        List<LobbyPlayerQuestion> lobbyPlayerQuestions = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionsByQuestionId(mockQuestionId);
+        List<LobbyPlayerQuestion> lobbyPlayerQuestions = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionsByQuestionId(mockQuestionId.get());
         assertNotNull(lobbyPlayerQuestions);
         assertTrue(lobbyPlayerQuestions.contains(testLobbyPlayerQuestion));
     }
@@ -123,14 +123,13 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     @Order(4)
     void testUpdateLobbyPlayerQuestionById() {
         int newPoints = 250;
-        testLobbyPlayerQuestion.setPoints(newPoints);
+        testLobbyPlayerQuestion.setPoints(Optional.of(newPoints));
 
         boolean updateResult = lobbyPlayerQuestionRepository.updateLobbyPlayerQuestionById(testLobbyPlayerQuestion);
         assertTrue(updateResult);
 
-        LobbyPlayerQuestion updatedLobbyPlayerQuestion = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(testLobbyPlayerQuestion.getId());
-        assertNotNull(updatedLobbyPlayerQuestion);
-        assertEquals(newPoints, updatedLobbyPlayerQuestion.getPoints());
+        LobbyPlayerQuestion updatedLobbyPlayerQuestion = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(testLobbyPlayerQuestion.getId()).orElseThrow();
+        assertEquals(testLobbyPlayerQuestion, updatedLobbyPlayerQuestion);
     }
 
     @Test
@@ -139,19 +138,18 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
         LobbyPlayerQuestion deletableLobbyPlayerQuestion = LobbyPlayerQuestion.builder()
                         .lobbyPlayerId(testLobbyPlayer.getId())
                         .questionId(mockQuestionId)
-                        .points(200)
+                        .points(Optional.of(200))
                         .build();
 
         lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(deletableLobbyPlayerQuestion);
 
-        LobbyPlayerQuestion found = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(deletableLobbyPlayerQuestion.getId());
-        assertNotNull(found);
-        assertEquals(deletableLobbyPlayerQuestion.getId(), found.getId());
+        LobbyPlayerQuestion found = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(deletableLobbyPlayerQuestion.getId()).orElseThrow();
+        assertEquals(deletableLobbyPlayerQuestion, found);
 
         boolean deleted = lobbyPlayerQuestionRepository.deleteLobbyPlayerQuestionById(deletableLobbyPlayerQuestion.getId());
         assertTrue(deleted);
 
-        LobbyPlayerQuestion deletedFetched = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(deletableLobbyPlayerQuestion.getId());
-        assertNull(deletedFetched);
+        var deletedFetched = lobbyPlayerQuestionRepository.findLobbyPlayerQuestionById(deletableLobbyPlayerQuestion.getId());
+        assertTrue(deletedFetched.isEmpty());
     }
 }

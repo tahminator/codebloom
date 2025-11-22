@@ -1,6 +1,8 @@
-package com.patina.codebloom.common.db.repos.lobby.player;
+package com.patina.codebloom.common.db.repos.lobby.player.question;
 
 import java.util.List;
+import java.util.Optional;
+
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 
 public interface LobbyPlayerQuestionRepository {
@@ -28,7 +30,7 @@ public interface LobbyPlayerQuestionRepository {
      * @param id the lobby player question ID
      * @return the lobby player question if found, null otherwise
      */
-    LobbyPlayerQuestion findLobbyPlayerQuestionById(String id);
+    Optional<LobbyPlayerQuestion> findLobbyPlayerQuestionById(String id);
 
     /**
      * Finds all questions for a specific lobby player.
