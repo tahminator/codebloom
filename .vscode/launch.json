@@ -7,13 +7,6 @@
         // run `just devd` first.
         {
             "type": "java",
-            "name": "CodebloomApplication",
-            "request": "launch",
-            "mainClass": "com.patina.codebloom.CodebloomApplication",
-            "projectName": "codebloom"
-        },
-        {
-            "type": "java",
             "request": "attach",
             "name": "Debug (Attach) - Remote (VSCode)",
             "hostName": "127.0.0.1",
