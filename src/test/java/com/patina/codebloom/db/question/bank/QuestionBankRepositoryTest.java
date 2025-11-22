@@ -168,5 +168,6 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
         List<QuestionBank> questions = questionBankRepository.getAllQuestions();
         assertTrue(questions.size() > 0, "There should at least be one question retrieved");
 
+        log.info("Successfully retrieved {} question(s)", questions.size());
     }
 }
