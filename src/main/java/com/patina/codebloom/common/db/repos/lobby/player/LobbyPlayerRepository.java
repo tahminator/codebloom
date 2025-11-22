@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.db.repos.lobby.player;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 
@@ -29,7 +30,7 @@ public interface LobbyPlayerRepository {
      * @param id the lobby player ID
      * @return the lobby player if found, null otherwise
      */
-    LobbyPlayer findLobbyPlayerById(String id);
+    Optional<LobbyPlayer> findLobbyPlayerById(String id);
 
     /**
      * Finds a lobby player for a specific player ID.
@@ -37,7 +38,7 @@ public interface LobbyPlayerRepository {
      * @param playerId the player ID
      * @return the lobby player for the specified player, null if not found
      */
-    LobbyPlayer findLobbyPlayerByPlayerId(String playerId);
+    Optional<LobbyPlayer> findLobbyPlayerByPlayerId(String playerId);
 
     /**
      * Finds all players in a specific lobby.

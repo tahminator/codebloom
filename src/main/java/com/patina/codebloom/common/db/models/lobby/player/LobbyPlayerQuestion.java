@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.models.lobby.player;
 
-import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
-import com.patina.codebloom.common.db.helper.annotations.NullColumn;
+import java.util.Optional;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,15 +14,13 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class LobbyPlayerQuestion {
-    @NotNullColumn
     private String id;
 
-    @NotNullColumn
     private String lobbyPlayerId;
 
-    @NullColumn
-    private String questionId;
+    @Builder.Default
+    private Optional<String> questionId = Optional.empty();
 
-    @NullColumn
-    private Integer points;
+    @Builder.Default
+    private Optional<Integer> points = Optional.empty();
 }

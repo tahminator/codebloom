@@ -68,20 +68,20 @@ public class DuelController {
     private void validatePlayerNotInLobby(final String playerId) {
         var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(playerId);
 
-        if (availableLobby != null) {
+        if (availableLobby.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already in a party. Please leave the party, then try again.");
         }
 
         var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(playerId);
 
-        if (activeLobby != null) {
+        if (activeLobby.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You are currently in a duel. Please forfeit the duel, then try again.");
         }
     }
 
     private void validateLobby(final Lobby lobby) {
         var now = StandardizedOffsetDateTime.now();
-        if (lobby.getExpiresAt() != null && lobby.getExpiresAt().isBefore(now)) {
+        if (lobby.getExpiresAt().isBefore(now)) {
             // TODO: Could possibly invalidate this party here if it hasn't been invalidated
             // yet.
             throw new ResponseStatusException(HttpStatus.GONE, "The lobby has expired and cannot be joined.");
@@ -148,32 +148,30 @@ public class DuelController {
         User user = authenticationObject.getUser();
         String playerId = user.getId();
 
-        LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
-        if (existingLobbyPlayer == null) {
-            return ResponseEntity.badRequest()
-                            .body(ApiResponder.failure("You are not currently in a lobby."));
-        }
+        LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby."));
 
         String lobbyId = existingLobbyPlayer.getLobbyId();
 
-        boolean deletedLobby = lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId());
-        if (!deletedLobby) {
+        boolean isLobbyPlayerDeleted = lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId());
+        if (!isLobbyPlayerDeleted) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(ApiResponder.failure("Failed to leave the lobby. Please try again."));
         }
 
-        Lobby lobby = lobbyRepository.findLobbyById(lobbyId);
-        if (lobby != null) {
-            int updatedPlayerCount = lobby.getPlayerCount() - 1;
-            lobby.setPlayerCount(updatedPlayerCount);
+        Lobby lobby = lobbyRepository.findLobbyById(lobbyId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong."));
 
-            if (updatedPlayerCount == 0) {
-                lobby.setStatus(LobbyStatus.CLOSED);
-            } else {
-                lobby.setStatus(LobbyStatus.AVAILABLE);
-            }
-            lobbyRepository.updateLobby(lobby);
+        int updatedPlayerCount = lobby.getPlayerCount() - 1;
+
+        lobby.setPlayerCount(updatedPlayerCount);
+        if (updatedPlayerCount == 0) {
+            lobby.setStatus(LobbyStatus.CLOSED);
+        } else {
+            lobby.setStatus(LobbyStatus.AVAILABLE);
         }
+        lobbyRepository.updateLobby(lobby);
+
         return ResponseEntity.ok(ApiResponder.success("Successfully left the lobby.", Empty.of()));
     }
 
@@ -190,10 +188,10 @@ public class DuelController {
         User user = authenticationObject.getUser();
         String playerId = user.getId();
 
-        LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
-        if (existingLobbyPlayer != null) {
-            return ResponseEntity.badRequest()
-                            .body(ApiResponder.failure("You are already in a lobby. Please leave your current lobby before creating a new one."));
+        var existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
+
+        if (existingLobbyPlayer.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are already in a lobby. Please leave your current lobby before creating a new one.");
         }
 
         String joinCode = PartyCodeGenerator.generateCode();

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -54,7 +55,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
     }
 
     @Override
-    public LobbyPlayer findLobbyPlayerById(final String id) {
+    public Optional<LobbyPlayer> findLobbyPlayerById(final String id) {
         String sql = """
                         SELECT
                             id,
@@ -71,18 +72,18 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLobbyPlayer(rs);
+                    return Optional.of(parseResultSetToLobbyPlayer(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find lobby player by id", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public LobbyPlayer findLobbyPlayerByPlayerId(final String playerId) {
+    public Optional<LobbyPlayer> findLobbyPlayerByPlayerId(final String playerId) {
         String sql = """
                         SELECT
                             id,
@@ -99,14 +100,14 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             stmt.setObject("playerId", UUID.fromString(playerId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLobbyPlayer(rs);
+                    return Optional.of(parseResultSetToLobbyPlayer(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find lobby player by player id", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override

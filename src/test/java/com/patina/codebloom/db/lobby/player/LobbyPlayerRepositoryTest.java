@@ -1,9 +1,7 @@
 package com.patina.codebloom.db.lobby.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -84,8 +82,7 @@ public class LobbyPlayerRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testFindLobbyPlayerById() {
-        LobbyPlayer foundLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(testLobbyPlayer.getId());
-        assertNotNull(foundLobbyPlayer);
+        LobbyPlayer foundLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(testLobbyPlayer.getId()).orElseThrow();
         assertEquals(foundLobbyPlayer, testLobbyPlayer);
     }
 
@@ -100,8 +97,7 @@ public class LobbyPlayerRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testFindLobbyPlayerByPlayerId() {
-        LobbyPlayer foundPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(mockPlayerId);
-        assertNotNull(foundPlayer);
+        LobbyPlayer foundPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(mockPlayerId).orElseThrow();
         assertEquals(foundPlayer, testLobbyPlayer);
     }
 
@@ -114,9 +110,8 @@ public class LobbyPlayerRepositoryTest extends BaseRepositoryTest {
         boolean updateResult = lobbyPlayerRepository.updateLobbyPlayer(testLobbyPlayer);
         assertTrue(updateResult);
 
-        LobbyPlayer updatedLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(testLobbyPlayer.getId());
-        assertNotNull(updatedLobbyPlayer);
-        assertEquals(newPoints, updatedLobbyPlayer.getPoints());
+        LobbyPlayer updatedLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerById(testLobbyPlayer.getId()).orElseThrow();
+        assertEquals(testLobbyPlayer, updatedLobbyPlayer);
     }
 
     @Test
@@ -130,14 +125,13 @@ public class LobbyPlayerRepositoryTest extends BaseRepositoryTest {
 
         lobbyPlayerRepository.createLobbyPlayer(deletableLobbyPlayer);
 
-        LobbyPlayer found = lobbyPlayerRepository.findLobbyPlayerById(deletableLobbyPlayer.getId());
-        assertNotNull(found);
+        LobbyPlayer found = lobbyPlayerRepository.findLobbyPlayerById(deletableLobbyPlayer.getId()).orElseThrow();
         assertEquals(deletableLobbyPlayer.getId(), found.getId());
 
         boolean deleted = lobbyPlayerRepository.deleteLobbyPlayerById(deletableLobbyPlayer.getId());
         assertTrue(deleted);
 
-        LobbyPlayer deletedFetched = lobbyPlayerRepository.findLobbyPlayerById(deletableLobbyPlayer.getId());
-        assertNull(deletedFetched);
+        var deletedFetched = lobbyPlayerRepository.findLobbyPlayerById(deletableLobbyPlayer.getId());
+        assertTrue(deletedFetched.isEmpty());
     }
 }

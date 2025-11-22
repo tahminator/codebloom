@@ -100,8 +100,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testFindLobbyById() {
-        Lobby foundLobby = lobbyRepository.findLobbyById(testLobby.getId());
-        assertNotNull(foundLobby);
+        var foundLobby = lobbyRepository.findLobbyById(testLobby.getId()).orElseThrow();
         assertEquals(foundLobby, testLobby);
     }
 
@@ -109,9 +108,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     @Order(2)
     void testfindAvailableLobbyByJoinCode() {
         Lobby foundLobby = lobbyRepository.findAvailableLobbyByJoinCode(mockJoinCode).orElseThrow();
-        assertEquals(testLobby.getId(), foundLobby.getId());
-        assertEquals(mockJoinCode, foundLobby.getJoinCode());
-        assertEquals(LobbyStatus.AVAILABLE, foundLobby.getStatus());
+        assertEquals(testLobby, foundLobby);
     }
 
     @Test
@@ -129,7 +126,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         Lobby foundLobby = lobbyRepository.findActiveLobbyByJoinCode("ABC123").orElseThrow();
         assertEquals(newActiveLobby, foundLobby);
 
-        lobbyRepository.deleteLobbyById(newActiveLobby.getId());
+        assertTrue(lobbyRepository.deleteLobbyById(newActiveLobby.getId()));
     }
 
     @Test
@@ -158,34 +155,28 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         boolean updateResult = lobbyRepository.updateLobby(testLobby);
         assertTrue(updateResult);
 
-        Lobby updatedLobby = lobbyRepository.findLobbyById(testLobby.getId());
-        assertNotNull(updatedLobby);
-        assertEquals(LobbyStatus.ACTIVE, updatedLobby.getStatus());
-        assertEquals(2, updatedLobby.getPlayerCount());
-        assertTrue(updatedLobby.getWinnerId().isEmpty());
+        Lobby updatedLobby = lobbyRepository.findLobbyById(testLobby.getId()).orElseThrow();
+        assertEquals(testLobby, updatedLobby);
     }
 
     @Test
     @Order(7)
     void testFindActiveLobbyByLobbyPlayerId() {
-        Lobby activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(testUser.getId());
-        assertNotNull(activeLobby);
-        assertEquals(testLobby.getId(), activeLobby.getId());
-        assertEquals(LobbyStatus.ACTIVE, activeLobby.getStatus());
-        assertEquals(mockJoinCode, activeLobby.getJoinCode());
+        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerId(testUser.getId()).orElseThrow();
+        assertEquals(testLobby, activeLobby);
     }
 
     @Test
     @Order(8)
     void testFindAvailableLobbyByLobbyPlayerIdEmpty() {
-        Lobby activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
-        assertNull(activeLobby);
+        var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
+        assertTrue(activeLobby.isEmpty());
     }
 
     @Test
     @Order(9)
     void testFindAvailableLobbyByLobbyPlayerIdMocked() {
-        Lobby activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
-        assertNull(activeLobby);
+        var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerId(testUser.getId());
+        assertTrue(activeLobby.isEmpty());
     }
 }
