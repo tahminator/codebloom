@@ -28,7 +28,8 @@ public interface LobbyPlayerRepository {
      * Finds a lobby player by its ID.
      * 
      * @param id the lobby player ID
-     * @return the lobby player if found, null otherwise
+     * @return an {@code Optional} containing the lobby player if found, or
+     * {@code Optional.empty()} otherwise
      */
     Optional<LobbyPlayer> findLobbyPlayerById(String id);
 
@@ -36,7 +37,8 @@ public interface LobbyPlayerRepository {
      * Finds a lobby player for a specific player ID.
      * 
      * @param playerId the player ID
-     * @return the lobby player for the specified player, null if not found
+     * @return an {@code Optional} containing the lobby player if found, or
+     * {@code Optional.empty()} otherwise
      */
     Optional<LobbyPlayer> findLobbyPlayerByPlayerId(String playerId);
 
