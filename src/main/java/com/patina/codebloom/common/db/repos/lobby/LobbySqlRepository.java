@@ -236,7 +236,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Optional<Lobby> findActiveLobbyByLobbyPlayerId(final String lobbyPlayerId) {
+    public Optional<Lobby> findActiveLobbyByLobbyPlayerPlayerId(final String lobbyPlayerId) {
         String sql = """
                         SELECT
                             l.id,
@@ -272,7 +272,7 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
-    public Optional<Lobby> findAvailableLobbyByLobbyPlayerId(final String lobbyPlayerId) {
+    public Optional<Lobby> findAvailableLobbyByLobbyPlayerPlayerId(final String lobbyPlayerId) {
         String sql = """
                         SELECT
                             l.*
