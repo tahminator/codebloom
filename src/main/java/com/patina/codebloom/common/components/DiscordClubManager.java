@@ -46,6 +46,14 @@ public class DiscordClubManager {
         this.playwrightClient = playwrightClient;
     }
 
+    private Optional<UserWithScore> getUser(final List<UserWithScore> users, final int index) {
+        if (index < 0 || index >= users.size()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(users.get(index));
+    }
+
     private List<Pair<String, byte[]>> getScreenshotsForRecentLeaderboard(final Leaderboard leaderboard, final DiscordClub club) {
         List<Pair<String, byte[]>> screenshots = new ArrayList<>();
 
@@ -104,12 +112,12 @@ public class DiscordClubManager {
                             <%s>
                             """,
                             club.getName(),
-                            users.get(0).getDiscordId(),
-                            users.get(0).getTotalScore(),
-                            users.get(1).getDiscordId(),
-                            users.get(1).getTotalScore(),
-                            users.get(2).getDiscordId(),
-                            users.get(2).getTotalScore(),
+                            getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
+                            getUser(users, 0).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                            getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
+                            getUser(users, 1).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                            getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
+                            getUser(users, 2).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
                             serverUrlUtils.getUrl());
 
             var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
@@ -125,7 +133,7 @@ public class DiscordClubManager {
                                             .guildId(Long.valueOf(guildId.get()))
                                             .channelId(Long.valueOf(channelId.get()))
                                             .description(description)
-                                            .title(title)
+
                                             .title("%s Leaderboard - %s".formatted(club.getName(), currentLeaderboard.getName()))
                                             .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
                                             .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
@@ -135,6 +143,7 @@ public class DiscordClubManager {
                                             .build());
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
     }
 
@@ -153,7 +162,7 @@ public class DiscordClubManager {
             List<UserWithScore> users = leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options);
 
             Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-            String title = String.format("🏆🏆🏆 - %s is now complete!", currentLeaderboard.getName());
+            String title = String.format("🏆🏆🏆 - Weekly Leaderboard Update: %s", currentLeaderboard.getName());
 
             LocalDateTime shouldExpireByTime = Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
                             // this orElse will only trigger if leaderboard doesn't have expiration time.
@@ -186,12 +195,12 @@ public class DiscordClubManager {
                             <%s>
                             """,
                             club.getName(),
-                            users.get(0).getDiscordId(),
-                            users.get(0).getTotalScore(),
-                            users.get(1).getDiscordId(),
-                            users.get(1).getTotalScore(),
-                            users.get(2).getDiscordId(),
-                            users.get(2).getTotalScore(),
+                            getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
+                            getUser(users, 0).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                            getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
+                            getUser(users, 1).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                            getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
+                            getUser(users, 2).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
                             daysLeft,
                             hoursLeft,
                             minutesLeft,
@@ -210,7 +219,7 @@ public class DiscordClubManager {
                                             .guildId(Long.valueOf(guildId.get()))
                                             .channelId(Long.valueOf(channelId.get()))
                                             .description(description)
-                                            .title(title)
+
                                             .title("%s Leaderboard - %s".formatted(club.getName(), currentLeaderboard.getName()))
                                             .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
                                             .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
@@ -220,6 +229,7 @@ public class DiscordClubManager {
                                             .build());
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
     }
 
