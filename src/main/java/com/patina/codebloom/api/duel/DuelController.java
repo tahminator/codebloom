@@ -158,13 +158,12 @@ public class DuelController {
         }
 
         var user = authenticationObject.getUser();
-        LobbyPlayer player = lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId());
 
-        if (player == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!");
-        }
+        LobbyPlayer player = lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!"));
 
-        Lobby lobby = lobbyRepository.findLobbyById(player.getLobbyId());
+        Lobby lobby = lobbyRepository.findLobbyById(player.getLobbyId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find lobby!"));
 
         if (lobby.getStatus() != LobbyStatus.AVAILABLE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby is not available!");
@@ -182,7 +181,7 @@ public class DuelController {
         for (LobbyPlayer lobbyPlayer : lobbyPlayers) {
             LobbyPlayerQuestion lobbyPlayerQuestion = LobbyPlayerQuestion.builder()
                             .lobbyPlayerId(lobbyPlayer.getId())
-                            .questionId(randomQuestion.getId())
+                            .questionId(Optional.of(randomQuestion.getId()))
                             .build();
 
             lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(lobbyPlayerQuestion);
