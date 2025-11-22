@@ -31,7 +31,8 @@ public interface LobbyRepository {
      * Finds a lobby by its ID.
      * 
      * @param id the lobby ID
-     * @return the lobby if found, null otherwise
+     * @return an {@code Optional} containing the lobby player for the specified
+     * player, or {@code Optional.empty()} if not found
      */
     Optional<Lobby> findLobbyById(String id);
 
@@ -72,7 +73,8 @@ public interface LobbyRepository {
      * Finds active lobby for the given `Player` with a status of ACTIVE.
      *
      * @param lobbyPlayerId the lobby player ID
-     * @return the lobby if found, null otherwise
+     * @return an {@code Optional} containing the lobby if found, or
+     * {@code Optional.empty()} otherwise
      *
      * TODO: Union with {@code LobbyRepository.findAvailableLobbyByLobbyPlayerId}
      */
@@ -82,7 +84,8 @@ public interface LobbyRepository {
      * Finds available lobby for the given `Player` with a status of AVAILABLE.
      *
      * @param lobbyPlayerId the lobby player ID
-     * @return the lobby if found, null otherwise
+     * @return an {@code Optional} containing the lobby if found, or
+     * {@code Optional.empty()} otherwise
      *
      * TODO: Union with {@code LobbyRepository.findActiveLobbyByLobbyPlayerId}
      */
