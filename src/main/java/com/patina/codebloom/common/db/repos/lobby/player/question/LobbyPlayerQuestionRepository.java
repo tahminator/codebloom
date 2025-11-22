@@ -28,7 +28,8 @@ public interface LobbyPlayerQuestionRepository {
      * Finds a lobby player question by its ID.
      * 
      * @param id the lobby player question ID
-     * @return the lobby player question if found, null otherwise
+     * @return an {@code Optional} containing the lobby player question if found, or
+     * {@code Optional.empty()} otherwise
      */
     Optional<LobbyPlayerQuestion> findLobbyPlayerQuestionById(String id);
 
