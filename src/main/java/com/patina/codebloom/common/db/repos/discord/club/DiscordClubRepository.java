@@ -1,5 +1,8 @@
 package com.patina.codebloom.common.db.repos.discord.club;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.patina.codebloom.common.db.models.discord.DiscordClub;
 
 public interface DiscordClubRepository {
@@ -18,7 +21,9 @@ public interface DiscordClubRepository {
      */
     void createDiscordClub(DiscordClub discordClub);
 
-    DiscordClub getDiscordClubById(String id);
+    Optional<DiscordClub> getDiscordClubById(String id);
+
+    List<DiscordClub> getAllActiveDiscordClubs();
 
     /**
      * @param discordClub - overridable fields:
@@ -26,9 +31,10 @@ public interface DiscordClubRepository {
      * <li>name</li>
      * <li>description</li>
      * <li>tag</li>
+     * <li>deletedAt</li>
      * </ul>
      */
-    DiscordClub updateDiscordClub(DiscordClub discordClub);
+    boolean updateDiscordClubById(DiscordClub discordClub);
 
     boolean deleteDiscordClubById(String id);
 

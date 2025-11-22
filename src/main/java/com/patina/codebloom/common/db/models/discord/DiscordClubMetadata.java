@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.models.discord;
 
-import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
-import com.patina.codebloom.common.db.helper.annotations.NullColumn;
+import java.util.Optional;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -17,16 +16,14 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 public class DiscordClubMetadata {
-    @NotNullColumn
     private String id;
 
-    @NullColumn
-    private String guildId;
+    @Builder.Default
+    private Optional<String> guildId = Optional.empty();
 
-    @NullColumn
-    private String leaderboardChannelId;
+    @Builder.Default
+    private Optional<String> leaderboardChannelId = Optional.empty();
 
-    @NotNullColumn
     private String discordClubId;
 
 }

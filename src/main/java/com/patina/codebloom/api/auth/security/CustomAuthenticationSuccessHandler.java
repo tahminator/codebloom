@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,10 +13,11 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.Session;
+import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.User;
-import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
+import com.patina.codebloom.common.db.repos.discord.club.DiscordClubRepository;
 import com.patina.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
@@ -24,6 +26,7 @@ import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.common.utils.pair.Pair;
 import com.patina.codebloom.jda.client.JDAClient;
 
 import jakarta.servlet.ServletException;
@@ -54,16 +57,20 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final SessionRepository sessionRepository;
     private final LeaderboardRepository leaderboardRepository;
     private final UserTagRepository userTagRepository;
+    private final DiscordClubRepository discordClubRepository;
     private final JDAClient jdaClient;
     private final LeetcodeClient leetcodeClient;
 
     public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
                     final LeaderboardRepository leaderboardRepository,
                     final JDAClient jdaClient,
-                    final UserTagRepository userTagRepository, final ThrottledLeetcodeClient throttledLeetcodeClient) {
+                    final UserTagRepository userTagRepository,
+                    final DiscordClubRepository discordClubRepository,
+                    final ThrottledLeetcodeClient throttledLeetcodeClient) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
+        this.discordClubRepository = discordClubRepository;
         this.jdaClient = jdaClient.connect();
         this.userTagRepository = userTagRepository;
         this.leetcodeClient = throttledLeetcodeClient;
@@ -108,41 +115,52 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 existingUser = newUser;
             }
 
+            final String userDiscordId = existingUser.getDiscordId();
+
             List<Guild> guilds = jdaClient.getGuilds();
-            String patinaGuildId = String.valueOf(jdaClient.getJdaPatinaProperties().getGuildId());
+            Map<String, List<Member>> guildIdToMembersMap = guilds.parallelStream().map(g -> Pair.of(g, g.getMembers())).collect(Collectors.toMap(
+                            p -> p.getLeft().getId(),
+                            p -> p.getRight()));
 
-            Guild foundGuild = null;
-            for (Guild g : guilds) {
-                // System.out.println(g.getId() + "=" +
-                // jdaInitializer.getJdaProperties().getId());
-                if (g.getId().equals(patinaGuildId)) {
-                    foundGuild = g;
-                    break;
+            var clubs = discordClubRepository.getAllActiveDiscordClubs();
+
+            for (var club : clubs) {
+                var metadata = club.getDiscordClubMetadata();
+                var guildId = metadata.flatMap(DiscordClubMetadata::getGuildId);
+                var tag = club.getTag();
+
+                if (guildId.isEmpty()) {
+                    continue;
                 }
-            }
 
-            if (foundGuild != null) {
-                List<Member> members = foundGuild.getMembers();
+                var memberList = guildIdToMembersMap.get(guildId.get());
+                if (memberList == null) {
+                    continue;
+                }
+                var member = memberList.stream().filter(m -> m.getId().equals(userDiscordId)).findFirst();
 
-                for (Member m : members) {
-                    // System.out.println(m.getId() + "=" + existingUser.getDiscordId());
-                    // System.out.println(m.getNickname() + "&" + m.getUser().getName());
-                    if (m.getId().equals(existingUser.getDiscordId())) {
-                        if (m.getNickname() != null) {
-                            existingUser.setNickname(m.getNickname());
-                        } else if (m.getUser().getGlobalName() != null) {
-                            existingUser.setNickname(m.getUser().getGlobalName());
-                        } else {
-                            existingUser.setNickname(existingUser.getDiscordName());
-                        }
-                        if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), Tag.Patina) == null) {
-                            userTagRepository.createTag(UserTag.builder()
-                                            .userId(existingUser.getId())
-                                            .tag(Tag.Patina)
-                                            .build());
-                        }
-                        userRepository.updateUser(existingUser);
+                if (member.isEmpty()) {
+                    continue;
+                }
+
+                if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), tag) == null) {
+                    userTagRepository.createTag(UserTag.builder()
+                                    .userId(existingUser.getId())
+                                    .tag(tag)
+                                    .build());
+                }
+
+                // override to handle nicknames
+                // TODO: Abstract this logic into `DiscordClub`
+                if ("Patina Network".equals(club.getName())) {
+                    if (member.get().getNickname() != null) {
+                        existingUser.setNickname(member.get().getNickname());
+                    } else if (member.get().getUser().getGlobalName() != null) {
+                        existingUser.setNickname(member.get().getUser().getGlobalName());
+                    } else {
+                        existingUser.setNickname(existingUser.getDiscordName());
                     }
+                    userRepository.updateUser(existingUser);
                 }
             }
 
