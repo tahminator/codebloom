@@ -23,7 +23,7 @@ import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
-import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
@@ -158,13 +158,12 @@ public class DuelController {
         }
 
         var user = authenticationObject.getUser();
-        LobbyPlayer player = lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId());
 
-        if (player == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!");
-        }
+        LobbyPlayer player = lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!"));
 
-        Lobby lobby = lobbyRepository.findLobbyById(player.getLobbyId());
+        Lobby lobby = lobbyRepository.findLobbyById(player.getLobbyId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find lobby!"));
 
         if (lobby.getStatus() != LobbyStatus.AVAILABLE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby is not available!");
@@ -182,7 +181,7 @@ public class DuelController {
         for (LobbyPlayer lobbyPlayer : lobbyPlayers) {
             LobbyPlayerQuestion lobbyPlayerQuestion = LobbyPlayerQuestion.builder()
                             .lobbyPlayerId(lobbyPlayer.getId())
-                            .questionId(randomQuestion.getId())
+                            .questionId(Optional.of(randomQuestion.getId()))
                             .build();
 
             lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(lobbyPlayerQuestion);

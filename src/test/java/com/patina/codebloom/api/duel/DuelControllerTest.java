@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
-import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.lobby.DuelData;
@@ -1002,8 +1003,8 @@ public class DuelControllerTest {
         LobbyPlayer player2 = LobbyPlayer.builder().id(randomUUID()).build();
         List<LobbyPlayer> allPlayers = List.of(currentPlayer, player2);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(currentPlayer);
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(lobby);
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(currentPlayer));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(lobby));
         when(questionBankRepository.getRandomQuestion()).thenReturn(mockQuestion);
         when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(allPlayers);
 
@@ -1020,7 +1021,7 @@ public class DuelControllerTest {
         ArgumentCaptor<LobbyPlayerQuestion> questionCaptor = ArgumentCaptor.forClass(LobbyPlayerQuestion.class);
         verify(lobbyPlayerQuestionRepository, times(2)).createLobbyPlayerQuestion(questionCaptor.capture());
 
-        assertEquals(mockQuestion.getId(), questionCaptor.getAllValues().get(0).getQuestionId());
+        assertEquals(mockQuestion.getId(), questionCaptor.getAllValues().get(0).getQuestionId().orElseThrow());
     }
 
     @Test
@@ -1030,7 +1031,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(null);
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
             duelController.startLobby(authObj);
@@ -1056,8 +1057,8 @@ public class DuelControllerTest {
                         .playerCount(2)
                         .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(currentPlayer);
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(lobby);
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(currentPlayer));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(lobby));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
             duelController.startLobby(authObj);
@@ -1083,8 +1084,8 @@ public class DuelControllerTest {
                         .playerCount(1)
                         .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(currentPlayer);
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(lobby);
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(currentPlayer));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(lobby));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
             duelController.startLobby(authObj);
