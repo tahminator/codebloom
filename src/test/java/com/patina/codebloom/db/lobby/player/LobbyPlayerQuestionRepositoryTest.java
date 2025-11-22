@@ -44,6 +44,8 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     private Lobby testLobby;
     private String mockPlayerId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
     private String mockQuestionId = "c9857a8a-9d0b-4d2e-b73c-3af2425bdca6";
+    private String mockQuestionId2 = "5a3f1c26-8a34-4c7d-ac15-6691f8a1e5c2";
+
     private String mockJoinCode = "QUESTION-TEST-" + UUID.randomUUID().toString().substring(0, 8);
 
     @Autowired
@@ -138,7 +140,7 @@ public class LobbyPlayerQuestionRepositoryTest extends BaseRepositoryTest {
     void testDeleteLobbyPlayerQuestionById() {
         LobbyPlayerQuestion deletableLobbyPlayerQuestion = LobbyPlayerQuestion.builder()
                         .lobbyPlayerId(testLobbyPlayer.getId())
-                        .questionId(mockQuestionId)
+                        .questionId(mockQuestionId2)
                         .points(200)
                         .build();
 
