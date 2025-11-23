@@ -1,3 +1,4 @@
+import AchievementCarousel from "@/components/ui/tags/AchievementCarousel";
 import {
   components,
   AchievementDtoPlace,
@@ -6,7 +7,7 @@ import {
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
 import { tagFF } from "@/lib/ff";
-import { Image, Tooltip, Group, Box, Text } from "@mantine/core";
+import { Image, Tooltip, Box, Text } from "@mantine/core";
 
 type AchievementDto = components["schemas"]["AchievementDto"];
 
@@ -120,7 +121,7 @@ function TagBadge({ userTag, size, achievement }: TagBadgeProps) {
     : metadata.name;
 
   return (
-    <Tooltip key={userTag.id} label={tooltipLabel} withArrow position="top">
+    <Tooltip label={tooltipLabel} withArrow position="top">
       <Box style={TROPHY_STYLES.container}>
         <Image
           src={metadata.icon}
@@ -155,24 +156,29 @@ export default function TagList({
 
   const { bestGlobal, achievementByLeaderboard } =
     processAchievements(achievements);
+  const items = [];
+  if (bestGlobal) {
+    items.push(
+      <GlobalTrophyBadge key="global-trophy" achievement={bestGlobal} />,
+    );
+  }
+  filteredTags.forEach((userTag) => {
+    const leaderboardKey = userTag.tag as unknown as AchievementDtoLeaderboard;
+    const achievement = achievementByLeaderboard.get(leaderboardKey);
+
+    items.push(
+      <TagBadge
+        key={userTag.id}
+        userTag={userTag}
+        size={size}
+        achievement={achievement}
+      />,
+    );
+  });
 
   return (
-    <Group gap={gap} wrap="nowrap" justify="center" align="center">
-      {bestGlobal && <GlobalTrophyBadge achievement={bestGlobal} />}
-      {filteredTags.map((userTag) => {
-        const leaderboardKey =
-          userTag.tag as unknown as AchievementDtoLeaderboard;
-        const achievement = achievementByLeaderboard.get(leaderboardKey);
-
-        return (
-          <TagBadge
-            key={userTag.id}
-            userTag={userTag}
-            size={size}
-            achievement={achievement}
-          />
-        );
-      })}
-    </Group>
+    <AchievementCarousel visibleCount={3} gap={gap}>
+      {items}
+    </AchievementCarousel>
   );
 }
