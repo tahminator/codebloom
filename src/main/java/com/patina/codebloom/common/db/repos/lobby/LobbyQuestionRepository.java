@@ -28,7 +28,7 @@ public interface LobbyQuestionRepository {
 
     List<LobbyQuestion> findLobbyQuestionsByLobbyId(String lobbyId);
 
-    List<LobbyQuestion> findLobbyQuestionByLobbyIdAndQuestionBankId(String lobbyId, String questionBankId);
+    List<LobbyQuestion> findLobbyQuestionsByLobbyIdAndQuestionBankId(String lobbyId, String questionBankId);
 
     Optional<LobbyQuestion> findMostRecentLobbyQuestionByLobbyId(String lobbyId);
 
