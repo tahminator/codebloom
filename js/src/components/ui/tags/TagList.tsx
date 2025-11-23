@@ -2,6 +2,7 @@ import AchievementCarousel from "@/components/ui/tags/AchievementCarousel";
 import {
   components,
   AchievementDtoPlace,
+  AchievementDtoLeaderboard,
 } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
@@ -35,6 +36,14 @@ const TROPHY_STYLES = {
   } as const,
 };
 
+const TAG_MEDAL_STYLE = {
+  position: "absolute",
+  top: -10,
+  right: -7,
+  fontSize: 22,
+  lineHeight: 1,
+} as const;
+
 function isTopThreePlace(place: AchievementDtoPlace): boolean {
   return place in PLACE_CONFIG;
 }
@@ -60,9 +69,18 @@ function GlobalTrophyBadge({ achievement }: AchievementBadgeProps) {
   );
 }
 
-function LeaderboardTrophyBadge({ achievement }: AchievementBadgeProps) {
-  const config = PLACE_CONFIG[achievement.place];
+interface LeaderboardAchievementBadgeProps {
+  achievement: AchievementDto;
+  size: number;
+}
 
+function LeaderboardAchievementBadge({
+  achievement,
+  size,
+}: LeaderboardAchievementBadgeProps) {
+  const config = PLACE_CONFIG[achievement.place];
+  const leaderboardAsTag = achievement.leaderboard as unknown as UserTag["tag"];
+  const metadata = ApiUtils.getMetadataByTagEnum(leaderboardAsTag);
   return (
     <Tooltip
       label={`${config.text} – ${achievement.leaderboard} – ${achievement.title}`}
@@ -70,8 +88,12 @@ function LeaderboardTrophyBadge({ achievement }: AchievementBadgeProps) {
       position="top"
     >
       <Box style={TROPHY_STYLES.container}>
-        <Text style={TROPHY_STYLES.trophy}>🏆</Text>
-        <Text style={TROPHY_STYLES.medal}>{config.emoji}</Text>
+        <Image
+          src={metadata.icon}
+          alt={metadata.alt}
+          style={{ height: size, width: "auto", cursor: "pointer" }}
+        />
+        <Text style={TAG_MEDAL_STYLE}>{config.emoji}</Text>
       </Box>
     </Tooltip>
   );
@@ -113,6 +135,8 @@ export default function TagList({
   }
 
   const items: JSX.Element[] = [];
+  const leaderboardsWithAchievements = new Set<AchievementDtoLeaderboard>();
+
   achievements.forEach((achievement) => {
     if (achievement.active && isTopThreePlace(achievement.place)) {
       if (!achievement.leaderboard) {
@@ -120,17 +144,23 @@ export default function TagList({
           <GlobalTrophyBadge key={achievement.id} achievement={achievement} />,
         );
       } else {
+        leaderboardsWithAchievements.add(achievement.leaderboard);
         items.push(
-          <LeaderboardTrophyBadge
+          <LeaderboardAchievementBadge
             key={achievement.id}
             achievement={achievement}
+            size={size}
           />,
         );
       }
     }
   });
   filteredTags.forEach((userTag) => {
-    items.push(<TagBadge key={userTag.id} userTag={userTag} size={size} />);
+    const tagAsLeaderboard =
+      userTag.tag as unknown as AchievementDtoLeaderboard;
+    if (!leaderboardsWithAchievements.has(tagAsLeaderboard)) {
+      items.push(<TagBadge key={userTag.id} userTag={userTag} size={size} />);
+    }
   });
 
   return (
