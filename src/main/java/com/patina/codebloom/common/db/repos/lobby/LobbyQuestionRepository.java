@@ -16,7 +16,6 @@ public interface LobbyQuestionRepository {
      * <ul>
      * <li>lobbyId</li>
      * <li>questionBankId</li>
-     * <li>createdAt</li>
      * </ul>
      */
     void createLobbyQuestion(LobbyQuestion lobbyQuestion);
