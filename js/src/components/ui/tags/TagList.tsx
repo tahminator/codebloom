@@ -78,11 +78,7 @@ function LeaderboardAchievementBadge({
   const leaderboardAsTag = achievement.leaderboard as unknown as UserTag["tag"];
   const metadata = ApiUtils.getMetadataByTagEnum(leaderboardAsTag);
   return (
-    <Tooltip
-      label={`${achievement.leaderboard} – ${achievement.title}`}
-      withArrow
-      position="top"
-    >
+    <Tooltip label={`${achievement.title}`} withArrow position="top">
       <Box style={TROPHY_STYLES.container}>
         <Image
           src={metadata.icon}
