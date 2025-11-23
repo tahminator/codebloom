@@ -24,15 +24,15 @@ PGPASSWORD="$DATABASE_PASSWORD" pg_dump \
     --verbose \
     --clean \
     --if-exists \
-    --format=custom |
-    PGPASSWORD="$DATABASE_PASSWORD" pg_restore \
+    --format=plain \
+    | sed '/SET transaction_timeout/d' \
+    | PGPASSWORD="$DATABASE_PASSWORD" psql \
         --host="$DATABASE_HOST" \
         --port="$DATABASE_PORT" \
         --username="$DATABASE_USER" \
         --dbname="$STAGING_DATABASE_NAME" \
-        --verbose \
-        --clean \
-        --if-exists
+        --echo-errors \
+        --single-transaction
 
 echo "Cleaning unnecessary data..."
 PGPASSWORD="$DATABASE_PASSWORD" psql \
@@ -60,6 +60,15 @@ PGPASSWORD="$DATABASE_PASSWORD" psql \
       END,
       \"profileUrl\" = 'https://via.placeholder.com/150'
     WHERE \"admin\" IS NOT TRUE;
+
+    -- Update DiscordClubMetadata for 'Patina Network'
+    UPDATE \"DiscordClubMetadata\" m
+    SET 
+      \"guildId\" = '1389762654452580373',
+      \"leaderboardChannelId\" = '1401739528057655436'
+    FROM \"DiscordClub\" c
+    WHERE c.\"id\" = m.\"discordClubId\"
+      AND c.\"name\" = 'Patina Network';
   "
 
 echo "Database copy completed successfully!"
