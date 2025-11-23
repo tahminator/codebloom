@@ -19,9 +19,9 @@ interface TagListProps {
 }
 
 const PLACE_CONFIG = {
-  [AchievementDtoPlace.ONE]: { rank: 1, emoji: "🥇", text: "1st Place" },
-  [AchievementDtoPlace.TWO]: { rank: 2, emoji: "🥈", text: "2nd Place" },
-  [AchievementDtoPlace.THREE]: { rank: 3, emoji: "🥉", text: "3rd Place" },
+  [AchievementDtoPlace.ONE]: { rank: 1, emoji: "🥇" },
+  [AchievementDtoPlace.TWO]: { rank: 2, emoji: "🥈" },
+  [AchievementDtoPlace.THREE]: { rank: 3, emoji: "🥉" },
 } as const;
 
 const TROPHY_STYLES = {
@@ -57,7 +57,7 @@ function GlobalTrophyBadge({ achievement }: AchievementBadgeProps) {
 
   return (
     <Tooltip
-      label={`${config.text} – ${achievement.title}`}
+      label={`${achievement.title}`}
       withArrow
       position="top"
     >
@@ -83,7 +83,7 @@ function LeaderboardAchievementBadge({
   const metadata = ApiUtils.getMetadataByTagEnum(leaderboardAsTag);
   return (
     <Tooltip
-      label={`${config.text} – ${achievement.leaderboard} – ${achievement.title}`}
+      label={`${achievement.leaderboard} – ${achievement.title}`}
       withArrow
       position="top"
     >
