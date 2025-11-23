@@ -1,4 +1,4 @@
-package com.patina.codebloom.db.lobby.player;
+package com.patina.codebloom.db.lobby;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
