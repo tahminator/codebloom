@@ -8,10 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
@@ -34,23 +32,20 @@ public class FetchAllLeetcodeQuestions {
     private final QuestionBankRepository questionBankRepository;
 
     public FetchAllLeetcodeQuestions(final BackgroundTaskRepository backgroundTaskRepository, final LeetcodeClient leetcodeClient,
-                                      final QuestionBankRepository questionBankRepository) {
+                    final QuestionBankRepository questionBankRepository) {
         this.backgroundTaskRepository = backgroundTaskRepository;
         this.leetcodeClient = leetcodeClient;
         this.questionBankRepository = questionBankRepository;
     }
 
-    @Scheduled(
-        initialDelay = 1,
-        fixedDelay = 3,
-        timeUnit = TimeUnit.HOURS
-    )
+    @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.HOURS)
     public void updateQuestionBank() {
         BackgroundTask recentLeetcodeTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
         if (recentLeetcodeTask != null) {
-                if (StandardizedOffsetDateTime.now()
-                        .isBefore(recentLeetcodeTask.getCompletedAt().plusHours(16))) {
-                throw new ResponseStatusException(HttpStatus.GONE, "Not time yet to resync question bank");
+            if (StandardizedOffsetDateTime.now()
+                            .isBefore(recentLeetcodeTask.getCompletedAt().plusHours(16))) {
+                log.error("Not time yet to resync question bank");
+                return;
             }
         }
 
@@ -60,32 +55,32 @@ public class FetchAllLeetcodeQuestions {
         for (LeetcodeQuestion question : leetcodeQuestions) {
             QuestionDifficulty difficulty;
 
-        switch (question.getDifficulty().toUpperCase()) {
-            case "EASY":
-                difficulty = QuestionDifficulty.Easy;
-                break;
+            switch (question.getDifficulty().toUpperCase()) {
+                case "EASY":
+                    difficulty = QuestionDifficulty.Easy;
+                    break;
 
-            case "MEDIUM":
-                difficulty = QuestionDifficulty.Medium;
-                break;
+                case "MEDIUM":
+                    difficulty = QuestionDifficulty.Medium;
+                    break;
 
-            case "HARD":
-                difficulty = QuestionDifficulty.Hard;
-                break;
+                case "HARD":
+                    difficulty = QuestionDifficulty.Hard;
+                    break;
 
-            default:
-                throw new IllegalArgumentException("Unknown difficulty: " + question.getDifficulty());
-        }
+                default:
+                    throw new IllegalArgumentException("Unknown difficulty: " + question.getDifficulty());
+            }
 
             QuestionBank bankQuestion = QuestionBank.builder()
-            .questionSlug(question.getTitleSlug())
-            .questionDifficulty(difficulty)
-            .questionTitle(question.getQuestionTitle())
-            .questionNumber(question.getQuestionId())
-            .questionLink(question.getLink())
-            .acceptanceRate(question.getAcceptanceRate())
-            .createdAt(StandardizedOffsetDateTime.now())
-            .build();
+                            .questionSlug(question.getTitleSlug())
+                            .questionDifficulty(difficulty)
+                            .questionTitle(question.getQuestionTitle())
+                            .questionNumber(question.getQuestionId())
+                            .questionLink(question.getLink())
+                            .acceptanceRate(question.getAcceptanceRate())
+                            .createdAt(StandardizedOffsetDateTime.now())
+                            .build();
 
             bankLeetcodeQuestion.add(bankQuestion);
         }
@@ -93,34 +88,33 @@ public class FetchAllLeetcodeQuestions {
         List<QuestionBank> bankQuestion = questionBankRepository.getAllQuestions();
 
         Set<String> slugsFromLeetcode = bankLeetcodeQuestion.stream()
-        .map(QuestionBank::getQuestionSlug)
-        .collect(Collectors.toSet());
+                        .map(QuestionBank::getQuestionSlug)
+                        .collect(Collectors.toSet());
 
         Set<String> slugsFromDb = bankQuestion.stream()
-        .map(QuestionBank::getQuestionSlug)
-        .collect(Collectors.toSet());
+                        .map(QuestionBank::getQuestionSlug)
+                        .collect(Collectors.toSet());
 
         List<QuestionBank> missingInDb = bankLeetcodeQuestion.stream()
-        .filter(q -> !slugsFromDb.contains(q.getQuestionSlug()))
-        .collect(Collectors.toList());
+                        .filter(q -> !slugsFromDb.contains(q.getQuestionSlug()))
+                        .collect(Collectors.toList());
 
         for (QuestionBank question : missingInDb) {
             questionBankRepository.createQuestion(question);
         }
 
         List<QuestionBank> deletedFromLeetcode = bankQuestion.stream()
-        .filter(q -> !slugsFromLeetcode.contains(q.getQuestionSlug()))
-        .collect(Collectors.toList());
+                        .filter(q -> !slugsFromLeetcode.contains(q.getQuestionSlug()))
+                        .collect(Collectors.toList());
 
         for (QuestionBank question : deletedFromLeetcode) {
             questionBankRepository.deleteQuestionById(question.getId());
         }
 
         backgroundTaskRepository.createBackgroundTask(BackgroundTask.builder()
-                                                        .task(BackgroundTaskEnum.LEETCODE_QUESTION_BANK)
-                                                        .completedAt(OffsetDateTime.now())
-                                                        .build()
-                                                    );
+                        .task(BackgroundTaskEnum.LEETCODE_QUESTION_BANK)
+                        .completedAt(OffsetDateTime.now())
+                        .build());
     }
 
 }
