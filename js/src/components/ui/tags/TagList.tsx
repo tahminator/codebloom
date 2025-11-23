@@ -56,11 +56,7 @@ function GlobalTrophyBadge({ achievement }: AchievementBadgeProps) {
   const config = PLACE_CONFIG[achievement.place];
 
   return (
-    <Tooltip
-      label={`${achievement.title}`}
-      withArrow
-      position="top"
-    >
+    <Tooltip label={`${achievement.title}`} withArrow position="top">
       <Box style={TROPHY_STYLES.container}>
         <Text style={TROPHY_STYLES.trophy}>🏆</Text>
         <Text style={TROPHY_STYLES.medal}>{config.emoji}</Text>
