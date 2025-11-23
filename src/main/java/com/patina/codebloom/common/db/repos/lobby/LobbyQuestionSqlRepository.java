@@ -56,7 +56,7 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create lobby", e);
+            throw new RuntimeException("Failed to create lobbyQuestion", e);
         }
 
     }
@@ -204,7 +204,7 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to update lobby", e);
+            throw new RuntimeException("Failed to update lobbyQuestion", e);
         }
     }
 
