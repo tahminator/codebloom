@@ -63,7 +63,7 @@ export default function AchievementCarousel({
 
   if (itemsArray.length <= visibleCount) {
     return (
-      <Flex justify="center" align="center">
+      <Flex gap="sm" justify="center" align="center">
         {itemsArray}
       </Flex>
     );
