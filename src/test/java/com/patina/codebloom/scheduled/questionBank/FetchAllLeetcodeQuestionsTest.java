@@ -37,56 +37,55 @@ public class FetchAllLeetcodeQuestionsTest {
         questionBankRepository = mock(QuestionBankRepository.class);
 
         job = new FetchAllLeetcodeQuestions(
-                backgroundTaskRepository,
-                leetcodeClient,
-                questionBankRepository
-        );
+                        backgroundTaskRepository,
+                        leetcodeClient,
+                        questionBankRepository);
 
         BackgroundTask lastSync = BackgroundTask.builder()
-                .task(BackgroundTaskEnum.LEETCODE_QUESTION_BANK)
-                .completedAt(OffsetDateTime.now().minusHours(20))
-                .build();
+                        .task(BackgroundTaskEnum.LEETCODE_QUESTION_BANK)
+                        .completedAt(OffsetDateTime.now().minusHours(20))
+                        .build();
 
         when(backgroundTaskRepository
-                .getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.LEETCODE_QUESTION_BANK))
-                .thenReturn(lastSync);
+                        .getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.LEETCODE_QUESTION_BANK))
+                                        .thenReturn(lastSync);
     }
 
     @Test
     void testSyncCreatesAndDeletesQuestions() {
         LeetcodeQuestion q1 = LeetcodeQuestion.builder()
-                .titleSlug("two-sum")
-                .questionTitle("Two Sum")
-                .questionId(1)
-                .difficulty("Easy")
-                .link("l1")
-                .acceptanceRate(50.0f)
-                .build();
+                        .titleSlug("two-sum")
+                        .questionTitle("Two Sum")
+                        .questionId(1)
+                        .difficulty("Easy")
+                        .link("l1")
+                        .acceptanceRate(50.0f)
+                        .build();
 
         LeetcodeQuestion q2 = LeetcodeQuestion.builder()
-                .titleSlug("add-two-numbers")
-                .questionTitle("Add Two Numbers")
-                .questionId(2)
-                .difficulty("Medium")
-                .link("l2")
-                .acceptanceRate(33.0f)
-                .build();
+                        .titleSlug("add-two-numbers")
+                        .questionTitle("Add Two Numbers")
+                        .questionId(2)
+                        .difficulty("Medium")
+                        .link("l2")
+                        .acceptanceRate(33.0f)
+                        .build();
 
         when(leetcodeClient.getAllProblems())
-                .thenReturn(List.of(q1, q2));
+                        .thenReturn(List.of(q1, q2));
 
         QuestionBank existing = QuestionBank.builder()
-                .id("id-existing")
-                .questionSlug("two-sum")
-                .build();
+                        .id("id-existing")
+                        .questionSlug("two-sum")
+                        .build();
 
         QuestionBank outdated = QuestionBank.builder()
-                .id("id-outdated")
-                .questionSlug("old-question")
-                .build();
+                        .id("id-outdated")
+                        .questionSlug("old-question")
+                        .build();
 
         when(questionBankRepository.getAllQuestions())
-                .thenReturn(List.of(existing, outdated));
+                        .thenReturn(List.of(existing, outdated));
 
         job.updateQuestionBank();
 
