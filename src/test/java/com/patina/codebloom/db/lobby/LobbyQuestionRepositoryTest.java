@@ -115,8 +115,8 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(3)
-    void testFindLobbyQuestionByLobbyIdAndQuestionBankId() {
-        List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionByLobbyIdAndQuestionBankId(testLobby.getId(), testQuestionBank.getId());
+    void testFindLobbyQuestionsByLobbyIdAndQuestionBankId() {
+        List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyIdAndQuestionBankId(testLobby.getId(), testQuestionBank.getId());
         assertNotNull(lobbyQuestions);
         assertTrue(lobbyQuestions.contains(testLobbyQuestion));
     }
