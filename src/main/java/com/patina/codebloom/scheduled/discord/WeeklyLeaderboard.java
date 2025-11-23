@@ -41,6 +41,7 @@ public class WeeklyLeaderboard {
 
         log.info("WeeklyLeaderboard triggered.");
         discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
+        weeklyMessageRepository.createLatestWeeklyMessage();
     }
 
 }
