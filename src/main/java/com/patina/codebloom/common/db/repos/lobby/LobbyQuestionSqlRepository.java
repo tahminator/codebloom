@@ -36,12 +36,12 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
     @Override
     public void createLobbyQuestion(final LobbyQuestion lobbyQuestion) {
         String sql = """
-                                    INSERT INTO "LobbyQuestion"
-                                (id, "lobbyId", "questionBankId", "userSolvedCount" )
-                                VALUES
-                                (:id, :lobbyId, :questionBankId, :userSolvedCount )
-                                RETURNING
-                                "createdAt"
+                        INSERT INTO "LobbyQuestion"
+                            (id, "lobbyId", "questionBankId", "userSolvedCount")
+                        VALUES
+                            (:id, :lobbyId, :questionBankId, :userSolvedCount)
+                        RETURNING
+                            "createdAt"
                         """;
         lobbyQuestion.setId(UUID.randomUUID().toString());
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -64,19 +64,16 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
     @Override
     public Optional<LobbyQuestion> findLobbyQuestionById(final String id) {
         String sql = """
-                             SELECT
-                             id,
-                             "lobbyId",
-                             "questionBankId",
-                             "userSolvedCount",
-                             "createdAt"
-
-                             FROM
-                             "LobbyQuestion"
-
-                             WHERE
-                               id = :id
-
+                        SELECT
+                            id,
+                            "lobbyId",
+                            "questionBankId",
+                            "userSolvedCount",
+                            "createdAt"
+                        FROM
+                            "LobbyQuestion"
+                        WHERE
+                            id = :id
                         """;
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
@@ -95,18 +92,16 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
     public List<LobbyQuestion> findLobbyQuestionsByLobbyId(final String lobbyId) {
         List<LobbyQuestion> result = new java.util.ArrayList<>();
         String sql = """
-                             SELECT
-                             id,
-                             "lobbyId",
-                             "questionBankId",
-                             "userSolvedCount",
-                             "createdAt"
-
-                             FROM
-                             "LobbyQuestion"
-
-                             WHERE
-                               "lobbyId" = :lobbyId
+                        SELECT
+                            id,
+                            "lobbyId",
+                            "questionBankId",
+                            "userSolvedCount",
+                            "createdAt"
+                        FROM
+                            "LobbyQuestion"
+                        WHERE
+                            "lobbyId" = :lobbyId
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -123,21 +118,19 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
     }
 
     @Override
-    public List<LobbyQuestion> findLobbyQuestionByLobbyIdAndQuestionBankId(final String lobbyId, final String questionBankId) {
+    public List<LobbyQuestion> findLobbyQuestionsByLobbyIdAndQuestionBankId(final String lobbyId, final String questionBankId) {
         List<LobbyQuestion> result = new java.util.ArrayList<>();
         String sql = """
-                             SELECT
-                             id,
-                             "lobbyId",
-                             "questionBankId",
-                             "userSolvedCount",
-                             "createdAt"
-
-                             FROM
-                             "LobbyQuestion"
-
-                             WHERE
-                               "lobbyId" = :lobbyId AND "questionBankId" = :questionBankId
+                        SELECT
+                            id,
+                            "lobbyId",
+                            "questionBankId",
+                            "userSolvedCount",
+                            "createdAt"
+                        FROM
+                            "LobbyQuestion"
+                        WHERE
+                            "lobbyId" = :lobbyId AND "questionBankId" = :questionBankId
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -157,21 +150,19 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
     @Override
     public Optional<LobbyQuestion> findMostRecentLobbyQuestionByLobbyId(final String lobbyId) {
         String sql = """
-                             SELECT
-                             id,
-                             "lobbyId",
-                             "questionBankId",
-                             "userSolvedCount",
-                             "createdAt"
-
-                             FROM
-                             "LobbyQuestion"
-
-                             WHERE
-                               "lobbyId" = :lobbyId
-                             ORDER BY
-                               "createdAt" DESC
-                             LIMIT 1
+                        SELECT
+                            id,
+                            "lobbyId",
+                            "questionBankId",
+                            "userSolvedCount",
+                            "createdAt"
+                        FROM
+                            "LobbyQuestion"
+                        WHERE
+                            "lobbyId" = :lobbyId
+                        ORDER BY
+                            "createdAt" DESC
+                        LIMIT 1
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -213,13 +204,13 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
         List<LobbyQuestion> result = new java.util.ArrayList<>();
         String sql = """
                         SELECT
-                        id,
-                        "lobbyId",
-                        "questionBankId",
-                        "userSolvedCount",
-                        "createdAt"
+                            id,
+                            "lobbyId",
+                            "questionBankId",
+                            "userSolvedCount",
+                            "createdAt"
                         FROM
-                        "LobbyQuestion"
+                            "LobbyQuestion"
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
