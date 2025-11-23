@@ -39,7 +39,7 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
                                     INSERT INTO "LobbyQuestion"
                                 (id, "lobbyId", "questionBankId", "userSolvedCount" )
                                 VALUES
-                                (:id, :"lobbyId", :"questionBankId", :UserSolvedCount )
+                                (:id, :lobbyId, :questionBankId, :userSolvedCount )
                                 RETURNING
                                 "createdAt"
                         """;
@@ -48,7 +48,7 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
             stmt.setObject("id", UUID.fromString(lobbyQuestion.getId()));
             stmt.setObject("lobbyId", UUID.fromString(lobbyQuestion.getLobbyId()));
             stmt.setObject("questionBankId", UUID.fromString(lobbyQuestion.getQuestionBankId()));
-            stmt.setInt("UserSolvedCount", lobbyQuestion.getUserSolvedCount());
+            stmt.setInt("userSolvedCount", lobbyQuestion.getUserSolvedCount());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -106,7 +106,7 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
                              "LobbyQuestion"
 
                              WHERE
-                               "lobbyId" = :"lobbyId"
+                               "lobbyId" = :lobbyId
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -137,12 +137,12 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
                              "LobbyQuestion"
 
                              WHERE
-                               "lobbyId" = :"lobbyId" AND "questionBankId" = :"questionBankId"
+                               "lobbyId" = :lobbyId AND "questionBankId" = :questionBankId
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyId", UUID.fromString(lobbyId));
-            stmt.setObject("questionBankId", UUID.fromString("questionBankId"));
+            stmt.setObject("questionBankId", UUID.fromString(questionBankId));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     result.add(parseResultSetToLobbyQuestion(rs));
@@ -168,7 +168,7 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
                              "LobbyQuestion"
 
                              WHERE
-                               "lobbyId" = :"lobbyId"
+                               "lobbyId" = :lobbyId
                              ORDER BY
                                "createdAt" DESC
                              LIMIT 1
@@ -192,13 +192,14 @@ public class LobbyQuestionSqlRepository implements LobbyQuestionRepository {
         String sql = """
                         UPDATE "LobbyQuestion"
                         SET
-                            "userSolvedCount" = "userSolvedCount"
+                            "userSolvedCount" = :userSolvedCount
                         WHERE
                             id = :id
                         """;
 
         try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setInt("userSolvedCount", lobbyQuestion.getUserSolvedCount());
+            stmt.setObject("id", UUID.fromString(lobbyQuestion.getId()));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
