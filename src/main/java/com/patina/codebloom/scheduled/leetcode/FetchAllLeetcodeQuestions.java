@@ -19,6 +19,7 @@ import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRe
 import com.patina.codebloom.common.db.repos.task.BackgroundTaskRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,7 +62,7 @@ public class FetchAllLeetcodeQuestions {
             .questionLink(question.getLink())
             // .description("Not Implemented Yet")
             .acceptanceRate(question.getAcceptanceRate())
-            .createdAt(null)
+            .createdAt(StandardizedOffsetDateTime.now())
             .build();
 
             bankLeetcodeQuestion.add(bankQuestion);
