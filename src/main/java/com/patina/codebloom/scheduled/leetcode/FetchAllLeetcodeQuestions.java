@@ -1,15 +1,17 @@
 package com.patina.codebloom.scheduled.leetcode;
 
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
@@ -38,15 +40,17 @@ public class FetchAllLeetcodeQuestions {
         this.questionBankRepository = questionBankRepository;
     }
 
-    @Scheduled(cron = "0 0 */3 * * *")
+    @Scheduled(
+        initialDelay = 1,
+        fixedDelay = 3,
+        timeUnit = TimeUnit.HOURS
+    )
     public void updateQuestionBank() {
         BackgroundTask recentLeetcodeTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
         if (recentLeetcodeTask != null) {
-            OffsetDateTime recentLeetcodeSyncTime = recentLeetcodeTask.getCompletedAt();
-            Duration diff = Duration.between(recentLeetcodeSyncTime.toInstant(), OffsetDateTime.now());
-            if (diff.toHours() <= 16) {
-                log.error("Not time yet to resync question bank");
-                return;
+                if (StandardizedOffsetDateTime.now()
+                        .isBefore(recentLeetcodeTask.getCompletedAt().plusHours(16))) {
+                throw new ResponseStatusException(HttpStatus.GONE, "Not time yet to resync question bank");
             }
         }
 
@@ -54,13 +58,31 @@ public class FetchAllLeetcodeQuestions {
 
         List<QuestionBank> bankLeetcodeQuestion = new ArrayList<>();
         for (LeetcodeQuestion question : leetcodeQuestions) {
+            QuestionDifficulty difficulty;
+
+        switch (question.getDifficulty().toUpperCase()) {
+            case "EASY":
+                difficulty = QuestionDifficulty.Easy;
+                break;
+
+            case "MEDIUM":
+                difficulty = QuestionDifficulty.Medium;
+                break;
+
+            case "HARD":
+                difficulty = QuestionDifficulty.Hard;
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown difficulty: " + question.getDifficulty());
+        }
+
             QuestionBank bankQuestion = QuestionBank.builder()
             .questionSlug(question.getTitleSlug())
-            .questionDifficulty(QuestionDifficulty.valueOf(question.getDifficulty()))
+            .questionDifficulty(difficulty)
             .questionTitle(question.getQuestionTitle())
             .questionNumber(question.getQuestionId())
             .questionLink(question.getLink())
-            // .description("Not Implemented Yet")
             .acceptanceRate(question.getAcceptanceRate())
             .createdAt(StandardizedOffsetDateTime.now())
             .build();
