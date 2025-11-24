@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
-import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 
 @Component
 public class DuelManager {
