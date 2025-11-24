@@ -3,11 +3,12 @@ import {
   components,
   AchievementDtoPlace,
   AchievementDtoLeaderboard,
+  UserTagTag,
 } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
 import { tagFF } from "@/lib/ff";
-import { Image, Tooltip, Box, Text } from "@mantine/core";
+import { Image, Tooltip, Box, Text, Stack, Divider } from "@mantine/core";
 
 type AchievementDto = components["schemas"]["AchievementDto"];
 
@@ -19,9 +20,9 @@ interface TagListProps {
 }
 
 const PLACE_CONFIG = {
-  [AchievementDtoPlace.ONE]: { rank: 1, emoji: "🥇" },
-  [AchievementDtoPlace.TWO]: { rank: 2, emoji: "🥈" },
-  [AchievementDtoPlace.THREE]: { rank: 3, emoji: "🥉" },
+  [AchievementDtoPlace.ONE]: { emoji: "🥇" },
+  [AchievementDtoPlace.TWO]: { emoji: "🥈" },
+  [AchievementDtoPlace.THREE]: { emoji: "🥉" },
 } as const;
 
 const TROPHY_STYLES = {
@@ -44,8 +45,27 @@ const TAG_MEDAL_STYLE = {
   lineHeight: 1,
 } as const;
 
+const LEADERBOARD_TO_TAG: Record<AchievementDtoLeaderboard, UserTagTag> = {
+  [AchievementDtoLeaderboard.Hunter]: UserTagTag.Hunter,
+  [AchievementDtoLeaderboard.Patina]: UserTagTag.Patina,
+  [AchievementDtoLeaderboard.Nyu]: UserTagTag.Nyu,
+  [AchievementDtoLeaderboard.Baruch]: UserTagTag.Baruch,
+  [AchievementDtoLeaderboard.Rpi]: UserTagTag.Rpi,
+  [AchievementDtoLeaderboard.Sbu]: UserTagTag.Sbu,
+  [AchievementDtoLeaderboard.Columbia]: UserTagTag.Columbia,
+  [AchievementDtoLeaderboard.Ccny]: UserTagTag.Ccny,
+  [AchievementDtoLeaderboard.Cornell]: UserTagTag.Cornell,
+  [AchievementDtoLeaderboard.Bmcc]: UserTagTag.Bmcc,
+  [AchievementDtoLeaderboard.Gwc]: UserTagTag.Gwc,
+};
+
 function isTopThreePlace(place: AchievementDtoPlace): boolean {
-  return place in PLACE_CONFIG;
+  return Boolean(PLACE_CONFIG[place]);
+}
+
+function getMetadataFromLeaderboard(leaderboard: AchievementDtoLeaderboard) {
+  const tagEnum = LEADERBOARD_TO_TAG[leaderboard];
+  return ApiUtils.getMetadataByTagEnum(tagEnum);
 }
 
 interface AchievementBadgeProps {
@@ -74,9 +94,13 @@ function LeaderboardAchievementBadge({
   achievement,
   size,
 }: LeaderboardAchievementBadgeProps) {
+  if (!achievement.leaderboard) {
+    return null;
+  }
+
   const config = PLACE_CONFIG[achievement.place];
-  const leaderboardAsTag = achievement.leaderboard as unknown as UserTag["tag"];
-  const metadata = ApiUtils.getMetadataByTagEnum(leaderboardAsTag);
+  const metadata = getMetadataFromLeaderboard(achievement.leaderboard);
+
   return (
     <Tooltip label={`${achievement.title}`} withArrow position="top">
       <Box style={TROPHY_STYLES.container}>
@@ -116,28 +140,25 @@ export default function TagList({
   size = 20,
   gap = "xs",
 }: TagListProps) {
-  if (!tagFF || !tags?.length) {
+  if (!tagFF) return null;
+
+  const filteredTags = ApiUtils.filterUnusedTags(tags ?? []);
+
+  if (!filteredTags.length && !achievements?.length) {
     return null;
   }
 
-  const filteredTags = ApiUtils.filterUnusedTags(tags);
-
-  if (!filteredTags.length && !achievements.length) {
-    return null;
-  }
-
-  const items: JSX.Element[] = [];
-  const leaderboardsWithAchievements = new Set<AchievementDtoLeaderboard>();
+  const achievementItems: JSX.Element[] = [];
+  const tagItems: JSX.Element[] = [];
 
   achievements.forEach((achievement) => {
     if (achievement.active && isTopThreePlace(achievement.place)) {
       if (!achievement.leaderboard) {
-        items.push(
+        achievementItems.push(
           <GlobalTrophyBadge key={achievement.id} achievement={achievement} />,
         );
       } else {
-        leaderboardsWithAchievements.add(achievement.leaderboard);
-        items.push(
+        achievementItems.push(
           <LeaderboardAchievementBadge
             key={achievement.id}
             achievement={achievement}
@@ -147,17 +168,33 @@ export default function TagList({
       }
     }
   });
+
   filteredTags.forEach((userTag) => {
-    const tagAsLeaderboard =
-      userTag.tag as unknown as AchievementDtoLeaderboard;
-    if (!leaderboardsWithAchievements.has(tagAsLeaderboard)) {
-      items.push(<TagBadge key={userTag.id} userTag={userTag} size={size} />);
-    }
+    tagItems.push(<TagBadge key={userTag.id} userTag={userTag} size={size} />);
   });
 
   return (
-    <AchievementCarousel visibleCount={3} gap={gap}>
-      {items}
-    </AchievementCarousel>
+    <Stack gap="md" align="center">
+      {tagItems.length > 0 && (
+        <Stack gap="xs" align="center">
+          <AchievementCarousel visibleCount={3} gap={gap}>
+            {tagItems}
+          </AchievementCarousel>
+        </Stack>
+      )}
+      {achievementItems.length > 0 && tagItems.length > 0 && (
+        <Divider w="70%" />
+      )}
+      {achievementItems.length > 0 && (
+        <Stack gap="sm" align="center">
+          <Text size="sm" fw={500} c="dimmed">
+            Achievements
+          </Text>
+          <AchievementCarousel visibleCount={3} gap={gap}>
+            {achievementItems}
+          </AchievementCarousel>
+        </Stack>
+      )}
+    </Stack>
   );
 }
