@@ -90,7 +90,13 @@ export default function Header() {
           aria-label={"Menu button"}
         />
       </header>
-      <Drawer opened={drawerOpened} onClose={closeDrawer} title="Navigation">
+      <Drawer
+        opened={drawerOpened}
+        onClose={closeDrawer}
+        withCloseButton={false}
+        size="50%"
+        title="Navigation"
+      >
         <Flex direction="column" align="center" gap="md" mt="sm">
           <Link to="/" className="w-full">
             Home
