@@ -90,7 +90,7 @@ public interface LobbyPlayerQuestionRepository {
 
     /**
      * Finds all unique question IDs for a specific lobby.
-     * 
+     *
      * @param lobbyId the lobby ID
      * @return list of unique question IDs in the specified lobby
      */
