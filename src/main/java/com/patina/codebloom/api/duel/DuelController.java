@@ -334,7 +334,7 @@ public class DuelController {
     @ApiResponse(responseCode = "401", description = "User not authenticated")
     @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
     @ApiResponse(responseCode = "404", description = "Player is not in a duel")
-    @ApiResponse(responseCode = "500", description = "Failed to update question submission")
+    @ApiResponse(responseCode = "500", description = "Failed to retrieve LeetCode submissions or database update failed")
     @PostMapping("/question/submit")
     public ResponseEntity<ApiResponder<Empty>> submitQuestion(
             @Protected final AuthenticationObject authenticationObject) {
@@ -355,15 +355,9 @@ public class DuelController {
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in an active duel"));
 
         List<LeetcodeSubmission> recentSubmissions;
-        try {
-            recentSubmissions = throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
-            int start = Math.max(0, recentSubmissions.size() - 5);
-            recentSubmissions = recentSubmissions.subList(start, recentSubmissions.size());
-        } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to retrieve LeetCode submissions. Please try again later.");
-        }
+        recentSubmissions = throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
+        int start = Math.max(0, recentSubmissions.size() - 5);
+        recentSubmissions = recentSubmissions.subList(start, recentSubmissions.size());
 
         List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobby.getId());
 
@@ -436,12 +430,21 @@ public class DuelController {
         lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(lobbyPlayerQuestion);
 
         matchedLobbyQuestion.setUserSolvedCount(matchedLobbyQuestion.getUserSolvedCount() + 1);
-        lobbyQuestionRepository.updateQuestionLobby(matchedLobbyQuestion);
+
+        boolean lobbyQuestionUpdated = lobbyQuestionRepository.updateQuestionLobby(matchedLobbyQuestion);
+        if (!lobbyQuestionUpdated) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update question submission");
+        }
 
         Integer currentPointsObj = lobbyPlayer.getPoints();
         int currentPoints = (currentPointsObj != null) ? currentPointsObj : 0;
         lobbyPlayer.setPoints(currentPoints + points);
-        lobbyPlayerRepository.updateLobbyPlayer(lobbyPlayer);
+
+        boolean isPlayerUpdated = lobbyPlayerRepository.updateLobbyPlayer(lobbyPlayer);
+        if (!isPlayerUpdated) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Failed to update player points");
+        }
 
         try {
             log.info("Submitting question - lobby.getId() = {}", lobby.getId());
