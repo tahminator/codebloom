@@ -59,7 +59,7 @@ export class ApiUtils {
   /**
    * Receive @type {ApiTypeUtils.UserTagTagMetadata} from a `leaderboard` enum.
    * Maps a leaderboard enum value to its corresponding tag enum.
-   * 
+   *
    * @returns {ApiTypeUtils.UserTagTagMetadata} metadata - Metadata object
    */
   static getTagMetadataFromLeaderboard(

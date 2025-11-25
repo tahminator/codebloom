@@ -262,7 +262,13 @@ export default function LeaderboardIndex() {
                               </Tooltip>
                             )}
                             {tagFF && entry.tags && entry.tags.length > 0 && (
-                              <TagList tags={entry.tags} size={16} gap="xs" showLeaderboardTitle={false} showDivider={false}/>
+                              <TagList
+                                tags={entry.tags}
+                                size={16}
+                                gap="xs"
+                                showLeaderboardTitle={false}
+                                showDivider={false}
+                              />
                             )}
                           </Flex>
                         )}

@@ -29,7 +29,7 @@ export default function UserTags({ userId }: { userId: string }) {
       </Group>
     );
   }
-  
+
   const { tags, achievements } = data.payload;
 
   return (

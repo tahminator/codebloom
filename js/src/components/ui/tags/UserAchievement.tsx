@@ -95,7 +95,7 @@ export default function UserAchievement({
   achievements,
   size,
   gap = "xs",
-  showHeader= true,
+  showHeader = true,
 }: UserAchievementProps) {
   const achievementItems = useMemo(
     () =>
@@ -105,18 +105,16 @@ export default function UserAchievement({
             achievement.active && isTopThreePlace(achievement.place),
         )
         .map((achievement) =>
-          achievement.leaderboard ? (
+          achievement.leaderboard ?
             <LeaderboardAchievementBadge
               key={achievement.id}
               achievement={achievement}
               size={size}
             />
-          ) : (
-            <GlobalTrophyBadge
+          : <GlobalTrophyBadge
               key={achievement.id}
               achievement={achievement}
-            />
-          ),
+            />,
         ),
     [achievements, size],
   );
