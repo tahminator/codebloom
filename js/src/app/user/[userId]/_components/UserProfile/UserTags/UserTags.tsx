@@ -38,4 +38,3 @@ export default function UserTags({ userId }: { userId: string }) {
     </Box>
   );
 }
-
