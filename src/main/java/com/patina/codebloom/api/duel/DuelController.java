@@ -6,18 +6,24 @@ import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
+import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.annotation.Protected;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
@@ -30,7 +36,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -60,7 +68,9 @@ public class DuelController {
     private final LobbyNotifyHandler lobbyNotifyHandler;
     private final QuestionBankRepository questionBankRepository;
     private final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
+    private final QuestionRepository questionRepository;
     private final LobbyQuestionRepository lobbyQuestionRepository;
+    private final ThrottledLeetcodeClient throttledLeetcodeClient;
 
     public DuelController(
             final Env env,
@@ -70,7 +80,9 @@ public class DuelController {
             final LobbyNotifyHandler lobbyNotifyHandler,
             final QuestionBankRepository questionBankRepository,
             final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
-            final LobbyQuestionRepository lobbyQuestionRepository) {
+            final QuestionRepository questionRepository,
+            final LobbyQuestionRepository lobbyQuestionRepository,
+            final ThrottledLeetcodeClient throttledLeetcodeClient) {
         this.env = env;
         this.duelManager = duelManager;
         this.lobbyRepository = lobbyRepository;
@@ -78,7 +90,9 @@ public class DuelController {
         this.lobbyNotifyHandler = lobbyNotifyHandler;
         this.questionBankRepository = questionBankRepository;
         this.lobbyPlayerQuestionRepository = lobbyPlayerQuestionRepository;
+        this.questionRepository = questionRepository;
         this.lobbyQuestionRepository = lobbyQuestionRepository;
+        this.throttledLeetcodeClient = throttledLeetcodeClient;
     }
 
     private void validatePlayerNotInLobby(final String playerId) {
@@ -314,8 +328,133 @@ public class DuelController {
                 "Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
     }
 
+    @Operation(summary = "Submit question", description = "Submit a question for the current duel")
+    @ApiResponse(responseCode = "200", description = "Question has been successfully submitted!")
+    @ApiResponse(responseCode = "400", description = "lobby player not found")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
+    @ApiResponse(responseCode = "404", description = "Player is not in a duel")
+    @ApiResponse(responseCode = "500", description = "Failed to update question submission")
+    @PostMapping("/question/submit")
+    public ResponseEntity<ApiResponder<Empty>> submitQuestion(
+            @Protected final AuthenticationObject authenticationObject) {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+
+        User user = authenticationObject.getUser();
+        String playerId = user.getId();
+
+        LobbyPlayer lobbyPlayer = lobbyPlayerRepository
+                .findLobbyPlayerByPlayerId(playerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby player not found"));
+
+        Lobby lobby = lobbyRepository
+                .findActiveLobbyByLobbyPlayerPlayerId(playerId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in an active duel"));
+
+        List<LeetcodeSubmission> recentSubmissions;
+        try {
+            recentSubmissions = throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
+            int start = Math.max(0, recentSubmissions.size() - 5);
+            recentSubmissions = recentSubmissions.subList(start, recentSubmissions.size());
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to retrieve LeetCode submissions. Please try again later.");
+        }
+
+        List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobby.getId());
+
+        if (lobbyQuestions.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No questions assigned to this lobby");
+        }
+
+        LeetcodeSubmission matchedSubmission = null;
+        LobbyQuestion matchedLobbyQuestion = null;
+        QuestionBank matchedQuestionBank = null;
+
+        for (LeetcodeSubmission submission : recentSubmissions) {
+            for (LobbyQuestion lobbyQuestion : lobbyQuestions) {
+                QuestionBank questionBank = questionBankRepository.getQuestionById(lobbyQuestion.getQuestionBankId());
+
+                if (questionBank != null && submission.getTitleSlug().equals(questionBank.getQuestionSlug())) {
+                    List<LobbyPlayerQuestion> existingPlayerQuestions =
+                            lobbyPlayerQuestionRepository.findQuestionsByLobbyPlayerId(lobbyPlayer.getId());
+
+                    boolean alreadySubmitted = existingPlayerQuestions.stream()
+                            .anyMatch(question -> question.getQuestionId().isPresent()
+                                    && question.getQuestionId().get().equals(questionBank.getId()));
+
+                    if (!alreadySubmitted) {
+                        matchedSubmission = submission;
+                        matchedLobbyQuestion = lobbyQuestion;
+                        matchedQuestionBank = questionBank;
+                        break;
+                    }
+                }
+            }
+
+            if (matchedSubmission != null) {
+                break;
+            }
+        }
+
+        if (matchedSubmission == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "No matching submission found in your last 5 submissions for any lobby question");
+        }
+
+        float multiplier = ScoreCalculator.calculateMultiplier(matchedQuestionBank.getQuestionDifficulty());
+        int points = ScoreCalculator.calculateScore(
+                matchedQuestionBank.getQuestionDifficulty(), matchedQuestionBank.getAcceptanceRate(), multiplier);
+
+        Question question = Question.builder()
+                .userId(user.getId())
+                .questionSlug(matchedQuestionBank.getQuestionSlug())
+                .questionTitle(matchedQuestionBank.getQuestionTitle())
+                .questionDifficulty(matchedQuestionBank.getQuestionDifficulty())
+                .questionNumber(matchedQuestionBank.getQuestionNumber())
+                .questionLink(matchedQuestionBank.getQuestionLink())
+                .description(matchedQuestionBank.getDescription())
+                .pointsAwarded(points)
+                .acceptanceRate(matchedQuestionBank.getAcceptanceRate())
+                .submittedAt(matchedSubmission.getTimestamp())
+                .submissionId(String.valueOf(matchedSubmission.getId()))
+                .build();
+
+        questionRepository.createQuestion(question);
+
+        LobbyPlayerQuestion lobbyPlayerQuestion = LobbyPlayerQuestion.builder()
+                .lobbyPlayerId(lobbyPlayer.getId())
+                .questionId(Optional.of(matchedQuestionBank.getId()))
+                .points(Optional.of(points))
+                .build();
+
+        lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(lobbyPlayerQuestion);
+
+        matchedLobbyQuestion.setUserSolvedCount(matchedLobbyQuestion.getUserSolvedCount() + 1);
+        lobbyQuestionRepository.updateQuestionLobby(matchedLobbyQuestion);
+
+        Integer currentPointsObj = lobbyPlayer.getPoints();
+        int currentPoints = (currentPointsObj != null) ? currentPointsObj : 0;
+        lobbyPlayer.setPoints(currentPoints + points);
+        lobbyPlayerRepository.updateLobbyPlayer(lobbyPlayer);
+
+        try {
+            log.info("Submitting question - lobby.getId() = {}", lobby.getId());
+            lobbyNotifyHandler.handle(lobby.getId());
+        } catch (IOException e) {
+            log.error("Failed to notify lobby clients via SSE", e);
+        }
+
+        return ResponseEntity.ok(ApiResponder.success("Question has been successfully submitted!", Empty.of()));
+    }
+
     @Operation(summary = "SSE endpoint for duel data", description = """
-        Server-sent events endpoint for real-time duel updates
+                    Server-sent events endpoint for real-time duel updates
 
         NOTE - Our application runs on DigitalOcean, which does not allow SSE over GET requests. As a result, we are forced
         to use a non-standard SSE implementation over a POST method.
