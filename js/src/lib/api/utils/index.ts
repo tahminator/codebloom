@@ -1,12 +1,27 @@
 import {
   QuestionTopicDtoTopic,
   UserTagTag,
+  AchievementDtoLeaderboard,
 } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
 import { TAG_METADATA_LIST, UNUSED_TAGS } from "./metadata/tag";
 import { TOPIC_METADATA_LIST } from "./metadata/topic";
+
+const LEADERBOARD_TO_TAG: Record<AchievementDtoLeaderboard, UserTagTag> = {
+  [AchievementDtoLeaderboard.Hunter]: UserTagTag.Hunter,
+  [AchievementDtoLeaderboard.Patina]: UserTagTag.Patina,
+  [AchievementDtoLeaderboard.Nyu]: UserTagTag.Nyu,
+  [AchievementDtoLeaderboard.Baruch]: UserTagTag.Baruch,
+  [AchievementDtoLeaderboard.Rpi]: UserTagTag.Rpi,
+  [AchievementDtoLeaderboard.Sbu]: UserTagTag.Sbu,
+  [AchievementDtoLeaderboard.Columbia]: UserTagTag.Columbia,
+  [AchievementDtoLeaderboard.Ccny]: UserTagTag.Ccny,
+  [AchievementDtoLeaderboard.Cornell]: UserTagTag.Cornell,
+  [AchievementDtoLeaderboard.Bmcc]: UserTagTag.Bmcc,
+  [AchievementDtoLeaderboard.Gwc]: UserTagTag.Gwc,
+};
 
 /**
  * A collection of helpful utilities to help transform & use data returned from the API.
@@ -39,6 +54,19 @@ export class ApiUtils {
     tagEnum: UserTagTag,
   ): ApiTypeUtils.UserTagTagMetadata {
     return ApiUtils._TAG_METADATA_LIST[tagEnum];
+  }
+
+  /**
+   * Receive @type {ApiTypeUtils.UserTagTagMetadata} from a `leaderboard` enum.
+   * Maps a leaderboard enum value to its corresponding tag enum.
+   * 
+   * @returns {ApiTypeUtils.UserTagTagMetadata} metadata - Metadata object
+   */
+  static getTagMetadataFromLeaderboard(
+    leaderboard: AchievementDtoLeaderboard,
+  ): ApiTypeUtils.UserTagTagMetadata {
+    const tagEnum = LEADERBOARD_TO_TAG[leaderboard];
+    return ApiUtils.getMetadataByTagEnum(tagEnum);
   }
 
   /**
@@ -147,4 +175,11 @@ export class ApiUtils {
       (term) => term.includes(lowerQuery) || lowerQuery.includes(term),
     );
   }
+}
+
+export function getTagMetadataFromLeaderboard(
+  leaderboard: AchievementDtoLeaderboard,
+) {
+  const tagEnum = LEADERBOARD_TO_TAG[leaderboard];
+  return ApiUtils.getMetadataByTagEnum(tagEnum);
 }
