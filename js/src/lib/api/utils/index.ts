@@ -42,6 +42,18 @@ export class ApiUtils {
   }
 
   /**
+   * Receive @type {ApiTypeUtils.UserTagTagMetadata} from a `leaderboard` enum.
+   * Maps a leaderboard enum value to its corresponding tag enum.
+   *
+   * @returns {ApiTypeUtils.UserTagTagMetadata} metadata - Metadata object
+   */
+  static getTagMetadataFromLeaderboard(
+    leaderboard: UserTagTag,
+  ): ApiTypeUtils.UserTagTagMetadata {
+    return ApiUtils.getMetadataByTagEnum(leaderboard);
+  }
+
+  /**
    * Receive @type {ApiTypeUtils.QuestionTopicTopicMetadata} from a `topicEnum`.
    *
    * @returns {ApiTypeUtils.QuestionTopicTopicMetadata} metadata - Metadata object
@@ -148,3 +160,10 @@ export class ApiUtils {
     );
   }
 }
+
+export function getTagMetadataFromLeaderboard(
+  leaderboard: UserTagTag,
+) {
+  return ApiUtils.getTagMetadataFromLeaderboard(leaderboard);
+}
+

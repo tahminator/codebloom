@@ -1,8 +1,7 @@
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
-import { ApiUtils } from "@/lib/api/utils";
-import { Group, Text } from "@mantine/core";
+import { Group, Text, Box } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
 
 import UserTagsSkeleton from "./UserTagsSkeleton";
@@ -11,11 +10,7 @@ export default function UserTags({ userId }: { userId: string }) {
   const { data, status } = useUserProfileQuery({ userId });
 
   if (status === "pending") {
-    return (
-      <>
-        <UserTagsSkeleton />
-      </>
-    );
+    return <UserTagsSkeleton />;
   }
 
   if (status === "error") {
@@ -26,26 +21,21 @@ export default function UserTags({ userId }: { userId: string }) {
 
   if (!data.success) {
     return (
-      <>
-        {
-          <Group gap="xs">
-            <IconAlertTriangle color="red" />
-            <Text fw={500} ff="Inter, sans-serif">
-              Error Fetching Tags
-            </Text>
-          </Group>
-        }
-      </>
+      <Group gap="xs">
+        <IconAlertTriangle color="red" />
+        <Text fw={500} ff="Inter, sans-serif">
+          Error Fetching Tags
+        </Text>
+      </Group>
     );
   }
 
-  const tags = data.payload.tags;
-
-  const filteredTags = ApiUtils.filterUnusedTags(tags);
+  const { tags, achievements } = data.payload;
 
   return (
-    <>
-      <TagList tags={filteredTags} size={40} gap="xs" />
-    </>
+    <Box w="100%">
+      <TagList tags={tags} achievements={achievements} size={40} gap="xs" />
+    </Box>
   );
 }
+
