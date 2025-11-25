@@ -161,9 +161,6 @@ export class ApiUtils {
   }
 }
 
-export function getTagMetadataFromLeaderboard(
-  leaderboard: UserTagTag,
-) {
+export function getTagMetadataFromLeaderboard(leaderboard: UserTagTag) {
   return ApiUtils.getTagMetadataFromLeaderboard(leaderboard);
 }
-

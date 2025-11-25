@@ -66,7 +66,9 @@ function LeaderboardAchievementBadge({
 
   const config = PLACE_CONFIG[achievement.place];
 
-  const metadata = ApiUtils.getTagMetadataFromLeaderboard(achievement.leaderboard);
+  const metadata = ApiUtils.getTagMetadataFromLeaderboard(
+    achievement.leaderboard,
+  );
   return (
     <Tooltip label={achievement.title} withArrow position="top">
       <Box style={{ position: "relative", display: "inline-block" }}>
