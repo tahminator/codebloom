@@ -126,7 +126,13 @@ export default function LeaderboardCard({
             <FaDiscord className="inline" /> {discordName}
           </Text>
           {tagFF && displayTags && displayTags.length > 0 && (
-            <TagList tags={displayTags} size={14} gap="xs" />
+            <TagList
+              tags={displayTags}
+              size={14}
+              gap="xs"
+              showLeaderboardTitle={false}
+              showDivider={false}
+            />
           )}
         </Flex>
         <Text
@@ -143,3 +149,4 @@ export default function LeaderboardCard({
     </Card>
   );
 }
+
