@@ -1,23 +1,20 @@
 package com.patina.codebloom.common.email.client.github;
 
+import com.patina.codebloom.common.email.Email;
+import com.patina.codebloom.common.email.Message;
+import com.patina.codebloom.common.email.error.EmailException;
+import com.patina.codebloom.common.email.options.SendEmailOptions;
+import jakarta.mail.Folder;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import jakarta.mail.Folder;
-import jakarta.mail.Session;
-import jakarta.mail.Store;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import com.patina.codebloom.common.email.Email;
-import com.patina.codebloom.common.email.Message;
-import com.patina.codebloom.common.email.error.EmailException;
-import com.patina.codebloom.common.email.options.SendEmailOptions;
 
 /**
  * Provides read-only access to the Github email account in order to access the
@@ -26,6 +23,7 @@ import com.patina.codebloom.common.email.options.SendEmailOptions;
 @Component
 @EnableConfigurationProperties(GithubOAuthEmailProperties.class)
 public class GithubOAuthEmail extends Email {
+
     private final GithubOAuthEmailProperties emailProperties;
     private static Session session;
 
@@ -43,10 +41,13 @@ public class GithubOAuthEmail extends Email {
 
     public List<Message> getPastMessages() throws EmailException {
         try {
-
             final Store store = session.getStore("imap");
 
-            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
+            store.connect(
+                emailProperties.getHost(),
+                emailProperties.getUsername(),
+                emailProperties.getPassword()
+            );
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);
@@ -59,7 +60,9 @@ public class GithubOAuthEmail extends Email {
                     if (m.isMimeType("text/plain")) {
                         content = "";
                         InputStream is = m.getInputStream();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                        BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(is)
+                        );
                         StringBuilder sb = new StringBuilder();
                         String thisLine;
                         while ((thisLine = reader.readLine()) != null) {
@@ -67,7 +70,13 @@ public class GithubOAuthEmail extends Email {
                         }
                         content = sb.toString();
                     }
-                    messages.add(new Message(m.getSubject(), content, m.getReceivedDate()));
+                    messages.add(
+                        new Message(
+                            m.getSubject(),
+                            content,
+                            m.getReceivedDate()
+                        )
+                    );
                 } catch (Exception e) {
                     System.err.println(e);
                 }
@@ -77,7 +86,10 @@ public class GithubOAuthEmail extends Email {
 
             return messages;
         } catch (Exception e) {
-            throw new EmailException("Something went wrong when receiving past messages", e);
+            throw new EmailException(
+                "Something went wrong when receiving past messages",
+                e
+            );
         }
     }
 
@@ -86,8 +98,11 @@ public class GithubOAuthEmail extends Email {
      */
     @Override
     @Deprecated
-    public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
-        throw new UnsupportedOperationException("GithubOAuthEmail does not support sending messages.");
+    public void sendMessage(final SendEmailOptions sendEmailOptions)
+        throws EmailException {
+        throw new UnsupportedOperationException(
+            "GithubOAuthEmail does not support sending messages."
+        );
     }
 
     @Override
@@ -95,7 +110,11 @@ public class GithubOAuthEmail extends Email {
         try {
             final Store store = session.getStore("imap");
 
-            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
+            store.connect(
+                emailProperties.getHost(),
+                emailProperties.getUsername(),
+                emailProperties.getPassword()
+            );
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);
@@ -103,8 +122,10 @@ public class GithubOAuthEmail extends Email {
             emailFolder.close();
             store.close();
         } catch (Exception e) {
-            throw new EmailException("Something went wrong when testing connection", e);
+            throw new EmailException(
+                "Something went wrong when testing connection",
+                e
+            );
         }
     }
-
 }

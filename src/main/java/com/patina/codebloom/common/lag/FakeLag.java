@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.lag;
 
 public class FakeLag {
+
     public static void sleep(final int ms) {
         try {
             Thread.sleep(ms);

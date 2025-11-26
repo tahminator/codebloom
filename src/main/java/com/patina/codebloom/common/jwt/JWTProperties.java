@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "secret")
 public class JWTProperties {
+
     private String key;
 
     public String getKey() {

@@ -1,12 +1,13 @@
 package com.patina.codebloom.utilities.exception;
 
 import java.util.Set;
-
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 public class ExcludedExceptions {
+
     private static final Set<Class<?>> EXCEPTIONS = Set.of(
-                    NoResourceFoundException.class);
+        NoResourceFoundException.class
+    );
 
     public static boolean isValid(final Throwable throwable) {
         if (throwable == null) {

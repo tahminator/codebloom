@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.models.api.access;
 
 import com.patina.codebloom.common.db.models.api.ApiKeyAccessEnum;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,6 +14,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class ApiKeyAccess {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 

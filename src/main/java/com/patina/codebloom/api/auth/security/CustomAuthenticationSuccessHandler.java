@@ -1,17 +1,5 @@
 package com.patina.codebloom.api.auth.security;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
@@ -28,27 +16,40 @@ import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.common.utils.pair.Pair;
 import com.patina.codebloom.jda.client.JDAClient;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
 /**
  * Handles successful OAuth2 login by either creating a new user or referencing
  * an old user and generating a cookie storing the session ID.
- * 
+ *
  * @see <a href=
  * "https://github.com/tahminator/codebloom/tree/main/docs/auth.md">Authentication
  * Documentation</a>
  */
 @Component
-public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
+public class CustomAuthenticationSuccessHandler
+    implements AuthenticationSuccessHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        CustomAuthenticationSuccessHandler.class
+    );
 
     // 30 days expiration
     private final int maxAgeSeconds = 60 * 60 * 24 * 30;
@@ -61,12 +62,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final JDAClient jdaClient;
     private final LeetcodeClient leetcodeClient;
 
-    public CustomAuthenticationSuccessHandler(final UserRepository userRepository, final SessionRepository sessionRepository,
-                    final LeaderboardRepository leaderboardRepository,
-                    final JDAClient jdaClient,
-                    final UserTagRepository userTagRepository,
-                    final DiscordClubRepository discordClubRepository,
-                    final ThrottledLeetcodeClient throttledLeetcodeClient) {
+    public CustomAuthenticationSuccessHandler(
+        final UserRepository userRepository,
+        final SessionRepository sessionRepository,
+        final LeaderboardRepository leaderboardRepository,
+        final JDAClient jdaClient,
+        final UserTagRepository userTagRepository,
+        final DiscordClubRepository discordClubRepository,
+        final ThrottledLeetcodeClient throttledLeetcodeClient
+    ) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
@@ -77,8 +81,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     @Override
-    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
-                    final Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(
+        final HttpServletRequest request,
+        final HttpServletResponse response,
+        final Authentication authentication
+    ) throws IOException, ServletException {
         Object principal = authentication.getPrincipal();
         String discordId = null;
         String discordName = null;
@@ -95,32 +102,50 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 existingUser.setDiscordName(discordName);
                 if (existingUser.getLeetcodeUsername() != null) {
                     try {
-                        UserProfile profile = leetcodeClient.getUserProfile(existingUser.getLeetcodeUsername());
-                        if (profile != null && profile.getUserAvatar() != null) {
+                        UserProfile profile = leetcodeClient.getUserProfile(
+                            existingUser.getLeetcodeUsername()
+                        );
+                        if (
+                            profile != null && profile.getUserAvatar() != null
+                        ) {
                             existingUser.setProfileUrl(profile.getUserAvatar());
                         }
                     } catch (RuntimeException ex) {
-                        LOGGER.warn("LeetCode lookup failed for {}", existingUser.getLeetcodeUsername(), ex);
+                        LOGGER.warn(
+                            "LeetCode lookup failed for {}",
+                            existingUser.getLeetcodeUsername(),
+                            ex
+                        );
                     }
                 }
                 userRepository.updateUser(existingUser);
             } else {
                 User newUser = User.builder()
-                                .discordId(discordId)
-                                .discordName(discordName)
-                                .build();
+                    .discordId(discordId)
+                    .discordName(discordName)
+                    .build();
                 userRepository.createUser(newUser);
-                Leaderboard leaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-                leaderboardRepository.addUserToLeaderboard(newUser.getId(), leaderboard.getId());
+                Leaderboard leaderboard =
+                    leaderboardRepository.getRecentLeaderboardMetadata();
+                leaderboardRepository.addUserToLeaderboard(
+                    newUser.getId(),
+                    leaderboard.getId()
+                );
                 existingUser = newUser;
             }
 
             final String userDiscordId = existingUser.getDiscordId();
 
             List<Guild> guilds = jdaClient.getGuilds();
-            Map<String, List<Member>> guildIdToMembersMap = guilds.parallelStream().map(g -> Pair.of(g, g.getMembers())).collect(Collectors.toMap(
-                            p -> p.getLeft().getId(),
-                            p -> p.getRight()));
+            Map<String, List<Member>> guildIdToMembersMap = guilds
+                .parallelStream()
+                .map(g -> Pair.of(g, g.getMembers()))
+                .collect(
+                    Collectors.toMap(
+                        p -> p.getLeft().getId(),
+                        p -> p.getRight()
+                    )
+                );
 
             var clubs = discordClubRepository.getAllActiveDiscordClubs();
 
@@ -137,17 +162,28 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 if (memberList == null) {
                     continue;
                 }
-                var member = memberList.stream().filter(m -> m.getId().equals(userDiscordId)).findFirst();
+                var member = memberList
+                    .stream()
+                    .filter(m -> m.getId().equals(userDiscordId))
+                    .findFirst();
 
                 if (member.isEmpty()) {
                     continue;
                 }
 
-                if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), tag) == null) {
-                    userTagRepository.createTag(UserTag.builder()
-                                    .userId(existingUser.getId())
-                                    .tag(tag)
-                                    .build());
+                if (
+                    userTagRepository.findTagByUserIdAndTag(
+                        existingUser.getId(),
+                        tag
+                    ) ==
+                    null
+                ) {
+                    userTagRepository.createTag(
+                        UserTag.builder()
+                            .userId(existingUser.getId())
+                            .tag(tag)
+                            .build()
+                    );
                 }
 
                 // override to handle nicknames
@@ -156,7 +192,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     if (member.get().getNickname() != null) {
                         existingUser.setNickname(member.get().getNickname());
                     } else if (member.get().getUser().getGlobalName() != null) {
-                        existingUser.setNickname(member.get().getUser().getGlobalName());
+                        existingUser.setNickname(
+                            member.get().getUser().getGlobalName()
+                        );
                     } else {
                         existingUser.setNickname(existingUser.getDiscordName());
                     }
@@ -164,16 +202,19 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 }
             }
 
-            LocalDateTime expirationTime = StandardizedLocalDateTime.now().plusSeconds(maxAgeSeconds);
+            LocalDateTime expirationTime =
+                StandardizedLocalDateTime.now().plusSeconds(maxAgeSeconds);
 
             Session session = Session.builder()
-                            .userId(existingUser.getId())
-                            .expiresAt(expirationTime)
-                            .build();
+                .userId(existingUser.getId())
+                .expiresAt(expirationTime)
+                .build();
             sessionRepository.createSession(session);
 
             if (session == null || session.getId() == null) {
-                response.sendRedirect("/login?success=false&message=Failed to log in.");
+                response.sendRedirect(
+                    "/login?success=false&message=Failed to log in."
+                );
                 throw new RuntimeException("Failed to create new session.");
             }
 
@@ -187,7 +228,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             response.addCookie(cookie);
             response.sendRedirect("/dashboard");
         } else {
-            response.sendRedirect("/login?success=false&message=Failed to log in.");
+            response.sendRedirect(
+                "/login?success=false&message=Failed to log in."
+            );
             throw new UsernameNotFoundException("User not found");
         }
     }

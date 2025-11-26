@@ -1,14 +1,19 @@
 package com.patina.codebloom.db.api.access;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import com.patina.codebloom.common.db.models.api.ApiKeyAccessEnum;
+import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
+import com.patina.codebloom.common.db.repos.api.access.ApiKeyAccessRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
+import java.util.List;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -18,37 +23,34 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.patina.codebloom.common.db.models.api.ApiKeyAccessEnum;
-import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
-import com.patina.codebloom.common.db.repos.api.access.ApiKeyAccessRepository;
-import com.patina.codebloom.db.BaseRepositoryTest;
-
-import lombok.extern.slf4j.Slf4j;
-
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
 public class ApiKeyAccessRepositoryTest extends BaseRepositoryTest {
+
     private final ApiKeyAccessRepository apiKeyAccessRepository;
     private ApiKeyAccess testApiKeyAccess;
     private ApiKeyAccess deletableApiKeyAccess;
-    private final String mockedApiKeyId = "48fa0072-2d3c-4c94-9003-0234efcf0209";
+    private final String mockedApiKeyId =
+        "48fa0072-2d3c-4c94-9003-0234efcf0209";
     private final ApiKeyAccessEnum access = ApiKeyAccessEnum.GWC_READ_BY_USER;
     private final ApiKeyAccessEnum testAccess = ApiKeyAccessEnum.TEST_VALUE;
 
     @Autowired
-    public ApiKeyAccessRepositoryTest(final ApiKeyAccessRepository apiKeyAccessRepository) {
+    public ApiKeyAccessRepositoryTest(
+        final ApiKeyAccessRepository apiKeyAccessRepository
+    ) {
         this.apiKeyAccessRepository = apiKeyAccessRepository;
     }
 
     @BeforeAll
     void createTestApiKeyAccess() {
         testApiKeyAccess = ApiKeyAccess.builder()
-                        .id(UUID.randomUUID().toString())
-                        .apiKeyId(mockedApiKeyId)
-                        .access(access)
-                        .build();
+            .id(UUID.randomUUID().toString())
+            .apiKeyId(mockedApiKeyId)
+            .access(access)
+            .build();
 
         apiKeyAccessRepository.createApiKeyAccess(testApiKeyAccess);
     }
@@ -56,22 +58,34 @@ public class ApiKeyAccessRepositoryTest extends BaseRepositoryTest {
     @AfterAll
     void testDeleteApiKeyAccessesByApiKeyId() {
         deletableApiKeyAccess = ApiKeyAccess.builder()
-                        .id(UUID.randomUUID().toString())
-                        .apiKeyId(mockedApiKeyId)
-                        .access(testAccess)
-                        .build();
+            .id(UUID.randomUUID().toString())
+            .apiKeyId(mockedApiKeyId)
+            .access(testAccess)
+            .build();
 
         apiKeyAccessRepository.createApiKeyAccess(deletableApiKeyAccess);
 
-        List<ApiKeyAccess> found = apiKeyAccessRepository.getApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
+        List<ApiKeyAccess> found =
+            apiKeyAccessRepository.getApiKeyAccessesByApiKeyId(
+                deletableApiKeyAccess.getApiKeyId()
+            );
         assertNotNull(found);
         assertTrue(found.size() > 0);
-        assertTrue(found.stream().anyMatch(k -> k.getId().equals(deletableApiKeyAccess.getId())));
+        assertTrue(
+            found
+                .stream()
+                .anyMatch(k -> k.getId().equals(deletableApiKeyAccess.getId()))
+        );
 
-        boolean deleted = apiKeyAccessRepository.deleteApiKeyAccessesByApiKeyId(deletableApiKeyAccess.getApiKeyId());
+        boolean deleted = apiKeyAccessRepository.deleteApiKeyAccessesByApiKeyId(
+            deletableApiKeyAccess.getApiKeyId()
+        );
         assertTrue(deleted);
 
-        ApiKeyAccess deletedFetched = apiKeyAccessRepository.getApiKeyAccessById(deletableApiKeyAccess.getId());
+        ApiKeyAccess deletedFetched =
+            apiKeyAccessRepository.getApiKeyAccessById(
+                deletableApiKeyAccess.getId()
+            );
         assertNull(deletedFetched);
     }
 
@@ -87,35 +101,49 @@ public class ApiKeyAccessRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void findApiKeyAccessById() {
-        ApiKeyAccess possibleTestApiKeyAccess = apiKeyAccessRepository.getApiKeyAccessById(testApiKeyAccess.getId());
+        ApiKeyAccess possibleTestApiKeyAccess =
+            apiKeyAccessRepository.getApiKeyAccessById(
+                testApiKeyAccess.getId()
+            );
 
         if (possibleTestApiKeyAccess == null) {
-            fail("most recent apiKeyAccess doesn't exist, even though we created a test apiKeyAccess");
+            fail(
+                "most recent apiKeyAccess doesn't exist, even though we created a test apiKeyAccess"
+            );
         }
 
         /**
          * @note - see method note
          */
         if (!testApiKeyAccess.equals(possibleTestApiKeyAccess)) {
-            fail("the most recent apiKeyAccess does not equal to the test apiKeyAccess");
+            fail(
+                "the most recent apiKeyAccess does not equal to the test apiKeyAccess"
+            );
         }
     }
 
     @Test
     @Order(2)
     void findApiKeyAccessesByApiKeyId() {
-        List<ApiKeyAccess> apiKeysAccessList = apiKeyAccessRepository.getApiKeyAccessesByApiKeyId(testApiKeyAccess.getApiKeyId());
+        List<ApiKeyAccess> apiKeysAccessList =
+            apiKeyAccessRepository.getApiKeyAccessesByApiKeyId(
+                testApiKeyAccess.getApiKeyId()
+            );
 
         if (apiKeysAccessList == null) {
             fail("list of all apiKeysAccess is null");
         }
 
         if (apiKeysAccessList.size() == 0) {
-            fail("list of all apiKeysAccess is 0, when it should be at least 1 from the test apiKeyAccess");
+            fail(
+                "list of all apiKeysAccess is 0, when it should be at least 1 from the test apiKeyAccess"
+            );
         }
 
         if (!apiKeysAccessList.contains(testApiKeyAccess)) {
-            fail("test apiKeyAccess cannot be found in the list of all apiKeysAccess");
+            fail(
+                "test apiKeyAccess cannot be found in the list of all apiKeysAccess"
+            );
         }
     }
 
@@ -123,29 +151,42 @@ public class ApiKeyAccessRepositoryTest extends BaseRepositoryTest {
     @Order(3)
     void updateApiKeyAccessByIdTest() {
         ApiKeyAccess updatedApiKeyAccess = ApiKeyAccess.builder()
-                        .id(testApiKeyAccess.getId())
-                        .apiKeyId(testApiKeyAccess.getApiKeyId())
-                        .access(testApiKeyAccess.getAccess())
-                        .build();
+            .id(testApiKeyAccess.getId())
+            .apiKeyId(testApiKeyAccess.getApiKeyId())
+            .access(testApiKeyAccess.getAccess())
+            .build();
 
-        boolean result = apiKeyAccessRepository.updateApiKeyAccessById(updatedApiKeyAccess);
+        boolean result = apiKeyAccessRepository.updateApiKeyAccessById(
+            updatedApiKeyAccess
+        );
 
         if (!result) {
             fail("failure to update updateApiKeyAccessById");
         }
 
-        ApiKeyAccess resultApiKeyAccess = apiKeyAccessRepository.getApiKeyAccessById(testApiKeyAccess.getId());
+        ApiKeyAccess resultApiKeyAccess =
+            apiKeyAccessRepository.getApiKeyAccessById(
+                testApiKeyAccess.getId()
+            );
 
         assertNotNull(resultApiKeyAccess);
         assertEquals(resultApiKeyAccess.getId(), testApiKeyAccess.getId());
-        assertEquals(resultApiKeyAccess.getApiKeyId(), testApiKeyAccess.getApiKeyId());
-        assertEquals(resultApiKeyAccess.getAccess(), testApiKeyAccess.getAccess());
+        assertEquals(
+            resultApiKeyAccess.getApiKeyId(),
+            testApiKeyAccess.getApiKeyId()
+        );
+        assertEquals(
+            resultApiKeyAccess.getAccess(),
+            testApiKeyAccess.getAccess()
+        );
     }
 
     @Test
     @Order(4)
     void deleteTestApiKeyAccess() {
-        boolean isSuccessful = apiKeyAccessRepository.deleteApiKeyAccessById(testApiKeyAccess.getId());
+        boolean isSuccessful = apiKeyAccessRepository.deleteApiKeyAccessById(
+            testApiKeyAccess.getId()
+        );
 
         if (!isSuccessful) {
             fail("Failed to delete test apiKeyAccess");

@@ -1,10 +1,9 @@
 package com.patina.codebloom.common.db.repos.question.questionbank;
 
-import java.util.List;
-
-import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
+import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
+import java.util.List;
 
 public interface QuestionBankRepository {
     void createQuestion(QuestionBank question);

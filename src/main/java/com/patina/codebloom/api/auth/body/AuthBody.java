@@ -3,6 +3,7 @@ package com.patina.codebloom.api.auth.body;
 import jakarta.validation.constraints.Max;
 
 public class AuthBody {
+
     @Max(255)
     private String nickname;
 

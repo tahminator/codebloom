@@ -2,13 +2,13 @@ package com.patina.codebloom.jda.client.options;
 
 import java.awt.Color;
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class EmbeddedImagesMessageOptions {
+
     private String title;
     private String description;
     private String footerText;

@@ -1,40 +1,44 @@
 package com.patina.codebloom.common.db.repos.session;
 
+import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.models.Session;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
-
 import org.springframework.stereotype.Component;
-
-import com.patina.codebloom.common.db.DbConnection;
-import com.patina.codebloom.common.db.models.Session;
 
 @Component
 public class SessionSqlRepository implements SessionRepository {
+
     private Connection conn;
 
     public SessionSqlRepository(final DbConnection dbConnection) {
         this.conn = dbConnection.getConn();
     }
 
-    private Session parseResultSetToSession(final ResultSet resultSet) throws SQLException {
+    private Session parseResultSetToSession(final ResultSet resultSet)
+        throws SQLException {
         return Session.builder()
-                        .id(resultSet.getString("id"))
-                        .userId(resultSet.getString("userId"))
-                        .expiresAt(resultSet.getTimestamp("expiresAt").toLocalDateTime())
-                        .build();
+            .id(resultSet.getString("id"))
+            .userId(resultSet.getString("userId"))
+            .expiresAt(resultSet.getTimestamp("expiresAt").toLocalDateTime())
+            .build();
     }
 
-    private void updateSessionWithResultSet(final ResultSet resultSet, final Session session) throws SQLException {
+    private void updateSessionWithResultSet(
+        final ResultSet resultSet,
+        final Session session
+    ) throws SQLException {
         session.setId(resultSet.getString("id"));
     }
 
     @Override
     public void createSession(final Session session) {
-        String sql = "INSERT INTO \"Session\" (id, \"userId\", \"expiresAt\") VALUES (?, ?, ?) RETURNING \"id\"";
+        String sql =
+            "INSERT INTO \"Session\" (id, \"userId\", \"expiresAt\") VALUES (?, ?, ?) RETURNING \"id\"";
         // Don't want dashes inside of the cookie, so better to just remove it from the
         // ID altogether.
         session.setId(UUID.randomUUID().toString().replace("-", ""));
@@ -49,7 +53,6 @@ public class SessionSqlRepository implements SessionRepository {
                     updateSessionWithResultSet(rs, session);
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create session", e);
         }
@@ -58,9 +61,10 @@ public class SessionSqlRepository implements SessionRepository {
     @Override
     public Session getSessionById(final String id) {
         Session session = null;
-        String sql = "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE id=?";
+        String sql =
+            "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE id=?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -76,7 +80,8 @@ public class SessionSqlRepository implements SessionRepository {
 
     @Override
     public ArrayList<Session> getSessionsByUserId(final String id) {
-        String sql = "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE \"userId\"=?";
+        String sql =
+            "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE \"userId\"=?";
         ArrayList<Session> sessions = new ArrayList<>();
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -105,6 +110,5 @@ public class SessionSqlRepository implements SessionRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Error while deleting session", e);
         }
-
     }
 }

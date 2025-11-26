@@ -2,7 +2,6 @@ package com.patina.codebloom.scheduled.pg;
 
 import java.util.Arrays;
 import java.util.List;
-
 import lombok.Getter;
 import lombok.ToString;
 
@@ -27,9 +26,9 @@ public enum PgChannel {
 
     public static PgChannel fromChannelName(final String channelName) {
         return list()
-                        .stream()
-                        .filter(c -> c.getChannelName().equals(channelName))
-                        .findFirst()
-                        .orElseThrow();
+            .stream()
+            .filter(c -> c.getChannelName().equals(channelName))
+            .findFirst()
+            .orElseThrow();
     }
 }

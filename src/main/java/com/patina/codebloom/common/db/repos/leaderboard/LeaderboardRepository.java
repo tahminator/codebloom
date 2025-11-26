@@ -1,11 +1,10 @@
 package com.patina.codebloom.common.db.repos.leaderboard;
 
-import java.util.List;
-
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import com.patina.codebloom.common.page.Indexed;
+import java.util.List;
 
 public interface LeaderboardRepository {
     Leaderboard getRecentLeaderboardMetadata();
@@ -17,9 +16,14 @@ public interface LeaderboardRepository {
      * {@link #getLeaderboardUsersById} instead.
      */
     @Deprecated
-    List<UserWithScore> getRecentLeaderboardUsers(LeaderboardFilterOptions options);
+    List<UserWithScore> getRecentLeaderboardUsers(
+        LeaderboardFilterOptions options
+    );
 
-    List<UserWithScore> getLeaderboardUsersById(String id, LeaderboardFilterOptions options);
+    List<UserWithScore> getLeaderboardUsersById(
+        String id,
+        LeaderboardFilterOptions options
+    );
 
     /**
      * Returns an ordered list of {@code UserWithScore} wrapped in {@code Indexed},
@@ -33,7 +37,10 @@ public interface LeaderboardRepository {
      * @implNote Filter options are passed to {@code getLeaderboardUsersById} only
      * to fetch the users, not to determine their global rank.
      */
-    List<Indexed<UserWithScore>> getGlobalRankedIndexedLeaderboardUsersById(String leaderboardId, LeaderboardFilterOptions options);
+    List<Indexed<UserWithScore>> getGlobalRankedIndexedLeaderboardUsersById(
+        String leaderboardId,
+        LeaderboardFilterOptions options
+    );
 
     /**
      * Returns an ordered list of {@code UserWithScore} wrapped in {@code Indexed},
@@ -47,7 +54,10 @@ public interface LeaderboardRepository {
      *
      * @implNote All filter options are used to calculate index, excluding search.
      */
-    List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(String leaderboardId, LeaderboardFilterOptions options);
+    List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(
+        String leaderboardId,
+        LeaderboardFilterOptions options
+    );
 
     /**
      * Returns a specific user's global rank on the leaderboard wrapped in
@@ -58,7 +68,10 @@ public interface LeaderboardRepository {
      * @param userId The ID of the user to fetch
      * @return The user with their global rank, or null if user not found
      */
-    Indexed<UserWithScore> getGlobalRankedUserById(String leaderboardId, String userId);
+    Indexed<UserWithScore> getGlobalRankedUserById(
+        String leaderboardId,
+        String userId
+    );
 
     /**
      * Returns a specific user's filtered rank on the leaderboard wrapped in
@@ -70,7 +83,11 @@ public interface LeaderboardRepository {
      * @param options The filter options to apply when calculating rank
      * @return The user with their filtered rank, or null if user not found
      */
-    Indexed<UserWithScore> getFilteredRankedUserById(String leaderboardId, String userId, LeaderboardFilterOptions options);
+    Indexed<UserWithScore> getFilteredRankedUserById(
+        String leaderboardId,
+        String userId,
+        LeaderboardFilterOptions options
+    );
 
     boolean disableLeaderboardById(String leaderboardId);
 
@@ -103,7 +120,11 @@ public interface LeaderboardRepository {
 
     boolean addUserToLeaderboard(String userId, String leaderboardId);
 
-    boolean updateUserPointsFromLeaderboard(String leaderboardId, String userId, int totalScore);
+    boolean updateUserPointsFromLeaderboard(
+        String leaderboardId,
+        String userId,
+        int totalScore
+    );
 
     /**
      * @deprecated This method is no longer recommended. Use
@@ -112,11 +133,16 @@ public interface LeaderboardRepository {
     @Deprecated
     int getRecentLeaderboardUserCount(LeaderboardFilterOptions options);
 
-    int getLeaderboardUserCountById(String id, LeaderboardFilterOptions options);
+    int getLeaderboardUserCountById(
+        String id,
+        LeaderboardFilterOptions options
+    );
 
     int getLeaderboardCount();
 
-    List<Leaderboard> getAllLeaderboardsShallow(LeaderboardFilterOptions options);
+    List<Leaderboard> getAllLeaderboardsShallow(
+        LeaderboardFilterOptions options
+    );
 
     boolean addAllUsersToLeaderboard(String leaderboardId);
 }

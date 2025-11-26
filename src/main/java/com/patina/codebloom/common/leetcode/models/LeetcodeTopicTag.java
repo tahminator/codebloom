@@ -16,6 +16,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @EqualsAndHashCode
 public class LeetcodeTopicTag {
+
     private String name;
     private String slug;
 }

@@ -8,6 +8,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public final class Pair<L, R> {
+
     private final L left;
     private final R right;
 

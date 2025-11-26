@@ -2,9 +2,12 @@ package com.patina.codebloom.db.auth;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+import com.patina.codebloom.common.db.models.auth.Auth;
+import com.patina.codebloom.common.db.repos.auth.AuthRepository;
+import com.patina.codebloom.db.BaseRepositoryTest;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,17 +18,12 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.patina.codebloom.common.db.models.auth.Auth;
-import com.patina.codebloom.common.db.repos.auth.AuthRepository;
-import com.patina.codebloom.db.BaseRepositoryTest;
-
-import lombok.extern.slf4j.Slf4j;
-
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
 public class AuthRepositoryTest extends BaseRepositoryTest {
+
     private AuthRepository authRepository;
     private Auth testAuth;
 
@@ -37,9 +35,9 @@ public class AuthRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void createTestAuth() {
         testAuth = Auth.builder()
-                        .token(UUID.randomUUID().toString())
-                        .csrf(UUID.randomUUID().toString())
-                        .build();
+            .token(UUID.randomUUID().toString())
+            .csrf(UUID.randomUUID().toString())
+            .build();
 
         authRepository.createAuth(testAuth);
     }

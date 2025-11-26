@@ -1,13 +1,13 @@
 package com.patina.codebloom.common.components;
 
-import org.springframework.stereotype.Component;
-
+import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
-import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DuelManager {
+
     private final LobbyRepository lobbyRepository;
 
     public DuelManager(final LobbyRepository lobbyRepository) {
@@ -15,10 +15,11 @@ public class DuelManager {
     }
 
     public DuelData generateDuelData(final String lobbyId) {
-        var fetchedLobby = lobbyRepository.findLobbyById(lobbyId).map(LobbyDto::fromLobby).orElse(null);
+        var fetchedLobby = lobbyRepository
+            .findLobbyById(lobbyId)
+            .map(LobbyDto::fromLobby)
+            .orElse(null);
 
-        return DuelData.builder()
-                        .lobby(fetchedLobby)
-                        .build();
+        return DuelData.builder().lobby(fetchedLobby).build();
     }
 }

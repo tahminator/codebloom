@@ -8,5 +8,6 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 public class IngestLogBody {
+
     private String info;
 }

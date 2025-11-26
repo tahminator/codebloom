@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.dto.autogen;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -9,8 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UnsafeEmptySuccessResponse {
+
     @Schema(defaultValue = "true")
     private boolean success;
+
     private String message;
 
     public boolean isSuccess() {

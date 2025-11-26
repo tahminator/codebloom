@@ -1,9 +1,8 @@
 package com.patina.codebloom.common.db.repos.task;
 
-import java.util.List;
-
 import com.patina.codebloom.common.db.models.task.BackgroundTask;
 import com.patina.codebloom.common.db.models.task.BackgroundTaskEnum;
+import java.util.List;
 
 public interface BackgroundTaskRepository {
     /**
@@ -23,9 +22,13 @@ public interface BackgroundTaskRepository {
 
     BackgroundTask getBackgroundTaskById(String id);
 
-    List<BackgroundTask> getBackgroundTasksByTaskEnum(BackgroundTaskEnum taskEnum);
+    List<BackgroundTask> getBackgroundTasksByTaskEnum(
+        BackgroundTaskEnum taskEnum
+    );
 
-    BackgroundTask getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum taskEnum);
+    BackgroundTask getMostRecentlyCompletedBackgroundTaskByTaskEnum(
+        BackgroundTaskEnum taskEnum
+    );
 
     /**
      * @note - The provided object's methods will be overridden with any returned

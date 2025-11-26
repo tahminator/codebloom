@@ -1,16 +1,13 @@
 package com.patina.codebloom.common.jedis;
 
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import com.patina.codebloom.common.env.Env;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.params.SetParams;
 
@@ -22,12 +19,16 @@ import redis.clients.jedis.params.SetParams;
 @Slf4j
 @EnableConfigurationProperties({ JedisClientConfiguration.class })
 public class JedisClient {
+
     private final JedisClientConfiguration jedisClientConfiguration;
 
     private UnifiedJedis client;
     private Env env;
 
-    public JedisClient(final JedisClientConfiguration jedisClientConfiguration, final Env env) {
+    public JedisClient(
+        final JedisClientConfiguration jedisClientConfiguration,
+        final Env env
+    ) {
         this.jedisClientConfiguration = jedisClientConfiguration;
         this.env = env;
     }
@@ -67,7 +68,9 @@ public class JedisClient {
      */
     public void setAuth(final String auth, final long expires) {
         if (!env.isCi()) {
-            log.error("You called JedisClient.setAuth in a non-CI environment. As a result, this operation has failed, but will not error.");
+            log.error(
+                "You called JedisClient.setAuth in a non-CI environment. As a result, this operation has failed, but will not error."
+            );
             return;
         }
 
@@ -78,7 +81,11 @@ public class JedisClient {
      * Set auth token and when it should be ejected from the cache. If not in CI,
      * will register an error message, but will no-op.
      */
-    public void setAuth(final String auth, final long units, final ChronoUnit chronoUnit) {
+    public void setAuth(
+        final String auth,
+        final long units,
+        final ChronoUnit chronoUnit
+    ) {
         setAuth(auth, chronoUnit.getDuration().multipliedBy(units).toSeconds());
     }
 }

@@ -1,8 +1,7 @@
 package com.patina.codebloom.common.db.repos.potd;
 
-import java.util.ArrayList;
-
 import com.patina.codebloom.common.db.models.potd.POTD;
+import java.util.ArrayList;
 
 public interface POTDRepository {
     POTD createPOTD(POTD potd);

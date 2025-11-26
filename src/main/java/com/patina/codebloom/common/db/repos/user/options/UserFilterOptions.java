@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.repos.user.options;
 
 import java.time.OffsetDateTime;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,6 +11,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class UserFilterOptions {
+
     /**
      * null indicates no preference to time.
      */

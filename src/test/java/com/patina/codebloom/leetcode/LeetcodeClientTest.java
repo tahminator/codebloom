@@ -1,19 +1,10 @@
 package com.patina.codebloom.leetcode;
 
-import java.util.List;
-import java.util.Set;
 // import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-// import static org.junit.jupiter.api.Assertions.fail;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 
 // import com.google.common.base.Strings;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
@@ -27,24 +18,39 @@ import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 // import com.patina.codebloom.common.utils.function.FunctionUtils;
 import com.patina.codebloom.config.TestJobNotifyListener;
 import com.patina.codebloom.scheduled.auth.LeetcodeAuthStealer;
+import java.util.List;
+import java.util.Set;
+// import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("ci")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Import(TestJobNotifyListener.class)
 public class LeetcodeClientTest {
+
     private final LeetcodeClient leetcodeClient;
     private final LeetcodeAuthStealer leetcodeAuthStealer;
 
     @Autowired
-    public LeetcodeClientTest(final ThrottledLeetcodeClient throttledLeetcodeClient, final LeetcodeAuthStealer leetcodeAuthStealer) {
+    public LeetcodeClientTest(
+        final ThrottledLeetcodeClient throttledLeetcodeClient,
+        final LeetcodeAuthStealer leetcodeAuthStealer
+    ) {
         this.leetcodeClient = throttledLeetcodeClient;
         this.leetcodeAuthStealer = leetcodeAuthStealer;
     }
 
     @Test
     void questionSlugValid() {
-        LeetcodeQuestion question = leetcodeClient.findQuestionBySlug("trapping-rain-water");
+        LeetcodeQuestion question = leetcodeClient.findQuestionBySlug(
+            "trapping-rain-water"
+        );
 
         assertTrue(question != null);
 
@@ -132,7 +138,8 @@ public class LeetcodeClientTest {
 
     @Test
     void userListValid() {
-        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
+        List<LeetcodeSubmission> userList =
+            leetcodeClient.findSubmissionsByUsername("az2924");
 
         assertTrue(userList != null);
 
@@ -200,7 +207,8 @@ public class LeetcodeClientTest {
 
     @Test
     void assertTwentyReturnedSubmissions() {
-        List<LeetcodeSubmission> submissions = leetcodeClient.findSubmissionsByUsername("az2924");
+        List<LeetcodeSubmission> submissions =
+            leetcodeClient.findSubmissionsByUsername("az2924");
         // make sure we are getting 20 submissions
         int count = 0;
         for (LeetcodeSubmission submission : submissions) {
@@ -212,7 +220,8 @@ public class LeetcodeClientTest {
 
     @Test
     void assertFiveReturnedSubmissions() {
-        List<LeetcodeSubmission> submissions = leetcodeClient.findSubmissionsByUsername("az2924", 5);
+        List<LeetcodeSubmission> submissions =
+            leetcodeClient.findSubmissionsByUsername("az2924", 5);
         // make sure we are getting 5 submissions
         int count = 0;
         for (LeetcodeSubmission submission : submissions) {

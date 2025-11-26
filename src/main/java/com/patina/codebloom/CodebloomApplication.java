@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableAsync
 public class CodebloomApplication {
+
     public static void main(final String[] args) {
         SpringApplication.run(CodebloomApplication.class, args);
     }

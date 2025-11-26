@@ -13,6 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @EqualsAndHashCode
 public class NewLeaderboardBody {
+
     @NotBlank
     private String name;
 }

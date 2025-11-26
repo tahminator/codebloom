@@ -10,5 +10,6 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class DeleteAnnouncementBody {
+
     private String id;
 }

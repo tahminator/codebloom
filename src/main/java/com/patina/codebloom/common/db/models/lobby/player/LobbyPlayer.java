@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class LobbyPlayer {
+
     private String id;
 
     private String lobbyId;

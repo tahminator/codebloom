@@ -1,13 +1,12 @@
 package com.patina.codebloom.common.db.repos.achievements;
 
-import java.util.List;
-
 import com.patina.codebloom.common.db.models.achievements.Achievement;
+import java.util.List;
 
 public interface AchievementRepository {
     /**
      * Creates a new achievement in the database.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -23,7 +22,7 @@ public interface AchievementRepository {
     void createAchievement(Achievement achievement);
     /**
      * Updates an existing achievement by its ID.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -35,7 +34,7 @@ public interface AchievementRepository {
      * <li>isActive</li>
      * <li>deletedAt</li>
      * </ul>
-     * @return updated achievement if successful 
+     * @return updated achievement if successful
      * */
     Achievement updateAchievement(Achievement achievement);
 

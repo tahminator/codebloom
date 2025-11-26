@@ -12,24 +12,25 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
+import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class LobbyNotifyHandlerTest {
 
     private DuelManager duelManager;
     private SseWrapper<ApiResponder<DuelData>> sseWrapper;
     private LobbyNotifyHandler lobbyNotifyHandler;
-    private ConcurrentHashMap<String, Set<SseWrapper<ApiResponder<DuelData>>>> partyIdToSseEmitters;
+    private ConcurrentHashMap<
+        String,
+        Set<SseWrapper<ApiResponder<DuelData>>>
+    > partyIdToSseEmitters;
 
     @BeforeEach
     void setUp() {
@@ -69,7 +70,9 @@ public class LobbyNotifyHandlerTest {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
-        doThrow(new IOException("SSE connection failed")).when(sseWrapper).sendData(any(ApiResponder.class));
+        doThrow(new IOException("SSE connection failed"))
+            .when(sseWrapper)
+            .sendData(any(ApiResponder.class));
 
         lobbyNotifyHandler.register(partyId, sseWrapper);
 
@@ -132,13 +135,19 @@ public class LobbyNotifyHandlerTest {
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
 
-        SseWrapper<ApiResponder<DuelData>> workingEmitter = mock(SseWrapper.class);
-        SseWrapper<ApiResponder<DuelData>> failingEmitter = mock(SseWrapper.class);
+        SseWrapper<ApiResponder<DuelData>> workingEmitter = mock(
+            SseWrapper.class
+        );
+        SseWrapper<ApiResponder<DuelData>> failingEmitter = mock(
+            SseWrapper.class
+        );
 
         lobbyNotifyHandler.register(partyId, workingEmitter);
         lobbyNotifyHandler.register(partyId, failingEmitter);
 
-        doThrow(new IOException("Connection failed")).when(failingEmitter).sendData(any(ApiResponder.class));
+        doThrow(new IOException("Connection failed"))
+            .when(failingEmitter)
+            .sendData(any(ApiResponder.class));
 
         lobbyNotifyHandler.handle(partyId);
 
@@ -153,7 +162,9 @@ public class LobbyNotifyHandlerTest {
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
 
         lobbyNotifyHandler.register(partyId, sseWrapper);
-        doThrow(new IOException("Connection failed")).when(sseWrapper).sendData(any(ApiResponder.class));
+        doThrow(new IOException("Connection failed"))
+            .when(sseWrapper)
+            .sendData(any(ApiResponder.class));
 
         lobbyNotifyHandler.handle(partyId);
 
@@ -175,7 +186,9 @@ public class LobbyNotifyHandlerTest {
     @Test
     void testGetDataFailure() throws IOException {
         String partyId = "test-party-id";
-        when(duelManager.generateDuelData(partyId)).thenThrow(new RuntimeException("Database connection failed"));
+        when(duelManager.generateDuelData(partyId)).thenThrow(
+            new RuntimeException("Database connection failed")
+        );
 
         lobbyNotifyHandler.register(partyId, sseWrapper);
 
@@ -187,7 +200,9 @@ public class LobbyNotifyHandlerTest {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
-        doThrow(new IOException("SSE connection failed")).when(sseWrapper).sendData(any(ApiResponder.class));
+        doThrow(new IOException("SSE connection failed"))
+            .when(sseWrapper)
+            .sendData(any(ApiResponder.class));
 
         lobbyNotifyHandler.register(partyId, sseWrapper);
 

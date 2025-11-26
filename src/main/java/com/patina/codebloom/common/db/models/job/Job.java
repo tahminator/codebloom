@@ -1,10 +1,8 @@
 package com.patina.codebloom.common.db.models.job;
 
-import java.time.OffsetDateTime;
-
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
-
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,6 +15,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Job {
+
     @NotNullColumn
     private String id;
 

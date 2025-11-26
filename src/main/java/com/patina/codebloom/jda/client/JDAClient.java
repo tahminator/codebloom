@@ -1,19 +1,14 @@
 package com.patina.codebloom.jda.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import com.patina.codebloom.jda.JDAInitializer;
-import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 import com.patina.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
+import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
 import com.patina.codebloom.jda.properties.patina.JDAPatinaProperties;
 import com.patina.codebloom.jda.properties.reporting.JDAErrorReportingProperties;
 import com.patina.codebloom.jda.properties.reporting.JDALogReportingProperties;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,14 +18,23 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.utils.FileUpload;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * Use this client to interface with any required Discord bot logic.
  */
 @Component
 @Slf4j
-@EnableConfigurationProperties({ JDAPatinaProperties.class, JDAErrorReportingProperties.class, JDALogReportingProperties.class })
+@EnableConfigurationProperties(
+    {
+        JDAPatinaProperties.class,
+        JDAErrorReportingProperties.class,
+        JDALogReportingProperties.class,
+    }
+)
 public class JDAClient {
+
     private final JDAInitializer jdaInitializer;
     private JDA jda;
 
@@ -43,10 +47,12 @@ public class JDAClient {
     @Getter
     private final JDALogReportingProperties jdaLogReportingProperties;
 
-    JDAClient(final JDAInitializer jdaInitializer,
-                    final JDAPatinaProperties jdaPatinaProperties,
-                    final JDAErrorReportingProperties jdaReportingProperties,
-                    final JDALogReportingProperties jdaLogReportingProperties) {
+    JDAClient(
+        final JDAInitializer jdaInitializer,
+        final JDAPatinaProperties jdaPatinaProperties,
+        final JDAErrorReportingProperties jdaReportingProperties,
+        final JDALogReportingProperties jdaLogReportingProperties
+    ) {
         this.jdaInitializer = jdaInitializer;
         this.jdaPatinaProperties = jdaPatinaProperties;
         this.jdaErrorReportingProperties = jdaReportingProperties;
@@ -62,7 +68,10 @@ public class JDAClient {
             jda.awaitReady();
         } catch (InterruptedException e) {
             e.printStackTrace();
-            throw new RuntimeException("Something went wrong when awaiting JDA", e);
+            throw new RuntimeException(
+                "Something went wrong when awaiting JDA",
+                e
+            );
         }
     }
 
@@ -86,14 +95,22 @@ public class JDAClient {
     public Guild getGuildById(final long guildId) {
         String guildIdString = String.valueOf(guildId);
         isJdaReadyOrThrow();
-        return jda.getGuilds().stream().filter(g -> g.getId().equals(guildIdString)).findFirst().orElse(null);
+        return jda
+            .getGuilds()
+            .stream()
+            .filter(g -> g.getId().equals(guildIdString))
+            .findFirst()
+            .orElse(null);
     }
 
     public List<Member> getMemberListByGuildId(final String guildId) {
         isJdaReadyOrThrow();
         List<Guild> guilds = jda.getGuilds();
 
-        Optional<Guild> optionalGuild = guilds.stream().filter(g -> g.getId().equals(guildId)).findFirst();
+        Optional<Guild> optionalGuild = guilds
+            .stream()
+            .filter(g -> g.getId().equals(guildId))
+            .findFirst();
 
         if (optionalGuild.isEmpty()) {
             return List.of();
@@ -122,27 +139,40 @@ public class JDAClient {
         }
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                        .setTitle(options.getTitle())
-                        .setDescription(options.getDescription())
-                        .setFooter(options.getFooterText(), options.getFooterIcon())
-                        .setColor(options.getColor());
+            .setTitle(options.getTitle())
+            .setDescription(options.getDescription())
+            .setFooter(options.getFooterText(), options.getFooterIcon())
+            .setColor(options.getColor());
 
-        if (options.getFileName().endsWith(".png") || options.getFileName().endsWith(".jpg")) {
-            embedBuilder.setImage(String.format("attachment://%s", options.getFileName()));
+        if (
+            options.getFileName().endsWith(".png") ||
+            options.getFileName().endsWith(".jpg")
+        ) {
+            embedBuilder.setImage(
+                String.format("attachment://%s", options.getFileName())
+            );
         }
 
         MessageEmbed embed = embedBuilder.build();
 
         log.info("Message has been built, ready to send...");
 
-        channel.sendFiles(FileUpload.fromData(options.getFileBytes(), options.getFileName()))
-                        .setEmbeds(embed)
-                        .queue();
+        channel
+            .sendFiles(
+                FileUpload.fromData(
+                    options.getFileBytes(),
+                    options.getFileName()
+                )
+            )
+            .setEmbeds(embed)
+            .queue();
 
         log.info("Message has been queued");
     }
 
-    public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options) {
+    public void sendEmbedWithImages(
+        final EmbeddedImagesMessageOptions options
+    ) {
         isJdaReadyOrThrow();
         Guild guild = getGuildById(options.getGuildId());
         if (guild == null) {
@@ -168,29 +198,29 @@ public class JDAClient {
 
         List<FileUpload> uploads = new ArrayList<>();
         for (int i = 0; i < filesBytes.size(); i++) {
-            String name = (fileNames != null && i < fileNames.size()) ? fileNames.get(i) : "image" + i + ".png";
+            String name = (fileNames != null && i < fileNames.size())
+                ? fileNames.get(i)
+                : "image" + i + ".png";
             uploads.add(FileUpload.fromData(filesBytes.get(i), name));
         }
 
         List<MessageEmbed> embeds = new ArrayList<>();
         EmbedBuilder firstEmbed = new EmbedBuilder()
-                        .setColor(options.getColor())
-                        .setTitle(options.getTitle())
-                        .setUrl("https://codebloom.patinanetwork.org")
-                        .setDescription(options.getDescription())
-                        .setFooter(options.getFooterText(), options.getFooterIcon())
-                        .setImage("attachment://" + fileNames.get(0));
+            .setColor(options.getColor())
+            .setTitle(options.getTitle())
+            .setUrl("https://codebloom.patinanetwork.org")
+            .setDescription(options.getDescription())
+            .setFooter(options.getFooterText(), options.getFooterIcon())
+            .setImage("attachment://" + fileNames.get(0));
 
         embeds.add(firstEmbed.build());
         for (int i = 1; i < fileNames.size(); i++) {
             EmbedBuilder additionalEmbed = new EmbedBuilder()
-                            .setUrl("https://codebloom.patinanetwork.org")
-                            .setImage("attachment://" + fileNames.get(i));
+                .setUrl("https://codebloom.patinanetwork.org")
+                .setImage("attachment://" + fileNames.get(i));
             embeds.add(additionalEmbed.build());
         }
 
-        channel.sendMessageEmbeds(embeds)
-                        .setFiles(uploads)
-                        .queue();
+        channel.sendMessageEmbeds(embeds).setFiles(uploads).queue();
     }
 }

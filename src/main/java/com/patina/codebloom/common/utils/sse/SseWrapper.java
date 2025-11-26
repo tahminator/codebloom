@@ -1,16 +1,13 @@
 package com.patina.codebloom.common.utils.sse;
 
-import java.io.IOException;
-
-import org.springframework.http.MediaType;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import java.io.IOException;
 import lombok.Getter;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
  * Use {@code SseWrapper} instead of {@code SseEmitter} to:
@@ -22,6 +19,7 @@ import lombok.Getter;
  * </ul>
  */
 public class SseWrapper<T> extends SseEmitter {
+
     @Schema(requiredMode = RequiredMode.REQUIRED)
     @Getter
     @JsonUnwrapped

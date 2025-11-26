@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class SendEmailOptions {
+
     private final String recipientEmail;
     private final String subject;
     private final String body;

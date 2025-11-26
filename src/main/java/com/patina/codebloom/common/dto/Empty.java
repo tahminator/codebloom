@@ -21,10 +21,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonSerialize
 public final class Empty {
+
     private static final Empty INSTANCE = new Empty();
 
-    private Empty() {
-    }
+    private Empty() {}
 
     /**
      * Use {@code Empty.of()} when you want to return a successful response, but

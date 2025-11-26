@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.leetcode.models;
 
 public class Lang {
+
     private String name;
     private String verboseName;
 

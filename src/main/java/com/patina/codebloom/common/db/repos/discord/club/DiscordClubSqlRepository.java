@@ -1,5 +1,11 @@
 package com.patina.codebloom.common.db.repos.discord.club;
 
+import com.patina.codebloom.common.db.DbConnection;
+import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
+import com.patina.codebloom.common.db.models.discord.DiscordClub;
+import com.patina.codebloom.common.db.models.usertag.Tag;
+import com.patina.codebloom.common.db.repos.discord.club.metadata.DiscordClubMetadataSqlRepository;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,15 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.stereotype.Component;
-
-import com.patina.codebloom.common.db.DbConnection;
-import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
-import com.patina.codebloom.common.db.models.discord.DiscordClub;
-import com.patina.codebloom.common.db.models.usertag.Tag;
-import com.patina.codebloom.common.db.repos.discord.club.metadata.DiscordClubMetadataSqlRepository;
-import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 
 @Component
 public class DiscordClubSqlRepository implements DiscordClubRepository {
@@ -25,53 +23,79 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
 
     private Connection conn;
 
-    public DiscordClubSqlRepository(final DbConnection dbConnection, final DiscordClubMetadataSqlRepository discordClubMetadataSqlRepository) {
+    public DiscordClubSqlRepository(
+        final DbConnection dbConnection,
+        final DiscordClubMetadataSqlRepository discordClubMetadataSqlRepository
+    ) {
         this.conn = dbConnection.getConn();
-        this.discordClubMetadataSqlRepository = discordClubMetadataSqlRepository;
+        this.discordClubMetadataSqlRepository =
+            discordClubMetadataSqlRepository;
     }
 
-    private DiscordClub parseResultSetTDiscordClub(final ResultSet rs) throws SQLException {
+    private DiscordClub parseResultSetTDiscordClub(final ResultSet rs)
+        throws SQLException {
         var id = rs.getString("id");
         var name = rs.getString("name");
         var description = Optional.ofNullable(rs.getString("description"));
-        var createdAt = StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class));
-        var deletedAt = Optional.ofNullable(rs.getObject("deletedAt", OffsetDateTime.class)).map(StandardizedOffsetDateTime::normalize);
+        var createdAt = StandardizedOffsetDateTime.normalize(
+            rs.getObject("createdAt", OffsetDateTime.class)
+        );
+        var deletedAt = Optional.ofNullable(
+            rs.getObject("deletedAt", OffsetDateTime.class)
+        ).map(StandardizedOffsetDateTime::normalize);
         Tag tag = Tag.valueOf(rs.getString("tag"));
-        var metadata = discordClubMetadataSqlRepository.getDiscordClubMetadataByClubId(id);
+        var metadata =
+            discordClubMetadataSqlRepository.getDiscordClubMetadataByClubId(id);
 
         return DiscordClub.builder()
-                        .id(id)
-                        .name(name)
-                        .description(description)
-                        .tag(tag)
-                        .discordClubMetadata(metadata)
-                        .createdAt(createdAt)
-                        .deletedAt(deletedAt)
-                        .build();
+            .id(id)
+            .name(name)
+            .description(description)
+            .tag(tag)
+            .discordClubMetadata(metadata)
+            .createdAt(createdAt)
+            .deletedAt(deletedAt)
+            .build();
     }
 
     @Override
     public void createDiscordClub(final DiscordClub discordClub) {
         discordClub.setId(UUID.randomUUID().toString());
         String sql = """
-                        INSERT INTO "DiscordClub"
-                            (id, name, description, tag, "deletedAt")
-                        VALUES
-                            (:id, :name, :description, :tag, :deletedAt)
-                        RETURNING
-                            "createdAt"
-                        """;
+            INSERT INTO "DiscordClub"
+                (id, name, description, tag, "deletedAt")
+            VALUES
+                (:id, :name, :description, :tag, :deletedAt)
+            RETURNING
+                "createdAt"
+            """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (
+            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
+        ) {
             stmt.setObject("id", UUID.fromString(discordClub.getId()));
             stmt.setString("name", discordClub.getName());
-            stmt.setString("description", discordClub.getDescription().orElse(null));
-            stmt.setObject("tag", discordClub.getTag().name(), java.sql.Types.OTHER);
-            stmt.setObject("deletedAt", discordClub.getDeletedAt().orElse(null));
+            stmt.setString(
+                "description",
+                discordClub.getDescription().orElse(null)
+            );
+            stmt.setObject(
+                "tag",
+                discordClub.getTag().name(),
+                java.sql.Types.OTHER
+            );
+            stmt.setObject(
+                "deletedAt",
+                discordClub.getDeletedAt().orElse(null)
+            );
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    discordClub.setCreatedAt(StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class)));
+                    discordClub.setCreatedAt(
+                        StandardizedOffsetDateTime.normalize(
+                            rs.getObject("createdAt", OffsetDateTime.class)
+                        )
+                    );
                 }
             }
         } catch (SQLException e) {
@@ -82,14 +106,16 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
     @Override
     public Optional<DiscordClub> getDiscordClubById(final String id) {
         String sql = """
-                        SELECT
-                            *
-                        FROM
-                            "DiscordClub"
-                        WHERE
-                            id = :id
-                        """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            SELECT
+                *
+            FROM
+                "DiscordClub"
+            WHERE
+                id = :id
+            """;
+        try (
+            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
+        ) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -105,22 +131,34 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
     @Override
     public boolean updateDiscordClubById(final DiscordClub discordClub) {
         String sql = """
-                        UPDATE
-                            "DiscordClub"
-                        SET
-                            "name" = :name,
-                            "description" = :description,
-                            "tag" = :tag,
-                            "deletedAt" = :deletedAt
-                        WHERE
-                            id = :id
-                        """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            UPDATE
+                "DiscordClub"
+            SET
+                "name" = :name,
+                "description" = :description,
+                "tag" = :tag,
+                "deletedAt" = :deletedAt
+            WHERE
+                id = :id
+            """;
+        try (
+            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
+        ) {
             stmt.setObject("id", UUID.fromString(discordClub.getId()));
             stmt.setString("name", discordClub.getName());
-            stmt.setString("description", discordClub.getDescription().orElse(null));
-            stmt.setObject("tag", discordClub.getTag().name(), java.sql.Types.OTHER);
-            stmt.setObject("deletedAt", discordClub.getDeletedAt().orElse(null));
+            stmt.setString(
+                "description",
+                discordClub.getDescription().orElse(null)
+            );
+            stmt.setObject(
+                "tag",
+                discordClub.getTag().name(),
+                java.sql.Types.OTHER
+            );
+            stmt.setObject(
+                "deletedAt",
+                discordClub.getDeletedAt().orElse(null)
+            );
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
@@ -132,10 +170,12 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
     @Override
     public boolean deleteDiscordClubById(final String id) {
         String sql = """
-                        DELETE FROM "DiscordClub"
-                        WHERE id = :id
-                        """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            DELETE FROM "DiscordClub"
+            WHERE id = :id
+            """;
+        try (
+            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
+        ) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -149,24 +189,28 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
         List<DiscordClub> result = new ArrayList<>();
 
         String sql = """
-                        SELECT
-                            *
-                        FROM
-                            "DiscordClub"
-                        WHERE
-                            "deletedAt" IS NULL
-                        """;
+            SELECT
+                *
+            FROM
+                "DiscordClub"
+            WHERE
+                "deletedAt" IS NULL
+            """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (
+            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
+        ) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     result.add(parseResultSetTDiscordClub(rs));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all active Discord clubs", e);
+            throw new RuntimeException(
+                "Failed to get all active Discord clubs",
+                e
+            );
         }
         return result;
     }
-
 }

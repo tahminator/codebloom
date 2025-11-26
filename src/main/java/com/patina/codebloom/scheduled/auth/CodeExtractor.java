@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CodeExtractor {
+
     public static String extractCode(final String content) {
         Pattern pattern = Pattern.compile("Verification code:\\s*(\\d{6})");
         Matcher matcher = pattern.matcher(content);

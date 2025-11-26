@@ -11,16 +11,20 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 /**
  * This is where the OAuth provider lives.
- * 
+ *
  * @see <a href= "https://github.com/tahminator/codebloom/tree/main/docs/auth.md">Authentication Documentation</a>
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    public SecurityConfig(final AuthenticationSuccessHandler customAuthenticationSuccessHandler) {
-        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
+    public SecurityConfig(
+        final AuthenticationSuccessHandler customAuthenticationSuccessHandler
+    ) {
+        this.customAuthenticationSuccessHandler =
+            customAuthenticationSuccessHandler;
     }
 
     /**
@@ -28,11 +32,23 @@ public class SecurityConfig {
      * then handles the authentication logic.
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).oauth2Login(oauth2 -> oauth2.authorizationEndpoint(auth -> auth
-                // This baseUri implicitly has {registrationId} at the end of it. That's why
-                // /api/auth/flow/discord still works.
-                .baseUri("/api/auth/flow")).redirectionEndpoint(auth -> auth.baseUri("/api/auth/flow/callback/{registrationId}")).successHandler(customAuthenticationSuccessHandler));
+    public SecurityFilterChain securityFilterChain(final HttpSecurity http)
+        throws Exception {
+        http
+            .csrf(AbstractHttpConfigurer::disable)
+            .oauth2Login(oauth2 ->
+                oauth2
+                    .authorizationEndpoint(auth ->
+                        auth
+                            // This baseUri implicitly has {registrationId} at the end of it. That's why
+                            // /api/auth/flow/discord still works.
+                            .baseUri("/api/auth/flow")
+                    )
+                    .redirectionEndpoint(auth ->
+                        auth.baseUri("/api/auth/flow/callback/{registrationId}")
+                    )
+                    .successHandler(customAuthenticationSuccessHandler)
+            );
 
         return http.build();
     }
@@ -40,6 +56,6 @@ public class SecurityConfig {
     // Remove the default login form that comes with SpringBoot Security.
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/login");
+        return web -> web.ignoring().requestMatchers("/login");
     }
 }

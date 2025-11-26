@@ -1,6 +1,7 @@
 package com.patina.codebloom.jwt;
 
 public class JWTTestObject {
+
     private String userId;
     private String email;
     private String role;

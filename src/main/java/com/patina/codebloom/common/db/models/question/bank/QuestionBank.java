@@ -1,13 +1,12 @@
 package com.patina.codebloom.common.db.models.question.bank;
 
-import java.time.OffsetDateTime;
-import java.util.List;
 import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
-
+import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,6 +19,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class QuestionBank {
+
     @NotNullColumn
     private String id;
 
@@ -52,5 +52,4 @@ public class QuestionBank {
      */
     @JoinColumn
     private List<QuestionTopic> topics;
-
 }

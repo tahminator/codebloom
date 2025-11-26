@@ -1,11 +1,9 @@
 package com.patina.codebloom.common.db.models.achievements;
 
-import java.time.OffsetDateTime;
-
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.usertag.Tag;
-
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

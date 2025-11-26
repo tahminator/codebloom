@@ -1,10 +1,8 @@
 package com.patina.codebloom.common.db.models.auth;
 
-import java.time.OffsetDateTime;
-
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
-
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,6 +17,7 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @ToString
 public class Auth {
+
     @NotNullColumn
     private String id;
 

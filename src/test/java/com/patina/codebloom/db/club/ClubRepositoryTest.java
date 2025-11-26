@@ -2,15 +2,14 @@ package com.patina.codebloom.db.club;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import com.patina.codebloom.common.db.models.club.Club;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.club.ClubSqlRepository;
 import com.patina.codebloom.db.BaseRepositoryTest;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -30,13 +29,13 @@ public class ClubRepositoryTest extends BaseRepositoryTest {
     void createClub() {
         long timestamp = System.currentTimeMillis();
         testClub = Club.builder()
-                        .name("Test Club")
-                        .description("Integration test club")
-                        .slug("test-club-" + timestamp)
-                        .splashIconUrl("")
-                        .password("testpassword123")
-                        .tag(Tag.Gwc)
-                        .build();
+            .name("Test Club")
+            .description("Integration test club")
+            .slug("test-club-" + timestamp)
+            .splashIconUrl("")
+            .password("testpassword123")
+            .tag(Tag.Gwc)
+            .build();
 
         repo.createClub(testClub);
         testClub = repo.getClubBySlug(testClub.getSlug());
@@ -75,14 +74,14 @@ public class ClubRepositoryTest extends BaseRepositoryTest {
     @Order(3)
     void testUpdateClub() {
         Club updatedClub = Club.builder()
-                        .id(testClub.getId())
-                        .name("Updated Club Name")
-                        .description("Updated Description")
-                        .slug(testClub.getSlug())
-                        .splashIconUrl("")
-                        .password("newpassword456")
-                        .tag(Tag.Gwc)
-                        .build();
+            .id(testClub.getId())
+            .name("Updated Club Name")
+            .description("Updated Description")
+            .slug(testClub.getSlug())
+            .splashIconUrl("")
+            .password("newpassword456")
+            .tag(Tag.Gwc)
+            .build();
 
         Club result = repo.updateClub(updatedClub);
 
@@ -99,13 +98,13 @@ public class ClubRepositoryTest extends BaseRepositoryTest {
     void testDeleteClubById() {
         long timestamp = System.currentTimeMillis();
         deletableClub = Club.builder()
-                        .name("Deletable Club")
-                        .description("Should be deleted")
-                        .slug("deletable-club-" + timestamp)
-                        .splashIconUrl("")
-                        .password("deletepassword")
-                        .tag(Tag.Gwc)
-                        .build();
+            .name("Deletable Club")
+            .description("Should be deleted")
+            .slug("deletable-club-" + timestamp)
+            .splashIconUrl("")
+            .password("deletepassword")
+            .tag(Tag.Gwc)
+            .build();
 
         repo.createClub(deletableClub);
         deletableClub = repo.getClubBySlug(deletableClub.getSlug());
@@ -127,13 +126,13 @@ public class ClubRepositoryTest extends BaseRepositoryTest {
     void testDeleteClubBySlug() {
         long timestamp = System.currentTimeMillis();
         Club deletableBySlugClub = Club.builder()
-                        .name("Deletable By Slug Club")
-                        .description("Should be deleted by slug")
-                        .slug("deletable-by-slug-club-" + timestamp)
-                        .splashIconUrl("")
-                        .password("deleteslugpassword")
-                        .tag(Tag.Gwc)
-                        .build();
+            .name("Deletable By Slug Club")
+            .description("Should be deleted by slug")
+            .slug("deletable-by-slug-club-" + timestamp)
+            .splashIconUrl("")
+            .password("deleteslugpassword")
+            .tag(Tag.Gwc)
+            .build();
 
         repo.createClub(deletableBySlugClub);
         deletableBySlugClub = repo.getClubBySlug(deletableBySlugClub.getSlug());
@@ -149,5 +148,4 @@ public class ClubRepositoryTest extends BaseRepositoryTest {
         Club deletedFetched = repo.getClubBySlug(deletableBySlugClub.getSlug());
         assertNull(deletedFetched);
     }
-
 }

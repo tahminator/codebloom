@@ -1,13 +1,13 @@
 package com.patina.codebloom.common.env;
 
 import java.util.List;
-
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Env {
+
     private final Environment environment;
 
     public Env(final Environment environment) {

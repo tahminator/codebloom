@@ -2,7 +2,6 @@ package com.patina.codebloom.common.security;
 
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.models.user.User;
-
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -15,6 +14,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class AuthenticationObject {
+
     private User user;
     private Session session;
 }

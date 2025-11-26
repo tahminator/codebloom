@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.models.lobby.player;
 
 import java.util.Optional;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,6 +13,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class LobbyPlayerQuestion {
+
     private String id;
 
     private String lobbyPlayerId;

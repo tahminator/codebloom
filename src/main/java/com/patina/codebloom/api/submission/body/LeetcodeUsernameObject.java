@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class LeetcodeUsernameObject {
+
     @NotNull
     @NotBlank
     private String leetcodeUsername;
@@ -19,5 +20,4 @@ public class LeetcodeUsernameObject {
     public void setLeetcodeUsername(final String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
     }
-
 }

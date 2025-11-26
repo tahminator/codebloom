@@ -1,18 +1,5 @@
 package com.patina.codebloom.api.user;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.user.User;
@@ -25,7 +12,6 @@ import com.patina.codebloom.common.dto.question.QuestionDto;
 import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,11 +19,26 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@Tag(name = "General user routes", description = "This controller is responsible for handling general user data, such as user profile, user submissions, and more.")
+@Tag(
+    name = "General user routes",
+    description = "This controller is responsible for handling general user data, such as user profile, user submissions, and more."
+)
 @RequestMapping("/api/user")
 public class UserController {
+
     /* Page size for submissions */
     private static final int SUBMISSIONS_PAGE_SIZE = 20;
 
@@ -45,79 +46,205 @@ public class UserController {
     private final UserRepository userRepository;
     private final QuestionTopicService questionTopicService;
 
-    public UserController(final QuestionRepository questionRepository, final UserRepository userRepository, final QuestionTopicService questionTopicService) {
+    public UserController(
+        final QuestionRepository questionRepository,
+        final UserRepository userRepository,
+        final QuestionTopicService questionTopicService
+    ) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.questionTopicService = questionTopicService;
     }
 
-    @Operation(summary = "Public route that returns the given user's profile", description = """
-                    Unprotected endpoint that returns the user profile of the user ID that is passed to the endpoint's path.
-                    """, responses = {
-            @ApiResponse(responseCode = "404", description = "User profile has not been found", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-            @ApiResponse(responseCode = "200", description = "User profile has been found")
-    })
+    @Operation(
+        summary = "Public route that returns the given user's profile",
+        description = """
+        Unprotected endpoint that returns the user profile of the user ID that is passed to the endpoint's path.
+        """,
+        responses = {
+            @ApiResponse(
+                responseCode = "404",
+                description = "User profile has not been found",
+                content = @Content(
+                    schema = @Schema(
+                        implementation = UnsafeGenericFailureResponse.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "200",
+                description = "User profile has been found"
+            ),
+        }
+    )
     @GetMapping("{userId}/profile")
-    public ResponseEntity<ApiResponder<UserDto>> getUserProfileByUserId(final HttpServletRequest request, @PathVariable final String userId) {
+    public ResponseEntity<ApiResponder<UserDto>> getUserProfileByUserId(
+        final HttpServletRequest request,
+        @PathVariable final String userId
+    ) {
         FakeLag.sleep(650);
 
         User user = userRepository.getUserById(userId);
 
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find user profile.");
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Failed to find user profile."
+            );
         }
 
-        return ResponseEntity.ok().body(ApiResponder.success("User profile found!", UserDto.fromUser(user)));
+        return ResponseEntity.ok().body(
+            ApiResponder.success("User profile found!", UserDto.fromUser(user))
+        );
     }
 
-    @Operation(summary = "Returns a list of the questions successfully submitted by the user.", description = """
-                    Protected endpoint that returns the list of questions completed by the user.
-                    These questions are guaranteed to be completed by the user.
-                    """, responses = { @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))) })
+    @Operation(
+        summary = "Returns a list of the questions successfully submitted by the user.",
+        description = """
+        Protected endpoint that returns the list of questions completed by the user.
+        These questions are guaranteed to be completed by the user.
+        """,
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Not authenticated",
+                content = @Content(
+                    schema = @Schema(
+                        implementation = UnsafeGenericFailureResponse.class
+                    )
+                )
+            ),
+        }
+    )
     @GetMapping("{userId}/submissions")
-    public ResponseEntity<ApiResponder<Page<QuestionDto>>> getAllQuestionsForUser(final HttpServletRequest request,
-                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
-                    @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
-                    @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize,
-                    @Parameter(description = "Filter to hide questions with 0 points awarded") @RequestParam(required = false, defaultValue = "false") final boolean pointFilter,
-                    @Parameter(description = "Filter for questions with at least one of the topics provided") @RequestParam(required = false, defaultValue = "") final Set<String> topics,
-                    @PathVariable final String userId) {
+    public ResponseEntity<
+        ApiResponder<Page<QuestionDto>>
+    > getAllQuestionsForUser(
+        final HttpServletRequest request,
+        @Parameter(description = "Page index", example = "1") @RequestParam(
+            required = false,
+            defaultValue = "1"
+        ) final int page,
+        @Parameter(
+            description = "Question Title",
+            example = "Two"
+        ) @RequestParam(required = false, defaultValue = "") final String query,
+        @Parameter(
+            description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE
+        ) @RequestParam(
+            required = false,
+            defaultValue = "" + SUBMISSIONS_PAGE_SIZE
+        ) final int pageSize,
+        @Parameter(
+            description = "Filter to hide questions with 0 points awarded"
+        ) @RequestParam(
+            required = false,
+            defaultValue = "false"
+        ) final boolean pointFilter,
+        @Parameter(
+            description = "Filter for questions with at least one of the topics provided"
+        ) @RequestParam(required = false, defaultValue = "") final Set<
+            String
+        > topics,
+        @PathVariable final String userId
+    ) {
         FakeLag.sleep(500);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
 
-        LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
+        LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(
+            topics
+        );
 
-        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query, pointFilter, topicEnums);
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
+            userId,
+            page,
+            parsedPageSize,
+            query,
+            pointFilter,
+            topicEnums
+        );
 
-        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query, pointFilter, topics);
-        int totalPages = (int) Math.ceil((double) totalQuestions / parsedPageSize);
+        int totalQuestions = questionRepository.getQuestionCountByUserId(
+            userId,
+            query,
+            pointFilter,
+            topics
+        );
+        int totalPages = (int) Math.ceil(
+            (double) totalQuestions / parsedPageSize
+        );
         boolean hasNextPage = page < totalPages;
 
-        List<QuestionDto> questionDtos = questions.stream().map(q -> QuestionDto.fromQuestion(q)).toList();
+        List<QuestionDto> questionDtos = questions
+            .stream()
+            .map(q -> QuestionDto.fromQuestion(q))
+            .toList();
 
-        Page<QuestionDto> createdPage = new Page<>(hasNextPage, questionDtos, totalPages, parsedPageSize);
+        Page<QuestionDto> createdPage = new Page<>(
+            hasNextPage,
+            questionDtos,
+            totalPages,
+            parsedPageSize
+        );
 
-        return ResponseEntity.ok().body(ApiResponder.success("All questions have been fetched!", createdPage));
+        return ResponseEntity.ok().body(
+            ApiResponder.success(
+                "All questions have been fetched!",
+                createdPage
+            )
+        );
     }
 
-    @Operation(summary = "Public route that returns a list of all the users' metadata.", description = """
-                        Unprotected endpoint that returns basic metadata for all users.
-                    """, responses = {
-            @ApiResponse(responseCode = "404", description = "All users' metadata has not been found.", content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-            @ApiResponse(responseCode = "200", description = "All users' metadata has been found.")
-    })
+    @Operation(
+        summary = "Public route that returns a list of all the users' metadata.",
+        description = """
+            Unprotected endpoint that returns basic metadata for all users.
+        """,
+        responses = {
+            @ApiResponse(
+                responseCode = "404",
+                description = "All users' metadata has not been found.",
+                content = @Content(
+                    schema = @Schema(
+                        implementation = UnsafeGenericFailureResponse.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "200",
+                description = "All users' metadata has been found."
+            ),
+        }
+    )
     @GetMapping("/all")
-    public ResponseEntity<ApiResponder<Page<UserDto>>> getAllUsers(final HttpServletRequest request,
-                    @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1") final int page,
-                    @Parameter(description = "Question Title", example = "Two") @RequestParam(required = false, defaultValue = "") final String query,
-                    @Parameter(description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE) @RequestParam(required = false, defaultValue = "" + SUBMISSIONS_PAGE_SIZE) final int pageSize) {
+    public ResponseEntity<ApiResponder<Page<UserDto>>> getAllUsers(
+        final HttpServletRequest request,
+        @Parameter(description = "Page index", example = "1") @RequestParam(
+            required = false,
+            defaultValue = "1"
+        ) final int page,
+        @Parameter(
+            description = "Question Title",
+            example = "Two"
+        ) @RequestParam(required = false, defaultValue = "") final String query,
+        @Parameter(
+            description = "Page size (maximum of " + SUBMISSIONS_PAGE_SIZE
+        ) @RequestParam(
+            required = false,
+            defaultValue = "" + SUBMISSIONS_PAGE_SIZE
+        ) final int pageSize
+    ) {
         FakeLag.sleep(650);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
 
-        List<User> users = userRepository.getAllUsers(page, parsedPageSize, query);
+        List<User> users = userRepository.getAllUsers(
+            page,
+            parsedPageSize,
+            query
+        );
 
         int totalUsers = userRepository.getUserCount(query);
         int totalPages = (int) Math.ceil((double) totalUsers / parsedPageSize);
@@ -125,8 +252,18 @@ public class UserController {
 
         List<UserDto> userDtos = users.stream().map(UserDto::fromUser).toList();
 
-        Page<UserDto> createdPage = new Page<>(hasNextPage, userDtos, totalPages, parsedPageSize);
+        Page<UserDto> createdPage = new Page<>(
+            hasNextPage,
+            userDtos,
+            totalPages,
+            parsedPageSize
+        );
 
-        return ResponseEntity.ok().body(ApiResponder.success("All users have been successfully fetched!", createdPage));
+        return ResponseEntity.ok().body(
+            ApiResponder.success(
+                "All users have been successfully fetched!",
+                createdPage
+            )
+        );
     }
 }

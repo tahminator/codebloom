@@ -7,6 +7,7 @@ import java.util.function.Function;
  * Utility class providing helper functions for stream operations.
  */
 public class StreamUtils {
+
     /**
      * Creates a function that applies a side effect to an input value and returns
      * the value unchanged.

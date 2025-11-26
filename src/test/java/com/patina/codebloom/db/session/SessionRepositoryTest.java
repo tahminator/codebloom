@@ -6,30 +6,28 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.List;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-// import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import com.patina.codebloom.common.db.models.Session;
 import com.patina.codebloom.common.db.repos.session.SessionRepository;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.db.BaseRepositoryTest;
-
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+// import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
 public class SessionRepositoryTest extends BaseRepositoryTest {
+
     private SessionRepository sessionRepository;
     private Session testSession;
     private String mockUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
@@ -42,9 +40,9 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void createSession() {
         testSession = Session.builder()
-                        .userId(mockUserId)
-                        .expiresAt(StandardizedLocalDateTime.now().plusHours(1))
-                        .build();
+            .userId(mockUserId)
+            .expiresAt(StandardizedLocalDateTime.now().plusHours(1))
+            .build();
 
         sessionRepository.createSession(testSession);
         log.info("Created test session with ID: {}", testSession.getId());
@@ -52,7 +50,9 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
 
     @AfterAll
     void deleteSession() {
-        boolean isSuccessful = sessionRepository.deleteSessionById(testSession.getId());
+        boolean isSuccessful = sessionRepository.deleteSessionById(
+            testSession.getId()
+        );
 
         if (!isSuccessful) {
             fail("Failed to delete test announcement");
@@ -70,9 +70,17 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
 
     @Test
     void testGetSessionsByUserId() {
-        List<Session> sessionList = sessionRepository.getSessionsByUserId(mockUserId);
+        List<Session> sessionList = sessionRepository.getSessionsByUserId(
+            mockUserId
+        );
         assertNotNull(sessionList);
         assertFalse(sessionList.isEmpty());
-        assertTrue(sessionList.stream().anyMatch(session -> session.getId().equals(testSession.getId())));
+        assertTrue(
+            sessionList
+                .stream()
+                .anyMatch(session ->
+                    session.getId().equals(testSession.getId())
+                )
+        );
     }
 }

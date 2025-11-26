@@ -1,22 +1,19 @@
 package com.patina.codebloom.common.email.client.codebloom;
 
-import java.util.List;
-import java.util.Properties;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import com.patina.codebloom.common.email.Email;
 import com.patina.codebloom.common.email.Message;
 import com.patina.codebloom.common.email.error.EmailException;
 import com.patina.codebloom.common.email.options.SendEmailOptions;
-
 import jakarta.mail.Authenticator;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.util.List;
+import java.util.Properties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * This is the official Codebloom email client which we use to interface with
@@ -28,10 +25,13 @@ import jakarta.mail.internet.MimeMessage;
 @Component
 @EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
 public class OfficialCodebloomEmail extends Email {
+
     private final OfficialCodebloomEmailProperties emailProperties;
     private Session session;
 
-    public OfficialCodebloomEmail(final OfficialCodebloomEmailProperties emailProperties) {
+    public OfficialCodebloomEmail(
+        final OfficialCodebloomEmailProperties emailProperties
+    ) {
         this.emailProperties = emailProperties;
         final Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailProperties.getHost());
@@ -40,12 +40,18 @@ public class OfficialCodebloomEmail extends Email {
         properties.setProperty("mail.smtp.starttls.required", "true");
         properties.setProperty("mail.smtp.auth", "true");
 
-        session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(emailProperties.getUsername(), emailProperties.getPassword());
+        session = Session.getInstance(
+            properties,
+            new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(
+                        emailProperties.getUsername(),
+                        emailProperties.getPassword()
+                    );
+                }
             }
-        });
+        );
     }
 
     /**
@@ -58,18 +64,27 @@ public class OfficialCodebloomEmail extends Email {
     }
 
     @Override
-    public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
+    public void sendMessage(final SendEmailOptions sendEmailOptions)
+        throws EmailException {
         try {
             jakarta.mail.Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(emailProperties.getUsername()));
-            message.setRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(sendEmailOptions.getRecipientEmail()));
+            message.setRecipient(
+                jakarta.mail.Message.RecipientType.TO,
+                new InternetAddress(sendEmailOptions.getRecipientEmail())
+            );
             message.setSubject(sendEmailOptions.getSubject());
-            message.setContent(sendEmailOptions.getBody(), "text/html; charset=UTF-8");
+            message.setContent(
+                sendEmailOptions.getBody(),
+                "text/html; charset=UTF-8"
+            );
 
             Transport.send(message);
-
         } catch (Exception e) {
-            throw new EmailException("Something went wrong when sending message", e);
+            throw new EmailException(
+                "Something went wrong when sending message",
+                e
+            );
         }
     }
 
@@ -82,7 +97,10 @@ public class OfficialCodebloomEmail extends Email {
             // TODO - May need to actually test sending an email out, which can be added
             // pretty trivially.
         } catch (Exception e) {
-            throw new EmailException("Something went wrong when testing connection", e);
+            throw new EmailException(
+                "Something went wrong when testing connection",
+                e
+            );
         }
     }
 }

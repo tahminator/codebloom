@@ -3,7 +3,6 @@ package com.patina.codebloom.common.db.repos.question;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +32,14 @@ public interface QuestionRepository {
 
     QuestionWithUser getQuestionWithUserById(String id);
 
-    ArrayList<Question> getQuestionsByUserId(String userId, int page, int pageSize, String query, boolean pointFilter, LeetcodeTopicEnum[] topics);
+    ArrayList<Question> getQuestionsByUserId(
+        String userId,
+        int page,
+        int pageSize,
+        String query,
+        boolean pointFilter,
+        LeetcodeTopicEnum[] topics
+    );
 
     /**
      * @note - The provided object's methods will be overridden with any returned
@@ -59,7 +65,7 @@ public interface QuestionRepository {
      * @note - Some fields may not be populated properly due to a service outage. So
      * this method looks for any Questions missing fields populated by LeetCode's
      * API.
-     * 
+     *
      * @return all questions missing either a runtime, memory, code, language, or
      * description
      */
@@ -75,7 +81,7 @@ public interface QuestionRepository {
      * @note - Returns all incomplete questions with user information, ordered by
      * most recently submitted. Incomplete questions are those missing either a
      * runtime, memory, code, or language.
-     * 
+     *
      * @return all incomplete questions with user details, sorted by submittedAt
      * DESC
      */
@@ -87,5 +93,10 @@ public interface QuestionRepository {
 
     boolean questionExistsBySubmissionId(String submissionId);
 
-    int getQuestionCountByUserId(String userId, String query, boolean filterPoints, Set<String> topics);
+    int getQuestionCountByUserId(
+        String userId,
+        String query,
+        boolean filterPoints,
+        Set<String> topics
+    );
 }

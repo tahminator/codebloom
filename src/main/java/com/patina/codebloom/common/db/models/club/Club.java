@@ -1,5 +1,6 @@
 package com.patina.codebloom.common.db.models.club;
 
+import com.patina.codebloom.common.db.models.usertag.Tag;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import com.patina.codebloom.common.db.models.usertag.Tag;
 
 @Builder
 @Getter
@@ -18,6 +18,7 @@ import com.patina.codebloom.common.db.models.usertag.Tag;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Club {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
@@ -38,5 +39,4 @@ public class Club {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Tag tag;
-
 }
