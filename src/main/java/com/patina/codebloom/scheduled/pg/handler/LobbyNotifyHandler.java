@@ -6,8 +6,6 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
@@ -82,24 +80,13 @@ public class LobbyNotifyHandler {
             return;
         }
 
-        List<SseWrapper<ApiResponder<DuelData>>> failedEmitters =
-            new ArrayList<>();
-
         for (var sseEmitter : emitterSet) {
             try {
                 sseEmitter.sendData(getData(partyId));
             } catch (Exception e) {
                 log.error("Failed to send SSE data to emitter", e);
-                failedEmitters.add(sseEmitter);
+                // TODO: implement retry logic for failed emitters
             }
-        }
-
-        for (var failedEmitter : failedEmitters) {
-            emitterSet.remove(failedEmitter);
-        }
-
-        if (emitterSet.isEmpty()) {
-            partyIdToSseEmitters.remove(partyId);
         }
     }
 }
