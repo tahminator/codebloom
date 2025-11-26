@@ -3,7 +3,23 @@ local format =
 
 return {
     {
+        "stevearc/conform.nvim",
+        optional = true,
+        opts = function(_, opts)
+            opts.formatters_by_ft = opts.formatters_by_ft or {}
+            for _, ft in ipairs({ "java" }) do
+                opts.formatters_by_ft[ft] = opts.formatters_by_ft[ft] or {}
+                table.insert(opts.formatters_by_ft[ft], "prettier")
+            end
+
+            opts.formatters.prettier = {
+                command = "prettier",
+            }
+        end,
+    },
+    {
         "nvimtools/none-ls.nvim",
+        optional = true,
         event = "LazyFile",
         dependencies = { "mason.nvim" },
         config = function()

@@ -6,12 +6,13 @@
     },
     "editor.formatOnSave": true,
     "java.checkstyle.configuration": "./checkstyle.xml",
-    "java.format.settings.url": "./java-formatter.xml",
     "java.checkstyle.version": "10.21.2",
     "gitlens.advanced.blame.customArguments": [
         "--ignore-revs-file",
         ".git-blame-ignore-revs"
     ],
-    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable"
+    "[java]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
 
