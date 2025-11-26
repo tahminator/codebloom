@@ -1,0 +1,6 @@
+{
+    "plugins": ["prettier-plugin-java"],
+    "parser": "java",
+    "tabWidth": 4,
+    "arrowParens": "avoid"
+}
