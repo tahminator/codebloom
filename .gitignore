@@ -61,6 +61,4 @@ node_modules
 # esbuild outputs
 scripts/**/index.js
 
-/package.json
-/pnpm-lock.yaml
 /node_modules

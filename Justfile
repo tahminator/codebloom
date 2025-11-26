@@ -28,20 +28,20 @@ backend-install *args:
   ./mvnw install -DskipTests=true {{args}}
 
 # Run backend formatter (check only)
-backend-prettier *args:
-  pnpx prettier -c **/*.java
+backend-fmt *args:
+  pnpm i && pnpm run fmt
 
 # Run backend formatter (check & write)
-backend-prettier-fix *args:
-  pnpx prettier -c --write **/*.java
+backend-fmt-fix *args:
+  pnpm i && pnpm run fmt:fix
 
 # Run backend linter, formatter, & tests
 backend-test *args:
-  just backend-prettier && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
+  just backend-fmt && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
 
 # Run backend tests with a debugger
 backend-testd *args:
-  dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
+  just backend-fmt && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
 
 # Run backend tests and launch Jacoco test coverage viewer if tests pass
 backend-coverage *args:
