@@ -1,9 +1,7 @@
 package com.patina.codebloom.common.db.helper.annotations;
 
 import java.lang.annotation.Target;
-// CHECKSTYLE:OFF
 import static java.lang.annotation.ElementType.*;
-// CHECKSTYLE:ON
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

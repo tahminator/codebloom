@@ -1,9 +1,7 @@
 package com.patina.codebloom.component;
 
-// CHECKSTYLE:OFF
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-// CHECKSTYLE:ON
 
 import java.time.LocalDateTime;
 import java.util.Arrays;

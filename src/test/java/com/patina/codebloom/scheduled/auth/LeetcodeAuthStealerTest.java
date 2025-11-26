@@ -1,9 +1,7 @@
 package com.patina.codebloom.scheduled.auth;
 /* 
-// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-// CHECKSTYLE:ON
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;

@@ -1,8 +1,6 @@
 package com.patina.codebloom.common.security.annotation;
 
-// CHECKSTYLE:OFF
 import java.lang.annotation.*;
-// CHECKSTYLE:ON
 
 /**
  * Can mark a controller method as protected. This is the same as injecting the

@@ -1,9 +1,7 @@
 package com.patina.codebloom.component;
 
-// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-// CHECKSTYLE:ON
 
 import java.time.OffsetDateTime;
 import java.util.Optional;

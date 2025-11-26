@@ -1,14 +1,10 @@
 package com.patina.codebloom.db.achievements;
 
-// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
-// CHECKSTYLE:ON
 
 import java.util.List;
 
-// CHECKSTYLE:OFF
 import org.junit.jupiter.api.*;
-// CHECKSTYLE:ON
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

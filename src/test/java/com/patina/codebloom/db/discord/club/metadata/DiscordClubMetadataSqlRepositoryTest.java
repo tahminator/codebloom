@@ -1,8 +1,6 @@
 package com.patina.codebloom.db.discord.club.metadata;
 
-// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
-// CHECKSTYLE:ON
 
 import java.util.Optional;
 
