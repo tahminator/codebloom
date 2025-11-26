@@ -507,7 +507,7 @@ public class DuelController {
         } catch (Exception e) {
             log.error("Failed to send SSE data", e);
             emitter.completeWithError(e);
-            lobbyNotifyHandler.deregister(lobby.getId());
+            // TODO: adding retry logic
         }
 
         return emitter;
