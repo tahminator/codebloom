@@ -190,11 +190,12 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>pnpm</executable>
+                            <executable>sh</executable>
                             <arguments>
-                                <argument>--prefix</argument>
-                                <argument>${project.basedir}</argument>
-                                <argument>i</argument>
+                                <argument>-c</argument>
+                                <argument>
+                                    pnpm --prefix ${project.basedir} i || echo "pnpm missing, skipping"
+                                </argument>
                             </arguments>
                             <skipOnError>true</skipOnError>
                         </configuration>
