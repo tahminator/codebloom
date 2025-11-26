@@ -178,6 +178,32 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+
+                <executions>
+                    <execution>
+                        <id>optional-pnpm-install-prettier-java</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>pnpm</executable>
+                            <arguments>
+                                <argument>i</argument>
+                                <argument>--prefix</argument>
+                                <argument>${project.basedir}</argument>
+                                <argument>prettier</argument>
+                                <argument>prettier-plugin-java</argument>
+                            </arguments>
+                            <skipOnError>true</skipOnError>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.14</version>
