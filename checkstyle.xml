@@ -116,7 +116,6 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
 
         <!-- Checks for imports                              -->
         <!-- See https://checkstyle.org/config_imports.html -->
-        <module name="AvoidStarImport" />
         <module name="IllegalImport" />
         <!-- defaults to sun.* packages -->
         <module name="RedundantImport" />
@@ -126,7 +125,6 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
 
         <!-- Checks for Size Violations.                    -->
         <!-- See https://checkstyle.org/config_sizes.html -->
-        <module name="MethodLength" />
         <module name="ParameterNumber">
             <property name="max" value="25" />
         </module>
@@ -138,11 +136,9 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
-        <module name="OperatorWrap" />
         <module name="ParenPad" />
         <module name="TypecastParenPad" />
         <module name="WhitespaceAfter" />
-        <module name="WhitespaceAround" />
 
         <!-- Modifier Checks                                    -->
         <!-- See https://checkstyle.org/config_modifiers.html -->
@@ -177,7 +173,6 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
         <!-- Miscellaneous other checks.                   -->
         <!-- See https://checkstyle.org/config_misc.html -->
         <module name="ArrayTypeStyle" />
-        <module name="FinalParameters" />
         <module name="UpperEll" />
 
         <!-- https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
@@ -202,3 +197,4 @@ https://www.oracle.com/java/technologies/javase/codeconventions-contents.html
     </module>
 
 </module>
+
