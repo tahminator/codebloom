@@ -192,11 +192,9 @@
                         <configuration>
                             <executable>pnpm</executable>
                             <arguments>
-                                <argument>i</argument>
                                 <argument>--prefix</argument>
                                 <argument>${project.basedir}</argument>
-                                <argument>prettier</argument>
-                                <argument>prettier-plugin-java</argument>
+                                <argument>i</argument>
                             </arguments>
                             <skipOnError>true</skipOnError>
                         </configuration>
