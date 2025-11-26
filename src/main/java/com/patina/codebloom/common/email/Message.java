@@ -7,11 +7,16 @@ import java.util.Date;
  * all Messages are subsequently closed as well.
  */
 public class Message {
+
     private final String subject;
     private final String message;
     private final Date sentAt;
 
-    public Message(final String subject, final String message, final Date sentAt) {
+    public Message(
+        final String subject,
+        final String message,
+        final Date sentAt
+    ) {
         this.subject = subject;
         this.message = message;
         this.sentAt = sentAt;

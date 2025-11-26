@@ -1,10 +1,10 @@
 package com.patina.codebloom.common.db.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 public class Metadata {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
@@ -59,5 +59,4 @@ public class Metadata {
     public void setTotalScore(final int totalScore) {
         this.totalScore = totalScore;
     }
-
 }

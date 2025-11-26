@@ -1,12 +1,10 @@
 package com.patina.codebloom.common.dto.achievement;
 
-import java.time.OffsetDateTime;
-
 import com.patina.codebloom.common.db.models.achievements.Achievement;
 import com.patina.codebloom.common.db.models.achievements.AchievementPlaceEnum;
 import com.patina.codebloom.common.db.models.usertag.Tag;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -47,17 +45,19 @@ public class AchievementDto {
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private OffsetDateTime deletedAt;
 
-    public static AchievementDto fromAchievement(final Achievement achievement) {
+    public static AchievementDto fromAchievement(
+        final Achievement achievement
+    ) {
         return AchievementDto.builder()
-                        .id(achievement.getId())
-                        .userId(achievement.getUserId())
-                        .leaderboard(achievement.getLeaderboard())
-                        .place(achievement.getPlace())
-                        .title(achievement.getTitle())
-                        .description(achievement.getDescription())
-                        .isActive(achievement.isActive())
-                        .createdAt(achievement.getCreatedAt())
-                        .deletedAt(achievement.getDeletedAt())
-                        .build();
+            .id(achievement.getId())
+            .userId(achievement.getUserId())
+            .leaderboard(achievement.getLeaderboard())
+            .place(achievement.getPlace())
+            .title(achievement.getTitle())
+            .description(achievement.getDescription())
+            .isActive(achievement.isActive())
+            .createdAt(achievement.getCreatedAt())
+            .deletedAt(achievement.getDeletedAt())
+            .build();
     }
 }

@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.db.models.question.topic;
 
 import java.util.Arrays;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -99,7 +98,8 @@ public enum LeetcodeTopicEnum {
      */
     public static LeetcodeTopicEnum fromValue(final String value) {
         return Arrays.stream(LeetcodeTopicEnum.values())
-                        .filter(topic -> topic.getLeetcodeEnum().equals(value))
-                        .findFirst().orElse(LeetcodeTopicEnum.UNKNOWN);
+            .filter(topic -> topic.getLeetcodeEnum().equals(value))
+            .findFirst()
+            .orElse(LeetcodeTopicEnum.UNKNOWN);
     }
 }

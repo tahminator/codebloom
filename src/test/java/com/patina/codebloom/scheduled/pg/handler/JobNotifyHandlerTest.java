@@ -4,10 +4,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.patina.codebloom.scheduled.leetcode.LeetcodeQuestionProcessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.patina.codebloom.scheduled.leetcode.LeetcodeQuestionProcessService;
 
 public class JobNotifyHandlerTest {
 
@@ -16,7 +15,9 @@ public class JobNotifyHandlerTest {
 
     @BeforeEach
     void setUp() {
-        leetcodeQuestionProcessService = mock(LeetcodeQuestionProcessService.class);
+        leetcodeQuestionProcessService = mock(
+            LeetcodeQuestionProcessService.class
+        );
         jobNotifyHandler = new JobNotifyHandler(leetcodeQuestionProcessService);
     }
 

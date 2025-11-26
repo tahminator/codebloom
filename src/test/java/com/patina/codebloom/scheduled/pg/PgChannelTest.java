@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.Test;
 
 public class PgChannelTest {
@@ -14,7 +13,10 @@ public class PgChannelTest {
     @Test
     void testEnumValues() {
         assertEquals("jobInsertChannel", PgChannel.INSERT_JOB.getChannelName());
-        assertEquals("upsertLobbyChannel", PgChannel.UPSERT_LOBBY.getChannelName());
+        assertEquals(
+            "upsertLobbyChannel",
+            PgChannel.UPSERT_LOBBY.getChannelName()
+        );
     }
 
     @Test
@@ -28,8 +30,14 @@ public class PgChannelTest {
 
     @Test
     void testFromChannelNameValid() {
-        assertEquals(PgChannel.INSERT_JOB, PgChannel.fromChannelName("jobInsertChannel"));
-        assertEquals(PgChannel.UPSERT_LOBBY, PgChannel.fromChannelName("upsertLobbyChannel"));
+        assertEquals(
+            PgChannel.INSERT_JOB,
+            PgChannel.fromChannelName("jobInsertChannel")
+        );
+        assertEquals(
+            PgChannel.UPSERT_LOBBY,
+            PgChannel.fromChannelName("upsertLobbyChannel")
+        );
     }
 
     @Test

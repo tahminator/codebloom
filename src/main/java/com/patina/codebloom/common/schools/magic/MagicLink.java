@@ -1,11 +1,11 @@
 package com.patina.codebloom.common.schools.magic;
 
 public class MagicLink {
+
     private String email;
     private String userId;
 
-    public MagicLink() {
-    }
+    public MagicLink() {}
 
     public MagicLink(final String email, final String userId) {
         this.email = email;
@@ -27,5 +27,4 @@ public class MagicLink {
     public void setUserId(final String userId) {
         this.userId = userId;
     }
-
 }

@@ -4,5 +4,5 @@ public enum LobbyStatus {
     CLOSED,
     AVAILABLE,
     ACTIVE,
-    COMPLETED
+    COMPLETED,
 }

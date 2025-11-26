@@ -1,14 +1,12 @@
 package com.patina.codebloom.common.db.models.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.patina.codebloom.common.db.helper.annotations.JoinColumn;
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
 import com.patina.codebloom.common.db.models.achievements.Achievement;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
-
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,6 +20,7 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @EqualsAndHashCode
 public class User {
+
     @NotNullColumn
     private String id;
 

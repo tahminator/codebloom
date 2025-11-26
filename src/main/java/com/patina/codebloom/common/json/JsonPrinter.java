@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * Output a pretty JSON string.
  */
 public class JsonPrinter {
+
     /**
      * Output a pretty JSON string.
      */

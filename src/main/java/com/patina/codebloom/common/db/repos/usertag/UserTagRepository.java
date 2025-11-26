@@ -1,10 +1,9 @@
 package com.patina.codebloom.common.db.repos.usertag;
 
-import java.util.ArrayList;
-
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
 import com.patina.codebloom.common.db.repos.usertag.options.UserTagFilterOptions;
+import java.util.ArrayList;
 
 public interface UserTagRepository {
     UserTag findTagByTagId(String tagId);
@@ -18,12 +17,15 @@ public interface UserTagRepository {
      * `pointOfTime` is set to `null` (default), it will return all tags attached to
      * given user ID.
      */
-    ArrayList<UserTag> findTagsByUserId(String userId, UserTagFilterOptions options);
+    ArrayList<UserTag> findTagsByUserId(
+        String userId,
+        UserTagFilterOptions options
+    );
 
     /**
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
-     * 
+     *
      * @param userTag - required fields:
      * <ul>
      * <li>userId</li>

@@ -13,6 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @EqualsAndHashCode
 public class DuelData {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LobbyDto lobby;
 

@@ -3,11 +3,16 @@ package com.patina.codebloom.common.leetcode.models;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 
 public class POTD {
+
     private String title;
     private String titleSlug;
     private QuestionDifficulty difficulty;
 
-    public POTD(final String title, final String titleSlug, final QuestionDifficulty difficulty) {
+    public POTD(
+        final String title,
+        final String titleSlug,
+        final QuestionDifficulty difficulty
+    ) {
         this.title = title;
         this.titleSlug = titleSlug;
         this.difficulty = difficulty;

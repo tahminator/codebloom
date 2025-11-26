@@ -1,13 +1,13 @@
 package com.patina.codebloom.api.club.service;
 
-import org.springframework.stereotype.Service;
-
 import com.patina.codebloom.api.club.dto.ClubDto;
 import com.patina.codebloom.common.db.models.club.Club;
 import com.patina.codebloom.common.db.repos.club.ClubRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ClubService {
+
     private final ClubRepository clubRepository;
 
     public ClubService(final ClubRepository clubRepository) {
@@ -20,13 +20,13 @@ public class ClubService {
             return null;
         }
         return ClubDto.builder()
-                        .id(club.getId())
-                        .name(club.getName())
-                        .description(club.getDescription())
-                        .slug(club.getSlug())
-                        .splashIconUrl(club.getSplashIconUrl())
-                        .tag(club.getTag())
-                        .build();
+            .id(club.getId())
+            .name(club.getName())
+            .description(club.getDescription())
+            .slug(club.getSlug())
+            .splashIconUrl(club.getSplashIconUrl())
+            .tag(club.getTag())
+            .build();
     }
 
     public boolean isPasswordValid(final Club club, final String rawPassword) {

@@ -1,10 +1,8 @@
 package com.patina.codebloom.common.db.models.question.topic;
 
-import java.time.LocalDateTime;
-
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
-
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -19,6 +17,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class QuestionTopic {
+
     @NotNullColumn
     private String id;
 

@@ -3,6 +3,7 @@ package com.patina.codebloom.common.leetcode.models;
 import java.time.LocalDateTime;
 
 public class LeetcodeSubmission {
+
     private int id;
 
     private String title;
@@ -10,7 +11,13 @@ public class LeetcodeSubmission {
     private LocalDateTime timestamp;
     private String statusDisplay;
 
-    public LeetcodeSubmission(final int id, final String title, final String titleSlug, final LocalDateTime timestamp, final String statusDisplay) {
+    public LeetcodeSubmission(
+        final int id,
+        final String title,
+        final String titleSlug,
+        final LocalDateTime timestamp,
+        final String statusDisplay
+    ) {
         this.id = id;
         this.title = title;
         this.titleSlug = titleSlug;
@@ -57,5 +64,4 @@ public class LeetcodeSubmission {
     public void setStatusDisplay(final String statusDisplay) {
         this.statusDisplay = statusDisplay;
     }
-
 }

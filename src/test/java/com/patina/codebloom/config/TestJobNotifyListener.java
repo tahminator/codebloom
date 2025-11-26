@@ -1,13 +1,12 @@
 package com.patina.codebloom.config;
 
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-
 import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.scheduled.pg.NotifyListener;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 /**
  * Can mock the {@code com.patina.codebloom.scheduled.pg.JobNotifyListener} so
@@ -15,11 +14,16 @@ import com.patina.codebloom.scheduled.pg.NotifyListener;
  */
 @TestConfiguration
 public class TestJobNotifyListener {
+
     private DbConnection dbConn;
     private Reporter reporter;
     private Env env;
 
-    public TestJobNotifyListener(final DbConnection dbConn, final Reporter reporter, final Env env) {
+    public TestJobNotifyListener(
+        final DbConnection dbConn,
+        final Reporter reporter,
+        final Env env
+    ) {
         this.dbConn = dbConn;
         this.reporter = reporter;
         this.env = env;
@@ -33,7 +37,7 @@ public class TestJobNotifyListener {
             @Override
             protected void init() {
                 return;
-            };
+            }
 
             @Override
             protected void shutdown() {

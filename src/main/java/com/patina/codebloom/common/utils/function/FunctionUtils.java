@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class FunctionUtils {
+
     /**
      * Given a function `fn`, this method will try to get a value from the function.
      * If null, it will try again.
@@ -12,8 +13,7 @@ public class FunctionUtils {
      * @apiNote This will not catch or retry on exceptions.
      */
     public static <T> T tryAgainIfNull(final Supplier<T> fn) {
-        return tryAgainIfFail(fn, (res) -> res != null, () -> {
-        });
+        return tryAgainIfFail(fn, res -> res != null, () -> {});
     }
 
     /**
@@ -25,9 +25,11 @@ public class FunctionUtils {
      *
      * @apiNote This will not catch or retry on exceptions.
      */
-    public static <T> T tryAgainIfFail(final Supplier<T> fn, final Function<T, Boolean> isSuccessfulFn) {
-        return tryAgainIfFail(fn, isSuccessfulFn, () -> {
-        });
+    public static <T> T tryAgainIfFail(
+        final Supplier<T> fn,
+        final Function<T, Boolean> isSuccessfulFn
+    ) {
+        return tryAgainIfFail(fn, isSuccessfulFn, () -> {});
     }
 
     /**
@@ -43,7 +45,11 @@ public class FunctionUtils {
      *
      * @apiNote This will not catch or retry on exceptions.
      */
-    public static <T> T tryAgainIfFail(final Supplier<T> fn, final Function<T, Boolean> isSuccessfulFn, final Consumer<T> fnInBetween) {
+    public static <T> T tryAgainIfFail(
+        final Supplier<T> fn,
+        final Function<T, Boolean> isSuccessfulFn,
+        final Consumer<T> fnInBetween
+    ) {
         T res = fn.get();
         if (!isSuccessfulFn.apply(res)) {
             fnInBetween.accept(res);
@@ -64,7 +70,11 @@ public class FunctionUtils {
      *
      * @apiNote This will not catch or retry on exceptions.
      */
-    public static <T> T tryAgainIfFail(final Supplier<T> fn, final Function<T, Boolean> isSuccessfulFn, final Procedure fnInBetween) {
+    public static <T> T tryAgainIfFail(
+        final Supplier<T> fn,
+        final Function<T, Boolean> isSuccessfulFn,
+        final Procedure fnInBetween
+    ) {
         T res = fn.get();
         if (!isSuccessfulFn.apply(res)) {
             fnInBetween.run();

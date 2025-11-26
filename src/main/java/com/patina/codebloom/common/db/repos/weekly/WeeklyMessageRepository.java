@@ -11,11 +11,11 @@ public interface WeeklyMessageRepository {
      * @note - The provided object's methods will be overriden with any returned
      * data from the database.
      *
-     * 
+     *
      * @param message - required fields:
      * <ul>
      * </ul>
-     * 
+     *
      */
     boolean createLatestWeeklyMessage(WeeklyMessage message);
 
@@ -25,11 +25,11 @@ public interface WeeklyMessageRepository {
      * @note - The provided object's methods will be overriden with any returned
      * data from the database.
      *
-     * 
+     *
      * @param message - required fields:
      * <ul>
      * </ul>
-     * 
+     *
      */
     boolean createLatestWeeklyMessage();
 

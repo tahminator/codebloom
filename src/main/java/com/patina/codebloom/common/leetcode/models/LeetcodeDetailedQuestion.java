@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.leetcode.models;
 
 public class LeetcodeDetailedQuestion {
+
     private int runtime;
     private String runtimeDisplay;
     private float runtimePercentile;
@@ -10,8 +11,16 @@ public class LeetcodeDetailedQuestion {
     private String code;
     private Lang lang;
 
-    public LeetcodeDetailedQuestion(final int runtime, final String runtimeDisplay, final float runtimePercentile, final int memory, final String memoryDisplay, final float memoryPercentile,
-                    final String code, final Lang lang) {
+    public LeetcodeDetailedQuestion(
+        final int runtime,
+        final String runtimeDisplay,
+        final float runtimePercentile,
+        final int memory,
+        final String memoryDisplay,
+        final float memoryPercentile,
+        final String code,
+        final Lang lang
+    ) {
         this.runtime = runtime;
         this.runtimeDisplay = runtimeDisplay;
         this.runtimePercentile = runtimePercentile;

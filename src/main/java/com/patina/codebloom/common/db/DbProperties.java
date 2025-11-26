@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "db.postgres")
 public class DbProperties {
+
     private String connection;
 
     public String getConnection() {

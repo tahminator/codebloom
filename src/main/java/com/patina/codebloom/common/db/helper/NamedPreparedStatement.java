@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * This class wraps around a {@link PreparedStatement} to allow named parameters
  * instead of indexed parameters. Example:
- * 
+ *
  * this:
  *
  * <pre>
@@ -41,6 +41,7 @@ import java.util.Map;
  * </pre>
  */
 public class NamedPreparedStatement implements AutoCloseable {
+
     /** The statement this object is wrapping. */
     private final PreparedStatement statement;
 
@@ -50,12 +51,13 @@ public class NamedPreparedStatement implements AutoCloseable {
     /**
      * Creates a NamedPreparedStatement. Wraps a call to
      * c.{@link Connection#prepareStatement(java.lang.String) prepareStatement}.
-     * 
+     *
      * @param conn the database connection
      * @param sql the parameterized query
      * @throws SQLException if the statement could not be created
      */
-    public NamedPreparedStatement(final Connection conn, final String sql) throws SQLException {
+    public NamedPreparedStatement(final Connection conn, final String sql)
+        throws SQLException {
         String parsedQuery = parse(sql);
         statement = conn.prepareStatement(parsedQuery);
     }
@@ -65,12 +67,15 @@ public class NamedPreparedStatement implements AutoCloseable {
      *
      * Creates a NamedPreparedStatement. Wraps a call to
      * c.{@link Connection#prepareStatement(java.lang.String) prepareStatement}.
-     * 
+     *
      * @param conn the database connection
      * @param sql the parameterized query
      * @throws SQLException if the statement could not be created
      */
-    public static NamedPreparedStatement create(final Connection conn, final String sql) throws SQLException {
+    public static NamedPreparedStatement create(
+        final Connection conn,
+        final String sql
+    ) throws SQLException {
         return new NamedPreparedStatement(conn, sql);
     }
 
@@ -78,7 +83,7 @@ public class NamedPreparedStatement implements AutoCloseable {
      * Parses a query with named parameters. The parameter-index mappings are put
      * into the map, and the parsed query is returned. DO NOT CALL FROM CLIENT CODE.
      * This method is non-private so JUnit code can test it.
-     * 
+     *
      * @param query query to parse
      * @param paramMap map to hold parameter-index mappings
      * @return the parsed query
@@ -89,7 +94,10 @@ public class NamedPreparedStatement implements AutoCloseable {
         boolean inSingleQuote = false;
         boolean inDoubleQuote = false;
         int index = 1;
-        HashMap<String, List<Integer>> indexes = new HashMap<String, List<Integer>>();
+        HashMap<String, List<Integer>> indexes = new HashMap<
+            String,
+            List<Integer>
+        >();
 
         for (int i = 0; i < length; i++) {
             char c = query.charAt(i);
@@ -106,9 +114,16 @@ public class NamedPreparedStatement implements AutoCloseable {
                     inSingleQuote = true;
                 } else if (c == '"') {
                     inDoubleQuote = true;
-                } else if (c == ':' && i + 1 < length && Character.isJavaIdentifierStart(query.charAt(i + 1))) {
+                } else if (
+                    c == ':' &&
+                    i + 1 < length &&
+                    Character.isJavaIdentifierStart(query.charAt(i + 1))
+                ) {
                     int j = i + 2;
-                    while (j < length && Character.isJavaIdentifierPart(query.charAt(j))) {
+                    while (
+                        j < length &&
+                        Character.isJavaIdentifierPart(query.charAt(j))
+                    ) {
                         j++;
                     }
                     String name = query.substring(i + 1, j);
@@ -145,7 +160,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Returns the indexes for a parameter.
-     * 
+     *
      * @param name parameter name
      * @return parameter indexes
      * @throws IllegalArgumentException if the parameter does not exist
@@ -160,14 +175,15 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setObject(int, java.lang.Object)
      */
-    public void setObject(final String name, final Object value) throws SQLException {
+    public void setObject(final String name, final Object value)
+        throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setObject(indexes[i], value);
@@ -176,7 +192,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @param targetSqlType the SQL type to be sent to the database
@@ -184,7 +200,11 @@ public class NamedPreparedStatement implements AutoCloseable {
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setObject(int, java.lang.Object)
      */
-    public void setObject(final String name, final Object value, final SQLType targetSqlType) throws SQLException {
+    public void setObject(
+        final String name,
+        final Object value,
+        final SQLType targetSqlType
+    ) throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setObject(indexes[i], value, targetSqlType);
@@ -193,7 +213,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @param targetSqlType the SQL type (as defined in java.sql.Types) to be sent
@@ -202,7 +222,11 @@ public class NamedPreparedStatement implements AutoCloseable {
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setObject(int, java.lang.Object)
      */
-    public void setObject(final String name, final Object value, final int targetSqlType) throws SQLException {
+    public void setObject(
+        final String name,
+        final Object value,
+        final int targetSqlType
+    ) throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setObject(indexes[i], value, targetSqlType);
@@ -211,14 +235,15 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setString(int, java.lang.String)
      */
-    public void setString(final String name, final String value) throws SQLException {
+    public void setString(final String name, final String value)
+        throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setString(indexes[i], value);
@@ -227,14 +252,15 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setBoolean(int, java.lang.Boolean)
      */
-    public void setBoolean(final String name, final Boolean value) throws SQLException {
+    public void setBoolean(final String name, final Boolean value)
+        throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setBoolean(indexes[i], value);
@@ -243,14 +269,15 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setArray(int, java.sql.Array)
      */
-    public void setArray(final String name, final Array value) throws SQLException {
+    public void setArray(final String name, final Array value)
+        throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setArray(indexes[i], value);
@@ -259,7 +286,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @throws SQLException if an error occurred
@@ -275,14 +302,15 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setInt(int, int)
      */
-    public void setLong(final String name, final long value) throws SQLException {
+    public void setLong(final String name, final long value)
+        throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setLong(indexes[i], value);
@@ -291,14 +319,15 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param value parameter value
      * @throws SQLException if an error occurred
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setTimestamp(int, java.sql.Timestamp)
      */
-    public void setTimestamp(final String name, final Timestamp value) throws SQLException {
+    public void setTimestamp(final String name, final Timestamp value)
+        throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setTimestamp(indexes[i], value);
@@ -307,7 +336,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Sets a parameter.
-     * 
+     *
      * @param name parameter name
      * @param targetSqlType the SQL type (as defined in java.sql.Types) to be sent
      * to the database
@@ -315,7 +344,8 @@ public class NamedPreparedStatement implements AutoCloseable {
      * @throws IllegalArgumentException if the parameter does not exist
      * @see PreparedStatement#setNull(int, int)
      */
-    public void setNull(final String name, final int targetSqlType) throws SQLException {
+    public void setNull(final String name, final int targetSqlType)
+        throws SQLException {
         int[] indexes = getIndexes(name);
         for (int i = 0; i < indexes.length; i++) {
             statement.setNull(indexes[i], targetSqlType);
@@ -324,7 +354,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Returns the underlying statement.
-     * 
+     *
      * @return the statement
      */
     public PreparedStatement getStatement() {
@@ -333,7 +363,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Executes the statement.
-     * 
+     *
      * @return true if the first result is a {@link ResultSet}
      * @throws SQLException if an error occurred
      * @see PreparedStatement#execute()
@@ -344,7 +374,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Executes the statement, which must be a query.
-     * 
+     *
      * @return the query results
      * @throws SQLException if an error occurred
      * @see PreparedStatement#executeQuery()
@@ -356,7 +386,7 @@ public class NamedPreparedStatement implements AutoCloseable {
     /**
      * Executes the statement, which must be an SQL INSERT, UPDATE or DELETE
      * statement; or an SQL statement that returns nothing, such as a DDL statement.
-     * 
+     *
      * @return number of rows affected
      * @throws SQLException if an error occurred
      * @see PreparedStatement#executeUpdate()
@@ -367,7 +397,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Closes the statement.
-     * 
+     *
      * @throws SQLException if an error occurred
      * @see Statement#close()
      */
@@ -377,7 +407,7 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Adds the current set of parameters as a batch entry.
-     * 
+     *
      * @throws SQLException if something went wrong
      */
     public void addBatch() throws SQLException {
@@ -386,9 +416,9 @@ public class NamedPreparedStatement implements AutoCloseable {
 
     /**
      * Executes all of the batched statements.
-     * 
+     *
      * See {@link Statement#executeBatch()} for details.
-     * 
+     *
      * @return update counts for each statement
      * @throws SQLException if something went wrong
      */

@@ -13,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class UserWithScore extends User {
+
     @NotNullColumn
     private int totalScore;
 }

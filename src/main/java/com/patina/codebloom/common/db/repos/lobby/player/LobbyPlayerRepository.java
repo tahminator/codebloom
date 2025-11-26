@@ -1,14 +1,13 @@
 package com.patina.codebloom.common.db.repos.lobby.player;
 
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import java.util.List;
 import java.util.Optional;
-
-import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 
 public interface LobbyPlayerRepository {
     /**
      * Creates a new lobby player in the database.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -26,7 +25,7 @@ public interface LobbyPlayerRepository {
 
     /**
      * Finds a lobby player by its ID.
-     * 
+     *
      * @param id the lobby player ID
      * @return an {@code Optional} containing the lobby player if found, or
      * {@code Optional.empty()} otherwise
@@ -35,7 +34,7 @@ public interface LobbyPlayerRepository {
 
     /**
      * Finds a lobby player for a specific player ID.
-     * 
+     *
      * @param playerId the player ID
      * @return an {@code Optional} containing the lobby player if found, or
      * {@code Optional.empty()} otherwise
@@ -44,7 +43,7 @@ public interface LobbyPlayerRepository {
 
     /**
      * Finds all players in a specific lobby.
-     * 
+     *
      * @param lobbyId the lobby ID
      * @return list of lobby players in the specified lobby
      */
@@ -52,7 +51,7 @@ public interface LobbyPlayerRepository {
 
     /**
      * Updates an existing lobby player in the database.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -70,7 +69,7 @@ public interface LobbyPlayerRepository {
 
     /**
      * Deletes all players from a specific lobby.
-     * 
+     *
      * @param lobbyId the lobby ID
      * @return true if all players were successfully deleted from the lobby, false
      * otherwise
@@ -79,7 +78,7 @@ public interface LobbyPlayerRepository {
 
     /**
      * Deletes a single lobby player by its ID.
-     * 
+     *
      * @param id the lobby player ID to delete
      * @return true if the lobby player was deleted successfully, false otherwise
      */

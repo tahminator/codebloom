@@ -1,6 +1,6 @@
 package com.patina.codebloom.common.db.models.lobby;
-import java.time.OffsetDateTime;
 
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,5 +23,4 @@ public class LobbyQuestion {
     private OffsetDateTime createdAt;
 
     private int userSolvedCount;
-
 }

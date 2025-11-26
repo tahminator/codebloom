@@ -1,8 +1,7 @@
 package com.patina.codebloom.common.db.models.api;
 
-import java.time.LocalDateTime;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,6 +14,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class ApiKey {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 

@@ -12,6 +12,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class RegisterClubBody {
+
     @NotBlank
     private String userId;
 

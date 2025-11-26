@@ -1,10 +1,8 @@
 package com.patina.codebloom.common.dto.potd;
 
-import java.time.LocalDateTime;
-
 import com.patina.codebloom.common.db.models.potd.POTD;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,6 +15,7 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @ToString
 public class PotdDto {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
@@ -34,11 +33,11 @@ public class PotdDto {
 
     public static PotdDto fromPOTD(final POTD potd) {
         return PotdDto.builder()
-                        .id(potd.getId())
-                        .title(potd.getTitle())
-                        .slug(potd.getSlug())
-                        .multiplier(potd.getMultiplier())
-                        .createdAt(potd.getCreatedAt())
-                        .build();
+            .id(potd.getId())
+            .title(potd.getTitle())
+            .slug(potd.getSlug())
+            .multiplier(potd.getMultiplier())
+            .createdAt(potd.getCreatedAt())
+            .build();
     }
 }

@@ -1,8 +1,7 @@
 package com.patina.codebloom.common.db.repos.announcement;
 
-import java.util.List;
-
 import com.patina.codebloom.common.db.models.announcement.Announcement;
+import java.util.List;
 
 public interface AnnouncementRepository {
     List<Announcement> getAllAnnouncements();
@@ -14,7 +13,7 @@ public interface AnnouncementRepository {
     /**
      * @note The id property of the object will be overriden.
      * @note the returned boolean indicates if the operation was a success or not.
-     * 
+     *
      */
     boolean createAnnouncement(Announcement announcement);
 

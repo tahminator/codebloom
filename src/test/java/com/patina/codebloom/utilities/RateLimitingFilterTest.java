@@ -1,5 +1,17 @@
 package com.patina.codebloom.utilities;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import com.patina.codebloom.common.dto.ApiResponder;
+import com.patina.codebloom.config.NoJdaRequired;
+import com.patina.codebloom.config.TestProtector;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,25 +21,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 
-import com.patina.codebloom.common.dto.ApiResponder;
-import com.patina.codebloom.config.NoJdaRequired;
-import com.patina.codebloom.config.TestProtector;
-
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Import(TestProtector.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RateLimitingFilterTest extends NoJdaRequired {
+
     @LocalServerPort
     private int port;
 
@@ -54,11 +52,11 @@ class RateLimitingFilterTest extends NoJdaRequired {
                     start.await();
 
                     RestAssured.given()
-                                    .when()
-                                    .header("Content-Type", "application/json")
-                                    .get("/api")
-                                    .then()
-                                    .statusCode(200);
+                        .when()
+                        .header("Content-Type", "application/json")
+                        .get("/api")
+                        .then()
+                        .statusCode(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -73,14 +71,13 @@ class RateLimitingFilterTest extends NoJdaRequired {
                 rateLimitSetup.await();
 
                 var apiResponder = RestAssured.given()
-                                .when()
-                                .header("Content-Type", "application/json")
-                                .get("/api")
-                                .then()
-                                .statusCode(429)
-                                .extract()
-                                .as(new TypeRef<ApiResponder<ServerMetadataObject>>() {
-                                });
+                    .when()
+                    .header("Content-Type", "application/json")
+                    .get("/api")
+                    .then()
+                    .statusCode(429)
+                    .extract()
+                    .as(new TypeRef<ApiResponder<ServerMetadataObject>>() {});
 
                 assertFalse(apiResponder.isSuccess());
             } catch (Exception e) {

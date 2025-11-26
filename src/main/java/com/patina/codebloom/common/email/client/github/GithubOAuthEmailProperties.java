@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "github.email")
 public class GithubOAuthEmailProperties {
+
     private String host;
     private String port;
     private String type;

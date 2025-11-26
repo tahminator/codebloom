@@ -1,10 +1,9 @@
 package com.patina.codebloom.common.db.repos.user;
 
-import java.util.ArrayList;
-
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
 import com.patina.codebloom.common.db.repos.user.options.UserFilterOptions;
+import java.util.ArrayList;
 
 public interface UserRepository {
     /**
@@ -16,7 +15,7 @@ public interface UserRepository {
      * <li>discordId</li>
      * <li>discordName</li>
      * </ul>
-     * 
+     *
      */
     void createUser(User user);
 
@@ -41,9 +40,16 @@ public interface UserRepository {
 
     User getUserByLeetcodeUsername(String leetcodeUsername);
 
-    UserWithScore getUserWithScoreByIdAndLeaderboardId(String userId, String leaderboardId, UserFilterOptions options);
+    UserWithScore getUserWithScoreByIdAndLeaderboardId(
+        String userId,
+        String leaderboardId,
+        UserFilterOptions options
+    );
 
-    UserWithScore getUserWithScoreByLeetcodeUsernameAndLeaderboardId(String userLeetcodeUsername, String leaderboardId);
+    UserWithScore getUserWithScoreByLeetcodeUsernameAndLeaderboardId(
+        String userLeetcodeUsername,
+        String leaderboardId
+    );
 
     User getUserByDiscordId(String discordId);
 

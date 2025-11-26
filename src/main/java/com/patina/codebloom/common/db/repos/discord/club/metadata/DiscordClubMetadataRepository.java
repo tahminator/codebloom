@@ -1,15 +1,14 @@
 package com.patina.codebloom.common.db.repos.discord.club.metadata;
 
-import java.util.Optional;
-
 import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
+import java.util.Optional;
 
 public interface DiscordClubMetadataRepository {
     /**
      * Creates a new DiscordClubMetadata in the database.
-     * 
+     *
      * @note - This should be joined with an existing DiscordClub in the database.
-     * 
+     *
      * @param discordClubMetadata - required fields:
      * <ul>
      * <li>discordClubId</li>
@@ -37,5 +36,4 @@ public interface DiscordClubMetadataRepository {
     boolean updateDiscordClubMetadata(DiscordClubMetadata discordClubMetadata);
 
     boolean deleteDiscordClubMetadataById(String id);
-
 }

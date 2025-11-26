@@ -1,8 +1,7 @@
 package com.patina.codebloom.common.db.repos.session;
 
-import java.util.ArrayList;
-
 import com.patina.codebloom.common.db.models.Session;
+import java.util.ArrayList;
 
 public interface SessionRepository {
     /**

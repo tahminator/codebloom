@@ -1,15 +1,4 @@
-
 package com.patina.codebloom.scheduled.leetcode;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import com.patina.codebloom.common.db.models.job.Job;
 import com.patina.codebloom.common.db.models.job.JobStatus;
@@ -19,16 +8,24 @@ import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
-
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BlockingBucket;
 import io.github.bucket4j.Bucket;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @Profile("!ci | thread")
 public class LeetcodeQuestionProcessService {
+
     private static final ReentrantLock LOCK = new ReentrantLock();
 
     private static final int MAX_JOBS_PER_RUN = 10;
@@ -42,26 +39,32 @@ public class LeetcodeQuestionProcessService {
 
     private BlockingBucket initializeBucket() {
         var bandwidth = Bandwidth.builder()
-                        .capacity(REQUESTS_OVER_TIME)
-                        .refillIntervally(REQUESTS_OVER_TIME, Duration.ofMillis(MILLISECONDS_TO_WAIT))
-                        .build();
+            .capacity(REQUESTS_OVER_TIME)
+            .refillIntervally(
+                REQUESTS_OVER_TIME,
+                Duration.ofMillis(MILLISECONDS_TO_WAIT)
+            )
+            .build();
 
-        return Bucket.builder()
-                        .addLimit(bandwidth)
-                        .build().asBlocking();
+        return Bucket.builder().addLimit(bandwidth).build().asBlocking();
     }
 
     private void waitForToken() {
         try {
             rateLimiter.consume(1);
         } catch (InterruptedException e) {
-            throw new RuntimeException("Failed to consume rate limit bucket token in leetcode question process service", e);
+            throw new RuntimeException(
+                "Failed to consume rate limit bucket token in leetcode question process service",
+                e
+            );
         }
     }
 
-    public LeetcodeQuestionProcessService(final JobRepository jobRepository,
-                    final ThrottledLeetcodeClient throttledLeetcodeClient,
-                    final QuestionRepository questionRepository) {
+    public LeetcodeQuestionProcessService(
+        final JobRepository jobRepository,
+        final ThrottledLeetcodeClient throttledLeetcodeClient,
+        final QuestionRepository questionRepository
+    ) {
         this.jobRepository = jobRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.questionRepository = questionRepository;
@@ -70,7 +73,7 @@ public class LeetcodeQuestionProcessService {
 
     /**
      * Queries the repo to find incomplete jobs by max size and returns them.
-     * 
+     *
      * @param maxSize the maximum number of jobs to claim
      * @return list of incomplete jobs to process
      */
@@ -82,7 +85,9 @@ public class LeetcodeQuestionProcessService {
     @Async
     public void drainQueue() {
         if (!LOCK.tryLock()) {
-            log.info("thread attempted to drain queue, but queue is already being drained.");
+            log.info(
+                "thread attempted to drain queue, but queue is already being drained."
+            );
             return;
         }
 
@@ -102,8 +107,11 @@ public class LeetcodeQuestionProcessService {
                         waitForToken();
                         fetchAndUpdate(job);
                     } catch (Exception e) {
-                        log.error("Failed to process job with id: {} for questionId: {}",
-                                        job.getId(), job.getQuestionId());
+                        log.error(
+                            "Failed to process job with id: {} for questionId: {}",
+                            job.getId(),
+                            job.getQuestionId()
+                        );
                         e.printStackTrace();
                     }
                 }
@@ -119,53 +127,101 @@ public class LeetcodeQuestionProcessService {
      * backend first, then use the leetcode ID to get submission details.
      */
     private void fetchAndUpdate(final Job job) {
-        log.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
+        log.info(
+            "Processing job {} for questionId: {}",
+            job.getId(),
+            job.getQuestionId()
+        );
 
         job.setStatus(JobStatus.PROCESSING);
         job.setProcessedAt(StandardizedOffsetDateTime.now());
         boolean success = jobRepository.updateJob(job);
         if (!success) {
-            throw new RuntimeException("Failed to update job status to PROCESSING");
+            throw new RuntimeException(
+                "Failed to update job status to PROCESSING"
+            );
         }
 
         try {
-            log.debug("Fetching question from backend with ID: {}", job.getQuestionId());
-            Question question = questionRepository.getQuestionById(job.getQuestionId());
+            log.debug(
+                "Fetching question from backend with ID: {}",
+                job.getQuestionId()
+            );
+            Question question = questionRepository.getQuestionById(
+                job.getQuestionId()
+            );
 
             if (question == null) {
-                throw new RuntimeException("No question found in backend with ID: " + job.getQuestionId());
+                throw new RuntimeException(
+                    "No question found in backend with ID: " +
+                        job.getQuestionId()
+                );
             }
 
-            log.debug("Found question: {} ({})", question.getQuestionTitle(), question.getQuestionSlug());
+            log.debug(
+                "Found question: {} ({})",
+                question.getQuestionTitle(),
+                question.getQuestionSlug()
+            );
 
             boolean dataFound = false;
 
-            if (question.getSubmissionId() != null && !question.getSubmissionId().isEmpty()) {
+            if (
+                question.getSubmissionId() != null &&
+                !question.getSubmissionId().isEmpty()
+            ) {
                 try {
-                    int submissionId = Integer.parseInt(question.getSubmissionId());
-                    log.debug("Fetching submission details from Leetcode for submission ID: {}", submissionId);
+                    int submissionId = Integer.parseInt(
+                        question.getSubmissionId()
+                    );
+                    log.debug(
+                        "Fetching submission details from Leetcode for submission ID: {}",
+                        submissionId
+                    );
 
-                    var detailedSubmission = leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
+                    var detailedSubmission =
+                        leetcodeClient.findSubmissionDetailBySubmissionId(
+                            submissionId
+                        );
 
                     if (detailedSubmission != null) {
-                        log.debug("Successfully fetched submission details for submission ID: {}", submissionId);
+                        log.debug(
+                            "Successfully fetched submission details for submission ID: {}",
+                            submissionId
+                        );
 
-                        question.setRuntime(detailedSubmission.getRuntimeDisplay());
-                        question.setMemory(detailedSubmission.getMemoryDisplay());
+                        question.setRuntime(
+                            detailedSubmission.getRuntimeDisplay()
+                        );
+                        question.setMemory(
+                            detailedSubmission.getMemoryDisplay()
+                        );
                         question.setCode(detailedSubmission.getCode());
 
                         if (detailedSubmission.getLang() != null) {
-                            question.setLanguage(detailedSubmission.getLang().getName());
+                            question.setLanguage(
+                                detailedSubmission.getLang().getName()
+                            );
                         }
 
                         questionRepository.updateQuestion(question);
-                        log.debug("Successfully updated question ID: {} with submission details", question.getId());
+                        log.debug(
+                            "Successfully updated question ID: {} with submission details",
+                            question.getId()
+                        );
                         dataFound = true;
                     } else {
-                        log.warn("No detailed submission found for submission ID: {}", submissionId);
+                        log.warn(
+                            "No detailed submission found for submission ID: {}",
+                            submissionId
+                        );
                     }
                 } catch (NumberFormatException e) {
-                    log.warn("Invalid submission ID format '{}' for question {}", question.getSubmissionId(), question.getId());
+                    log.warn(
+                        "Invalid submission ID format '{}' for question {}",
+                        question.getSubmissionId(),
+                        question.getId()
+                    );
                 }
             }
 
@@ -173,29 +229,41 @@ public class LeetcodeQuestionProcessService {
                 job.setStatus(JobStatus.COMPLETE);
                 job.setCompletedAt(StandardizedOffsetDateTime.now());
 
-                log.info("Successfully completed job {} for question: {} (ID: {})",
-                                job.getId(), question.getQuestionTitle(), question.getId());
+                log.info(
+                    "Successfully completed job {} for question: {} (ID: {})",
+                    job.getId(),
+                    question.getQuestionTitle(),
+                    question.getId()
+                );
             } else {
-                job.setNextAttemptAt(StandardizedOffsetDateTime.now().plusMinutes(30));
+                job.setNextAttemptAt(
+                    StandardizedOffsetDateTime.now().plusMinutes(30)
+                );
 
-                log.info("No submission data found for job {} for question: {} (ID: {}), scheduled for retry in 30 minutes",
-                                job.getId(), question.getQuestionTitle(), question.getId());
+                log.info(
+                    "No submission data found for job {} for question: {} (ID: {}), scheduled for retry in 30 minutes",
+                    job.getId(),
+                    question.getQuestionTitle(),
+                    question.getId()
+                );
             }
 
             success = jobRepository.updateJob(job);
             if (!success) {
                 throw new RuntimeException("Failed to update job");
             }
-
         } catch (Exception e) {
             job.setStatus(JobStatus.INCOMPLETE);
             job.setProcessedAt(null);
             jobRepository.updateJob(job);
 
-            log.error("Failed to process job {} for questionId: {}", job.getId(), job.getQuestionId());
+            log.error(
+                "Failed to process job {} for questionId: {}",
+                job.getId(),
+                job.getQuestionId()
+            );
             e.printStackTrace();
             throw new RuntimeException("Job processing failed", e);
         }
     }
-
 }

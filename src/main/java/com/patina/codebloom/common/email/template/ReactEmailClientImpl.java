@@ -2,7 +2,6 @@ package com.patina.codebloom.common.email.template;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.core.io.ClassPathResource;
@@ -14,12 +13,18 @@ public class ReactEmailClientImpl implements ReactEmailClient {
 
     private String getHtmlAsString(final String path) throws IOException {
         ClassPathResource resource = new ClassPathResource(path);
-        return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
-
+        return StreamUtils.copyToString(
+            resource.getInputStream(),
+            StandardCharsets.UTF_8
+        );
     }
 
     @Override
-    public String createExampleTemplate(final String recipientName, final String verifyUrl, final String supportEmail) throws IOException {
+    public String createExampleTemplate(
+        final String recipientName,
+        final String verifyUrl,
+        final String supportEmail
+    ) throws IOException {
         final String html = getHtmlAsString("static/email/example.html");
         final Document doc = Jsoup.parse(html);
 
@@ -27,13 +32,16 @@ public class ReactEmailClientImpl implements ReactEmailClient {
         doc.getElementById("input-verifyUrl-innerText").text(verifyUrl);
         doc.getElementById("input-verifyUrl-href").attr("href", verifyUrl);
         doc.getElementById("input-supportEmail-innerText").text(supportEmail);
-        doc.getElementById("input-supportEmail-href").attr("href", supportEmail);
+        doc
+            .getElementById("input-supportEmail-href")
+            .attr("href", supportEmail);
 
         return doc.outerHtml();
     }
 
     @Override
-    public String schoolEmailTemplate(final String verifyUrl) throws IOException {
+    public String schoolEmailTemplate(final String verifyUrl)
+        throws IOException {
         final String html = getHtmlAsString("static/email/school-email.html");
         final Document doc = Jsoup.parse(html);
 
@@ -42,5 +50,4 @@ public class ReactEmailClientImpl implements ReactEmailClient {
 
         return doc.outerHtml();
     }
-
 }

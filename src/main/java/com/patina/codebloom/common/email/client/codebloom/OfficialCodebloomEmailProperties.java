@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "codebloom.email")
 public class OfficialCodebloomEmailProperties {
+
     private String host;
     private String port;
     private String type;

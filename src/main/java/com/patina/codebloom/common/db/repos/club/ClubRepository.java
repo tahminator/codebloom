@@ -5,7 +5,7 @@ import com.patina.codebloom.common.db.models.club.Club;
 public interface ClubRepository {
     /**
      * Creates a new club in the database.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -21,7 +21,7 @@ public interface ClubRepository {
 
     /**
      * Updates an existing club by its ID.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -45,4 +45,3 @@ public interface ClubRepository {
 
     boolean deleteClubById(String id);
 }
-

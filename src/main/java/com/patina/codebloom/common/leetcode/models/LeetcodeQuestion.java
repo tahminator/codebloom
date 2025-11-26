@@ -1,7 +1,6 @@
 package com.patina.codebloom.common.leetcode.models;
 
 import java.util.List;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,6 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @EqualsAndHashCode
 public class LeetcodeQuestion {
+
     private String link;
     private int questionId;
     private String questionTitle;

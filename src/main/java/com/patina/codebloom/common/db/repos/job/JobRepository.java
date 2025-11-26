@@ -1,13 +1,12 @@
 package com.patina.codebloom.common.db.repos.job;
 
-import java.util.List;
-
 import com.patina.codebloom.common.db.models.job.Job;
+import java.util.List;
 
 public interface JobRepository {
     /**
      * Creates a new job in the database.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -25,7 +24,7 @@ public interface JobRepository {
 
     /**
      * Finds a job by its ID.
-     * 
+     *
      * @param id the job ID
      * @return the job if found, null otherwise
      */
@@ -33,7 +32,7 @@ public interface JobRepository {
 
     /**
      * Finds incomplete jobs ordered by nextAttemptAt (earliest first).
-     * 
+     *
      * @param maxJobs the maximum number of jobs to return
      * @return list of incomplete jobs ordered by earliest nextAttemptAt first
      */
@@ -41,7 +40,7 @@ public interface JobRepository {
 
     /**
      * Updates an existing job in the database.
-     * 
+     *
      * @note - The provided object's methods will be overridden with any returned
      * data from the database.
      *
@@ -62,7 +61,7 @@ public interface JobRepository {
 
     /**
      * Deletes a job by its ID.
-     * 
+     *
      * @param id the job ID to delete
      * @return true if the job was deleted successfully, false otherwise
      */

@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.patina.codebloom.common.db.models.potd.POTD;
+import com.patina.codebloom.common.db.repos.potd.POTDRepository;
+import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
 import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -13,11 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import com.patina.codebloom.common.db.models.potd.POTD;
-import com.patina.codebloom.common.db.repos.potd.POTDRepository;
-import com.patina.codebloom.common.time.StandardizedLocalDateTime;
-import com.patina.codebloom.db.BaseRepositoryTest;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -31,11 +29,11 @@ public class POTDRepositoryTest extends BaseRepositoryTest {
     @BeforeEach
     void setup() {
         POTD potd = POTD.builder()
-                        .title("Test Title")
-                        .slug("test-title")
-                        .multiplier(2.0f)
-                        .createdAt(StandardizedLocalDateTime.now())
-                        .build();
+            .title("Test Title")
+            .slug("test-title")
+            .multiplier(2.0f)
+            .createdAt(StandardizedLocalDateTime.now())
+            .build();
         testPOTD = potdRepository.createPOTD(potd);
     }
 

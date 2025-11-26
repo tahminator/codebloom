@@ -2,7 +2,6 @@ package com.patina.codebloom.common.db.models.lobby;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,6 +14,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Lobby {
+
     private String id;
 
     private String joinCode;

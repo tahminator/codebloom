@@ -3,11 +3,6 @@ package com.patina.codebloom.component;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.OffsetDateTime;
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-
 import com.github.javafaker.Faker;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
@@ -15,8 +10,12 @@ import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
+import java.time.OffsetDateTime;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 public class DuelManagerTest {
+
     private final DuelManager duelManager;
     private final Faker faker;
 
@@ -29,23 +28,25 @@ public class DuelManagerTest {
 
     private Lobby.LobbyBuilder randomPartialLobby() {
         return Lobby.builder()
-                        .id(java.util.UUID.randomUUID().toString())
-                        .joinCode(faker.code().isbn10(false).toUpperCase())
-                        .createdAt(OffsetDateTime.now());
+            .id(java.util.UUID.randomUUID().toString())
+            .joinCode(faker.code().isbn10(false).toUpperCase())
+            .createdAt(OffsetDateTime.now());
     }
 
     @Test
     void testGenerateDuelDataSuccess() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-                        .id(lobbyId)
-                        .status(LobbyStatus.ACTIVE)
-                        .expiresAt(OffsetDateTime.now().plusHours(1))
-                        .playerCount(2)
-                        .winnerId(Optional.empty())
-                        .build();
+            .id(lobbyId)
+            .status(LobbyStatus.ACTIVE)
+            .expiresAt(OffsetDateTime.now().plusHours(1))
+            .playerCount(2)
+            .winnerId(Optional.empty())
+            .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
+            Optional.of(mockLobby)
+        );
 
         DuelData result = duelManager.generateDuelData(lobbyId);
 
@@ -64,14 +65,16 @@ public class DuelManagerTest {
         String lobbyId = java.util.UUID.randomUUID().toString();
         String winnerId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-                        .id(lobbyId)
-                        .status(LobbyStatus.COMPLETED)
-                        .expiresAt(OffsetDateTime.now())
-                        .playerCount(2)
-                        .winnerId(Optional.of(winnerId))
-                        .build();
+            .id(lobbyId)
+            .status(LobbyStatus.COMPLETED)
+            .expiresAt(OffsetDateTime.now())
+            .playerCount(2)
+            .winnerId(Optional.of(winnerId))
+            .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
+            Optional.of(mockLobby)
+        );
 
         DuelData result = duelManager.generateDuelData(lobbyId);
 
@@ -84,13 +87,15 @@ public class DuelManagerTest {
     void testGenerateDuelDataCallsRepositoryOnce() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-                        .id(lobbyId)
-                        .status(LobbyStatus.ACTIVE)
-                        .expiresAt(OffsetDateTime.now())
-                        .playerCount(1)
-                        .build();
+            .id(lobbyId)
+            .status(LobbyStatus.ACTIVE)
+            .expiresAt(OffsetDateTime.now())
+            .playerCount(1)
+            .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
+            Optional.of(mockLobby)
+        );
 
         duelManager.generateDuelData(lobbyId);
 
@@ -105,15 +110,17 @@ public class DuelManagerTest {
         String winnerId = java.util.UUID.randomUUID().toString();
 
         Lobby mockLobby = randomPartialLobby()
-                        .id(lobbyId)
-                        .status(LobbyStatus.CLOSED)
-                        .createdAt(createdAt)
-                        .expiresAt(expiresAt)
-                        .playerCount(4)
-                        .winnerId(Optional.of(winnerId))
-                        .build();
+            .id(lobbyId)
+            .status(LobbyStatus.CLOSED)
+            .createdAt(createdAt)
+            .expiresAt(expiresAt)
+            .playerCount(4)
+            .winnerId(Optional.of(winnerId))
+            .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
+            Optional.of(mockLobby)
+        );
 
         DuelData result = duelManager.generateDuelData(lobbyId);
         LobbyDto resultDto = result.getLobby();
@@ -131,13 +138,15 @@ public class DuelManagerTest {
     void testGenerateDuelDataReturnsNewInstanceEachTime() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-                        .id(lobbyId)
-                        .status(LobbyStatus.ACTIVE)
-                        .expiresAt(OffsetDateTime.now())
-                        .playerCount(2)
-                        .build();
+            .id(lobbyId)
+            .status(LobbyStatus.ACTIVE)
+            .expiresAt(OffsetDateTime.now())
+            .playerCount(2)
+            .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
+            Optional.of(mockLobby)
+        );
 
         DuelData result1 = duelManager.generateDuelData(lobbyId);
         DuelData result2 = duelManager.generateDuelData(lobbyId);

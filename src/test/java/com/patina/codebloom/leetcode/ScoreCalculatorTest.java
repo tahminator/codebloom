@@ -1,14 +1,15 @@
 package com.patina.codebloom.leetcode;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
-
 import static com.patina.codebloom.common.db.models.question.QuestionDifficulty.Easy;
 import static com.patina.codebloom.common.db.models.question.QuestionDifficulty.Hard;
 import static com.patina.codebloom.common.db.models.question.QuestionDifficulty.Medium;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.patina.codebloom.common.leetcode.score.ScoreCalculator;
+import org.junit.jupiter.api.Test;
 
 class ScoreCalculatorTest {
+
     @Test
     void easyScore() {
         for (int i = 0; i < 1000; i++) {
@@ -36,13 +37,19 @@ class ScoreCalculatorTest {
     @Test
     void easyMultiplier() {
         float baseMultiplier = ScoreCalculator.calculateMultiplier(Easy);
-        assertEquals(true, baseMultiplier >= 1.235f && baseMultiplier <= 1.365f);
+        assertEquals(
+            true,
+            baseMultiplier >= 1.235f && baseMultiplier <= 1.365f
+        );
     }
 
     @Test
     void mediumMultiplier() {
         float baseMultiplier = ScoreCalculator.calculateMultiplier(Medium);
-        assertEquals(true, baseMultiplier >= 1.425f && baseMultiplier <= 1.575f);
+        assertEquals(
+            true,
+            baseMultiplier >= 1.425f && baseMultiplier <= 1.575f
+        );
     }
 
     @Test

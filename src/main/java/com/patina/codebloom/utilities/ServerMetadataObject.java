@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ServerMetadataObject {
+
     private String name;
     private String version;
     private String description;
@@ -12,8 +13,18 @@ public class ServerMetadataObject {
     public ServerMetadataObject() {
         this.name = "Codebloom";
         this.version = "v1.0.0";
-        this.description = "LeetCode leaderboard for Patina Network members to track progress and motivate each other.";
-        this.authors = new ArrayList<>(Arrays.asList("Alisha Zaman", "Alfardil Alam", "Angela Yu", "Tahmid Ahmed", "Arshadul Monir", "Nancy Huang"));
+        this.description =
+            "LeetCode leaderboard for Patina Network members to track progress and motivate each other.";
+        this.authors = new ArrayList<>(
+            Arrays.asList(
+                "Alisha Zaman",
+                "Alfardil Alam",
+                "Angela Yu",
+                "Tahmid Ahmed",
+                "Arshadul Monir",
+                "Nancy Huang"
+            )
+        );
     }
 
     public String getName() {
@@ -47,5 +58,4 @@ public class ServerMetadataObject {
     public void setAuthors(final ArrayList<String> authors) {
         this.authors = authors;
     }
-
 }

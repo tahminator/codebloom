@@ -1,8 +1,7 @@
 package com.patina.codebloom.common.db.repos.api.access;
 
-import java.util.List;
-
 import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
+import java.util.List;
 
 public interface ApiKeyAccessRepository {
     ApiKeyAccess getApiKeyAccessById(String id);

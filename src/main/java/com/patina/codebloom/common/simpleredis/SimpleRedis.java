@@ -2,7 +2,6 @@ package com.patina.codebloom.common.simpleredis;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,45 +9,55 @@ import org.springframework.stereotype.Service;
  * The first parameter of `index` is used to determine a specific index to
  * utilize, similar to `REDIS_INSTANCE/0`. Within each index you can use all the
  * same features that you may normally use, such as putting and getting.
- * 
+ *
  * Databases (indices):
- * 
+ *
  * 0 - Submission Refresh
- * 
+ *
  * 1 - Verification Email Sending
  *
  * 2 - Global rate limiting
  */
 @Service
 public class SimpleRedis {
-    private final Map<Integer, Map<String, Object>> store = new ConcurrentHashMap<>();
+
+    private final Map<Integer, Map<String, Object>> store =
+        new ConcurrentHashMap<>();
 
     /**
      * Puts a value from the hashmap at the given index.
      */
     public void put(final int index, final String key, final Object value) {
-        store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).put(key, value);
+        store
+            .computeIfAbsent(index, k -> new ConcurrentHashMap<>())
+            .put(key, value);
     }
 
     /**
      * Gets a value from the hashmap at the given index.
      */
     public Object get(final int index, final String key) {
-        return store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).get(key);
+        return store
+            .computeIfAbsent(index, k -> new ConcurrentHashMap<>())
+            .get(key);
     }
 
     /**
      * Removes a value from the hashmap at the given index.
      */
     public void remove(final int index, final String key) {
-        store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).remove(key);
+        store
+            .computeIfAbsent(index, k -> new ConcurrentHashMap<>())
+            .remove(key);
     }
 
     /**
      * Checks whether a key exists at the hashmap at the given index.
      */
     public boolean containsKey(final int index, final String key) {
-        return store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).containsKey(key);
+        return store
+            .computeIfAbsent(index, k -> new ConcurrentHashMap<>())
+            .containsKey(key);
     }
 
     /**
@@ -62,7 +71,9 @@ public class SimpleRedis {
      * Returns the size of the hashmap at the given index.
      */
     public int size(final int index) {
-        return store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).size();
+        return store
+            .computeIfAbsent(index, k -> new ConcurrentHashMap<>())
+            .size();
     }
 
     /**

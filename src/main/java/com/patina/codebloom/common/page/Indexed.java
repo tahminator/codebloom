@@ -1,12 +1,10 @@
 package com.patina.codebloom.common.page;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -30,8 +28,10 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @EqualsAndHashCode
 public class Indexed<T> {
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final int index;
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonUnwrapped
     private final T item;
@@ -43,7 +43,7 @@ public class Indexed<T> {
      * be a property inside of the object.
      *
      * For example, if we had <code>Indexed<User></code>:
-     * 
+     *
      * <pre>
      * <code>
      * {
@@ -61,10 +61,7 @@ public class Indexed<T> {
      * @param index - Index of said object
      */
     public static <T> Indexed<T> of(final T item, final int index) {
-        return Indexed.<T>builder()
-                        .item(item)
-                        .index(index)
-                        .build();
+        return Indexed.<T>builder().item(item).index(index).build();
     }
 
     /**
@@ -83,20 +80,22 @@ public class Indexed<T> {
      *
      * Set the starting index to any integer.
      */
-    public static <T> List<Indexed<T>> ofDefaultList(final List<T> items, final int startIndex) {
+    public static <T> List<Indexed<T>> ofDefaultList(
+        final List<T> items,
+        final int startIndex
+    ) {
         if (items == null) {
             return List.of();
         }
         return IntStream.range(0, items.size())
-                        .mapToObj(i -> Indexed.of(items.get(i), i + startIndex))
-                        .toList();
-
+            .mapToObj(i -> Indexed.of(items.get(i), i + startIndex))
+            .toList();
     }
 
     /**
      * This method will apply the given function to this {@code Indexed} object, if
      * not null. Otherwise return {@code Indexed} with a null item.
-     * 
+     *
      */
     public <R> Indexed<R> map(final Function<? super T, ? extends R> mapper) {
         final R newItem = (this.item == null) ? null : mapper.apply(this.item);

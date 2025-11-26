@@ -1,10 +1,10 @@
 package com.patina.codebloom.common.db.helper.annotations;
 
-import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Annotation to mark database fields that are not part of the table; rather,
@@ -18,6 +18,4 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Target({ FIELD })
 @Retention(RetentionPolicy.SOURCE)
-public @interface JoinColumn {
-
-}
+public @interface JoinColumn {}

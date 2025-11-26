@@ -1,10 +1,8 @@
 package com.patina.codebloom.common.db.models.leaderboard;
 
-import java.time.LocalDateTime;
-
 import com.patina.codebloom.common.db.helper.annotations.NotNullColumn;
 import com.patina.codebloom.common.db.helper.annotations.NullColumn;
-
+import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode
 @ToString
 public class Leaderboard {
+
     @NotNullColumn
     private String id;
 

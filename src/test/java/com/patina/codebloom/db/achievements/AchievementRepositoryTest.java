@@ -2,19 +2,17 @@ package com.patina.codebloom.db.achievements;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
-
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import com.patina.codebloom.common.db.models.achievements.Achievement;
 import com.patina.codebloom.common.db.models.achievements.AchievementPlaceEnum;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.achievements.AchievementSqlRepository;
-import com.patina.codebloom.db.BaseRepositoryTest;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.db.BaseRepositoryTest;
+import java.util.List;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -34,22 +32,24 @@ public class AchievementRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void createAchievement() {
         testAchievement = Achievement.builder()
-                        .userId(mockUserId)
-                        .place(AchievementPlaceEnum.ONE)
-                        .leaderboard(null)
-                        .title("Test Achievement")
-                        .description("Integration test achievement")
-                        .isActive(true)
-                        .createdAt(StandardizedOffsetDateTime.now())
-                        .deletedAt(null)
-                        .build();
+            .userId(mockUserId)
+            .place(AchievementPlaceEnum.ONE)
+            .leaderboard(null)
+            .title("Test Achievement")
+            .description("Integration test achievement")
+            .isActive(true)
+            .createdAt(StandardizedOffsetDateTime.now())
+            .deletedAt(null)
+            .build();
 
         repo.createAchievement(testAchievement);
     }
 
     @AfterAll
     void cleanUp() {
-        boolean isSuccessful = repo.deleteAchievementById(testAchievement.getId());
+        boolean isSuccessful = repo.deleteAchievementById(
+            testAchievement.getId()
+        );
         if (!isSuccessful) {
             fail("Failed deleting achievement by id.");
         }
@@ -67,26 +67,32 @@ public class AchievementRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void testGetAchievementsByUserId() {
-        List<Achievement> achievementList = repo.getAchievementsByUserId(mockUserId);
+        List<Achievement> achievementList = repo.getAchievementsByUserId(
+            mockUserId
+        );
         assertNotNull(achievementList);
         assertFalse(achievementList.isEmpty());
-        assertTrue(achievementList.stream().anyMatch(a -> a.getId().equals(testAchievement.getId())));
+        assertTrue(
+            achievementList
+                .stream()
+                .anyMatch(a -> a.getId().equals(testAchievement.getId()))
+        );
     }
 
     @Test
     @Order(3)
     void testUpdateAchievement() {
         Achievement updatedAchievement = Achievement.builder()
-                        .id(testAchievement.getId())
-                        .userId(testAchievement.getUserId())
-                        .place(AchievementPlaceEnum.THREE)
-                        .leaderboard(Tag.Patina)
-                        .title("Updated Title")
-                        .description("Updated Description")
-                        .isActive(false)
-                        .createdAt(testAchievement.getCreatedAt())
-                        .deletedAt(testAchievement.getDeletedAt())
-                        .build();
+            .id(testAchievement.getId())
+            .userId(testAchievement.getUserId())
+            .place(AchievementPlaceEnum.THREE)
+            .leaderboard(Tag.Patina)
+            .title("Updated Title")
+            .description("Updated Description")
+            .isActive(false)
+            .createdAt(testAchievement.getCreatedAt())
+            .deletedAt(testAchievement.getDeletedAt())
+            .build();
 
         Achievement result = repo.updateAchievement(updatedAchievement);
 
@@ -101,26 +107,32 @@ public class AchievementRepositoryTest extends BaseRepositoryTest {
     @Order(4)
     void testDeleteAchievementById() {
         deletableAchievement = Achievement.builder()
-                        .userId(mockUserId)
-                        .place(AchievementPlaceEnum.ONE)
-                        .leaderboard(null)
-                        .title("Deletable Achievement")
-                        .description("Should be deleted")
-                        .isActive(true)
-                        .createdAt(StandardizedOffsetDateTime.now())
-                        .deletedAt(null)
-                        .build();
+            .userId(mockUserId)
+            .place(AchievementPlaceEnum.ONE)
+            .leaderboard(null)
+            .title("Deletable Achievement")
+            .description("Should be deleted")
+            .isActive(true)
+            .createdAt(StandardizedOffsetDateTime.now())
+            .deletedAt(null)
+            .build();
 
         repo.createAchievement(deletableAchievement);
 
-        Achievement found = repo.getAchievementById(deletableAchievement.getId());
+        Achievement found = repo.getAchievementById(
+            deletableAchievement.getId()
+        );
         assertNotNull(found);
         assertEquals(deletableAchievement.getId(), found.getId());
 
-        boolean deleted = repo.deleteAchievementById(deletableAchievement.getId());
+        boolean deleted = repo.deleteAchievementById(
+            deletableAchievement.getId()
+        );
         assertTrue(deleted);
 
-        Achievement deletedFetched = repo.getAchievementById(deletableAchievement.getId());
+        Achievement deletedFetched = repo.getAchievementById(
+            deletableAchievement.getId()
+        );
         assertNull(deletedFetched);
     }
 }
