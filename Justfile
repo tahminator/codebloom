@@ -27,9 +27,17 @@ backend-dev-debug *args:
 backend-install *args:
   ./mvnw install -DskipTests=true {{args}}
 
-# Run backend tests
+# Run backend formatter (check only)
+backend-prettier *args:
+  pnpx prettier -c **/*.java
+
+# Run backend formatter (check & write)
+backend-prettier-fix *args:
+  pnpx prettier -c --write **/*.java
+
+# Run backend linter, formatter, & tests
 backend-test *args:
-  dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
+  just backend-prettier && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
 
 # Run backend tests with a debugger
 backend-testd *args:
