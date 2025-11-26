@@ -33,7 +33,7 @@ public class LeetcodeQuestionProcessService {
 
     private static final int MAX_JOBS_PER_RUN = 10;
     private static final long REQUESTS_OVER_TIME = 1L;
-    private static final long MILLISECONDS_TO_WAIT = 2000L;
+    private static final long MILLISECONDS_TO_WAIT = 300L;
 
     private final JobRepository jobRepository;
     private final LeetcodeClient leetcodeClient;
@@ -78,7 +78,7 @@ public class LeetcodeQuestionProcessService {
         return jobRepository.findIncompleteJobs(maxSize);
     }
 
-    @Scheduled(initialDelay = 0, fixedDelay = 120, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(initialDelay = 0, fixedDelay = 90, timeUnit = TimeUnit.MINUTES)
     @Async
     public void drainQueue() {
         if (!LOCK.tryLock()) {
