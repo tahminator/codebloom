@@ -1,8 +1,6 @@
 package com.patina.codebloom.db.leaderboard;
 
-// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
-// CHECKSTYLE:ON
 
 import java.util.List;
 import java.util.Objects;

@@ -1,9 +1,7 @@
 package com.patina.codebloom.db.task;
 
-// CHECKSTYLE:OFF
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
-// CHECKSTYLE:ON
 
 import java.time.OffsetDateTime;
 import java.util.List;
