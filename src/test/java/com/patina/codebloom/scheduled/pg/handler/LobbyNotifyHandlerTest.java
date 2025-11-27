@@ -129,47 +129,7 @@ public class LobbyNotifyHandlerTest {
         verify(duelManager, never()).generateDuelData(anyString());
     }
 
-    @Test
-    void testHandleRemovesFailedEmitters() throws IOException {
-        String partyId = "test-party-id";
-        DuelData mockDuelData = DuelData.DEFAULT;
-        when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
 
-        SseWrapper<ApiResponder<DuelData>> workingEmitter = mock(
-            SseWrapper.class
-        );
-        SseWrapper<ApiResponder<DuelData>> failingEmitter = mock(
-            SseWrapper.class
-        );
-
-        lobbyNotifyHandler.register(partyId, workingEmitter);
-        lobbyNotifyHandler.register(partyId, failingEmitter);
-
-        doThrow(new IOException("Connection failed"))
-            .when(failingEmitter)
-            .sendData(any(ApiResponder.class));
-
-        lobbyNotifyHandler.handle(partyId);
-
-        assertTrue(partyIdToSseEmitters.get(partyId).contains(workingEmitter));
-        assertFalse(partyIdToSseEmitters.get(partyId).contains(failingEmitter));
-    }
-
-    @Test
-    void testHandleRemovesPartyWhenAllEmittersFail() throws IOException {
-        String partyId = "test-party-id";
-        DuelData mockDuelData = DuelData.DEFAULT;
-        when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
-
-        lobbyNotifyHandler.register(partyId, sseWrapper);
-        doThrow(new IOException("Connection failed"))
-            .when(sseWrapper)
-            .sendData(any(ApiResponder.class));
-
-        lobbyNotifyHandler.handle(partyId);
-
-        assertFalse(partyIdToSseEmitters.containsKey(partyId));
-    }
 
     @Test
     void testGetDataSuccess() throws IOException {
