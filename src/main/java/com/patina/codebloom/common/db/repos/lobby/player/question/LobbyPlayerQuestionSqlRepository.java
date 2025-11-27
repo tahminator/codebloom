@@ -67,7 +67,7 @@ public class LobbyPlayerQuestionSqlRepository
             );
             stmt.setObject(
                 "points",
-                lobbyPlayerQuestion.getPoints().orElse(null),
+                lobbyPlayerQuestion.getPoints().orElse(0),
                 java.sql.Types.INTEGER
             );
 
