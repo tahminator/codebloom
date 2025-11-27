@@ -7,4 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LogExecutionTime {}
+public @interface LogExecutionTime {
+    boolean reportToDiscord() default false;
+}
