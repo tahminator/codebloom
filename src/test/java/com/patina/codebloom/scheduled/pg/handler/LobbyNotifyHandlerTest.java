@@ -129,8 +129,6 @@ public class LobbyNotifyHandlerTest {
         verify(duelManager, never()).generateDuelData(anyString());
     }
 
-
-
     @Test
     void testGetDataSuccess() throws IOException {
         String partyId = "test-party-id";
