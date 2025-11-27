@@ -14,6 +14,7 @@ import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.UserProfile;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.common.utils.log.LogExecutionTime;
 import com.patina.codebloom.common.utils.pair.Pair;
 import com.patina.codebloom.jda.client.JDAClient;
 import jakarta.servlet.ServletException;
@@ -81,6 +82,7 @@ public class CustomAuthenticationSuccessHandler
     }
 
     @Override
+    @LogExecutionTime(reportToDiscord = true)
     public void onAuthenticationSuccess(
         final HttpServletRequest request,
         final HttpServletResponse response,
