@@ -1,29 +1,69 @@
 import AchievementCarousel from "@/components/ui/tags/AchievementCarousel";
-import {
-  components,
-  AchievementDtoPlace,
-} from "@/lib/api/types/autogen/schema";
+import { Api } from "@/lib/api/types";
+import { AchievementDtoPlace } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
-import { Image, Tooltip, Box, Text, Stack } from "@mantine/core";
+import { Image, Tooltip, Box, Text, Stack, Divider } from "@mantine/core";
 import { useMemo } from "react";
 
-type AchievementDto = components["schemas"]["AchievementDto"];
-
+type AchievementDto = Api<"AchievementDto">;
 interface UserAchievementProps {
-  achievements: AchievementDto[];
+  achievements?: AchievementDto[];
   size: number;
   gap?: string | number;
   showHeader?: boolean;
 }
 
 const PLACE_CONFIG = {
-  [AchievementDtoPlace.ONE]: { emoji: "🥇" },
-  [AchievementDtoPlace.TWO]: { emoji: "🥈" },
-  [AchievementDtoPlace.THREE]: { emoji: "🥉" },
+  [AchievementDtoPlace.ONE]: "🥇",
+  [AchievementDtoPlace.TWO]: "🥈",
+  [AchievementDtoPlace.THREE]: "🥉",
 } as const;
 
-function isTopThreePlace(place: AchievementDtoPlace): boolean {
-  return Boolean(PLACE_CONFIG[place]);
+export default function UserAchievement({
+  achievements = [],
+  size,
+  gap = "xs",
+  showHeader = true,
+}: UserAchievementProps) {
+  const achievementItems = useMemo(
+    () =>
+      achievements
+        .filter(
+          (achievement) =>
+            achievement.active && achievement.place in PLACE_CONFIG,
+        )
+        .map((achievement) =>
+          achievement.leaderboard ?
+            <LeaderboardAchievementBadge
+              key={achievement.id}
+              achievement={achievement}
+              size={size}
+            />
+          : <GlobalTrophyBadge
+              key={achievement.id}
+              achievement={achievement}
+            />,
+        ),
+    [achievements, size],
+  );
+
+  if (!achievementItems.length) return null;
+
+  return (
+    <Stack gap="md" align="center">
+      <Divider w="70%" />
+      {showHeader && (
+        <Text size="sm" fw={500} c="dimmed">
+          Achievements
+        </Text>
+      )}
+      <AchievementCarousel
+        items={achievementItems}
+        visibleCount={3}
+        gap={gap}
+      />
+    </Stack>
+  );
 }
 
 interface AchievementBadgeProps {
@@ -31,12 +71,14 @@ interface AchievementBadgeProps {
 }
 
 function GlobalTrophyBadge({ achievement }: AchievementBadgeProps) {
-  const config = PLACE_CONFIG[achievement.place];
+  const emoji = PLACE_CONFIG[achievement.place];
 
   return (
     <Tooltip label={achievement.title} withArrow position="top">
       <Box style={{ position: "relative", display: "inline-block" }}>
-        <Text style={{ fontSize: 34, lineHeight: 1 }}>🏆</Text>
+        <Text fz={34} lh={1}>
+          🏆
+        </Text>
         <Text
           style={{
             position: "absolute",
@@ -46,7 +88,7 @@ function GlobalTrophyBadge({ achievement }: AchievementBadgeProps) {
             lineHeight: 1,
           }}
         >
-          {config.emoji}
+          {emoji}
         </Text>
       </Box>
     </Tooltip>
@@ -64,7 +106,7 @@ function LeaderboardAchievementBadge({
 }: LeaderboardAchievementBadgeProps) {
   if (!achievement.leaderboard) return null;
 
-  const config = PLACE_CONFIG[achievement.place];
+  const emoji = PLACE_CONFIG[achievement.place];
 
   const metadata = ApiUtils.getTagMetadataFromLeaderboard(
     achievement.leaderboard,
@@ -86,53 +128,9 @@ function LeaderboardAchievementBadge({
             lineHeight: 1,
           }}
         >
-          {config.emoji}
+          {emoji}
         </Text>
       </Box>
     </Tooltip>
-  );
-}
-
-export default function UserAchievement({
-  achievements,
-  size,
-  gap = "xs",
-  showHeader = true,
-}: UserAchievementProps) {
-  const achievementItems = useMemo(
-    () =>
-      achievements
-        .filter(
-          (achievement) =>
-            achievement.active && isTopThreePlace(achievement.place),
-        )
-        .map((achievement) =>
-          achievement.leaderboard ?
-            <LeaderboardAchievementBadge
-              key={achievement.id}
-              achievement={achievement}
-              size={size}
-            />
-          : <GlobalTrophyBadge
-              key={achievement.id}
-              achievement={achievement}
-            />,
-        ),
-    [achievements, size],
-  );
-
-  if (!achievementItems.length) return null;
-
-  return (
-    <Stack gap="md" align="center">
-      {showHeader && (
-        <Text size="sm" fw={500} c="dimmed">
-          Achievements
-        </Text>
-      )}
-      <AchievementCarousel visibleCount={3} gap={gap}>
-        {achievementItems}
-      </AchievementCarousel>
-    </Stack>
   );
 }

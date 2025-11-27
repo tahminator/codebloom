@@ -1,7 +1,8 @@
 import TagList from "@/components/ui/tags/TagList";
+import UserAchievement from "@/components/ui/tags/UserAchievement";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
-import { Group, Text, Box } from "@mantine/core";
+import { Group, Text, Stack } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
 
 import UserTagsSkeleton from "./UserTagsSkeleton";
@@ -33,8 +34,9 @@ export default function UserTags({ userId }: { userId: string }) {
   const { tags, achievements } = data.payload;
 
   return (
-    <Box w="100%">
-      <TagList tags={tags} achievements={achievements} size={40} gap="xs" />
-    </Box>
+    <Stack gap="md" w="100%">
+      <TagList tags={tags} size={40} gap="xs" />
+      <UserAchievement achievements={achievements} size={40} gap="xs" />
+    </Stack>
   );
 }

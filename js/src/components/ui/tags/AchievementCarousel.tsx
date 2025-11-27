@@ -1,9 +1,10 @@
+import { usePagination } from "@/lib/hooks/usePagination";
 import { Flex, ActionIcon } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
-import { Children, ReactNode, ReactElement, useState } from "react";
+import { ReactElement } from "react";
 
 interface AchievementCarouselProps {
-  children: ReactNode;
+  items: ReactElement[];
   visibleCount?: number;
   gap?: string | number;
 }
@@ -12,6 +13,49 @@ interface NavigationButtonProps {
   onClick: () => void;
   disabled: boolean;
   icon: ReactElement;
+}
+
+export default function AchievementCarousel({
+  items,
+  visibleCount = 3,
+  gap = "xs",
+}: AchievementCarouselProps) {
+  const totalPages = Math.ceil(items.length / visibleCount);
+  const { page, goBack, goForward } = usePagination({
+    initialPage: 1,
+    tieToUrl: false,
+  });
+
+  if (!items.length) return null;
+
+  const startIdx = (page - 1) * visibleCount;
+  const visibleItems = items.slice(startIdx, startIdx + visibleCount);
+
+  const canGoBack = page > 1;
+  const canGoForward = page < totalPages;
+  const showArrows = items.length > visibleCount;
+
+  return (
+    <Flex gap="md" align="center" justify="center">
+      <Flex gap={gap} wrap="nowrap" align="center">
+        {visibleItems}
+      </Flex>
+      {showArrows && (
+        <Flex direction="column" gap="xs" align="center">
+          <NavigationButton
+            onClick={goForward}
+            disabled={!canGoForward}
+            icon={<IconChevronRight size={18} />}
+          />
+          <NavigationButton
+            onClick={goBack}
+            disabled={!canGoBack}
+            icon={<IconChevronLeft size={18} />}
+          />
+        </Flex>
+      )}
+    </Flex>
+  );
 }
 
 function NavigationButton({ onClick, disabled, icon }: NavigationButtonProps) {
@@ -25,51 +69,5 @@ function NavigationButton({ onClick, disabled, icon }: NavigationButtonProps) {
     >
       {icon}
     </ActionIcon>
-  );
-}
-
-export default function AchievementCarousel({
-  children,
-  visibleCount = 3,
-  gap = "xs",
-}: AchievementCarouselProps) {
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const itemsArray = Children.toArray(children) as ReactElement[];
-
-  if (!itemsArray.length) return null;
-
-  const startIdx = currentPage * visibleCount;
-  const visibleItems = itemsArray.slice(startIdx, startIdx + visibleCount);
-
-  const totalPages = Math.ceil(itemsArray.length / visibleCount);
-  const canGoNext = currentPage < totalPages - 1;
-  const canGoPrev = currentPage > 0;
-
-  const handleNext = () => setCurrentPage((prev) => prev + 1);
-  const handlePrev = () => setCurrentPage((prev) => prev - 1);
-
-  const showArrows = itemsArray.length >= visibleCount;
-
-  return (
-    <Flex gap="md" align="center" justify="center">
-      <Flex gap={gap} wrap="nowrap" align="center">
-        {visibleItems}
-      </Flex>
-      {showArrows && (
-        <Flex direction="column" gap="xs" align="center">
-          <NavigationButton
-            onClick={handleNext}
-            disabled={!canGoNext}
-            icon={<IconChevronRight size={18} />}
-          />
-          <NavigationButton
-            onClick={handlePrev}
-            disabled={!canGoPrev}
-            icon={<IconChevronLeft size={18} />}
-          />
-        </Flex>
-      )}
-    </Flex>
   );
 }
