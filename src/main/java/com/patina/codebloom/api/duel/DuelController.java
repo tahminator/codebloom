@@ -3,11 +3,12 @@ package com.patina.codebloom.api.duel;
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
+import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
-import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
@@ -30,7 +31,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -63,6 +63,7 @@ public class DuelController {
     private final LobbyNotifyHandler lobbyNotifyHandler;
     private final QuestionBankRepository questionBankRepository;
     private final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
+    private final LobbyQuestionRepository lobbyQuestionRepository;
 
     public DuelController(
         final Env env,
@@ -71,7 +72,8 @@ public class DuelController {
         final LobbyPlayerRepository lobbyPlayerRepository,
         final LobbyNotifyHandler lobbyNotifyHandler,
         final QuestionBankRepository questionBankRepository,
-        final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository
+        final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
+        final LobbyQuestionRepository lobbyQuestionRepository
     ) {
         this.env = env;
         this.duelManager = duelManager;
@@ -80,6 +82,7 @@ public class DuelController {
         this.lobbyNotifyHandler = lobbyNotifyHandler;
         this.questionBankRepository = questionBankRepository;
         this.lobbyPlayerQuestionRepository = lobbyPlayerQuestionRepository;
+        this.lobbyQuestionRepository = lobbyQuestionRepository;
     }
 
     private void validatePlayerNotInLobby(final String playerId) {
@@ -300,20 +303,14 @@ public class DuelController {
 
         QuestionBank randomQuestion =
             questionBankRepository.getRandomQuestion();
-        List<LobbyPlayer> lobbyPlayers =
-            lobbyPlayerRepository.findPlayersByLobbyId(lobby.getId());
 
-        for (LobbyPlayer lobbyPlayer : lobbyPlayers) {
-            LobbyPlayerQuestion lobbyPlayerQuestion =
-                LobbyPlayerQuestion.builder()
-                    .lobbyPlayerId(lobbyPlayer.getId())
-                    .questionId(Optional.of(randomQuestion.getId()))
-                    .build();
+        LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
+            .lobbyId(lobby.getId())
+            .questionBankId(randomQuestion.getId())
+            .userSolvedCount(0)
+            .build();
 
-            lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(
-                lobbyPlayerQuestion
-            );
-        }
+        lobbyQuestionRepository.createLobbyQuestion(lobbyQuestion);
 
         return ResponseEntity.ok(
             ApiResponder.success("Party successfully started!", Empty.of())
