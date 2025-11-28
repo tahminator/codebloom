@@ -39,7 +39,7 @@ public class FetchAllLeetcodeQuestions {
         this.questionBankRepository = questionBankRepository;
     }
 
-    @Scheduled(initialDelay = 0, fixedDelay = 3, timeUnit = TimeUnit.HOURS)
+    @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.HOURS)
     public void updateQuestionBank() {
         BackgroundTask recentLeetcodeTask =
             backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
