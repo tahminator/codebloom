@@ -312,6 +312,12 @@ public class DuelController {
 
         lobbyQuestionRepository.createLobbyQuestion(lobbyQuestion);
 
+        try {
+            lobbyNotifyHandler.handle(lobby.getId());
+        } catch (Exception e) {
+            log.error("Failed to notify clients about lobby start", e);
+        }
+
         return ResponseEntity.ok(
             ApiResponder.success("Party successfully started!", Empty.of())
         );
