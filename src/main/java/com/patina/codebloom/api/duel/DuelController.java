@@ -328,13 +328,16 @@ public class DuelController {
                 "Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
     }
 
+    // CHECKSTYLE:OFF
     @Operation(summary = "Submit question", description = "Submit a question for the current duel")
     @ApiResponse(responseCode = "200", description = "Question has been successfully submitted!")
     @ApiResponse(responseCode = "400", description = "lobby player not found")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
     @ApiResponse(responseCode = "403", description = "Endpoint is currently non-functional")
     @ApiResponse(responseCode = "404", description = "Player is not in a duel")
-    @ApiResponse(responseCode = "500", description = "Failed to retrieve LeetCode submissions or database update failed")
+    @ApiResponse(
+            responseCode = "500",
+            description = "Failed to retrieve LeetCode submissions or database update failed")
     @PostMapping("/question/submit")
     public ResponseEntity<ApiResponder<Empty>> submitQuestion(
             @Protected final AuthenticationObject authenticationObject) {
@@ -442,8 +445,7 @@ public class DuelController {
 
         boolean isPlayerUpdated = lobbyPlayerRepository.updateLobbyPlayer(lobbyPlayer);
         if (!isPlayerUpdated) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Failed to update player points");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update player points");
         }
 
         try {
@@ -455,6 +457,8 @@ public class DuelController {
 
         return ResponseEntity.ok(ApiResponder.success("Question has been successfully submitted!", Empty.of()));
     }
+
+    // CHECKSTYLE:ON
 
     @Operation(summary = "SSE endpoint for duel data", description = """
                     Server-sent events endpoint for real-time duel updates
