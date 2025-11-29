@@ -47,7 +47,7 @@ public class DuelManager {
             .findLobbyById(lobbyId)
             .map(LobbyDto::fromLobby)
             .orElse(null);
-            
+
         List<QuestionBank> lobbyQuestions = lobbyQuestionRepository
             .findLobbyQuestionsByLobbyId(lobbyId)
             .stream()
