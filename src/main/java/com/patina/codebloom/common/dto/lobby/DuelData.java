@@ -20,18 +20,10 @@ public class DuelData {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LobbyDto lobby;
 
-    @Schema(
-        requiredMode = Schema.RequiredMode.NOT_REQUIRED,
-        nullable = true,
-        description = "Unique questions being worked on in this duel"
-    )
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private List<QuestionBank> questions;
 
-    @Schema(
-        requiredMode = Schema.RequiredMode.NOT_REQUIRED,
-        nullable = true,
-        description = "Map of player IDs to the questions they have solved"
-    )
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Map<String, List<QuestionBank>> playerQuestions;
 
     public static final DuelData DEFAULT = builder().build();
