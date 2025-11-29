@@ -1,6 +1,6 @@
 package com.patina.codebloom.common.dto.lobby;
 
-import com.patina.codebloom.common.db.models.question.Question;
+import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +25,14 @@ public class DuelData {
         nullable = true,
         description = "Unique questions being worked on in this duel"
     )
-    private List<Question> questions;
+    private List<QuestionBank> questions;
 
     @Schema(
         requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         nullable = true,
         description = "Map of player IDs to the questions they have solved"
     )
-    private Map<String, List<Question>> playerQuestions;
+    private Map<String, List<QuestionBank>> playerQuestions;
 
     public static final DuelData DEFAULT = builder().build();
 }
