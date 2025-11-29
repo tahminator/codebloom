@@ -23,12 +23,23 @@ public class DuelManagerTest {
     private final Faker faker;
 
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
-    private LobbyPlayerRepository lobbyPlayerRepository = mock(LobbyPlayerRepository.class);
-    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(LobbyPlayerQuestionRepository.class);
-    private QuestionRepository questionRepository = mock(QuestionRepository.class);
+    private LobbyPlayerRepository lobbyPlayerRepository = mock(
+        LobbyPlayerRepository.class
+    );
+    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(
+        LobbyPlayerQuestionRepository.class
+    );
+    private QuestionRepository questionRepository = mock(
+        QuestionRepository.class
+    );
 
     public DuelManagerTest() {
-        this.duelManager = new DuelManager(lobbyRepository, lobbyPlayerRepository, lobbyPlayerQuestionRepository, questionRepository);
+        this.duelManager = new DuelManager(
+            lobbyRepository,
+            lobbyPlayerRepository,
+            lobbyPlayerQuestionRepository,
+            questionRepository
+        );
         this.faker = Faker.instance();
     }
 
