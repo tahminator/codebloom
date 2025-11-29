@@ -7,7 +7,12 @@ import com.github.javafaker.Faker;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
+import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import java.time.OffsetDateTime;
@@ -20,9 +25,31 @@ public class DuelManagerTest {
     private final Faker faker;
 
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
+    private LobbyQuestionRepository lobbyQuestionRepository = mock(
+        LobbyQuestionRepository.class
+    );
+    private LobbyPlayerRepository lobbyPlayerRepository = mock(
+        LobbyPlayerRepository.class
+    );
+    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(
+        LobbyPlayerQuestionRepository.class
+    );
+    private QuestionRepository questionRepository = mock(
+        QuestionRepository.class
+    );
+    private QuestionBankRepository questionBankRepository = mock(
+        QuestionBankRepository.class
+    );
 
     public DuelManagerTest() {
-        this.duelManager = new DuelManager(lobbyRepository);
+        this.duelManager = new DuelManager(
+            lobbyRepository,
+            lobbyQuestionRepository,
+            lobbyPlayerRepository,
+            lobbyPlayerQuestionRepository,
+            questionRepository,
+            questionBankRepository
+        );
         this.faker = Faker.instance();
     }
 
