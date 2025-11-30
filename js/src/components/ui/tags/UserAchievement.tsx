@@ -58,6 +58,7 @@ export default function UserAchievement({
         items={achievementItems}
         visibleCount={3}
         gap={gap}
+        enableCarousel={true}
       />
     </Stack>
   );
