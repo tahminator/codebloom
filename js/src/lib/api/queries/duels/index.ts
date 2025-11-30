@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ApiURL } from "../../common/apiURL";
 
+// Create
 export const useCreateParty = () => {
   const queryClient = useQueryClient();
 
@@ -23,6 +24,7 @@ async function createParty() {
   return res(await response.json());
 }
 
+// Join
 export const useJoinParty = () => {
   const queryClient = useQueryClient();
 
@@ -42,5 +44,51 @@ async function joinParty(joinPartyBody: { partyCode: string }) {
     method,
     body: req({ partyCode: joinPartyBody.partyCode }),
   });
+  return res(await response.json());
+}
+
+// Start
+export const useStartParty = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: startParty,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["party"] });
+    },
+  });
+};
+
+async function startParty() {
+  const { url, method, res } = ApiURL.create("/api/duel/lobby/start", {
+    method: "POST",
+  });
+
+  const response = await fetch(url, {
+    method,
+  });
+
+  return res(await response.json());
+}
+
+// Leave
+export const useLeaveParty = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: leaveParty,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["party"] });
+    },
+  });
+};
+
+async function leaveParty() {
+  const { url, method, res } = ApiURL.create("/api/duel/party/leave", {
+    method: "POST",
+  });
+
+  const response = await fetch(url, { method });
+
   return res(await response.json());
 }
