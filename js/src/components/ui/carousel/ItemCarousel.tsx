@@ -24,9 +24,8 @@ export default function AchievementCarousel({
   if (!items.length) return <></>;
 
   const startIdx = (page - 1) * visibleCount;
-  const visibleItems = enableCarousel
-    ? items.slice(startIdx, startIdx + visibleCount)
-    : items;
+  const visibleItems =
+    enableCarousel ? items.slice(startIdx, startIdx + visibleCount) : items;
 
   const canGoBack = page > 1;
   const canGoForward = page < totalPages;

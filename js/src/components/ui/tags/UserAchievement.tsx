@@ -28,10 +28,7 @@ export default function UserAchievement({
   const achievementItems = useMemo(
     () =>
       achievements
-        .filter(
-          (achievement) =>
-            achievement.active && achievement.place,
-        )
+        .filter((achievement) => achievement.active && achievement.place)
         .map((achievement) =>
           achievement.leaderboard ?
             <LeaderboardAchievementBadge
