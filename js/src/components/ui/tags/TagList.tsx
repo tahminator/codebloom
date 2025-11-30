@@ -41,21 +41,19 @@ export default function TagList({
   return (
     <Stack gap="sm" align="center">
       {expanded && <Divider w="70%" />}
-      {hasTags && (
-        <Stack gap="sm" align="center">
-          {expanded && (
-            <Text size="sm" fw={500} c="dimmed">
-              Leaderboard
-            </Text>
-          )}
-          <AchievementCarousel
-            items={tagItems}
-            visibleCount={3}
-            gap={gap}
-            enableCarousel={expanded}
-          />
-        </Stack>
-      )}
+      <Stack gap="sm" align="center">
+        {expanded && (
+          <Text size="sm" fw={500} c="dimmed">
+            Leaderboard
+          </Text>
+        )}
+        <AchievementCarousel
+          items={tagItems}
+          visibleCount={3}
+          gap={gap}
+          enableCarousel={expanded}
+        />
+      </Stack>
     </Stack>
   );
 }
