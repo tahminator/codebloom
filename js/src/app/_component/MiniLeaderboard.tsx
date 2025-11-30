@@ -195,8 +195,6 @@ export default function MiniLeaderboardDesktop() {
                                   tags={entry.tags}
                                   size={16}
                                   gap="xs"
-                                  showLeaderboardTitle={false}
-                                  showDivider={false}
                                 />
                               )}
                             </Flex>

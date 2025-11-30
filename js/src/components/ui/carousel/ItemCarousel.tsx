@@ -7,33 +7,30 @@ interface AchievementCarouselProps {
   items: ReactElement[];
   visibleCount?: number;
   gap?: string | number;
-}
-
-interface NavigationButtonProps {
-  onClick: () => void;
-  disabled: boolean;
-  icon: ReactElement;
+  enableCarousel?: boolean;
 }
 
 export default function AchievementCarousel({
   items,
   visibleCount = 3,
   gap = "xs",
+  enableCarousel = false,
 }: AchievementCarouselProps) {
   const totalPages = Math.ceil(items.length / visibleCount);
   const { page, goBack, goForward } = usePagination({
-    initialPage: 1,
     tieToUrl: false,
   });
 
-  if (!items.length) return null;
+  if (!items.length) return <></>;
 
   const startIdx = (page - 1) * visibleCount;
-  const visibleItems = items.slice(startIdx, startIdx + visibleCount);
+  const visibleItems = enableCarousel
+    ? items.slice(startIdx, startIdx + visibleCount)
+    : items;
 
   const canGoBack = page > 1;
   const canGoForward = page < totalPages;
-  const showArrows = items.length > visibleCount;
+  const showArrows = enableCarousel && items.length > visibleCount;
 
   return (
     <Flex gap="md" align="center" justify="center">
@@ -56,6 +53,12 @@ export default function AchievementCarousel({
       )}
     </Flex>
   );
+}
+
+interface NavigationButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  icon: ReactElement;
 }
 
 function NavigationButton({ onClick, disabled, icon }: NavigationButtonProps) {

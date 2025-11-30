@@ -266,8 +266,6 @@ export default function LeaderboardIndex() {
                                 tags={entry.tags}
                                 size={16}
                                 gap="xs"
-                                showLeaderboardTitle={false}
-                                showDivider={false}
                               />
                             )}
                           </Flex>
