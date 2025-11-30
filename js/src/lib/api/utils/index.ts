@@ -42,8 +42,9 @@ export class ApiUtils {
   }
 
   /**
-   * Receive @type {ApiTypeUtils.UserTagTagMetadata} from a `leaderboard` enum.
-   * Maps a leaderboard enum value to its corresponding tag enum.
+   * Convenience method to retrieve tag metadata for a leaderboard value.
+   * Both the input and lookup are of type `UserTagTag`; this method exists for semantic clarity
+   * when working with leaderboard contexts, and may help future extensibility.
    *
    * @returns {ApiTypeUtils.UserTagTagMetadata} metadata - Metadata object
    */
