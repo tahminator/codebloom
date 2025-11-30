@@ -1,5 +1,4 @@
-import AchievementCarousel from "@/components/ui/tags/AchievementCarousel";
-import { Api } from "@/lib/api/types";
+import AchievementCarousel from "@/components/ui/carousel/ItemCarousel";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
 import { tagFF } from "@/lib/ff";
@@ -8,11 +7,9 @@ import { useMemo } from "react";
 
 interface TagListProps {
   tags: UserTag[];
-  achievements?: Api<"AchievementDto">[];
   size?: number;
   gap?: string | number;
-  showLeaderboardTitle?: boolean;
-  showDivider?: boolean;
+  expanded?: boolean;
 }
 
 interface TagBadgeProps {
@@ -22,11 +19,9 @@ interface TagBadgeProps {
 
 export default function TagList({
   tags,
-  achievements = [],
   size = 20,
   gap = "xs",
-  showLeaderboardTitle = true,
-  showDivider = true,
+  expanded = false,
 }: TagListProps) {
   const filteredTags = ApiUtils.filterUnusedTags(tags);
   const tagItems = useMemo(
@@ -40,21 +35,25 @@ export default function TagList({
   if (!tagFF) return null;
 
   const hasTags = tagItems.length > 0;
-  const hasAchievements = achievements.length > 0;
 
-  if (!hasTags && !hasAchievements) return null;
+  if (!hasTags) return null;
 
   return (
     <Stack gap="sm" align="center">
-      {showDivider && <Divider w="70%" />}
+      {expanded && <Divider w="70%" />}
       {hasTags && (
         <Stack gap="sm" align="center">
-          {showLeaderboardTitle && (
+          {expanded && (
             <Text size="sm" fw={500} c="dimmed">
               Leaderboard
             </Text>
           )}
-          <AchievementCarousel items={tagItems} visibleCount={3} gap={gap} />
+          <AchievementCarousel
+            items={tagItems}
+            visibleCount={3}
+            gap={gap}
+            enableCarousel={expanded}
+          />
         </Stack>
       )}
     </Stack>

@@ -35,7 +35,7 @@ export default function UserTags({ userId }: { userId: string }) {
 
   return (
     <Stack gap="md" w="100%">
-      <TagList tags={tags} size={40} gap="xs" />
+      <TagList tags={tags} size={40} gap="xs" expanded={true} />
       <UserAchievement achievements={achievements} size={40} gap="xs" />
     </Stack>
   );

@@ -130,8 +130,6 @@ export default function LeaderboardCard({
               tags={displayTags}
               size={14}
               gap="xs"
-              showLeaderboardTitle={false}
-              showDivider={false}
             />
           )}
         </Flex>

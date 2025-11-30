@@ -1,4 +1,4 @@
-import AchievementCarousel from "@/components/ui/tags/AchievementCarousel";
+import AchievementCarousel from "@/components/ui/carousel/ItemCarousel";
 import { Api } from "@/lib/api/types";
 import { AchievementDtoPlace } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
@@ -30,7 +30,7 @@ export default function UserAchievement({
       achievements
         .filter(
           (achievement) =>
-            achievement.active && achievement.place in PLACE_CONFIG,
+            achievement.active && achievement.place,
         )
         .map((achievement) =>
           achievement.leaderboard ?
@@ -47,7 +47,7 @@ export default function UserAchievement({
     [achievements, size],
   );
 
-  if (!achievementItems.length) return null;
+  if (!achievementItems.length) return <></>;
 
   return (
     <Stack gap="md" align="center">
@@ -104,7 +104,7 @@ function LeaderboardAchievementBadge({
   achievement,
   size,
 }: LeaderboardAchievementBadgeProps) {
-  if (!achievement.leaderboard) return null;
+  if (!achievement.leaderboard) return <></>;
 
   const emoji = PLACE_CONFIG[achievement.place];
 
