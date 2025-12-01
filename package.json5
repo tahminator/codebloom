@@ -8,7 +8,4 @@
 		fmt: 'pnpx prettier -c "src/**/*.java"',
 		'fmt:fix': 'pnpx prettier --write "src/**/*.java"',
 	},
-	dependencies: {
-		'@microsoft/fetch-event-source': '^2.0.1',
-	},
 }

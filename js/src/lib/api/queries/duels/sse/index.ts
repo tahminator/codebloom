@@ -1,43 +1,81 @@
+import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { ApiURL } from "@/lib/api/common/apiURL";
 import { fetchEventSource } from "@/lib/api/common/fetchEventSource";
+import { DuelData } from "@/lib/api/types/autogen/schema";
+import { useEffect, useState } from "react";
 
-export const getDuelData = async (lobbyCode: string) => {
-  const { url, method, res } = ApiURL.create("/api/duel/{lobbyCode}/sse", {
-    method: "POST",
-    params: {
-      lobbyCode: lobbyCode,
-    },
+type DuelStreamData = {
+  data: UnknownApiResponse<DuelData> | null;
+  isConnected: boolean;
+  error: Error | null;
+};
+
+export const useDuelData = (lobbyCode: string) => {
+  const [state, setState] = useState<DuelStreamData>({
+    data: null,
+    isConnected: false,
+    error: null,
   });
 
-  const controller = new AbortController();
+  useEffect(() => {
+    if (!lobbyCode) {
+      return;
+    }
 
-  await fetchEventSource(url, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    signal: controller.signal,
+    const controller = new AbortController();
 
-    async onopen(response) {
-      if (response.ok) {
-        return;
-      }
-    },
+    const connect = async () => {
+      const { url, method, res } = ApiURL.create("/api/duel/{lobbyCode}/sse", {
+        method: "POST",
+        params: {
+          lobbyCode: lobbyCode,
+        },
+      });
 
-    onmessage(ev) {
-      try {
-        res(JSON.parse(ev.data));
-      } catch (e) {
-        console.error("Failed to parse SSE message", e);
-      }
-    },
+      const controller = new AbortController();
 
-    onerror(err) {
-      if (err.message) {
-        throw err;
-      }
-    },
+      await fetchEventSource(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: controller.signal,
 
-    onclose() {},
-  });
+        async onopen(response) {
+          if (response.ok) {
+            setState((prev) => ({ ...prev, isConnected: true, error: null }));
+            return;
+          }
+        },
+
+        onmessage(ev) {
+          try {
+            const data = res(JSON.parse(ev.data));
+            setState((prev) => ({ ...prev, data: data, isConnected: true }));
+          } catch (e) {
+            console.error("Failed to parse SSE message", e);
+          }
+        },
+
+        onerror(err) {
+          if (err.message) {
+            setState((prev) => ({ ...prev, error: err, isConnected: false }));
+            throw err;
+          }
+        },
+
+        onclose() {
+          setState((prev) => ({ ...prev, isConnected: false }));
+        },
+      });
+    };
+    connect();
+
+    return () => {
+      controller.abort();
+      setState((prev) => ({ ...prev, isConnected: false }));
+    };
+  }, [lobbyCode]);
+
+  return state;
 };
