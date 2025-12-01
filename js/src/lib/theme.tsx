@@ -4,6 +4,7 @@ import {
   DEFAULT_THEME,
   mergeMantineTheme,
   rem,
+  Tooltip,
 } from "@mantine/core";
 
 /**
@@ -21,6 +22,13 @@ import {
  * {@link https://github.com/mantinedev/mantine/blob/master/packages/%40mantine/core/src/core/MantineProvider/default-colors.ts Default Colors}
  */
 export const themeOverride = createTheme({
+  components: {
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        events: { hover: true, focus: true, touch: true },
+      },
+    }),
+  },
   autoContrast: true,
   primaryColor: "patina",
   colors: {
