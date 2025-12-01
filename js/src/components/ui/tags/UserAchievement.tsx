@@ -3,6 +3,7 @@ import { Api } from "@/lib/api/types";
 import { AchievementDtoPlace } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { Image, Tooltip, Box, Text, Stack, Divider } from "@mantine/core";
+import dayjs from "dayjs";
 import { useMemo } from "react";
 
 type AchievementDto = Api<"AchievementDto">;
@@ -72,7 +73,13 @@ function GlobalTrophyBadge({ achievement }: AchievementBadgeProps) {
   const emoji = PLACE_CONFIG[achievement.place];
 
   return (
-    <Tooltip label={achievement.title} withArrow position="top">
+    <Tooltip
+      label={`${achievement.title} - Received on ${dayjs(
+        achievement.createdAt,
+      ).format("MMM D, YYYY")}`}
+      withArrow
+      position="top"
+    >
       <Box style={{ position: "relative", display: "inline-block" }}>
         <Text fz={34} lh={1}>
           🏆
@@ -110,7 +117,13 @@ function LeaderboardAchievementBadge({
     achievement.leaderboard,
   );
   return (
-    <Tooltip label={achievement.title} withArrow position="top">
+    <Tooltip
+      label={`${achievement.title} - Received on ${dayjs(
+        achievement.createdAt,
+      ).format("MMM D, YYYY")}`}
+      withArrow
+      position="top"
+    >
       <Box style={{ position: "relative", display: "inline-block" }}>
         <Image
           src={metadata.icon}
