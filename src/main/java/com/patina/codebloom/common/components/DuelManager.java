@@ -1,11 +1,13 @@
 package com.patina.codebloom.common.components;
 
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.dto.question.QuestionBankDto;
@@ -25,6 +27,7 @@ public class DuelManager {
     private final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
     private final QuestionRepository questionRepository;
     private final QuestionBankRepository questionBankRepository;
+    private final UserRepository userRepository;
 
     public DuelManager(
         final LobbyRepository lobbyRepository,
@@ -32,7 +35,8 @@ public class DuelManager {
         final LobbyPlayerRepository lobbyPlayerRepository,
         final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
         final QuestionRepository questionRepository,
-        final QuestionBankRepository questionBankRepository
+        final QuestionBankRepository questionBankRepository,
+        final UserRepository userRepository
     ) {
         this.lobbyRepository = lobbyRepository;
         this.lobbyQuestionRepository = lobbyQuestionRepository;
@@ -40,6 +44,7 @@ public class DuelManager {
         this.lobbyPlayerQuestionRepository = lobbyPlayerQuestionRepository;
         this.questionRepository = questionRepository;
         this.questionBankRepository = questionBankRepository;
+        this.userRepository = userRepository;
     }
 
     public DuelData generateDuelData(final String lobbyId) {
@@ -60,6 +65,7 @@ public class DuelManager {
         return DuelData.builder()
             .lobby(fetchedLobby)
             .questions(lobbyQuestions)
+            .players(buildPlayersInLobby(lobbyId))
             .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
             .build();
     }
@@ -92,5 +98,16 @@ public class DuelManager {
         }
 
         return playerQuestionsMap;
+    }
+
+    private List<User> buildPlayersInLobby(final String lobbyId) {
+        var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
+
+        return lobbyPlayers
+            .stream()
+            .map(lobbyPlayer ->
+                userRepository.getUserById(lobbyPlayer.getPlayerId())
+            )
+            .collect(Collectors.toList());
     }
 }
