@@ -63,10 +63,10 @@ public class DuelManager {
             .build();
     }
 
-    private Map<String, List<QuestionBank>> buildPlayerSolvedQuestionsMap(
+    private Map<String, List<Question>> buildPlayerSolvedQuestionsMap(
         final String lobbyId
     ) {
-        Map<String, List<QuestionBank>> playerQuestionsMap = new HashMap<>();
+        Map<String, List<Question>> playerQuestionsMap = new HashMap<>();
 
         var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
 
@@ -76,17 +76,14 @@ public class DuelManager {
                     player.getId()
                 );
 
-            List<QuestionBank> playerQuestions = lobbyPlayerQuestions
+            List<Question> playerQuestions = lobbyPlayerQuestions
                 .stream()
                 .filter(lpq -> lpq.getQuestionId().isPresent())
-                .map(lpq -> {
-                    Question question = questionRepository.getQuestionById(
+                .map(lpq ->
+                    questionRepository.getQuestionById(
                         lpq.getQuestionId().get()
-                    );
-                    return questionBankRepository.getQuestionBySlug(
-                        question.getQuestionSlug()
-                    );
-                })
+                    )
+                )
                 .collect(Collectors.toList());
 
             playerQuestionsMap.put(player.getPlayerId(), playerQuestions);
