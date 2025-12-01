@@ -13,6 +13,7 @@ import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
+import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import java.time.OffsetDateTime;
@@ -40,6 +41,7 @@ public class DuelManagerTest {
     private QuestionBankRepository questionBankRepository = mock(
         QuestionBankRepository.class
     );
+    private UserRepository userRepository = mock(UserRepository.class);
 
     public DuelManagerTest() {
         this.duelManager = new DuelManager(
@@ -48,7 +50,8 @@ public class DuelManagerTest {
             lobbyPlayerRepository,
             lobbyPlayerQuestionRepository,
             questionRepository,
-            questionBankRepository
+            questionBankRepository,
+            userRepository
         );
         this.faker = Faker.instance();
     }
