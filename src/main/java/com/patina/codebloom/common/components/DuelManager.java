@@ -15,6 +15,7 @@ import com.patina.codebloom.common.dto.question.QuestionDto;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
@@ -108,6 +109,7 @@ public class DuelManager {
             .map(lobbyPlayer ->
                 userRepository.getUserById(lobbyPlayer.getPlayerId())
             )
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 }
