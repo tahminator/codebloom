@@ -1,11 +1,11 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { ApiURL } from "@/lib/api/common/apiURL";
 import { fetchEventSource } from "@/lib/api/common/fetchEventSource";
-import { DuelData } from "@/lib/api/types/autogen/schema";
+import { Api } from "@/lib/api/types";
 import { useEffect, useState } from "react";
 
 type DuelStreamData = {
-  data: UnknownApiResponse<DuelData> | null;
+  data: UnknownApiResponse<Api<"DuelData">> | null;
   isConnected: boolean;
   error: Error | null;
 };
@@ -50,7 +50,7 @@ export const useDuelData = (lobbyCode: string) => {
 
         onmessage(ev) {
           try {
-            const data = res(JSON.parse(ev.data));
+            const data = res(ev.data);
             setState((prev) => ({ ...prev, data: data, isConnected: true }));
           } catch (e) {
             console.error("Failed to parse SSE message", e);

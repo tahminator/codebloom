@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@microsoft/fetch-event-source':
-        specifier: ^2.0.1
-        version: 2.0.1
     devDependencies:
       prettier:
         specifier: ^3.6.2
@@ -35,9 +31,6 @@ packages:
 
   '@chevrotain/utils@11.0.3':
     resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
-
-  '@microsoft/fetch-event-source@2.0.1':
-    resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
 
   chevrotain-allstar@0.3.1:
     resolution: {integrity: sha512-b7g+y9A0v4mxCW1qUhf3BSVPg+/NvGErk/dOkrDaHA0nQIQGAtrOjlX//9OQtRlSCy+x9rfB5N8yC71lH1nvMw==}
@@ -84,8 +77,6 @@ snapshots:
   '@chevrotain/types@11.0.3': {}
 
   '@chevrotain/utils@11.0.3': {}
-
-  '@microsoft/fetch-event-source@2.0.1': {}
 
   chevrotain-allstar@0.3.1(chevrotain@11.0.3):
     dependencies:
