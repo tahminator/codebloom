@@ -348,6 +348,11 @@ public class DuelController {
         User user = authenticationObject.getUser();
         String playerId = user.getId();
 
+        if (user.getLeetcodeUsername() == null || user.getLeetcodeUsername().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "You have not linked a LeetCode username to your profile");
+        }
+
         LobbyPlayer lobbyPlayer = lobbyPlayerRepository
                 .findLobbyPlayerByPlayerId(playerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby player not found"));
@@ -358,9 +363,19 @@ public class DuelController {
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in an active duel"));
 
         List<LeetcodeSubmission> recentSubmissions;
-        recentSubmissions = throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
+        try {
+            recentSubmissions = throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to reach LeetCode service");
+        }
+
+        if (recentSubmissions == null || recentSubmissions.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No recent submissions found on your LeetCode profile");
+        }
+
         int start = Math.max(0, recentSubmissions.size() - 5);
-        recentSubmissions = recentSubmissions.subList(start, recentSubmissions.size());
+        List<LeetcodeSubmission> lastFiveSubmissions = recentSubmissions.subList(start, recentSubmissions.size());
 
         List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobby.getId());
 
@@ -372,7 +387,17 @@ public class DuelController {
         LobbyQuestion matchedLobbyQuestion = null;
         QuestionBank matchedQuestionBank = null;
 
-        for (LeetcodeSubmission submission : recentSubmissions) {
+        for (int i = lastFiveSubmissions.size() - 1; i >= 0; i--) {
+            LeetcodeSubmission submission = lastFiveSubmissions.get(i);
+
+            String submissionId = String.valueOf(submission.getId());
+
+            boolean submissionAlreadyExists = questionRepository.questionExistsBySubmissionId(submissionId);
+
+            if (submissionAlreadyExists) {
+                continue;
+            }
+
             for (LobbyQuestion lobbyQuestion : lobbyQuestions) {
                 QuestionBank questionBank = questionBankRepository.getQuestionById(lobbyQuestion.getQuestionBankId());
 
@@ -444,6 +469,7 @@ public class DuelController {
         lobbyPlayer.setPoints(currentPoints + points);
 
         boolean isPlayerUpdated = lobbyPlayerRepository.updateLobbyPlayer(lobbyPlayer);
+
         if (!isPlayerUpdated) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update player points");
         }
