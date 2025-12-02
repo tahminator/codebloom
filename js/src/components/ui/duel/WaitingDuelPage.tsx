@@ -1,4 +1,4 @@
-import { Api } from "@/lib/api/types";
+import { components } from "@/lib/api/types/autogen/schema";
 import {
   Button,
   Card,
@@ -17,7 +17,7 @@ interface DuelPlayer {
   ready: boolean;
 }
 
-type LobbyDto = Api<"LobbyDto">;
+type LobbyDto = components["schemas"]["LobbyDto"];
 
 interface DuelWaitingScreenProps {
   lobby: LobbyDto;
