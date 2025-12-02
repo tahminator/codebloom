@@ -1,22 +1,25 @@
 package com.patina.codebloom.common.components;
 
+import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
-import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.dto.question.QuestionBankDto;
 import com.patina.codebloom.common.dto.question.QuestionDto;
-import com.patina.codebloom.common.dto.user.UserDto;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,7 +31,6 @@ public class DuelManager {
     private final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
     private final QuestionRepository questionRepository;
     private final QuestionBankRepository questionBankRepository;
-    private final UserRepository userRepository;
 
     public DuelManager(
             final LobbyRepository lobbyRepository,
@@ -36,15 +38,13 @@ public class DuelManager {
             final LobbyPlayerRepository lobbyPlayerRepository,
             final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
             final QuestionRepository questionRepository,
-            final QuestionBankRepository questionBankRepository,
-            final UserRepository userRepository) {
+            final QuestionBankRepository questionBankRepository) {
         this.lobbyRepository = lobbyRepository;
         this.lobbyQuestionRepository = lobbyQuestionRepository;
         this.lobbyPlayerRepository = lobbyPlayerRepository;
         this.lobbyPlayerQuestionRepository = lobbyPlayerQuestionRepository;
         this.questionRepository = questionRepository;
         this.questionBankRepository = questionBankRepository;
-        this.userRepository = userRepository;
     }
 
     public DuelData generateDuelData(final String lobbyId) {
@@ -59,7 +59,6 @@ public class DuelManager {
         return DuelData.builder()
                 .lobby(fetchedLobby)
                 .questions(lobbyQuestions)
-                .players(buildPlayersInLobby(lobbyId))
                 .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
                 .build();
     }
@@ -85,13 +84,32 @@ public class DuelManager {
         return playerQuestionsMap;
     }
 
-    private List<UserDto> buildPlayersInLobby(final String lobbyId) {
-        var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
+    public void endDuel(final String lobbyId) throws DuelException {
+        try {
+            var activeLobby = lobbyRepository
+                    .findLobbyById(lobbyId)
+                    .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "Lobby cannot be found."));
 
-        return lobbyPlayers.stream()
-                .map(lobbyPlayer -> userRepository.getUserById(lobbyPlayer.getPlayerId()))
-                .filter(Objects::nonNull)
-                .map(UserDto::fromUser)
-                .collect(Collectors.toList());
+            if (activeLobby.getExpiresAt().isAfter(StandardizedOffsetDateTime.now())) {
+                throw new DuelException(HttpStatus.CONFLICT, "This lobby has not completed it's duration yet");
+            }
+
+            var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(activeLobby.getId());
+
+            var winner = lobbyPlayers.stream()
+                    .max(Comparator.comparing(LobbyPlayer::getPoints))
+                    .orElseThrow(() -> new DuelException(
+                            HttpStatus.NOT_FOUND, "No winner can be found because there are no players in the duel."));
+
+            activeLobby.setWinnerId(Optional.of(winner.getId()));
+            activeLobby.setExpiresAt(StandardizedOffsetDateTime.now());
+            activeLobby.setStatus(LobbyStatus.COMPLETED);
+
+            lobbyRepository.updateLobby(activeLobby);
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DuelException(e);
+        }
     }
 }

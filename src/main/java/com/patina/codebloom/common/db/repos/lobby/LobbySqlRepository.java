@@ -241,6 +241,42 @@ public class LobbySqlRepository implements LobbyRepository {
     }
 
     @Override
+    public List<Lobby> findActiveLobbies() {
+        List<Lobby> result = new ArrayList<>();
+        String sql = """
+            SELECT
+                id,
+                "joinCode",
+                status,
+                "createdAt",
+                "expiresAt",
+                "playerCount",
+                "winnerId"
+            FROM
+                "Lobby"
+            WHERE
+                status = :status
+                AND "expiresAt" > NOW()
+            ORDER BY
+                "createdAt" DESC
+            """;
+
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("status", LobbyStatus.ACTIVE.name(), java.sql.Types.OTHER);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(parseResultSetToLobby(rs));
+                }
+            }
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find available lobbies", e);
+        }
+    }
+
+    @Override
     public Optional<Lobby> findActiveLobbyByLobbyPlayerPlayerId(final String lobbyPlayerId) {
         String sql = """
             SELECT
