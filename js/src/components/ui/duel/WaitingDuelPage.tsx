@@ -1,4 +1,4 @@
-import { Api } from "@/lib/api/types";
+import { components } from "@/lib/api/types/autogen/schema";
 import {
   Button,
   Card,
@@ -18,7 +18,7 @@ interface DuelPlayer {
 }
 
 interface DuelWaitingScreenProps {
-  lobby: Api<"DuelData">["lobby"];
+  lobby: components["schemas"]["DuelData"]["lobby"];
   players?: DuelPlayer[];
   currentUserId: string;
   isHost: boolean;
