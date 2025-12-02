@@ -17,8 +17,10 @@ interface DuelPlayer {
   ready: boolean;
 }
 
+type LobbyDto = Api<"LobbyDto">;
+
 interface DuelWaitingScreenProps {
-  lobby: Api<"LobbyDto">;
+  lobby: LobbyDto;
   players?: DuelPlayer[];
   currentUserId: string;
   isHost: boolean;
@@ -27,7 +29,7 @@ interface DuelWaitingScreenProps {
   onToggleReady: () => void;
 }
 
-export function DuelWaitingScreen({
+export function WaitingDuelPage({
   lobby,
   players = [],
   currentUserId,
@@ -36,10 +38,10 @@ export function DuelWaitingScreen({
   onStart,
   onToggleReady,
 }: DuelWaitingScreenProps) {
-  const sortedPlayers = useMemo(
-    () => [...players].sort((a, b) => a.id.localeCompare(b.id)),
-    [players],
-  );
+  const sortedPlayers = useMemo(() => {
+    if (players.length <= 2) return players;
+    return [...players].sort((a, b) => a.id.localeCompare(b.id));
+  }, [players]);
 
   const player1 = sortedPlayers[0] ?? null;
   const player2 = sortedPlayers[1] ?? null;
@@ -90,6 +92,7 @@ export function DuelWaitingScreen({
                     <Button
                       size="md"
                       variant="subtle"
+                      aria-label="Copy lobby code to clipboard"
                       onClick={copy}
                       styles={{
                         root: {
