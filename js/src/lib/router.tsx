@@ -1,6 +1,7 @@
 import AdminPage from "@/app/admin/admin.page";
 import ClubSignUp from "@/app/club/[clubSlug]/ClubSignUp.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
+import LobbyEntryPage from "@/app/duel/_components/lobby/LobbyEntry.page";
 import DuelPage from "@/app/duel/[lobbyCode]/Duel.page";
 import PartyCreationPage from "@/app/duel/create/PartyCreation.page";
 import LeaderboardEmbed from "@/app/embed/leaderboard/LeaderboardEmbed";
@@ -201,6 +202,11 @@ export const router = createBrowserRouter([
             "Sorry, this is not available right now. Please try again later."
           }
         />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/lobby",
+    element: <LobbyEntryPage />,
     errorElement: <ErrorPage />,
   },
 ]);
