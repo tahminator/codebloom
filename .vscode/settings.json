@@ -11,8 +11,15 @@
         "--ignore-revs-file",
         ".git-blame-ignore-revs"
     ],
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "\\.java$",
+                "cmd": "./mvnw spotless:apply -DspotlessFiles=${file}"
+            }
+        ]
+    },
     "[java]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.formatOnSave": false
     }
 }
-
