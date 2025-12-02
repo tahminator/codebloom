@@ -1,7 +1,5 @@
 package com.patina.codebloom.common.components;
 
-import com.patina.codebloom.common.db.models.question.Question;
-import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
@@ -10,6 +8,8 @@ import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
+import com.patina.codebloom.common.dto.question.QuestionBankDto;
+import com.patina.codebloom.common.dto.question.QuestionDto;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +48,13 @@ public class DuelManager {
             .map(LobbyDto::fromLobby)
             .orElse(null);
 
-        List<QuestionBank> lobbyQuestions = lobbyQuestionRepository
+        List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository
             .findLobbyQuestionsByLobbyId(lobbyId)
             .stream()
             .map(lq ->
                 questionBankRepository.getQuestionById(lq.getQuestionBankId())
             )
+            .map(QuestionBankDto::fromQuestionBank)
             .collect(Collectors.toList());
 
         return DuelData.builder()
@@ -63,10 +64,10 @@ public class DuelManager {
             .build();
     }
 
-    private Map<String, List<Question>> buildPlayerSolvedQuestionsMap(
+    private Map<String, List<QuestionDto>> buildPlayerSolvedQuestionsMap(
         final String lobbyId
     ) {
-        Map<String, List<Question>> playerQuestionsMap = new HashMap<>();
+        Map<String, List<QuestionDto>> playerQuestionsMap = new HashMap<>();
 
         var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
 
@@ -76,7 +77,7 @@ public class DuelManager {
                     player.getId()
                 );
 
-            List<Question> playerQuestions = lobbyPlayerQuestions
+            List<QuestionDto> playerQuestions = lobbyPlayerQuestions
                 .stream()
                 .filter(lpq -> lpq.getQuestionId().isPresent())
                 .map(lpq ->
@@ -84,6 +85,7 @@ public class DuelManager {
                         lpq.getQuestionId().get()
                     )
                 )
+                .map(QuestionDto::fromQuestion)
                 .collect(Collectors.toList());
 
             playerQuestionsMap.put(player.getPlayerId(), playerQuestions);
