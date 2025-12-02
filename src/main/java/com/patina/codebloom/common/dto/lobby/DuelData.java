@@ -2,7 +2,7 @@ package com.patina.codebloom.common.dto.lobby;
 
 import com.patina.codebloom.common.dto.question.QuestionBankDto;
 import com.patina.codebloom.common.dto.question.QuestionDto;
-import com.patina.codebloom.common.db.models.user.User;
+import com.patina.codebloom.common.dto.user.UserDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class DuelData {
     private List<QuestionBankDto> questions;
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private List<User> players;
+    private List<UserDto> players;
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Map<String, List<QuestionDto>> playerQuestions;
