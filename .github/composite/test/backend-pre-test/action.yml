@@ -9,21 +9,16 @@ runs:
     - name: Set up OpenJDK 25
       uses: actions/setup-java@v4
       with:
-          distribution: "temurin"
-          java-version: "25"
-          cache: "maven"
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-          node-version: 20
+        distribution: "temurin"
+        java-version: "25"
+        cache: "maven"
 
     - name: Verify Java version
       shell: bash
       run: |
-          java -version
-          javac -version
-          echo "JAVA_HOME=$JAVA_HOME"
+        java -version
+        javac -version
+        echo "JAVA_HOME=$JAVA_HOME"
 
     - name: Run script
       shell: bash
