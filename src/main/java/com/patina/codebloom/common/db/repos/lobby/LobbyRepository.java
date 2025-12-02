@@ -65,6 +65,13 @@ public interface LobbyRepository {
     List<Lobby> findAvailableLobbies();
 
     /**
+     * Finds all active lobbies.
+     *
+     * @return list of available lobbies
+     */
+    List<Lobby> findActiveLobbies();
+
+    /**
      * Finds active lobby for the given `Player` with a status of ACTIVE.
      *
      * @param lobbyPlayerPlayerId the player ID ({@code User.id}) on {@code LobbyPlayer}
