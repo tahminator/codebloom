@@ -7,6 +7,8 @@ import com.github.javafaker.Faker;
 import com.patina.codebloom.common.components.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
@@ -16,7 +18,9 @@ import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRe
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
+import com.patina.codebloom.common.dto.user.UserDto;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -185,5 +189,88 @@ public class DuelManagerTest {
         assertNotNull(result2);
         assertEquals(result1.getLobby().getId(), result2.getLobby().getId());
         verify(lobbyRepository, times(2)).findLobbyById(lobbyId);
+    }
+
+    @Test
+    void testBuildPlayersInLobbyConvertsUsersToUserDtos() {
+        String lobbyId = java.util.UUID.randomUUID().toString();
+        String playerId1 = java.util.UUID.randomUUID().toString();
+        String playerId2 = java.util.UUID.randomUUID().toString();
+
+        LobbyPlayer player1 = LobbyPlayer.builder()
+            .id(java.util.UUID.randomUUID().toString())
+            .lobbyId(lobbyId)
+            .playerId(playerId1)
+            .points(0)
+            .build();
+
+        LobbyPlayer player2 = LobbyPlayer.builder()
+            .id(java.util.UUID.randomUUID().toString())
+            .lobbyId(lobbyId)
+            .playerId(playerId2)
+            .points(0)
+            .build();
+
+        User user1 = User.builder()
+            .id(playerId1)
+            .discordId("123456789")
+            .discordName("TestUser1")
+            .admin(false)
+            .verifyKey("key1")
+            .build();
+
+        User user2 = User.builder()
+            .id(playerId2)
+            .discordId("987654321")
+            .discordName("TestUser2")
+            .admin(true)
+            .verifyKey("key2")
+            .build();
+
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(
+            List.of(player1, player2)
+        );
+        when(userRepository.getUserById(playerId1)).thenReturn(user1);
+        when(userRepository.getUserById(playerId2)).thenReturn(user2);
+
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
+            Optional.empty()
+        );
+        when(
+            lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)
+        ).thenReturn(List.of());
+
+        DuelData result = duelManager.generateDuelData(lobbyId);
+
+        assertNotNull(result.getPlayers());
+        assertEquals(2, result.getPlayers().size());
+
+        List<UserDto> players = result.getPlayers();
+        UserDto resultUser1 = players
+            .stream()
+            .filter(u -> u.getId().equals(playerId1))
+            .findFirst()
+            .orElse(null);
+        UserDto resultUser2 = players
+            .stream()
+            .filter(u -> u.getId().equals(playerId2))
+            .findFirst()
+            .orElse(null);
+
+        assertNotNull(resultUser1);
+        assertEquals(playerId1, resultUser1.getId());
+        assertEquals("123456789", resultUser1.getDiscordId());
+        assertEquals("TestUser1", resultUser1.getDiscordName());
+        assertFalse(resultUser1.isAdmin());
+
+        assertNotNull(resultUser2);
+        assertEquals(playerId2, resultUser2.getId());
+        assertEquals("987654321", resultUser2.getDiscordId());
+        assertEquals("TestUser2", resultUser2.getDiscordName());
+        assertTrue(resultUser2.isAdmin());
+
+        verify(lobbyPlayerRepository, times(2)).findPlayersByLobbyId(lobbyId);
+        verify(userRepository, times(1)).getUserById(playerId1);
+        verify(userRepository, times(1)).getUserById(playerId2);
     }
 }
