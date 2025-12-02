@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.components;
 
-import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
@@ -12,6 +11,7 @@ import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.dto.question.QuestionBankDto;
 import com.patina.codebloom.common.dto.question.QuestionDto;
+import com.patina.codebloom.common.dto.user.UserDto;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +101,7 @@ public class DuelManager {
         return playerQuestionsMap;
     }
 
-    private List<User> buildPlayersInLobby(final String lobbyId) {
+    private List<UserDto> buildPlayersInLobby(final String lobbyId) {
         var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
 
         return lobbyPlayers
@@ -110,6 +110,7 @@ public class DuelManager {
                 userRepository.getUserById(lobbyPlayer.getPlayerId())
             )
             .filter(Objects::nonNull)
+            .map(UserDto::fromUser)
             .collect(Collectors.toList());
     }
 }
