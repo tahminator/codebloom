@@ -1,6 +1,7 @@
 import AdminPage from "@/app/admin/admin.page";
 import ClubSignUp from "@/app/club/[clubSlug]/ClubSignUp.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
+import LobbyEntryPage from "@/app/duel/_components/lobby/LobbyEntry.page";
 import GwcEmbedContainer from "@/app/embed/leaderboard/gwc/GwcEmbed";
 import ErrorPage from "@/app/error/Error.page";
 import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
@@ -105,6 +106,11 @@ export const router = createBrowserRouter([
   {
     path: "/privacy",
     element: <PolicyPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/lobby",
+    element: <LobbyEntryPage />,
     errorElement: <ErrorPage />,
   },
 ]);
