@@ -178,29 +178,22 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.3.0</version>
-
-                <executions>
-                    <execution>
-                        <id>optional-pnpm-install-prettier-java</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>sh</executable>
-                            <arguments>
-                                <argument>-c</argument>
-                                <argument>
-                                    pnpm --prefix ${project.basedir} i || echo "pnpm missing, skipping"
-                                </argument>
-                            </arguments>
-                            <skipOnError>true</skipOnError>
-                        </configuration>
-                    </execution>
-                </executions>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+                <java>
+                    <includes>
+                        <include>src/main/java/**/*.java</include>
+                        <include>src/test/java/**/*.java</include>
+                    </includes>
+                    <palantirJavaFormat>
+                    <version>2.83.0</version>
+                    <style>PALANTIR</style>
+                    <formatJavadoc>true</formatJavadoc>
+                    </palantirJavaFormat>
+                </java>
+            </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
