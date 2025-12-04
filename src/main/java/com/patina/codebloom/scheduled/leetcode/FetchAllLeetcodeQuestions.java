@@ -48,6 +48,7 @@ public class FetchAllLeetcodeQuestions {
     @PostConstruct
     public void init() {
         if (env.isDev()) {
+            log.info("Running instant question bank sync");
             runStartupSync();
         }
     }
