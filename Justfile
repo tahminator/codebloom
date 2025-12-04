@@ -28,12 +28,12 @@ backend-install *args:
   ./mvnw install -DskipTests=true {{args}}
 
 # Run backend formatter (check only)
-backend-fmt *args:
-  pnpm i && pnpm run fmt
+backend-spotless *args:
+  ./mvnw spotless:check
 
 # Run backend formatter (check & write)
-backend-fmt-fix *args:
-  pnpm i && pnpm run fmt:fix
+backend-spotless-fix *args:
+  ./mvnw spotless:apply
 
 # Run backend linter, formatter, & tests
 backend-test *args:
