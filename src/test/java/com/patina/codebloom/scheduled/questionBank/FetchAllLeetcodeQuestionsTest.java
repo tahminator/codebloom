@@ -2,6 +2,7 @@ package com.patina.codebloom.scheduled.questionBank;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -119,5 +120,13 @@ public class FetchAllLeetcodeQuestionsTest {
             BackgroundTaskEnum.LEETCODE_QUESTION_BANK,
             taskCaptor.getValue().getTask()
         );
+    }
+
+    @Test
+    void testInit() {
+        when(env.isDev()).thenReturn(true);
+        FetchAllLeetcodeQuestions spyJob = spy(job);
+        spyJob.init();
+        verify(spyJob, times(1)).runStartupSync();
     }
 }
