@@ -11,6 +11,7 @@ import com.patina.codebloom.common.db.models.task.BackgroundTask;
 import com.patina.codebloom.common.db.models.task.BackgroundTaskEnum;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.db.repos.task.BackgroundTaskRepository;
+import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.scheduled.leetcode.FetchAllLeetcodeQuestions;
@@ -25,6 +26,7 @@ public class FetchAllLeetcodeQuestionsTest {
     private BackgroundTaskRepository backgroundTaskRepository;
     private LeetcodeClient leetcodeClient;
     private QuestionBankRepository questionBankRepository;
+    private Env env;
 
     private FetchAllLeetcodeQuestions job;
 
@@ -33,11 +35,13 @@ public class FetchAllLeetcodeQuestionsTest {
         backgroundTaskRepository = mock(BackgroundTaskRepository.class);
         leetcodeClient = mock(LeetcodeClient.class);
         questionBankRepository = mock(QuestionBankRepository.class);
+        env = mock(Env.class);
 
         job = new FetchAllLeetcodeQuestions(
             backgroundTaskRepository,
             leetcodeClient,
-            questionBankRepository
+            questionBankRepository,
+            env
         );
 
         BackgroundTask lastSync = BackgroundTask.builder()
