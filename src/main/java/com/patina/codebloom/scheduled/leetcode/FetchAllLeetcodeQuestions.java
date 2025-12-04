@@ -49,12 +49,12 @@ public class FetchAllLeetcodeQuestions {
     public void init() {
         if (env.isDev()) {
             log.info("Running instant question bank sync");
-            runStartupSync();
+            runStartupSynchronization();
         }
     }
 
     @Async
-    public void runStartupSync() {
+    private void runStartupSynchronization() {
         updateQuestionBank();
     }
 
