@@ -45,19 +45,17 @@ public class AchievementDto {
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
     private OffsetDateTime deletedAt;
 
-    public static AchievementDto fromAchievement(
-        final Achievement achievement
-    ) {
+    public static AchievementDto fromAchievement(final Achievement achievement) {
         return AchievementDto.builder()
-            .id(achievement.getId())
-            .userId(achievement.getUserId())
-            .leaderboard(achievement.getLeaderboard())
-            .place(achievement.getPlace())
-            .title(achievement.getTitle())
-            .description(achievement.getDescription())
-            .isActive(achievement.isActive())
-            .createdAt(achievement.getCreatedAt())
-            .deletedAt(achievement.getDeletedAt())
-            .build();
+                .id(achievement.getId())
+                .userId(achievement.getUserId())
+                .leaderboard(achievement.getLeaderboard())
+                .place(achievement.getPlace())
+                .title(achievement.getTitle())
+                .description(achievement.getDescription())
+                .isActive(achievement.isActive())
+                .createdAt(achievement.getCreatedAt())
+                .deletedAt(achievement.getDeletedAt())
+                .build();
     }
 }

@@ -49,28 +49,23 @@ public class QuestionBankDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private List<QuestionTopicDto> topics;
 
-    public static QuestionBankDto fromQuestionBank(
-        final QuestionBank questionBank
-    ) {
+    public static QuestionBankDto fromQuestionBank(final QuestionBank questionBank) {
         return QuestionBankDto.builder()
-            .id(questionBank.getId())
-            .questionSlug(questionBank.getQuestionSlug())
-            .questionDifficulty(questionBank.getQuestionDifficulty())
-            .questionTitle(questionBank.getQuestionTitle())
-            .questionNumber(questionBank.getQuestionNumber())
-            .questionLink(questionBank.getQuestionLink())
-            .description(questionBank.getDescription())
-            .acceptanceRate(questionBank.getAcceptanceRate())
-            .createdAt(questionBank.getCreatedAt())
-            .topics(
-                questionBank.getTopics() != null
-                    ? questionBank
-                          .getTopics()
-                          .stream()
-                          .map(t -> QuestionTopicDto.fromQuestionTopic(t))
-                          .toList()
-                    : List.of()
-            )
-            .build();
+                .id(questionBank.getId())
+                .questionSlug(questionBank.getQuestionSlug())
+                .questionDifficulty(questionBank.getQuestionDifficulty())
+                .questionTitle(questionBank.getQuestionTitle())
+                .questionNumber(questionBank.getQuestionNumber())
+                .questionLink(questionBank.getQuestionLink())
+                .description(questionBank.getDescription())
+                .acceptanceRate(questionBank.getAcceptanceRate())
+                .createdAt(questionBank.getCreatedAt())
+                .topics(
+                        questionBank.getTopics() != null
+                                ? questionBank.getTopics().stream()
+                                        .map(t -> QuestionTopicDto.fromQuestionTopic(t))
+                                        .toList()
+                                : List.of())
+                .build();
     }
 }

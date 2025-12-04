@@ -47,9 +47,7 @@ public class QuestionBank {
     @NotNullColumn
     private OffsetDateTime createdAt;
 
-    /**
-     * Join field, update/create with {@link QuestionTopicRepository}
-     */
+    /** Join field, update/create with {@link QuestionTopicRepository} */
     @JoinColumn
     private List<QuestionTopic> topics;
 }

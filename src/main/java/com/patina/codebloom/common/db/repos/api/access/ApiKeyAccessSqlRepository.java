@@ -20,13 +20,12 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private ApiKeyAccess parseResultSetToApiKeyAccess(final ResultSet rs)
-        throws SQLException {
+    private ApiKeyAccess parseResultSetToApiKeyAccess(final ResultSet rs) throws SQLException {
         return ApiKeyAccess.builder()
-            .id(rs.getString("id"))
-            .apiKeyId(rs.getString("apiKeyId"))
-            .access(ApiKeyAccessEnum.valueOf(rs.getString("access")))
-            .build();
+                .id(rs.getString("id"))
+                .apiKeyId(rs.getString("apiKeyId"))
+                .access(ApiKeyAccessEnum.valueOf(rs.getString("access")))
+                .build();
     }
 
     @Override
@@ -42,9 +41,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -59,9 +56,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
     }
 
     @Override
-    public ArrayList<ApiKeyAccess> getApiKeyAccessesByApiKeyId(
-        final String apiKeyId
-    ) {
+    public ArrayList<ApiKeyAccess> getApiKeyAccessesByApiKeyId(final String apiKeyId) {
         String sql = """
             SELECT
                 id,
@@ -74,9 +69,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
             """;
 
         final ArrayList<ApiKeyAccess> results = new java.util.ArrayList<>();
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("apiKeyId", java.util.UUID.fromString(apiKeyId));
             try (ResultSet resultSet = stmt.executeQuery()) {
                 while (resultSet.next()) {
@@ -84,10 +77,7 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to fetch apiKeyAccesses by apiKeyId",
-                e
-            );
+            throw new RuntimeException("Failed to fetch apiKeyAccesses by apiKeyId", e);
         }
         return results;
     }
@@ -101,22 +91,10 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 (:id, :apiKeyId, :access)
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
-            stmt.setObject(
-                "id",
-                java.util.UUID.fromString(apiKeyAccess.getId())
-            );
-            stmt.setObject(
-                "apiKeyId",
-                java.util.UUID.fromString(apiKeyAccess.getApiKeyId())
-            );
-            stmt.setObject(
-                "access",
-                apiKeyAccess.getAccess().name(),
-                java.sql.Types.OTHER
-            );
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", java.util.UUID.fromString(apiKeyAccess.getId()));
+            stmt.setObject("apiKeyId", java.util.UUID.fromString(apiKeyAccess.getApiKeyId()));
+            stmt.setObject("access", apiKeyAccess.getAccess().name(), java.sql.Types.OTHER);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -136,27 +114,15 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(apiKeyAccess.getId()));
-            stmt.setObject(
-                "apiKeyId",
-                UUID.fromString(apiKeyAccess.getApiKeyId())
-            );
-            stmt.setObject(
-                "access",
-                apiKeyAccess.getAccess().name(),
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("apiKeyId", UUID.fromString(apiKeyAccess.getApiKeyId()));
+            stmt.setObject("access", apiKeyAccess.getAccess().name(), java.sql.Types.OTHER);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to update ApiKeyAccess by ID",
-                e
-            );
+            throw new RuntimeException("Failed to update ApiKeyAccess by ID", e);
         }
     }
 
@@ -169,18 +135,13 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 "apiKeyId" = :apiKeyId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("apiKeyId", UUID.fromString(apiKeyId));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to delete ApiKeyAccess rows by apiKeyId",
-                e
-            );
+            throw new RuntimeException("Failed to delete ApiKeyAccess rows by apiKeyId", e);
         }
     }
 
@@ -193,18 +154,13 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to delete ApiKeyAccess by ID: " + id,
-                e
-            );
+            throw new RuntimeException("Failed to delete ApiKeyAccess by ID: " + id, e);
         }
     }
 }

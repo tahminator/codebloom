@@ -19,14 +19,12 @@ public class AuthenticationObjectDto {
     private PrivateUserDto user;
     private SessionDto session;
 
-    public static AuthenticationObjectDto fromAuthenticationObject(
-        final AuthenticationObject authenticationObject
-    ) {
+    public static AuthenticationObjectDto fromAuthenticationObject(final AuthenticationObject authenticationObject) {
         return AuthenticationObjectDto.builder()
-            // ok to send private user, only ever sending auth object down the wire when
-            // validating authenticated user.
-            .user(PrivateUserDto.fromUser(authenticationObject.getUser()))
-            .session(SessionDto.fromSession(authenticationObject.getSession()))
-            .build();
+                // ok to send private user, only ever sending auth object down the wire when
+                // validating authenticated user.
+                .user(PrivateUserDto.fromUser(authenticationObject.getUser()))
+                .session(SessionDto.fromSession(authenticationObject.getSession()))
+                .build();
     }
 }

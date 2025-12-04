@@ -13,24 +13,18 @@ public interface UserTagRepository {
     ArrayList<UserTag> findTagsByUserId(String userId);
 
     /**
-     * @note - Will return tags created at or before `pointOfTime` set in options. If
-     * `pointOfTime` is set to `null` (default), it will return all tags attached to
-     * given user ID.
+     * @note - Will return tags created at or before `pointOfTime` set in options. If `pointOfTime` is set to `null`
+     *     (default), it will return all tags attached to given user ID.
      */
-    ArrayList<UserTag> findTagsByUserId(
-        String userId,
-        UserTagFilterOptions options
-    );
+    ArrayList<UserTag> findTagsByUserId(String userId, UserTagFilterOptions options);
 
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param userTag - required fields:
-     * <ul>
-     * <li>userId</li>
-     * <li>tag</li>
-     * </ul>
+     *     <ul>
+     *       <li>userId
+     *       <li>tag
+     *     </ul>
      */
     void createTag(UserTag userTag);
 

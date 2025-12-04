@@ -17,16 +17,15 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
     private final Connection conn;
 
-    private QuestionTopic mapResultSetToQuestionTopic(final ResultSet resultSet)
-        throws SQLException {
+    private QuestionTopic mapResultSetToQuestionTopic(final ResultSet resultSet) throws SQLException {
         return QuestionTopic.builder()
-            .id(resultSet.getString("id"))
-            .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
-            .questionId(resultSet.getString("questionId"))
-            .questionBankId(resultSet.getString("questionBankId"))
-            .topicSlug(resultSet.getString("topicSlug"))
-            .topic(LeetcodeTopicEnum.fromValue(resultSet.getString("topic")))
-            .build();
+                .id(resultSet.getString("id"))
+                .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
+                .questionId(resultSet.getString("questionId"))
+                .questionBankId(resultSet.getString("questionBankId"))
+                .topicSlug(resultSet.getString("topicSlug"))
+                .topic(LeetcodeTopicEnum.fromValue(resultSet.getString("topic")))
+                .build();
     }
 
     public QuestionTopicSqlRepository(final DbConnection connection) {
@@ -34,9 +33,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
     }
 
     @Override
-    public List<QuestionTopic> findQuestionTopicsByQuestionId(
-        final String questionId
-    ) {
+    public List<QuestionTopic> findQuestionTopicsByQuestionId(final String questionId) {
         List<QuestionTopic> result = new ArrayList<>();
 
         String sql = """
@@ -53,9 +50,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     qt."questionId" = :questionId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionId", UUID.fromString(questionId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -66,17 +61,12 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
             return result;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to find question topics by question ID",
-                e
-            );
+            throw new RuntimeException("Failed to find question topics by question ID", e);
         }
     }
 
     @Override
-    public List<QuestionTopic> findQuestionTopicsByQuestionBankId(
-        final String questionBankId
-    ) {
+    public List<QuestionTopic> findQuestionTopicsByQuestionBankId(final String questionBankId) {
         List<QuestionTopic> result = new ArrayList<>();
 
         String sql = """
@@ -93,9 +83,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     qt."questionBankId" = :questionBankId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionBankId", UUID.fromString(questionBankId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -106,10 +94,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
             return result;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to find question topics by question bank ID",
-                e
-            );
+            throw new RuntimeException("Failed to find question topics by question bank ID", e);
         }
     }
 
@@ -130,12 +115,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                         qt.id = :id
                 """;
 
-            try (
-                NamedPreparedStatement stmt = new NamedPreparedStatement(
-                    conn,
-                    sql
-                )
-            ) {
+            try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
                 stmt.setObject("id", UUID.fromString(id));
 
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -153,9 +133,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
     @Override
     public QuestionTopic findQuestionTopicByQuestionIdAndTopicEnum(
-        final String questionId,
-        final LeetcodeTopicEnum topicEnum
-    ) {
+            final String questionId, final LeetcodeTopicEnum topicEnum) {
         String sql = """
                 SELECT
                     id,
@@ -172,15 +150,9 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     qt.topic = :topic
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionId", UUID.fromString(questionId));
-            stmt.setObject(
-                "topic",
-                topicEnum.getLeetcodeEnum(),
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("topic", topicEnum.getLeetcodeEnum(), java.sql.Types.OTHER);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -207,41 +179,27 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
         questionTopic.setId(UUID.randomUUID().toString());
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
 
             if (questionTopic.getQuestionId() == null) {
                 stmt.setNull("questionId", java.sql.Types.NULL);
             } else {
-                stmt.setObject(
-                    "questionId",
-                    UUID.fromString(questionTopic.getQuestionId())
-                );
+                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
             }
 
             if (questionTopic.getQuestionBankId() == null) {
                 stmt.setNull("questionBankId", java.sql.Types.NULL);
             } else {
-                stmt.setObject(
-                    "questionBankId",
-                    UUID.fromString(questionTopic.getQuestionBankId())
-                );
+                stmt.setObject("questionBankId", UUID.fromString(questionTopic.getQuestionBankId()));
             }
 
             stmt.setString("topicSlug", questionTopic.getTopicSlug());
-            stmt.setObject(
-                "topic",
-                questionTopic.getTopic().getLeetcodeEnum(),
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("topic", questionTopic.getTopic().getLeetcodeEnum(), java.sql.Types.OTHER);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    questionTopic.setCreatedAt(
-                        rs.getTimestamp("createdAt").toLocalDateTime()
-                    );
+                    questionTopic.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
                 }
             }
         } catch (Exception e) {
@@ -263,42 +221,27 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
 
             if (questionTopic.getQuestionId() == null) {
                 stmt.setNull("questionId", java.sql.Types.NULL);
             } else {
-                stmt.setObject(
-                    "questionId",
-                    UUID.fromString(questionTopic.getQuestionId())
-                );
+                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
             }
 
             if (questionTopic.getQuestionBankId() == null) {
                 stmt.setNull("questionBankId", java.sql.Types.NULL);
             } else {
-                stmt.setObject(
-                    "questionBankId",
-                    UUID.fromString(questionTopic.getQuestionBankId())
-                );
+                stmt.setObject("questionBankId", UUID.fromString(questionTopic.getQuestionBankId()));
             }
 
             stmt.setString("topicSlug", questionTopic.getTopicSlug());
-            stmt.setObject(
-                "topic",
-                questionTopic.getTopic().getLeetcodeEnum(),
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("topic", questionTopic.getTopic().getLeetcodeEnum(), java.sql.Types.OTHER);
 
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
-            throw new RuntimeException(
-                "Failed to update question topic by ID",
-                e
-            );
+            throw new RuntimeException("Failed to update question topic by ID", e);
         }
     }
 
@@ -311,9 +254,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
 

@@ -28,32 +28,23 @@ public class RateLimitingFilter implements Filter {
     private final SimpleRedis redis;
     private final ObjectMapper objectMapper;
 
-    public RateLimitingFilter(
-        final SimpleRedis redis,
-        final ObjectMapper objectMapper
-    ) {
+    public RateLimitingFilter(final SimpleRedis redis, final ObjectMapper objectMapper) {
         this.redis = redis;
         this.objectMapper = objectMapper;
     }
 
-    private Bucket createNewBucket(
-        final long capacity,
-        final long refillIntervalMillis
-    ) {
+    private Bucket createNewBucket(final long capacity, final long refillIntervalMillis) {
         var bandwidth = Bandwidth.builder()
-            .capacity(capacity)
-            .refillIntervally(capacity, Duration.ofMillis(refillIntervalMillis))
-            .build();
+                .capacity(capacity)
+                .refillIntervally(capacity, Duration.ofMillis(refillIntervalMillis))
+                .build();
 
         return Bucket.builder().addLimit(bandwidth).build();
     }
 
     @Override
-    public final void doFilter(
-        final ServletRequest request,
-        final ServletResponse response,
-        final FilterChain chain
-    ) throws IOException, ServletException {
+    public final void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -61,23 +52,15 @@ public class RateLimitingFilter implements Filter {
         String remoteAddr = httpRequest.getRemoteAddr();
 
         boolean isApiPath = path.startsWith("/api");
-        final long rateLimitCapacity = isApiPath
-            ? API_RATE_LIMIT_CAPACITY
-            : STATIC_RATE_LIMIT_CAPACITY;
-        final long refillInterval = isApiPath
-            ? API_REFILL_INTERVAL_MILLIS
-            : STATIC_REFILL_INTERVAL_MILLIS;
+        final long rateLimitCapacity = isApiPath ? API_RATE_LIMIT_CAPACITY : STATIC_RATE_LIMIT_CAPACITY;
+        final long refillInterval = isApiPath ? API_REFILL_INTERVAL_MILLIS : STATIC_REFILL_INTERVAL_MILLIS;
         String bucketKey = remoteAddr + (isApiPath ? ":api" : ":static");
 
         Bucket bucket;
         synchronized (this) {
             bucket = (Bucket) redis.get(2, bucketKey);
             if (bucket == null) {
-                redis.put(
-                    2,
-                    bucketKey,
-                    createNewBucket(rateLimitCapacity, refillInterval)
-                );
+                redis.put(2, bucketKey, createNewBucket(rateLimitCapacity, refillInterval));
                 bucket = (Bucket) redis.get(2, bucketKey);
             }
         }

@@ -3,9 +3,7 @@ package com.patina.codebloom.common.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/**
- * Use the generic methods for failure and success as they are simpler to use.
- */
+/** Use the generic methods for failure and success as they are simpler to use. */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class ApiResponder<T> {
 
@@ -14,11 +12,7 @@ public final class ApiResponder<T> {
     private String message;
 
     @JsonCreator
-    private ApiResponder(
-        final boolean success,
-        final String message,
-        final T payload
-    ) {
+    private ApiResponder(final boolean success, final String message, final T payload) {
         this.success = success;
         this.payload = payload;
         this.message = message;
@@ -30,10 +24,7 @@ public final class ApiResponder<T> {
         this.message = message;
     }
 
-    public static <T> ApiResponder<T> success(
-        final String message,
-        final T payload
-    ) {
+    public static <T> ApiResponder<T> success(final String message, final T payload) {
         return new ApiResponder<>(true, message, payload);
     }
 
@@ -41,11 +32,7 @@ public final class ApiResponder<T> {
         return new ApiResponder<>(false, message, null);
     }
 
-    public static <T> ApiResponder<T> custom(
-        final boolean success,
-        final String message,
-        final T payload
-    ) {
+    public static <T> ApiResponder<T> custom(final boolean success, final String message, final T payload) {
         return new ApiResponder<>(success, message, payload);
     }
 

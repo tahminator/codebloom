@@ -17,14 +17,7 @@ public class ApiController {
 
     @Operation(summary = "Basic metadata about the server")
     @GetMapping
-    public ResponseEntity<ApiResponder<ServerMetadataObject>> apiIndex(
-        final HttpServletRequest request
-    ) {
-        return ResponseEntity.ok().body(
-            ApiResponder.success(
-                "Hello from Codebloom!",
-                new ServerMetadataObject()
-            )
-        );
+    public ResponseEntity<ApiResponder<ServerMetadataObject>> apiIndex(final HttpServletRequest request) {
+        return ResponseEntity.ok().body(ApiResponder.success("Hello from Codebloom!", new ServerMetadataObject()));
     }
 }

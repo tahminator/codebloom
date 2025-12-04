@@ -3,9 +3,7 @@ package com.patina.codebloom.common.db.models.usertag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * This is the base enum abstraction that's used in the UserTag model/table
- */
+/** This is the base enum abstraction that's used in the UserTag model/table */
 @AllArgsConstructor
 @Getter
 public enum Tag {
@@ -21,9 +19,7 @@ public enum Tag {
     Cornell("Cornell University"),
     Bmcc("Borough of Manhattan Community College");
 
-    /**
-     * Only applies to school tags.
-     */
+    /** Only applies to school tags. */
     // CHECKSTYLE:OFF
     private final String resolvedName;
     // CHECKSTYLE:ON

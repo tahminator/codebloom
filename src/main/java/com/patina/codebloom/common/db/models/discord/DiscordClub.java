@@ -35,6 +35,5 @@ public class DiscordClub {
 
     @JoinColumn
     @Builder.Default
-    private Optional<DiscordClubMetadata> discordClubMetadata =
-        Optional.empty();
+    private Optional<DiscordClubMetadata> discordClubMetadata = Optional.empty();
 }

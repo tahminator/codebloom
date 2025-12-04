@@ -1,8 +1,6 @@
 package com.patina.codebloom.common.email.error;
 
-/**
- * Base exception for {@link com.patina.codebloom.common.email.Email}
- */
+/** Base exception for {@link com.patina.codebloom.common.email.Email} */
 public class EmailException extends Exception {
 
     public EmailException() {

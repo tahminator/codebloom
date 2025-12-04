@@ -3,14 +3,11 @@ package com.patina.codebloom.common.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * Use {@code Empty.of()} when you want to return a successful response, but
- * have no data to send back to the client.
+ * Use {@code Empty.of()} when you want to return a successful response, but have no data to send back to the client.
  *
- * The client will only see an empty object, which is more ideal than an
- * undefined key.
+ * <p>The client will only see an empty object, which is more ideal than an undefined key.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  *
  * <pre>{@code
  * public ResponseEntity<ApiResponder<Empty>> exampleFunction() {
@@ -27,14 +24,12 @@ public final class Empty {
     private Empty() {}
 
     /**
-     * Use {@code Empty.of()} when you want to return a successful response, but
-     * have no data to send back to the client.
+     * Use {@code Empty.of()} when you want to return a successful response, but have no data to send back to the
+     * client.
      *
-     * The client will only see an empty object, which is more ideal than an
-     * undefined key.
+     * <p>The client will only see an empty object, which is more ideal than an undefined key.
      *
-     * <p>
-     * Example usage:
+     * <p>Example usage:
      *
      * <pre>{@code
      * public ResponseEntity<ApiResponder<Empty>> exampleFunction() {

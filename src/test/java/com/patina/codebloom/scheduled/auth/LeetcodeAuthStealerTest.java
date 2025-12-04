@@ -1,5 +1,5 @@
 package com.patina.codebloom.scheduled.auth;
-/* 
+/*
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

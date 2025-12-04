@@ -3,13 +3,10 @@ package com.patina.codebloom.common.security.annotation;
 import java.lang.annotation.*;
 
 /**
- * Can mark a controller method as protected. This is the same as injecting the
- * `Protector` class and calling the methods inside of the controller with the
- * `HttpServletRequest` object. You can find an example below.
+ * Can mark a controller method as protected. This is the same as injecting the `Protector` class and calling the
+ * methods inside of the controller with the `HttpServletRequest` object. You can find an example below.
  *
- *
- * <p>
- * Example usage:
+ * <p>Example usage:
  *
  * <pre>{@code
  * @Protected
@@ -20,16 +17,13 @@ import java.lang.annotation.*;
  * }
  * }</pre>
  *
- * @see <a href=
- * "https://github.com/tahminator/codebloom/blob/main/docs/backend/auth.md">Authentication
- * Documentation</a>
+ * @see <a href= "https://github.com/tahminator/codebloom/blob/main/docs/backend/auth.md">Authentication
+ *     Documentation</a>
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Protected {
-    /**
-     * If set to `false`, will allow any authenticated user. Default: `false`.
-     */
+    /** If set to `false`, will allow any authenticated user. Default: `false`. */
     boolean admin() default false;
 }

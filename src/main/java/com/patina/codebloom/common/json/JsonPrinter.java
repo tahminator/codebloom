@@ -3,14 +3,10 @@ package com.patina.codebloom.common.json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-/**
- * Output a pretty JSON string.
- */
+/** Output a pretty JSON string. */
 public class JsonPrinter {
 
-    /**
-     * Output a pretty JSON string.
-     */
+    /** Output a pretty JSON string. */
     public static String prettify(final String jsonString) {
         try {
             ObjectMapper mapper = new ObjectMapper();

@@ -13,9 +13,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  * Use {@code SseWrapper} instead of {@code SseEmitter} to:
  *
  * <ul>
- * <li>Enforce type-safety in the backend.</li>
- * <li>“Trick” Springdoc into generating a concrete schema for SSE
- * endpoints.</li>
+ *   <li>Enforce type-safety in the backend.
+ *   <li>“Trick” Springdoc into generating a concrete schema for SSE endpoints.
  * </ul>
  */
 public class SseWrapper<T> extends SseEmitter {
@@ -29,9 +28,7 @@ public class SseWrapper<T> extends SseEmitter {
         super(timeout);
     }
 
-    /**
-     * Please use {@code SseWrapper.sendData}
-     */
+    /** Please use {@code SseWrapper.sendData} */
     @Override
     @Deprecated
     public void send(final Object object) throws IOException {

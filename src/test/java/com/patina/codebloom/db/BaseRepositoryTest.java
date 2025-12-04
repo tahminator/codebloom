@@ -6,10 +6,9 @@ import com.patina.codebloom.jda.JDAInitializer;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
- * Some clients are slow and are not required to be loaded for database
- * integration tests.
+ * Some clients are slow and are not required to be loaded for database integration tests.
  *
- * All database tests must extend this class.
+ * <p>All database tests must extend this class.
  */
 public class BaseRepositoryTest {
 

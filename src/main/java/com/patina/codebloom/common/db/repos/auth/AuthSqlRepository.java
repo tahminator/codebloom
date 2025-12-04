@@ -23,15 +23,11 @@ public class AuthSqlRepository implements AuthRepository {
 
     private Auth parseResultSetToAuth(final ResultSet rs) throws SQLException {
         return Auth.builder()
-            .id(rs.getString("id"))
-            .token(rs.getString("token"))
-            .csrf(rs.getString("csrf"))
-            .createdAt(
-                StandardizedOffsetDateTime.normalize(
-                    rs.getObject("createdAt", OffsetDateTime.class)
-                )
-            )
-            .build();
+                .id(rs.getString("id"))
+                .token(rs.getString("token"))
+                .csrf(rs.getString("csrf"))
+                .createdAt(StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class)))
+                .build();
     }
 
     @Override
@@ -46,12 +42,7 @@ public class AuthSqlRepository implements AuthRepository {
             """;
         auth.setId(UUID.randomUUID().toString());
 
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("id", UUID.fromString(auth.getId()));
             stmt.setString("token", auth.getToken());
             stmt.setString("csrf", auth.getCsrf());
@@ -59,10 +50,7 @@ public class AuthSqlRepository implements AuthRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     auth.setCreatedAt(
-                        StandardizedOffsetDateTime.normalize(
-                            rs.getObject("createdAt", OffsetDateTime.class)
-                        )
-                    );
+                            StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class)));
                 }
             }
         } catch (SQLException e) {
@@ -80,12 +68,7 @@ public class AuthSqlRepository implements AuthRepository {
             WHERE
                 id = :id
             """;
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("id", UUID.fromString(auth.getId()));
             stmt.setString("token", auth.getToken());
             stmt.setString("csrf", auth.getCsrf());
@@ -107,12 +90,7 @@ public class AuthSqlRepository implements AuthRepository {
             WHERE
                 id = :id;
             """;
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("id", UUID.fromString(inputtedId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -157,12 +135,7 @@ public class AuthSqlRepository implements AuthRepository {
                     id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

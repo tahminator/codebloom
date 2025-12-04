@@ -12,15 +12,14 @@ public class LeetcodeDetailedQuestion {
     private Lang lang;
 
     public LeetcodeDetailedQuestion(
-        final int runtime,
-        final String runtimeDisplay,
-        final float runtimePercentile,
-        final int memory,
-        final String memoryDisplay,
-        final float memoryPercentile,
-        final String code,
-        final Lang lang
-    ) {
+            final int runtime,
+            final String runtimeDisplay,
+            final float runtimePercentile,
+            final int memory,
+            final String memoryDisplay,
+            final float memoryPercentile,
+            final String code,
+            final Lang lang) {
         this.runtime = runtime;
         this.runtimeDisplay = runtimeDisplay;
         this.runtimePercentile = runtimePercentile;

@@ -12,7 +12,6 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,7 @@ public class SendEmailTest extends NoJdaRequired {
         RestAssured.baseURI = "http://localhost";
     }
 
-    private String buildTestEmailPayload(final String email)
-        throws JsonProcessingException {
+    private String buildTestEmailPayload(final String email) throws JsonProcessingException {
         Map<String, Object> body = new HashMap<>();
         body.put("email", email);
         return new ObjectMapper().writeValueAsString(body);
@@ -51,54 +49,34 @@ public class SendEmailTest extends NoJdaRequired {
     void testNonValidSchoolEmail() throws JsonProcessingException {
         String payload = buildTestEmailPayload("name@example.com ");
         ApiResponder<Empty> apiResponder = RestAssured.given()
-            .header("Content-Type", "application/json")
-            .body(payload)
-            .post("/api/auth/school/enroll")
-            .then()
-            .statusCode(400)
-            .extract()
-            .as(new TypeRef<ApiResponder<Empty>>() {});
+                .header("Content-Type", "application/json")
+                .body(payload)
+                .post("/api/auth/school/enroll")
+                .then()
+                .statusCode(400)
+                .extract()
+                .as(new TypeRef<ApiResponder<Empty>>() {});
 
-        assertTrue(
-            apiResponder != null,
-            "Expected apiResponder to not be equal to null"
-        );
-        assertTrue(
-            apiResponder.isSuccess() == false,
-            "Testing apiResponder success is false"
-        );
-        assertTrue(
-            apiResponder.getMessage() != null,
-            "Testing apiResponder message is not null"
-        );
+        assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
+        assertTrue(apiResponder.isSuccess() == false, "Testing apiResponder success is false");
+        assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
     }
 
     @Test
     void testValidSchoolEmail() throws JsonProcessingException {
-        String payload = buildTestEmailPayload(
-            "TIMMY.APPLES420@myhunter.cuny.edu"
-        );
+        String payload = buildTestEmailPayload("TIMMY.APPLES420@myhunter.cuny.edu");
 
         ApiResponder<Empty> apiResponder = RestAssured.given()
-            .header("Content-Type", "application/json")
-            .body(payload)
-            .post("/api/auth/school/enroll")
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(new TypeRef<ApiResponder<Empty>>() {});
+                .header("Content-Type", "application/json")
+                .body(payload)
+                .post("/api/auth/school/enroll")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<ApiResponder<Empty>>() {});
 
-        assertTrue(
-            apiResponder != null,
-            "Expected apiResponder to not be equal to null"
-        );
-        assertTrue(
-            apiResponder.isSuccess() == true,
-            "Testing apiResponder success is true"
-        );
-        assertTrue(
-            apiResponder.getMessage() != null,
-            "Testing apiResponder message is not null"
-        );
+        assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
+        assertTrue(apiResponder.isSuccess() == true, "Testing apiResponder success is true");
+        assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
     }
 }

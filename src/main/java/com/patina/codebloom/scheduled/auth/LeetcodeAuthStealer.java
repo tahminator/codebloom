@@ -42,10 +42,7 @@ public class LeetcodeAuthStealer {
     private volatile String cookie;
     private volatile String csrf;
 
-    /**
-     * So we don't report that a csrf token is missing more than once per machine
-     * lifecycle.
-     */
+    /** So we don't report that a csrf token is missing more than once per machine lifecycle. */
     private boolean reported = false;
 
     @Value("${github.username}")
@@ -61,15 +58,14 @@ public class LeetcodeAuthStealer {
     private final Env env;
 
     private static final String USER_AGENT =
-        "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
+            "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
 
     public LeetcodeAuthStealer(
-        final JedisClient jedisClient,
-        final AuthRepository authRepository,
-        final GithubOAuthEmail email,
-        final Reporter reporter,
-        final Env env
-    ) {
+            final JedisClient jedisClient,
+            final AuthRepository authRepository,
+            final GithubOAuthEmail email,
+            final Reporter reporter,
+            final Env env) {
         this.jedisClient = jedisClient;
         this.authRepository = authRepository;
         this.email = email;
@@ -78,9 +74,8 @@ public class LeetcodeAuthStealer {
     }
 
     /**
-     * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b> <div /> This function
-     * utilizes Playwright in order to get an authentication key from Leetcode. That
-     * code is stored in the database and can then be used to run authenticated
+     * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b> <div /> This function utilizes Playwright in order to get an
+     * authentication key from Leetcode. That code is stored in the database and can then be used to run authenticated
      * queries such as used to retrieve code from our user submissions.
      */
     @Scheduled(initialDelay = 0, fixedDelay = 1, timeUnit = TimeUnit.HOURS)
@@ -90,26 +85,15 @@ public class LeetcodeAuthStealer {
             Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
             // The auth token should be refreshed every day.
-            if (
-                mostRecentAuth != null &&
-                mostRecentAuth
-                    .getCreatedAt()
-                    .isAfter(
-                        StandardizedOffsetDateTime.now().minus(
-                            4,
-                            ChronoUnit.HOURS
-                        )
-                    )
-            ) {
-                log.info(
-                    "Auth token already exists, using token from database."
-                );
+            if (mostRecentAuth != null
+                    && mostRecentAuth
+                            .getCreatedAt()
+                            .isAfter(StandardizedOffsetDateTime.now().minus(4, ChronoUnit.HOURS))) {
+                log.info("Auth token already exists, using token from database.");
                 cookie = mostRecentAuth.getToken();
                 csrf = mostRecentAuth.getCsrf();
                 if (env.isCi()) {
-                    log.info(
-                        "in ci, stealing token and putting it in cache for 1 day"
-                    );
+                    log.info("in ci, stealing token and putting it in cache for 1 day");
                     jedisClient.setAuth(cookie, 4, ChronoUnit.HOURS); // 4 hours.
                 }
                 return;
@@ -130,9 +114,7 @@ public class LeetcodeAuthStealer {
 
                 log.info("auth token not found in redis client");
             }
-            log.info(
-                "Auth token is missing/expired. Attempting to receive token..."
-            );
+            log.info("Auth token is missing/expired. Attempting to receive token...");
 
             stealCookieImpl();
         } finally {
@@ -141,18 +123,14 @@ public class LeetcodeAuthStealer {
     }
 
     /**
-     * There are some cases where leetcode.com may not respect the token anymore. If
-     * that is the case, it is best to try to steal a new cookie and replace the
-     * current one.
+     * There are some cases where leetcode.com may not respect the token anymore. If that is the case, it is best to try
+     * to steal a new cookie and replace the current one.
      *
-     * You may await the `CompletableFuture` and receive the brand new token, or
-     * call-and-forget.
+     * <p>You may await the `CompletableFuture` and receive the brand new token, or call-and-forget.
      */
     @Async
     public CompletableFuture<Optional<String>> reloadCookie() {
-        return CompletableFuture.completedFuture(
-            Optional.ofNullable(stealCookieImpl())
-        );
+        return CompletableFuture.completedFuture(Optional.ofNullable(stealCookieImpl()));
     }
 
     public String getCookie() {
@@ -165,21 +143,17 @@ public class LeetcodeAuthStealer {
     }
 
     /**
-     * It's fine if this is null for some requests; it isn't a requirement to fetch
-     * data from the GraphQL layer of leetcode.com
+     * It's fine if this is null for some requests; it isn't a requirement to fetch data from the GraphQL layer of
+     * leetcode.com
      */
     public String getCsrf() {
         if (csrf == null && !reported) {
             reported = true;
-            reporter.log(
-                Report.builder()
+            reporter.log(Report.builder()
                     .environments(env.getActiveProfiles())
                     .location(Location.BACKEND)
-                    .data(
-                        "CSRF token is missing inside of LeetcodeAuthStealer. This may be something to look into."
-                    )
-                    .build()
-            );
+                    .data("CSRF token is missing inside of LeetcodeAuthStealer. This may be something to look into.")
+                    .build());
         }
 
         return csrf;
@@ -187,30 +161,21 @@ public class LeetcodeAuthStealer {
 
     String stealCookieImpl() {
         LOCK.writeLock().lock();
-        try (
-            Playwright playwright = Playwright.create();
-            Browser browser = playwright
-                .firefox()
-                .launch(
-                    new BrowserType.LaunchOptions()
-                        .setHeadless(true)
-                        .setTimeout(40000)
-                );
-            BrowserContext context = browser.newContext(
-                new NewContextOptions()
-                    .setUserAgent(USER_AGENT)
-                    .setStorageState(null)
-            )
-        ) {
+        try (Playwright playwright = Playwright.create();
+                Browser browser = playwright
+                        .firefox()
+                        .launch(new BrowserType.LaunchOptions()
+                                .setHeadless(true)
+                                .setTimeout(40000));
+                BrowserContext context = browser.newContext(
+                        new NewContextOptions().setUserAgent(USER_AGENT).setStorageState(null))) {
             context.clearCookies();
 
             log.info("Loaded browser context");
 
             Page page = context.newPage();
 
-            page.navigate(
-                "https://leetcode.com/accounts/github/login/?next=%2F"
-            );
+            page.navigate("https://leetcode.com/accounts/github/login/?next=%2F");
 
             log.info("Navigated to leetcode.com login");
 
@@ -223,10 +188,7 @@ public class LeetcodeAuthStealer {
 
             page.click("input[name=\"commit\"]");
 
-            if (
-                page.isVisible("#device-verification-prompt") ||
-                page.isVisible("#session-otp-input-description")
-            ) {
+            if (page.isVisible("#device-verification-prompt") || page.isVisible("#session-otp-input-description")) {
                 log.info("2FA Required");
                 List<Message> messages;
 
@@ -236,20 +198,13 @@ public class LeetcodeAuthStealer {
                     messages = email.getPastMessages();
                 } catch (Exception e) {
                     log.info("Failed to retrieve past messages");
-                    throw new RuntimeException(
-                        "Failed to retrieve past messages",
-                        e
-                    );
+                    throw new RuntimeException("Failed to retrieve past messages", e);
                 }
 
                 Message target = null;
                 for (Message m : messages) {
                     // Don't break so we can get the newest available code.
-                    if (
-                        m
-                            .getSubject()
-                            .equals("[GitHub] Please verify your device")
-                    ) {
+                    if (m.getSubject().equals("[GitHub] Please verify your device")) {
                         log.info("Found verification email");
                         target = m;
                     }
@@ -257,8 +212,7 @@ public class LeetcodeAuthStealer {
 
                 if (target == null) {
                     throw new RuntimeException(
-                        "Something went wrong when parsing the inbox. Manual intervention required"
-                    );
+                            "Something went wrong when parsing the inbox. Manual intervention required");
                 }
 
                 String code = CodeExtractor.extractCode(target.getMessage());
@@ -266,9 +220,7 @@ public class LeetcodeAuthStealer {
                 log.info("Found code in email, will fill now...");
 
                 if (code == null) {
-                    throw new RuntimeException(
-                        "Code was not found in the email. Manual intervention required."
-                    );
+                    throw new RuntimeException("Code was not found in the email. Manual intervention required.");
                 }
 
                 page.fill("input[name='otp']", code);
@@ -277,9 +229,7 @@ public class LeetcodeAuthStealer {
             }
 
             if (page.isVisible("button[name=\"authorize\"]")) {
-                List<ElementHandle> buttons = page.querySelectorAll(
-                    "button[name=\"authorize\"]"
-                );
+                List<ElementHandle> buttons = page.querySelectorAll("button[name=\"authorize\"]");
                 if (buttons.size() > 1) {
                     // Click the second button (which is the actual authorize button)
                     buttons.get(1).click();
@@ -297,32 +247,18 @@ public class LeetcodeAuthStealer {
             // }
 
             if (page.url().equals("https://leetcode.com/")) {
-                Map<String, String> cookieMap = page
-                    .context()
-                    .cookies()
-                    .stream()
-                    .filter(
-                        cookie ->
-                            cookie.name.equals("LEETCODE_SESSION") ||
-                            cookie.name.equals("csrftoken")
-                    )
-                    .collect(
-                        Collectors.toMap(
-                            cookie -> cookie.name,
-                            cookie -> cookie.value
-                        )
-                    );
+                Map<String, String> cookieMap = page.context().cookies().stream()
+                        .filter(cookie -> cookie.name.equals("LEETCODE_SESSION") || cookie.name.equals("csrftoken"))
+                        .collect(Collectors.toMap(cookie -> cookie.name, cookie -> cookie.value));
 
                 String sessionToken = cookieMap.get("LEETCODE_SESSION");
                 String csrf = cookieMap.get("csrftoken");
                 if (sessionToken != null) {
                     log.info("Cookie found!");
-                    authRepository.createAuth(
-                        Auth.builder()
+                    authRepository.createAuth(Auth.builder()
                             .token(sessionToken)
                             .csrf(cookieMap.get("csrftoken"))
-                            .build()
-                    );
+                            .build());
                     if (env.isCi()) {
                         log.info("in ci, stored in redis as well");
                         jedisClient.setAuth(sessionToken, 4, ChronoUnit.HOURS); // 4 hours.

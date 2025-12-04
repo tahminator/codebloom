@@ -10,12 +10,7 @@ public class Page<T> {
 
     private int pageSize;
 
-    public Page(
-        final boolean hasNextPage,
-        final List<T> items,
-        final int pages,
-        final int pageSize
-    ) {
+    public Page(final boolean hasNextPage, final List<T> items, final int pages, final int pageSize) {
         this.hasNextPage = hasNextPage;
         this.items = items;
         this.pages = pages;

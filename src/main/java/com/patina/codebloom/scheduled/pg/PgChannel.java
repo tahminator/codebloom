@@ -5,9 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
 
-/**
- * PG NOTIFY channels.
- */
+/** PG NOTIFY channels. */
 @Getter
 @ToString
 public enum PgChannel {
@@ -25,10 +23,9 @@ public enum PgChannel {
     }
 
     public static PgChannel fromChannelName(final String channelName) {
-        return list()
-            .stream()
-            .filter(c -> c.getChannelName().equals(channelName))
-            .findFirst()
-            .orElseThrow();
+        return list().stream()
+                .filter(c -> c.getChannelName().equals(channelName))
+                .findFirst()
+                .orElseThrow();
     }
 }

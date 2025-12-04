@@ -21,12 +21,12 @@ public class POTDSqlRepository implements POTDRepository {
 
     private POTD mapRowToPOTD(final ResultSet rs) throws SQLException {
         return POTD.builder()
-            .id(rs.getString("id"))
-            .title(rs.getString("title"))
-            .slug(rs.getString("slug"))
-            .multiplier(rs.getFloat("multiplier"))
-            .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
-            .build();
+                .id(rs.getString("id"))
+                .title(rs.getString("title"))
+                .slug(rs.getString("slug"))
+                .multiplier(rs.getFloat("multiplier"))
+                .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                .build();
     }
 
     @Override
@@ -56,8 +56,7 @@ public class POTDSqlRepository implements POTDRepository {
 
     @Override
     public POTD getPOTDById(final String id) {
-        String sql =
-            "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\" WHERE id = ?";
+        String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\" WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
@@ -75,13 +74,10 @@ public class POTDSqlRepository implements POTDRepository {
 
     @Override
     public ArrayList<POTD> getAllPOTDS() {
-        String sql =
-            "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\"";
+        String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\"";
         ArrayList<POTD> potdList = new ArrayList<>();
-        try (
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()
-        ) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 potdList.add(mapRowToPOTD(rs));
             }
@@ -93,8 +89,7 @@ public class POTDSqlRepository implements POTDRepository {
 
     @Override
     public void updatePOTD(final POTD potd) {
-        String sql =
-            "UPDATE \"POTD\" SET title = ?, slug = ?, multiplier = ? WHERE id = ?";
+        String sql = "UPDATE \"POTD\" SET title = ?, slug = ?, multiplier = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, potd.getTitle());
             stmt.setString(2, potd.getSlug());
@@ -126,10 +121,8 @@ public class POTDSqlRepository implements POTDRepository {
             LIMIT 1
             """;
 
-        try (
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()
-        ) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return mapRowToPOTD(rs);
             }

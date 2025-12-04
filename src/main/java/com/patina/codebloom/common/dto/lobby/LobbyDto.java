@@ -40,13 +40,13 @@ public class LobbyDto {
 
     public static LobbyDto fromLobby(final Lobby lobby) {
         return LobbyDto.builder()
-            .id(lobby.getId())
-            .joinCode(lobby.getJoinCode())
-            .status(lobby.getStatus())
-            .expiresAt(lobby.getExpiresAt())
-            .createdAt(lobby.getCreatedAt())
-            .playerCount(lobby.getPlayerCount())
-            .winnerId(lobby.getWinnerId().orElse(null))
-            .build();
+                .id(lobby.getId())
+                .joinCode(lobby.getJoinCode())
+                .status(lobby.getStatus())
+                .expiresAt(lobby.getExpiresAt())
+                .createdAt(lobby.getCreatedAt())
+                .playerCount(lobby.getPlayerCount())
+                .winnerId(lobby.getWinnerId().orElse(null))
+                .build();
     }
 }

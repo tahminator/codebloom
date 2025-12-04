@@ -16,9 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addArgumentResolvers(
-        final List<HandlerMethodArgumentResolver> resolvers
-    ) {
+    public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(protectedResolver);
     }
 }

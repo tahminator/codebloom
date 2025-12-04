@@ -18,19 +18,16 @@ import org.springframework.stereotype.Component;
 @Profile("!ci")
 public class SubmissionScheduler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(
-        SubmissionScheduler.class
-    );
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionScheduler.class);
 
     private final UserRepository userRepository;
     private final LeetcodeClient leetcodeClient;
     private final SubmissionsHandler submissionsHandler;
 
     public SubmissionScheduler(
-        final UserRepository userRepository,
-        final ThrottledLeetcodeClient throttledLeetcodeClient,
-        final SubmissionsHandler submissionsHandler
-    ) {
+            final UserRepository userRepository,
+            final ThrottledLeetcodeClient throttledLeetcodeClient,
+            final SubmissionsHandler submissionsHandler) {
         this.userRepository = userRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.submissionsHandler = submissionsHandler;
@@ -39,24 +36,17 @@ public class SubmissionScheduler {
     // Cron runs every 30 minutes
     @Scheduled(cron = "0 */30 * * * *")
     public void handleAllUserSubmissions() {
-        LOGGER.info(
-            "Beginning the scheduled task to handle all user submissions now:"
-        );
+        LOGGER.info("Beginning the scheduled task to handle all user submissions now:");
         ArrayList<User> users = userRepository.getAllUsers();
 
         for (User user : users) {
             if (user.getLeetcodeUsername() == null) {
-                LOGGER.info(
-                    "User with id of {} does not have a leetcode username set.",
-                    user.getId()
-                );
+                LOGGER.info("User with id of {} does not have a leetcode username set.", user.getId());
                 continue;
             }
 
             List<LeetcodeSubmission> leetcodeSubmissions =
-                leetcodeClient.findSubmissionsByUsername(
-                    user.getLeetcodeUsername()
-                );
+                    leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
             submissionsHandler.handleSubmissions(leetcodeSubmissions, user);
             LOGGER.info("User with id of {} has been completed", user.getId());

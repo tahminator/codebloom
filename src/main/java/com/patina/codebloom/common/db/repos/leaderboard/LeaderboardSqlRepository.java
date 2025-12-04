@@ -30,31 +30,23 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     private Connection conn;
     private final UserRepository userRepository;
 
-    public LeaderboardSqlRepository(
-        final DbConnection dbConnection,
-        final UserRepository userRepository
-    ) {
+    public LeaderboardSqlRepository(final DbConnection dbConnection, final UserRepository userRepository) {
         this.conn = dbConnection.getConn();
         this.userRepository = userRepository;
     }
 
-    private Leaderboard parseResultSetToLeaderboard(final ResultSet resultSet)
-        throws SQLException {
+    private Leaderboard parseResultSetToLeaderboard(final ResultSet resultSet) throws SQLException {
         return Leaderboard.builder()
-            .id(resultSet.getString("id"))
-            .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
-            .deletedAt(
-                Optional.ofNullable(resultSet.getTimestamp("deletedAt"))
-                    .map(Timestamp::toLocalDateTime)
-                    .orElse(null)
-            )
-            .name(resultSet.getString("name"))
-            .shouldExpireBy(
-                Optional.ofNullable(resultSet.getTimestamp("shouldExpireBy"))
-                    .map(Timestamp::toLocalDateTime)
-                    .orElse(null)
-            )
-            .build();
+                .id(resultSet.getString("id"))
+                .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
+                .deletedAt(Optional.ofNullable(resultSet.getTimestamp("deletedAt"))
+                        .map(Timestamp::toLocalDateTime)
+                        .orElse(null))
+                .name(resultSet.getString("name"))
+                .shouldExpireBy(Optional.ofNullable(resultSet.getTimestamp("shouldExpireBy"))
+                        .map(Timestamp::toLocalDateTime)
+                        .orElse(null))
+                .build();
     }
 
     @Override
@@ -69,9 +61,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "deletedAt" IS NULL
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(leaderboardId));
             int rowsAffected = stmt.executeUpdate();
 
@@ -92,16 +82,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "createdAt"
             """;
         leaderboard.setId(UUID.randomUUID().toString());
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
             stmt.setString("name", leaderboard.getName());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var createdAt = rs
-                        .getTimestamp("createdAt")
-                        .toLocalDateTime();
+                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                     leaderboard.setCreatedAt(createdAt);
                 }
             }
@@ -133,10 +119,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to fetch recent leaderboard metadata",
-                e
-            );
+            throw new RuntimeException("Failed to fetch recent leaderboard metadata", e);
         }
 
         return null;
@@ -156,9 +139,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -166,31 +147,18 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to fetch recent leaderboard metadata",
-                e
-            );
+            throw new RuntimeException("Failed to fetch recent leaderboard metadata", e);
         }
 
         return null;
     }
 
     @Override
-    public List<
-        Indexed<UserWithScore>
-    > getGlobalRankedIndexedLeaderboardUsersById(
-        final String leaderboardId,
-        final LeaderboardFilterOptions options
-    ) {
-        List<UserWithScore> users = this.getLeaderboardUsersById(
-            leaderboardId,
-            options
-        );
-        Map<String, UserWithScore> userIdToUserMap = users
-            .stream()
-            .collect(
-                Collectors.toMap(user -> user.getId(), Function.identity())
-            );
+    public List<Indexed<UserWithScore>> getGlobalRankedIndexedLeaderboardUsersById(
+            final String leaderboardId, final LeaderboardFilterOptions options) {
+        List<UserWithScore> users = this.getLeaderboardUsersById(leaderboardId, options);
+        Map<String, UserWithScore> userIdToUserMap =
+                users.stream().collect(Collectors.toMap(user -> user.getId(), Function.identity()));
         List<Indexed<UserWithScore>> result = new ArrayList<>();
 
         String sql = """
@@ -228,13 +196,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     r.rank ASC
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
-            UUID[] userIds = users
-                .stream()
-                .map(user -> UUID.fromString(user.getId()))
-                .toArray(size -> new UUID[size]);
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            UUID[] userIds =
+                    users.stream().map(user -> UUID.fromString(user.getId())).toArray(size -> new UUID[size]);
 
             stmt.setArray("userIds", conn.createArrayOf("UUID", userIds));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
@@ -247,10 +211,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to get ranks for leaderboard users",
-                e
-            );
+            throw new RuntimeException("Failed to get ranks for leaderboard users", e);
         }
 
         return result;
@@ -258,18 +219,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public List<Indexed<UserWithScore>> getRankedIndexedLeaderboardUsersById(
-        final String leaderboardId,
-        final LeaderboardFilterOptions options
-    ) {
-        List<UserWithScore> users = this.getLeaderboardUsersById(
-            leaderboardId,
-            options
-        );
-        Map<String, UserWithScore> userIdToUserMap = users
-            .stream()
-            .collect(
-                Collectors.toMap(user -> user.getId(), Function.identity())
-            );
+            final String leaderboardId, final LeaderboardFilterOptions options) {
+        List<UserWithScore> users = this.getLeaderboardUsersById(leaderboardId, options);
+        Map<String, UserWithScore> userIdToUserMap =
+                users.stream().collect(Collectors.toMap(user -> user.getId(), Function.identity()));
         List<Indexed<UserWithScore>> result = new ArrayList<>();
 
         String sql = """
@@ -341,13 +294,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 r.rank ASC
                                     """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
-            UUID[] userIds = users
-                .stream()
-                .map(user -> UUID.fromString(user.getId()))
-                .toArray(size -> new UUID[size]);
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            UUID[] userIds =
+                    users.stream().map(user -> UUID.fromString(user.getId())).toArray(size -> new UUID[size]);
 
             stmt.setArray("userIds", conn.createArrayOf("UUID", userIds));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
@@ -371,26 +320,16 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to get ranks for leaderboard users",
-                e
-            );
+            throw new RuntimeException("Failed to get ranks for leaderboard users", e);
         }
 
         return result;
     }
 
     @Override
-    public Indexed<UserWithScore> getGlobalRankedUserById(
-        final String leaderboardId,
-        final String userId
-    ) {
-        UserWithScore user =
-            userRepository.getUserWithScoreByIdAndLeaderboardId(
-                userId,
-                leaderboardId,
-                UserFilterOptions.builder().build()
-            );
+    public Indexed<UserWithScore> getGlobalRankedUserById(final String leaderboardId, final String userId) {
+        UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
+                userId, leaderboardId, UserFilterOptions.builder().build());
         if (user == null) {
             return null;
         }
@@ -427,9 +366,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 r."userId" = :userId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             stmt.setObject("userId", UUID.fromString(userId));
 
@@ -448,16 +385,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public Indexed<UserWithScore> getFilteredRankedUserById(
-        final String leaderboardId,
-        final String userId,
-        final LeaderboardFilterOptions options
-    ) {
-        UserWithScore user =
-            userRepository.getUserWithScoreByIdAndLeaderboardId(
-                userId,
-                leaderboardId,
-                UserFilterOptions.builder().build()
-            );
+            final String leaderboardId, final String userId, final LeaderboardFilterOptions options) {
+        UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
+                userId, leaderboardId, UserFilterOptions.builder().build());
         if (user == null) {
             return null;
         }
@@ -528,9 +458,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 r."userId" = :userId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             stmt.setObject("userId", UUID.fromString(userId));
 
@@ -553,19 +481,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to get filtered rank for user",
-                e
-            );
+            throw new RuntimeException("Failed to get filtered rank for user", e);
         }
 
         return null;
     }
 
     @Override
-    public List<UserWithScore> getRecentLeaderboardUsers(
-        final LeaderboardFilterOptions options
-    ) {
+    public List<UserWithScore> getRecentLeaderboardUsers(final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -643,9 +566,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             LIMIT :pageSize OFFSET :pageNumber;
                             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
@@ -659,27 +580,19 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("bmcc", options.isBmcc());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
-            stmt.setInt(
-                "pageNumber",
-                (options.getPage() - 1) * options.getPageSize()
-            );
+            stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
                     var leaderboardId = rs.getString("leaderboardId");
-                    var leaderboardDeletedAt = rs.getObject(
-                        "leaderboardDeletedAt",
-                        OffsetDateTime.class
-                    );
+                    var leaderboardDeletedAt = rs.getObject("leaderboardDeletedAt", OffsetDateTime.class);
 
-                    UserWithScore user =
-                        userRepository.getUserWithScoreByIdAndLeaderboardId(
+                    UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
                             userId,
                             leaderboardId,
                             UserFilterOptions.builder()
-                                .pointOfTime(leaderboardDeletedAt)
-                                .build()
-                        );
+                                    .pointOfTime(leaderboardDeletedAt)
+                                    .build());
 
                     if (user != null) {
                         users.add(user);
@@ -687,20 +600,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to fetch recent leaderboard users",
-                e
-            );
+            throw new RuntimeException("Failed to fetch recent leaderboard users", e);
         }
 
         return users;
     }
 
     @Override
-    public List<UserWithScore> getLeaderboardUsersById(
-        final String id,
-        final LeaderboardFilterOptions options
-    ) {
+    public List<UserWithScore> getLeaderboardUsersById(final String id, final LeaderboardFilterOptions options) {
         ArrayList<UserWithScore> users = new ArrayList<>();
 
         String sql = """
@@ -765,9 +672,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             LIMIT :pageSize OFFSET :pageNumber;
                             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(id));
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
@@ -782,27 +687,19 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("bmcc", options.isBmcc());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
-            stmt.setInt(
-                "pageNumber",
-                (options.getPage() - 1) * options.getPageSize()
-            );
+            stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
                     var leaderboardId = rs.getString("leaderboardId");
-                    var leaderboardDeletedAt = rs.getObject(
-                        "leaderboardDeletedAt",
-                        OffsetDateTime.class
-                    );
+                    var leaderboardDeletedAt = rs.getObject("leaderboardDeletedAt", OffsetDateTime.class);
 
-                    UserWithScore user =
-                        userRepository.getUserWithScoreByIdAndLeaderboardId(
+                    UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
                             userId,
                             leaderboardId,
                             UserFilterOptions.builder()
-                                .pointOfTime(leaderboardDeletedAt)
-                                .build()
-                        );
+                                    .pointOfTime(leaderboardDeletedAt)
+                                    .build());
 
                     if (user != null) {
                         users.add(user);
@@ -810,10 +707,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to fetch recent leaderboard users",
-                e
-            );
+            throw new RuntimeException("Failed to fetch recent leaderboard users", e);
         }
 
         return users;
@@ -830,9 +724,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             WHERE id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("name", leaderboard.getName());
             stmt.setObject("createdAt", leaderboard.getCreatedAt());
             stmt.setObject("deletedAt", leaderboard.getDeletedAt());
@@ -842,18 +734,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
             return rowsAffected > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to disable update leaderboard",
-                e
-            );
+            throw new RuntimeException("Failed to disable update leaderboard", e);
         }
     }
 
     @Override
-    public boolean addUserToLeaderboard(
-        final String userId,
-        final String leaderboardId
-    ) {
+    public boolean addUserToLeaderboard(final String userId, final String leaderboardId) {
         String sql = """
             INSERT INTO "Metadata"
                 (id, "userId", "leaderboardId")
@@ -861,9 +747,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 (:id, :userId, :leaderboardId)
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.randomUUID());
             stmt.setObject("userId", UUID.fromString(userId));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
@@ -877,10 +761,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     @Override
     public boolean updateUserPointsFromLeaderboard(
-        final String leaderboardId,
-        final String userId,
-        final int totalScore
-    ) {
+            final String leaderboardId, final String userId, final int totalScore) {
         String sql = """
             UPDATE "Metadata"
             SET
@@ -891,9 +772,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "leaderboardId" = :leaderboardId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setInt("totalScore", totalScore);
             stmt.setObject("userId", UUID.fromString(userId));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
@@ -907,9 +786,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public int getRecentLeaderboardUserCount(
-        final LeaderboardFilterOptions options
-    ) {
+    public int getRecentLeaderboardUserCount(final LeaderboardFilterOptions options) {
         String sql = """
                 WITH latest_leaderboard AS (
                     SELECT id
@@ -964,9 +841,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 AND
                     (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
@@ -985,20 +860,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to retrieve leaderboard users",
-                e
-            );
+            throw new RuntimeException("Failed to retrieve leaderboard users", e);
         }
 
         return 0;
     }
 
     @Override
-    public int getLeaderboardUserCountById(
-        final String id,
-        final LeaderboardFilterOptions options
-    ) {
+    public int getLeaderboardUserCountById(final String id, final LeaderboardFilterOptions options) {
         String sql = """
                 SELECT
                     COUNT(m.id)
@@ -1047,9 +916,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 AND
                     (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(id));
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
@@ -1069,19 +936,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to retrieve leaderboard users",
-                e
-            );
+            throw new RuntimeException("Failed to retrieve leaderboard users", e);
         }
 
         return 0;
     }
 
     @Override
-    public List<Leaderboard> getAllLeaderboardsShallow(
-        final LeaderboardFilterOptions options
-    ) {
+    public List<Leaderboard> getAllLeaderboardsShallow(final LeaderboardFilterOptions options) {
         ArrayList<Leaderboard> leaderboards = new ArrayList<>();
         String sql = """
                 SELECT
@@ -1097,15 +959,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 LIMIT :pageSize OFFSET :pageNumber
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
-            stmt.setInt(
-                "pageNumber",
-                (options.getPage() - 1) * options.getPageSize()
-            );
+            stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -1113,10 +970,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Error while retrieving all paginated leaderboards",
-                e
-            );
+            throw new RuntimeException("Error while retrieving all paginated leaderboards", e);
         }
 
         return leaderboards;
@@ -1132,9 +986,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 (:id, :userId, :leaderboardId)
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             for (var user : users) {
                 String userMetaId = UUID.randomUUID().toString();
                 stmt.setObject("id", UUID.fromString(userMetaId));
@@ -1144,15 +996,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             }
 
             int[] updates = stmt.executeBatch();
-            long successfulInsertions = Arrays.stream(updates)
-                .filter(count -> count > 0)
-                .count();
+            long successfulInsertions =
+                    Arrays.stream(updates).filter(count -> count > 0).count();
             return successfulInsertions == users.size();
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to add all users to the the leaderboard",
-                e
-            );
+            throw new RuntimeException("Failed to add all users to the the leaderboard", e);
         }
     }
 
@@ -1165,26 +1013,19 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "Leaderboard"
             """;
 
-        try (
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()
-        ) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Error while retrieving leaderboard count",
-                e
-            );
+            throw new RuntimeException("Error while retrieving leaderboard count", e);
         }
 
         return 0;
     }
 
-    /**
-     * Internal use only. Intended for testing use cases (access via reflection).
-     */
+    /** Internal use only. Intended for testing use cases (access via reflection). */
     private boolean deleteLeaderboardById(final String id) {
         String sql = """
                 DELETE FROM "Leaderboard"
@@ -1192,9 +1033,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
@@ -1208,8 +1047,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     /**
      * Internal use only. Intended for testing use cases (access via reflection).
      *
-     * @note This will only re-activate a leaderboard if it's the most recent
-     * leaderboard entry.
+     * @note This will only re-activate a leaderboard if it's the most recent leaderboard entry.
      */
     private boolean enableLeaderboardById(final String id) {
         String sql = """
@@ -1220,9 +1058,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

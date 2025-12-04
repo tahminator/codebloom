@@ -15,24 +15,19 @@ import org.springframework.stereotype.Component;
 @Profile("!ci")
 public class RefetchIncompleteQuestions {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(
-        RefetchIncompleteQuestions.class
-    );
+    private static final Logger LOGGER = LoggerFactory.getLogger(RefetchIncompleteQuestions.class);
 
     private final QuestionRepository questionRepository;
     private final LeetcodeClient leetcodeClient;
 
     public RefetchIncompleteQuestions(
-        final QuestionRepository questionRepository,
-        final ThrottledLeetcodeClient throttledLeetcodeClient
-    ) {
+            final QuestionRepository questionRepository, final ThrottledLeetcodeClient throttledLeetcodeClient) {
         this.questionRepository = questionRepository;
         this.leetcodeClient = throttledLeetcodeClient;
     }
 
     public void reFetchIncompleteQuestions() {
-        ArrayList<Question> questions =
-            questionRepository.getAllIncompleteQuestions();
+        ArrayList<Question> questions = questionRepository.getAllIncompleteQuestions();
 
         if (questions.isEmpty()) {
             LOGGER.info("All questions have complete information.");
@@ -43,43 +38,35 @@ public class RefetchIncompleteQuestions {
             try {
                 int submissionId = Integer.parseInt(q.getSubmissionId());
                 LeetcodeDetailedQuestion matchingQuestionWithDetails =
-                    leetcodeClient.findSubmissionDetailBySubmissionId(
-                        submissionId
-                    );
+                        leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
 
                 Question updated = Question.builder()
-                    .id(q.getId())
-                    .userId(q.getUserId())
-                    .questionSlug(q.getQuestionSlug())
-                    .questionTitle(q.getQuestionTitle())
-                    .questionDifficulty(q.getQuestionDifficulty())
-                    .questionNumber(q.getQuestionNumber())
-                    .questionLink(q.getQuestionLink())
-                    .description(q.getDescription())
-                    .pointsAwarded(q.getPointsAwarded())
-                    .acceptanceRate(q.getAcceptanceRate())
-                    .createdAt(q.getCreatedAt())
-                    .submittedAt(q.getSubmittedAt())
-                    .runtime(matchingQuestionWithDetails.getRuntimeDisplay())
-                    .memory(matchingQuestionWithDetails.getMemoryDisplay())
-                    .code(matchingQuestionWithDetails.getCode())
-                    .language(matchingQuestionWithDetails.getLang().getName())
-                    .submissionId(q.getSubmissionId())
-                    .build();
+                        .id(q.getId())
+                        .userId(q.getUserId())
+                        .questionSlug(q.getQuestionSlug())
+                        .questionTitle(q.getQuestionTitle())
+                        .questionDifficulty(q.getQuestionDifficulty())
+                        .questionNumber(q.getQuestionNumber())
+                        .questionLink(q.getQuestionLink())
+                        .description(q.getDescription())
+                        .pointsAwarded(q.getPointsAwarded())
+                        .acceptanceRate(q.getAcceptanceRate())
+                        .createdAt(q.getCreatedAt())
+                        .submittedAt(q.getSubmittedAt())
+                        .runtime(matchingQuestionWithDetails.getRuntimeDisplay())
+                        .memory(matchingQuestionWithDetails.getMemoryDisplay())
+                        .code(matchingQuestionWithDetails.getCode())
+                        .language(matchingQuestionWithDetails.getLang().getName())
+                        .submissionId(q.getSubmissionId())
+                        .build();
 
                 questionRepository.updateQuestion(updated);
-                LOGGER.info(
-                    "Successfully updated question with id: " +
-                        q.getId() +
-                        " (submissionId: " +
-                        submissionId +
-                        ")"
-                );
+                LOGGER.info("Successfully updated question with id: " + q.getId()
+                        + " (submissionId: "
+                        + submissionId
+                        + ")");
             } catch (Exception e) {
-                LOGGER.error(
-                    "Failed to refetch question: " + q.getQuestionSlug(),
-                    e
-                );
+                LOGGER.error("Failed to refetch question: " + q.getQuestionSlug(), e);
             }
         }
     }

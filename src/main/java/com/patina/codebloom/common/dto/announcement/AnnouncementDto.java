@@ -31,15 +31,13 @@ public class AnnouncementDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String message;
 
-    public static AnnouncementDto fromAnnouncement(
-        final Announcement announcement
-    ) {
+    public static AnnouncementDto fromAnnouncement(final Announcement announcement) {
         return AnnouncementDto.builder()
-            .id(announcement.getId())
-            .createdAt(announcement.getCreatedAt())
-            .expiresAt(announcement.getExpiresAt())
-            .showTimer(announcement.isShowTimer())
-            .message(announcement.getMessage())
-            .build();
+                .id(announcement.getId())
+                .createdAt(announcement.getCreatedAt())
+                .expiresAt(announcement.getExpiresAt())
+                .showTimer(announcement.isShowTimer())
+                .message(announcement.getMessage())
+                .build();
     }
 }

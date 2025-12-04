@@ -52,11 +52,11 @@ class RateLimitingFilterTest extends NoJdaRequired {
                     start.await();
 
                     RestAssured.given()
-                        .when()
-                        .header("Content-Type", "application/json")
-                        .get("/api")
-                        .then()
-                        .statusCode(200);
+                            .when()
+                            .header("Content-Type", "application/json")
+                            .get("/api")
+                            .then()
+                            .statusCode(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -71,13 +71,13 @@ class RateLimitingFilterTest extends NoJdaRequired {
                 rateLimitSetup.await();
 
                 var apiResponder = RestAssured.given()
-                    .when()
-                    .header("Content-Type", "application/json")
-                    .get("/api")
-                    .then()
-                    .statusCode(429)
-                    .extract()
-                    .as(new TypeRef<ApiResponder<ServerMetadataObject>>() {});
+                        .when()
+                        .header("Content-Type", "application/json")
+                        .get("/api")
+                        .then()
+                        .statusCode(429)
+                        .extract()
+                        .as(new TypeRef<ApiResponder<ServerMetadataObject>>() {});
 
                 assertFalse(apiResponder.isSuccess());
             } catch (Exception e) {

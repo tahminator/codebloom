@@ -23,64 +23,43 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @Tag(
-    name = "General user routes (v2)",
-    description = "This controller is responsible for handling general user data, such as user profile, user submissions, and more."
-)
+        name = "General user routes (v2)",
+        description =
+                "This controller is responsible for handling general user data, such as user profile, user submissions, and more.")
 @RequestMapping("/api/user/v2")
 public class UserV2Controller {
 
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
 
-    public UserV2Controller(
-        final QuestionRepository questionRepository,
-        final UserRepository userRepository
-    ) {
+    public UserV2Controller(final QuestionRepository questionRepository, final UserRepository userRepository) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
     }
 
     @Operation(
-        summary = "Public route that returns the given user's profile",
-        description = """
+            summary = "Public route that returns the given user's profile",
+            description = """
             Unprotected endpoint that returns the user profile of the LeetCode username that is passed to the endpoint's path.
         """,
-        responses = {
-            @ApiResponse(
-                responseCode = "404",
-                description = "User profile has not been found",
-                content = @Content(
-                    schema = @Schema(
-                        implementation = UnsafeGenericFailureResponse.class
-                    )
-                )
-            ),
-            @ApiResponse(
-                responseCode = "200",
-                description = "User profile has been found"
-            ),
-        }
-    )
+            responses = {
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "User profile has not been found",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(responseCode = "200", description = "User profile has been found"),
+            })
     @GetMapping("{leetcodeUsername}/profile")
-    public ResponseEntity<
-        ApiResponder<UserDto>
-    > getUserProfileByLeetcodeUsername(
-        final HttpServletRequest request,
-        @PathVariable final String leetcodeUsername
-    ) {
+    public ResponseEntity<ApiResponder<UserDto>> getUserProfileByLeetcodeUsername(
+            final HttpServletRequest request, @PathVariable final String leetcodeUsername) {
         FakeLag.sleep(650);
 
         User user = userRepository.getUserByLeetcodeUsername(leetcodeUsername);
 
         if (user == null) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "Failed to find user profile."
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find user profile.");
         }
 
-        return ResponseEntity.ok().body(
-            ApiResponder.success("User profile found!", UserDto.fromUser(user))
-        );
+        return ResponseEntity.ok().body(ApiResponder.success("User profile found!", UserDto.fromUser(user)));
     }
 }

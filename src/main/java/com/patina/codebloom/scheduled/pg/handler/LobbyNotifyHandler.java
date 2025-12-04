@@ -22,10 +22,7 @@ public class LobbyNotifyHandler {
 
     @VisibleForTesting
     @Getter(AccessLevel.PACKAGE)
-    private final ConcurrentHashMap<
-        String,
-        Set<SseWrapper<ApiResponder<DuelData>>>
-    > partyIdToSseEmitters;
+    private final ConcurrentHashMap<String, Set<SseWrapper<ApiResponder<DuelData>>>> partyIdToSseEmitters;
 
     private final DuelManager duelManager;
 
@@ -40,20 +37,13 @@ public class LobbyNotifyHandler {
             return ApiResponder.success("Data retrieved!", duelData);
         } catch (Exception e) {
             log.error("failed to get duel data", e);
-            return ApiResponder.failure(
-                String.format("Something went wrong: %s", e.getMessage())
-            );
+            return ApiResponder.failure(String.format("Something went wrong: %s", e.getMessage()));
         }
     }
 
     @Async
-    public void register(
-        final String partyId,
-        final SseWrapper<ApiResponder<DuelData>> sseEmitter
-    ) {
-        var emitterSet = partyIdToSseEmitters.computeIfAbsent(partyId, _ ->
-            ConcurrentHashMap.newKeySet()
-        );
+    public void register(final String partyId, final SseWrapper<ApiResponder<DuelData>> sseEmitter) {
+        var emitterSet = partyIdToSseEmitters.computeIfAbsent(partyId, _ -> ConcurrentHashMap.newKeySet());
         if (!emitterSet.contains(sseEmitter)) {
             emitterSet.add(sseEmitter);
         }

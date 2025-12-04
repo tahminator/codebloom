@@ -33,11 +33,11 @@ public class PotdDto {
 
     public static PotdDto fromPOTD(final POTD potd) {
         return PotdDto.builder()
-            .id(potd.getId())
-            .title(potd.getTitle())
-            .slug(potd.getSlug())
-            .multiplier(potd.getMultiplier())
-            .createdAt(potd.getCreatedAt())
-            .build();
+                .id(potd.getId())
+                .title(potd.getTitle())
+                .slug(potd.getSlug())
+                .multiplier(potd.getMultiplier())
+                .createdAt(potd.getCreatedAt())
+                .build();
     }
 }

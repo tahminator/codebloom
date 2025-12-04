@@ -41,15 +41,13 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
     private LobbyQuestion testLobbyQuestion;
     private Lobby testLobby;
     private QuestionBank testQuestionBank;
-    private String mockJoinCode =
-        "LOBBY-Q-TEST-" + UUID.randomUUID().toString().substring(0, 8);
+    private String mockJoinCode = "LOBBY-Q-TEST-" + UUID.randomUUID().toString().substring(0, 8);
 
     @Autowired
     public LobbyQuestionRepositoryTest(
-        final LobbyQuestionRepository lobbyQuestionRepository,
-        final LobbyRepository lobbyRepository,
-        final QuestionBankRepository questionBankRepository
-    ) {
+            final LobbyQuestionRepository lobbyQuestionRepository,
+            final LobbyRepository lobbyRepository,
+            final QuestionBankRepository questionBankRepository) {
         this.lobbyQuestionRepository = lobbyQuestionRepository;
         this.lobbyRepository = lobbyRepository;
         this.questionBankRepository = questionBankRepository;
@@ -58,43 +56,40 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void setup() {
         testLobby = Lobby.builder()
-            .joinCode(mockJoinCode)
-            .status(LobbyStatus.AVAILABLE)
-            .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
-            .playerCount(1)
-            .build();
+                .joinCode(mockJoinCode)
+                .status(LobbyStatus.AVAILABLE)
+                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .playerCount(1)
+                .build();
 
         lobbyRepository.createLobby(testLobby);
 
         testQuestionBank = QuestionBank.builder()
-            .questionSlug("test-question")
-            .questionDifficulty(QuestionDifficulty.Easy)
-            .questionTitle("Test Question")
-            .questionNumber(1234)
-            .questionLink("https://leetcode.com/problems/test-question")
-            .acceptanceRate(50.0f)
-            .build();
+                .questionSlug("test-question")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionTitle("Test Question")
+                .questionNumber(1234)
+                .questionLink("https://leetcode.com/problems/test-question")
+                .acceptanceRate(50.0f)
+                .build();
 
         questionBankRepository.createQuestion(testQuestionBank);
 
         testLobbyQuestion = LobbyQuestion.builder()
-            .lobbyId(testLobby.getId())
-            .questionBankId(testQuestionBank.getId())
-            .userSolvedCount(0)
-            .createdAt(StandardizedOffsetDateTime.now())
-            .build();
+                .lobbyId(testLobby.getId())
+                .questionBankId(testQuestionBank.getId())
+                .userSolvedCount(0)
+                .createdAt(StandardizedOffsetDateTime.now())
+                .build();
 
         lobbyQuestionRepository.createLobbyQuestion(testLobbyQuestion);
     }
 
     @AfterAll
     void cleanup() {
-        boolean isSuccessful =
-            lobbyQuestionRepository.deleteLobbyQuestionById(
-                testLobbyQuestion.getId()
-            ) &&
-            lobbyRepository.deleteLobbyById(testLobby.getId()) &&
-            questionBankRepository.deleteQuestionById(testQuestionBank.getId());
+        boolean isSuccessful = lobbyQuestionRepository.deleteLobbyQuestionById(testLobbyQuestion.getId())
+                && lobbyRepository.deleteLobbyById(testLobby.getId())
+                && questionBankRepository.deleteQuestionById(testQuestionBank.getId());
 
         if (!isSuccessful) {
             fail("Failed to delete test lobby question");
@@ -104,9 +99,7 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testFindLobbyQuestionById() {
-        var foundLobbyQuestion = lobbyQuestionRepository.findLobbyQuestionById(
-            testLobbyQuestion.getId()
-        );
+        var foundLobbyQuestion = lobbyQuestionRepository.findLobbyQuestionById(testLobbyQuestion.getId());
         assertTrue(foundLobbyQuestion.isPresent());
         assertEquals(testLobbyQuestion, foundLobbyQuestion.get());
     }
@@ -114,10 +107,7 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void testFindLobbyQuestionsByLobbyId() {
-        List<LobbyQuestion> lobbyQuestions =
-            lobbyQuestionRepository.findLobbyQuestionsByLobbyId(
-                testLobby.getId()
-            );
+        List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(testLobby.getId());
         assertNotNull(lobbyQuestions);
         assertTrue(lobbyQuestions.contains(testLobbyQuestion));
     }
@@ -125,11 +115,8 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testFindLobbyQuestionsByLobbyIdAndQuestionBankId() {
-        List<LobbyQuestion> lobbyQuestions =
-            lobbyQuestionRepository.findLobbyQuestionsByLobbyIdAndQuestionBankId(
-                testLobby.getId(),
-                testQuestionBank.getId()
-            );
+        List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyIdAndQuestionBankId(
+                testLobby.getId(), testQuestionBank.getId());
         assertNotNull(lobbyQuestions);
         assertTrue(lobbyQuestions.contains(testLobbyQuestion));
     }
@@ -138,9 +125,7 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
     @Order(4)
     void testFindMostRecentLobbyQuestionByLobbyId() {
         Optional<LobbyQuestion> mostRecentQuestion =
-            lobbyQuestionRepository.findMostRecentLobbyQuestionByLobbyId(
-                testLobby.getId()
-            );
+                lobbyQuestionRepository.findMostRecentLobbyQuestionByLobbyId(testLobby.getId());
         assertTrue(mostRecentQuestion.isPresent());
         assertEquals(testLobbyQuestion, mostRecentQuestion.get());
     }
@@ -148,8 +133,7 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(5)
     void testFindAllLobbyQuestions() {
-        List<LobbyQuestion> allQuestions =
-            lobbyQuestionRepository.findAllLobbyQuestions();
+        List<LobbyQuestion> allQuestions = lobbyQuestionRepository.findAllLobbyQuestions();
         assertNotNull(allQuestions);
         assertTrue(allQuestions.contains(testLobbyQuestion));
     }
@@ -160,14 +144,12 @@ public class LobbyQuestionRepositoryTest extends BaseRepositoryTest {
         int newSolvedCount = 5;
         testLobbyQuestion.setUserSolvedCount(newSolvedCount);
 
-        boolean updateResult = lobbyQuestionRepository.updateQuestionLobby(
-            testLobbyQuestion
-        );
+        boolean updateResult = lobbyQuestionRepository.updateQuestionLobby(testLobbyQuestion);
         assertTrue(updateResult);
 
         LobbyQuestion updatedLobbyQuestion = lobbyQuestionRepository
-            .findLobbyQuestionById(testLobbyQuestion.getId())
-            .orElseThrow();
+                .findLobbyQuestionById(testLobbyQuestion.getId())
+                .orElseThrow();
         assertEquals(testLobbyQuestion, updatedLobbyQuestion);
     }
 }

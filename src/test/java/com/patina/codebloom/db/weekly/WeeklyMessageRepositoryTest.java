@@ -29,22 +29,17 @@ public class WeeklyMessageRepositoryTest extends BaseRepositoryTest {
     private WeeklyMessage testWeeklyMessage;
 
     @Autowired
-    public WeeklyMessageRepositoryTest(
-        final WeeklyMessageRepository weeklyMessageRepository
-    ) {
+    public WeeklyMessageRepositoryTest(final WeeklyMessageRepository weeklyMessageRepository) {
         this.weeklyMessageRepository = weeklyMessageRepository;
     }
 
     @BeforeAll
     void createTestWeeklyMessage() {
         testWeeklyMessage = WeeklyMessage.builder()
-            .id("Test Weekly Message")
-            .createdAt(java.time.LocalDateTime.now())
-            .build();
-        boolean isSuccessful =
-            weeklyMessageRepository.createLatestWeeklyMessage(
-                testWeeklyMessage
-            );
+                .id("Test Weekly Message")
+                .createdAt(java.time.LocalDateTime.now())
+                .build();
+        boolean isSuccessful = weeklyMessageRepository.createLatestWeeklyMessage(testWeeklyMessage);
 
         if (!isSuccessful) {
             fail("Failed to create test weekly message");
@@ -54,9 +49,7 @@ public class WeeklyMessageRepositoryTest extends BaseRepositoryTest {
     @AfterAll
     void cleanUp() {
         WeeklyMessage latest = weeklyMessageRepository.getLatestWeeklyMessage();
-        boolean isSuccessful =
-            latest != null &&
-            weeklyMessageRepository.deleteWeeklyMessageById(latest.getId());
+        boolean isSuccessful = latest != null && weeklyMessageRepository.deleteWeeklyMessageById(latest.getId());
 
         if (!isSuccessful) {
             fail("Failed to delete test weekly message");
@@ -66,51 +59,31 @@ public class WeeklyMessageRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testGetLatestWeeklyMessage() {
-        WeeklyMessage possibleTestWeeklyMessage =
-            weeklyMessageRepository.getLatestWeeklyMessage();
+        WeeklyMessage possibleTestWeeklyMessage = weeklyMessageRepository.getLatestWeeklyMessage();
 
-        assertNotNull(
-            possibleTestWeeklyMessage,
-            "Latest weekly message should not be null"
-        );
+        assertNotNull(possibleTestWeeklyMessage, "Latest weekly message should not be null");
         log.info("testWeeklyMessage: {}", testWeeklyMessage);
         log.info("possibleTestWeeklyMessage: {}", possibleTestWeeklyMessage);
+        assertEquals(testWeeklyMessage.getId(), possibleTestWeeklyMessage.getId(), "IDs do not match");
         assertEquals(
-            testWeeklyMessage.getId(),
-            possibleTestWeeklyMessage.getId(),
-            "IDs do not match"
-        );
-        assertEquals(
-            testWeeklyMessage.getCreatedAt(),
-            possibleTestWeeklyMessage.getCreatedAt(),
-            "CreatedAt timestamps do not match"
-        );
+                testWeeklyMessage.getCreatedAt(),
+                possibleTestWeeklyMessage.getCreatedAt(),
+                "CreatedAt timestamps do not match");
     }
 
     @Test
     @Order(2)
     void findWeeklyMessageById() {
         WeeklyMessage latest = weeklyMessageRepository.getLatestWeeklyMessage();
-        WeeklyMessage possibleTestWeeklyMessage =
-            weeklyMessageRepository.getWeeklyMessageById(latest.getId());
+        WeeklyMessage possibleTestWeeklyMessage = weeklyMessageRepository.getWeeklyMessageById(latest.getId());
 
         log.info("testWeeklyMessage: {}", testWeeklyMessage.toString());
         log.info(
-            "possibleTestWeeklyMessage: {}",
-            possibleTestWeeklyMessage != null
-                ? possibleTestWeeklyMessage.toString()
-                : "null"
-        );
+                "possibleTestWeeklyMessage: {}",
+                possibleTestWeeklyMessage != null ? possibleTestWeeklyMessage.toString() : "null");
 
-        assertNotNull(
-            possibleTestWeeklyMessage,
-            "possibleTestWeeklyMessage should not be null"
-        );
-        assertEquals(
-            latest.getId(),
-            possibleTestWeeklyMessage.getId(),
-            "IDs do not match"
-        );
+        assertNotNull(possibleTestWeeklyMessage, "possibleTestWeeklyMessage should not be null");
+        assertEquals(latest.getId(), possibleTestWeeklyMessage.getId(), "IDs do not match");
     }
 
     @Test

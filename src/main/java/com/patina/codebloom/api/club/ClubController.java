@@ -31,40 +31,31 @@ public class ClubController {
     private final UserTagRepository userTagRepository;
 
     public ClubController(
-        final ClubService clubService,
-        final ClubRepository clubRepository,
-        final UserTagRepository userTagRepository
-    ) {
+            final ClubService clubService,
+            final ClubRepository clubRepository,
+            final UserTagRepository userTagRepository) {
         this.clubService = clubService;
         this.clubRepository = clubRepository;
         this.userTagRepository = userTagRepository;
     }
 
     @GetMapping("/{clubSlug}")
-    public ResponseEntity<ApiResponder<ClubDto>> getClubDataBySlug(
-        @PathVariable final String clubSlug
-    ) {
+    public ResponseEntity<ApiResponder<ClubDto>> getClubDataBySlug(@PathVariable final String clubSlug) {
         FakeLag.sleep(650);
 
         ClubDto club = clubService.getClubDtoBySlug(clubSlug);
 
         if (club == null) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "Club does not exist."
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club does not exist.");
         }
 
-        return ResponseEntity.ok().body(
-            ApiResponder.success("Club Found", club)
-        );
+        return ResponseEntity.ok().body(ApiResponder.success("Club Found", club));
     }
 
     @Operation(summary = "Gives user a club tag if the password is correct")
     @PostMapping("/verify")
     public ResponseEntity<ApiResponder<UserTag>> validatePassword(
-        @RequestBody final RegisterClubBody registerClubBody
-    ) {
+            @RequestBody final RegisterClubBody registerClubBody) {
         final String userId = registerClubBody.getUserId();
         final String clubSlug = registerClubBody.getClubSlug();
         final String password = registerClubBody.getPassword();
@@ -72,28 +63,18 @@ public class ClubController {
         Club club = clubRepository.getClubBySlug(clubSlug);
 
         if (club == null) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "Club does not exist."
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club does not exist.");
         }
 
         boolean valid = clubService.isPasswordValid(club, password);
 
         if (!valid) {
-            return ResponseEntity.ok(
-                ApiResponder.custom(false, "Incorrect Password", null)
-            );
+            return ResponseEntity.ok(ApiResponder.custom(false, "Incorrect Password", null));
         }
 
-        UserTag clubTag = UserTag.builder()
-            .userId(userId)
-            .tag(club.getTag())
-            .build();
+        UserTag clubTag = UserTag.builder().userId(userId).tag(club.getTag()).build();
 
         userTagRepository.createTag(clubTag);
-        return ResponseEntity.ok(
-            ApiResponder.success("Club Tag added.", clubTag)
-        );
+        return ResponseEntity.ok(ApiResponder.success("Club Tag added.", clubTag));
     }
 }

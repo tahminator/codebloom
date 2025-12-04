@@ -32,8 +32,7 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
     private final ApiKeyRepository apiKeyRepository;
     private ApiKey testApiKey;
     private ApiKey deletableApiKey;
-    private final String mockedUpdatedBy =
-        "742d5c7d-4fe2-44c7-b36a-0f5a6e2efb79";
+    private final String mockedUpdatedBy = "742d5c7d-4fe2-44c7-b36a-0f5a6e2efb79";
 
     @Autowired
     public ApiKeyRepositoryTest(final ApiKeyRepository apiKeyRepository) {
@@ -45,11 +44,11 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
         UUID.fromString(mockedUpdatedBy);
 
         ApiKey tempApiKey = ApiKey.builder()
-            .id(UUID.randomUUID().toString())
-            .apiKey(UUID.randomUUID().toString())
-            .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
-            .updatedBy(mockedUpdatedBy)
-            .build();
+                .id(UUID.randomUUID().toString())
+                .apiKey(UUID.randomUUID().toString())
+                .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                .updatedBy(mockedUpdatedBy)
+                .build();
 
         apiKeyRepository.createApiKey(tempApiKey);
 
@@ -62,9 +61,7 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
 
     @AfterAll
     void deleteTestApiKey() {
-        boolean isSuccessful = apiKeyRepository.deleteApiKeyById(
-            testApiKey.getId()
-        );
+        boolean isSuccessful = apiKeyRepository.deleteApiKeyById(testApiKey.getId());
 
         if (!isSuccessful) {
             fail("Failed to delete test apiKey");
@@ -72,29 +69,21 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
     }
 
     /**
-     * @note this could possibly fail via race condition if you create a new apiKey
-     * in the few seconds while this test suite is running, overriding the test
-     * apiKey. If you do, let the test suite finish and let `@AfterAll` delete the
-     * test apiKey and then just run the test suite again.
-     *
-     * We run this test first just to make sure that we don't run into that issue.
+     * @note this could possibly fail via race condition if you create a new apiKey in the few seconds while this test
+     *     suite is running, overriding the test apiKey. If you do, let the test suite finish and let `@AfterAll` delete
+     *     the test apiKey and then just run the test suite again.
+     *     <p>We run this test first just to make sure that we don't run into that issue.
      */
     @Test
     @Order(1)
     void findApiKeyById() {
-        ApiKey possibleTestApiKey = apiKeyRepository.getApiKeyById(
-            testApiKey.getId()
-        );
+        ApiKey possibleTestApiKey = apiKeyRepository.getApiKeyById(testApiKey.getId());
 
         if (possibleTestApiKey == null) {
-            fail(
-                "most recent apiKey doesn't exist, even though we created a test apiKey"
-            );
+            fail("most recent apiKey doesn't exist, even though we created a test apiKey");
         }
 
-        /**
-         * @note - see method note
-         */
+        /** @note - see method note */
         if (!testApiKey.equals(possibleTestApiKey)) {
             fail("the test apiKey does not match the possible apiKey by Id");
         }
@@ -103,23 +92,15 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void findApiKeyByHash() {
-        ApiKey possibleTestApiKey = apiKeyRepository.getApiKeyByHash(
-            testApiKey.getApiKey()
-        );
+        ApiKey possibleTestApiKey = apiKeyRepository.getApiKeyByHash(testApiKey.getApiKey());
 
         if (possibleTestApiKey == null) {
-            fail(
-                "most recent apiKey doesn't exist, even though we created a test apiKey"
-            );
+            fail("most recent apiKey doesn't exist, even though we created a test apiKey");
         }
 
-        /**
-         * @note - see method note
-         */
+        /** @note - see method note */
         if (!testApiKey.equals(possibleTestApiKey)) {
-            fail(
-                "the generated test apiKey does not match the apiKey fetched with get apiKey by hash"
-            );
+            fail("the generated test apiKey does not match the apiKey fetched with get apiKey by hash");
         }
     }
 
@@ -134,9 +115,7 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
             fail("expected at least the test apiKey");
         }
 
-        boolean found = apiKeysList
-            .stream()
-            .anyMatch(k -> testApiKey.getId().equals(k.getId()));
+        boolean found = apiKeysList.stream().anyMatch(k -> testApiKey.getId().equals(k.getId()));
         if (!found) {
             fail("test apiKey cannot be found in the list of all apiKeys");
         }
@@ -146,11 +125,11 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
     @Order(4)
     void updateApiKeyByIdTest() {
         ApiKey updatedApiKey = ApiKey.builder()
-            .id(testApiKey.getId())
-            .apiKey(testApiKey.getApiKey())
-            .expiresAt(testApiKey.getExpiresAt())
-            .updatedBy(testApiKey.getUpdatedBy())
-            .build();
+                .id(testApiKey.getId())
+                .apiKey(testApiKey.getApiKey())
+                .expiresAt(testApiKey.getExpiresAt())
+                .updatedBy(testApiKey.getUpdatedBy())
+                .build();
 
         boolean result = apiKeyRepository.updateApiKeyById(updatedApiKey);
 
@@ -158,9 +137,7 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
             fail("failure to update apiKeyById");
         }
 
-        ApiKey resultApiKey = apiKeyRepository.getApiKeyById(
-            testApiKey.getId()
-        );
+        ApiKey resultApiKey = apiKeyRepository.getApiKeyById(testApiKey.getId());
 
         assertNotNull(resultApiKey);
         assertEquals(resultApiKey.getId(), testApiKey.getId());
@@ -172,28 +149,22 @@ public class ApiKeyRepositoryTest extends BaseRepositoryTest {
     @Test
     void testDeleteApiKeyByHash() {
         deletableApiKey = ApiKey.builder()
-            .id(UUID.randomUUID().toString())
-            .apiKey(UUID.randomUUID().toString())
-            .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
-            .updatedBy(mockedUpdatedBy)
-            .build();
+                .id(UUID.randomUUID().toString())
+                .apiKey(UUID.randomUUID().toString())
+                .expiresAt(StandardizedLocalDateTime.now().plusMinutes(5L))
+                .updatedBy(mockedUpdatedBy)
+                .build();
 
         apiKeyRepository.createApiKey(deletableApiKey);
 
-        ApiKey found = apiKeyRepository.getApiKeyByHash(
-            deletableApiKey.getApiKey()
-        );
+        ApiKey found = apiKeyRepository.getApiKeyByHash(deletableApiKey.getApiKey());
         assertNotNull(found);
         assertEquals(deletableApiKey.getId(), found.getId());
 
-        boolean deleted = apiKeyRepository.deleteApiKeyByHash(
-            deletableApiKey.getApiKey()
-        );
+        boolean deleted = apiKeyRepository.deleteApiKeyByHash(deletableApiKey.getApiKey());
         assertTrue(deleted);
 
-        ApiKey deletedFetched = apiKeyRepository.getApiKeyByHash(
-            deletableApiKey.getApiKey()
-        );
+        ApiKey deletedFetched = apiKeyRepository.getApiKeyByHash(deletableApiKey.getApiKey());
         assertNull(deletedFetched);
     }
 }

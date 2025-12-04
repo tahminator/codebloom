@@ -21,8 +21,7 @@ public class SelectAcceptedSubmisisonsQuery {
         }
         """;
 
-    public static String body(final String username, final int limit)
-        throws JsonProcessingException {
+    public static String body(final String username, final int limit) throws JsonProcessingException {
         // API doesn't let you get more than this amount.
         int submissionsLimit;
         if (limit < 1 || limit > 20) {

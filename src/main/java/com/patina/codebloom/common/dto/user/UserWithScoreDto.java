@@ -50,22 +50,18 @@ public class UserWithScoreDto {
 
     public static UserWithScoreDto fromUserWithScore(final UserWithScore user) {
         return UserWithScoreDto.builder()
-            .id(user.getId())
-            .discordId(user.getDiscordId())
-            .discordName(user.getDiscordName())
-            .leetcodeUsername(user.getLeetcodeUsername())
-            .nickname(user.getNickname())
-            .admin(user.isAdmin())
-            .profileUrl(user.getProfileUrl())
-            .tags(user.getTags())
-            .achievements(
-                user
-                    .getAchievements()
-                    .stream()
-                    .map(AchievementDto::fromAchievement)
-                    .toList()
-            )
-            .totalScore(user.getTotalScore())
-            .build();
+                .id(user.getId())
+                .discordId(user.getDiscordId())
+                .discordName(user.getDiscordName())
+                .leetcodeUsername(user.getLeetcodeUsername())
+                .nickname(user.getNickname())
+                .admin(user.isAdmin())
+                .profileUrl(user.getProfileUrl())
+                .tags(user.getTags())
+                .achievements(user.getAchievements().stream()
+                        .map(AchievementDto::fromAchievement)
+                        .toList())
+                .totalScore(user.getTotalScore())
+                .build();
     }
 }

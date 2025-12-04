@@ -23,45 +23,34 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
     private final QuestionTopicRepository questionTopicRepository;
 
     public QuestionBankSqlRepository(
-        final DbConnection dbConnection,
-        final QuestionTopicRepository questionTopicRepository
-    ) {
+            final DbConnection dbConnection, final QuestionTopicRepository questionTopicRepository) {
         this.conn = dbConnection.getConn();
         this.questionTopicRepository = questionTopicRepository;
     }
 
-    private QuestionBank mapResultSetToQuestion(final ResultSet rs)
-        throws SQLException {
+    private QuestionBank mapResultSetToQuestion(final ResultSet rs) throws SQLException {
         var questionBankId = rs.getString("id");
         var questionSlug = rs.getString("questionSlug");
-        var questionDifficulty = QuestionDifficulty.valueOf(
-            rs.getString("questionDifficulty")
-        );
+        var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
         var questionNumber = rs.getInt("questionNumber");
         var questionLink = rs.getString("questionLink");
         var questionTitle = rs.getString("questionTitle");
         var description = rs.getString("description");
         var acceptanceRate = rs.getFloat("acceptanceRate");
-        var createdAt = StandardizedOffsetDateTime.normalize(
-            rs.getObject("createdAt", OffsetDateTime.class)
-        );
+        var createdAt = StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class));
 
         return QuestionBank.builder()
-            .id(questionBankId)
-            .questionSlug(questionSlug)
-            .questionDifficulty(questionDifficulty)
-            .questionNumber(questionNumber)
-            .questionLink(questionLink)
-            .questionTitle(questionTitle)
-            .description(description)
-            .acceptanceRate(acceptanceRate)
-            .createdAt(createdAt)
-            .topics(
-                questionTopicRepository.findQuestionTopicsByQuestionBankId(
-                    questionBankId
-                )
-            )
-            .build();
+                .id(questionBankId)
+                .questionSlug(questionSlug)
+                .questionDifficulty(questionDifficulty)
+                .questionNumber(questionNumber)
+                .questionLink(questionLink)
+                .questionTitle(questionTitle)
+                .description(description)
+                .acceptanceRate(acceptanceRate)
+                .createdAt(createdAt)
+                .topics(questionTopicRepository.findQuestionTopicsByQuestionBankId(questionBankId))
+                .build();
     }
 
     @Override
@@ -83,16 +72,10 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
 
         question.setId(UUID.randomUUID().toString());
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(question.getId()));
             stmt.setString("slug", question.getQuestionSlug());
-            stmt.setObject(
-                "difficulty",
-                question.getQuestionDifficulty().name(),
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("difficulty", question.getQuestionDifficulty().name(), java.sql.Types.OTHER);
             stmt.setInt("number", question.getQuestionNumber());
             stmt.setString("link", question.getQuestionLink());
             stmt.setString("title", question.getQuestionTitle());
@@ -125,9 +108,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -163,9 +144,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 LIMIT 1
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionSlug", slug);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -196,15 +175,9 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("slug", inputQuestion.getQuestionSlug());
-            stmt.setObject(
-                "difficulty",
-                inputQuestion.getQuestionDifficulty().name(),
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("difficulty", inputQuestion.getQuestionDifficulty().name(), java.sql.Types.OTHER);
             stmt.setInt("number", inputQuestion.getQuestionNumber());
             stmt.setString("link", inputQuestion.getQuestionLink());
             stmt.setString("title", inputQuestion.getQuestionTitle());
@@ -223,9 +196,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
     public boolean deleteQuestionById(final String id) {
         String sql = "DELETE FROM \"QuestionBank\" WHERE id=:id";
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
 
@@ -255,9 +226,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 LIMIT 1
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     question = mapResultSetToQuestion(rs);
@@ -272,9 +241,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
     }
 
     @Override
-    public List<QuestionBank> getQuestionsByTopic(
-        final LeetcodeTopicEnum topic
-    ) {
+    public List<QuestionBank> getQuestionsByTopic(final LeetcodeTopicEnum topic) {
         List<QuestionBank> questions = new ArrayList<>();
         String sql = """
                 SELECT DISTINCT
@@ -295,33 +262,22 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     qt.topic = :topic
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
-            stmt.setObject(
-                "topic",
-                topic.getLeetcodeEnum(),
-                java.sql.Types.OTHER
-            );
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("topic", topic.getLeetcodeEnum(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     questions.add(mapResultSetToQuestion(rs));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to retrieve questions by topic",
-                e
-            );
+            throw new RuntimeException("Failed to retrieve questions by topic", e);
         }
 
         return questions;
     }
 
     @Override
-    public List<QuestionBank> getQuestionsByDifficulty(
-        final QuestionDifficulty difficulty
-    ) {
+    public List<QuestionBank> getQuestionsByDifficulty(final QuestionDifficulty difficulty) {
         List<QuestionBank> questions = new ArrayList<>();
         String sql = """
                 SELECT
@@ -340,9 +296,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     "questionDifficulty" = :difficulty
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("difficulty", difficulty, java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -350,10 +304,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to retrieve questions by difficulty",
-                e
-            );
+            throw new RuntimeException("Failed to retrieve questions by difficulty", e);
         }
 
         return questions;
@@ -375,9 +326,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                         "createdAt"
                     FROM "QuestionBank"
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     questions.add(mapResultSetToQuestion(rs));

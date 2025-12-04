@@ -18,9 +18,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ThrottledLeetcodeClientImpl
-    extends LeetcodeClientImpl
-    implements ThrottledLeetcodeClient {
+public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements ThrottledLeetcodeClient {
 
     private static final long REQUESTS_OVER_TIME = 1L;
     private static final long MILLISECONDS_TO_WAIT = 100L;
@@ -28,12 +26,9 @@ public class ThrottledLeetcodeClientImpl
 
     private BlockingBucket initializeBucket() {
         var bandwidth = Bandwidth.builder()
-            .capacity(REQUESTS_OVER_TIME)
-            .refillIntervally(
-                REQUESTS_OVER_TIME,
-                Duration.ofMillis(MILLISECONDS_TO_WAIT)
-            )
-            .build();
+                .capacity(REQUESTS_OVER_TIME)
+                .refillIntervally(REQUESTS_OVER_TIME, Duration.ofMillis(MILLISECONDS_TO_WAIT))
+                .build();
 
         return Bucket.builder().addLimit(bandwidth).build().asBlocking();
     }
@@ -42,17 +37,11 @@ public class ThrottledLeetcodeClientImpl
         try {
             rateLimiter.consume(1);
         } catch (InterruptedException e) {
-            throw new RuntimeException(
-                "Failed to consume rate limit bucket token in leetcode client",
-                e
-            );
+            throw new RuntimeException("Failed to consume rate limit bucket token in leetcode client", e);
         }
     }
 
-    public ThrottledLeetcodeClientImpl(
-        final LeetcodeAuthStealer leetcodeAuthStealer,
-        final Reporter reporter
-    ) {
+    public ThrottledLeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer, final Reporter reporter) {
         super(leetcodeAuthStealer, reporter);
         this.rateLimiter = initializeBucket();
     }
@@ -64,26 +53,19 @@ public class ThrottledLeetcodeClientImpl
     }
 
     @Override
-    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(
-        final String username
-    ) {
+    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username) {
         waitForToken();
         return super.findSubmissionsByUsername(username);
     }
 
     @Override
-    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(
-        final String username,
-        final int limit
-    ) {
+    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username, final int limit) {
         waitForToken();
         return super.findSubmissionsByUsername(username, limit);
     }
 
     @Override
-    public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(
-        final int submissionId
-    ) {
+    public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(final int submissionId) {
         waitForToken();
         return super.findSubmissionDetailBySubmissionId(submissionId);
     }

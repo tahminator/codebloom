@@ -8,18 +8,16 @@ public interface LobbyQuestionRepository {
     /**
      * Creates a new lobbyQuestion in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobbyQuestion - required fields:
-     * <ul>
-     * <li>lobbyId</li>
-     * <li>questionBankId</li>
-     * </ul>
-     * optional fields:
-     * <ul>
-     * <li>userSolvedCount (defaults to 0 if not provided)</li>
-     * </ul>
+     *     <ul>
+     *       <li>lobbyId
+     *       <li>questionBankId
+     *     </ul>
+     *     optional fields:
+     *     <ul>
+     *       <li>userSolvedCount (defaults to 0 if not provided)
+     *     </ul>
      */
     void createLobbyQuestion(LobbyQuestion lobbyQuestion);
 
@@ -27,31 +25,25 @@ public interface LobbyQuestionRepository {
 
     List<LobbyQuestion> findLobbyQuestionsByLobbyId(String lobbyId);
 
-    List<LobbyQuestion> findLobbyQuestionsByLobbyIdAndQuestionBankId(
-        String lobbyId,
-        String questionBankId
-    );
+    List<LobbyQuestion> findLobbyQuestionsByLobbyIdAndQuestionBankId(String lobbyId, String questionBankId);
 
-    Optional<LobbyQuestion> findMostRecentLobbyQuestionByLobbyId(
-        String lobbyId
-    );
+    Optional<LobbyQuestion> findMostRecentLobbyQuestionByLobbyId(String lobbyId);
 
     List<LobbyQuestion> findAllLobbyQuestions();
 
     /**
      * Updates an existing lobbyQuestion in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobbyQuestion - required fields:
-     * <ul>
-     * <li>id</li>
-     * </ul>
-     * updatable fields:
-     * <ul>
-     * <li>userSolvedCount</li>
-     * </ul>
+     *     <ul>
+     *       <li>id
+     *     </ul>
+     *     updatable fields:
+     *     <ul>
+     *       <li>userSolvedCount
+     *     </ul>
+     *
      * @return true if the update was successful, false otherwise
      */
     boolean updateQuestionLobby(LobbyQuestion lobbyQuestion);

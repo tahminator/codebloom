@@ -38,17 +38,14 @@ public class AnnouncementControllerTest extends NoJdaRequired {
     @LocalServerPort
     private int port;
 
-    private CreateAnnouncementBody createAnnouncementBody =
-        CreateAnnouncementBody.builder()
+    private CreateAnnouncementBody createAnnouncementBody = CreateAnnouncementBody.builder()
             .message("Hi this is a test message!")
             .showTimer(true)
             .expiresAt(StandardizedOffsetDateTime.now().plusHours(24))
             .build();
     private AnnouncementDto testAnnouncement;
 
-    /**
-     * only used for cleanup after all tests are done.
-     */
+    /** only used for cleanup after all tests are done. */
     @Autowired
     private AnnouncementRepository announcementRepository;
 
@@ -76,9 +73,8 @@ public class AnnouncementControllerTest extends NoJdaRequired {
      *
      * @throws JsonProcessingException
      */
-    private String builtTestCreateAnnouncementPayload(
-        final CreateAnnouncementBody createAnnouncementBody
-    ) throws JsonProcessingException {
+    private String builtTestCreateAnnouncementPayload(final CreateAnnouncementBody createAnnouncementBody)
+            throws JsonProcessingException {
         Map<String, Object> body = new HashMap<>();
         body.put("message", createAnnouncementBody.getMessage());
         body.put("showTimer", createAnnouncementBody.isShowTimer());
@@ -90,94 +86,58 @@ public class AnnouncementControllerTest extends NoJdaRequired {
     @Order(1)
     void createNewTestAnnouncementAsAdmin() throws JsonProcessingException {
         ApiResponder<AnnouncementDto> apiResponder = RestAssured.given()
-            .when()
-            .header("Content-Type", "application/json")
-            .body(builtTestCreateAnnouncementPayload(createAnnouncementBody))
-            .post("/api/admin/announcement/create")
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(new TypeRef<ApiResponder<AnnouncementDto>>() {});
+                .when()
+                .header("Content-Type", "application/json")
+                .body(builtTestCreateAnnouncementPayload(createAnnouncementBody))
+                .post("/api/admin/announcement/create")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<ApiResponder<AnnouncementDto>>() {});
 
-        assertTrue(
-            apiResponder != null,
-            "Expected apiResponder to not be equal to null"
-        );
-        assertTrue(
-            apiResponder.isSuccess(),
-            "Testing apiResponder success is true"
-        );
-        assertTrue(
-            apiResponder.getMessage() != null,
-            "Testing apiResponder message is not null"
-        );
+        assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
+        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
+        assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
 
         testAnnouncement = apiResponder.getPayload();
 
-        assertTrue(
-            testAnnouncement != null,
-            "Expected announcement to not be equal to null"
-        );
+        assertTrue(testAnnouncement != null, "Expected announcement to not be equal to null");
 
         assertEquals(
-            testAnnouncement.getExpiresAt(),
-            StandardizedOffsetDateTime.normalize(
-                createAnnouncementBody.getExpiresAt()
-            ),
-            "Expected announcement response and announcement request body expiresAt to be equal"
-        );
+                testAnnouncement.getExpiresAt(),
+                StandardizedOffsetDateTime.normalize(createAnnouncementBody.getExpiresAt()),
+                "Expected announcement response and announcement request body expiresAt to be equal");
         assertTrue(
-            testAnnouncement
-                .getMessage()
-                .equals(createAnnouncementBody.getMessage()),
-            "Expected announcement response and announcement request body message to be equal"
-        );
+                testAnnouncement.getMessage().equals(createAnnouncementBody.getMessage()),
+                "Expected announcement response and announcement request body message to be equal");
         assertTrue(
-            testAnnouncement.isShowTimer() ==
-                createAnnouncementBody.isShowTimer(),
-            "Expected announcement response and announcement request body showTimer to be equal"
-        );
+                testAnnouncement.isShowTimer() == createAnnouncementBody.isShowTimer(),
+                "Expected announcement response and announcement request body showTimer to be equal");
     }
 
     @Test
     @Order(2)
     void getTestAnnouncement() {
         ApiResponder<AnnouncementDto> apiResponder = RestAssured.given()
-            .when()
-            .get("/api/announcement")
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(new TypeRef<ApiResponder<AnnouncementDto>>() {});
+                .when()
+                .get("/api/announcement")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<ApiResponder<AnnouncementDto>>() {});
 
-        assertTrue(
-            apiResponder != null,
-            "Expected apiResponder to not be equal to null"
-        );
-        assertTrue(
-            apiResponder.isSuccess(),
-            "Testing apiResponder success is true"
-        );
-        assertTrue(
-            apiResponder.getMessage() != null,
-            "Testing apiResponder message is not null"
-        );
+        assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
+        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
+        assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
         AnnouncementDto newlyFetchedAnnouncement = apiResponder.getPayload();
 
-        assertTrue(
-            newlyFetchedAnnouncement != null,
-            "expected newlyFetchedAnnouncement to not be null"
-        );
+        assertTrue(newlyFetchedAnnouncement != null, "expected newlyFetchedAnnouncement to not be null");
 
         log.info("testAnnouncement: {}", testAnnouncement.toString());
-        log.info(
-            "possibleTestAnnouncement: {}",
-            newlyFetchedAnnouncement.toString()
-        );
+        log.info("possibleTestAnnouncement: {}", newlyFetchedAnnouncement.toString());
 
         assertTrue(
-            testAnnouncement.equals(newlyFetchedAnnouncement),
-            "Expected the previously created announcement to be equal to the newly fetched announcement"
-        );
+                testAnnouncement.equals(newlyFetchedAnnouncement),
+                "Expected the previously created announcement to be equal to the newly fetched announcement");
     }
 }

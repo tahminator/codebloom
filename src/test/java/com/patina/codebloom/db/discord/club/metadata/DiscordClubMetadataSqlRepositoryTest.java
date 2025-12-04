@@ -31,9 +31,7 @@ public class DiscordClubMetadataSqlRepositoryTest {
 
     @Autowired
     public DiscordClubMetadataSqlRepositoryTest(
-        final DiscordClubMetadataRepository repo,
-        final DiscordClubRepository discordClubRepo
-    ) {
+            final DiscordClubMetadataRepository repo, final DiscordClubRepository discordClubRepo) {
         this.repo = repo;
         this.discordClubRepo = discordClubRepo;
     }
@@ -41,52 +39,43 @@ public class DiscordClubMetadataSqlRepositoryTest {
     @BeforeAll
     void createDiscordClubMetadata() {
         testDiscordClub = DiscordClub.builder()
-            .name("test club")
-            .description(Optional.of("test parent club"))
-            .tag(Tag.Cornell)
-            .build();
+                .name("test club")
+                .description(Optional.of("test parent club"))
+                .tag(Tag.Cornell)
+                .build();
 
         discordClubRepo.createDiscordClub(testDiscordClub);
 
         testDiscordClubMetadata = DiscordClubMetadata.builder()
-            .leaderboardChannelId(Optional.of("Original leaderboardChannelId"))
-            .discordClubId(testDiscordClub.getId())
-            .build();
+                .leaderboardChannelId(Optional.of("Original leaderboardChannelId"))
+                .discordClubId(testDiscordClub.getId())
+                .build();
 
         repo.createDiscordClubMetadata(testDiscordClubMetadata);
     }
 
     @AfterAll
     void cleanUp() {
-        boolean isSuccessful = repo.deleteDiscordClubMetadataById(
-            testDiscordClubMetadata.getId()
-        );
-        assertTrue(
-            isSuccessful,
-            "Failed deleting discord club metadata by id."
-        );
+        boolean isSuccessful = repo.deleteDiscordClubMetadataById(testDiscordClubMetadata.getId());
+        assertTrue(isSuccessful, "Failed deleting discord club metadata by id.");
 
-        isSuccessful = discordClubRepo.deleteDiscordClubById(
-            testDiscordClub.getId()
-        );
+        isSuccessful = discordClubRepo.deleteDiscordClubById(testDiscordClub.getId());
         assertTrue(isSuccessful, "Failed deleting discord club by id.");
     }
 
     @Test
     @Order(1)
     void testGetDiscordClubMetadataById() {
-        DiscordClubMetadata found = repo
-            .getDiscordClubMetadataById(testDiscordClubMetadata.getId())
-            .orElseThrow();
+        DiscordClubMetadata found =
+                repo.getDiscordClubMetadataById(testDiscordClubMetadata.getId()).orElseThrow();
         assertEquals(testDiscordClubMetadata, found);
     }
 
     @Test
     @Order(2)
     void testGetDiscordClubMetadataByClubId() {
-        var possibleClubMetadata = repo
-            .getDiscordClubMetadataByClubId(testDiscordClub.getId())
-            .orElseThrow();
+        var possibleClubMetadata =
+                repo.getDiscordClubMetadataByClubId(testDiscordClub.getId()).orElseThrow();
         assertEquals(testDiscordClubMetadata, possibleClubMetadata);
     }
 
@@ -95,14 +84,11 @@ public class DiscordClubMetadataSqlRepositoryTest {
     void testUpdateDiscordClubMetadata() {
         testDiscordClubMetadata.setGuildId(Optional.of("Original guildId"));
 
-        boolean isUpdateSuccessful = repo.updateDiscordClubMetadata(
-            testDiscordClubMetadata
-        );
+        boolean isUpdateSuccessful = repo.updateDiscordClubMetadata(testDiscordClubMetadata);
         assertTrue(isUpdateSuccessful);
 
-        var updatedClubMetadata = repo
-            .getDiscordClubMetadataById(testDiscordClubMetadata.getId())
-            .orElseThrow();
+        var updatedClubMetadata =
+                repo.getDiscordClubMetadataById(testDiscordClubMetadata.getId()).orElseThrow();
 
         assertEquals(testDiscordClubMetadata, updatedClubMetadata);
     }

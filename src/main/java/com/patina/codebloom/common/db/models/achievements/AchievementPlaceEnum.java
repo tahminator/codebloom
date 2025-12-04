@@ -15,12 +15,10 @@ public enum AchievementPlaceEnum {
         this.integerRepresentation = integerRepresentation;
     }
 
-    public static AchievementPlaceEnum fromInteger(
-        final int integerRepresentation
-    ) {
+    public static AchievementPlaceEnum fromInteger(final int integerRepresentation) {
         return Stream.of(AchievementPlaceEnum.values())
-            .filter(e -> e.getIntegerRepresentation() == integerRepresentation)
-            .findFirst()
-            .orElseThrow();
+                .filter(e -> e.getIntegerRepresentation() == integerRepresentation)
+                .findFirst()
+                .orElseThrow();
     }
 }

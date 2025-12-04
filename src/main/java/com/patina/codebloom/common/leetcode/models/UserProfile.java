@@ -9,12 +9,11 @@ public class UserProfile {
     private final String aboutMe;
 
     public UserProfile(
-        final String username,
-        final String ranking,
-        final String userAvatar,
-        final String realName,
-        final String aboutMe
-    ) {
+            final String username,
+            final String ranking,
+            final String userAvatar,
+            final String realName,
+            final String aboutMe) {
         this.username = username;
         this.ranking = ranking;
         this.userAvatar = userAvatar;

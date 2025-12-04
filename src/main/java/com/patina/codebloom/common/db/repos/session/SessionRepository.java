@@ -5,14 +5,12 @@ import java.util.ArrayList;
 
 public interface SessionRepository {
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param session - required fields:
-     * <ul>
-     * <li>userId</li>
-     * <li>expiresAt</li>
-     * </ul>
+     *     <ul>
+     *       <li>userId
+     *       <li>expiresAt
+     *     </ul>
      */
     void createSession(Session session);
 

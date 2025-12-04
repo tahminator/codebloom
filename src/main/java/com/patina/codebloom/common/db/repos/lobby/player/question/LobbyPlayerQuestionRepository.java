@@ -8,18 +8,16 @@ public interface LobbyPlayerQuestionRepository {
     /**
      * Creates a new lobby player question in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobbyPlayerQuestion - required fields:
-     * <ul>
-     * <li>lobbyPlayerId</li>
-     * </ul>
-     * optional fields:
-     * <ul>
-     * <li>questionId (can be null)</li>
-     * <li>points (can be null)</li>
-     * </ul>
+     *     <ul>
+     *       <li>lobbyPlayerId
+     *     </ul>
+     *     optional fields:
+     *     <ul>
+     *       <li>questionId (can be null)
+     *       <li>points (can be null)
+     *     </ul>
      */
     void createLobbyPlayerQuestion(LobbyPlayerQuestion lobbyPlayerQuestion);
 
@@ -27,8 +25,7 @@ public interface LobbyPlayerQuestionRepository {
      * Finds a lobby player question by its ID.
      *
      * @param id the lobby player question ID
-     * @return an {@code Optional} containing the lobby player question if found, or
-     * {@code Optional.empty()} otherwise
+     * @return an {@code Optional} containing the lobby player question if found, or {@code Optional.empty()} otherwise
      */
     Optional<LobbyPlayerQuestion> findLobbyPlayerQuestionById(String id);
 
@@ -38,9 +35,7 @@ public interface LobbyPlayerQuestionRepository {
      * @param lobbyPlayerId the lobby player ID
      * @return list of questions for the specified lobby player
      */
-    List<LobbyPlayerQuestion> findQuestionsByLobbyPlayerId(
-        String lobbyPlayerId
-    );
+    List<LobbyPlayerQuestion> findQuestionsByLobbyPlayerId(String lobbyPlayerId);
 
     /**
      * Finds all lobby player questions for a specific question.
@@ -48,28 +43,22 @@ public interface LobbyPlayerQuestionRepository {
      * @param questionId the question ID
      * @return list of lobby player questions for the specified question
      */
-    List<LobbyPlayerQuestion> findLobbyPlayerQuestionsByQuestionId(
-        String questionId
-    );
+    List<LobbyPlayerQuestion> findLobbyPlayerQuestionsByQuestionId(String questionId);
 
     /**
      * Updates an existing lobby player question in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobbyPlayerQuestion
+     *     <p>overridable fields:
+     *     <ul>
+     *       <li>points
+     *       <li>questionId
+     *     </ul>
      *
-     * overridable fields:
-     * <ul>
-     * <li>points</li>
-     * <li>questionId</li>
-     * </ul>
      * @return true if the update was successful, false otherwise
      */
-    boolean updateLobbyPlayerQuestionById(
-        LobbyPlayerQuestion lobbyPlayerQuestion
-    );
+    boolean updateLobbyPlayerQuestionById(LobbyPlayerQuestion lobbyPlayerQuestion);
 
     /**
      * Deletes all questions for a specific lobby player.
@@ -83,8 +72,7 @@ public interface LobbyPlayerQuestionRepository {
      * Deletes a single lobby player question by its ID.
      *
      * @param id the lobby player question ID to delete
-     * @return true if the lobby player question was deleted successfully, false
-     * otherwise
+     * @return true if the lobby player question was deleted successfully, false otherwise
      */
     boolean deleteLobbyPlayerQuestionById(String id);
 

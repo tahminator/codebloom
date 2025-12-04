@@ -30,14 +30,14 @@ public class ClubSqlRepository implements ClubRepository {
         Tag tag = tagValue != null ? Tag.valueOf(tagValue) : null;
 
         return Club.builder()
-            .id(id)
-            .name(name)
-            .description(description)
-            .slug(slug)
-            .splashIconUrl(splashIconUrl)
-            .password(password)
-            .tag(tag)
-            .build();
+                .id(id)
+                .name(name)
+                .description(description)
+                .slug(slug)
+                .splashIconUrl(splashIconUrl)
+                .password(password)
+                .tag(tag)
+                .build();
     }
 
     @Override
@@ -49,20 +49,14 @@ public class ClubSqlRepository implements ClubRepository {
             VALUES
                 (:id, :name, :description, :slug, :splashIconUrl, :password, :tag)
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(club.getId()));
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
             stmt.setString("slug", club.getSlug());
             stmt.setString("splashIconUrl", club.getSplashIconUrl());
             stmt.setString("password", club.getPassword());
-            stmt.setObject(
-                "tag",
-                club.getTag() != null ? club.getTag().name() : null,
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("tag", club.getTag() != null ? club.getTag().name() : null, java.sql.Types.OTHER);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create Club", e);
@@ -83,19 +77,13 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE
                 id = :id
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(club.getId()));
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
             stmt.setString("splashIconUrl", club.getSplashIconUrl());
             stmt.setString("password", club.getPassword());
-            stmt.setObject(
-                "tag",
-                club.getTag() != null ? club.getTag().name() : null,
-                java.sql.Types.OTHER
-            );
+            stmt.setObject("tag", club.getTag() != null ? club.getTag().name() : null, java.sql.Types.OTHER);
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
                 return getClubById(club.getId());
@@ -122,9 +110,7 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE
                 id = :id
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -153,9 +139,7 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE
                 "slug" = :slug
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("slug", slug);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -175,9 +159,7 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE "slug" = :slug
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("slug", slug);
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -193,9 +175,7 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

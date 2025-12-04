@@ -82,39 +82,34 @@ public class QuestionWithUserDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private String nickname;
 
-    public static QuestionWithUserDto fromQuestionWithUser(
-        final QuestionWithUser questionWithUser
-    ) {
+    public static QuestionWithUserDto fromQuestionWithUser(final QuestionWithUser questionWithUser) {
         return QuestionWithUserDto.builder()
-            .id(questionWithUser.getId())
-            .userId(questionWithUser.getUserId())
-            .questionSlug(questionWithUser.getQuestionSlug())
-            .questionTitle(questionWithUser.getQuestionTitle())
-            .questionDifficulty(questionWithUser.getQuestionDifficulty())
-            .questionNumber(questionWithUser.getQuestionNumber())
-            .questionLink(questionWithUser.getQuestionLink())
-            .description(questionWithUser.getDescription())
-            .pointsAwarded(questionWithUser.getPointsAwarded())
-            .acceptanceRate(questionWithUser.getAcceptanceRate())
-            .createdAt(questionWithUser.getCreatedAt())
-            .submittedAt(questionWithUser.getSubmittedAt())
-            .runtime(questionWithUser.getRuntime())
-            .memory(questionWithUser.getMemory())
-            .code(questionWithUser.getCode())
-            .language(questionWithUser.getLanguage())
-            .submissionId(questionWithUser.getSubmissionId())
-            .topics(
-                questionWithUser.getTopics() != null
-                    ? questionWithUser
-                          .getTopics()
-                          .stream()
-                          .map(QuestionTopicDto::fromQuestionTopic)
-                          .toList()
-                    : List.of()
-            )
-            .discordName(questionWithUser.getDiscordName())
-            .leetcodeUsername(questionWithUser.getLeetcodeUsername())
-            .nickname(questionWithUser.getNickname())
-            .build();
+                .id(questionWithUser.getId())
+                .userId(questionWithUser.getUserId())
+                .questionSlug(questionWithUser.getQuestionSlug())
+                .questionTitle(questionWithUser.getQuestionTitle())
+                .questionDifficulty(questionWithUser.getQuestionDifficulty())
+                .questionNumber(questionWithUser.getQuestionNumber())
+                .questionLink(questionWithUser.getQuestionLink())
+                .description(questionWithUser.getDescription())
+                .pointsAwarded(questionWithUser.getPointsAwarded())
+                .acceptanceRate(questionWithUser.getAcceptanceRate())
+                .createdAt(questionWithUser.getCreatedAt())
+                .submittedAt(questionWithUser.getSubmittedAt())
+                .runtime(questionWithUser.getRuntime())
+                .memory(questionWithUser.getMemory())
+                .code(questionWithUser.getCode())
+                .language(questionWithUser.getLanguage())
+                .submissionId(questionWithUser.getSubmissionId())
+                .topics(
+                        questionWithUser.getTopics() != null
+                                ? questionWithUser.getTopics().stream()
+                                        .map(QuestionTopicDto::fromQuestionTopic)
+                                        .toList()
+                                : List.of())
+                .discordName(questionWithUser.getDiscordName())
+                .leetcodeUsername(questionWithUser.getLeetcodeUsername())
+                .nickname(questionWithUser.getNickname())
+                .build();
     }
 }

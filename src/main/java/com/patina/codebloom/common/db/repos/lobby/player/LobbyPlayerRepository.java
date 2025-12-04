@@ -8,18 +8,16 @@ public interface LobbyPlayerRepository {
     /**
      * Creates a new lobby player in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobbyPlayer - required fields:
-     * <ul>
-     * <li>lobbyId</li>
-     * <li>playerId</li>
-     * </ul>
-     * optional fields:
-     * <ul>
-     * <li>points (defaults to 0)</li>
-     * </ul>
+     *     <ul>
+     *       <li>lobbyId
+     *       <li>playerId
+     *     </ul>
+     *     optional fields:
+     *     <ul>
+     *       <li>points (defaults to 0)
+     *     </ul>
      */
     void createLobbyPlayer(LobbyPlayer lobbyPlayer);
 
@@ -27,8 +25,7 @@ public interface LobbyPlayerRepository {
      * Finds a lobby player by its ID.
      *
      * @param id the lobby player ID
-     * @return an {@code Optional} containing the lobby player if found, or
-     * {@code Optional.empty()} otherwise
+     * @return an {@code Optional} containing the lobby player if found, or {@code Optional.empty()} otherwise
      */
     Optional<LobbyPlayer> findLobbyPlayerById(String id);
 
@@ -36,8 +33,7 @@ public interface LobbyPlayerRepository {
      * Finds a lobby player for a specific player ID.
      *
      * @param playerId the player ID
-     * @return an {@code Optional} containing the lobby player if found, or
-     * {@code Optional.empty()} otherwise
+     * @return an {@code Optional} containing the lobby player if found, or {@code Optional.empty()} otherwise
      */
     Optional<LobbyPlayer> findLobbyPlayerByPlayerId(String playerId);
 
@@ -52,17 +48,16 @@ public interface LobbyPlayerRepository {
     /**
      * Updates an existing lobby player in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobbyPlayer - required fields:
-     * <ul>
-     * <li>id</li>
-     * </ul>
-     * updatable fields:
-     * <ul>
-     * <li>points</li>
-     * </ul>
+     *     <ul>
+     *       <li>id
+     *     </ul>
+     *     updatable fields:
+     *     <ul>
+     *       <li>points
+     *     </ul>
+     *
      * @return true if the update was successful, false otherwise
      */
     boolean updateLobbyPlayer(LobbyPlayer lobbyPlayer);
@@ -71,8 +66,7 @@ public interface LobbyPlayerRepository {
      * Deletes all players from a specific lobby.
      *
      * @param lobbyId the lobby ID
-     * @return true if all players were successfully deleted from the lobby, false
-     * otherwise
+     * @return true if all players were successfully deleted from the lobby, false otherwise
      */
     boolean deletePlayersByLobbyId(String lobbyId);
 

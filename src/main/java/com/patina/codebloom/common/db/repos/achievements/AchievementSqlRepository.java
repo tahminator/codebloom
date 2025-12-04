@@ -26,34 +26,30 @@ public class AchievementSqlRepository implements AchievementRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private Achievement parseResultSetToAchievement(final ResultSet rs)
-        throws SQLException {
+    private Achievement parseResultSetToAchievement(final ResultSet rs) throws SQLException {
         var id = rs.getString("id");
         var userId = rs.getString("userId");
         var place = AchievementPlaceEnum.valueOf(rs.getString("place"));
         var leaderboard = Optional.ofNullable(rs.getString("leaderboard"))
-            .map(Tag::valueOf)
-            .orElse(null);
+                .map(Tag::valueOf)
+                .orElse(null);
         var title = rs.getString("title");
         var description = rs.getString("description");
         var isActive = rs.getBoolean("isActive");
-        var createdAt = StandardizedOffsetDateTime.normalize(
-            rs.getObject("createdAt", OffsetDateTime.class)
-        );
-        OffsetDateTime deletedAt = StandardizedOffsetDateTime.normalize(
-            rs.getObject("deletedAt", OffsetDateTime.class)
-        );
+        var createdAt = StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class));
+        OffsetDateTime deletedAt =
+                StandardizedOffsetDateTime.normalize(rs.getObject("deletedAt", OffsetDateTime.class));
         return Achievement.builder()
-            .id(id)
-            .userId(userId)
-            .place(place)
-            .leaderboard(leaderboard)
-            .title(title)
-            .description(description)
-            .isActive(isActive)
-            .createdAt(createdAt)
-            .deletedAt(deletedAt)
-            .build();
+                .id(id)
+                .userId(userId)
+                .place(place)
+                .leaderboard(leaderboard)
+                .title(title)
+                .description(description)
+                .isActive(isActive)
+                .createdAt(createdAt)
+                .deletedAt(deletedAt)
+                .build();
     }
 
     @Override
@@ -67,23 +63,16 @@ public class AchievementSqlRepository implements AchievementRepository {
             RETURNING
                 "createdAt"
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(achievement.getId()));
             stmt.setObject("userId", UUID.fromString(achievement.getUserId()));
+            stmt.setObject("place", achievement.getPlace().name(), java.sql.Types.OTHER);
             stmt.setObject(
-                "place",
-                achievement.getPlace().name(),
-                java.sql.Types.OTHER
-            );
-            stmt.setObject(
-                "leaderboard",
-                Optional.ofNullable(achievement.getLeaderboard())
-                    .map(Enum::name)
-                    .orElse(null),
-                java.sql.Types.OTHER
-            );
+                    "leaderboard",
+                    Optional.ofNullable(achievement.getLeaderboard())
+                            .map(Enum::name)
+                            .orElse(null),
+                    java.sql.Types.OTHER);
             stmt.setString("title", achievement.getTitle());
             stmt.setString("description", achievement.getDescription());
             stmt.setBoolean("isActive", achievement.isActive());
@@ -92,10 +81,7 @@ public class AchievementSqlRepository implements AchievementRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     achievement.setCreatedAt(
-                        StandardizedOffsetDateTime.normalize(
-                            rs.getObject("createdAt", OffsetDateTime.class)
-                        )
-                    );
+                            StandardizedOffsetDateTime.normalize(rs.getObject("createdAt", OffsetDateTime.class)));
                 }
             }
         } catch (SQLException e) {
@@ -119,21 +105,14 @@ public class AchievementSqlRepository implements AchievementRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("place", achievement.getPlace().name(), java.sql.Types.OTHER);
             stmt.setObject(
-                "place",
-                achievement.getPlace().name(),
-                java.sql.Types.OTHER
-            );
-            stmt.setObject(
-                "leaderboard",
-                Optional.ofNullable(achievement.getLeaderboard())
-                    .map(Enum::name)
-                    .orElse(null),
-                java.sql.Types.OTHER
-            );
+                    "leaderboard",
+                    Optional.ofNullable(achievement.getLeaderboard())
+                            .map(Enum::name)
+                            .orElse(null),
+                    java.sql.Types.OTHER);
             stmt.setString("title", achievement.getTitle());
             stmt.setString("description", achievement.getDescription());
             stmt.setBoolean("isActive", achievement.isActive());
@@ -158,9 +137,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("deletedAt", LocalDateTime.now());
             stmt.setObject("id", UUID.fromString(id));
 
@@ -191,9 +168,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                 AND "deletedAt" IS NULL
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -228,9 +203,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                 AND "deletedAt" IS NULL
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -239,10 +212,7 @@ public class AchievementSqlRepository implements AchievementRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to get achievements by user ID",
-                e
-            );
+            throw new RuntimeException("Failed to get achievements by user ID", e);
         }
 
         return achievements;

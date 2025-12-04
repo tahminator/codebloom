@@ -31,15 +31,13 @@ public class LeaderboardDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private LocalDateTime shouldExpireBy;
 
-    public static LeaderboardDto fromLeaderboard(
-        final Leaderboard leaderboard
-    ) {
+    public static LeaderboardDto fromLeaderboard(final Leaderboard leaderboard) {
         return LeaderboardDto.builder()
-            .id(leaderboard.getId())
-            .name(leaderboard.getName())
-            .createdAt(leaderboard.getCreatedAt())
-            .deletedAt(leaderboard.getDeletedAt())
-            .shouldExpireBy(leaderboard.getShouldExpireBy())
-            .build();
+                .id(leaderboard.getId())
+                .name(leaderboard.getName())
+                .createdAt(leaderboard.getCreatedAt())
+                .deletedAt(leaderboard.getDeletedAt())
+                .shouldExpireBy(leaderboard.getShouldExpireBy())
+                .build();
     }
 }

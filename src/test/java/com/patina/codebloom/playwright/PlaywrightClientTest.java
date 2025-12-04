@@ -26,14 +26,9 @@ public class PlaywrightClientTest {
 
     @Test
     void testGetCodebloomLeaderboardScreenshotSuccess() {
-        when(serverUrlUtils.getUrl()).thenReturn(
-            "https://stg.codebloom.patinanetwork.org"
-        );
+        when(serverUrlUtils.getUrl()).thenReturn("https://stg.codebloom.patinanetwork.org");
 
-        byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(
-            1,
-            Tag.Rpi
-        );
+        byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(1, Tag.Rpi);
 
         assertNotNull(screenshot, "Screenshot should not be null");
         assertTrue(screenshot.length > 0, "Screenshot should have content");
@@ -43,14 +38,9 @@ public class PlaywrightClientTest {
 
     @Test
     void testGetCodebloomLeaderboardScreenshotDifferentPage() {
-        when(serverUrlUtils.getUrl()).thenReturn(
-            "https://stg.codebloom.patinanetwork.org"
-        );
+        when(serverUrlUtils.getUrl()).thenReturn("https://stg.codebloom.patinanetwork.org");
 
-        byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(
-            2,
-            Tag.Baruch
-        );
+        byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(2, Tag.Baruch);
 
         assertNotNull(screenshot, "Screenshot should not be null");
         assertTrue(screenshot.length > 0, "Screenshot should have content");
@@ -60,14 +50,9 @@ public class PlaywrightClientTest {
 
     @Test
     void testGetCodebloomLeaderboardScreenshotDifferentTag() {
-        when(serverUrlUtils.getUrl()).thenReturn(
-            "https://stg.codebloom.patinanetwork.org"
-        );
+        when(serverUrlUtils.getUrl()).thenReturn("https://stg.codebloom.patinanetwork.org");
 
-        byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(
-            1,
-            Tag.Gwc
-        );
+        byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(1, Tag.Gwc);
 
         assertNotNull(screenshot, "Screenshot should not be null");
         assertTrue(screenshot.length > 0, "Screenshot should have content");

@@ -13,8 +13,7 @@ public interface LeetcodeClient {
     LeetcodeQuestion findQuestionBySlug(String slug);
 
     /**
-     * Default method that doesn't require a limit. The default limit will return 20
-     * submissions.
+     * Default method that doesn't require a limit. The default limit will return 20 submissions.
      *
      * @param username
      */
@@ -26,17 +25,10 @@ public interface LeetcodeClient {
      * @param username
      * @param limit
      */
-    List<LeetcodeSubmission> findSubmissionsByUsername(
-        String username,
-        int limit
-    );
+    List<LeetcodeSubmission> findSubmissionsByUsername(String username, int limit);
 
-    /**
-     * @implNote requires authentication
-     */
-    LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(
-        int submissionId
-    );
+    /** @implNote requires authentication */
+    LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(int submissionId);
 
     POTD getPotd();
 

@@ -9,14 +9,14 @@ public interface DiscordClubRepository {
      * Creates a new DiscordClub in the database.
      *
      * @param discordClub - required fields:
-     * <ul>
-     * <li>name</li>
-     * <li>tag</li>
-     * </ul>
-     * optional fields:
-     * <ul>
-     * <li>description</li>
-     * </ul>
+     *     <ul>
+     *       <li>name
+     *       <li>tag
+     *     </ul>
+     *     optional fields:
+     *     <ul>
+     *       <li>description
+     *     </ul>
      */
     void createDiscordClub(DiscordClub discordClub);
 
@@ -26,12 +26,12 @@ public interface DiscordClubRepository {
 
     /**
      * @param discordClub - overridable fields:
-     * <ul>
-     * <li>name</li>
-     * <li>description</li>
-     * <li>tag</li>
-     * <li>deletedAt</li>
-     * </ul>
+     *     <ul>
+     *       <li>name
+     *       <li>description
+     *       <li>tag
+     *       <li>deletedAt
+     *     </ul>
      */
     boolean updateDiscordClubById(DiscordClub discordClub);
 

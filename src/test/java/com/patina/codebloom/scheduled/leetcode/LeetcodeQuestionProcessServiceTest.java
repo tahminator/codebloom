@@ -24,7 +24,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles({ "ci", "thread" })
+@ActiveProfiles({"ci", "thread"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
@@ -38,10 +38,9 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
 
     @Autowired
     public LeetcodeQuestionProcessServiceTest(
-        final JobRepository jobRepository,
-        final LeetcodeQuestionProcessService service,
-        final QuestionRepository questionRepository
-    ) {
+            final JobRepository jobRepository,
+            final LeetcodeQuestionProcessService service,
+            final QuestionRepository questionRepository) {
         this.jobRepository = jobRepository;
         this.service = service;
         this.questionRepository = questionRepository;
@@ -50,45 +49,42 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
     @BeforeAll
     void setup() {
         jobRepository.deleteAllJobs();
-        String uniqueSubmissionId =
-            "test-submission-" + System.currentTimeMillis();
+        String uniqueSubmissionId = "test-submission-" + System.currentTimeMillis();
 
         testQuestion = Question.builder()
-            .userId(mockUserId)
-            .questionSlug("two-sum-test-" + System.currentTimeMillis())
-            .questionTitle("Two Sum Test")
-            .questionDifficulty(QuestionDifficulty.Easy)
-            .questionNumber(1)
-            .questionLink("https://leetcode.com/problems/two-sum/")
-            .description(
-                "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."
-            )
-            .pointsAwarded(100)
-            .acceptanceRate(0.8f)
-            .submittedAt(java.time.LocalDateTime.now())
-            .runtime("3 ms")
-            .memory("14.2 MB")
-            .code("def twoSum(self, nums, target): # test code")
-            .language("python")
-            .submissionId(uniqueSubmissionId)
-            .build();
+                .userId(mockUserId)
+                .questionSlug("two-sum-test-" + System.currentTimeMillis())
+                .questionTitle("Two Sum Test")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(1)
+                .questionLink("https://leetcode.com/problems/two-sum/")
+                .description(
+                        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.")
+                .pointsAwarded(100)
+                .acceptanceRate(0.8f)
+                .submittedAt(java.time.LocalDateTime.now())
+                .runtime("3 ms")
+                .memory("14.2 MB")
+                .code("def twoSum(self, nums, target): # test code")
+                .language("python")
+                .submissionId(uniqueSubmissionId)
+                .build();
 
         testQuestion = questionRepository.createQuestion(testQuestion);
 
         testJob = Job.builder()
-            .questionId(testQuestion.getId())
-            .status(JobStatus.INCOMPLETE)
-            .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
-            .build();
+                .questionId(testQuestion.getId())
+                .status(JobStatus.INCOMPLETE)
+                .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
+                .build();
 
         jobRepository.createJob(testJob);
     }
 
     @AfterAll
     void cleanup() {
-        boolean isSuccessful =
-            jobRepository.deleteJobById(testJob.getId()) &&
-            questionRepository.deleteQuestionById(testQuestion.getId());
+        boolean isSuccessful = jobRepository.deleteJobById(testJob.getId())
+                && questionRepository.deleteQuestionById(testQuestion.getId());
         if (!isSuccessful) {
             fail("Failed to clean up test job");
         }
@@ -103,28 +99,26 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
     @Test
     void findIncompleteJobsValid() {
         Question tempQuestion = Question.builder()
-            .userId(mockUserId)
-            .questionSlug("find-incomplete-test-" + System.currentTimeMillis())
-            .questionTitle("Find Incomplete Test")
-            .questionDifficulty(QuestionDifficulty.Medium)
-            .questionNumber(2)
-            .questionLink("https://leetcode.com/problems/find-incomplete-test/")
-            .description("Test question for incomplete jobs test")
-            .pointsAwarded(150)
-            .acceptanceRate(0.6f)
-            .submittedAt(java.time.LocalDateTime.now())
-            .submissionId(
-                "test-submission-" + System.currentTimeMillis() + "-456"
-            )
-            .build();
+                .userId(mockUserId)
+                .questionSlug("find-incomplete-test-" + System.currentTimeMillis())
+                .questionTitle("Find Incomplete Test")
+                .questionDifficulty(QuestionDifficulty.Medium)
+                .questionNumber(2)
+                .questionLink("https://leetcode.com/problems/find-incomplete-test/")
+                .description("Test question for incomplete jobs test")
+                .pointsAwarded(150)
+                .acceptanceRate(0.6f)
+                .submittedAt(java.time.LocalDateTime.now())
+                .submissionId("test-submission-" + System.currentTimeMillis() + "-456")
+                .build();
 
         tempQuestion = questionRepository.createQuestion(tempQuestion);
 
         Job freshJob = Job.builder()
-            .questionId(tempQuestion.getId())
-            .status(JobStatus.INCOMPLETE)
-            .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
-            .build();
+                .questionId(tempQuestion.getId())
+                .status(JobStatus.INCOMPLETE)
+                .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
+                .build();
 
         jobRepository.createJob(freshJob);
 
@@ -140,28 +134,26 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
     @Test
     void jobStatusTransitionValid() {
         Question tempQuestion = Question.builder()
-            .userId(mockUserId)
-            .questionSlug("valid-parentheses-" + System.currentTimeMillis())
-            .questionTitle("Valid Parentheses Test")
-            .questionDifficulty(QuestionDifficulty.Easy)
-            .questionNumber(20)
-            .questionLink("https://leetcode.com/problems/valid-parentheses/")
-            .description("Test question for job status transition")
-            .pointsAwarded(120)
-            .acceptanceRate(0.7f)
-            .submittedAt(java.time.LocalDateTime.now())
-            .submissionId(
-                "test-submission-" + System.currentTimeMillis() + "-789"
-            )
-            .build();
+                .userId(mockUserId)
+                .questionSlug("valid-parentheses-" + System.currentTimeMillis())
+                .questionTitle("Valid Parentheses Test")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(20)
+                .questionLink("https://leetcode.com/problems/valid-parentheses/")
+                .description("Test question for job status transition")
+                .pointsAwarded(120)
+                .acceptanceRate(0.7f)
+                .submittedAt(java.time.LocalDateTime.now())
+                .submissionId("test-submission-" + System.currentTimeMillis() + "-789")
+                .build();
 
         tempQuestion = questionRepository.createQuestion(tempQuestion);
 
         Job processingJob = Job.builder()
-            .questionId(tempQuestion.getId())
-            .status(JobStatus.INCOMPLETE)
-            .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
-            .build();
+                .questionId(tempQuestion.getId())
+                .status(JobStatus.INCOMPLETE)
+                .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
+                .build();
 
         jobRepository.createJob(processingJob);
 

@@ -41,10 +41,10 @@ public class JobSqlRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void setup() {
         testJob = Job.builder()
-            .questionId(mockQuestionId)
-            .status(JobStatus.INCOMPLETE)
-            .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
-            .build();
+                .questionId(mockQuestionId)
+                .status(JobStatus.INCOMPLETE)
+                .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
+                .build();
 
         jobRepository.createJob(testJob);
     }
@@ -83,9 +83,7 @@ public class JobSqlRepositoryTest extends BaseRepositoryTest {
     void testUpdateJob() {
         testJob.setProcessedAt(StandardizedOffsetDateTime.now());
         testJob.setCompletedAt(StandardizedOffsetDateTime.now().plusMinutes(5));
-        testJob.setNextAttemptAt(
-            StandardizedOffsetDateTime.now().plusMinutes(30)
-        );
+        testJob.setNextAttemptAt(StandardizedOffsetDateTime.now().plusMinutes(30));
         testJob.setStatus(JobStatus.COMPLETE);
 
         boolean updateResult = jobRepository.updateJob(testJob);

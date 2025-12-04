@@ -12,12 +12,11 @@ public class LeetcodeSubmission {
     private String statusDisplay;
 
     public LeetcodeSubmission(
-        final int id,
-        final String title,
-        final String titleSlug,
-        final LocalDateTime timestamp,
-        final String statusDisplay
-    ) {
+            final int id,
+            final String title,
+            final String titleSlug,
+            final LocalDateTime timestamp,
+            final String statusDisplay) {
         this.id = id;
         this.title = title;
         this.titleSlug = titleSlug;
