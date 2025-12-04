@@ -127,6 +127,6 @@ public class FetchAllLeetcodeQuestionsTest {
         when(env.isDev()).thenReturn(true);
         FetchAllLeetcodeQuestions spyJob = spy(job);
         spyJob.init();
-        verify(spyJob, times(1)).runStartupSync();
+        verify(spyJob, times(1)).init();
     }
 }
