@@ -6,9 +6,11 @@ import com.patina.codebloom.common.db.models.task.BackgroundTask;
 import com.patina.codebloom.common.db.models.task.BackgroundTaskEnum;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.db.repos.task.BackgroundTaskRepository;
+import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.models.LeetcodeQuestion;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import jakarta.annotation.PostConstruct;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -28,15 +31,30 @@ public class FetchAllLeetcodeQuestions {
     private final BackgroundTaskRepository backgroundTaskRepository;
     private final LeetcodeClient leetcodeClient;
     private final QuestionBankRepository questionBankRepository;
+    private final Env env;
 
     public FetchAllLeetcodeQuestions(
         final BackgroundTaskRepository backgroundTaskRepository,
         final LeetcodeClient leetcodeClient,
-        final QuestionBankRepository questionBankRepository
+        final QuestionBankRepository questionBankRepository,
+        final Env env
     ) {
         this.backgroundTaskRepository = backgroundTaskRepository;
         this.leetcodeClient = leetcodeClient;
         this.questionBankRepository = questionBankRepository;
+        this.env = env;
+    }
+
+    @PostConstruct
+    public void init() {
+        if (env.isDev()) {
+            runStartupSync();
+        }
+    }
+
+    @Async
+    public void runStartupSync() {
+        updateQuestionBank();
     }
 
     @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.HOURS)
