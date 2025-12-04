@@ -38,39 +38,21 @@ public class ApiControllerTest {
     @Test
     void testBaseApiRoute() {
         ApiResponder<ServerMetadataObject> apiResponder = RestAssured.given()
-            .when()
-            .get("/api")
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(new TypeRef<ApiResponder<ServerMetadataObject>>() {});
+                .when()
+                .get("/api")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<ApiResponder<ServerMetadataObject>>() {});
 
-        assertTrue(
-            apiResponder.isSuccess(),
-            "Testing apiResponder success is true"
-        );
-        assertTrue(
-            apiResponder.getMessage() != null,
-            "Testing apiResponder message is not null"
-        );
+        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
+        assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
         ServerMetadataObject serverMetadataObject = apiResponder.getPayload();
-        assertTrue(
-            serverMetadataObject != null,
-            "Testing server metadata object is not null"
-        );
-        assertTrue(
-            serverMetadataObject.getVersion() != null,
-            "Testing server version is not null"
-        );
-        assertTrue(
-            serverMetadataObject.getName() != null,
-            "Testing server name is not null"
-        );
+        assertTrue(serverMetadataObject != null, "Testing server metadata object is not null");
+        assertTrue(serverMetadataObject.getVersion() != null, "Testing server version is not null");
+        assertTrue(serverMetadataObject.getName() != null, "Testing server name is not null");
         List<String> authors = serverMetadataObject.getAuthors();
         assertTrue(authors != null, "Testing authors list is not null");
-        assertTrue(
-            authors.size() == 6,
-            "Testing length of authors, expected 6."
-        );
+        assertTrue(authors.size() == 6, "Testing length of authors, expected 6.");
     }
 }

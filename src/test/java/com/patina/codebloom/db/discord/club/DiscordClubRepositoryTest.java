@@ -38,31 +38,25 @@ public class DiscordClubRepositoryTest extends BaseRepositoryTest {
         long timestamp = System.currentTimeMillis();
 
         testDiscordClub = DiscordClub.builder()
-            .name("Test Discord Club")
-            .description(
-                Optional.of("Integration test Discord Club at " + timestamp)
-            )
-            .tag(Tag.Nyu)
-            .createdAt(OffsetDateTime.now())
-            .build();
+                .name("Test Discord Club")
+                .description(Optional.of("Integration test Discord Club at " + timestamp))
+                .tag(Tag.Nyu)
+                .createdAt(OffsetDateTime.now())
+                .build();
 
         repo.createDiscordClub(testDiscordClub);
     }
 
     @AfterAll
     void cleanUp() {
-        boolean isSuccessful = repo.deleteDiscordClubById(
-            testDiscordClub.getId()
-        );
+        boolean isSuccessful = repo.deleteDiscordClubById(testDiscordClub.getId());
         assertTrue(isSuccessful, "Failed deleting discord club by id.");
     }
 
     @Test
     @Order(1)
     void testGetDiscordClubById() {
-        DiscordClub found = repo
-            .getDiscordClubById(testDiscordClub.getId())
-            .orElseThrow();
+        DiscordClub found = repo.getDiscordClubById(testDiscordClub.getId()).orElseThrow();
         assertEquals(testDiscordClub, found);
     }
 
@@ -77,18 +71,12 @@ public class DiscordClubRepositoryTest extends BaseRepositoryTest {
     @Order(3)
     void testUpdateDiscordClub() {
         testDiscordClub.setDescription(Optional.of("helloworld"));
-        testDiscordClub.setDeletedAt(
-            Optional.of(StandardizedOffsetDateTime.now())
-        );
+        testDiscordClub.setDeletedAt(Optional.of(StandardizedOffsetDateTime.now()));
 
-        boolean isUpdateSuccessful = repo.updateDiscordClubById(
-            testDiscordClub
-        );
+        boolean isUpdateSuccessful = repo.updateDiscordClubById(testDiscordClub);
         assertTrue(isUpdateSuccessful);
 
-        var newUpdatedClub = repo
-            .getDiscordClubById(testDiscordClub.getId())
-            .orElseThrow();
+        var newUpdatedClub = repo.getDiscordClubById(testDiscordClub.getId()).orElseThrow();
 
         assertEquals(testDiscordClub, newUpdatedClub);
     }

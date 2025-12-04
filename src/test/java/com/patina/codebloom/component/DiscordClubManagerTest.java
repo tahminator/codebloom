@@ -23,21 +23,14 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 public class DiscordClubManagerTest {
 
     private JDAClient jdaClient = mock(JDAClient.class);
 
-    private LeaderboardRepository leaderboardRepository = mock(
-        LeaderboardRepository.class
-    );
+    private LeaderboardRepository leaderboardRepository = mock(LeaderboardRepository.class);
 
-    private DiscordClubRepository discordClubRepository = mock(
-        DiscordClubRepository.class
-    );
+    private DiscordClubRepository discordClubRepository = mock(DiscordClubRepository.class);
 
     private PlaywrightClient playwrightClient = mock(PlaywrightClient.class);
 
@@ -48,20 +41,13 @@ public class DiscordClubManagerTest {
     @BeforeEach
     void setUp() {
         discordClubManager = new DiscordClubManager(
-            serverUrlUtils,
-            jdaClient,
-            leaderboardRepository,
-            discordClubRepository,
-            playwrightClient
-        );
+                serverUrlUtils, jdaClient, leaderboardRepository, discordClubRepository, playwrightClient);
     }
 
     @Test
     void testSendLeaderboardCompletedDiscordMessageToAllClubsSuccess() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Arrays.asList(mockClub)
-        );
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
 
         setupMockLeaderboardData();
 
@@ -69,16 +55,12 @@ public class DiscordClubManagerTest {
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
         verify(jdaClient).connect();
-        verify(jdaClient).sendEmbedWithImages(
-            any(EmbeddedImagesMessageOptions.class)
-        );
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
     @Test
     void testSendLeaderboardCompletedDiscordMessageToAllClubsEmptyClubList() {
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Collections.emptyList()
-        );
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Collections.emptyList());
 
         discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
 
@@ -91,9 +73,7 @@ public class DiscordClubManagerTest {
     void testSendLeaderboardCompletedDiscordMessageToAllClubsMultipleClubs() {
         DiscordClub club1 = createMockDiscordClub("Club 1", Tag.Rpi);
         DiscordClub club2 = createMockDiscordClub("Club 2", Tag.Baruch);
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Arrays.asList(club1, club2)
-        );
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(club1, club2));
 
         setupMockLeaderboardData();
 
@@ -101,20 +81,13 @@ public class DiscordClubManagerTest {
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
         verify(jdaClient, times(2)).connect();
-        verify(jdaClient, times(2)).sendEmbedWithImages(
-            any(EmbeddedImagesMessageOptions.class)
-        );
+        verify(jdaClient, times(2)).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
     @Test
     void testSendLeaderboardCompletedDiscordMessageMissingGuildId() {
-        DiscordClub mockClub = createMockDiscordClubWithoutMetadata(
-            "Test Club",
-            Tag.Rpi
-        );
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Arrays.asList(mockClub)
-        );
+        DiscordClub mockClub = createMockDiscordClubWithoutMetadata("Test Club", Tag.Rpi);
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
 
         setupMockLeaderboardData();
 
@@ -127,9 +100,7 @@ public class DiscordClubManagerTest {
     @Test
     void testSendWeeklyLeaderboardUpdateDiscordMessageToAllClubsSuccess() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Arrays.asList(mockClub)
-        );
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
 
         setupMockLeaderboardDataWithExpiration();
 
@@ -137,16 +108,12 @@ public class DiscordClubManagerTest {
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
         verify(jdaClient).connect();
-        verify(jdaClient).sendEmbedWithImages(
-            any(EmbeddedImagesMessageOptions.class)
-        );
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
     @Test
     void testSendWeeklyLeaderboardUpdateDiscordMessageToAllClubsEmptyClubList() {
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Collections.emptyList()
-        );
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Collections.emptyList());
 
         discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
 
@@ -157,13 +124,8 @@ public class DiscordClubManagerTest {
 
     @Test
     void testSendWeeklyLeaderboardUpdateDiscordMessageMissingChannelId() {
-        DiscordClub mockClub = createMockDiscordClubWithPartialMetadata(
-            "Test Club",
-            Tag.Rpi
-        );
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Arrays.asList(mockClub)
-        );
+        DiscordClub mockClub = createMockDiscordClubWithPartialMetadata("Test Club", Tag.Rpi);
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
 
         setupMockLeaderboardDataWithExpiration();
 
@@ -176,9 +138,7 @@ public class DiscordClubManagerTest {
     @Test
     void testSendWeeklyLeaderboardUpdateWithoutExpiration() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
-        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(
-            Arrays.asList(mockClub)
-        );
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
 
         setupMockLeaderboardDataWithoutExpiration();
 
@@ -186,20 +146,13 @@ public class DiscordClubManagerTest {
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
         verify(jdaClient).connect();
-        verify(jdaClient).sendEmbedWithImages(
-            any(EmbeddedImagesMessageOptions.class)
-        );
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
-    private DiscordClub createMockDiscordClub(
-        final String name,
-        final Tag tag
-    ) {
+    private DiscordClub createMockDiscordClub(final String name, final Tag tag) {
         DiscordClubMetadata metadata = mock(DiscordClubMetadata.class);
         when(metadata.getGuildId()).thenReturn(Optional.of("123456789"));
-        when(metadata.getLeaderboardChannelId()).thenReturn(
-            Optional.of("987654321")
-        );
+        when(metadata.getLeaderboardChannelId()).thenReturn(Optional.of("987654321"));
 
         DiscordClub club = mock(DiscordClub.class);
         when(club.getName()).thenReturn(name);
@@ -209,10 +162,7 @@ public class DiscordClubManagerTest {
         return club;
     }
 
-    private DiscordClub createMockDiscordClubWithoutMetadata(
-        final String name,
-        final Tag tag
-    ) {
+    private DiscordClub createMockDiscordClubWithoutMetadata(final String name, final Tag tag) {
         DiscordClub club = mock(DiscordClub.class);
         when(club.getName()).thenReturn(name);
         when(club.getTag()).thenReturn(tag);
@@ -221,10 +171,7 @@ public class DiscordClubManagerTest {
         return club;
     }
 
-    private DiscordClub createMockDiscordClubWithPartialMetadata(
-        final String name,
-        final Tag tag
-    ) {
+    private DiscordClub createMockDiscordClubWithPartialMetadata(final String name, final Tag tag) {
         DiscordClubMetadata metadata = mock(DiscordClubMetadata.class);
         when(metadata.getGuildId()).thenReturn(Optional.of("123456789"));
         when(metadata.getLeaderboardChannelId()).thenReturn(Optional.empty());
@@ -242,30 +189,16 @@ public class DiscordClubManagerTest {
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(
-            mockLeaderboard
-        );
-        when(
-            leaderboardRepository.getLeaderboardUserCountById(
-                eq("leaderboard-id"),
-                any()
-            )
-        ).thenReturn(25);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getLeaderboardUserCountById(eq("leaderboard-id"), any()))
+                .thenReturn(25);
 
         List<UserWithScore> mockUsers = createMockUsers();
-        when(
-            leaderboardRepository.getLeaderboardUsersById(
-                eq("leaderboard-id"),
-                any(LeaderboardFilterOptions.class)
-            )
-        ).thenReturn(mockUsers);
+        when(leaderboardRepository.getLeaderboardUsersById(eq("leaderboard-id"), any(LeaderboardFilterOptions.class)))
+                .thenReturn(mockUsers);
 
-        when(
-            playwrightClient.getCodebloomLeaderboardScreenshot(
-                anyInt(),
-                any(Tag.class)
-            )
-        ).thenReturn("mock-screenshot".getBytes());
+        when(playwrightClient.getCodebloomLeaderboardScreenshot(anyInt(), any(Tag.class)))
+                .thenReturn("mock-screenshot".getBytes());
 
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:3000");
     }
@@ -276,13 +209,9 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
-        when(mockLeaderboard.getShouldExpireBy()).thenReturn(
-            LocalDateTime.now().plusDays(7)
-        );
+        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(
-            mockLeaderboard
-        );
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
     }
 
     private void setupMockLeaderboardDataWithoutExpiration() {
@@ -293,9 +222,7 @@ public class DiscordClubManagerTest {
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
         when(mockLeaderboard.getShouldExpireBy()).thenReturn(null);
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(
-            mockLeaderboard
-        );
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
     }
 
     private List<UserWithScore> createMockUsers() {

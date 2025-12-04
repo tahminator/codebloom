@@ -11,13 +11,10 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.params.SetParams;
 
-/**
- * <b>The client is only loaded in CI.</b> That may change at a later date.
- * Check wiki for details.
- */
+/** <b>The client is only loaded in CI.</b> That may change at a later date. Check wiki for details. */
 @Component
 @Slf4j
-@EnableConfigurationProperties({ JedisClientConfiguration.class })
+@EnableConfigurationProperties({JedisClientConfiguration.class})
 public class JedisClient {
 
     private final JedisClientConfiguration jedisClientConfiguration;
@@ -25,10 +22,7 @@ public class JedisClient {
     private UnifiedJedis client;
     private Env env;
 
-    public JedisClient(
-        final JedisClientConfiguration jedisClientConfiguration,
-        final Env env
-    ) {
+    public JedisClient(final JedisClientConfiguration jedisClientConfiguration, final Env env) {
         this.jedisClientConfiguration = jedisClientConfiguration;
         this.env = env;
     }
@@ -51,9 +45,7 @@ public class JedisClient {
         }
     }
 
-    /**
-     * Get auth token. Will return empty {@link Optional} if not in CI.
-     */
+    /** Get auth token. Will return empty {@link Optional} if not in CI. */
     public Optional<String> getAuth() {
         if (!env.isCi()) {
             return Optional.empty();
@@ -63,14 +55,13 @@ public class JedisClient {
     }
 
     /**
-     * Set auth token and when it should be ejected from the cache. If not in CI,
-     * will register an error message, but will no-op.
+     * Set auth token and when it should be ejected from the cache. If not in CI, will register an error message, but
+     * will no-op.
      */
     public void setAuth(final String auth, final long expires) {
         if (!env.isCi()) {
             log.error(
-                "You called JedisClient.setAuth in a non-CI environment. As a result, this operation has failed, but will not error."
-            );
+                    "You called JedisClient.setAuth in a non-CI environment. As a result, this operation has failed, but will not error.");
             return;
         }
 
@@ -78,14 +69,10 @@ public class JedisClient {
     }
 
     /**
-     * Set auth token and when it should be ejected from the cache. If not in CI,
-     * will register an error message, but will no-op.
+     * Set auth token and when it should be ejected from the cache. If not in CI, will register an error message, but
+     * will no-op.
      */
-    public void setAuth(
-        final String auth,
-        final long units,
-        final ChronoUnit chronoUnit
-    ) {
+    public void setAuth(final String auth, final long units, final ChronoUnit chronoUnit) {
         setAuth(auth, chronoUnit.getDuration().multipliedBy(units).toSeconds());
     }
 }

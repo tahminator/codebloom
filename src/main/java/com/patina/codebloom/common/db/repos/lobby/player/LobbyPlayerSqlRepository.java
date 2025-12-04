@@ -21,14 +21,13 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private LobbyPlayer parseResultSetToLobbyPlayer(final ResultSet resultSet)
-        throws SQLException {
+    private LobbyPlayer parseResultSetToLobbyPlayer(final ResultSet resultSet) throws SQLException {
         return LobbyPlayer.builder()
-            .id(resultSet.getString("id"))
-            .lobbyId(resultSet.getString("lobbyId"))
-            .playerId(resultSet.getString("playerId"))
-            .points(resultSet.getInt("points"))
-            .build();
+                .id(resultSet.getString("id"))
+                .lobbyId(resultSet.getString("lobbyId"))
+                .playerId(resultSet.getString("playerId"))
+                .points(resultSet.getInt("points"))
+                .build();
     }
 
     @Override
@@ -42,18 +41,10 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
 
         lobbyPlayer.setId(UUID.randomUUID().toString());
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(lobbyPlayer.getId()));
-            stmt.setObject(
-                "lobbyId",
-                UUID.fromString(lobbyPlayer.getLobbyId())
-            );
-            stmt.setObject(
-                "playerId",
-                UUID.fromString(lobbyPlayer.getPlayerId())
-            );
+            stmt.setObject("lobbyId", UUID.fromString(lobbyPlayer.getLobbyId()));
+            stmt.setObject("playerId", UUID.fromString(lobbyPlayer.getPlayerId()));
             stmt.setInt("points", lobbyPlayer.getPoints());
 
             stmt.executeUpdate();
@@ -76,9 +67,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -93,9 +82,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
     }
 
     @Override
-    public Optional<LobbyPlayer> findLobbyPlayerByPlayerId(
-        final String playerId
-    ) {
+    public Optional<LobbyPlayer> findLobbyPlayerByPlayerId(final String playerId) {
         String sql = """
             SELECT
                 id,
@@ -108,9 +95,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 "playerId" = :playerId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("playerId", UUID.fromString(playerId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -118,10 +103,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to find lobby player by player id",
-                e
-            );
+            throw new RuntimeException("Failed to find lobby player by player id", e);
         }
 
         return Optional.empty();
@@ -144,9 +126,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 points DESC
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyId", UUID.fromString(lobbyId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -171,9 +151,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setInt("points", lobbyPlayer.getPoints());
             stmt.setObject("id", UUID.fromString(lobbyPlayer.getId()));
 
@@ -191,18 +169,13 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             WHERE "lobbyId" = :lobbyId
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyId", UUID.fromString(lobbyId));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to delete players by lobby id",
-                e
-            );
+            throw new RuntimeException("Failed to delete players by lobby id", e);
         }
     }
 
@@ -213,18 +186,13 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             WHERE id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to delete lobby player by id",
-                e
-            );
+            throw new RuntimeException("Failed to delete lobby player by id", e);
         }
     }
 }

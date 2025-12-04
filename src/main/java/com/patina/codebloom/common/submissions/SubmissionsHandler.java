@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /**
- * The submission logic is abstracted because it gets reused in two different
- * parts of the app: the submissions API and the automated recurring task.
+ * The submission logic is abstracted because it gets reused in two different parts of the app: the submissions API and
+ * the automated recurring task.
  */
 @Component
 public class SubmissionsHandler {
@@ -60,25 +60,24 @@ public class SubmissionsHandler {
         ZoneId est = ZoneId.of("America/New_York");
         ZonedDateTime now = ZonedDateTime.now(est);
         ZonedDateTime cutoff = createdAt
-            .atZone(ZoneId.systemDefault())
-            .withZoneSameInstant(est)
-            .toLocalDate()
-            .plusDays(1)
-            .atTime(20, 0)
-            .atZone(est);
+                .atZone(ZoneId.systemDefault())
+                .withZoneSameInstant(est)
+                .toLocalDate()
+                .plusDays(1)
+                .atTime(20, 0)
+                .atZone(est);
         return now.isBefore(cutoff);
     }
 
     public SubmissionsHandler(
-        final QuestionRepository questionRepository,
-        final ThrottledLeetcodeClient throttledLeetcodeClient,
-        final LeaderboardRepository leaderboardRepository,
-        final POTDRepository potdRepository,
-        final UserRepository userRepository,
-        final QuestionTopicRepository questionTopicRepository,
-        final ThrottledReporter throttledReporter,
-        final JobRepository jobRepository
-    ) {
+            final QuestionRepository questionRepository,
+            final ThrottledLeetcodeClient throttledLeetcodeClient,
+            final LeaderboardRepository leaderboardRepository,
+            final POTDRepository potdRepository,
+            final UserRepository userRepository,
+            final QuestionTopicRepository questionTopicRepository,
+            final ThrottledReporter throttledReporter,
+            final JobRepository jobRepository) {
         this.questionRepository = questionRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.leaderboardRepository = leaderboardRepository;
@@ -89,71 +88,46 @@ public class SubmissionsHandler {
         this.throttledReporter = throttledReporter;
     }
 
-    public static <T> Predicate<T> distinctByKey(
-        final Function<? super T, ?> keyExtractor
-    ) {
+    public static <T> Predicate<T> distinctByKey(final Function<? super T, ?> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-        return t ->
-            seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     public ArrayList<AcceptedSubmission> handleSubmissions(
-        final List<LeetcodeSubmission> leetcodeSubmissions,
-        final User user
-    ) {
+            final List<LeetcodeSubmission> leetcodeSubmissions, final User user) {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
         POTD potd = potdRepository.getCurrentPOTD();
 
-        var questionMap = leetcodeSubmissions
-            .parallelStream()
-            .filter(distinctByKey(LeetcodeSubmission::getTitleSlug))
-            .map(s ->
-                Pair.of(
-                    s.getTitleSlug(),
-                    leetcodeClient.findQuestionBySlug(s.getTitleSlug())
-                )
-            )
-            .collect(Collectors.toMap(p -> p.getLeft(), p -> p.getRight()));
+        var questionMap = leetcodeSubmissions.parallelStream()
+                .filter(distinctByKey(LeetcodeSubmission::getTitleSlug))
+                .map(s -> Pair.of(s.getTitleSlug(), leetcodeClient.findQuestionBySlug(s.getTitleSlug())))
+                .collect(Collectors.toMap(p -> p.getLeft(), p -> p.getRight()));
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
             if (!leetcodeSubmission.getStatusDisplay().equals("Accepted")) {
                 continue;
             }
 
-            if (
-                questionRepository.questionExistsBySubmissionId(
-                    String.valueOf(leetcodeSubmission.getId())
-                )
-            ) {
+            if (questionRepository.questionExistsBySubmissionId(String.valueOf(leetcodeSubmission.getId()))) {
                 continue;
             }
 
-            Question question = questionRepository.getQuestionBySlugAndUserId(
-                leetcodeSubmission.getTitleSlug(),
-                user.getId()
-            );
+            Question question =
+                    questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
 
             float multiplier;
-            if (
-                potd == null ||
-                !isValid(potd.getCreatedAt()) ||
-                !Objects.equals(
-                    potd.getSlug(),
-                    leetcodeSubmission.getTitleSlug()
-                )
-            ) {
+            if (potd == null
+                    || !isValid(potd.getCreatedAt())
+                    || !Objects.equals(potd.getSlug(), leetcodeSubmission.getTitleSlug())) {
                 multiplier = 1.0f;
             } else {
                 multiplier = potd.getMultiplier();
             }
 
-            LeetcodeQuestion leetcodeQuestion = questionMap.get(
-                leetcodeSubmission.getTitleSlug()
-            );
+            LeetcodeQuestion leetcodeQuestion = questionMap.get(leetcodeSubmission.getTitleSlug());
 
             // If the submission is before the leaderboard started, points awarded = 0
-            Leaderboard recentLeaderboard =
-                leaderboardRepository.getRecentLeaderboardMetadata();
+            Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
             // This should never be happening as there should always be an existing
             // leaderboard to fall on. Howerver, race conditions could trigger this problem.
@@ -161,9 +135,7 @@ public class SubmissionsHandler {
                 throw new RuntimeException("No recent leaderboard found.");
             }
 
-            boolean isTooLate = recentLeaderboard
-                .getCreatedAt()
-                .isAfter(leetcodeSubmission.getTimestamp());
+            boolean isTooLate = recentLeaderboard.getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
 
             // int basePoints = switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
             // case "EASY" -> 100;
@@ -177,12 +149,9 @@ public class SubmissionsHandler {
                 points = 0;
             } else {
                 points = ScoreCalculator.calculateScore(
-                    QuestionDifficulty.valueOf(
-                        leetcodeQuestion.getDifficulty()
-                    ),
-                    leetcodeQuestion.getAcceptanceRate(),
-                    multiplier
-                );
+                        QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()),
+                        leetcodeQuestion.getAcceptanceRate(),
+                        multiplier);
             }
 
             // throttledReporter.log(Report.builder()
@@ -205,65 +174,42 @@ public class SubmissionsHandler {
             // .build());
 
             Question newQuestion = Question.builder()
-                .userId(user.getId())
-                .questionSlug(leetcodeQuestion.getTitleSlug())
-                .questionDifficulty(
-                    QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty())
-                )
-                .questionNumber(leetcodeQuestion.getQuestionId())
-                .questionLink(
-                    "https://leetcode.com/problems/" +
-                        leetcodeQuestion.getTitleSlug()
-                )
-                .questionTitle(leetcodeQuestion.getQuestionTitle())
-                .description(leetcodeQuestion.getQuestion())
-                .pointsAwarded(points)
-                .acceptanceRate(leetcodeQuestion.getAcceptanceRate())
-                .submittedAt(leetcodeSubmission.getTimestamp())
-                .submissionId(String.valueOf(leetcodeSubmission.getId()))
-                .build();
+                    .userId(user.getId())
+                    .questionSlug(leetcodeQuestion.getTitleSlug())
+                    .questionDifficulty(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()))
+                    .questionNumber(leetcodeQuestion.getQuestionId())
+                    .questionLink("https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug())
+                    .questionTitle(leetcodeQuestion.getQuestionTitle())
+                    .description(leetcodeQuestion.getQuestion())
+                    .pointsAwarded(points)
+                    .acceptanceRate(leetcodeQuestion.getAcceptanceRate())
+                    .submittedAt(leetcodeSubmission.getTimestamp())
+                    .submissionId(String.valueOf(leetcodeSubmission.getId()))
+                    .build();
 
             questionRepository.createQuestion(newQuestion);
 
             Job newJob = Job.builder()
-                .questionId(newQuestion.getId())
-                .status(JobStatus.INCOMPLETE)
-                .build();
+                    .questionId(newQuestion.getId())
+                    .status(JobStatus.INCOMPLETE)
+                    .build();
 
             jobRepository.createJob(newJob);
 
-            leetcodeQuestion
-                .getTopics()
-                .stream()
-                .forEach(topic ->
-                    questionTopicRepository.createQuestionTopic(
-                        QuestionTopic.builder()
+            leetcodeQuestion.getTopics().stream()
+                    .forEach(topic -> questionTopicRepository.createQuestionTopic(QuestionTopic.builder()
                             .questionId(newQuestion.getId())
                             .topicSlug(topic.getSlug())
                             .topic(LeetcodeTopicEnum.fromValue(topic.getSlug()))
-                            .build()
-                    )
-                );
+                            .build()));
 
-            acceptedSubmissions.add(
-                new AcceptedSubmission(
-                    leetcodeQuestion.getQuestionTitle(),
-                    points
-                )
-            );
+            acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
 
-            UserWithScore recentUserMetadata =
-                userRepository.getUserWithScoreByIdAndLeaderboardId(
-                    user.getId(),
-                    recentLeaderboard.getId(),
-                    UserFilterOptions.DEFAULT
-                );
+            UserWithScore recentUserMetadata = userRepository.getUserWithScoreByIdAndLeaderboardId(
+                    user.getId(), recentLeaderboard.getId(), UserFilterOptions.DEFAULT);
 
             leaderboardRepository.updateUserPointsFromLeaderboard(
-                recentLeaderboard.getId(),
-                user.getId(),
-                recentUserMetadata.getTotalScore() + points
-            );
+                    recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }
 
         return acceptedSubmissions;

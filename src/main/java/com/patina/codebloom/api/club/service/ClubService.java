@@ -20,13 +20,13 @@ public class ClubService {
             return null;
         }
         return ClubDto.builder()
-            .id(club.getId())
-            .name(club.getName())
-            .description(club.getDescription())
-            .slug(club.getSlug())
-            .splashIconUrl(club.getSplashIconUrl())
-            .tag(club.getTag())
-            .build();
+                .id(club.getId())
+                .name(club.getName())
+                .description(club.getDescription())
+                .slug(club.getSlug())
+                .splashIconUrl(club.getSplashIconUrl())
+                .tag(club.getTag())
+                .build();
     }
 
     public boolean isPasswordValid(final Club club, final String rawPassword) {

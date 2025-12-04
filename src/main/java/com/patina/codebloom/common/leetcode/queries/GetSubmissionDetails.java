@@ -28,8 +28,7 @@ public class GetSubmissionDetails {
           }
                 """;
 
-    public static String body(final int submissionId)
-        throws JsonProcessingException {
+    public static String body(final int submissionId) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> requestBodyMap = new HashMap<>();

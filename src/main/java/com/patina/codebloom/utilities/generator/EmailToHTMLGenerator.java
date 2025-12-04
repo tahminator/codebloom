@@ -19,21 +19,13 @@ public class EmailToHTMLGenerator implements CommandLineRunner {
     @Override
     public void run(final String... args) throws Exception {
         log.info("Generating HTML from React email template.");
-        Process process = new ProcessBuilder("just", "email-gen")
-            .inheritIO()
-            .start();
+        Process process = new ProcessBuilder("just", "email-gen").inheritIO().start();
         int exitCode = process.waitFor();
         if (exitCode == 0) {
             log.info("HTML generation completed successfully.");
         } else {
-            log.error(
-                "HTML generation command failed with exit code {}",
-                exitCode
-            );
-            int springExitCode = SpringApplication.exit(
-                applicationContext,
-                () -> exitCode
-            );
+            log.error("HTML generation command failed with exit code {}", exitCode);
+            int springExitCode = SpringApplication.exit(applicationContext, () -> exitCode);
             System.exit(springExitCode);
         }
     }

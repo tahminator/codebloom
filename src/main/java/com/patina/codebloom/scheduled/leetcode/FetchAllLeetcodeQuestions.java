@@ -34,11 +34,10 @@ public class FetchAllLeetcodeQuestions {
     private final Env env;
 
     public FetchAllLeetcodeQuestions(
-        final BackgroundTaskRepository backgroundTaskRepository,
-        final LeetcodeClient leetcodeClient,
-        final QuestionBankRepository questionBankRepository,
-        final Env env
-    ) {
+            final BackgroundTaskRepository backgroundTaskRepository,
+            final LeetcodeClient leetcodeClient,
+            final QuestionBankRepository questionBankRepository,
+            final Env env) {
         this.backgroundTaskRepository = backgroundTaskRepository;
         this.leetcodeClient = leetcodeClient;
         this.questionBankRepository = questionBankRepository;
@@ -60,23 +59,17 @@ public class FetchAllLeetcodeQuestions {
 
     @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.HOURS)
     public void updateQuestionBank() {
-        BackgroundTask recentLeetcodeTask =
-            backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
-                BackgroundTaskEnum.LEETCODE_QUESTION_BANK
-            );
+        BackgroundTask recentLeetcodeTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
+                BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
         if (recentLeetcodeTask != null) {
-            if (
-                StandardizedOffsetDateTime.now().isBefore(
-                    recentLeetcodeTask.getCompletedAt().plusHours(16)
-                )
-            ) {
+            if (StandardizedOffsetDateTime.now()
+                    .isBefore(recentLeetcodeTask.getCompletedAt().plusHours(16))) {
                 log.error("Not time yet to resync question bank");
                 return;
             }
         }
 
-        List<LeetcodeQuestion> leetcodeQuestions =
-            leetcodeClient.getAllProblems();
+        List<LeetcodeQuestion> leetcodeQuestions = leetcodeClient.getAllProblems();
 
         List<QuestionBank> bankLeetcodeQuestion = new ArrayList<>();
         for (LeetcodeQuestion question : leetcodeQuestions) {
@@ -93,60 +86,49 @@ public class FetchAllLeetcodeQuestions {
                     difficulty = QuestionDifficulty.Hard;
                     break;
                 default:
-                    throw new IllegalArgumentException(
-                        "Unknown difficulty: " + question.getDifficulty()
-                    );
+                    throw new IllegalArgumentException("Unknown difficulty: " + question.getDifficulty());
             }
 
             QuestionBank bankQuestion = QuestionBank.builder()
-                .questionSlug(question.getTitleSlug())
-                .questionDifficulty(difficulty)
-                .questionTitle(question.getQuestionTitle())
-                .questionNumber(question.getQuestionId())
-                .questionLink(question.getLink())
-                .acceptanceRate(question.getAcceptanceRate())
-                .createdAt(StandardizedOffsetDateTime.now())
-                .build();
+                    .questionSlug(question.getTitleSlug())
+                    .questionDifficulty(difficulty)
+                    .questionTitle(question.getQuestionTitle())
+                    .questionNumber(question.getQuestionId())
+                    .questionLink(question.getLink())
+                    .acceptanceRate(question.getAcceptanceRate())
+                    .createdAt(StandardizedOffsetDateTime.now())
+                    .build();
 
             bankLeetcodeQuestion.add(bankQuestion);
         }
 
-        List<QuestionBank> bankQuestion =
-            questionBankRepository.getAllQuestions();
+        List<QuestionBank> bankQuestion = questionBankRepository.getAllQuestions();
 
-        Set<String> slugsFromLeetcode = bankLeetcodeQuestion
-            .stream()
-            .map(QuestionBank::getQuestionSlug)
-            .collect(Collectors.toSet());
+        Set<String> slugsFromLeetcode =
+                bankLeetcodeQuestion.stream().map(QuestionBank::getQuestionSlug).collect(Collectors.toSet());
 
-        Set<String> slugsFromDb = bankQuestion
-            .stream()
-            .map(QuestionBank::getQuestionSlug)
-            .collect(Collectors.toSet());
+        Set<String> slugsFromDb =
+                bankQuestion.stream().map(QuestionBank::getQuestionSlug).collect(Collectors.toSet());
 
-        List<QuestionBank> missingInDb = bankLeetcodeQuestion
-            .stream()
-            .filter(q -> !slugsFromDb.contains(q.getQuestionSlug()))
-            .collect(Collectors.toList());
+        List<QuestionBank> missingInDb = bankLeetcodeQuestion.stream()
+                .filter(q -> !slugsFromDb.contains(q.getQuestionSlug()))
+                .collect(Collectors.toList());
 
         for (QuestionBank question : missingInDb) {
             questionBankRepository.createQuestion(question);
         }
 
-        List<QuestionBank> deletedFromLeetcode = bankQuestion
-            .stream()
-            .filter(q -> !slugsFromLeetcode.contains(q.getQuestionSlug()))
-            .collect(Collectors.toList());
+        List<QuestionBank> deletedFromLeetcode = bankQuestion.stream()
+                .filter(q -> !slugsFromLeetcode.contains(q.getQuestionSlug()))
+                .collect(Collectors.toList());
 
         for (QuestionBank question : deletedFromLeetcode) {
             questionBankRepository.deleteQuestionById(question.getId());
         }
 
-        backgroundTaskRepository.createBackgroundTask(
-            BackgroundTask.builder()
+        backgroundTaskRepository.createBackgroundTask(BackgroundTask.builder()
                 .task(BackgroundTaskEnum.LEETCODE_QUESTION_BANK)
                 .completedAt(OffsetDateTime.now())
-                .build()
-        );
+                .build());
     }
 }

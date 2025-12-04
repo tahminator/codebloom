@@ -30,57 +30,44 @@ public class DuelManagerTest {
     private final Faker faker;
 
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
-    private LobbyQuestionRepository lobbyQuestionRepository = mock(
-        LobbyQuestionRepository.class
-    );
-    private LobbyPlayerRepository lobbyPlayerRepository = mock(
-        LobbyPlayerRepository.class
-    );
-    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(
-        LobbyPlayerQuestionRepository.class
-    );
-    private QuestionRepository questionRepository = mock(
-        QuestionRepository.class
-    );
-    private QuestionBankRepository questionBankRepository = mock(
-        QuestionBankRepository.class
-    );
+    private LobbyQuestionRepository lobbyQuestionRepository = mock(LobbyQuestionRepository.class);
+    private LobbyPlayerRepository lobbyPlayerRepository = mock(LobbyPlayerRepository.class);
+    private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(LobbyPlayerQuestionRepository.class);
+    private QuestionRepository questionRepository = mock(QuestionRepository.class);
+    private QuestionBankRepository questionBankRepository = mock(QuestionBankRepository.class);
     private UserRepository userRepository = mock(UserRepository.class);
 
     public DuelManagerTest() {
         this.duelManager = new DuelManager(
-            lobbyRepository,
-            lobbyQuestionRepository,
-            lobbyPlayerRepository,
-            lobbyPlayerQuestionRepository,
-            questionRepository,
-            questionBankRepository,
-            userRepository
-        );
+                lobbyRepository,
+                lobbyQuestionRepository,
+                lobbyPlayerRepository,
+                lobbyPlayerQuestionRepository,
+                questionRepository,
+                questionBankRepository,
+                userRepository);
         this.faker = Faker.instance();
     }
 
     private Lobby.LobbyBuilder randomPartialLobby() {
         return Lobby.builder()
-            .id(java.util.UUID.randomUUID().toString())
-            .joinCode(faker.code().isbn10(false).toUpperCase())
-            .createdAt(OffsetDateTime.now());
+                .id(java.util.UUID.randomUUID().toString())
+                .joinCode(faker.code().isbn10(false).toUpperCase())
+                .createdAt(OffsetDateTime.now());
     }
 
     @Test
     void testGenerateDuelDataSuccess() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-            .id(lobbyId)
-            .status(LobbyStatus.ACTIVE)
-            .expiresAt(OffsetDateTime.now().plusHours(1))
-            .playerCount(2)
-            .winnerId(Optional.empty())
-            .build();
+                .id(lobbyId)
+                .status(LobbyStatus.ACTIVE)
+                .expiresAt(OffsetDateTime.now().plusHours(1))
+                .playerCount(2)
+                .winnerId(Optional.empty())
+                .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
-            Optional.of(mockLobby)
-        );
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result = duelManager.generateDuelData(lobbyId);
 
@@ -99,16 +86,14 @@ public class DuelManagerTest {
         String lobbyId = java.util.UUID.randomUUID().toString();
         String winnerId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-            .id(lobbyId)
-            .status(LobbyStatus.COMPLETED)
-            .expiresAt(OffsetDateTime.now())
-            .playerCount(2)
-            .winnerId(Optional.of(winnerId))
-            .build();
+                .id(lobbyId)
+                .status(LobbyStatus.COMPLETED)
+                .expiresAt(OffsetDateTime.now())
+                .playerCount(2)
+                .winnerId(Optional.of(winnerId))
+                .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
-            Optional.of(mockLobby)
-        );
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result = duelManager.generateDuelData(lobbyId);
 
@@ -121,15 +106,13 @@ public class DuelManagerTest {
     void testGenerateDuelDataCallsRepositoryOnce() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-            .id(lobbyId)
-            .status(LobbyStatus.ACTIVE)
-            .expiresAt(OffsetDateTime.now())
-            .playerCount(1)
-            .build();
+                .id(lobbyId)
+                .status(LobbyStatus.ACTIVE)
+                .expiresAt(OffsetDateTime.now())
+                .playerCount(1)
+                .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
-            Optional.of(mockLobby)
-        );
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         duelManager.generateDuelData(lobbyId);
 
@@ -144,17 +127,15 @@ public class DuelManagerTest {
         String winnerId = java.util.UUID.randomUUID().toString();
 
         Lobby mockLobby = randomPartialLobby()
-            .id(lobbyId)
-            .status(LobbyStatus.CLOSED)
-            .createdAt(createdAt)
-            .expiresAt(expiresAt)
-            .playerCount(4)
-            .winnerId(Optional.of(winnerId))
-            .build();
+                .id(lobbyId)
+                .status(LobbyStatus.CLOSED)
+                .createdAt(createdAt)
+                .expiresAt(expiresAt)
+                .playerCount(4)
+                .winnerId(Optional.of(winnerId))
+                .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
-            Optional.of(mockLobby)
-        );
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result = duelManager.generateDuelData(lobbyId);
         LobbyDto resultDto = result.getLobby();
@@ -172,15 +153,13 @@ public class DuelManagerTest {
     void testGenerateDuelDataReturnsNewInstanceEachTime() {
         String lobbyId = java.util.UUID.randomUUID().toString();
         Lobby mockLobby = randomPartialLobby()
-            .id(lobbyId)
-            .status(LobbyStatus.ACTIVE)
-            .expiresAt(OffsetDateTime.now())
-            .playerCount(2)
-            .build();
+                .id(lobbyId)
+                .status(LobbyStatus.ACTIVE)
+                .expiresAt(OffsetDateTime.now())
+                .playerCount(2)
+                .build();
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
-            Optional.of(mockLobby)
-        );
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.of(mockLobby));
 
         DuelData result1 = duelManager.generateDuelData(lobbyId);
         DuelData result2 = duelManager.generateDuelData(lobbyId);
@@ -198,47 +177,41 @@ public class DuelManagerTest {
         String playerId2 = java.util.UUID.randomUUID().toString();
 
         LobbyPlayer player1 = LobbyPlayer.builder()
-            .id(java.util.UUID.randomUUID().toString())
-            .lobbyId(lobbyId)
-            .playerId(playerId1)
-            .points(0)
-            .build();
+                .id(java.util.UUID.randomUUID().toString())
+                .lobbyId(lobbyId)
+                .playerId(playerId1)
+                .points(0)
+                .build();
 
         LobbyPlayer player2 = LobbyPlayer.builder()
-            .id(java.util.UUID.randomUUID().toString())
-            .lobbyId(lobbyId)
-            .playerId(playerId2)
-            .points(0)
-            .build();
+                .id(java.util.UUID.randomUUID().toString())
+                .lobbyId(lobbyId)
+                .playerId(playerId2)
+                .points(0)
+                .build();
 
         User user1 = User.builder()
-            .id(playerId1)
-            .discordId("123456789")
-            .discordName("TestUser1")
-            .admin(false)
-            .verifyKey("key1")
-            .build();
+                .id(playerId1)
+                .discordId("123456789")
+                .discordName("TestUser1")
+                .admin(false)
+                .verifyKey("key1")
+                .build();
 
         User user2 = User.builder()
-            .id(playerId2)
-            .discordId("987654321")
-            .discordName("TestUser2")
-            .admin(true)
-            .verifyKey("key2")
-            .build();
+                .id(playerId2)
+                .discordId("987654321")
+                .discordName("TestUser2")
+                .admin(true)
+                .verifyKey("key2")
+                .build();
 
-        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(
-            List.of(player1, player2)
-        );
+        when(lobbyPlayerRepository.findPlayersByLobbyId(lobbyId)).thenReturn(List.of(player1, player2));
         when(userRepository.getUserById(playerId1)).thenReturn(user1);
         when(userRepository.getUserById(playerId2)).thenReturn(user2);
 
-        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(
-            Optional.empty()
-        );
-        when(
-            lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)
-        ).thenReturn(List.of());
+        when(lobbyRepository.findLobbyById(lobbyId)).thenReturn(Optional.empty());
+        when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)).thenReturn(List.of());
 
         DuelData result = duelManager.generateDuelData(lobbyId);
 
@@ -246,16 +219,14 @@ public class DuelManagerTest {
         assertEquals(2, result.getPlayers().size());
 
         List<UserDto> players = result.getPlayers();
-        UserDto resultUser1 = players
-            .stream()
-            .filter(u -> u.getId().equals(playerId1))
-            .findFirst()
-            .orElse(null);
-        UserDto resultUser2 = players
-            .stream()
-            .filter(u -> u.getId().equals(playerId2))
-            .findFirst()
-            .orElse(null);
+        UserDto resultUser1 = players.stream()
+                .filter(u -> u.getId().equals(playerId1))
+                .findFirst()
+                .orElse(null);
+        UserDto resultUser2 = players.stream()
+                .filter(u -> u.getId().equals(playerId2))
+                .findFirst()
+                .orElse(null);
 
         assertNotNull(resultUser1);
         assertEquals(playerId1, resultUser1.getId());

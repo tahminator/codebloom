@@ -7,32 +7,27 @@ import java.util.ArrayList;
 
 public interface UserRepository {
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param user - required fields:
-     * <ul>
-     * <li>discordId</li>
-     * <li>discordName</li>
-     * </ul>
-     *
+     *     <ul>
+     *       <li>discordId
+     *       <li>discordName
+     *     </ul>
      */
     void createUser(User user);
 
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param user - overridden fields:
-     * <ul>
-     * <li>discordName</li>
-     * <li>discordId</li>
-     * <li>leetcodeUsername</li>
-     * <li>nickname</li>
-     * <li>admin</li>
-     * <li>profileUrl</li>
-     * <li>schoolEmail</li>
-     * </ul>
+     *     <ul>
+     *       <li>discordName
+     *       <li>discordId
+     *       <li>leetcodeUsername
+     *       <li>nickname
+     *       <li>admin
+     *       <li>profileUrl
+     *       <li>schoolEmail
+     *     </ul>
      */
     boolean updateUser(User user);
 
@@ -40,16 +35,9 @@ public interface UserRepository {
 
     User getUserByLeetcodeUsername(String leetcodeUsername);
 
-    UserWithScore getUserWithScoreByIdAndLeaderboardId(
-        String userId,
-        String leaderboardId,
-        UserFilterOptions options
-    );
+    UserWithScore getUserWithScoreByIdAndLeaderboardId(String userId, String leaderboardId, UserFilterOptions options);
 
-    UserWithScore getUserWithScoreByLeetcodeUsernameAndLeaderboardId(
-        String userLeetcodeUsername,
-        String leaderboardId
-    );
+    UserWithScore getUserWithScoreByLeetcodeUsernameAndLeaderboardId(String userLeetcodeUsername, String leaderboardId);
 
     User getUserByDiscordId(String discordId);
 

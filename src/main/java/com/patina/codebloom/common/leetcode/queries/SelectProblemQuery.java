@@ -26,8 +26,7 @@ public class SelectProblemQuery {
         }
         """;
 
-    public static String body(final String slug)
-        throws JsonProcessingException {
+    public static String body(final String slug) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> requestBodyMap = new HashMap<>();

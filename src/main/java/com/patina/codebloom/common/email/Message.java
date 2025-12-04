@@ -3,8 +3,8 @@ package com.patina.codebloom.common.email;
 import java.util.Date;
 
 /**
- * This class exists due to the fact that when the email connection is closed,
- * all Messages are subsequently closed as well.
+ * This class exists due to the fact that when the email connection is closed, all Messages are subsequently closed as
+ * well.
  */
 public class Message {
 
@@ -12,11 +12,7 @@ public class Message {
     private final String message;
     private final Date sentAt;
 
-    public Message(
-        final String subject,
-        final String message,
-        final Date sentAt
-    ) {
+    public Message(final String subject, final String message, final Date sentAt) {
         this.subject = subject;
         this.message = message;
         this.sentAt = sentAt;

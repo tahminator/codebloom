@@ -47,21 +47,17 @@ public class UserDto {
 
     public static UserDto fromUser(final User user) {
         return UserDto.builder()
-            .id(user.getId())
-            .discordId(user.getDiscordId())
-            .discordName(user.getDiscordName())
-            .leetcodeUsername(user.getLeetcodeUsername())
-            .nickname(user.getNickname())
-            .admin(user.isAdmin())
-            .profileUrl(user.getProfileUrl())
-            .tags(user.getTags())
-            .achievements(
-                user
-                    .getAchievements()
-                    .stream()
-                    .map(AchievementDto::fromAchievement)
-                    .toList()
-            )
-            .build();
+                .id(user.getId())
+                .discordId(user.getDiscordId())
+                .discordName(user.getDiscordName())
+                .leetcodeUsername(user.getLeetcodeUsername())
+                .nickname(user.getNickname())
+                .admin(user.isAdmin())
+                .profileUrl(user.getProfileUrl())
+                .tags(user.getTags())
+                .achievements(user.getAchievements().stream()
+                        .map(AchievementDto::fromAchievement)
+                        .toList())
+                .build();
     }
 }

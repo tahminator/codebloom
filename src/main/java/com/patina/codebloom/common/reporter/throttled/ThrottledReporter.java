@@ -12,10 +12,7 @@ import java.time.Duration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * Attaches a rate limiter over {@link Reporter} to avoid too many user
- * submission reports
- */
+/** Attaches a rate limiter over {@link Reporter} to avoid too many user submission reports */
 @Component
 public class ThrottledReporter extends Reporter {
 
@@ -23,9 +20,9 @@ public class ThrottledReporter extends Reporter {
 
     private Bucket initializeBucket() {
         var bandwidth = Bandwidth.builder()
-            .capacity(1L)
-            .refillIntervally(1L, Duration.ofMinutes(2))
-            .build();
+                .capacity(1L)
+                .refillIntervally(1L, Duration.ofMinutes(2))
+                .build();
 
         return Bucket.builder().addLimit(bandwidth).build();
     }
@@ -39,14 +36,10 @@ public class ThrottledReporter extends Reporter {
         this.rateLimiter = initializeBucket();
     }
 
-    /**
-     * Convert the stacktrace of a {@linkplain Throwable} into a string.
-     */
+    /** Convert the stacktrace of a {@linkplain Throwable} into a string. */
     public static String throwableToString(final Throwable throwable) {
-        try (
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)
-        ) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8)) {
             throwable.printStackTrace(ps);
             ps.flush();
             return baos.toString();
@@ -55,9 +48,7 @@ public class ThrottledReporter extends Reporter {
         }
     }
 
-    /**
-     * Report an error.
-     */
+    /** Report an error. */
     @Override
     @Async
     public void error(final Report report) {
@@ -67,9 +58,7 @@ public class ThrottledReporter extends Reporter {
         super.error(report);
     }
 
-    /**
-     * Report a log.
-     */
+    /** Report a log. */
     @Override
     @Async
     public void log(final Report report) {

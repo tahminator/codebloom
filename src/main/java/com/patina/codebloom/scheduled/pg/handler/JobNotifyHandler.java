@@ -13,9 +13,7 @@ public class JobNotifyHandler {
 
     private final LeetcodeQuestionProcessService leetcodeQuestionProcessService;
 
-    public JobNotifyHandler(
-        final LeetcodeQuestionProcessService leetcodeQuestionProcessService
-    ) {
+    public JobNotifyHandler(final LeetcodeQuestionProcessService leetcodeQuestionProcessService) {
         this.leetcodeQuestionProcessService = leetcodeQuestionProcessService;
     }
 

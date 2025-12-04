@@ -21,63 +21,29 @@ class ReactEmailClientTest {
         String verifyUrl = "https://example.com";
         String supportEmail = "codebloom@patinanetwork.org";
 
-        String renderedHtml = client.createExampleTemplate(
-            recipientName,
-            verifyUrl,
-            supportEmail
-        );
+        String renderedHtml = client.createExampleTemplate(recipientName, verifyUrl, supportEmail);
 
         Document doc = Jsoup.parse(renderedHtml);
 
-        Element recipientText = doc.getElementById(
-            "input-recipientName-innerText"
-        );
-        assertNotNull(
-            recipientText,
-            "Missing element: input-recipientName-innerText"
-        );
-        assertEquals(
-            "Example",
-            recipientText.text(),
-            "recipientName text not set"
-        );
+        Element recipientText = doc.getElementById("input-recipientName-innerText");
+        assertNotNull(recipientText, "Missing element: input-recipientName-innerText");
+        assertEquals("Example", recipientText.text(), "recipientName text not set");
 
         Element verifyText = doc.getElementById("input-verifyUrl-innerText");
         assertNotNull(verifyText, "Missing element: input-verifyUrl-innerText");
-        assertEquals(
-            "https://example.com",
-            verifyText.text(),
-            "verifyUrl text not set"
-        );
+        assertEquals("https://example.com", verifyText.text(), "verifyUrl text not set");
 
         Element verifyHref = doc.getElementById("input-verifyUrl-href");
         assertNotNull(verifyHref, "Missing element: input-verifyUrl-href");
-        assertEquals(
-            "https://example.com",
-            verifyHref.attr("href"),
-            "verifyUrl href not set"
-        );
+        assertEquals("https://example.com", verifyHref.attr("href"), "verifyUrl href not set");
 
-        Element supportText = doc.getElementById(
-            "input-supportEmail-innerText"
-        );
-        assertNotNull(
-            supportText,
-            "Missing element: input-supportEmail-innerText"
-        );
-        assertEquals(
-            "codebloom@patinanetwork.org",
-            supportText.text(),
-            "supportEmail text not set"
-        );
+        Element supportText = doc.getElementById("input-supportEmail-innerText");
+        assertNotNull(supportText, "Missing element: input-supportEmail-innerText");
+        assertEquals("codebloom@patinanetwork.org", supportText.text(), "supportEmail text not set");
 
         Element supportHref = doc.getElementById("input-supportEmail-href");
         assertNotNull(supportHref, "Missing element: input-supportEmail-href");
-        assertEquals(
-            "codebloom@patinanetwork.org",
-            supportHref.attr("href"),
-            "supportEmail href not set"
-        );
+        assertEquals("codebloom@patinanetwork.org", supportHref.attr("href"), "supportEmail href not set");
     }
 
     @Test
@@ -95,10 +61,6 @@ class ReactEmailClientTest {
 
         Element verifyHref = doc.getElementById("input-verifyUrl-href");
         assertNotNull(verifyHref, "Missing element: input-verifyUrl-href");
-        assertEquals(
-            verifyUrl,
-            verifyHref.attr("href"),
-            "verifyUrl href not set"
-        );
+        assertEquals(verifyUrl, verifyHref.attr("href"), "verifyUrl href not set");
     }
 }

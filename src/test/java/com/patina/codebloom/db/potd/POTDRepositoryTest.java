@@ -29,11 +29,11 @@ public class POTDRepositoryTest extends BaseRepositoryTest {
     @BeforeEach
     void setup() {
         POTD potd = POTD.builder()
-            .title("Test Title")
-            .slug("test-title")
-            .multiplier(2.0f)
-            .createdAt(StandardizedLocalDateTime.now())
-            .build();
+                .title("Test Title")
+                .slug("test-title")
+                .multiplier(2.0f)
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
         testPOTD = potdRepository.createPOTD(potd);
     }
 

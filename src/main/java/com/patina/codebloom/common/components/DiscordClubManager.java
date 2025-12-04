@@ -36,12 +36,11 @@ public class DiscordClubManager {
     private final ServerUrlUtils serverUrlUtils;
 
     public DiscordClubManager(
-        final ServerUrlUtils serverUrlUtils,
-        final JDAClient jdaClient,
-        final LeaderboardRepository leaderboardRepository,
-        final DiscordClubRepository discordClubRepository,
-        final PlaywrightClient playwrightClient
-    ) {
+            final ServerUrlUtils serverUrlUtils,
+            final JDAClient jdaClient,
+            final LeaderboardRepository leaderboardRepository,
+            final DiscordClubRepository discordClubRepository,
+            final PlaywrightClient playwrightClient) {
         this.serverUrlUtils = serverUrlUtils;
         this.jdaClient = jdaClient;
         this.leaderboardRepository = leaderboardRepository;
@@ -49,10 +48,7 @@ public class DiscordClubManager {
         this.playwrightClient = playwrightClient;
     }
 
-    private Optional<UserWithScore> getUser(
-        final List<UserWithScore> users,
-        final int index
-    ) {
+    private Optional<UserWithScore> getUser(final List<UserWithScore> users, final int index) {
         if (index < 0 || index >= users.size()) {
             return Optional.empty();
         }
@@ -61,72 +57,50 @@ public class DiscordClubManager {
     }
 
     private List<Pair<String, byte[]>> getScreenshotsForRecentLeaderboard(
-        final Leaderboard leaderboard,
-        final DiscordClub club
-    ) {
+            final Leaderboard leaderboard, final DiscordClub club) {
         List<Pair<String, byte[]>> screenshots = new ArrayList<>();
 
         var totalUsers = leaderboardRepository.getLeaderboardUserCountById(
-            leaderboard.getId(),
-            LeaderboardFilterGenerator.builderWithTag(club.getTag()).build()
-        );
-        int totalPages = (int) Math.ceil(
-            (double) totalUsers / FRONTEND_PAGE_SIZE
-        );
+                leaderboard.getId(),
+                LeaderboardFilterGenerator.builderWithTag(club.getTag()).build());
+        int totalPages = (int) Math.ceil((double) totalUsers / FRONTEND_PAGE_SIZE);
 
         for (int p = 1; p <= totalPages; p++) {
-            byte[] screenshot =
-                playwrightClient.getCodebloomLeaderboardScreenshot(
-                    p,
-                    club.getTag()
-                );
-            screenshots.add(
-                Pair.of("leaderboard_page_%s.png".formatted(p), screenshot)
-            );
+            byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(p, club.getTag());
+            screenshots.add(Pair.of("leaderboard_page_%s.png".formatted(p), screenshot));
         }
 
         return screenshots;
     }
 
     /**
-     * Loads the page for each discord club's tag, takes a screenshot, and sends a
-     * final Discord message with the winners of the leaderboard.
+     * Loads the page for each discord club's tag, takes a screenshot, and sends a final Discord message with the
+     * winners of the leaderboard.
      *
-     * CANNOT BE ASYNC, WILL BREAK THE FLOW.
+     * <p>CANNOT BE ASYNC, WILL BREAK THE FLOW.
      *
-     * TODO:
+     * <p>TODO:
      * https://codebloom.notion.site/Refactor-create-new-leaderboard-to-load-new-leaderboard-first-then-take-screenshots-of-the-old-page-2a87c85563aa809a9ca6dc23a31b0ab2?pvs=74
      */
-    private void sendLeaderboardCompletedDiscordMessage(
-        final DiscordClub club
-    ) {
+    private void sendLeaderboardCompletedDiscordMessage(final DiscordClub club) {
         log.info("Connecting to JDA client...");
         jdaClient.connect();
         try {
-            var latestLeaderboard =
-                leaderboardRepository.getRecentLeaderboardMetadata();
-            var screenshots = getScreenshotsForRecentLeaderboard(
-                latestLeaderboard,
-                club
-            );
+            var latestLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+            var screenshots = getScreenshotsForRecentLeaderboard(latestLeaderboard, club);
 
-            LeaderboardFilterOptions options =
-                LeaderboardFilterGenerator.builderWithTag(club.getTag())
+            LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                     .page(1)
                     .pageSize(5)
                     .build();
 
             List<UserWithScore> users =
-                leaderboardRepository.getLeaderboardUsersById(
-                    latestLeaderboard.getId(),
-                    options
-                );
+                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options);
 
-            Leaderboard currentLeaderboard =
-                leaderboardRepository.getRecentLeaderboardMetadata();
+            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
             String description = String.format(
-                """
+                    """
                 Dear %s users,
 
                 CONGRATS ON THE WINNERS FROM THIS LEADERBOARD!
@@ -143,123 +117,79 @@ public class DiscordClubManager {
                 Codebloom
                 <%s>
                 """,
-                club.getName(),
-                getUser(users, 0)
-                    .map(UserWithScore::getDiscordId)
-                    .orElse("N/A"),
-                getUser(users, 0)
-                    .map(UserWithScore::getTotalScore)
-                    .map(String::valueOf)
-                    .orElse("N/A"),
-                getUser(users, 1)
-                    .map(UserWithScore::getDiscordId)
-                    .orElse("N/A"),
-                getUser(users, 1)
-                    .map(UserWithScore::getTotalScore)
-                    .map(String::valueOf)
-                    .orElse("N/A"),
-                getUser(users, 2)
-                    .map(UserWithScore::getDiscordId)
-                    .orElse("N/A"),
-                getUser(users, 2)
-                    .map(UserWithScore::getTotalScore)
-                    .map(String::valueOf)
-                    .orElse("N/A"),
-                serverUrlUtils.getUrl()
-            );
+                    club.getName(),
+                    getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
+                    getUser(users, 0)
+                            .map(UserWithScore::getTotalScore)
+                            .map(String::valueOf)
+                            .orElse("N/A"),
+                    getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
+                    getUser(users, 1)
+                            .map(UserWithScore::getTotalScore)
+                            .map(String::valueOf)
+                            .orElse("N/A"),
+                    getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
+                    getUser(users, 2)
+                            .map(UserWithScore::getTotalScore)
+                            .map(String::valueOf)
+                            .orElse("N/A"),
+                    serverUrlUtils.getUrl());
 
-            var guildId = club
-                .getDiscordClubMetadata()
-                .flatMap(DiscordClubMetadata::getGuildId);
-            var channelId = club
-                .getDiscordClubMetadata()
-                .flatMap(DiscordClubMetadata::getLeaderboardChannelId);
+            var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
+            var channelId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
 
             if (guildId.isEmpty() || channelId.isEmpty()) {
-                log.error(
-                    "club {} is skipped because of missing metadata",
-                    club.getName()
-                );
+                log.error("club {} is skipped because of missing metadata", club.getName());
                 return;
             }
 
-            jdaClient.sendEmbedWithImages(
-                EmbeddedImagesMessageOptions.builder()
+            jdaClient.sendEmbedWithImages(EmbeddedImagesMessageOptions.builder()
                     .guildId(Long.valueOf(guildId.get()))
                     .channelId(Long.valueOf(channelId.get()))
                     .description(description)
-                    .title(
-                        "🏆🏆🏆 %s - Final Leaderboard Score for %s".formatted(
-                            currentLeaderboard.getName(),
-                            club.getName()
-                        )
-                    )
-                    .footerText(
-                        "Codebloom - LeetCode Leaderboard for %s".formatted(
-                            club.getName()
-                        )
-                    )
-                    .footerIcon(
-                        "%s/favicon.ico".formatted(serverUrlUtils.getUrl())
-                    )
+                    .title("🏆🏆🏆 %s - Final Leaderboard Score for %s"
+                            .formatted(currentLeaderboard.getName(), club.getName()))
+                    .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
+                    .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
                     .color(new Color(69, 129, 103))
-                    .filesBytes(
-                        screenshots.stream().map(Pair::getRight).toList()
-                    )
+                    .filesBytes(screenshots.stream().map(Pair::getRight).toList())
                     .fileNames(screenshots.stream().map(Pair::getLeft).toList())
-                    .build()
-            );
+                    .build());
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    private void sendWeeklyLeaderboardUpdateDiscordMessage(
-        final DiscordClub club
-    ) {
+    private void sendWeeklyLeaderboardUpdateDiscordMessage(final DiscordClub club) {
         log.info("Connecting to JDA client...");
         jdaClient.connect();
         try {
-            var latestLeaderboard =
-                leaderboardRepository.getRecentLeaderboardMetadata();
-            var screenshots = getScreenshotsForRecentLeaderboard(
-                latestLeaderboard,
-                club
-            );
+            var latestLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+            var screenshots = getScreenshotsForRecentLeaderboard(latestLeaderboard, club);
 
-            LeaderboardFilterOptions options =
-                LeaderboardFilterGenerator.builderWithTag(club.getTag())
+            LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                     .page(1)
                     .pageSize(5)
                     .build();
 
             List<UserWithScore> users =
-                leaderboardRepository.getLeaderboardUsersById(
-                    latestLeaderboard.getId(),
-                    options
-                );
+                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options);
 
-            Leaderboard currentLeaderboard =
-                leaderboardRepository.getRecentLeaderboardMetadata();
+            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
-            LocalDateTime shouldExpireByTime = Optional.ofNullable(
-                currentLeaderboard.getShouldExpireBy()
-            )
-                // this orElse will only trigger if leaderboard doesn't have expiration time.
-                .orElse(StandardizedLocalDateTime.now());
+            LocalDateTime shouldExpireByTime = Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
+                    // this orElse will only trigger if leaderboard doesn't have expiration time.
+                    .orElse(StandardizedLocalDateTime.now());
 
-            Duration remaining = Duration.between(
-                StandardizedLocalDateTime.now(),
-                shouldExpireByTime
-            );
+            Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireByTime);
 
             long daysLeft = remaining.toDays();
             long hoursLeft = remaining.toHours() % 24;
             long minutesLeft = remaining.toMinutes() % 60;
 
             String description = String.format(
-                """
+                    """
                 Dear %s users,
 
                 Here is a weekly update on the LeetCode leaderboard for our very own members!
@@ -279,75 +209,47 @@ public class DiscordClubManager {
                 Codebloom
                 <%s>
                 """,
-                club.getName(),
-                getUser(users, 0)
-                    .map(UserWithScore::getDiscordId)
-                    .orElse("N/A"),
-                getUser(users, 0)
-                    .map(UserWithScore::getTotalScore)
-                    .map(String::valueOf)
-                    .orElse("N/A"),
-                getUser(users, 1)
-                    .map(UserWithScore::getDiscordId)
-                    .orElse("N/A"),
-                getUser(users, 1)
-                    .map(UserWithScore::getTotalScore)
-                    .map(String::valueOf)
-                    .orElse("N/A"),
-                getUser(users, 2)
-                    .map(UserWithScore::getDiscordId)
-                    .orElse("N/A"),
-                getUser(users, 2)
-                    .map(UserWithScore::getTotalScore)
-                    .map(String::valueOf)
-                    .orElse("N/A"),
-                daysLeft,
-                hoursLeft,
-                minutesLeft,
-                serverUrlUtils.getUrl()
-            );
+                    club.getName(),
+                    getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
+                    getUser(users, 0)
+                            .map(UserWithScore::getTotalScore)
+                            .map(String::valueOf)
+                            .orElse("N/A"),
+                    getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
+                    getUser(users, 1)
+                            .map(UserWithScore::getTotalScore)
+                            .map(String::valueOf)
+                            .orElse("N/A"),
+                    getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
+                    getUser(users, 2)
+                            .map(UserWithScore::getTotalScore)
+                            .map(String::valueOf)
+                            .orElse("N/A"),
+                    daysLeft,
+                    hoursLeft,
+                    minutesLeft,
+                    serverUrlUtils.getUrl());
 
-            var guildId = club
-                .getDiscordClubMetadata()
-                .flatMap(DiscordClubMetadata::getGuildId);
-            var channelId = club
-                .getDiscordClubMetadata()
-                .flatMap(DiscordClubMetadata::getLeaderboardChannelId);
+            var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
+            var channelId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
 
             if (guildId.isEmpty() || channelId.isEmpty()) {
-                log.error(
-                    "club {} is skipped because of missing metadata",
-                    club.getName()
-                );
+                log.error("club {} is skipped because of missing metadata", club.getName());
                 return;
             }
 
-            jdaClient.sendEmbedWithImages(
-                EmbeddedImagesMessageOptions.builder()
+            jdaClient.sendEmbedWithImages(EmbeddedImagesMessageOptions.builder()
                     .guildId(Long.valueOf(guildId.get()))
                     .channelId(Long.valueOf(channelId.get()))
                     .description(description)
-                    .title(
-                        "%s - Weekly Leaderboard Update for %s".formatted(
-                            currentLeaderboard.getName(),
-                            club.getName()
-                        )
-                    )
-                    .footerText(
-                        "Codebloom - LeetCode Leaderboard for %s".formatted(
-                            club.getName()
-                        )
-                    )
-                    .footerIcon(
-                        "%s/favicon.ico".formatted(serverUrlUtils.getUrl())
-                    )
+                    .title("%s - Weekly Leaderboard Update for %s"
+                            .formatted(currentLeaderboard.getName(), club.getName()))
+                    .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
+                    .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
                     .color(new Color(69, 129, 103))
-                    .filesBytes(
-                        screenshots.stream().map(Pair::getRight).toList()
-                    )
+                    .filesBytes(screenshots.stream().map(Pair::getRight).toList())
                     .fileNames(screenshots.stream().map(Pair::getLeft).toList())
-                    .build()
-            );
+                    .build());
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

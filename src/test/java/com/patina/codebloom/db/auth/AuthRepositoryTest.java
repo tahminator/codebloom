@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.patina.codebloom.common.db.models.auth.Auth;
 import com.patina.codebloom.common.db.repos.auth.AuthRepository;
 import com.patina.codebloom.db.BaseRepositoryTest;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
@@ -35,9 +34,9 @@ public class AuthRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void createTestAuth() {
         testAuth = Auth.builder()
-            .token(UUID.randomUUID().toString())
-            .csrf(UUID.randomUUID().toString())
-            .build();
+                .token(UUID.randomUUID().toString())
+                .csrf(UUID.randomUUID().toString())
+                .build();
 
         authRepository.createAuth(testAuth);
     }

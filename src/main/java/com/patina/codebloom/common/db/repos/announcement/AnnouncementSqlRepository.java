@@ -22,15 +22,14 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private Announcement parseResultSetToTag(final ResultSet resultSet)
-        throws SQLException {
+    private Announcement parseResultSetToTag(final ResultSet resultSet) throws SQLException {
         return Announcement.builder()
-            .id(resultSet.getString("id"))
-            .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
-            .expiresAt(resultSet.getObject("expiresAt", OffsetDateTime.class))
-            .showTimer(resultSet.getBoolean("showTimer"))
-            .message(resultSet.getString("message"))
-            .build();
+                .id(resultSet.getString("id"))
+                .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
+                .expiresAt(resultSet.getObject("expiresAt", OffsetDateTime.class))
+                .showTimer(resultSet.getBoolean("showTimer"))
+                .message(resultSet.getString("message"))
+                .build();
     }
 
     @Override
@@ -114,10 +113,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to fetch most recent announcement",
-                e
-            );
+            throw new RuntimeException("Failed to fetch most recent announcement", e);
         }
 
         return null;
@@ -142,9 +138,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     announcement.setId(rs.getString("id"));
-                    announcement.setCreatedAt(
-                        rs.getObject("createdAt", OffsetDateTime.class)
-                    );
+                    announcement.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
                     return true;
                 }
             }
@@ -170,10 +164,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
 
             return rowsAffected == 1;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to delete announcement by ID",
-                e
-            );
+            throw new RuntimeException("Failed to delete announcement by ID", e);
         }
     }
 
@@ -189,9 +180,7 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
             WHERE
                 id = :id
             """;
-        try (
-            NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)
-        ) {
+        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("expiresAt", announcement.getExpiresAt());
             stmt.setBoolean("showTimer", announcement.isShowTimer());
             stmt.setString("message", announcement.getMessage());

@@ -11,10 +11,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
-/**
- * This should only ever be used to do a verification on a user's Leetcode
- * profile. Do NOT leak the key.
- */
+/** This should only ever be used to do a verification on a user's Leetcode profile. Do NOT leak the key. */
 @Getter
 @Builder
 @Jacksonized
@@ -57,23 +54,19 @@ public class PrivateUserDto {
 
     public static PrivateUserDto fromUser(final User user) {
         return PrivateUserDto.builder()
-            .id(user.getId())
-            .discordId(user.getDiscordId())
-            .discordName(user.getDiscordName())
-            .leetcodeUsername(user.getLeetcodeUsername())
-            .nickname(user.getNickname())
-            .admin(user.isAdmin())
-            .profileUrl(user.getProfileUrl())
-            .tags(user.getTags())
-            .verifyKey(user.getVerifyKey())
-            .schoolEmail(user.getSchoolEmail())
-            .achievements(
-                user
-                    .getAchievements()
-                    .stream()
-                    .map(AchievementDto::fromAchievement)
-                    .toList()
-            )
-            .build();
+                .id(user.getId())
+                .discordId(user.getDiscordId())
+                .discordName(user.getDiscordName())
+                .leetcodeUsername(user.getLeetcodeUsername())
+                .nickname(user.getNickname())
+                .admin(user.isAdmin())
+                .profileUrl(user.getProfileUrl())
+                .tags(user.getTags())
+                .verifyKey(user.getVerifyKey())
+                .schoolEmail(user.getSchoolEmail())
+                .achievements(user.getAchievements().stream()
+                        .map(AchievementDto::fromAchievement)
+                        .toList())
+                .build();
     }
 }

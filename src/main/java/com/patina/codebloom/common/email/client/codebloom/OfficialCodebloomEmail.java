@@ -16,11 +16,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 /**
- * This is the official Codebloom email client which we use to interface with
- * our actual users.
+ * This is the official Codebloom email client which we use to interface with our actual users.
  *
- * For example, we use this client to send emails to users who are trying to
- * verify their school status.
+ * <p>For example, we use this client to send emails to users who are trying to verify their school status.
  */
 @Component
 @EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
@@ -29,9 +27,7 @@ public class OfficialCodebloomEmail extends Email {
     private final OfficialCodebloomEmailProperties emailProperties;
     private Session session;
 
-    public OfficialCodebloomEmail(
-        final OfficialCodebloomEmailProperties emailProperties
-    ) {
+    public OfficialCodebloomEmail(final OfficialCodebloomEmailProperties emailProperties) {
         this.emailProperties = emailProperties;
         final Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailProperties.getHost());
@@ -40,23 +36,15 @@ public class OfficialCodebloomEmail extends Email {
         properties.setProperty("mail.smtp.starttls.required", "true");
         properties.setProperty("mail.smtp.auth", "true");
 
-        session = Session.getInstance(
-            properties,
-            new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(
-                        emailProperties.getUsername(),
-                        emailProperties.getPassword()
-                    );
-                }
+        session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(emailProperties.getUsername(), emailProperties.getPassword());
             }
-        );
+        });
     }
 
-    /**
-     * @deprecated - This is not supported.
-     */
+    /** @deprecated - This is not supported. */
     @Override
     @Deprecated
     public List<Message> getPastMessages() throws EmailException {
@@ -64,27 +52,18 @@ public class OfficialCodebloomEmail extends Email {
     }
 
     @Override
-    public void sendMessage(final SendEmailOptions sendEmailOptions)
-        throws EmailException {
+    public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
         try {
             jakarta.mail.Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(emailProperties.getUsername()));
             message.setRecipient(
-                jakarta.mail.Message.RecipientType.TO,
-                new InternetAddress(sendEmailOptions.getRecipientEmail())
-            );
+                    jakarta.mail.Message.RecipientType.TO, new InternetAddress(sendEmailOptions.getRecipientEmail()));
             message.setSubject(sendEmailOptions.getSubject());
-            message.setContent(
-                sendEmailOptions.getBody(),
-                "text/html; charset=UTF-8"
-            );
+            message.setContent(sendEmailOptions.getBody(), "text/html; charset=UTF-8");
 
             Transport.send(message);
         } catch (Exception e) {
-            throw new EmailException(
-                "Something went wrong when sending message",
-                e
-            );
+            throw new EmailException("Something went wrong when sending message", e);
         }
     }
 
@@ -97,10 +76,7 @@ public class OfficialCodebloomEmail extends Email {
             // TODO - May need to actually test sending an email out, which can be added
             // pretty trivially.
         } catch (Exception e) {
-            throw new EmailException(
-                "Something went wrong when testing connection",
-                e
-            );
+            throw new EmailException("Something went wrong when testing connection", e);
         }
     }
 }

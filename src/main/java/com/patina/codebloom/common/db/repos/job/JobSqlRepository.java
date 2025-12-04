@@ -22,23 +22,16 @@ public class JobSqlRepository implements JobRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private Job parseResultSetToJob(final ResultSet resultSet)
-        throws SQLException {
+    private Job parseResultSetToJob(final ResultSet resultSet) throws SQLException {
         return Job.builder()
-            .id(resultSet.getString("id"))
-            .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
-            .processedAt(
-                resultSet.getObject("processedAt", OffsetDateTime.class)
-            )
-            .completedAt(
-                resultSet.getObject("completedAt", OffsetDateTime.class)
-            )
-            .nextAttemptAt(
-                resultSet.getObject("nextAttemptAt", OffsetDateTime.class)
-            )
-            .status(JobStatus.valueOf(resultSet.getString("status")))
-            .questionId(resultSet.getString("questionId"))
-            .build();
+                .id(resultSet.getString("id"))
+                .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
+                .processedAt(resultSet.getObject("processedAt", OffsetDateTime.class))
+                .completedAt(resultSet.getObject("completedAt", OffsetDateTime.class))
+                .nextAttemptAt(resultSet.getObject("nextAttemptAt", OffsetDateTime.class))
+                .status(JobStatus.valueOf(resultSet.getString("status")))
+                .questionId(resultSet.getString("questionId"))
+                .build();
     }
 
     @Override
@@ -61,12 +54,8 @@ public class JobSqlRepository implements JobRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    job.setCreatedAt(
-                        rs.getObject("createdAt", OffsetDateTime.class)
-                    );
-                    job.setNextAttemptAt(
-                        rs.getObject("nextAttemptAt", OffsetDateTime.class)
-                    );
+                    job.setCreatedAt(rs.getObject("createdAt", OffsetDateTime.class));
+                    job.setNextAttemptAt(rs.getObject("nextAttemptAt", OffsetDateTime.class));
                 }
             }
         } catch (SQLException e) {
@@ -128,11 +117,7 @@ public class JobSqlRepository implements JobRepository {
             """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(
-                1,
-                JobStatus.INCOMPLETE.name(),
-                java.sql.Types.OTHER
-            );
+            stmt.setObject(1, JobStatus.INCOMPLETE.name(), java.sql.Types.OTHER);
             stmt.setInt(2, maxJobs);
 
             try (ResultSet rs = stmt.executeQuery()) {

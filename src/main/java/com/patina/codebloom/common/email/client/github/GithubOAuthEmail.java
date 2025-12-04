@@ -16,10 +16,7 @@ import java.util.Properties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/**
- * Provides read-only access to the Github email account in order to access the
- * OAuth code.
- */
+/** Provides read-only access to the Github email account in order to access the OAuth code. */
 @Component
 @EnableConfigurationProperties(GithubOAuthEmailProperties.class)
 public class GithubOAuthEmail extends Email {
@@ -43,11 +40,7 @@ public class GithubOAuthEmail extends Email {
         try {
             final Store store = session.getStore("imap");
 
-            store.connect(
-                emailProperties.getHost(),
-                emailProperties.getUsername(),
-                emailProperties.getPassword()
-            );
+            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);
@@ -60,9 +53,7 @@ public class GithubOAuthEmail extends Email {
                     if (m.isMimeType("text/plain")) {
                         content = "";
                         InputStream is = m.getInputStream();
-                        BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(is)
-                        );
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                         StringBuilder sb = new StringBuilder();
                         String thisLine;
                         while ((thisLine = reader.readLine()) != null) {
@@ -70,13 +61,7 @@ public class GithubOAuthEmail extends Email {
                         }
                         content = sb.toString();
                     }
-                    messages.add(
-                        new Message(
-                            m.getSubject(),
-                            content,
-                            m.getReceivedDate()
-                        )
-                    );
+                    messages.add(new Message(m.getSubject(), content, m.getReceivedDate()));
                 } catch (Exception e) {
                     System.err.println(e);
                 }
@@ -86,23 +71,15 @@ public class GithubOAuthEmail extends Email {
 
             return messages;
         } catch (Exception e) {
-            throw new EmailException(
-                "Something went wrong when receiving past messages",
-                e
-            );
+            throw new EmailException("Something went wrong when receiving past messages", e);
         }
     }
 
-    /**
-     * @deprecated - This is not supported.
-     */
+    /** @deprecated - This is not supported. */
     @Override
     @Deprecated
-    public void sendMessage(final SendEmailOptions sendEmailOptions)
-        throws EmailException {
-        throw new UnsupportedOperationException(
-            "GithubOAuthEmail does not support sending messages."
-        );
+    public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
+        throw new UnsupportedOperationException("GithubOAuthEmail does not support sending messages.");
     }
 
     @Override
@@ -110,11 +87,7 @@ public class GithubOAuthEmail extends Email {
         try {
             final Store store = session.getStore("imap");
 
-            store.connect(
-                emailProperties.getHost(),
-                emailProperties.getUsername(),
-                emailProperties.getPassword()
-            );
+            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);
@@ -122,10 +95,7 @@ public class GithubOAuthEmail extends Email {
             emailFolder.close();
             store.close();
         } catch (Exception e) {
-            throw new EmailException(
-                "Something went wrong when testing connection",
-                e
-            );
+            throw new EmailException("Something went wrong when testing connection", e);
         }
     }
 }

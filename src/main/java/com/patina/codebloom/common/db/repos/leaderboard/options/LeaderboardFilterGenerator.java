@@ -8,13 +8,8 @@ import java.util.function.Consumer;
 
 public class LeaderboardFilterGenerator {
 
-    /**
-     * Return a list of {@link LeaderboardFilterOptions} where each opts object will
-     * have exactly one flag on.
-     */
-    public static List<
-        Pair<LeaderboardFilterOptions, Tag>
-    > generateAllSupportedTagToggles() {
+    /** Return a list of {@link LeaderboardFilterOptions} where each opts object will have exactly one flag on. */
+    public static List<Pair<LeaderboardFilterOptions, Tag>> generateAllSupportedTagToggles() {
         List<Pair<LeaderboardFilterOptions, Tag>> list = new ArrayList<>();
 
         list.add(Pair.of(withOnlyTrue(opt -> opt.sbu(true)), Tag.Sbu));
@@ -24,18 +19,14 @@ public class LeaderboardFilterGenerator {
         list.add(Pair.of(withOnlyTrue(opt -> opt.baruch(true)), Tag.Baruch));
         list.add(Pair.of(withOnlyTrue(opt -> opt.rpi(true)), Tag.Rpi));
         list.add(Pair.of(withOnlyTrue(opt -> opt.ccny(true)), Tag.Ccny));
-        list.add(
-            Pair.of(withOnlyTrue(opt -> opt.columbia(true)), Tag.Columbia)
-        );
+        list.add(Pair.of(withOnlyTrue(opt -> opt.columbia(true)), Tag.Columbia));
         list.add(Pair.of(withOnlyTrue(opt -> opt.cornell(true)), Tag.Cornell));
         list.add(Pair.of(withOnlyTrue(opt -> opt.bmcc(true)), Tag.Bmcc));
 
         return list;
     }
 
-    public static LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder builderWithTag(
-        final Tag tag
-    ) {
+    public static LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder builderWithTag(final Tag tag) {
         return switch (tag) {
             case Patina -> LeaderboardFilterOptions.builder().patina(true);
             case Hunter -> LeaderboardFilterOptions.builder().hunter(true);
@@ -52,12 +43,8 @@ public class LeaderboardFilterGenerator {
     }
 
     private static LeaderboardFilterOptions withOnlyTrue(
-        final Consumer<
-            LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder
-        > flagSetter
-    ) {
-        LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder builder =
-            LeaderboardFilterOptions.builder();
+            final Consumer<LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder> flagSetter) {
+        LeaderboardFilterOptions.LeaderboardFilterOptionsBuilder builder = LeaderboardFilterOptions.builder();
 
         flagSetter.accept(builder);
         return builder.build();

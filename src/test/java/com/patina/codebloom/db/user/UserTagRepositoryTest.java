@@ -44,19 +44,14 @@ public class UserTagRepositoryTest extends BaseRepositoryTest {
 
     @BeforeAll
     void createUserTag() {
-        testUserTag = UserTag.builder()
-            .userId(mockUserId)
-            .tag(Tag.Patina)
-            .build();
+        testUserTag = UserTag.builder().userId(mockUserId).tag(Tag.Patina).build();
 
         userTagRepository.createTag(testUserTag);
     }
 
     @AfterAll
     void cleanUp() {
-        boolean isSuccessful = userTagRepository.deleteTagByTagId(
-            testUserTag.getId()
-        );
+        boolean isSuccessful = userTagRepository.deleteTagByTagId(testUserTag.getId());
 
         if (!isSuccessful) {
             fail("Failed deleting Tag by TagId.");
@@ -75,11 +70,8 @@ public class UserTagRepositoryTest extends BaseRepositoryTest {
     @Order(2)
     void testFindAllTagsByUserIdWithPointOfTime() {
         List<UserTag> tagList = userTagRepository.findTagsByUserId(
-            mockUserId,
-            UserTagFilterOptions.builder()
-                .pointOfTime(OffsetDateTime.MIN)
-                .build()
-        );
+                mockUserId,
+                UserTagFilterOptions.builder().pointOfTime(OffsetDateTime.MIN).build());
         assertNotNull(tagList);
         assertEquals(0, tagList.size());
     }
@@ -87,38 +79,24 @@ public class UserTagRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testFindAllTagsByUserId() {
-        ArrayList<UserTag> tagList = userTagRepository.findTagsByUserId(
-            mockUserId
-        );
+        ArrayList<UserTag> tagList = userTagRepository.findTagsByUserId(mockUserId);
         assertNotNull(tagList);
         assertFalse(tagList.isEmpty());
-        assertTrue(
-            tagList
-                .stream()
-                .anyMatch(tag -> tag.getId().equals(testUserTag.getId()))
-        );
+        assertTrue(tagList.stream().anyMatch(tag -> tag.getId().equals(testUserTag.getId())));
     }
 
     @Test
     @Order(4)
     void testDeleteTagByUserIdAndTag() {
-        deletableUserTag = UserTag.builder()
-            .userId(mockUserId2)
-            .tag(Tag.Patina)
-            .build();
+        deletableUserTag = UserTag.builder().userId(mockUserId2).tag(Tag.Patina).build();
 
         userTagRepository.createTag(deletableUserTag);
 
-        UserTag found = userTagRepository.findTagByTagId(
-            deletableUserTag.getId()
-        );
+        UserTag found = userTagRepository.findTagByTagId(deletableUserTag.getId());
         assertNotNull(found);
         assertEquals(deletableUserTag.getId(), found.getId());
 
-        boolean deleted = userTagRepository.deleteTagByUserIdAndTag(
-            mockUserId2,
-            deletableUserTag.getTag()
-        );
+        boolean deleted = userTagRepository.deleteTagByUserIdAndTag(mockUserId2, deletableUserTag.getTag());
         assertTrue(deleted);
     }
 }

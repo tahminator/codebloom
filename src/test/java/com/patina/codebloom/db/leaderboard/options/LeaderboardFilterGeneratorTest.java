@@ -14,48 +14,43 @@ import org.junit.jupiter.api.Test;
 public class LeaderboardFilterGeneratorTest {
 
     public static final Set<Tag> VALID_LEADERBOARD_TAGS = Set.of(
-        Tag.Patina,
-        Tag.Baruch,
-        Tag.Bmcc,
-        Tag.Ccny,
-        Tag.Sbu,
-        Tag.Columbia,
-        Tag.Cornell,
-        Tag.Hunter,
-        Tag.Nyu,
-        Tag.Rpi
-    );
+            Tag.Patina,
+            Tag.Baruch,
+            Tag.Bmcc,
+            Tag.Ccny,
+            Tag.Sbu,
+            Tag.Columbia,
+            Tag.Cornell,
+            Tag.Hunter,
+            Tag.Nyu,
+            Tag.Rpi);
 
     public static final Set<Tag> ALL_LEADERBOARD_TAGS = Set.of(
-        Tag.Patina,
-        Tag.Gwc,
-        Tag.Baruch,
-        Tag.Bmcc,
-        Tag.Ccny,
-        Tag.Sbu,
-        Tag.Columbia,
-        Tag.Cornell,
-        Tag.Hunter,
-        Tag.Nyu,
-        Tag.Rpi
-    );
+            Tag.Patina,
+            Tag.Gwc,
+            Tag.Baruch,
+            Tag.Bmcc,
+            Tag.Ccny,
+            Tag.Sbu,
+            Tag.Columbia,
+            Tag.Cornell,
+            Tag.Hunter,
+            Tag.Nyu,
+            Tag.Rpi);
 
     @Test
     void expectLeaderboardFilterGeneratorToReturnAllValidTags() {
         var leaderboardTags = new HashSet<>();
         leaderboardTags.addAll(VALID_LEADERBOARD_TAGS);
         List<Pair<LeaderboardFilterOptions, Tag>> listOfPairs =
-            LeaderboardFilterGenerator.generateAllSupportedTagToggles();
+                LeaderboardFilterGenerator.generateAllSupportedTagToggles();
         for (var pair : listOfPairs) {
             var tag = pair.getRight();
 
             if (!leaderboardTags.remove(tag)) {
-                fail(
-                    String.format(
+                fail(String.format(
                         "Generator returned a tag that is not included in VALID_LEADERBOARD_TAGS. Tag: %s",
-                        tag.getResolvedName()
-                    )
-                );
+                        tag.getResolvedName()));
             }
         }
 
@@ -66,7 +61,7 @@ public class LeaderboardFilterGeneratorTest {
     void expectBuilderWithTagToCreateCorrectFilterOptions() {
         for (Tag tag : ALL_LEADERBOARD_TAGS) {
             LeaderboardFilterOptions options =
-                LeaderboardFilterGenerator.builderWithTag(tag).build();
+                    LeaderboardFilterGenerator.builderWithTag(tag).build();
 
             switch (tag) {
                 case Patina -> assertTrue(options.isPatina());
@@ -88,7 +83,7 @@ public class LeaderboardFilterGeneratorTest {
     void expectBuilderWithTagToSetOnlyOneTagTrue() {
         for (Tag tag : ALL_LEADERBOARD_TAGS) {
             LeaderboardFilterOptions options =
-                LeaderboardFilterGenerator.builderWithTag(tag).build();
+                    LeaderboardFilterGenerator.builderWithTag(tag).build();
 
             int trueCount = 0;
             if (options.isPatina()) {
@@ -125,12 +120,7 @@ public class LeaderboardFilterGeneratorTest {
                 trueCount++;
             }
 
-            assertEquals(
-                1,
-                trueCount,
-                "Expected exactly one tag to be true for tag: " +
-                    tag.getResolvedName()
-            );
+            assertEquals(1, trueCount, "Expected exactly one tag to be true for tag: " + tag.getResolvedName());
         }
     }
 }

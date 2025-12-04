@@ -1,9 +1,7 @@
 package com.patina.codebloom.db.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -11,8 +9,6 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.db.BaseRepositoryTest;
 import java.util.ArrayList;
-import java.util.UUID;
-import javassist.expr.NewArray;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,15 +40,15 @@ public class UserRepositoryTest extends BaseRepositoryTest {
         String uniqueDiscordId = "test-" + System.currentTimeMillis();
 
         testUser = User.builder()
-            .discordId(uniqueDiscordId)
-            .discordName("TestUser")
-            .leetcodeUsername("testuser")
-            .nickname("TestNickname")
-            .admin(false)
-            .schoolEmail("test@example.com")
-            .profileUrl("")
-            .tags(new ArrayList<>())
-            .build();
+                .discordId(uniqueDiscordId)
+                .discordName("TestUser")
+                .leetcodeUsername("testuser")
+                .nickname("TestNickname")
+                .admin(false)
+                .schoolEmail("test@example.com")
+                .profileUrl("")
+                .tags(new ArrayList<>())
+                .build();
 
         userRepository.createUser(testUser);
     }
@@ -84,9 +80,7 @@ public class UserRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testGetUserByLeetcodeUsername() {
-        User found = userRepository.getUserByLeetcodeUsername(
-            testUser.getLeetcodeUsername()
-        );
+        User found = userRepository.getUserByLeetcodeUsername(testUser.getLeetcodeUsername());
         assertNotNull(found);
         assertEquals(testUser, found);
     }
@@ -134,20 +128,14 @@ public class UserRepositoryTest extends BaseRepositoryTest {
         ArrayList<User> users = userRepository.getAllUsers(1, 5, "");
         assertNotNull(users);
         assertTrue(users.size() >= 0);
-        ArrayList<User> searchResults = userRepository.getAllUsers(
-            1,
-            100,
-            "TestUser"
-        );
+        ArrayList<User> searchResults = userRepository.getAllUsers(1, 100, "TestUser");
         assertTrue(searchResults.contains(testUser));
     }
 
     @Test
     @Order(9)
     void testUserExistsByLeetcodeUsername() {
-        boolean exists = userRepository.userExistsByLeetcodeUsername(
-            testUser.getLeetcodeUsername()
-        );
+        boolean exists = userRepository.userExistsByLeetcodeUsername(testUser.getLeetcodeUsername());
         assertTrue(exists);
     }
 }

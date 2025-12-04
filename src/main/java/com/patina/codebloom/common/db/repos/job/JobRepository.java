@@ -7,18 +7,16 @@ public interface JobRepository {
     /**
      * Creates a new job in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param job - required fields:
-     * <ul>
-     * <li>questionId</li>
-     * <li>status</li>
-     * </ul>
-     * optional fields:
-     * <li>nextAttemptAt</li>
-     * <ul>
-     * </ul>
+     *     <ul>
+     *       <li>questionId
+     *       <li>status
+     *     </ul>
+     *     optional fields:
+     *     <li>nextAttemptAt
+     *         <ul>
+     *     </ul>
      */
     void createJob(Job job);
 
@@ -41,20 +39,19 @@ public interface JobRepository {
     /**
      * Updates an existing job in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param job - required fields:
-     * <ul>
-     * <li>id</li>
-     * </ul>
-     * updatable fields:
-     * <ul>
-     * <li>processedAt</li>
-     * <li>completedAt</li>
-     * <li>nextAttemptAt</li>
-     * <li>status</li>
-     * </ul>
+     *     <ul>
+     *       <li>id
+     *     </ul>
+     *     updatable fields:
+     *     <ul>
+     *       <li>processedAt
+     *       <li>completedAt
+     *       <li>nextAttemptAt
+     *       <li>status
+     *     </ul>
+     *
      * @return true if the update was successful, false otherwise
      */
     boolean updateJob(Job job);

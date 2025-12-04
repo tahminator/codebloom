@@ -12,9 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
- * Please use {@link com.patina.codebloom.jda.client.JDAClient JDAClient} if you
- * intend to utilize/consume the Discord bot.
- *
+ * Please use {@link com.patina.codebloom.jda.client.JDAClient JDAClient} if you intend to utilize/consume the Discord
+ * bot.
  */
 @Component
 @EnableConfigurationProperties(JDAProperties.class)
@@ -25,10 +24,7 @@ public class JDAInitializer {
 
     private final JDAEventListener jdaEventListener;
 
-    public JDAInitializer(
-        final JDAProperties jdaProperties,
-        final JDAEventListener jdaEventListener
-    ) {
+    public JDAInitializer(final JDAProperties jdaProperties, final JDAEventListener jdaEventListener) {
         this.jdaProperties = jdaProperties;
         this.jdaEventListener = jdaEventListener;
     }
@@ -36,11 +32,11 @@ public class JDAInitializer {
     @Bean
     public JDA initializeJda() throws InterruptedException {
         final JDA jda = JDABuilder.createDefault(jdaProperties.getToken())
-            .enableIntents(GatewayIntent.GUILD_MEMBERS)
-            .setChunkingFilter(ChunkingFilter.ALL)
-            .setMemberCachePolicy(MemberCachePolicy.ALL)
-            .addEventListeners(jdaEventListener)
-            .build();
+                .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .setChunkingFilter(ChunkingFilter.ALL)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .addEventListeners(jdaEventListener)
+                .build();
 
         jda.awaitReady();
 

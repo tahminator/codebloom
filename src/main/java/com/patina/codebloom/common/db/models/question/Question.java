@@ -46,9 +46,8 @@ public class Question {
     private String description;
 
     /**
-     * Optional for the case of future proofing. We might end up using AI to award
-     * some points, so there might be a case where we create the DB entry and then
-     * pass it to a message queue to use AI and calculate a score.
+     * Optional for the case of future proofing. We might end up using AI to award some points, so there might be a case
+     * where we create the DB entry and then pass it to a message queue to use AI and calculate a score.
      */
     @NullColumn
     private Integer pointsAwarded;
@@ -78,9 +77,7 @@ public class Question {
     @NullColumn
     private String submissionId;
 
-    /**
-     * Join field, update/create with {@link QuestionTopicRepository}
-     */
+    /** Join field, update/create with {@link QuestionTopicRepository} */
     @JoinColumn
     private List<QuestionTopic> topics;
 }

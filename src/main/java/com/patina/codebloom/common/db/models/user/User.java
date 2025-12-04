@@ -67,14 +67,12 @@ public class User {
     private List<Achievement> achievements = new ArrayList<>();
 
     /**
-     * This operation is permitted, but the tag will not be used in update
-     * operations in the UserRepository. Instead call this method with the parameter
-     * being the add method from
+     * This operation is permitted, but the tag will not be used in update operations in the UserRepository. Instead
+     * call this method with the parameter being the add method from
      * {@link com.patina.codebloom.common.db.repos.usertag.UserTagRepository}
      *
-     * Essentially, this operation should be used to keep the User model up-to-date
-     * with any Tag operations without needlessly querying the database for the full
-     * User object.
+     * <p>Essentially, this operation should be used to keep the User model up-to-date with any Tag operations without
+     * needlessly querying the database for the full User object.
      */
     public void addTag(final UserTag tag) {
         if (tag == null) {

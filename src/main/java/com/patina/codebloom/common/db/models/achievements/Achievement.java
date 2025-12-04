@@ -26,9 +26,7 @@ public class Achievement {
     @NotNullColumn
     private AchievementPlaceEnum place;
 
-    /**
-     * `null` indicates global leaderboard.
-     */
+    /** `null` indicates global leaderboard. */
     @NullColumn
     private Tag leaderboard;
 

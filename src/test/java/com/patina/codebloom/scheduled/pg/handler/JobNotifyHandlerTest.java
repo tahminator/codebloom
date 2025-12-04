@@ -15,9 +15,7 @@ public class JobNotifyHandlerTest {
 
     @BeforeEach
     void setUp() {
-        leetcodeQuestionProcessService = mock(
-            LeetcodeQuestionProcessService.class
-        );
+        leetcodeQuestionProcessService = mock(LeetcodeQuestionProcessService.class);
         jobNotifyHandler = new JobNotifyHandler(leetcodeQuestionProcessService);
     }
 

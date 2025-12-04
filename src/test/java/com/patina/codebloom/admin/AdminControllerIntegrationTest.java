@@ -39,10 +39,7 @@ public class AdminControllerIntegrationTest extends NoJdaRequired {
         RestAssured.baseURI = "http://localhost";
     }
 
-    private String buildTestAdminToggleBody(
-        final String id,
-        final boolean toggleTo
-    ) throws JsonProcessingException {
+    private String buildTestAdminToggleBody(final String id, final boolean toggleTo) throws JsonProcessingException {
         Map<String, Object> body = new HashMap<>();
         body.put("id", id);
         body.put("toggleTo", toggleTo);
@@ -53,34 +50,20 @@ public class AdminControllerIntegrationTest extends NoJdaRequired {
     @Test
     void testAdminToggle() throws JsonProcessingException {
         ApiResponder<UserDto> apiResponder = RestAssured.given()
-            .when()
-            // Everyone should have this user ID on their dev db from the repeated
-            // migration.
-            .header("Content-Type", "application/json")
-            .body(
-                buildTestAdminToggleBody(
-                    "e0b45c9a-9c8f-4a39-9373-39cf2a5f8055",
-                    false
-                )
-            )
-            .post("/api/admin/user/admin/toggle")
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(new TypeRef<ApiResponder<UserDto>>() {});
+                .when()
+                // Everyone should have this user ID on their dev db from the repeated
+                // migration.
+                .header("Content-Type", "application/json")
+                .body(buildTestAdminToggleBody("e0b45c9a-9c8f-4a39-9373-39cf2a5f8055", false))
+                .post("/api/admin/user/admin/toggle")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<ApiResponder<UserDto>>() {});
 
-        assertTrue(
-            apiResponder != null,
-            "Expected apiResponder to not be equal to null"
-        );
-        assertTrue(
-            apiResponder.isSuccess(),
-            "Testing apiResponder success is true"
-        );
-        assertTrue(
-            apiResponder.getMessage() != null,
-            "Testing apiResponder message is not null"
-        );
+        assertTrue(apiResponder != null, "Expected apiResponder to not be equal to null");
+        assertTrue(apiResponder.isSuccess(), "Testing apiResponder success is true");
+        assertTrue(apiResponder.getMessage() != null, "Testing apiResponder message is not null");
         UserDto user = apiResponder.getPayload();
         assertTrue(user != null, "Expected user to not be equal to null");
         assertTrue(!user.isAdmin(), "Expected user to not be admin");

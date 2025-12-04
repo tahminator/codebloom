@@ -12,9 +12,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class UserFilterOptions {
 
-    /**
-     * null indicates no preference to time.
-     */
+    /** null indicates no preference to time. */
     @Builder.Default
     private OffsetDateTime pointOfTime = null;
 

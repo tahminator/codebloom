@@ -8,9 +8,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 public class AlternativeSwaggerController {
 
-    /**
-     * This method is used by the frontend team. No need to document it.
-     */
+    /** This method is used by the frontend team. No need to document it. */
     @GetMapping("/swagger")
     @Operation(hidden = true)
     public RedirectView redirectToSwaggerHtml() {

@@ -13,7 +13,6 @@ public interface AnnouncementRepository {
     /**
      * @note The id property of the object will be overriden.
      * @note the returned boolean indicates if the operation was a success or not.
-     *
      */
     boolean createAnnouncement(Announcement announcement);
 

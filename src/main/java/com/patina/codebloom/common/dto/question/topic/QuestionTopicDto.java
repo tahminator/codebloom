@@ -32,15 +32,13 @@ public class QuestionTopicDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createdAt;
 
-    public static QuestionTopicDto fromQuestionTopic(
-        final QuestionTopic questionTopic
-    ) {
+    public static QuestionTopicDto fromQuestionTopic(final QuestionTopic questionTopic) {
         return QuestionTopicDto.builder()
-            .id(questionTopic.getId())
-            .questionId(questionTopic.getQuestionId())
-            .topicSlug(questionTopic.getTopicSlug())
-            .topic(questionTopic.getTopic())
-            .createdAt(questionTopic.getCreatedAt())
-            .build();
+                .id(questionTopic.getId())
+                .questionId(questionTopic.getQuestionId())
+                .topicSlug(questionTopic.getTopicSlug())
+                .topic(questionTopic.getTopic())
+                .createdAt(questionTopic.getCreatedAt())
+                .build();
     }
 }

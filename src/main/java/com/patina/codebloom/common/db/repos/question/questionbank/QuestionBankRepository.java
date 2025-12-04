@@ -13,19 +13,17 @@ public interface QuestionBankRepository {
     QuestionBank getQuestionBySlug(String slug);
 
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param inputQuestion - overridable fields:
-     * <ul>
-     * <li>questionSlug</li>
-     * <li>questionDifficulty</li>
-     * <li>questionNumber</li>
-     * <li>questionLink</li>
-     * <li>questionTitle</li>
-     * <li>description</li>
-     * <li>acceptanceRate</li>
-     * </ul>
+     *     <ul>
+     *       <li>questionSlug
+     *       <li>questionDifficulty
+     *       <li>questionNumber
+     *       <li>questionLink
+     *       <li>questionTitle
+     *       <li>description
+     *       <li>acceptanceRate
+     *     </ul>
      */
     boolean updateQuestion(QuestionBank inputQuestion);
 

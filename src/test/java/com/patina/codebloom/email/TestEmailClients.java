@@ -16,9 +16,7 @@ public class TestEmailClients extends NoJdaRequired {
 
     @Autowired
     public TestEmailClients(
-        final GithubOAuthEmail githubOAuthEmail,
-        final OfficialCodebloomEmail officialCodebloomEmail
-    ) {
+            final GithubOAuthEmail githubOAuthEmail, final OfficialCodebloomEmail officialCodebloomEmail) {
         this.githubOAuthEmail = githubOAuthEmail;
         this.officialCodebloomEmail = officialCodebloomEmail;
     }

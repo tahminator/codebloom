@@ -42,31 +42,23 @@ public class JWTClientImpl implements JWTClient {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
-    /**
-     * Create the JWT token, along with when it should expire.
-     */
-    public <T> String encode(final T obj, final Duration expiresIn)
-        throws JsonProcessingException {
+    /** Create the JWT token, along with when it should expire. */
+    public <T> String encode(final T obj, final Duration expiresIn) throws JsonProcessingException {
         String payload = objectMapper.writeValueAsString(obj);
         return JWT.create()
-            .withClaim("payload", payload)
-            .withExpiresAt(Instant.now().plus(expiresIn))
-            .sign(algorithm);
+                .withClaim("payload", payload)
+                .withExpiresAt(Instant.now().plus(expiresIn))
+                .sign(algorithm);
     }
 
-    /**
-     * Create the JWT token, default of 15 minute expiration.
-     */
+    /** Create the JWT token, default of 15 minute expiration. */
     public <T> String encode(final T obj) throws JsonProcessingException {
         return encode(obj, Duration.ofMinutes(15L));
     }
 
-    /**
-     * Parse the JWT token back into a valid Object. Will throw if expired or unable
-     * to verify JWT.
-     */
+    /** Parse the JWT token back into a valid Object. Will throw if expired or unable to verify JWT. */
     public <T> T decode(final String token, final Class<T> clazz)
-        throws JsonProcessingException, JWTVerificationException {
+            throws JsonProcessingException, JWTVerificationException {
         DecodedJWT decodedJWT = jwtVerifier.verify(token);
         String payloadString = decodedJWT.getClaim("payload").asString();
         if (payloadString == null) {

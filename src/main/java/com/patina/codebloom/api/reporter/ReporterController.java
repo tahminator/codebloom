@@ -18,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(
-    name = "Reporter route",
-    description = """
-    This controller allows the frontend to report anything at runtime (log or error), which will then be ingested by the server."""
-)
+@Tag(name = "Reporter route", description = """
+    This controller allows the frontend to report anything at runtime (log or error), which will then be ingested by the server.""")
 @RequestMapping("/api/reporter")
 public class ReporterController {
 
@@ -30,11 +27,7 @@ public class ReporterController {
     private final Env env;
     private final ServerUrlUtils serverUrlUtils;
 
-    public ReporterController(
-        final Reporter reporter,
-        final Env env,
-        final ServerUrlUtils serverUrlUtils
-    ) {
+    public ReporterController(final Reporter reporter, final Env env, final ServerUrlUtils serverUrlUtils) {
         this.reporter = reporter;
         this.env = env;
         this.serverUrlUtils = serverUrlUtils;
@@ -61,41 +54,33 @@ public class ReporterController {
 
     @PostMapping("/error")
     public ResponseEntity<ApiResponder<Empty>> ingestErrors(
-        final @RequestBody IngestErrorsBody ingestErrorBody,
-        final HttpServletRequest request
-    ) {
+            final @RequestBody IngestErrorsBody ingestErrorBody, final HttpServletRequest request) {
         if (!validateOrigin(request)) {
             // don't let the bad actor know it failed.
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
         }
 
-        reporter.error(
-            Report.builder()
+        reporter.error(Report.builder()
                 .data(ingestErrorBody.getTrace())
                 .environments(env.getActiveProfiles())
                 .location(Location.FRONTEND)
-                .build()
-        );
+                .build());
         return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
     }
 
     @PostMapping("/log")
     public ResponseEntity<ApiResponder<Empty>> ingestLog(
-        final @RequestBody IngestLogBody ingestLogBody,
-        final HttpServletRequest request
-    ) {
+            final @RequestBody IngestLogBody ingestLogBody, final HttpServletRequest request) {
         if (!validateOrigin(request)) {
             // don't let the bad actor know it failed.
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
         }
 
-        reporter.log(
-            Report.builder()
+        reporter.log(Report.builder()
                 .data(ingestLogBody.getInfo())
                 .environments(env.getActiveProfiles())
                 .location(Location.FRONTEND)
-                .build()
-        );
+                .build());
         return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
     }
 }

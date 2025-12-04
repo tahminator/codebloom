@@ -18,23 +18,17 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
         this.conn = dbConnection.getConn();
     }
 
-    private WeeklyMessage parseResultSetToWeeklyMessage(
-        final ResultSet resultSet
-    ) throws SQLException {
+    private WeeklyMessage parseResultSetToWeeklyMessage(final ResultSet resultSet) throws SQLException {
         return WeeklyMessage.builder()
-            .id(resultSet.getString("id"))
-            .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
-            .build();
+                .id(resultSet.getString("id"))
+                .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
+                .build();
     }
 
-    private void updateWeeklyMessageWithResultSet(
-        final WeeklyMessage message,
-        final ResultSet resultSet
-    ) throws SQLException {
+    private void updateWeeklyMessageWithResultSet(final WeeklyMessage message, final ResultSet resultSet)
+            throws SQLException {
         message.setId(resultSet.getString("id"));
-        message.setCreatedAt(
-            resultSet.getTimestamp("createdAt").toLocalDateTime()
-        );
+        message.setCreatedAt(resultSet.getTimestamp("createdAt").toLocalDateTime());
     }
 
     @Override
@@ -57,10 +51,7 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Error while retrieving latest weekly message",
-                e
-            );
+            throw new RuntimeException("Error while retrieving latest weekly message", e);
         }
 
         return null;
@@ -114,10 +105,7 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to create new latest weekly message",
-                e
-            );
+            throw new RuntimeException("Failed to create new latest weekly message", e);
         }
 
         return false;
@@ -139,10 +127,7 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
 
             return rowsAffected > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                "Failed to create new latest weekly message",
-                e
-            );
+            throw new RuntimeException("Failed to create new latest weekly message", e);
         }
     }
 

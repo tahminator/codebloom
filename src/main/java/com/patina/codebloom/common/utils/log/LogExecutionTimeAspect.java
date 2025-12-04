@@ -24,10 +24,7 @@ public class LogExecutionTimeAspect {
     }
 
     @Around("@annotation(logExecutionTime)")
-    public Object logExecTime(
-        final ProceedingJoinPoint joinPoint,
-        LogExecutionTime logExecutionTime
-    ) throws Throwable {
+    public Object logExecTime(final ProceedingJoinPoint joinPoint, LogExecutionTime logExecutionTime) throws Throwable {
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long elapsed = System.currentTimeMillis() - start;
@@ -35,18 +32,11 @@ public class LogExecutionTimeAspect {
         log.info("{} executed in {} ms", joinPoint.getSignature(), elapsed);
 
         if (logExecutionTime.reportToDiscord()) {
-            reporter.log(
-                Report.builder()
-                    .data(
-                        "%s executed in %s ms".formatted(
-                            joinPoint.getSignature(),
-                            elapsed
-                        )
-                    )
+            reporter.log(Report.builder()
+                    .data("%s executed in %s ms".formatted(joinPoint.getSignature(), elapsed))
                     .environments(env.getActiveProfiles())
                     .location(Location.BACKEND)
-                    .build()
-            );
+                    .build());
         }
 
         return result;

@@ -29,25 +29,22 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     private QuestionBank testQuestionBank;
 
     @Autowired
-    public QuestionBankRepositoryTest(
-        final QuestionBankRepository questionBankRepository
-    ) {
+    public QuestionBankRepositoryTest(final QuestionBankRepository questionBankRepository) {
         this.questionBankRepository = questionBankRepository;
     }
 
     @BeforeAll
     void createQuestion() {
         testQuestionBank = QuestionBank.builder()
-            .questionSlug("two-sum")
-            .questionTitle("Two Sum")
-            .questionDifficulty(QuestionDifficulty.Easy)
-            .questionNumber(1)
-            .questionLink("https://leetcode.com/problems/two-sum/")
-            .description(
-                "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."
-            )
-            .acceptanceRate(0.8f)
-            .build();
+                .questionSlug("two-sum")
+                .questionTitle("Two Sum")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(1)
+                .questionLink("https://leetcode.com/problems/two-sum/")
+                .description(
+                        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.")
+                .acceptanceRate(0.8f)
+                .build();
 
         questionBankRepository.createQuestion(testQuestionBank);
     }
@@ -55,9 +52,7 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     @AfterAll
     void cleanUp() {
         if (testQuestionBank != null && testQuestionBank.getId() != null) {
-            boolean isSuccessful = questionBankRepository.deleteQuestionById(
-                testQuestionBank.getId()
-            );
+            boolean isSuccessful = questionBankRepository.deleteQuestionById(testQuestionBank.getId());
             if (!isSuccessful) {
                 fail("Failed to delete test question");
             }
@@ -67,126 +62,78 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testGetQuestionById() {
-        QuestionBank possibleTestQuestion =
-            questionBankRepository.getQuestionById(testQuestionBank.getId());
+        QuestionBank possibleTestQuestion = questionBankRepository.getQuestionById(testQuestionBank.getId());
 
-        assertNotNull(
-            possibleTestQuestion,
-            "Retrieved question should not be null"
-        );
+        assertNotNull(possibleTestQuestion, "Retrieved question should not be null");
+        assertEquals(testQuestionBank.getId(), possibleTestQuestion.getId(), "Question IDs should match");
         assertEquals(
-            testQuestionBank.getId(),
-            possibleTestQuestion.getId(),
-            "Question IDs should match"
-        );
+                testQuestionBank.getQuestionSlug(),
+                possibleTestQuestion.getQuestionSlug(),
+                "Question slugs should match");
         assertEquals(
-            testQuestionBank.getQuestionSlug(),
-            possibleTestQuestion.getQuestionSlug(),
-            "Question slugs should match"
-        );
-        assertEquals(
-            testQuestionBank.getQuestionTitle(),
-            possibleTestQuestion.getQuestionTitle(),
-            "Question titles should match"
-        );
+                testQuestionBank.getQuestionTitle(),
+                possibleTestQuestion.getQuestionTitle(),
+                "Question titles should match");
 
-        log.info(
-            "Successfully found question by ID '{}'",
-            testQuestionBank.getQuestionSlug()
-        );
+        log.info("Successfully found question by ID '{}'", testQuestionBank.getQuestionSlug());
     }
 
     @Test
     @Order(2)
     void testGetQuestionBySlug() {
         QuestionBank possibleTestQuestion =
-            questionBankRepository.getQuestionBySlug(
-                testQuestionBank.getQuestionSlug()
-            );
+                questionBankRepository.getQuestionBySlug(testQuestionBank.getQuestionSlug());
 
-        assertNotNull(
-            possibleTestQuestion,
-            "Retrieved question should not be null"
-        );
+        assertNotNull(possibleTestQuestion, "Retrieved question should not be null");
+        assertEquals(testQuestionBank.getId(), possibleTestQuestion.getId(), "Question IDs should match");
         assertEquals(
-            testQuestionBank.getId(),
-            possibleTestQuestion.getId(),
-            "Question IDs should match"
-        );
+                testQuestionBank.getQuestionSlug(),
+                possibleTestQuestion.getQuestionSlug(),
+                "Question slugs should match");
         assertEquals(
-            testQuestionBank.getQuestionSlug(),
-            possibleTestQuestion.getQuestionSlug(),
-            "Question slugs should match"
-        );
-        assertEquals(
-            testQuestionBank.getQuestionTitle(),
-            possibleTestQuestion.getQuestionTitle(),
-            "Question titles should match"
-        );
+                testQuestionBank.getQuestionTitle(),
+                possibleTestQuestion.getQuestionTitle(),
+                "Question titles should match");
 
-        log.info(
-            "Successfully found question by slug '{}'",
-            testQuestionBank.getQuestionSlug()
-        );
+        log.info("Successfully found question by slug '{}'", testQuestionBank.getQuestionSlug());
     }
 
     @Test
     @Order(3)
     void testUpdateQuestion() {
         QuestionBank updatedQuestionBank = QuestionBank.builder()
-            .id(testQuestionBank.getId())
-            .questionSlug(testQuestionBank.getQuestionSlug())
-            .questionTitle("Updated Two Sum")
-            .questionDifficulty(testQuestionBank.getQuestionDifficulty())
-            .questionNumber(testQuestionBank.getQuestionNumber())
-            .questionLink(testQuestionBank.getQuestionLink())
-            .description(testQuestionBank.getDescription())
-            .acceptanceRate(testQuestionBank.getAcceptanceRate())
-            .build();
+                .id(testQuestionBank.getId())
+                .questionSlug(testQuestionBank.getQuestionSlug())
+                .questionTitle("Updated Two Sum")
+                .questionDifficulty(testQuestionBank.getQuestionDifficulty())
+                .questionNumber(testQuestionBank.getQuestionNumber())
+                .questionLink(testQuestionBank.getQuestionLink())
+                .description(testQuestionBank.getDescription())
+                .acceptanceRate(testQuestionBank.getAcceptanceRate())
+                .build();
 
-        boolean result = questionBankRepository.updateQuestion(
-            updatedQuestionBank
-        );
+        boolean result = questionBankRepository.updateQuestion(updatedQuestionBank);
 
         if (!result) {
             fail("Failed to update question");
         }
 
-        testQuestionBank = questionBankRepository.getQuestionById(
-            testQuestionBank.getId()
-        );
+        testQuestionBank = questionBankRepository.getQuestionById(testQuestionBank.getId());
         assertNotNull(testQuestionBank, "Updated question should not be null");
-        assertEquals(
-            "Updated Two Sum",
-            testQuestionBank.getQuestionTitle(),
-            "Question title should be updated"
-        );
+        assertEquals("Updated Two Sum", testQuestionBank.getQuestionTitle(), "Question title should be updated");
     }
 
     @Test
     @Order(4)
     void testGetRandomQuestion() {
-        QuestionBank randomQuestion =
-            questionBankRepository.getRandomQuestion();
+        QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
 
         assertNotNull(randomQuestion, "Random question should not be null");
-        assertNotNull(
-            randomQuestion.getId(),
-            "Random question ID should not be null"
-        );
-        assertNotNull(
-            randomQuestion.getQuestionSlug(),
-            "Random question slug should not be null"
-        );
-        assertNotNull(
-            randomQuestion.getQuestionTitle(),
-            "Random question title should not be null"
-        );
+        assertNotNull(randomQuestion.getId(), "Random question ID should not be null");
+        assertNotNull(randomQuestion.getQuestionSlug(), "Random question slug should not be null");
+        assertNotNull(randomQuestion.getQuestionTitle(), "Random question title should not be null");
 
-        log.info(
-            "Successfully retrieved random question: {}",
-            randomQuestion.getQuestionTitle()
-        );
+        log.info("Successfully retrieved random question: {}", randomQuestion.getQuestionTitle());
     }
 
     @Test
@@ -194,24 +141,18 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     void testGetQuestionsByTopic() {
         LeetcodeTopicEnum topic = LeetcodeTopicEnum.ARRAY;
 
-        List<QuestionBank> questions =
-            questionBankRepository.getQuestionsByTopic(topic);
+        List<QuestionBank> questions = questionBankRepository.getQuestionsByTopic(topic);
 
         assertNotNull(questions, "Questions list should not be null");
 
-        log.info(
-            "Successfully retrieved {} question(s) by topic: {}",
-            questions.size(),
-            topic.getLeetcodeEnum()
-        );
+        log.info("Successfully retrieved {} question(s) by topic: {}", questions.size(), topic.getLeetcodeEnum());
     }
 
     @Test
     @Order(6)
     void testGetQuestionsByDifficulty() {
         QuestionDifficulty difficulty = QuestionDifficulty.Easy;
-        List<QuestionBank> questions =
-            questionBankRepository.getQuestionsByDifficulty(difficulty);
+        List<QuestionBank> questions = questionBankRepository.getQuestionsByDifficulty(difficulty);
 
         assertNotNull(questions, "Questions list should not be null");
         assertFalse(questions.isEmpty(), "Questions list should not be empty");
@@ -221,37 +162,25 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
             if (question.getId().equals(testQuestionBank.getId())) {
                 foundTestQuestion = true;
                 assertEquals(
-                    testQuestionBank.getQuestionSlug(),
-                    question.getQuestionSlug(),
-                    "Question slugs should match"
-                );
+                        testQuestionBank.getQuestionSlug(), question.getQuestionSlug(), "Question slugs should match");
                 assertEquals(
-                    testQuestionBank.getQuestionTitle(),
-                    question.getQuestionTitle(),
-                    "Question titles should match"
-                );
+                        testQuestionBank.getQuestionTitle(),
+                        question.getQuestionTitle(),
+                        "Question titles should match");
                 break;
             }
         }
 
-        assertTrue(
-            foundTestQuestion,
-            "Test question should be found in the list of questions with EASY difficulty"
-        );
+        assertTrue(foundTestQuestion, "Test question should be found in the list of questions with EASY difficulty");
         log.info(
-            "Successfully retrieved {} question(s) by difficulty: EASY, including test question",
-            questions.size()
-        );
+                "Successfully retrieved {} question(s) by difficulty: EASY, including test question", questions.size());
     }
 
     @Test
     @Order(7)
     void testGetAllQuestions() {
         List<QuestionBank> questions = questionBankRepository.getAllQuestions();
-        assertTrue(
-            questions.size() > 0,
-            "There should at least be one question retrieved"
-        );
+        assertTrue(questions.size() > 0, "There should at least be one question retrieved");
 
         log.info("Successfully retrieved {} question(s)", questions.size());
     }

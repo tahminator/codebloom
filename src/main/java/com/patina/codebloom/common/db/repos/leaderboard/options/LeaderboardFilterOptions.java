@@ -56,5 +56,5 @@ public class LeaderboardFilterOptions {
     private final boolean bmcc = false;
 
     public static final LeaderboardFilterOptions DEFAULT =
-        LeaderboardFilterOptions.builder().build();
+            LeaderboardFilterOptions.builder().build();
 }

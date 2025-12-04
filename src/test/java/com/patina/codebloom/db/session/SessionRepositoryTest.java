@@ -40,9 +40,9 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void createSession() {
         testSession = Session.builder()
-            .userId(mockUserId)
-            .expiresAt(StandardizedLocalDateTime.now().plusHours(1))
-            .build();
+                .userId(mockUserId)
+                .expiresAt(StandardizedLocalDateTime.now().plusHours(1))
+                .build();
 
         sessionRepository.createSession(testSession);
         log.info("Created test session with ID: {}", testSession.getId());
@@ -50,9 +50,7 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
 
     @AfterAll
     void deleteSession() {
-        boolean isSuccessful = sessionRepository.deleteSessionById(
-            testSession.getId()
-        );
+        boolean isSuccessful = sessionRepository.deleteSessionById(testSession.getId());
 
         if (!isSuccessful) {
             fail("Failed to delete test announcement");
@@ -70,17 +68,9 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
 
     @Test
     void testGetSessionsByUserId() {
-        List<Session> sessionList = sessionRepository.getSessionsByUserId(
-            mockUserId
-        );
+        List<Session> sessionList = sessionRepository.getSessionsByUserId(mockUserId);
         assertNotNull(sessionList);
         assertFalse(sessionList.isEmpty());
-        assertTrue(
-            sessionList
-                .stream()
-                .anyMatch(session ->
-                    session.getId().equals(testSession.getId())
-                )
-        );
+        assertTrue(sessionList.stream().anyMatch(session -> session.getId().equals(testSession.getId())));
     }
 }

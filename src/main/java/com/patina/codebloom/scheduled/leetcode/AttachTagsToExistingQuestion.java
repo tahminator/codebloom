@@ -25,10 +25,9 @@ public class AttachTagsToExistingQuestion {
     private final LeetcodeClient leetcodeClient;
 
     public AttachTagsToExistingQuestion(
-        final QuestionRepository questionRepository,
-        final QuestionTopicRepository questionTopicRepository,
-        final ThrottledLeetcodeClient throttledLeetcodeClient
-    ) {
+            final QuestionRepository questionRepository,
+            final QuestionTopicRepository questionTopicRepository,
+            final ThrottledLeetcodeClient throttledLeetcodeClient) {
         this.questionRepository = questionRepository;
         this.questionTopicRepository = questionTopicRepository;
         this.leetcodeClient = throttledLeetcodeClient;
@@ -36,11 +35,8 @@ public class AttachTagsToExistingQuestion {
 
     @Scheduled(initialDelay = 0, fixedDelay = 120, timeUnit = TimeUnit.MINUTES)
     void attachTagsToExistingQuestions() {
-        log.info(
-            "Attempting to attach tags to existing questions that are missing any..."
-        );
-        List<Question> questions =
-            questionRepository.getAllQuestionsWithNoTopics();
+        log.info("Attempting to attach tags to existing questions that are missing any...");
+        List<Question> questions = questionRepository.getAllQuestionsWithNoTopics();
 
         if (questions.size() == 0) {
             log.info("No questions with topics. This task is complete.");
@@ -51,9 +47,7 @@ public class AttachTagsToExistingQuestion {
             log.info("Updating question with id of {}", question.getId());
             LeetcodeQuestion leetcodeQuestion;
             try {
-                leetcodeQuestion = leetcodeClient.findQuestionBySlug(
-                    question.getQuestionSlug()
-                );
+                leetcodeQuestion = leetcodeClient.findQuestionBySlug(question.getQuestionSlug());
             } catch (Exception e) {
                 e.printStackTrace();
                 continue;
@@ -63,10 +57,10 @@ public class AttachTagsToExistingQuestion {
                 String leetcodeTopicTagSlug = leetcodeTopicTag.getSlug();
 
                 var newQuestionTopic = QuestionTopic.builder()
-                    .questionId(question.getId())
-                    .topicSlug(leetcodeTopicTagSlug)
-                    .topic(LeetcodeTopicEnum.fromValue(leetcodeTopicTagSlug))
-                    .build();
+                        .questionId(question.getId())
+                        .topicSlug(leetcodeTopicTagSlug)
+                        .topic(LeetcodeTopicEnum.fromValue(leetcodeTopicTagSlug))
+                        .build();
 
                 questionTopicRepository.createQuestionTopic(newQuestionTopic);
             }

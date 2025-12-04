@@ -15,9 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 /**
  * Protector is used to validate whether or not the user is logged in or not.
  *
- * @see <a href=
- * "https://github.com/tahminator/codebloom/blob/main/docs/backend/auth.md">Authentication
- * Documentation</a>
+ * @see <a href= "https://github.com/tahminator/codebloom/blob/main/docs/backend/auth.md">Authentication
+ *     Documentation</a>
  */
 @Component
 public class Protector {
@@ -25,78 +24,48 @@ public class Protector {
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
 
-    public Protector(
-        final SessionRepository sessionRepository,
-        final UserRepository userRepository
-    ) {
+    public Protector(final SessionRepository sessionRepository, final UserRepository userRepository) {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
     }
 
-    public AuthenticationObject validateSession(
-        final HttpServletRequest request
-    ) {
+    public AuthenticationObject validateSession(final HttpServletRequest request) {
         if (request.getCookies() == null) {
-            throw new ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Unauthorized"
-            );
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
         for (Cookie cookie : request.getCookies()) {
-            if (
-                "session_token".equals(cookie.getName()) &&
-                !cookie.getValue().isEmpty()
-            ) {
+            if ("session_token".equals(cookie.getName()) && !cookie.getValue().isEmpty()) {
                 String sessionToken = cookie.getValue();
 
-                Session session = sessionRepository.getSessionById(
-                    sessionToken
-                );
+                Session session = sessionRepository.getSessionById(sessionToken);
 
                 if (session == null) {
-                    throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Unauthorized"
-                    );
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
 
                 LocalDateTime now = StandardizedLocalDateTime.now();
 
                 if (session.getExpiresAt().isBefore(now)) {
-                    throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Unauthorized"
-                    );
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
 
                 User user = userRepository.getUserById(session.getUserId());
                 if (user == null) {
-                    throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Unauthorized"
-                    );
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
 
                 return new AuthenticationObject(user, session);
             }
         }
 
-        throw new ResponseStatusException(
-            HttpStatus.UNAUTHORIZED,
-            "Unauthorized"
-        );
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
     }
 
-    public AuthenticationObject validateAdminSession(
-        final HttpServletRequest request
-    ) {
+    public AuthenticationObject validateAdminSession(final HttpServletRequest request) {
         AuthenticationObject admin = validateSession(request);
         if (!admin.getUser().isAdmin()) {
-            throw new ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Unauthorized"
-            );
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         return admin;
     }

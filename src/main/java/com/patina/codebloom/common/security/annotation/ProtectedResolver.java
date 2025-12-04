@@ -21,27 +21,21 @@ public class ProtectedResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return (
-            parameter.hasParameterAnnotation(Protected.class) &&
-            parameter.getParameterType().equals(AuthenticationObject.class)
-        );
+        return (parameter.hasParameterAnnotation(Protected.class)
+                && parameter.getParameterType().equals(AuthenticationObject.class));
     }
 
     @Override
     public Object resolveArgument(
-        final MethodParameter parameter,
-        final ModelAndViewContainer mavContainer,
-        final NativeWebRequest webRequest,
-        final WebDataBinderFactory binderFactory
-    ) {
-        HttpServletRequest request =
-            (HttpServletRequest) webRequest.getNativeRequest();
-        Protected protectedAnnotation = parameter.getParameterAnnotation(
-            Protected.class
-        );
+            final MethodParameter parameter,
+            final ModelAndViewContainer mavContainer,
+            final NativeWebRequest webRequest,
+            final WebDataBinderFactory binderFactory) {
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        Protected protectedAnnotation = parameter.getParameterAnnotation(Protected.class);
 
         return protectedAnnotation.admin()
-            ? protector.validateAdminSession(request)
-            : protector.validateSession(request);
+                ? protector.validateAdminSession(request)
+                : protector.validateSession(request);
     }
 }

@@ -22,8 +22,7 @@ public class GetUserProfile {
         }
         """;
 
-    public static String body(final String username)
-        throws JsonProcessingException {
+    public static String body(final String username) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map<String, Object> requestBodyMap = new HashMap<>();

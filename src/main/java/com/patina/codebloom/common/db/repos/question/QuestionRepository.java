@@ -9,22 +9,20 @@ import java.util.Set;
 
 public interface QuestionRepository {
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param question - required fields:
-     * <ul>
-     * <li>userId</li>
-     * <li>questionSlug</li>
-     * <li>questionDifficulty</li>
-     * <li>questionNumber</li>
-     * <li>questionLink</li>
-     * <li>questionTitle</li>
-     * <li>description</li>
-     * <li>pointsAwarded</li>
-     * <li>acceptanceRate</li>
-     * <li>submittedAt</li>
-     * </ul>
+     *     <ul>
+     *       <li>userId
+     *       <li>questionSlug
+     *       <li>questionDifficulty
+     *       <li>questionNumber
+     *       <li>questionLink
+     *       <li>questionTitle
+     *       <li>description
+     *       <li>pointsAwarded
+     *       <li>acceptanceRate
+     *       <li>submittedAt
+     *     </ul>
      */
     Question createQuestion(Question question);
 
@@ -33,57 +31,44 @@ public interface QuestionRepository {
     QuestionWithUser getQuestionWithUserById(String id);
 
     ArrayList<Question> getQuestionsByUserId(
-        String userId,
-        int page,
-        int pageSize,
-        String query,
-        boolean pointFilter,
-        LeetcodeTopicEnum[] topics
-    );
+            String userId, int page, int pageSize, String query, boolean pointFilter, LeetcodeTopicEnum[] topics);
 
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param question - overridden fields:
-     * <ul>
-     * <li>questionTitle</li>
-     * <li>description</li>
-     * <li>pointsAwarded</li>
-     * <li>acceptanceRate</li>
-     * <li>runtime</li>
-     * <li>memory</li>
-     * <li>code</li>
-     * <li>language</li>
-     * <li>submissionId</li>
-     * </ul>
+     *     <ul>
+     *       <li>questionTitle
+     *       <li>description
+     *       <li>pointsAwarded
+     *       <li>acceptanceRate
+     *       <li>runtime
+     *       <li>memory
+     *       <li>code
+     *       <li>language
+     *       <li>submissionId
+     *     </ul>
+     *
      * @return updated question if sucessful
      */
     Question updateQuestion(Question question);
 
     /**
-     * @note - Some fields may not be populated properly due to a service outage. So
-     * this method looks for any Questions missing fields populated by LeetCode's
-     * API.
-     *
-     * @return all questions missing either a runtime, memory, code, language, or
-     * description
+     * @note - Some fields may not be populated properly due to a service outage. So this method looks for any Questions
+     *     missing fields populated by LeetCode's API.
+     * @return all questions missing either a runtime, memory, code, language, or description
      */
     ArrayList<Question> getAllIncompleteQuestions();
 
     /**
-     * @note - Special case that will do a reverse-lookup on `QuestionTopic` to
-     * return all `Question` rows that do not have any assigned topics yet.
+     * @note - Special case that will do a reverse-lookup on `QuestionTopic` to return all `Question` rows that do not
+     *     have any assigned topics yet.
      */
     List<Question> getAllQuestionsWithNoTopics();
 
     /**
-     * @note - Returns all incomplete questions with user information, ordered by
-     * most recently submitted. Incomplete questions are those missing either a
-     * runtime, memory, code, or language.
-     *
-     * @return all incomplete questions with user details, sorted by submittedAt
-     * DESC
+     * @note - Returns all incomplete questions with user information, ordered by most recently submitted. Incomplete
+     *     questions are those missing either a runtime, memory, code, or language.
+     * @return all incomplete questions with user details, sorted by submittedAt DESC
      */
     ArrayList<QuestionWithUser> getAllIncompleteQuestionsWithUser();
 
@@ -93,10 +78,5 @@ public interface QuestionRepository {
 
     boolean questionExistsBySubmissionId(String submissionId);
 
-    int getQuestionCountByUserId(
-        String userId,
-        String query,
-        boolean filterPoints,
-        Set<String> topics
-    );
+    int getQuestionCountByUserId(String userId, String query, boolean filterPoints, Set<String> topics);
 }

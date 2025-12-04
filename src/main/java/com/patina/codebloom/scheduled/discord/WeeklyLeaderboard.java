@@ -18,24 +18,17 @@ public class WeeklyLeaderboard {
     private final WeeklyMessageRepository weeklyMessageRepository;
 
     WeeklyLeaderboard(
-        final DiscordClubManager discordClubManager,
-        final WeeklyMessageRepository weeklyMessageRepository
-    ) {
+            final DiscordClubManager discordClubManager, final WeeklyMessageRepository weeklyMessageRepository) {
         this.discordClubManager = discordClubManager;
         this.weeklyMessageRepository = weeklyMessageRepository;
     }
 
     @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60 * 60)
     public void sendWeeklyLeaderboard() {
-        WeeklyMessage weeklyMessage =
-            weeklyMessageRepository.getLatestWeeklyMessage();
+        WeeklyMessage weeklyMessage = weeklyMessageRepository.getLatestWeeklyMessage();
 
-        if (
-            weeklyMessage != null &&
-            !weeklyMessage
-                .getCreatedAt()
-                .isBefore(LocalDateTime.now().minusDays(7L))
-        ) {
+        if (weeklyMessage != null
+                && !weeklyMessage.getCreatedAt().isBefore(LocalDateTime.now().minusDays(7L))) {
             log.info("WeeklyLeaderboard skipped.");
             return;
         }

@@ -37,19 +37,13 @@ class ScoreCalculatorTest {
     @Test
     void easyMultiplier() {
         float baseMultiplier = ScoreCalculator.calculateMultiplier(Easy);
-        assertEquals(
-            true,
-            baseMultiplier >= 1.235f && baseMultiplier <= 1.365f
-        );
+        assertEquals(true, baseMultiplier >= 1.235f && baseMultiplier <= 1.365f);
     }
 
     @Test
     void mediumMultiplier() {
         float baseMultiplier = ScoreCalculator.calculateMultiplier(Medium);
-        assertEquals(
-            true,
-            baseMultiplier >= 1.425f && baseMultiplier <= 1.575f
-        );
+        assertEquals(true, baseMultiplier >= 1.425f && baseMultiplier <= 1.575f);
     }
 
     @Test

@@ -12,15 +12,9 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         OpenAPI openAPI = new OpenAPI();
 
-        openAPI.path(
-            "/api/auth/flow/discord",
-            CustomOpenApiAuthItems.getDiscordOAuthFlow()
-        );
+        openAPI.path("/api/auth/flow/discord", CustomOpenApiAuthItems.getDiscordOAuthFlow());
 
-        openAPI.path(
-            "/api/auth/flow/callback/discord",
-            CustomOpenApiAuthItems.getDiscordOAuthFlowCallback()
-        );
+        openAPI.path("/api/auth/flow/callback/discord", CustomOpenApiAuthItems.getDiscordOAuthFlowCallback());
 
         return openAPI;
     }

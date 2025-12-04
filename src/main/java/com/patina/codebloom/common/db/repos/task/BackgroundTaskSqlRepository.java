@@ -23,17 +23,12 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
         this.conn = dbConn.getConn();
     }
 
-    private BackgroundTask parseResultSetToBackgroundTask(final ResultSet rs)
-        throws SQLException {
+    private BackgroundTask parseResultSetToBackgroundTask(final ResultSet rs) throws SQLException {
         return BackgroundTask.builder()
-            .id(rs.getString("id"))
-            .completedAt(
-                StandardizedOffsetDateTime.normalize(
-                    rs.getObject("completedAt", OffsetDateTime.class)
-                )
-            )
-            .task(BackgroundTaskEnum.valueOf(rs.getString("task")))
-            .build();
+                .id(rs.getString("id"))
+                .completedAt(StandardizedOffsetDateTime.normalize(rs.getObject("completedAt", OffsetDateTime.class)))
+                .task(BackgroundTaskEnum.valueOf(rs.getString("task")))
+                .build();
     }
 
     @Override
@@ -49,24 +44,15 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
         if (task.getCompletedAt() == null) {
             task.setCompletedAt(StandardizedOffsetDateTime.now());
         }
-        task.setCompletedAt(
-            StandardizedOffsetDateTime.normalize(task.getCompletedAt())
-        );
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        task.setCompletedAt(StandardizedOffsetDateTime.normalize(task.getCompletedAt()));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("id", UUID.fromString(task.getId()));
             stmt.setObject("task", task.getTask().name(), java.sql.Types.OTHER);
             stmt.setObject("completedAt", task.getCompletedAt());
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected != 1) {
-                throw new RuntimeException(
-                    "Failed to create background task: Rows affected != 1"
-                );
+                throw new RuntimeException("Failed to create background task: Rows affected != 1");
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to create background task", e);
@@ -84,12 +70,7 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                     id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -97,19 +78,14 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(
-                "Failed to get background task by ID",
-                e
-            );
+            throw new RuntimeException("Failed to get background task by ID", e);
         }
 
         return null;
     }
 
     @Override
-    public List<BackgroundTask> getBackgroundTasksByTaskEnum(
-        final BackgroundTaskEnum taskEnum
-    ) {
+    public List<BackgroundTask> getBackgroundTasksByTaskEnum(final BackgroundTaskEnum taskEnum) {
         List<BackgroundTask> result = new ArrayList<>();
         String sql = """
                 SELECT
@@ -120,12 +96,7 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                     task = :task
             """;
 
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("task", taskEnum.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -133,19 +104,14 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(
-                "Failed to get background tasks by task enum",
-                e
-            );
+            throw new RuntimeException("Failed to get background tasks by task enum", e);
         }
 
         return result;
     }
 
     @Override
-    public BackgroundTask getMostRecentlyCompletedBackgroundTaskByTaskEnum(
-        final BackgroundTaskEnum taskEnum
-    ) {
+    public BackgroundTask getMostRecentlyCompletedBackgroundTaskByTaskEnum(final BackgroundTaskEnum taskEnum) {
         String sql = """
                 SELECT
                     *
@@ -158,12 +124,7 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                 LIMIT 1
             """;
 
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("task", taskEnum.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -171,10 +132,7 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(
-                "Failed to get most recently completed background task by task enum",
-                e
-            );
+            throw new RuntimeException("Failed to get most recently completed background task by task enum", e);
         }
 
         return null;
@@ -191,15 +149,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                             id = :id
             """;
 
-        task.setCompletedAt(
-            StandardizedOffsetDateTime.normalize(task.getCompletedAt())
-        );
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        task.setCompletedAt(StandardizedOffsetDateTime.normalize(task.getCompletedAt()));
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("task", task.getTask().name(), java.sql.Types.OTHER);
             stmt.setObject("completedAt", task.getCompletedAt());
             stmt.setObject("id", UUID.fromString(task.getId()));
@@ -208,10 +159,7 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
 
             return rowsAffected == 1;
         } catch (Exception e) {
-            throw new RuntimeException(
-                "Failed to update background task by ID",
-                e
-            );
+            throw new RuntimeException("Failed to update background task by ID", e);
         }
     }
 
@@ -224,22 +172,14 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                     id = :id
             """;
 
-        try (
-            NamedPreparedStatement stmt = NamedPreparedStatement.create(
-                conn,
-                sql
-            )
-        ) {
+        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
 
             return rowsAffected == 1;
         } catch (Exception e) {
-            throw new RuntimeException(
-                "Failed to delete background task by id",
-                e
-            );
+            throw new RuntimeException("Failed to delete background task by id", e);
         }
     }
 }

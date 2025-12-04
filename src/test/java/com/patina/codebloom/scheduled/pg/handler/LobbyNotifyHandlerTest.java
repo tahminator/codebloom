@@ -27,10 +27,7 @@ public class LobbyNotifyHandlerTest {
     private DuelManager duelManager;
     private SseWrapper<ApiResponder<DuelData>> sseWrapper;
     private LobbyNotifyHandler lobbyNotifyHandler;
-    private ConcurrentHashMap<
-        String,
-        Set<SseWrapper<ApiResponder<DuelData>>>
-    > partyIdToSseEmitters;
+    private ConcurrentHashMap<String, Set<SseWrapper<ApiResponder<DuelData>>>> partyIdToSseEmitters;
 
     @BeforeEach
     void setUp() {
@@ -70,9 +67,7 @@ public class LobbyNotifyHandlerTest {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
-        doThrow(new IOException("SSE connection failed"))
-            .when(sseWrapper)
-            .sendData(any(ApiResponder.class));
+        doThrow(new IOException("SSE connection failed")).when(sseWrapper).sendData(any(ApiResponder.class));
 
         lobbyNotifyHandler.register(partyId, sseWrapper);
 
@@ -144,9 +139,7 @@ public class LobbyNotifyHandlerTest {
     @Test
     void testGetDataFailure() throws IOException {
         String partyId = "test-party-id";
-        when(duelManager.generateDuelData(partyId)).thenThrow(
-            new RuntimeException("Database connection failed")
-        );
+        when(duelManager.generateDuelData(partyId)).thenThrow(new RuntimeException("Database connection failed"));
 
         lobbyNotifyHandler.register(partyId, sseWrapper);
 
@@ -158,9 +151,7 @@ public class LobbyNotifyHandlerTest {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
-        doThrow(new IOException("SSE connection failed"))
-            .when(sseWrapper)
-            .sendData(any(ApiResponder.class));
+        doThrow(new IOException("SSE connection failed")).when(sseWrapper).sendData(any(ApiResponder.class));
 
         lobbyNotifyHandler.register(partyId, sseWrapper);
 

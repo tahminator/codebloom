@@ -9,20 +9,18 @@ public interface LobbyRepository {
     /**
      * Creates a new lobby in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobby - required fields:
-     * <ul>
-     * <li>joinCode</li>
-     * <li>status</li>
-     * <li>expiresAt</li>
-     * </ul>
-     * optional fields:
-     * <ul>
-     * <li>playerCount (defaults to 0)</li>
-     * <li>winnerId</li>
-     * </ul>
+     *     <ul>
+     *       <li>joinCode
+     *       <li>status
+     *       <li>expiresAt
+     *     </ul>
+     *     optional fields:
+     *     <ul>
+     *       <li>playerCount (defaults to 0)
+     *       <li>winnerId
+     *     </ul>
      */
     void createLobby(Lobby lobby);
 
@@ -30,8 +28,8 @@ public interface LobbyRepository {
      * Finds a lobby by its ID.
      *
      * @param id the lobby ID
-     * @return an {@code Optional} containing the lobby player for the specified
-     * player, or {@code Optional.empty()} if not found
+     * @return an {@code Optional} containing the lobby player for the specified player, or {@code Optional.empty()} if
+     *     not found
      */
     Optional<Lobby> findLobbyById(String id);
 
@@ -39,8 +37,7 @@ public interface LobbyRepository {
      * Finds a lobby by its join code and status of {@code AVAILABLE}
      *
      * @param joinCode the lobby join code
-     * @return an {@code Optional} containing the lobby if found, or
-     * {@code Optional.empty()} otherwise
+     * @return an {@code Optional} containing the lobby if found, or {@code Optional.empty()} otherwise
      */
     Optional<Lobby> findAvailableLobbyByJoinCode(String joinCode);
 
@@ -48,8 +45,7 @@ public interface LobbyRepository {
      * Finds a lobby by its join code and status of {@code ACTIVE}
      *
      * @param joinCode the lobby join code
-     * @return an {@code Optional} containing the lobby if found, or
-     * {@code Optional.empty()} otherwise
+     * @return an {@code Optional} containing the lobby if found, or {@code Optional.empty()} otherwise
      */
     Optional<Lobby> findActiveLobbyByJoinCode(String joinCode);
 
@@ -71,47 +67,36 @@ public interface LobbyRepository {
     /**
      * Finds active lobby for the given `Player` with a status of ACTIVE.
      *
-     * @param lobbyPlayerPlayerId the player ID ({@code User.id}) on
-     * {@code LobbyPlayer}
-     * @return an {@code Optional} containing the lobby if found, or
-     * {@code Optional.empty()} otherwise
-     *
-     * TODO: Union with {@code LobbyRepository.findAvailableLobbyByLobbyPlayerId}
+     * @param lobbyPlayerPlayerId the player ID ({@code User.id}) on {@code LobbyPlayer}
+     * @return an {@code Optional} containing the lobby if found, or {@code Optional.empty()} otherwise
+     *     <p>TODO: Union with {@code LobbyRepository.findAvailableLobbyByLobbyPlayerId}
      */
-    Optional<Lobby> findActiveLobbyByLobbyPlayerPlayerId(
-        String lobbyPlayerPlayerId
-    );
+    Optional<Lobby> findActiveLobbyByLobbyPlayerPlayerId(String lobbyPlayerPlayerId);
 
     /**
      * Finds available lobby for the given `Player` with a status of AVAILABLE.
      *
-     * @param lobbyPlayerPlayerId the player ID ({@code User.id}) on
-     * {@code LobbyPlayer}
-     * @return an {@code Optional} containing the lobby if found, or
-     * {@code Optional.empty()} otherwise
-     *
-     * TODO: Union with {@code LobbyRepository.findActiveLobbyByLobbyPlayerId}
+     * @param lobbyPlayerPlayerId the player ID ({@code User.id}) on {@code LobbyPlayer}
+     * @return an {@code Optional} containing the lobby if found, or {@code Optional.empty()} otherwise
+     *     <p>TODO: Union with {@code LobbyRepository.findActiveLobbyByLobbyPlayerId}
      */
-    Optional<Lobby> findAvailableLobbyByLobbyPlayerPlayerId(
-        String lobbyPlayerPlayerId
-    );
+    Optional<Lobby> findAvailableLobbyByLobbyPlayerPlayerId(String lobbyPlayerPlayerId);
 
     /**
      * Updates an existing lobby in the database.
      *
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param lobby - required fields:
-     * <ul>
-     * <li>id</li>
-     * </ul>
-     * updatable fields:
-     * <ul>
-     * <li>status</li>
-     * <li>expiresAt</li>
-     * <li>playerCount</li>
-     * </ul>
+     *     <ul>
+     *       <li>id
+     *     </ul>
+     *     updatable fields:
+     *     <ul>
+     *       <li>status
+     *       <li>expiresAt
+     *       <li>playerCount
+     *     </ul>
+     *
      * @return true if the update was successful, false otherwise
      */
     boolean updateLobby(Lobby lobby);

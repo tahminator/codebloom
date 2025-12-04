@@ -25,34 +25,30 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
 
     private QuestionTopicRepository questionTopicRepository;
-    private final String mockQuestionId =
-        "c9857a8a-9d0b-4d2e-b73c-3af2425bdca6";
-    private final String mockQuestionBankId =
-        "165dd000-c310-11f0-8d3a-461b1b1abee8";
+    private final String mockQuestionId = "c9857a8a-9d0b-4d2e-b73c-3af2425bdca6";
+    private final String mockQuestionBankId = "165dd000-c310-11f0-8d3a-461b1b1abee8";
 
     private QuestionTopic testQuestionTopic;
     private QuestionTopic testQuestionBankTopic;
 
     @Autowired
-    public QuestionTopicRepositoryTest(
-        final QuestionTopicRepository questionTopicRepository
-    ) {
+    public QuestionTopicRepositoryTest(final QuestionTopicRepository questionTopicRepository) {
         this.questionTopicRepository = questionTopicRepository;
     }
 
     @BeforeAll
     void createQuestion() {
         testQuestionTopic = QuestionTopic.builder()
-            .questionId(mockQuestionId)
-            .topic(LeetcodeTopicEnum.ARRAY)
-            .topicSlug("array")
-            .build();
+                .questionId(mockQuestionId)
+                .topic(LeetcodeTopicEnum.ARRAY)
+                .topicSlug("array")
+                .build();
 
         testQuestionBankTopic = QuestionTopic.builder()
-            .questionBankId(mockQuestionBankId)
-            .topic(LeetcodeTopicEnum.ARRAY)
-            .topicSlug("array")
-            .build();
+                .questionBankId(mockQuestionBankId)
+                .topic(LeetcodeTopicEnum.ARRAY)
+                .topicSlug("array")
+                .build();
 
         questionTopicRepository.createQuestionTopic(testQuestionTopic);
         questionTopicRepository.createQuestionTopic(testQuestionBankTopic);
@@ -60,13 +56,8 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
 
     @AfterAll
     void cleanUp() {
-        boolean isSuccessful =
-            questionTopicRepository.deleteQuestionTopicById(
-                testQuestionTopic.getId()
-            ) &&
-            questionTopicRepository.deleteQuestionTopicById(
-                testQuestionBankTopic.getId()
-            );
+        boolean isSuccessful = questionTopicRepository.deleteQuestionTopicById(testQuestionTopic.getId())
+                && questionTopicRepository.deleteQuestionTopicById(testQuestionBankTopic.getId());
         if (!isSuccessful) {
             fail("Failed to delete test question");
         }
@@ -75,67 +66,44 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testFindQuestionTopicById() {
-        QuestionTopic possibleQuestionTopic =
-            questionTopicRepository.findQuestionTopicById(
-                testQuestionTopic.getId()
-            );
+        QuestionTopic possibleQuestionTopic = questionTopicRepository.findQuestionTopicById(testQuestionTopic.getId());
 
-        assertNotNull(
-            possibleQuestionTopic,
-            "Retrieved question topic should not be null"
-        );
+        assertNotNull(possibleQuestionTopic, "Retrieved question topic should not be null");
 
         if (!possibleQuestionTopic.equals(testQuestionTopic)) {
             log.info("possibleQuestionTopic: {}", possibleQuestionTopic);
             log.info("testQuestionTopic: {}", testQuestionTopic);
-            fail(
-                "testFindQuestionTopicById failed: possibleQuestionTopic does not equal to testQuestionTopic"
-            );
+            fail("testFindQuestionTopicById failed: possibleQuestionTopic does not equal to testQuestionTopic");
         }
     }
 
     @Test
     @Order(2)
     void testFindQuestionTopicByQuestionIdAndTopicEnum() {
-        QuestionTopic possibleQuestionTopic =
-            questionTopicRepository.findQuestionTopicByQuestionIdAndTopicEnum(
-                mockQuestionId,
-                LeetcodeTopicEnum.ARRAY
-            );
+        QuestionTopic possibleQuestionTopic = questionTopicRepository.findQuestionTopicByQuestionIdAndTopicEnum(
+                mockQuestionId, LeetcodeTopicEnum.ARRAY);
 
-        assertNotNull(
-            possibleQuestionTopic,
-            "Retrieved question topic should not be null"
-        );
+        assertNotNull(possibleQuestionTopic, "Retrieved question topic should not be null");
 
         if (!possibleQuestionTopic.equals(testQuestionTopic)) {
             log.info("possibleQuestionTopic: {}", possibleQuestionTopic);
             log.info("testQuestionTopic: {}", testQuestionTopic);
             fail(
-                "testFindQuestionTopicByQuestionIdAndTopicEnum failed: possibleQuestionTopic does not equal to testQuestionTopic"
-            );
+                    "testFindQuestionTopicByQuestionIdAndTopicEnum failed: possibleQuestionTopic does not equal to testQuestionTopic");
         }
     }
 
     @Test
     @Order(3)
     void testFindQuestionTopicsByQuestionId() {
-        List<QuestionTopic> questionTopics =
-            questionTopicRepository.findQuestionTopicsByQuestionId(
-                mockQuestionId
-            );
+        List<QuestionTopic> questionTopics = questionTopicRepository.findQuestionTopicsByQuestionId(mockQuestionId);
 
-        assertNotNull(
-            questionTopics,
-            "Retrieved question topic list should not be null"
-        );
+        assertNotNull(questionTopics, "Retrieved question topic list should not be null");
 
         if (!questionTopics.contains(testQuestionTopic)) {
             log.info("questionTopics: {}", questionTopics);
             log.info("testQuestionTopic: {}", testQuestionTopic);
-            fail(
-                "testFindQuestionTopicsByQuestionId failed: testQuestionTopic is not in questionTopics"
-            );
+            fail("testFindQuestionTopicsByQuestionId failed: testQuestionTopic is not in questionTopics");
         }
     }
 
@@ -145,30 +113,20 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
         testQuestionTopic.setTopic(LeetcodeTopicEnum.BACKTRACKING);
         testQuestionTopic.setTopicSlug("backtracking");
 
-        boolean isSuccessful = questionTopicRepository.updateQuestionTopicById(
-            testQuestionTopic
-        );
+        boolean isSuccessful = questionTopicRepository.updateQuestionTopicById(testQuestionTopic);
 
         if (!isSuccessful) {
             fail("testUpdateQuestion failed: Failed to update question");
         }
 
-        QuestionTopic newQuestionTopic =
-            questionTopicRepository.findQuestionTopicById(
-                testQuestionTopic.getId()
-            );
+        QuestionTopic newQuestionTopic = questionTopicRepository.findQuestionTopicById(testQuestionTopic.getId());
 
-        assertNotNull(
-            newQuestionTopic,
-            "Retrieved question topic should not be null"
-        );
+        assertNotNull(newQuestionTopic, "Retrieved question topic should not be null");
 
         if (!newQuestionTopic.equals(testQuestionTopic)) {
             log.info("newQuestionTopic: {}", newQuestionTopic);
             log.info("testQuestionTopic: {}", testQuestionTopic);
-            fail(
-                "testFindQuestionTopicById failed: newQuestionTopic does not equal to testQuestionTopic"
-            );
+            fail("testFindQuestionTopicById failed: newQuestionTopic does not equal to testQuestionTopic");
         }
     }
 
@@ -176,21 +134,14 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
     @Order(5)
     void testFindQuestionTopicsByQuestionBankId() {
         List<QuestionTopic> questionBankTopics =
-            questionTopicRepository.findQuestionTopicsByQuestionBankId(
-                mockQuestionBankId
-            );
+                questionTopicRepository.findQuestionTopicsByQuestionBankId(mockQuestionBankId);
 
-        assertNotNull(
-            questionBankTopics,
-            "Retrieved question topic list should not be null"
-        );
+        assertNotNull(questionBankTopics, "Retrieved question topic list should not be null");
 
         if (!questionBankTopics.contains(testQuestionBankTopic)) {
             log.info("questionBankTopics: {}", questionBankTopics);
             log.info("testQuestionBankTopic: {}", testQuestionBankTopic);
-            fail(
-                "testFindQuestionTopicsByQuestionBankId failed: testQuestionBankTopic is not in questionTopics"
-            );
+            fail("testFindQuestionTopicsByQuestionBankId failed: testQuestionBankTopic is not in questionTopics");
         }
     }
 }

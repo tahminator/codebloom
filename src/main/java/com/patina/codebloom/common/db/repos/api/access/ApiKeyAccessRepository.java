@@ -9,26 +9,22 @@ public interface ApiKeyAccessRepository {
     List<ApiKeyAccess> getApiKeyAccessesByApiKeyId(String apiKeyId);
 
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param userTag - required fields:
-     * <ul>
-     * <li>apiKeyAccess</li>
-     * <li>apiKeyId</li>
-     * </ul>
+     *     <ul>
+     *       <li>apiKeyAccess
+     *       <li>apiKeyId
+     *     </ul>
      */
     void createApiKeyAccess(ApiKeyAccess apiKeyAccess);
 
     /**
-     * @note - The provided object's methods will be overridden with any returned
-     * data from the database.
-     *
+     * @note - The provided object's methods will be overridden with any returned data from the database.
      * @param agent - overridden fields:
-     * <ul>
-     * <li>apiKeyId</li>
-     * <li>apiKeyAccess</li>
-     * </ul>
+     *     <ul>
+     *       <li>apiKeyId
+     *       <li>apiKeyAccess
+     *     </ul>
      */
     boolean updateApiKeyAccessById(ApiKeyAccess apiKeyAccess);
 

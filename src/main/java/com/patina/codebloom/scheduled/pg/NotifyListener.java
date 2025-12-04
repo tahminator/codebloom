@@ -36,12 +36,11 @@ public class NotifyListener {
     private final LobbyNotifyHandler lobbyNotifyHandler;
 
     public NotifyListener(
-        final DbConnection dbConn,
-        final Reporter reporter,
-        final Env env,
-        final JobNotifyHandler jobNotifyHandler,
-        final LobbyNotifyHandler lobbyNotifyHandler
-    ) {
+            final DbConnection dbConn,
+            final Reporter reporter,
+            final Env env,
+            final JobNotifyHandler jobNotifyHandler,
+            final LobbyNotifyHandler lobbyNotifyHandler) {
         this.channels = PgChannel.list();
         this.vtpool = Executors.newVirtualThreadPerTaskExecutor();
         this.reporter = reporter;
@@ -68,35 +67,21 @@ public class NotifyListener {
 
                 try (Statement stmt = conn.createStatement()) {
                     for (var c : channels) {
-                        stmt.execute(
-                            String.format("LISTEN \"%s\"", c.getChannelName())
-                        );
-                        log.info(
-                            String.format(
-                                "Subscribed to %s",
-                                c.getChannelName()
-                            )
-                        );
+                        stmt.execute(String.format("LISTEN \"%s\"", c.getChannelName()));
+                        log.info(String.format("Subscribed to %s", c.getChannelName()));
                     }
 
                     while (!Thread.currentThread().isInterrupted()) {
-                        PGNotification[] notifications =
-                            pgConn.getNotifications(500);
+                        PGNotification[] notifications = pgConn.getNotifications(500);
 
                         if (notifications != null) {
                             for (var n : notifications) {
-                                switch (
-                                    PgChannel.fromChannelName(n.getName())
-                                ) {
-                                    case INSERT_JOB -> jobNotifyHandler.handle(
-                                        n.getParameter()
-                                    );
-                                    case UPSERT_LOBBY -> lobbyNotifyHandler.handle(
-                                        n.getParameter()
-                                    );
-                                    default -> throw new UnsupportedOperationException(
-                                        "a notification has been received that cannot be handled by the backend"
-                                    );
+                                switch (PgChannel.fromChannelName(n.getName())) {
+                                    case INSERT_JOB -> jobNotifyHandler.handle(n.getParameter());
+                                    case UPSERT_LOBBY -> lobbyNotifyHandler.handle(n.getParameter());
+                                    default ->
+                                        throw new UnsupportedOperationException(
+                                                "a notification has been received that cannot be handled by the backend");
                                 }
                             }
                         }
@@ -111,13 +96,11 @@ public class NotifyListener {
                 }
 
                 log.error("Failed to listen to notifications", e);
-                reporter.error(
-                    Report.builder()
+                reporter.error(Report.builder()
                         .environments(env.getActiveProfiles())
                         .location(Location.BACKEND)
                         .data(Reporter.throwableToString(e))
-                        .build()
-                );
+                        .build());
 
                 try {
                     Thread.sleep(5000);

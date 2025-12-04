@@ -31,14 +31,13 @@ public class DuelManager {
     private final UserRepository userRepository;
 
     public DuelManager(
-        final LobbyRepository lobbyRepository,
-        final LobbyQuestionRepository lobbyQuestionRepository,
-        final LobbyPlayerRepository lobbyPlayerRepository,
-        final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
-        final QuestionRepository questionRepository,
-        final QuestionBankRepository questionBankRepository,
-        final UserRepository userRepository
-    ) {
+            final LobbyRepository lobbyRepository,
+            final LobbyQuestionRepository lobbyQuestionRepository,
+            final LobbyPlayerRepository lobbyPlayerRepository,
+            final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
+            final QuestionRepository questionRepository,
+            final QuestionBankRepository questionBankRepository,
+            final UserRepository userRepository) {
         this.lobbyRepository = lobbyRepository;
         this.lobbyQuestionRepository = lobbyQuestionRepository;
         this.lobbyPlayerRepository = lobbyPlayerRepository;
@@ -49,51 +48,36 @@ public class DuelManager {
     }
 
     public DuelData generateDuelData(final String lobbyId) {
-        var fetchedLobby = lobbyRepository
-            .findLobbyById(lobbyId)
-            .map(LobbyDto::fromLobby)
-            .orElse(null);
+        var fetchedLobby =
+                lobbyRepository.findLobbyById(lobbyId).map(LobbyDto::fromLobby).orElse(null);
 
-        List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository
-            .findLobbyQuestionsByLobbyId(lobbyId)
-            .stream()
-            .map(lq ->
-                questionBankRepository.getQuestionById(lq.getQuestionBankId())
-            )
-            .map(QuestionBankDto::fromQuestionBank)
-            .collect(Collectors.toList());
+        List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId).stream()
+                .map(lq -> questionBankRepository.getQuestionById(lq.getQuestionBankId()))
+                .map(QuestionBankDto::fromQuestionBank)
+                .collect(Collectors.toList());
 
         return DuelData.builder()
-            .lobby(fetchedLobby)
-            .questions(lobbyQuestions)
-            .players(buildPlayersInLobby(lobbyId))
-            .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
-            .build();
+                .lobby(fetchedLobby)
+                .questions(lobbyQuestions)
+                .players(buildPlayersInLobby(lobbyId))
+                .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
+                .build();
     }
 
-    private Map<String, List<QuestionDto>> buildPlayerSolvedQuestionsMap(
-        final String lobbyId
-    ) {
+    private Map<String, List<QuestionDto>> buildPlayerSolvedQuestionsMap(final String lobbyId) {
         Map<String, List<QuestionDto>> playerQuestionsMap = new HashMap<>();
 
         var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
 
         for (var player : lobbyPlayers) {
-            var lobbyPlayerQuestions =
-                lobbyPlayerQuestionRepository.findQuestionsByLobbyPlayerId(
-                    player.getId()
-                );
+            var lobbyPlayerQuestions = lobbyPlayerQuestionRepository.findQuestionsByLobbyPlayerId(player.getId());
 
-            List<QuestionDto> playerQuestions = lobbyPlayerQuestions
-                .stream()
-                .filter(lpq -> lpq.getQuestionId().isPresent())
-                .map(lpq ->
-                    questionRepository.getQuestionById(
-                        lpq.getQuestionId().get()
-                    )
-                )
-                .map(QuestionDto::fromQuestion)
-                .collect(Collectors.toList());
+            List<QuestionDto> playerQuestions = lobbyPlayerQuestions.stream()
+                    .filter(lpq -> lpq.getQuestionId().isPresent())
+                    .map(lpq -> questionRepository.getQuestionById(
+                            lpq.getQuestionId().get()))
+                    .map(QuestionDto::fromQuestion)
+                    .collect(Collectors.toList());
 
             playerQuestionsMap.put(player.getPlayerId(), playerQuestions);
         }
@@ -104,13 +88,10 @@ public class DuelManager {
     private List<UserDto> buildPlayersInLobby(final String lobbyId) {
         var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(lobbyId);
 
-        return lobbyPlayers
-            .stream()
-            .map(lobbyPlayer ->
-                userRepository.getUserById(lobbyPlayer.getPlayerId())
-            )
-            .filter(Objects::nonNull)
-            .map(UserDto::fromUser)
-            .collect(Collectors.toList());
+        return lobbyPlayers.stream()
+                .map(lobbyPlayer -> userRepository.getUserById(lobbyPlayer.getPlayerId()))
+                .filter(Objects::nonNull)
+                .map(UserDto::fromUser)
+                .collect(Collectors.toList());
     }
 }
