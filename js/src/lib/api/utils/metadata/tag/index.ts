@@ -4,10 +4,7 @@ import { ApiTypeUtils } from "@/lib/api/utils/types";
 /**
  * Metadata for all Tag enums.
  */
-export const TAG_METADATA_LIST: Record<
-  Tag,
-  ApiTypeUtils.TagMetadata
-> = {
+export const TAG_METADATA_LIST: Record<Tag, ApiTypeUtils.TagMetadata> = {
   Hunter: {
     shortName: "Hunter",
     name: "Hunter College",

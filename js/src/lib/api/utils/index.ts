@@ -1,7 +1,4 @@
-import {
-  LeetcodeTopicEnum,
-  Tag,
-} from "@/lib/api/types/autogen/schema";
+import { LeetcodeTopicEnum, Tag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
@@ -35,9 +32,7 @@ export class ApiUtils {
    *
    * @returns {ApiTypeUtils.TagMetadata} metadata - Metadata object
    */
-  static getMetadataByTagEnum(
-    tagEnum: Tag,
-  ): ApiTypeUtils.TagMetadata {
+  static getMetadataByTagEnum(tagEnum: Tag): ApiTypeUtils.TagMetadata {
     return ApiUtils._TAG_METADATA_LIST[tagEnum];
   }
 
@@ -141,9 +136,7 @@ export class ApiUtils {
     return tags.filter(ApiUtils._isSupportedTag);
   }
 
-  static filterUnusedTagEnums(
-    tagEnums: Tag[],
-  ): ApiTypeUtils.FilteredTag[] {
+  static filterUnusedTagEnums(tagEnums: Tag[]): ApiTypeUtils.FilteredTag[] {
     return tagEnums.filter(ApiUtils._isSupportedTagEnum);
   }
 
