@@ -2,7 +2,7 @@ import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeader
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/autogen/schema";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -53,7 +53,7 @@ export default function MiniLeaderboardMobile() {
           { label: "All", value: "all" },
           { label: "Patina", value: "patina" },
         ]}
-        onChange={() => toggleFilter(UserTagTag.Patina)}
+        onChange={() => toggleFilter(Tag.Patina)}
       />
       <div style={{ position: "relative" }}>
         {isPlaceholderData && (

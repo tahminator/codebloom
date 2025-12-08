@@ -1,6 +1,6 @@
 import {
   QuestionTopicDtoTopic,
-  UserTagTag,
+  Tag,
 } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
@@ -25,32 +25,32 @@ export class ApiUtils {
   }
 
   private static _isSupportedTagEnum(
-    tagEnum: UserTagTag,
-  ): tagEnum is ApiTypeUtils.FilteredUserTagTag {
+    tagEnum: Tag,
+  ): tagEnum is ApiTypeUtils.FilteredTag {
     return !ApiUtils._UNUSED_TAGS.includes(tagEnum);
   }
 
   /**
-   * Receive @type {ApiTypeUtils.UserTagTagMetadata} from a `tagEnum`.
+   * Receive @type {ApiTypeUtils.TagMetadata} from a `tagEnum`.
    *
-   * @returns {ApiTypeUtils.UserTagTagMetadata} metadata - Metadata object
+   * @returns {ApiTypeUtils.TagMetadata} metadata - Metadata object
    */
   static getMetadataByTagEnum(
-    tagEnum: UserTagTag,
-  ): ApiTypeUtils.UserTagTagMetadata {
+    tagEnum: Tag,
+  ): ApiTypeUtils.TagMetadata {
     return ApiUtils._TAG_METADATA_LIST[tagEnum];
   }
 
   /**
    * Convenience method to retrieve tag metadata for a leaderboard value.
-   * Both the input and lookup are of type `UserTagTag`; this method exists for semantic clarity
+   * Both the input and lookup are of type `Tag`; this method exists for semantic clarity
    * when working with leaderboard contexts, and may help future extensibility.
    *
-   * @returns {ApiTypeUtils.UserTagTagMetadata} metadata - Metadata object
+   * @returns {ApiTypeUtils.TagMetadata} metadata - Metadata object
    */
   static getTagMetadataFromLeaderboard(
-    leaderboard: UserTagTag,
-  ): ApiTypeUtils.UserTagTagMetadata {
+    leaderboard: Tag,
+  ): ApiTypeUtils.TagMetadata {
     return ApiUtils.getMetadataByTagEnum(leaderboard);
   }
 
@@ -70,7 +70,7 @@ export class ApiUtils {
    *
    * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
    */
-  static getAllTagEnumMetadata(): ApiTypeUtils.UserTagTagMetadata[] {
+  static getAllTagEnumMetadata(): ApiTypeUtils.TagMetadata[] {
     return Object.typedEntries(ApiUtils._TAG_METADATA_LIST).map(
       ([_, metadata]) => metadata,
     );
@@ -92,7 +92,7 @@ export class ApiUtils {
    *
    * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
    */
-  static getAllSupportedTagEnumMetadata(): ApiTypeUtils.UserTagTagMetadata[] {
+  static getAllSupportedTagEnumMetadata(): ApiTypeUtils.TagMetadata[] {
     return Object.typedEntries(ApiUtils._TAG_METADATA_LIST)
       .filter(([tagEnum, _]) => this._isSupportedTagEnum(tagEnum))
       .map(([_, metadata]) => metadata);
@@ -101,11 +101,11 @@ export class ApiUtils {
   /**
    * Return a list of all tag enums. Essentially a shorthand for:
    * ```ts
-   * Object.values(UserTagTag);
+   * Object.values(Tag);
    * ```
    */
-  static getAllTagEnums(): UserTagTag[] {
-    return Object.values(UserTagTag);
+  static getAllTagEnums(): Tag[] {
+    return Object.values(Tag);
   }
 
   /**
@@ -127,8 +127,8 @@ export class ApiUtils {
    * ```ts
    * ApiUtils._TOPIC_METADATA_LIST
    */
-  static getAllSupportedTagEnums(): ApiTypeUtils.FilteredUserTagTag[] {
-    return Object.values(UserTagTag).filter(ApiUtils._isSupportedTagEnum);
+  static getAllSupportedTagEnums(): ApiTypeUtils.FilteredTag[] {
+    return Object.values(Tag).filter(ApiUtils._isSupportedTagEnum);
   }
 
   /**
@@ -142,8 +142,8 @@ export class ApiUtils {
   }
 
   static filterUnusedTagEnums(
-    tagEnums: UserTagTag[],
-  ): ApiTypeUtils.FilteredUserTagTag[] {
+    tagEnums: Tag[],
+  ): ApiTypeUtils.FilteredTag[] {
     return tagEnums.filter(ApiUtils._isSupportedTagEnum);
   }
 
@@ -162,6 +162,6 @@ export class ApiUtils {
   }
 }
 
-export function getTagMetadataFromLeaderboard(leaderboard: UserTagTag) {
+export function getTagMetadataFromLeaderboard(leaderboard: Tag) {
   return ApiUtils.getTagMetadataFromLeaderboard(leaderboard);
 }

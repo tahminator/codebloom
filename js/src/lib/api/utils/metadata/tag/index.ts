@@ -1,12 +1,12 @@
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/autogen/schema";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
 /**
- * Metadata for all UserTagTag enums.
+ * Metadata for all Tag enums.
  */
 export const TAG_METADATA_LIST: Record<
-  UserTagTag,
-  ApiTypeUtils.UserTagTagMetadata
+  Tag,
+  ApiTypeUtils.TagMetadata
 > = {
   Hunter: {
     shortName: "Hunter",
@@ -87,4 +87,4 @@ export const TAG_METADATA_LIST: Record<
   },
 } as const;
 
-export const UNUSED_TAGS: UserTagTag[] = [UserTagTag.Gwc];
+export const UNUSED_TAGS: Tag[] = [Tag.Gwc];

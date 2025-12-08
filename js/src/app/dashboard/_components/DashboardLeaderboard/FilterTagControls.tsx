@@ -1,4 +1,4 @@
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 import {
@@ -8,7 +8,7 @@ import {
 import { Flex, Image, SegmentedControl, Tooltip } from "@mantine/core";
 import { ReactNode, useMemo } from "react";
 
-type SegmentFlagsWithAll = ApiTypeUtils.FilteredUserTagTag | "All";
+type SegmentFlagsWithAll = ApiTypeUtils.FilteredTag | "All";
 
 export default function FilterTagsControl({
   tags,
@@ -61,7 +61,7 @@ export default function FilterTagsControl({
     }
 
     const firstEnabledKey =
-      firstEnabledKeyValue[0] as ApiTypeUtils.FilteredUserTagTag;
+      firstEnabledKeyValue[0] as ApiTypeUtils.FilteredTag;
 
     return firstEnabledKey;
   }, [filters]);
@@ -74,7 +74,7 @@ export default function FilterTagsControl({
       onFilterSelected(undefined);
     } else {
       onFilterSelected(
-        ApiUtils.getMetadataByTagEnum(segmentKey as UserTagTag).apiKey,
+        ApiUtils.getMetadataByTagEnum(segmentKey as Tag).apiKey,
       );
     }
 
