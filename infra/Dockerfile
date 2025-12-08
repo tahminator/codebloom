@@ -5,6 +5,7 @@ WORKDIR /js
 
 # Copy frontend source code
 COPY js/package.json js/pnpm-lock.yaml ./
+COPY js/patches/ ./patches/
 
 # Fix a bug with corepack by installing corepack globally
 RUN npm i -g corepack@latest
