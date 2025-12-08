@@ -1,13 +1,13 @@
-import { QuestionTopicDtoTopic } from "@/lib/api/types/autogen/schema";
+import { LeetcodeTopicEnum } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { Button, Chip, Flex, Popover, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 
 type TopicFilterPopoverProps = {
-  value: QuestionTopicDtoTopic[];
-  selectedTopicsSet: Set<QuestionTopicDtoTopic>;
-  onChange: (topics: QuestionTopicDtoTopic[]) => void;
+  value: LeetcodeTopicEnum[];
+  selectedTopicsSet: Set<LeetcodeTopicEnum>;
+  onChange: (topics: LeetcodeTopicEnum[]) => void;
   onClear: () => void;
 };
 
@@ -25,7 +25,7 @@ export default function TopicFilterPopover({
   const filteredTopics = useMemo(
     () =>
       Object.entries(leetcodeTopics).filter(([key, topic]) => {
-        if (selectedTopicsSet.has(key as QuestionTopicDtoTopic)) {
+        if (selectedTopicsSet.has(key as LeetcodeTopicEnum)) {
           return true;
         }
 
@@ -59,7 +59,7 @@ export default function TopicFilterPopover({
           multiple
           value={value}
           onChange={(e) => {
-            onChange(e as QuestionTopicDtoTopic[]);
+            onChange(e as LeetcodeTopicEnum[]);
           }}
         >
           <Flex

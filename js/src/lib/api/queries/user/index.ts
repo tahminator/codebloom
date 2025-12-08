@@ -1,5 +1,5 @@
 import { ApiURL } from "@/lib/api/common/apiURL";
-import { QuestionTopicDtoTopic } from "@/lib/api/types/autogen/schema";
+import { LeetcodeTopicEnum } from "@/lib/api/types/autogen/schema";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -63,12 +63,12 @@ export const useUserSubmissionsQuery = ({
   }, [goTo, setPointFilter]);
 
   const topics = useMemo(
-    () => _topics.split(",").filter(Boolean) as QuestionTopicDtoTopic[],
+    () => _topics.split(",").filter(Boolean) as LeetcodeTopicEnum[],
     [_topics],
   );
 
   const setTopics = useCallback(
-    (topics: QuestionTopicDtoTopic[]) => {
+    (topics: LeetcodeTopicEnum[]) => {
       _setTopics(topics.join(","));
       goTo(1);
     },
