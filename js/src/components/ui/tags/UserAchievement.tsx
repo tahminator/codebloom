@@ -1,6 +1,6 @@
 import AchievementCarousel from "@/components/ui/carousel/ItemCarousel";
 import { Api } from "@/lib/api/types";
-import { AchievementDtoPlace } from "@/lib/api/types/autogen/schema";
+import { AchievementPlaceEnum } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { Image, Tooltip, Box, Text, Stack, Divider } from "@mantine/core";
 import dayjs from "dayjs";
@@ -15,9 +15,9 @@ interface UserAchievementProps {
 }
 
 const PLACE_CONFIG = {
-  [AchievementDtoPlace.ONE]: "🥇",
-  [AchievementDtoPlace.TWO]: "🥈",
-  [AchievementDtoPlace.THREE]: "🥉",
+  [AchievementPlaceEnum.ONE]: "🥇",
+  [AchievementPlaceEnum.TWO]: "🥈",
+  [AchievementPlaceEnum.THREE]: "🥉",
 } as const;
 
 export default function UserAchievement({
