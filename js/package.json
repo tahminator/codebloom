@@ -75,7 +75,7 @@
         "typescript-eslint": "^8.19.0",
         "vite": "^6.2.7"
     },
-    "packageManager": "pnpm@9.15.3",
+    "packageManager": "pnpm@10.24.0",
     "pnpm": {
         "patchedDependencies": {
             "openapi-typescript@7.8.0": "patches/openapi-typescript@7.8.0.patch"
