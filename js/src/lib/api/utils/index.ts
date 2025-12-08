@@ -1,5 +1,5 @@
 import {
-  QuestionTopicDtoTopic,
+  LeetcodeTopicEnum,
   Tag,
 } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
@@ -60,7 +60,7 @@ export class ApiUtils {
    * @returns {ApiTypeUtils.QuestionTopicTopicMetadata} metadata - Metadata object
    */
   static getTopicEnumMetadataByTopicEnum(
-    topicEnum: QuestionTopicDtoTopic,
+    topicEnum: LeetcodeTopicEnum,
   ): ApiTypeUtils.QuestionTopicTopicMetadata {
     return ApiUtils._TOPIC_METADATA_LIST[topicEnum];
   }
@@ -115,7 +115,7 @@ export class ApiUtils {
    * ```
    */
   static getAllTopicEntries(): Record<
-    QuestionTopicDtoTopic,
+    LeetcodeTopicEnum,
     ApiTypeUtils.QuestionTopicTopicMetadata
   > {
     return this._TOPIC_METADATA_LIST;
