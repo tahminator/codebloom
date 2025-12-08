@@ -1,11 +1,13 @@
 package com.patina.codebloom.common.db.models.usertag;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /** This is the base enum abstraction that's used in the UserTag model/table */
 @AllArgsConstructor
 @Getter
+@Schema(description = "Tag")
 public enum Tag {
     Patina("Patina Network"),
     Hunter("Hunter College"),

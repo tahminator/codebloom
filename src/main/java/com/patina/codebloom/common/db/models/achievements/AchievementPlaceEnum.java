@@ -1,9 +1,11 @@
 package com.patina.codebloom.common.db.models.achievements;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.stream.Stream;
 import lombok.Getter;
 
 @Getter
+@Schema(description = "AchievementPlaceEnum")
 public enum AchievementPlaceEnum {
     ONE(1),
     TWO(2),

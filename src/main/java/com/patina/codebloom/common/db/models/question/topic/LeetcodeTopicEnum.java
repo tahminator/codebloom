@@ -1,11 +1,13 @@
 package com.patina.codebloom.common.db.models.question.topic;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Schema(description = "LeetcodeTopicEnum")
 public enum LeetcodeTopicEnum {
     STACK("stack"),
     DATA_STREAM("data-stream"),
