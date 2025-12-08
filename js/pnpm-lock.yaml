@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  openapi-typescript:
+    hash: tfggmvnhq3rkebfp6gdfys547m
+    path: patches/openapi-typescript@7.8.0.patch
+
 importers:
 
   .:
@@ -128,7 +133,7 @@ importers:
         version: 3.1.10
       openapi-typescript:
         specifier: ^7.8.0
-        version: 7.8.0(typescript@5.6.3)
+        version: 7.8.0(patch_hash=tfggmvnhq3rkebfp6gdfys547m)(typescript@5.6.3)
       postcss:
         specifier: ^8.4.49
         version: 8.4.49
@@ -4984,7 +4989,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  openapi-typescript@7.8.0(typescript@5.6.3):
+  openapi-typescript@7.8.0(patch_hash=tfggmvnhq3rkebfp6gdfys547m)(typescript@5.6.3):
     dependencies:
       '@redocly/openapi-core': 1.34.3(supports-color@10.0.0)
       ansi-colors: 4.1.3
