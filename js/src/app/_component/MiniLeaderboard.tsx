@@ -3,7 +3,7 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/autogen/schema";
 import { tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -55,7 +55,7 @@ export default function MiniLeaderboardDesktop() {
           { label: "All", value: "all" },
           { label: "Patina", value: "patina" },
         ]}
-        onChange={() => toggleFilter(UserTagTag.Patina)}
+        onChange={() => toggleFilter(Tag.Patina)}
       />
       <div style={{ position: "relative" }}>
         {isPlaceholderData && (

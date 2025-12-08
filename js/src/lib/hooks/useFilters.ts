@@ -1,4 +1,4 @@
-import { UserTagTag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/autogen/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { useCallback, useMemo } from "react";
@@ -6,22 +6,22 @@ import { useSearchParams } from "react-router-dom";
 import { useImmer } from "use-immer";
 
 export type TagEnumToBooleanFilterObject = Record<
-  ApiTypeUtils.FilteredUserTagTag,
+  ApiTypeUtils.FilteredTag,
   boolean
 >;
 
 export type ToggleTagEnumFn = (
-  tagEnum: ApiTypeUtils.FilteredUserTagTag,
+  tagEnum: ApiTypeUtils.FilteredTag,
 ) => void;
 
-function getUrlKey(tagEnum: UserTagTag) {
+function getUrlKey(tagEnum: Tag) {
   return ApiUtils.getMetadataByTagEnum(tagEnum).apiKey;
 }
 
 /**
  * React hook that manages user tag filters.
  *
- * Each supported `UserTagTag` is represented as a boolean in the `filters` object.
+ * Each supported `Tag` is represented as a boolean in the `filters` object.
  * When a filter is toggled, both the internal state and the URL search params update
  * to reflect the new value.
  *
@@ -29,11 +29,11 @@ function getUrlKey(tagEnum: UserTagTag) {
  * URL params and updates whenever filters are toggled.
  *
  * @param {Object} options - Configuration options for the hook.
- * @param {(tagEnum: ApiTypeUtils.FilteredUserTagTag) => void} options.onFilterChange - (Optional) When `toggleFilter` is called, `onFilterChange` will be triggered 
+ * @param {(tagEnum: ApiTypeUtils.FilteredTag) => void} options.onFilterChange - (Optional) When `toggleFilter` is called, `onFilterChange` will be triggered 
  * to run any side-effects.
  *
  * @returns An object containing:
- * - `filters`: an object with each key of `UserTagTag` mapping to a value to its current enabled/disabled state
+ * - `filters`: an object with each key of `Tag` mapping to a value to its current enabled/disabled state
  * - `toggleFilter`: a function to toggle an individual tag filter
  *
  * @example
@@ -47,7 +47,7 @@ function getUrlKey(tagEnum: UserTagTag) {
           { label: "All", value: "all" },
           { label: "Patina", value: "patina" },
         ]}
-        onChange={() => toggleFilter(UserTagTag.Patina)}
+        onChange={() => toggleFilter(Tag.Patina)}
       />
  * );
  * ```
@@ -56,7 +56,7 @@ export function useFilters({
   onFilterChange,
 }:
   | {
-      onFilterChange?: (tagEnum: ApiTypeUtils.FilteredUserTagTag) => void;
+      onFilterChange?: (tagEnum: ApiTypeUtils.FilteredTag) => void;
     }
   | undefined = {}) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,14 +67,14 @@ export function useFilters({
     const kvTuples = ApiUtils.getAllTagEnums().map((tagEnum) => [
       tagEnum,
       searchParams.get(getUrlKey(tagEnum)) === "true",
-    ]) as [ApiTypeUtils.FilteredUserTagTag, boolean][]; // slight type trickery because TS
+    ]) as [ApiTypeUtils.FilteredTag, boolean][]; // slight type trickery because TS
     // doesn't know which type is a key and which is a value; we help it out here a little.
 
     return Object.typedFromEntries(kvTuples);
   });
 
   const toggleFilter: ToggleTagEnumFn = useCallback(
-    (tagEnum: ApiTypeUtils.FilteredUserTagTag) => {
+    (tagEnum: ApiTypeUtils.FilteredTag) => {
       const key = getUrlKey(tagEnum);
       const prevValue = filters[tagEnum];
 

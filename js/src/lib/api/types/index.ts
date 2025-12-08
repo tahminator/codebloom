@@ -19,7 +19,7 @@ export type TApiSchemaKey = keyof Schemas;
  * @note - All types are selectable except enums. Here is an example of how to import and use enums:
  *
  * ```ts
- * import { UserTagTag } from "@/lib/api/types/autogen/schema";
+ * import { Tag } from "@/lib/api/types/autogen/schema";
  * ```
  */
 export type Api<T extends TApiSchemaKey> = Schemas[T];
