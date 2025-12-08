@@ -11,5 +11,11 @@ backend_startup
 
 corepack enable pnpm
 pnpm --dir js i --frozen-lockfile
+
+curl http://localhost:8080/v3/api-docs | jq .
+
 pnpm --dir js run generate
+
+cat ./js/src/lib/api/types/autogen/schema.ts
+
 pnpm --dir js run test
