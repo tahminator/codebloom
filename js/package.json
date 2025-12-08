@@ -62,7 +62,7 @@
         "eslint-plugin-react-refresh": "^0.4.16",
         "globals": "^15.14.0",
         "nodemon": "^3.1.10",
-        "openapi-typescript": "^7.8.0",
+        "openapi-typescript": "7.8.0",
         "postcss": "^8.4.49",
         "postcss-preset-mantine": "^1.17.0",
         "postcss-simple-vars": "^7.0.1",
@@ -78,7 +78,7 @@
     "packageManager": "pnpm@9.15.3",
     "pnpm": {
         "patchedDependencies": {
-            "openapi-typescript": "patches/openapi-typescript@7.8.0.patch"
+            "openapi-typescript@7.8.0": "patches/openapi-typescript@7.8.0.patch"
         }
     }
 }

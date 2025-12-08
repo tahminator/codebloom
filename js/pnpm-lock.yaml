@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  openapi-typescript:
+  openapi-typescript@7.8.0:
     hash: tfggmvnhq3rkebfp6gdfys547m
     path: patches/openapi-typescript@7.8.0.patch
 
@@ -132,7 +132,7 @@ importers:
         specifier: ^3.1.10
         version: 3.1.10
       openapi-typescript:
-        specifier: ^7.8.0
+        specifier: 7.8.0
         version: 7.8.0(patch_hash=tfggmvnhq3rkebfp6gdfys547m)(typescript@5.6.3)
       postcss:
         specifier: ^8.4.49
