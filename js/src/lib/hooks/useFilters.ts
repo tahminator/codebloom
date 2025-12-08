@@ -10,9 +10,7 @@ export type TagEnumToBooleanFilterObject = Record<
   boolean
 >;
 
-export type ToggleTagEnumFn = (
-  tagEnum: ApiTypeUtils.FilteredTag,
-) => void;
+export type ToggleTagEnumFn = (tagEnum: ApiTypeUtils.FilteredTag) => void;
 
 function getUrlKey(tagEnum: Tag) {
   return ApiUtils.getMetadataByTagEnum(tagEnum).apiKey;

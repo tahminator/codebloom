@@ -60,8 +60,7 @@ export default function FilterTagsControl({
       return "All";
     }
 
-    const firstEnabledKey =
-      firstEnabledKeyValue[0] as ApiTypeUtils.FilteredTag;
+    const firstEnabledKey = firstEnabledKeyValue[0] as ApiTypeUtils.FilteredTag;
 
     return firstEnabledKey;
   }, [filters]);
@@ -73,9 +72,7 @@ export default function FilterTagsControl({
     if (value == "All") {
       onFilterSelected(undefined);
     } else {
-      onFilterSelected(
-        ApiUtils.getMetadataByTagEnum(segmentKey as Tag).apiKey,
-      );
+      onFilterSelected(ApiUtils.getMetadataByTagEnum(segmentKey as Tag).apiKey);
     }
 
     // disable previous
