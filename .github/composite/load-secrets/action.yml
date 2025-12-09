@@ -31,10 +31,7 @@ runs:
         passphrase: ${{ inputs.GPG_PASSPHRASE }}
 
     - name: Install git-crypt
-      shell: bash
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y git-crypt
+      uses: flydiverny/setup-git-crypt@v4
 
     - name: Verify git-crypt version
       shell: bash
