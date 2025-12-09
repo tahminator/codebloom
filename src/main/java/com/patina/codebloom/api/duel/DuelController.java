@@ -33,7 +33,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,7 +46,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Tag(name = "Live duel routes", description = """
     This controller houses the logic for live Leetcode duels. """)
 @RequestMapping("/api/duel")
-@Profile("!ci")
 @Slf4j
 public class DuelController {
 
