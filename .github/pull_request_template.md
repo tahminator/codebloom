@@ -1,8 +1,9 @@
-## Notion Ticket (use public link, not private)
-
+<!-- DO NOT EDIT THE NEXT LINE. IT WILL BE AUTOMATICALLY SYNCED -->
 <!-- https://codebloom.notion.site/Render-achievements-to-user-profile-page-2a87c85563aa806ab7c0efa9cca47309 -->
 
 ## Description of changes
+
+## Checklist before review
 
 - [ ] I have done a thorough self-review of the PR
 - [ ] Copilot has reviewed my latest changes, and all comments have been fixed and/or closed.
