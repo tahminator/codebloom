@@ -1,0 +1,231 @@
+name: "Check Notion PR"
+description: "Run validation(s) on the given PR ID against Notion"
+inputs:
+  PR_ID:
+    description: "PR ID"
+    required: true
+  GPG_PRIVATE_KEY:
+    description: "GPG Private Key"
+    required: true
+  GPG_PASSPHRASE:
+    description: "GPG Passphrase"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Disable man-db
+      uses: ./.github/composite/disable-mandb
+
+    - name: Load secrets
+      uses: ./.github/composite/load-secrets
+      with:
+        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
+        UNLOAD_ENVIRONMENTS: ci
+
+    - name: Parse the numerical string prefix from the PR title
+      id: parse_id
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        TITLE="$(gh pr view "${{ inputs.PR_ID }}" --json title -q .title)"
+        PREFIX="$(echo "$TITLE" | grep -oE '^-?[0-9]+')"
+
+        if [ -z "$PREFIX" ]; then
+          echo "No numeric prefix found in PR title: $TITLE" >&2
+          exit 1
+        fi
+
+        echo "id=$PREFIX" >> "$GITHUB_OUTPUT"
+
+    - name: Check if the Notion task ID exists
+      id: check_notion
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        ID="${{ steps.parse_id.outputs.id }}"
+        BODY='{
+            "filter": {
+                "property": "ID",
+                "unique_id": {
+                    "equals": '${ID}'
+                }
+            }
+        }'
+
+        result=$(curl --request POST \
+            --header "accept: application/json" \
+            --header "Authorization: Bearer ${NOTION_SECRET}" \
+            --header "Content-Type: application/json" \
+            --header "Notion-Version: 2025-09-03" \
+            --data "${BODY}" \
+            https://api.notion.com/v1/data_sources/$NOTION_TASK_DB_ID/query \
+        | jq '(.results[0] // null) | {id: .properties.ID.unique_id.number, public_url: .public_url }')
+
+        if [ -z "$result" ] || [ "$result" = "null" ] || [ "$result" = "[]" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "public_url=null" >> "$GITHUB_OUTPUT"
+        else
+            PARSED_ID=$(echo "$result" | jq -r '.id')
+
+            if [ "$PARSED_ID" -ne "$ID" ]; then
+                echo "found=false" >> "$GITHUB_OUTPUT"
+                echo "public_url=null" >> "$GITHUB_OUTPUT"
+                echo "notion_id=null" >> "$GITHUB_OUTPUT"
+            else
+                PUBLIC_URL=$(echo "$result" | jq -r '.public_url')
+                echo "found=true" >> "$GITHUB_OUTPUT"
+                echo "public_url=$PUBLIC_URL" >> "$GITHUB_OUTPUT"
+                echo "notion_id=$PARSED_ID" >> "$GITHUB_OUTPUT"
+            fi
+        fi
+
+    - name: Send a message to the PR if task does not exist
+      if: steps.check_notion.outputs.found == 'false'
+      uses: ./.github/composite/send-message
+      with:
+        prId: ${{ inputs.PR_ID }}
+        message: |
+          Task ID ${{ steps.parse_id.outputs.id || 'N/A'}} does not exist on Notion. Please set a valid Notion task ID to the start of the PR title.
+
+    - name: Fail if task does not exist
+      if: steps.check_notion.outputs.found == 'false'
+      shell: bash
+      run: |
+        echo "Ticket verification failed."
+        exit 1
+
+    - name: Update PR description with public link
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        PUBLIC_URL=${{ steps.check_notion.outputs.public_url }}
+        ID=${{ steps.parse_id.outputs.id }}
+        PR_ID=${{ inputs.PR_ID }}
+
+        if [[ "$PUBLIC_URL" = "null" ]]; then
+          echo "Public URL set to null when it should not be. Exiting"
+          exit 1
+        fi
+
+        CURRENT_BODY="$(gh pr view "$PR_ID" --json body -q .body)"
+
+        NEW_LINE="## [$ID]($PUBLIC_URL)"
+
+        NEW_BODY=$(echo -e "$CURRENT_BODY" | awk -v link="$NEW_LINE" '
+                  FNR == 2 {
+                    print link
+                  }
+                  FNR != 2 {
+                    print $0
+                  }
+                ')
+
+        gh pr edit "$PR_ID" --body "$NEW_BODY"
+
+    - name: Update Notion task with PR link
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        echo "Starting Notion task update script."
+
+        PR_LINK=${{ github.server_url }}/${{ github.repository }}/pull/${{ inputs.PR_ID }}
+        PR_ID="${{ inputs.PR_ID }}"
+        NOTION_ID="${{ steps.parse_id.outputs.id }}"
+
+        echo "PR_LINK: $PR_LINK"
+        echo "PR_ID: $PR_ID"
+        echo "NOTION_ID to search for: $NOTION_ID"
+
+        DATA_BODY='{
+            "filter": {
+                "property": "ID",
+                "unique_id": {
+                    "equals": '${NOTION_ID}'
+                }
+            }
+        }'
+
+        echo "Searching Notion database for task with ID: $NOTION_ID"
+        echo "Query body: $DATA_BODY"
+
+        notion_data=$(curl --request POST \
+            --header "accept: application/json" \
+            --header "Authorization: Bearer ${NOTION_SECRET}" \
+            --header "Content-Type: application/json" \
+            --header "Notion-Version: 2025-09-03" \
+            --data "${DATA_BODY}" \
+            https://api.notion.com/v1/data_sources/$NOTION_TASK_DB_ID/query | jq '.')
+
+        echo "Notion query successful. Result data:"
+        echo "$notion_data"
+
+        NOTION_PAGE_ID=$(echo "$notion_data" | jq -r '.results[0].id')
+        echo "Extracted NOTION_PAGE_ID: $NOTION_PAGE_ID"
+
+        if [ "$NOTION_PAGE_ID" == "null" ] || [ -z "$NOTION_PAGE_ID" ]; then
+            echo "Error: Could not find Notion page for ID $NOTION_ID. Exiting."
+            exit 1
+        fi
+
+        prs_raw=$(echo "$notion_data" | jq -r '.results[0].properties."PRs (AUTO)".rich_text')
+        echo "Existing 'PRs (AUTO)' rich_text raw data: $prs_raw"
+
+        existing_prs=$(echo "$prs_raw" | jq -r '.[].plain_text')
+        echo "Existing PR links in plain text:"
+        echo "$existing_prs"
+
+        if echo "$existing_prs" | grep -Fq "$PR_LINK"; then
+          echo "PR link $PR_LINK is already present in Notion task. No update needed."
+          exit 0
+        fi
+
+        echo "PR link $PR_LINK not found. Preparing to add it."
+        new_pr_obj=$(printf '{"text": {"content": "%s\\n"}}' "$PR_LINK")
+        echo "New PR rich text object to be added: $new_pr_obj"
+        new_prs_arr=$(echo "$prs_raw" | jq --arg new_obj_str "$new_pr_obj" '. + [$new_obj_str | fromjson]')
+        echo "New array of PR rich text objects: $new_prs_arr"
+
+        PATCH_BODY='{
+                "properties": {
+                  "PRs (AUTO)": {
+                    "rich_text": '$new_prs_arr'
+                  }
+                }
+              }'
+
+        echo "Patch body for updating Notion page $NOTION_PAGE_ID:"
+        echo "$PATCH_BODY"
+
+        echo "Sending PATCH request to Notion API..."
+        status_code_output=$(curl -s -w "HTTPSTATUS:%{http_code}" \
+            --request PATCH \
+            --header "Authorization: Bearer ${NOTION_SECRET}" \
+            --header "Content-Type: application/json" \
+            --header "Notion-Version: 2025-09-03" \
+            --data "$PATCH_BODY" \
+            "https://api.notion.com/v1/pages/$NOTION_PAGE_ID")
+
+        status_code=$(echo "$status_code_output" | sed -E 's/.*HTTPSTATUS:([0-9]{3}).*/\1/')
+        response_body=$(echo "$status_code_output" | sed -E 's/HTTPSTATUS:[0-9]{3}//')
+
+        echo "Notion PATCH request sent."
+        echo "Response Status Code: $status_code"
+        echo "Response Body: $response_body"
+
+        if [[ "$status_code" -ne "200" ]]; then
+          echo "Failed to update Notion task. Status code was $status_code."
+          exit 1
+        fi
+
+        echo "Notion task updated successfully with PR link: $PR_LINK."
