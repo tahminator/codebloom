@@ -39,6 +39,10 @@ jobs:
         runs-on: ubuntu-latest
         needs: verifyPr
 
+        if: |
+          !cancelled() &&
+          (needs.verifyPr.result == 'skipped' || needs.verifyPr.result == 'success')
+
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
