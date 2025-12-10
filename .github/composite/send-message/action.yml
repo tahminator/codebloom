@@ -1,0 +1,32 @@
+name: "Send PR Message"
+description: "Post an arbitrary message to a pull request"
+
+# requires the following permissions
+# permissions:
+#   issues: write
+
+inputs:
+  prId:
+    description: "PR ID number"
+    required: true
+  message:
+    description: "Message body to post on the PR"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Post PR Message
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const prId = ${{ inputs.prId }};
+          const message = `${{ inputs.message }}`;
+
+
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: parseInt(prId, 10),
+            body: message
+          });
