@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.task;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.task.BackgroundTask;
 import com.patina.codebloom.common.db.models.task.BackgroundTaskEnum;
@@ -12,15 +11,16 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
 
-    private final Connection conn;
+    private final DataSource ds;
 
-    public BackgroundTaskSqlRepository(final DbConnection dbConn) {
-        this.conn = dbConn.getConn();
+    public BackgroundTaskSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private BackgroundTask parseResultSetToBackgroundTask(final ResultSet rs) throws SQLException {
@@ -45,7 +45,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
             task.setCompletedAt(StandardizedOffsetDateTime.now());
         }
         task.setCompletedAt(StandardizedOffsetDateTime.normalize(task.getCompletedAt()));
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(task.getId()));
             stmt.setObject("task", task.getTask().name(), java.sql.Types.OTHER);
             stmt.setObject("completedAt", task.getCompletedAt());
@@ -70,7 +71,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -96,7 +98,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                     task = :task
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("task", taskEnum.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -124,7 +127,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                 LIMIT 1
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("task", taskEnum.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -150,7 +154,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
             """;
 
         task.setCompletedAt(StandardizedOffsetDateTime.normalize(task.getCompletedAt()));
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("task", task.getTask().name(), java.sql.Types.OTHER);
             stmt.setObject("completedAt", task.getCompletedAt());
             stmt.setObject("id", UUID.fromString(task.getId()));
@@ -172,7 +177,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

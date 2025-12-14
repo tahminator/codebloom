@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.usertag;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.models.usertag.UserTag;
@@ -11,15 +10,16 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserTagSqlRepository implements UserTagRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public UserTagSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public UserTagSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private UserTag parseResultSetToTag(final ResultSet rs) throws SQLException {
@@ -44,7 +44,8 @@ public class UserTagSqlRepository implements UserTagRepository {
                 id = :id
                     """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(tagId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -74,7 +75,8 @@ public class UserTagSqlRepository implements UserTagRepository {
                 "userId" = :userId
                     """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("tag", tag.name(), java.sql.Types.OTHER);
             stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
@@ -104,7 +106,8 @@ public class UserTagSqlRepository implements UserTagRepository {
                 "userId" = :userId
                     """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -138,7 +141,8 @@ public class UserTagSqlRepository implements UserTagRepository {
                 (cast(:pointOfTime AS timestamptz) IS NULL OR "createdAt" <= :pointOfTime)
                     """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
             if (options.getPointOfTime() == null) {
                 stmt.setNull("pointOfTime", Types.TIMESTAMP_WITH_TIMEZONE);
@@ -171,7 +175,8 @@ public class UserTagSqlRepository implements UserTagRepository {
                 RETURNING
                     "createdAt"
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(userTag.getId()));
             stmt.setObject("userId", UUID.fromString(userTag.getUserId()));
             stmt.setObject("tag", userTag.getTag().name(), java.sql.Types.OTHER);
@@ -195,7 +200,8 @@ public class UserTagSqlRepository implements UserTagRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(tagId));
             int rowsAffected = stmt.executeUpdate();
 
@@ -216,7 +222,8 @@ public class UserTagSqlRepository implements UserTagRepository {
                     tag = :tag
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
             stmt.setObject("tag", tag.name(), java.sql.Types.OTHER);
 

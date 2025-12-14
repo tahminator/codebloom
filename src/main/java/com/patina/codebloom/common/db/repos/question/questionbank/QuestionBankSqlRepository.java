@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.question.questionbank;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
@@ -14,17 +13,17 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class QuestionBankSqlRepository implements QuestionBankRepository {
 
-    private final Connection conn;
+    private final DataSource ds;
     private final QuestionTopicRepository questionTopicRepository;
 
-    public QuestionBankSqlRepository(
-            final DbConnection dbConnection, final QuestionTopicRepository questionTopicRepository) {
-        this.conn = dbConnection.getConn();
+    public QuestionBankSqlRepository(final DataSource ds, final QuestionTopicRepository questionTopicRepository) {
+        this.ds = ds;
         this.questionTopicRepository = questionTopicRepository;
     }
 
@@ -72,7 +71,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
 
         question.setId(UUID.randomUUID().toString());
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(question.getId()));
             stmt.setString("slug", question.getQuestionSlug());
             stmt.setObject("difficulty", question.getQuestionDifficulty().name(), java.sql.Types.OTHER);
@@ -108,7 +108,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -144,7 +145,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 LIMIT 1
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionSlug", slug);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -175,7 +177,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("slug", inputQuestion.getQuestionSlug());
             stmt.setObject("difficulty", inputQuestion.getQuestionDifficulty().name(), java.sql.Types.OTHER);
             stmt.setInt("number", inputQuestion.getQuestionNumber());
@@ -196,7 +199,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
     public boolean deleteQuestionById(final String id) {
         String sql = "DELETE FROM \"QuestionBank\" WHERE id=:id";
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
 
@@ -226,7 +230,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 LIMIT 1
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     question = mapResultSetToQuestion(rs);
@@ -262,7 +267,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     qt.topic = :topic
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("topic", topic.getLeetcodeEnum(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -296,7 +302,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                     "questionDifficulty" = :difficulty
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("difficulty", difficulty, java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -326,7 +333,8 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                         "createdAt"
                     FROM "QuestionBank"
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     questions.add(mapResultSetToQuestion(rs));

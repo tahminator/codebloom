@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.achievements;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.achievements.Achievement;
 import com.patina.codebloom.common.db.models.achievements.AchievementPlaceEnum;
@@ -15,15 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AchievementSqlRepository implements AchievementRepository {
 
-    private Connection conn;
+    private final DataSource ds;
 
-    public AchievementSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public AchievementSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private Achievement parseResultSetToAchievement(final ResultSet rs) throws SQLException {
@@ -63,7 +63,8 @@ public class AchievementSqlRepository implements AchievementRepository {
             RETURNING
                 "createdAt"
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(achievement.getId()));
             stmt.setObject("userId", UUID.fromString(achievement.getUserId()));
             stmt.setObject("place", achievement.getPlace().name(), java.sql.Types.OTHER);
@@ -105,7 +106,8 @@ public class AchievementSqlRepository implements AchievementRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("place", achievement.getPlace().name(), java.sql.Types.OTHER);
             stmt.setObject(
                     "leaderboard",
@@ -137,7 +139,8 @@ public class AchievementSqlRepository implements AchievementRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("deletedAt", LocalDateTime.now());
             stmt.setObject("id", UUID.fromString(id));
 
@@ -168,7 +171,8 @@ public class AchievementSqlRepository implements AchievementRepository {
                 AND "deletedAt" IS NULL
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -203,7 +207,8 @@ public class AchievementSqlRepository implements AchievementRepository {
                 AND "deletedAt" IS NULL
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {

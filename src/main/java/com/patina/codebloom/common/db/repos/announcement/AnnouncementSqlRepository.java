@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.announcement;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.announcement.Announcement;
 import java.sql.Connection;
@@ -11,15 +10,16 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AnnouncementSqlRepository implements AnnouncementRepository {
 
-    private Connection conn;
+    private final DataSource ds;
 
-    public AnnouncementSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public AnnouncementSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private Announcement parseResultSetToTag(final ResultSet resultSet) throws SQLException {
@@ -48,7 +48,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                     "createdAt" ASC
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     result.add(parseResultSetToTag(rs));
@@ -76,7 +77,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                                     id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -106,7 +108,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                                 LIMIT 1
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToTag(rs);
@@ -130,7 +133,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                     id, "createdAt"
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.randomUUID());
             stmt.setObject(2, announcement.getExpiresAt());
             stmt.setBoolean(3, announcement.isShowTimer());
@@ -158,7 +162,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
                     id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
 
@@ -180,7 +185,8 @@ public class AnnouncementSqlRepository implements AnnouncementRepository {
             WHERE
                 id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("expiresAt", announcement.getExpiresAt());
             stmt.setBoolean("showTimer", announcement.isShowTimer());
             stmt.setString("message", announcement.getMessage());

@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.session;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.Session;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,15 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SessionSqlRepository implements SessionRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public SessionSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public SessionSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private Session parseResultSetToSession(final ResultSet resultSet) throws SQLException {
@@ -38,7 +38,8 @@ public class SessionSqlRepository implements SessionRepository {
         // ID altogether.
         session.setId(UUID.randomUUID().toString().replace("-", ""));
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, session.getId());
             stmt.setObject(2, UUID.fromString(session.getUserId()));
             stmt.setObject(3, session.getExpiresAt());
@@ -58,7 +59,8 @@ public class SessionSqlRepository implements SessionRepository {
         Session session = null;
         String sql = "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE id=?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -77,7 +79,8 @@ public class SessionSqlRepository implements SessionRepository {
         String sql = "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE \"userId\"=?";
         ArrayList<Session> sessions = new ArrayList<>();
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -95,7 +98,8 @@ public class SessionSqlRepository implements SessionRepository {
     public boolean deleteSessionById(final String id) {
         String sql = "DELETE FROM \"Session\" WHERE id=?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             int rowsAffected = stmt.executeUpdate();
 

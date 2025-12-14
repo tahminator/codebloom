@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.discord.club.metadata;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.discord.DiscordClubMetadata;
 import java.sql.Connection;
@@ -8,15 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public DiscordClubMetadataSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public DiscordClubMetadataSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private DiscordClubMetadata parseResultSetToDiscordClubMetadata(final ResultSet rs) throws SQLException {
@@ -43,7 +43,8 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
                 (:id, :guildId, :leaderboardChannelId, :discordClubId)
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(discordClubMetadata.getId()));
             stmt.setString("guildId", discordClubMetadata.getGuildId().orElse(null));
             stmt.setString(
@@ -70,7 +71,8 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
             WHERE
                 id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -96,7 +98,8 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(discordClubMetadata.getId()));
             stmt.setString("guildId", discordClubMetadata.getGuildId().orElse(null));
             stmt.setString(
@@ -116,7 +119,8 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
             DELETE FROM "DiscordClubMetadata"
             WHERE id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -138,7 +142,8 @@ public class DiscordClubMetadataSqlRepository implements DiscordClubMetadataRepo
             WHERE
                 "discordClubId" = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

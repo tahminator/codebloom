@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.potd;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.potd.POTD;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,15 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class POTDSqlRepository implements POTDRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public POTDSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public POTDSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private POTD mapRowToPOTD(final ResultSet rs) throws SQLException {
@@ -40,7 +40,8 @@ public class POTDSqlRepository implements POTDRepository {
 
         potd.setId(UUID.randomUUID().toString());
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(potd.getId()));
             stmt.setString(2, potd.getTitle());
             stmt.setString(3, potd.getSlug());
@@ -58,7 +59,8 @@ public class POTDSqlRepository implements POTDRepository {
     public POTD getPOTDById(final String id) {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\" WHERE id = ?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -76,7 +78,8 @@ public class POTDSqlRepository implements POTDRepository {
     public ArrayList<POTD> getAllPOTDS() {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\"";
         ArrayList<POTD> potdList = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 potdList.add(mapRowToPOTD(rs));
@@ -90,7 +93,8 @@ public class POTDSqlRepository implements POTDRepository {
     @Override
     public void updatePOTD(final POTD potd) {
         String sql = "UPDATE \"POTD\" SET title = ?, slug = ?, multiplier = ? WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, potd.getTitle());
             stmt.setString(2, potd.getSlug());
             stmt.setFloat(3, potd.getMultiplier());
@@ -104,7 +108,8 @@ public class POTDSqlRepository implements POTDRepository {
     @Override
     public void deletePOTD(final String id) {
         String sql = "DELETE FROM \"POTD\" WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -121,7 +126,8 @@ public class POTDSqlRepository implements POTDRepository {
             LIMIT 1
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return mapRowToPOTD(rs);

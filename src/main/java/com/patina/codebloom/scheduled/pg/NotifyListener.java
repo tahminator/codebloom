@@ -1,6 +1,5 @@
 package com.patina.codebloom.scheduled.pg;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.common.reporter.report.Report;
@@ -10,10 +9,12 @@ import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.PGConnection;
 import org.postgresql.PGNotification;
@@ -29,14 +30,16 @@ public class NotifyListener {
     private final List<PgChannel> channels;
 
     private final Env env;
-    private final Connection conn;
+    private final DataSource ds;
     private final Reporter reporter;
 
     private final JobNotifyHandler jobNotifyHandler;
     private final LobbyNotifyHandler lobbyNotifyHandler;
 
+    private Connection conn;
+
     public NotifyListener(
-            final DbConnection dbConn,
+            final DataSource ds,
             final Reporter reporter,
             final Env env,
             final JobNotifyHandler jobNotifyHandler,
@@ -45,7 +48,7 @@ public class NotifyListener {
         this.vtpool = Executors.newVirtualThreadPerTaskExecutor();
         this.reporter = reporter;
         this.env = env;
-        this.conn = dbConn.getConn();
+        this.ds = ds;
         this.jobNotifyHandler = jobNotifyHandler;
         this.lobbyNotifyHandler = lobbyNotifyHandler;
     }
@@ -58,11 +61,32 @@ public class NotifyListener {
     @PreDestroy
     protected void shutdown() {
         vtpool.shutdownNow();
+        closeConnection();
+    }
+
+    private Connection getOrCreateConnection() throws SQLException {
+        if (conn == null || conn.isClosed()) {
+            log.info("Creating new connection for LISTEN/NOTIFY");
+            conn = ds.getConnection();
+        }
+        return conn;
+    }
+
+    private void closeConnection() {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                log.error("Failed to close listener connection", e);
+            }
+            conn = null;
+        }
     }
 
     private void listenLoop() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
+                Connection conn = getOrCreateConnection();
                 PGConnection pgConn = conn.unwrap(PGConnection.class);
 
                 try (Statement stmt = conn.createStatement()) {

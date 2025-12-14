@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.leaderboard;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.leaderboard.Leaderboard;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
@@ -22,16 +21,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LeaderboardSqlRepository implements LeaderboardRepository {
 
-    private Connection conn;
+    private DataSource ds;
     private final UserRepository userRepository;
 
-    public LeaderboardSqlRepository(final DbConnection dbConnection, final UserRepository userRepository) {
-        this.conn = dbConnection.getConn();
+    public LeaderboardSqlRepository(final DataSource ds, final UserRepository userRepository) {
+        this.ds = ds;
         this.userRepository = userRepository;
     }
 
@@ -61,7 +61,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "deletedAt" IS NULL
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(leaderboardId));
             int rowsAffected = stmt.executeUpdate();
 
@@ -82,7 +83,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "createdAt"
             """;
         leaderboard.setId(UUID.randomUUID().toString());
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
             stmt.setString("name", leaderboard.getName());
             try (ResultSet rs = stmt.executeQuery()) {
@@ -112,7 +114,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             LIMIT 1
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToLeaderboard(rs);
@@ -139,7 +142,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -196,7 +200,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     r.rank ASC
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             UUID[] userIds =
                     users.stream().map(user -> UUID.fromString(user.getId())).toArray(size -> new UUID[size]);
 
@@ -294,7 +299,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 r.rank ASC
                                     """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             UUID[] userIds =
                     users.stream().map(user -> UUID.fromString(user.getId())).toArray(size -> new UUID[size]);
 
@@ -366,7 +372,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 r."userId" = :userId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             stmt.setObject("userId", UUID.fromString(userId));
 
@@ -458,7 +465,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 r."userId" = :userId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             stmt.setObject("userId", UUID.fromString(userId));
 
@@ -566,7 +574,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             LIMIT :pageSize OFFSET :pageNumber;
                             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
@@ -672,7 +681,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             LIMIT :pageSize OFFSET :pageNumber;
                             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(id));
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
@@ -724,7 +734,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             WHERE id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("name", leaderboard.getName());
             stmt.setObject("createdAt", leaderboard.getCreatedAt());
             stmt.setObject("deletedAt", leaderboard.getDeletedAt());
@@ -747,7 +758,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 (:id, :userId, :leaderboardId)
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.randomUUID());
             stmt.setObject("userId", UUID.fromString(userId));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
@@ -772,7 +784,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "leaderboardId" = :leaderboardId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setInt("totalScore", totalScore);
             stmt.setObject("userId", UUID.fromString(userId));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
@@ -841,7 +854,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 AND
                     (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
             stmt.setBoolean("nyu", options.isNyu());
@@ -916,7 +930,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 AND
                     (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("leaderboardId", UUID.fromString(id));
             stmt.setBoolean("patina", options.isPatina());
             stmt.setBoolean("hunter", options.isHunter());
@@ -959,7 +974,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 LIMIT :pageSize OFFSET :pageNumber
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
             stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
@@ -986,7 +1002,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 (:id, :userId, :leaderboardId)
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             for (var user : users) {
                 String userMetaId = UUID.randomUUID().toString();
                 stmt.setObject("id", UUID.fromString(userMetaId));
@@ -1013,7 +1030,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 "Leaderboard"
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
@@ -1033,7 +1051,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
@@ -1058,7 +1077,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

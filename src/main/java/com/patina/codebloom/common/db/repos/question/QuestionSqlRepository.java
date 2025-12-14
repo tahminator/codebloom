@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.question;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
@@ -20,12 +19,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
 
-    private Connection conn;
+    private DataSource ds;
     private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
     private final QuestionTopicService questionTopicService;
@@ -121,11 +121,11 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     public QuestionSqlRepository(
-            final DbConnection dbConnection,
+            final DataSource ds,
             final UserRepository userRepository,
             final QuestionTopicRepository questionTopicRepository,
             final QuestionTopicService questionTopicService) {
-        this.conn = dbConnection.getConn();
+        this.ds = ds;
         this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
         this.questionTopicService = questionTopicService;
@@ -158,7 +158,8 @@ public class QuestionSqlRepository implements QuestionRepository {
 
         question.setId(UUID.randomUUID().toString());
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(question.getId()));
             stmt.setObject(2, UUID.fromString(question.getUserId()));
             stmt.setString(3, question.getQuestionSlug());
@@ -223,7 +224,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                     id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -264,7 +266,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                 WHERE q.id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -375,7 +378,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             LIMIT ? OFFSET ?;
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(userId));
             stmt.setString(2, "%" + query + "%");
             stmt.setBoolean(3, pointFilter);
@@ -447,7 +451,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                     id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(inputQuestion.getUserId()));
             stmt.setString(2, inputQuestion.getQuestionSlug());
             stmt.setObject(3, inputQuestion.getQuestionDifficulty().name(), java.sql.Types.OTHER);
@@ -482,7 +487,8 @@ public class QuestionSqlRepository implements QuestionRepository {
     public boolean deleteQuestionById(final String id) {
         String sql = "DELETE FROM \"Question\" WHERE id=?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
 
@@ -523,7 +529,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                 LIMIT 1
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, slug);
             stmt.setObject(2, UUID.fromString(inputtedUserId));
             try (ResultSet rs = stmt.executeQuery()) {
@@ -583,7 +590,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             )
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
             stmt.setString("title", "%" + query + "%");
             stmt.setBoolean("pointFilter", pointFilter);
@@ -616,7 +624,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                     "submissionId" = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, submissionId);
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
@@ -640,7 +649,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                 OR ("code" is NULL OR "code" = '')
                 OR ("language" is NULL OR "language" = '')
             """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     questions.add(mapResultSetToQuestion(rs));
@@ -685,7 +695,8 @@ public class QuestionSqlRepository implements QuestionRepository {
             );
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     result.add(mapResultSetToQuestion(rs));
@@ -736,7 +747,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                 q."submittedAt" DESC
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     QuestionWithUser question = mapResultSetToQuestionWithUser(rs);

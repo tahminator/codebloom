@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.api.access;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.api.ApiKeyAccessEnum;
 import com.patina.codebloom.common.db.models.api.access.ApiKeyAccess;
@@ -9,15 +8,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public ApiKeyAccessSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public ApiKeyAccessSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private ApiKeyAccess parseResultSetToApiKeyAccess(final ResultSet rs) throws SQLException {
@@ -41,7 +41,8 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -69,7 +70,8 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
             """;
 
         final ArrayList<ApiKeyAccess> results = new java.util.ArrayList<>();
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("apiKeyId", java.util.UUID.fromString(apiKeyId));
             try (ResultSet resultSet = stmt.executeQuery()) {
                 while (resultSet.next()) {
@@ -91,7 +93,8 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 (:id, :apiKeyId, :access)
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", java.util.UUID.fromString(apiKeyAccess.getId()));
             stmt.setObject("apiKeyId", java.util.UUID.fromString(apiKeyAccess.getApiKeyId()));
             stmt.setObject("access", apiKeyAccess.getAccess().name(), java.sql.Types.OTHER);
@@ -114,7 +117,8 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(apiKeyAccess.getId()));
             stmt.setObject("apiKeyId", UUID.fromString(apiKeyAccess.getApiKeyId()));
             stmt.setObject("access", apiKeyAccess.getAccess().name(), java.sql.Types.OTHER);
@@ -135,7 +139,8 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 "apiKeyId" = :apiKeyId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("apiKeyId", UUID.fromString(apiKeyId));
 
             int rowsAffected = stmt.executeUpdate();
@@ -154,7 +159,8 @@ public class ApiKeyAccessSqlRepository implements ApiKeyAccessRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

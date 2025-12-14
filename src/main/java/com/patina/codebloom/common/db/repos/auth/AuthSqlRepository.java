@@ -1,24 +1,23 @@
 package com.patina.codebloom.common.db.repos.auth;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.auth.Auth;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuthSqlRepository implements AuthRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public AuthSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public AuthSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private Auth parseResultSetToAuth(final ResultSet rs) throws SQLException {
@@ -42,7 +41,8 @@ public class AuthSqlRepository implements AuthRepository {
             """;
         auth.setId(UUID.randomUUID().toString());
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(auth.getId()));
             stmt.setString("token", auth.getToken());
             stmt.setString("csrf", auth.getCsrf());
@@ -68,7 +68,8 @@ public class AuthSqlRepository implements AuthRepository {
             WHERE
                 id = :id
             """;
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(auth.getId()));
             stmt.setString("token", auth.getToken());
             stmt.setString("csrf", auth.getCsrf());
@@ -90,7 +91,8 @@ public class AuthSqlRepository implements AuthRepository {
             WHERE
                 id = :id;
             """;
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(inputtedId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -113,7 +115,8 @@ public class AuthSqlRepository implements AuthRepository {
             ORDER BY "createdAt" DESC
             LIMIT 1
             """;
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToAuth(rs);
@@ -135,7 +138,8 @@ public class AuthSqlRepository implements AuthRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

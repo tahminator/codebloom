@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.discord.club;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.discord.DiscordClub;
 import com.patina.codebloom.common.db.models.usertag.Tag;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,11 +21,11 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
 
     private final DiscordClubMetadataSqlRepository discordClubMetadataSqlRepository;
 
-    private Connection conn;
+    private DataSource ds;
 
     public DiscordClubSqlRepository(
-            final DbConnection dbConnection, final DiscordClubMetadataSqlRepository discordClubMetadataSqlRepository) {
-        this.conn = dbConnection.getConn();
+            final DataSource ds, final DiscordClubMetadataSqlRepository discordClubMetadataSqlRepository) {
+        this.ds = ds;
         this.discordClubMetadataSqlRepository = discordClubMetadataSqlRepository;
     }
 
@@ -62,7 +62,8 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                 "createdAt"
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(discordClub.getId()));
             stmt.setString("name", discordClub.getName());
             stmt.setString("description", discordClub.getDescription().orElse(null));
@@ -90,7 +91,8 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
             WHERE
                 id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -116,7 +118,8 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
             WHERE
                 id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(discordClub.getId()));
             stmt.setString("name", discordClub.getName());
             stmt.setString("description", discordClub.getDescription().orElse(null));
@@ -136,7 +139,8 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
             DELETE FROM "DiscordClub"
             WHERE id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -158,7 +162,8 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
                 "deletedAt" IS NULL
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     result.add(parseResultSetTDiscordClub(rs));
