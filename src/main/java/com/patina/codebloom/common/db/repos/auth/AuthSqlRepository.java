@@ -4,6 +4,7 @@ import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.auth.Auth;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -116,11 +117,10 @@ public class AuthSqlRepository implements AuthRepository {
             LIMIT 1
             """;
         try (Connection conn = ds.getConnection();
-                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return parseResultSetToAuth(rs);
-                }
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return parseResultSetToAuth(rs);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get most recent auth", e);
