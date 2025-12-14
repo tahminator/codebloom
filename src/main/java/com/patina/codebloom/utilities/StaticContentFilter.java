@@ -46,7 +46,8 @@ public class StaticContentFilter implements Filter {
         boolean isApi = path.startsWith("/api");
         boolean isOpenAPI = path.startsWith("/v3");
         boolean isActuator = path.startsWith("/actuator");
-        boolean isResourceFile = !isApi && !isOpenAPI && fileExtensions.stream().anyMatch(path::contains);
+        boolean isResourceFile =
+                !isApi && !isOpenAPI && !isActuator && fileExtensions.stream().anyMatch(path::contains);
 
         if (isApi || isResourceFile || isOpenAPI || isActuator) {
             chain.doFilter(request, response);
