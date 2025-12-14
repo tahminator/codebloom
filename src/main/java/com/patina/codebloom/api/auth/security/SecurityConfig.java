@@ -39,8 +39,8 @@ public class SecurityConfig {
     }
 
     /**
-     * Security filter chain for actuator endpoints with HTTP Basic authentication.
-     * This needs to be processed first (Order 1) to prevent OAuth from being applied.
+     * Security filter chain for actuator endpoints with HTTP Basic authentication. This needs to be processed first
+     * (Order 1) to prevent OAuth from being applied.
      */
     @Bean
     @Order(1)
@@ -55,8 +55,8 @@ public class SecurityConfig {
 
     /**
      * The authorization endpoint is used to get redirected to the OAuth login page. The redirection endpoint is the
-     * callback endpoint on our server that then handles the authentication logic.
-     * This handles all other requests with OAuth.
+     * callback endpoint on our server that then handles the authentication logic. This handles all other requests with
+     * OAuth.
      */
     @Bean
     @Order(2)
