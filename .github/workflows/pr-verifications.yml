@@ -1,0 +1,30 @@
+name: Verify PR
+run-name: Running PR verification on ${{ github.actor }}'s branch
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifyPr:
+    name: Run verification checks on the PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run 'Check Notion PR' composite action
+        uses: ./.github/composite/check-notion-pr
+        with:
+          PR_ID: ${{ github.event.number }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

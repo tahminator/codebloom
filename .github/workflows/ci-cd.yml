@@ -17,31 +17,9 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    verifyPr:
-        name: Run verification checks on the PR
-        runs-on: ubuntu-latest
-
-        if: github.event_name == 'pull_request'
-
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-
-            - name: Run 'Check Notion PR' composite action
-              uses: ./.github/composite/check-notion-pr
-              with:
-                PR_ID: ${{ github.event.number }}
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
     backendPreTest:
         name: Backend Pre Test
         runs-on: ubuntu-latest
-        needs: verifyPr
-
-        if: |
-          !cancelled() &&
-          (needs.verifyPr.result == 'skipped' || needs.verifyPr.result == 'success')
 
         steps:
             - name: Checkout Repository
