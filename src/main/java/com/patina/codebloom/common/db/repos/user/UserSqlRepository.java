@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.user;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.models.user.UserWithScore;
@@ -13,20 +12,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserSqlRepository implements UserRepository {
 
-    private Connection conn;
+    private DataSource ds;
     private final UserTagRepository userTagRepository;
     private final AchievementRepository achievementRepository;
 
     public UserSqlRepository(
-            final DbConnection dbConnection,
+            final DataSource ds,
             final UserTagRepository userTagRepository,
             final AchievementRepository achievementRepository) {
-        this.conn = dbConnection.getConn();
+        this.ds = ds;
         this.userTagRepository = userTagRepository;
         this.achievementRepository = achievementRepository;
     }
@@ -81,7 +81,8 @@ public class UserSqlRepository implements UserRepository {
                 "verifyKey"
             """;
         user.setId(UUID.randomUUID().toString());
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(user.getId()));
             stmt.setString("discordName", user.getDiscordName());
             stmt.setString("discordId", user.getDiscordId());
@@ -119,7 +120,8 @@ public class UserSqlRepository implements UserRepository {
                 id=:id
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(inputId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -150,7 +152,8 @@ public class UserSqlRepository implements UserRepository {
                 WHERE "leetcodeUsername" = :leetcodeUsername
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("leetcodeUsername", inputLeetcodeUsername);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -182,7 +185,8 @@ public class UserSqlRepository implements UserRepository {
                 "discordId" = :discordId
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("discordId", inputDiscordId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -200,7 +204,8 @@ public class UserSqlRepository implements UserRepository {
     public int getUserCount() {
         String sql = "SELECT COUNT(*) FROM \"User\"";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
@@ -228,7 +233,8 @@ public class UserSqlRepository implements UserRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(inputUser.getId()));
             stmt.setString("discordName", inputUser.getDiscordName());
             stmt.setString("discordId", inputUser.getDiscordId());
@@ -266,7 +272,8 @@ public class UserSqlRepository implements UserRepository {
             FROM "User"
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     users.add(parseResultSetToUser(rs));
@@ -302,7 +309,8 @@ public class UserSqlRepository implements UserRepository {
                 LIMIT :limit OFFSET :offset
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("query", "%" + query + "%");
             stmt.setInt("limit", pageSize);
             stmt.setInt("offset", (page - 1) * pageSize);
@@ -329,7 +337,8 @@ public class UserSqlRepository implements UserRepository {
             LIMIT 1
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, leetcodeUsername);
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
@@ -363,7 +372,8 @@ public class UserSqlRepository implements UserRepository {
                     m."leaderboardId" = :leaderboardId
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(userId));
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             try (ResultSet rs = stmt.executeQuery()) {
@@ -401,7 +411,8 @@ public class UserSqlRepository implements UserRepository {
                     m."leaderboardId" = :leaderboardId
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("leetcodeUsername", userLeetcodeUsername);
             stmt.setObject("leaderboardId", UUID.fromString(leaderboardId));
             try (ResultSet rs = stmt.executeQuery()) {
@@ -426,7 +437,8 @@ public class UserSqlRepository implements UserRepository {
             WHERE
                 ("discordName" ILIKE :query OR "leetcodeUsername" ILIKE :query OR "nickname" ILIKE :query)
             """;
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("query", "%" + query + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -447,7 +459,8 @@ public class UserSqlRepository implements UserRepository {
                     id = :id
             """;
 
-        try (NamedPreparedStatement stmt = NamedPreparedStatement.create(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

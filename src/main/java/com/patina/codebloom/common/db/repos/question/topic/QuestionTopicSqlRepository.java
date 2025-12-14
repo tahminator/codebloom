@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.question.topic;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
@@ -10,12 +9,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
-    private final Connection conn;
+    private final DataSource ds;
 
     private QuestionTopic mapResultSetToQuestionTopic(final ResultSet resultSet) throws SQLException {
         return QuestionTopic.builder()
@@ -28,8 +28,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                 .build();
     }
 
-    public QuestionTopicSqlRepository(final DbConnection connection) {
-        this.conn = connection.getConn();
+    public QuestionTopicSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     @Override
@@ -50,7 +50,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     qt."questionId" = :questionId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionId", UUID.fromString(questionId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -83,7 +84,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     qt."questionBankId" = :questionBankId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionBankId", UUID.fromString(questionBankId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -115,7 +117,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                         qt.id = :id
                 """;
 
-            try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            try (Connection conn = ds.getConnection();
+                    NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
                 stmt.setObject("id", UUID.fromString(id));
 
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -150,7 +153,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     qt.topic = :topic
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionId", UUID.fromString(questionId));
             stmt.setObject("topic", topicEnum.getLeetcodeEnum(), java.sql.Types.OTHER);
 
@@ -179,7 +183,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
         questionTopic.setId(UUID.randomUUID().toString());
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
 
             if (questionTopic.getQuestionId() == null) {
@@ -221,7 +226,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
 
             if (questionTopic.getQuestionId() == null) {
@@ -254,7 +260,8 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
 

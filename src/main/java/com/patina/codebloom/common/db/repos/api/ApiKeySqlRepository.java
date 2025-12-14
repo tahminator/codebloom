@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.api;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.api.ApiKey;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
@@ -12,15 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApiKeySqlRepository implements ApiKeyRepository {
 
-    private Connection conn;
+    private final DataSource ds;
 
-    public ApiKeySqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public ApiKeySqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private ApiKey parseResultSetToApiKey(final ResultSet resultSet) throws SQLException {
@@ -52,7 +52,8 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -82,7 +83,8 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
                 "apiKeyHash" = :hash
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("hash", hash);
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -112,7 +114,8 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
 
         final List<ApiKey> results = new ArrayList<>();
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql);
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql);
                 ResultSet resultSet = stmt.executeQuery()) {
             while (resultSet.next()) {
                 results.add(parseResultSetToApiKey(resultSet));
@@ -144,7 +147,8 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
         final UUID id = UUID.fromString(apiKey.getId());
         final UUID updatedBy = UUID.fromString(apiKey.getUpdatedBy());
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", id);
             stmt.setString("apiKeyHash", apiKey.getApiKey());
             stmt.setObject("expiresAt", apiKey.getExpiresAt());
@@ -172,7 +176,8 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
         var localTime = StandardizedLocalDateTime.now();
         apiKey.setUpdatedAt(localTime);
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", id);
             stmt.setString("apiKeyHash", apiKey.getApiKey());
             stmt.setObject("expiresAt", apiKey.getExpiresAt());
@@ -195,7 +200,8 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
                 "id" = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             final int rowsAffected = stmt.executeUpdate();
@@ -214,7 +220,8 @@ public class ApiKeySqlRepository implements ApiKeyRepository {
                 "apiKeyHash" = :hash
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("hash", hash);
 
             final int rowsAffected = stmt.executeUpdate();

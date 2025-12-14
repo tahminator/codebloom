@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.club;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.club.Club;
 import com.patina.codebloom.common.db.models.usertag.Tag;
@@ -8,15 +7,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ClubSqlRepository implements ClubRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public ClubSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public ClubSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private Club parseResultSetToClub(final ResultSet rs) throws SQLException {
@@ -49,7 +49,8 @@ public class ClubSqlRepository implements ClubRepository {
             VALUES
                 (:id, :name, :description, :slug, :splashIconUrl, :password, :tag)
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(club.getId()));
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
@@ -77,7 +78,8 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE
                 id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(club.getId()));
             stmt.setString("name", club.getName());
             stmt.setString("description", club.getDescription());
@@ -110,7 +112,8 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE
                 id = :id
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -139,7 +142,8 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE
                 "slug" = :slug
             """;
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("slug", slug);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -159,7 +163,8 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE "slug" = :slug
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("slug", slug);
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -175,7 +180,8 @@ public class ClubSqlRepository implements ClubRepository {
             WHERE id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

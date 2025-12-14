@@ -1,21 +1,21 @@
 package com.patina.codebloom.common.db.repos.weekly;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public WeeklyMessageSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public WeeklyMessageSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private WeeklyMessage parseResultSetToWeeklyMessage(final ResultSet resultSet) throws SQLException {
@@ -44,7 +44,8 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
             LIMIT 1
                                 """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return parseResultSetToWeeklyMessage(rs);
@@ -70,7 +71,8 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
             LIMIT 1
                                 """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -95,7 +97,8 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
                     id, "createdAt"
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.randomUUID());
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -120,7 +123,8 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
                     (?)
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.randomUUID());
 
             int rowsAffected = stmt.executeUpdate();
@@ -140,7 +144,8 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
                 id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             int rowsAffected = stmt.executeUpdate();
 
@@ -164,7 +169,8 @@ public class WeeklyMessageSqlRepository implements WeeklyMessageRepository {
             WHERE wm.id = td.id
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             int rowsAffected = stmt.executeUpdate();
 
             return rowsAffected > 0;

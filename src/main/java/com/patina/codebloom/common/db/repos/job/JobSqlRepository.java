@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.job;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.models.job.Job;
 import com.patina.codebloom.common.db.models.job.JobStatus;
 import java.sql.Connection;
@@ -11,15 +10,16 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JobSqlRepository implements JobRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public JobSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public JobSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private Job parseResultSetToJob(final ResultSet resultSet) throws SQLException {
@@ -47,7 +47,8 @@ public class JobSqlRepository implements JobRepository {
 
         job.setId(UUID.randomUUID().toString());
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(job.getId()));
             stmt.setString(2, job.getQuestionId());
             stmt.setObject(3, job.getStatus().name(), java.sql.Types.OTHER);
@@ -80,7 +81,8 @@ public class JobSqlRepository implements JobRepository {
                 id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -116,7 +118,8 @@ public class JobSqlRepository implements JobRepository {
             LIMIT ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, JobStatus.INCOMPLETE.name(), java.sql.Types.OTHER);
             stmt.setInt(2, maxJobs);
 
@@ -145,7 +148,8 @@ public class JobSqlRepository implements JobRepository {
                 id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, job.getProcessedAt());
             stmt.setObject(2, job.getCompletedAt());
             stmt.setObject(3, job.getNextAttemptAt());
@@ -166,7 +170,8 @@ public class JobSqlRepository implements JobRepository {
             WHERE id = ?
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setObject(1, UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
@@ -182,7 +187,8 @@ public class JobSqlRepository implements JobRepository {
             DELETE FROM "Job"
             """;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
         } catch (SQLException e) {

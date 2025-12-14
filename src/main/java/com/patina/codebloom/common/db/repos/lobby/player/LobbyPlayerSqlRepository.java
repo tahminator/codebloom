@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.lobby.player;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import java.sql.Connection;
@@ -10,15 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public LobbyPlayerSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public LobbyPlayerSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private LobbyPlayer parseResultSetToLobbyPlayer(final ResultSet resultSet) throws SQLException {
@@ -41,7 +41,8 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
 
         lobbyPlayer.setId(UUID.randomUUID().toString());
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(lobbyPlayer.getId()));
             stmt.setObject("lobbyId", UUID.fromString(lobbyPlayer.getLobbyId()));
             stmt.setObject("playerId", UUID.fromString(lobbyPlayer.getPlayerId()));
@@ -67,7 +68,8 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -95,7 +97,8 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 "playerId" = :playerId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("playerId", UUID.fromString(playerId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -126,7 +129,8 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 points DESC
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyId", UUID.fromString(lobbyId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -151,7 +155,8 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setInt("points", lobbyPlayer.getPoints());
             stmt.setObject("id", UUID.fromString(lobbyPlayer.getId()));
 
@@ -169,7 +174,8 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             WHERE "lobbyId" = :lobbyId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyId", UUID.fromString(lobbyId));
 
             int rowsAffected = stmt.executeUpdate();
@@ -186,7 +192,8 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             WHERE id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

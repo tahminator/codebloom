@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.lobby;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -13,15 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LobbySqlRepository implements LobbyRepository {
 
-    private Connection conn;
+    private final DataSource ds;
 
-    public LobbySqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public LobbySqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private Lobby parseResultSetToLobby(final ResultSet resultSet) throws SQLException {
@@ -49,7 +49,8 @@ public class LobbySqlRepository implements LobbyRepository {
 
         lobby.setId(UUID.randomUUID().toString());
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(lobby.getId()));
             stmt.setString("joinCode", lobby.getJoinCode());
             stmt.setObject("status", lobby.getStatus().name(), java.sql.Types.OTHER);
@@ -84,7 +85,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -116,7 +118,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 AND status = :status
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("joinCode", joinCode);
             stmt.setObject("status", LobbyStatus.AVAILABLE.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -149,7 +152,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 AND status = 'ACTIVE'
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("joinCode", joinCode);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -183,7 +187,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt" DESC
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("status", status.name(), java.sql.Types.OTHER);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -219,7 +224,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt" DESC
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("status", LobbyStatus.AVAILABLE.name(), java.sql.Types.OTHER);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -254,7 +260,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 AND lp."playerId" = :playerId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("status", LobbyStatus.ACTIVE.name(), java.sql.Types.OTHER);
             stmt.setObject("playerId", UUID.fromString(lobbyPlayerId));
 
@@ -285,7 +292,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 lp."playerId" = :playerId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("playerId", UUID.fromString(lobbyPlayerId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -312,7 +320,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("status", lobby.getStatus().name(), java.sql.Types.OTHER);
             stmt.setObject("expiresAt", lobby.getExpiresAt());
             stmt.setInt("playerCount", lobby.getPlayerCount());
@@ -332,7 +341,8 @@ public class LobbySqlRepository implements LobbyRepository {
             WHERE id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();

@@ -1,9 +1,9 @@
 package com.patina.codebloom.config;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.scheduled.pg.NotifyListener;
+import javax.sql.DataSource;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -15,12 +15,12 @@ import org.springframework.context.annotation.Primary;
 @TestConfiguration
 public class TestJobNotifyListener {
 
-    private DbConnection dbConn;
-    private Reporter reporter;
-    private Env env;
+    private final DataSource ds;
+    private final Reporter reporter;
+    private final Env env;
 
-    public TestJobNotifyListener(final DbConnection dbConn, final Reporter reporter, final Env env) {
-        this.dbConn = dbConn;
+    public TestJobNotifyListener(final DataSource ds, final Reporter reporter, final Env env) {
+        this.ds = ds;
         this.reporter = reporter;
         this.env = env;
     }
@@ -29,7 +29,7 @@ public class TestJobNotifyListener {
     @Primary
     public NotifyListener notifyListener() {
         // loop should never start, and as such will also never stop.
-        return new NotifyListener(dbConn, reporter, env, null, null) {
+        return new NotifyListener(ds, reporter, env, null, null) {
             @Override
             protected void init() {
                 return;

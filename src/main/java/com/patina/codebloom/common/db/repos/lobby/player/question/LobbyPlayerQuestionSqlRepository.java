@@ -1,6 +1,5 @@
 package com.patina.codebloom.common.db.repos.lobby.player.question;
 
-import com.patina.codebloom.common.db.DbConnection;
 import com.patina.codebloom.common.db.helper.NamedPreparedStatement;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 import java.sql.Connection;
@@ -10,15 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepository {
 
-    private Connection conn;
+    private DataSource ds;
 
-    public LobbyPlayerQuestionSqlRepository(final DbConnection dbConnection) {
-        this.conn = dbConnection.getConn();
+    public LobbyPlayerQuestionSqlRepository(final DataSource ds) {
+        this.ds = ds;
     }
 
     private LobbyPlayerQuestion parseResultSetToLobbyPlayerQuestion(final ResultSet resultSet) throws SQLException {
@@ -41,7 +41,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
 
         lobbyPlayerQuestion.setId(UUID.randomUUID().toString());
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(lobbyPlayerQuestion.getId()));
             stmt.setObject("lobbyPlayerId", UUID.fromString(lobbyPlayerQuestion.getLobbyPlayerId()));
             stmt.setObject(
@@ -69,7 +70,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -98,7 +100,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
                 "lobbyPlayerId" = :lobbyPlayerId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyPlayerId", UUID.fromString(lobbyPlayerId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -128,7 +131,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
                 "questionId" = :questionId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("questionId", UUID.fromString(questionId));
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -154,7 +158,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
                 id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("points", lobbyPlayerQuestion.getPoints().orElse(null), java.sql.Types.INTEGER);
             stmt.setObject(
                     "questionId",
@@ -175,7 +180,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
             WHERE "lobbyPlayerId" = :lobbyPlayerId
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyPlayerId", UUID.fromString(lobbyPlayerId));
 
             int rowsAffected = stmt.executeUpdate();
@@ -192,7 +198,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
             WHERE id = :id
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
 
             int rowsAffected = stmt.executeUpdate();
@@ -218,7 +225,8 @@ public class LobbyPlayerQuestionSqlRepository implements LobbyPlayerQuestionRepo
                 "questionId"
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("lobbyId", UUID.fromString(lobbyId));
 
             try (ResultSet rs = stmt.executeQuery()) {
