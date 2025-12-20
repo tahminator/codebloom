@@ -11,7 +11,8 @@
         "vscjava.vscode-java-pack",
         "vmware.vscode-boot-dev-pack",
         "bradlc.vscode-tailwindcss",
-        "redhat.vscode-xml"
+        "redhat.vscode-xml",
+        "emeraldwalk.runonsave"
     ]
 }
 
