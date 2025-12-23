@@ -21,8 +21,7 @@ runs:
       with:
         script: |
           const prId = ${{ inputs.prId }};
-          const message = `${{ inputs.message }}`;
-
+          const message = ${{ toJSON(inputs.message) }};
 
           await github.rest.issues.createComment({
             owner: context.repo.owner,
