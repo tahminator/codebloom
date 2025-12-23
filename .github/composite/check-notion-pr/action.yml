@@ -1,5 +1,6 @@
 name: "Check Notion PR"
 description: "Run validation(s) on the given PR ID against Notion"
+
 inputs:
   PR_ID:
     description: "PR ID"
@@ -10,6 +11,12 @@ inputs:
   GPG_PASSPHRASE:
     description: "GPG Passphrase"
     required: true
+
+outputs:
+  notion_id:
+    description: "The parsed Notion ID"
+    value: ${{ steps.parse_id.outputs.id }}
+
 runs:
   using: "composite"
   steps:
@@ -101,7 +108,7 @@ runs:
       if: steps.check_notion.outputs.found == 'false'
       shell: bash
       run: |
-        echo "Ticket verification failed."
+        echo "Task verification failed."
         exit 1
 
     - name: Update PR description with public link
