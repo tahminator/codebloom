@@ -24,7 +24,14 @@ jobs:
 
       - name: Run 'Check Notion PR' composite action
         uses: ./.github/composite/check-notion-pr
+        id: notion_check
         with:
           PR_ID: ${{ github.event.number }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Run 'Check Notion Commits' composite action
+        uses: ./.github/composite/check-notion-commits
+        with:
+          PR_ID: ${{ github.event.number }}
+          NOTION_ID: ${{ steps.notion_check.outputs.notion_id }}
