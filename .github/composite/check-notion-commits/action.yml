@@ -1,0 +1,66 @@
+name: "Check Notion Commits"
+description: 'Ensure all commits in the PR match the Notion Task ID (run after "Check Notion PR")'
+inputs:
+  PR_ID:
+    description: "PR ID"
+    required: true
+  NOTION_ID:
+    description: "The Notion ID parsed from the PR title"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Verify Commit Messages
+      id: verify
+      shell: bash
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        EXPECTED="${{ inputs.NOTION_ID }}"
+        FAILED_COMMITS=""
+
+        COMMITS=$(gh pr view "${{ inputs.PR_ID }}" --json commits --jq '.commits[].messageHeadline')
+
+        while IFS= read -r MESSAGE; do
+          if [[ ! "$MESSAGE" == "$EXPECTED"* ]]; then
+            echo "::warning::Invalid commit: $MESSAGE"
+            FAILED_COMMITS+="$MESSAGE"$'\n'
+          fi
+        done <<< "$COMMITS"
+
+        if [ -n "$FAILED_COMMITS" ]; then
+          # strip last \n
+          FAILED_COMMITS="${FAILED_COMMITS%$'\n'}"
+
+          echo "failed_list<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$FAILED_COMMITS" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          exit 1
+        fi
+
+    - name: Send PR Message on Failure
+      if: steps.verify.outcome == 'failure'
+      uses: ./.github/composite/send-message
+      with:
+        prId: ${{ inputs.PR_ID }}
+        message: |
+          ### Commit Validation Failed
+          The following commits do not start with the required Notion ID `${{ inputs.NOTION_ID }}`:
+
+          ```
+          ${{ steps.verify.outputs.failed_list }}
+          ```
+
+          Please rebase and update your commit messages.
+          All messages should be of the following format: `${{ inputs.NOTION_ID }}: Example commit`
+
+    - name: Finalize Failure
+      if: steps.verify.outcome == 'failure'
+      shell: bash
+      run: |
+        echo "One or more commits do not match the Notion ID."
+        exit 1
