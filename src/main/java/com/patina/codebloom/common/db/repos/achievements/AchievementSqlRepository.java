@@ -205,6 +205,9 @@ public class AchievementSqlRepository implements AchievementRepository {
             WHERE
                 "userId" = :userId
                 AND "deletedAt" IS NULL
+            ORDER BY
+                (leaderboard IS NULL) DESC,
+                "createdAt" DESC
             """;
 
         try (Connection conn = ds.getConnection();
