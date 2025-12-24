@@ -53,7 +53,7 @@ backend-coveraged *args:
 
 # Run the frontend 
 frontend-dev *args:
-  cd js && pnpm run dev {{args}}
+  cd js && pnpm i && pnpm run dev {{args}}
 
 # Builds and installs frontend packages
 frontend-install *args:
