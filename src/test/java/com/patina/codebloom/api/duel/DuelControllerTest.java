@@ -22,25 +22,33 @@ import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
+import com.patina.codebloom.common.db.models.question.Question;
+import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
+import com.patina.codebloom.common.db.repos.question.QuestionRepository;
 import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.env.Env;
+import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
 import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import com.patina.codebloom.utilities.exception.ValidationException;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -62,7 +70,9 @@ public class DuelControllerTest {
     private LobbyNotifyHandler lobbyNotifyHandler = mock(LobbyNotifyHandler.class);
     private QuestionBankRepository questionBankRepository = mock(QuestionBankRepository.class);
     private LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository = mock(LobbyPlayerQuestionRepository.class);
+    private QuestionRepository questionRepository = mock(QuestionRepository.class);
     private LobbyQuestionRepository lobbyQuestionRepository = mock(LobbyQuestionRepository.class);
+    private ThrottledLeetcodeClient throttledLeetcodeClient = mock(ThrottledLeetcodeClient.class);
 
     public DuelControllerTest() {
         this.duelController = new DuelController(
@@ -73,7 +83,9 @@ public class DuelControllerTest {
                 lobbyNotifyHandler,
                 questionBankRepository,
                 lobbyPlayerQuestionRepository,
-                lobbyQuestionRepository);
+                questionRepository,
+                lobbyQuestionRepository,
+                throttledLeetcodeClient);
         this.faker = Faker.instance();
     }
 
@@ -1088,5 +1100,369 @@ public class DuelControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
         assertEquals("You are not currently in a lobby!", ex.getReason());
+    }
+
+    @Test
+    @DisplayName("Start Lobby - Fail: Production Environment")
+    void testStartLobbyFailInProd() {
+        when(env.isProd()).thenReturn(true);
+        AuthenticationObject authObj = createAuthenticationObject(createRandomUser());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            duelController.startLobby(authObj);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), ex.getStatusCode().value());
+        assertEquals("Endpoint is currently non-functional", ex.getReason());
+
+        verify(lobbyRepository, times(0)).findLobbyById(any());
+    }
+
+    @Test
+    @DisplayName("Submit Question - Success")
+    void testSubmitQuestionSuccess() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        String lobbyPlayerId = randomUUID();
+        String questionBankId = randomUUID();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(lobbyPlayerId)
+                .lobbyId(lobbyId)
+                .playerId(user.getId())
+                .points(100)
+                .build();
+
+        Lobby lobby = Lobby.builder()
+                .id(lobbyId)
+                .status(LobbyStatus.ACTIVE)
+                .playerCount(2)
+                .build();
+
+        QuestionBank questionBank = QuestionBank.builder()
+                .id(questionBankId)
+                .questionSlug("two-sum")
+                .questionTitle("Two Sum")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(1)
+                .questionLink("https://leetcode.com/problems/two-sum")
+                .description("Find two numbers that add up to target")
+                .acceptanceRate(0.5f)
+                .build();
+
+        LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
+                .id(randomUUID())
+                .lobbyId(lobbyId)
+                .questionBankId(questionBankId)
+                .userSolvedCount(0)
+                .build();
+
+        LeetcodeSubmission submission =
+                new LeetcodeSubmission(12345, "Two Sum", "two-sum", LocalDateTime.now(), "Accepted");
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
+        when(throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername()))
+                .thenReturn(List.of(submission));
+        when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)).thenReturn(List.of(lobbyQuestion));
+        when(questionBankRepository.getQuestionById(questionBankId)).thenReturn(questionBank);
+        when(lobbyPlayerQuestionRepository.findQuestionsByLobbyPlayerId(lobbyPlayerId))
+                .thenReturn(List.of());
+        when(lobbyQuestionRepository.updateQuestionLobby(any())).thenReturn(true);
+        when(lobbyPlayerRepository.updateLobbyPlayer(any())).thenReturn(true);
+
+        ResponseEntity<ApiResponder<Empty>> response = duelController.submitQuestion(authObj);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals(
+                "Question has been successfully submitted!", response.getBody().getMessage());
+
+        verify(questionRepository, times(1)).createQuestion(any(Question.class));
+        verify(lobbyPlayerQuestionRepository, times(1)).createLobbyPlayerQuestion(any(LobbyPlayerQuestion.class));
+        verify(lobbyQuestionRepository, times(1)).updateQuestionLobby(any(LobbyQuestion.class));
+        verify(lobbyPlayerRepository, times(1)).updateLobbyPlayer(any(LobbyPlayer.class));
+    }
+
+    @Test
+    @DisplayName("Submit Question - Fail: Production Environment")
+    void testSubmitQuestionFailInProduction() {
+        when(env.isProd()).thenReturn(true);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            duelController.submitQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), ex.getStatusCode().value());
+        assertEquals("Endpoint is currently non-functional", ex.getReason());
+
+        verify(lobbyPlayerRepository, times(0)).findLobbyPlayerByPlayerId(any());
+        verify(throttledLeetcodeClient, times(0)).findSubmissionsByUsername(any());
+    }
+
+    @Test
+    @DisplayName("Submit Question - Fail: Lobby Player Not Found")
+    void testSubmitQuestionFailLobbyPlayerNotFound() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            duelController.submitQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), ex.getStatusCode().value());
+        assertEquals("Lobby player not found", ex.getReason());
+
+        verify(lobbyRepository, times(0)).findActiveLobbyByLobbyPlayerPlayerId(any());
+    }
+
+    @Test
+    @DisplayName("Submit Question - Fail: Player Not In Active Duel")
+    void testSubmitQuestionFailNotInActiveDuel() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyPlayerId = randomUUID();
+
+        LobbyPlayer lobbyPlayer =
+                LobbyPlayer.builder().id(lobbyPlayerId).playerId(user.getId()).build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            duelController.submitQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), ex.getStatusCode().value());
+        assertEquals("Player is not currently in an active duel", ex.getReason());
+
+        verify(throttledLeetcodeClient, times(0)).findSubmissionsByUsername(any());
+    }
+
+    @Test
+    @DisplayName("Submit Question - Fail: No Questions Assigned To Lobby")
+    void testSubmitQuestionFailNoQuestionsInLobby() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        String lobbyPlayerId = randomUUID();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(lobbyPlayerId)
+                .lobbyId(lobbyId)
+                .playerId(user.getId())
+                .build();
+
+        Lobby lobby = Lobby.builder().id(lobbyId).status(LobbyStatus.ACTIVE).build();
+
+        LeetcodeSubmission submission =
+                new LeetcodeSubmission(12345, "Two Sum", "two-sum", LocalDateTime.now(), "Accepted");
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
+        when(throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername()))
+                .thenReturn(List.of(submission));
+        when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)).thenReturn(List.of());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            duelController.submitQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), ex.getStatusCode().value());
+        assertEquals("No questions assigned to this lobby", ex.getReason());
+
+        verify(questionBankRepository, times(0)).getQuestionById(any());
+    }
+
+    @Test
+    @DisplayName("Submit Question - Fail: No Matching Submission Found")
+    void testSubmitQuestionFailNoMatchingSubmission() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        String lobbyPlayerId = randomUUID();
+        String questionBankId = randomUUID();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(lobbyPlayerId)
+                .lobbyId(lobbyId)
+                .playerId(user.getId())
+                .build();
+
+        Lobby lobby = Lobby.builder().id(lobbyId).status(LobbyStatus.ACTIVE).build();
+
+        QuestionBank questionBank = QuestionBank.builder()
+                .id(questionBankId)
+                .questionSlug("two-sum")
+                .build();
+
+        LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
+                .id(randomUUID())
+                .lobbyId(lobbyId)
+                .questionBankId(questionBankId)
+                .build();
+
+        LeetcodeSubmission submission =
+                new LeetcodeSubmission(12345, "Three Sum", "three-sum", LocalDateTime.now(), "Accepted");
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
+        when(throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername()))
+                .thenReturn(List.of(submission));
+        when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)).thenReturn(List.of(lobbyQuestion));
+        when(questionBankRepository.getQuestionById(questionBankId)).thenReturn(questionBank);
+        when(lobbyPlayerQuestionRepository.findQuestionsByLobbyPlayerId(lobbyPlayerId))
+                .thenReturn(List.of());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            duelController.submitQuestion(authObj);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), ex.getStatusCode().value());
+        assertEquals("No matching submission found in your last 5 submissions for any lobby question", ex.getReason());
+
+        verify(questionRepository, times(0)).createQuestion(any());
+    }
+
+    @Test
+    @DisplayName("Submit Question - Updates Lobby Question Solved Count")
+    void testSubmitQuestionUpdatesLobbyQuestionSolvedCount() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        String lobbyPlayerId = randomUUID();
+        String questionBankId = randomUUID();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(lobbyPlayerId)
+                .lobbyId(lobbyId)
+                .playerId(user.getId())
+                .points(0)
+                .build();
+
+        Lobby lobby = Lobby.builder().id(lobbyId).status(LobbyStatus.ACTIVE).build();
+
+        QuestionBank questionBank = QuestionBank.builder()
+                .id(questionBankId)
+                .questionSlug("two-sum")
+                .questionTitle("Two Sum")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(1)
+                .questionLink("https://leetcode.com/problems/two-sum")
+                .acceptanceRate(0.5f)
+                .build();
+
+        LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
+                .id(randomUUID())
+                .lobbyId(lobbyId)
+                .questionBankId(questionBankId)
+                .userSolvedCount(3)
+                .build();
+
+        LeetcodeSubmission submission =
+                new LeetcodeSubmission(12345, "Two Sum", "two-sum", LocalDateTime.now(), "Accepted");
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
+        when(throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername()))
+                .thenReturn(List.of(submission));
+        when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)).thenReturn(List.of(lobbyQuestion));
+        when(questionBankRepository.getQuestionById(questionBankId)).thenReturn(questionBank);
+        when(lobbyPlayerQuestionRepository.findQuestionsByLobbyPlayerId(lobbyPlayerId))
+                .thenReturn(List.of());
+        when(lobbyQuestionRepository.updateQuestionLobby(any())).thenReturn(true);
+        when(lobbyPlayerRepository.updateLobbyPlayer(any())).thenReturn(true);
+
+        duelController.submitQuestion(authObj);
+
+        ArgumentCaptor<LobbyQuestion> lobbyQuestionCaptor = ArgumentCaptor.forClass(LobbyQuestion.class);
+        verify(lobbyQuestionRepository, times(1)).updateQuestionLobby(lobbyQuestionCaptor.capture());
+
+        LobbyQuestion updatedLobbyQuestion = lobbyQuestionCaptor.getValue();
+        assertEquals(4, updatedLobbyQuestion.getUserSolvedCount());
+    }
+
+    @Test
+    @DisplayName("Submit Question - Updates Total Player Points")
+    void testSubmitQuestionUpdatesPlayerTotalPoints() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        String lobbyId = randomUUID();
+        String lobbyPlayerId = randomUUID();
+        String questionBankId = randomUUID();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(lobbyPlayerId)
+                .lobbyId(lobbyId)
+                .playerId(user.getId())
+                .points(100)
+                .build();
+
+        Lobby lobby = Lobby.builder().id(lobbyId).status(LobbyStatus.ACTIVE).build();
+
+        QuestionBank questionBank = QuestionBank.builder()
+                .id(questionBankId)
+                .questionSlug("two-sum")
+                .questionTitle("Two Sum")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(1)
+                .questionLink("https://leetcode.com/problems/two-sum")
+                .acceptanceRate(0.5f)
+                .build();
+
+        LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
+                .id(randomUUID())
+                .lobbyId(lobbyId)
+                .questionBankId(questionBankId)
+                .userSolvedCount(0)
+                .build();
+
+        LeetcodeSubmission submission =
+                new LeetcodeSubmission(12345, "Two Sum", "two-sum", LocalDateTime.now(), "Accepted");
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
+        when(throttledLeetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername()))
+                .thenReturn(List.of(submission));
+        when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId)).thenReturn(List.of(lobbyQuestion));
+        when(questionBankRepository.getQuestionById(questionBankId)).thenReturn(questionBank);
+        when(lobbyPlayerQuestionRepository.findQuestionsByLobbyPlayerId(lobbyPlayerId))
+                .thenReturn(List.of());
+        when(lobbyQuestionRepository.updateQuestionLobby(any())).thenReturn(true);
+        when(lobbyPlayerRepository.updateLobbyPlayer(any())).thenReturn(true);
+
+        duelController.submitQuestion(authObj);
+
+        ArgumentCaptor<LobbyPlayer> playerCaptor = ArgumentCaptor.forClass(LobbyPlayer.class);
+        verify(lobbyPlayerRepository, times(1)).updateLobbyPlayer(playerCaptor.capture());
+
+        LobbyPlayer updatedPlayer = playerCaptor.getValue();
+        assertTrue(updatedPlayer.getPoints() > 100);
     }
 }
