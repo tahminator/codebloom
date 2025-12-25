@@ -261,7 +261,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt" DESC
             """;
 
-        try (NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("status", LobbyStatus.ACTIVE.name(), java.sql.Types.OTHER);
 
             try (ResultSet rs = stmt.executeQuery()) {
