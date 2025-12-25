@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>10.21.2</version>
+            <version>12.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
