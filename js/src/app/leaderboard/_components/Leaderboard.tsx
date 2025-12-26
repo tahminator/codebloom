@@ -265,11 +265,7 @@ export default function LeaderboardIndex() {
                             {entry.nickname &&
                               tagFF &&
                               entry.tags?.length > 0 && (
-                                <Divider
-                                  orientation="vertical"
-                                  opacity={0.4}
-                                  h={20}
-                                />
+                                <Divider orientation="vertical" h={20} />
                               )}
                             {tagFF && entry.tags?.length > 0 && (
                               <TagList tags={entry.tags} size={16} gap="xs" />
