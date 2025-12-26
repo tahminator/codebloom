@@ -60,7 +60,7 @@ public class ReporterController {
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
         }
 
-        reporter.error(Report.builder()
+        reporter.error("reporter error", Report.builder()
                 .data(ingestErrorBody.getTrace())
                 .environments(env.getActiveProfiles())
                 .location(Location.FRONTEND)
@@ -76,7 +76,7 @@ public class ReporterController {
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
         }
 
-        reporter.log(Report.builder()
+        reporter.log("reporter log", Report.builder()
                 .data(ingestLogBody.getInfo())
                 .environments(env.getActiveProfiles())
                 .location(Location.FRONTEND)

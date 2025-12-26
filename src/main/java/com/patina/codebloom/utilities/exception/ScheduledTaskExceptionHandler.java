@@ -31,7 +31,7 @@ public class ScheduledTaskExceptionHandler {
         ConcurrentTaskScheduler scheduler = new ConcurrentTaskScheduler(Executors.newSingleThreadScheduledExecutor());
 
         scheduler.setErrorHandler(throwable -> {
-            errorReporter.error(Report.builder()
+            errorReporter.error("taskScheduler", Report.builder()
                     .environments(env.getActiveProfiles())
                     .location(Location.BACKEND)
                     .data(Reporter.throwableToString(throwable))

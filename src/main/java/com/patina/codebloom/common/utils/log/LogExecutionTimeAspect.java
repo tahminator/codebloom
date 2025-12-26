@@ -32,7 +32,7 @@ public class LogExecutionTimeAspect {
         log.info("{} executed in {} ms", joinPoint.getSignature(), elapsed);
 
         if (logExecutionTime.reportToDiscord()) {
-            reporter.log(Report.builder()
+            reporter.log("logExecTime", Report.builder()
                     .data("%s executed in %s ms".formatted(joinPoint.getSignature(), elapsed))
                     .environments(env.getActiveProfiles())
                     .location(Location.BACKEND)

@@ -45,7 +45,7 @@ public class ControllerExceptionHandler {
         rx.printStackTrace();
 
         if (ExcludedExceptions.isValid(rx)) {
-            errorReporter.error(Report.builder()
+            errorReporter.error("handleThrowable", Report.builder()
                     .environments(env.getActiveProfiles())
                     .location(Location.BACKEND)
                     .data(Reporter.throwableToString(rx))
