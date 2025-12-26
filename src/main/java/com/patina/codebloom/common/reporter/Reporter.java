@@ -5,6 +5,9 @@ import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
 import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
+
+import lombok.NonNull;
+
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -38,7 +41,7 @@ public class Reporter {
 
     /** Report an error. */
     @Async
-    public void error(final Report report) {
+    public void error(@NonNull String key, final Report report) {
         String description = String.format(
                 """
             An error occurred in Codebloom.
@@ -65,7 +68,7 @@ public class Reporter {
 
     /** Report a log. */
     @Async
-    public void log(final Report report) {
+    public void log(@NonNull String key, final Report report) {
         String description = String.format(
                 """
             Log request has been triggered.
@@ -89,4 +92,5 @@ public class Reporter {
                 .fileBytes(report.getData().getBytes())
                 .build());
     }
+
 }
