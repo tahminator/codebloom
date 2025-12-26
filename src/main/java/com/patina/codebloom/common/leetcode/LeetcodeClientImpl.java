@@ -126,7 +126,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                reporter.log(Report.builder()
+                reporter.log("findQuestionBySlug", Report.builder()
                         .data(String.format(
                                 """
                                     Leetcode client failed to find question by slug due to status code of %d
@@ -214,7 +214,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                reporter.log(Report.builder()
+                reporter.log("findSubmissionsByUsername", Report.builder()
                         .data(String.format(
                                 """
                                     Leetcode client failed to find submission by username due to status code of %d
@@ -280,7 +280,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                reporter.log(Report.builder()
+                reporter.log("findSubmissionDetailBySubmissionId", Report.builder()
                         .data(String.format(
                                 """
                                     Leetcode client failed to find submission detail by submission ID due to status code of %d
@@ -348,7 +348,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                reporter.log(Report.builder()
+                reporter.log("getPotd", Report.builder()
                         .data(String.format(
                                 """
                                     Leetcode client failed to get POTD due to status code of %d
@@ -398,7 +398,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                reporter.log(Report.builder()
+                reporter.log("getUserProfile", Report.builder()
                         .data(String.format(
                                 """
                                     Leetcode client failed to get user profile by username due to status code of %d
@@ -444,7 +444,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                reporter.log(Report.builder()
+                reporter.log("getAllTopicTags", Report.builder()
                         .data(String.format(
                                 """
                                     Leetcode client failed to get all topic tags due to status code of %d
@@ -493,7 +493,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                reporter.log(Report.builder()
+                reporter.log("getAllProblems", Report.builder()
                         .data(String.format(
                                 """
                                     Leetcode client failed to get all leetcode questions due to status code of %d

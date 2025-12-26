@@ -149,7 +149,7 @@ public class LeetcodeAuthStealer {
     public String getCsrf() {
         if (csrf == null && !reported) {
             reported = true;
-            reporter.log(Report.builder()
+            reporter.log("getCsrf", Report.builder()
                     .environments(env.getActiveProfiles())
                     .location(Location.BACKEND)
                     .data("CSRF token is missing inside of LeetcodeAuthStealer. This may be something to look into.")
