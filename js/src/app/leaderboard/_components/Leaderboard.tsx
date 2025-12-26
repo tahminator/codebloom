@@ -245,7 +245,8 @@ export default function LeaderboardIndex() {
                             </Text>
                           </Flex>
                         </Flex>
-                        {(entry.nickname || (tagFF && entry.tags?.length > 0)) && (
+                        {(entry.nickname ||
+                          (tagFF && entry.tags?.length > 0)) && (
                           <Flex align="center" gap={5}>
                             {entry.nickname && (
                               <Tooltip
@@ -261,9 +262,15 @@ export default function LeaderboardIndex() {
                                 </Flex>
                               </Tooltip>
                             )}
-                            {entry.nickname && tagFF && entry.tags?.length > 0 && (
-                              <Divider orientation="vertical" opacity={0.4} h={20} />
-                            )}
+                            {entry.nickname &&
+                              tagFF &&
+                              entry.tags?.length > 0 && (
+                                <Divider
+                                  orientation="vertical"
+                                  opacity={0.4}
+                                  h={20}
+                                />
+                              )}
                             {tagFF && entry.tags?.length > 0 && (
                               <TagList tags={entry.tags} size={16} gap="xs" />
                             )}
