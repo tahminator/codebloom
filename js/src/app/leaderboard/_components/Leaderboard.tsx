@@ -245,9 +245,11 @@ export default function LeaderboardIndex() {
                             </Text>
                           </Flex>
                         </Flex>
-                        {(entry.nickname &&
-                          (tagFF && entry.tags && entry.tags.length > 0)) && (
-                          <Flex align="center" gap={5}>
+                        {entry.nickname &&
+                          tagFF &&
+                          entry.tags &&
+                          entry.tags.length > 0 && (
+                            <Flex align="center" gap={5}>
                               <Tooltip
                                 label="This user is a verified member of the Patina Discord server."
                                 color="dark.4"
@@ -260,10 +262,14 @@ export default function LeaderboardIndex() {
                                   <Text size="sm">{entry.nickname}</Text>
                                 </Flex>
                               </Tooltip>
-                              <Divider orientation="vertical" opacity={0.4} h={20} />
+                              <Divider
+                                orientation="vertical"
+                                opacity={0.4}
+                                h={20}
+                              />
                               <TagList tags={entry.tags} size={16} gap="xs" />
-                          </Flex>
-                        )}
+                            </Flex>
+                          )}
                       </Stack>
                     </Flex>
                   </Flex>
