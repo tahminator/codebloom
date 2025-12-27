@@ -1,6 +1,7 @@
 package com.patina.codebloom.api.duel;
 
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
+import com.patina.codebloom.api.duel.body.PartyCreatedBody;
 import com.patina.codebloom.common.components.duel.DuelException;
 import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
@@ -289,7 +290,8 @@ public class DuelController {
     @ApiResponse(responseCode = "400", description = "Player is already in a lobby")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
     @PostMapping("/party/create")
-    public ResponseEntity<ApiResponder<Empty>> createParty(@Protected final AuthenticationObject authenticationObject) {
+    public ResponseEntity<ApiResponder<PartyCreatedBody>> createParty(
+            @Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
@@ -327,7 +329,8 @@ public class DuelController {
         lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
 
         return ResponseEntity.ok(ApiResponder.success(
-                "Lobby created successfully! Share the join code: " + lobby.getJoinCode(), Empty.of()));
+                "Lobby created successfully!",
+                PartyCreatedBody.builder().code(joinCode).build()));
     }
 
     @Operation(summary = "SSE endpoint for duel data", description = """
