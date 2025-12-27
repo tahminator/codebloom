@@ -31,11 +31,13 @@ public class ScheduledTaskExceptionHandler {
         ConcurrentTaskScheduler scheduler = new ConcurrentTaskScheduler(Executors.newSingleThreadScheduledExecutor());
 
         scheduler.setErrorHandler(throwable -> {
-            errorReporter.error("taskScheduler", Report.builder()
-                    .environments(env.getActiveProfiles())
-                    .location(Location.BACKEND)
-                    .data(Reporter.throwableToString(throwable))
-                    .build());
+            errorReporter.error(
+                    "taskScheduler",
+                    Report.builder()
+                            .environments(env.getActiveProfiles())
+                            .location(Location.BACKEND)
+                            .data(Reporter.throwableToString(throwable))
+                            .build());
 
             throwable.printStackTrace();
         });
