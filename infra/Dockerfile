@@ -48,11 +48,13 @@ ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_DSN
 ARG SKIP
 ARG VITE_DSN
+ARG COMMIT_SHA
 
 RUN echo "SENTRY_AUTH_TOKEN is: ${SENTRY_AUTH_TOKEN:+set}" \
     && echo "SENTRY_DSN is: ${SENTRY_DSN:+set}" \
     && echo "SKIP is: ${SKIP:+set}" \
-    && echo "VITE_DSN is: ${VITE_DSN:+set}"
+    && echo "VITE_DSN is: ${VITE_DSN:+set}" \
+    && echo "COMMIT_SHA is: ${COMMIT_SHA:+set}"
 
 # Download dependencies
 RUN ./mvnw dependency:resolve -B
@@ -72,7 +74,7 @@ RUN rm -f src/main/resources/static/email/*.html
 COPY --from=email-build /email/out/*.html src/main/resources/static/email/
 
 # Package the application
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -DskipTests -Dcommit.sha="${COMMIT_SHA}"
 
 
 # ==== Runtime Stage ====
