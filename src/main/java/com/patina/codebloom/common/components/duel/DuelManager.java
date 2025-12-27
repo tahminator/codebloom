@@ -124,7 +124,6 @@ public class DuelManager {
                 No winner can be found because there are no players in the duel. This should not be happening."""));
 
             activeLobby.setWinnerId(Optional.of(winner.getPlayerId()));
-            activeLobby.setExpiresAt(StandardizedOffsetDateTime.now());
             activeLobby.setStatus(LobbyStatus.COMPLETED);
 
             lobbyRepository.updateLobby(activeLobby);
