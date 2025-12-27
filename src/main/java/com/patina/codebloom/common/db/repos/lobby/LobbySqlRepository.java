@@ -388,8 +388,8 @@ public class LobbySqlRepository implements LobbyRepository {
             UPDATE "Lobby"
             SET
                 status = :status,
-                "expiresAt" = :expiresAt,
-                "playerCount" = :playerCount
+                "playerCount" = :playerCount,
+                "winnerId" = :winnerId
             WHERE
                 id = :id
             """;
@@ -397,9 +397,9 @@ public class LobbySqlRepository implements LobbyRepository {
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("status", lobby.getStatus().name(), java.sql.Types.OTHER);
-            stmt.setObject("expiresAt", lobby.getExpiresAt());
             stmt.setInt("playerCount", lobby.getPlayerCount());
             stmt.setObject("id", UUID.fromString(lobby.getId()));
+            stmt.setObject("winnerId", lobby.getWinnerId().map(UUID::fromString).orElse(null));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;

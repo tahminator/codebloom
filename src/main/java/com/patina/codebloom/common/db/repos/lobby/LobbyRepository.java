@@ -99,8 +99,8 @@ public interface LobbyRepository {
      *     updatable fields:
      *     <ul>
      *       <li>status
-     *       <li>expiresAt
      *       <li>playerCount
+     *       <li>winnerId
      *     </ul>
      *
      * @return true if the update was successful, false otherwise
