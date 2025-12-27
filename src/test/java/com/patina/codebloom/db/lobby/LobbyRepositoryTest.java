@@ -145,7 +145,6 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     void testUpdateLobby() {
         testLobby.setStatus(LobbyStatus.ACTIVE);
         testLobby.setPlayerCount(2);
-        testLobby.setExpiresAt(StandardizedOffsetDateTime.now().plusHours(2));
 
         boolean updateResult = lobbyRepository.updateLobby(testLobby);
         assertTrue(updateResult);
