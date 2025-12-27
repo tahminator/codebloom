@@ -4,6 +4,7 @@ import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.utils.function.ThrowableProcedure;
+import com.patina.codebloom.common.utils.log.LogExecutionTime;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,7 +32,9 @@ public class DuelCleanupService {
     }
 
     @Scheduled(initialDelay = 30, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
+    @LogExecutionTime
     public void cleanupExpiredDuels() {
+        log.info("cleanupExpiredDuels triggered");
         var lobbies = lobbyRepository.findExpiredLobbies();
 
         lobbies.stream().map(Lobby::getId).forEach(id -> {
