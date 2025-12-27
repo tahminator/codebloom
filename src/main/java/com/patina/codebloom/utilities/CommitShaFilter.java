@@ -11,9 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Filter that adds the X-Commit-Sha header to all HTTP responses.
- * The commit SHA is injected from the application properties, which is populated
- * from the Maven build-time property during Docker build.
+ * Filter that adds the X-Commit-Sha header to all HTTP responses. The commit SHA is injected from the application
+ * properties, which is populated from the Maven build-time property during Docker build.
  */
 @Component
 public class CommitShaFilter implements Filter {
@@ -22,10 +21,7 @@ public class CommitShaFilter implements Filter {
     private String commitSha;
 
     @Override
-    public void doFilter(
-            final ServletRequest request,
-            final ServletResponse response,
-            final FilterChain chain)
+    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
         if (response instanceof HttpServletResponse httpResponse) {
             httpResponse.setHeader("X-Commit-Sha", commitSha);
