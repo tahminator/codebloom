@@ -4,10 +4,8 @@ import com.patina.codebloom.api.duel.body.JoinLobbyBody;
 import com.patina.codebloom.common.components.duel.DuelException;
 import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
-import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
-import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
@@ -168,7 +166,7 @@ public class DuelController {
         return ResponseEntity.ok(ApiResponder.success("Party successfully joined!", Empty.of()));
     }
 
-    @Operation(summary = "Start lobby", description = "Start a lobby")
+    @Operation(summary = "Start duel", description = "Start the duel, given that all conditions are met.")
     @ApiResponses(
             value = {
                 @ApiResponse(
@@ -179,47 +177,26 @@ public class DuelController {
                         responseCode = "401",
                         description = "Unauthorized",
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-                @ApiResponse(responseCode = "200", description = "Lobby has been successfully started!"),
+                @ApiResponse(responseCode = "200", description = "Duel successfully started!"),
             })
-    @PostMapping("/lobby/start")
-    public ResponseEntity<ApiResponder<Empty>> startLobby(@Protected final AuthenticationObject authenticationObject) {
+    @PostMapping("/start")
+    public ResponseEntity<ApiResponder<Empty>> startDuel(@Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
         var user = authenticationObject.getUser();
 
-        LobbyPlayer player = lobbyPlayerRepository
-                .findLobbyPlayerByPlayerId(user.getId())
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!"));
+        try {
+            duelManager.startDuel(user.getId(), user.isAdmin());
+        } catch (DuelException e) {
+            var httpStatus = e.getHttpStatus()
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
 
-        Lobby lobby = lobbyRepository
-                .findLobbyById(player.getLobbyId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find lobby!"));
-
-        if (lobby.getStatus() != LobbyStatus.AVAILABLE) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby is not available!");
+            throw new ResponseStatusException(httpStatus, e.getMessage());
         }
 
-        if (lobby.getPlayerCount() < 2) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must have at least 2 players!");
-        }
-
-        lobby.setStatus(LobbyStatus.ACTIVE);
-        lobbyRepository.updateLobby(lobby);
-
-        QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
-
-        LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
-                .lobbyId(lobby.getId())
-                .questionBankId(randomQuestion.getId())
-                .userSolvedCount(0)
-                .build();
-
-        lobbyQuestionRepository.createLobbyQuestion(lobbyQuestion);
-
-        return ResponseEntity.ok(ApiResponder.success("Party successfully started!", Empty.of()));
+        return ResponseEntity.ok(ApiResponder.success("Duel successfully started!", Empty.of()));
     }
 
     @Operation(summary = "Leave party", description = "Leave the current lobby")

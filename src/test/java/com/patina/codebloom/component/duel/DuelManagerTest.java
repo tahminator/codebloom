@@ -11,6 +11,7 @@ import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
@@ -23,6 +24,7 @@ import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.OffsetDateTime;
@@ -473,5 +475,265 @@ public class DuelManagerTest {
         assertNotNull(updatedLobby.getWinnerId());
         assertTrue(updatedLobby.getWinnerId().isPresent());
         assertEquals(updatedLobby.getWinnerId().get(), players.get(0).getPlayerId());
+    }
+
+    @Test
+    void testStartDuelFailsUserIsNotInALobby() {
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(any())).thenReturn(Optional.empty());
+
+        DuelException e;
+        try {
+            duelManager.startDuel(Strings.EMPTY, false);
+            fail("Expected a duel exception");
+            return;
+        } catch (DuelException ex) {
+            e = ex;
+        }
+
+        assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus().orElseThrow());
+        assertEquals("You are not currently in a lobby!", e.getMessage());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, never()).findLobbyById(any());
+        verify(lobbyRepository, never()).updateLobby(any());
+        verify(questionBankRepository, never()).getRandomQuestion();
+        verify(lobbyQuestionRepository, never()).createLobbyQuestion(any());
+    }
+
+    @Test
+    void testStartDuelFailsLobbyPlayerFoundButNotLobby() {
+        String userId = UUID.randomUUID().toString();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(UUID.randomUUID().toString())
+                .lobbyId(UUID.randomUUID().toString())
+                .playerId(userId)
+                .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.empty());
+
+        DuelException e;
+        try {
+            duelManager.startDuel(userId, false);
+            fail("Expected a duel exception");
+            return;
+        } catch (DuelException ex) {
+            e = ex;
+        }
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus().orElseThrow());
+        assertEquals("Hmm, something went wrong.", e.getMessage());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, times(1)).findLobbyById(any());
+        verify(lobbyRepository, never()).updateLobby(any());
+        verify(questionBankRepository, never()).getRandomQuestion();
+        verify(lobbyQuestionRepository, never()).createLobbyQuestion(any());
+    }
+
+    @Test
+    void testStartDuelFailsLobbyFoundIsNotAvailable() {
+        String userId = UUID.randomUUID().toString();
+
+        Lobby lobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().minus(30, ChronoUnit.MINUTES))
+                .joinCode(PartyCodeGenerator.generateCode())
+                .playerCount(2)
+                .status(LobbyStatus.ACTIVE)
+                .winnerId(Optional.empty())
+                .build();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(UUID.randomUUID().toString())
+                .lobbyId(lobby.getId())
+                .playerId(userId)
+                .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
+
+        DuelException e;
+        try {
+            duelManager.startDuel(userId, false);
+            fail("Expected a duel exception");
+            return;
+        } catch (DuelException ex) {
+            e = ex;
+        }
+
+        assertEquals(HttpStatus.CONFLICT, e.getHttpStatus().orElseThrow());
+        assertEquals("Lobby is not available!", e.getMessage());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, times(1)).findLobbyById(any());
+        verify(lobbyRepository, never()).updateLobby(any());
+        verify(questionBankRepository, never()).getRandomQuestion();
+        verify(lobbyQuestionRepository, never()).createLobbyQuestion(any());
+    }
+
+    @Test
+    void testStartDuelFailsLobbyDoesNotHaveEnoughPlayers() {
+        String userId = UUID.randomUUID().toString();
+
+        Lobby lobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().minus(30, ChronoUnit.MINUTES))
+                .joinCode(PartyCodeGenerator.generateCode())
+                .playerCount(1)
+                .status(LobbyStatus.AVAILABLE)
+                .winnerId(Optional.empty())
+                .build();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(UUID.randomUUID().toString())
+                .lobbyId(lobby.getId())
+                .playerId(userId)
+                .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
+
+        DuelException e;
+        try {
+            duelManager.startDuel(userId, false);
+            fail("Expected a duel exception");
+            return;
+        } catch (DuelException ex) {
+            e = ex;
+        }
+
+        assertEquals(HttpStatus.CONFLICT, e.getHttpStatus().orElseThrow());
+        assertEquals("You must have at least 2 players!", e.getMessage());
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, times(1)).findLobbyById(any());
+        verify(lobbyRepository, never()).updateLobby(any());
+        verify(questionBankRepository, never()).getRandomQuestion();
+        verify(lobbyQuestionRepository, never()).createLobbyQuestion(any());
+    }
+
+    @Test
+    void testStartDuelFailsLobbyDoesNotHaveEnoughPlayersButIsAdminUser() {
+        String userId = UUID.randomUUID().toString();
+
+        Lobby lobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().minus(30, ChronoUnit.MINUTES))
+                .joinCode(PartyCodeGenerator.generateCode())
+                .playerCount(1)
+                .status(LobbyStatus.AVAILABLE)
+                .winnerId(Optional.empty())
+                .build();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(UUID.randomUUID().toString())
+                .lobbyId(lobby.getId())
+                .playerId(userId)
+                .build();
+
+        QuestionBank questionBank = QuestionBank.builder()
+                .id(UUID.randomUUID().toString())
+                .questionSlug("Two Sum")
+                .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
+        when(lobbyRepository.updateLobby(any())).thenReturn(true);
+        when(questionBankRepository.getRandomQuestion()).thenReturn(questionBank);
+        doNothing().when(lobbyQuestionRepository).createLobbyQuestion(any());
+
+        try {
+            duelManager.startDuel(userId, true);
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, times(1)).findLobbyById(any());
+        verify(lobbyRepository, times(1)).updateLobby(any());
+        verify(questionBankRepository, times(1)).getRandomQuestion();
+        verify(lobbyQuestionRepository, times(1)).createLobbyQuestion(any());
+    }
+
+    @Test
+    void testStartDuelSuccess() {
+        String userId = UUID.randomUUID().toString();
+
+        Lobby lobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().minus(30, ChronoUnit.MINUTES))
+                .joinCode(PartyCodeGenerator.generateCode())
+                .playerCount(2)
+                .status(LobbyStatus.AVAILABLE)
+                .winnerId(Optional.empty())
+                .build();
+
+        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
+                .id(UUID.randomUUID().toString())
+                .lobbyId(lobby.getId())
+                .playerId(userId)
+                .build();
+
+        QuestionBank questionBank = QuestionBank.builder()
+                .id(UUID.randomUUID().toString())
+                .questionSlug("Two Sum")
+                .build();
+
+        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
+        when(lobbyRepository.updateLobby(any())).thenReturn(true);
+        when(questionBankRepository.getRandomQuestion()).thenReturn(questionBank);
+        doNothing().when(lobbyQuestionRepository).createLobbyQuestion(any());
+
+        try {
+            duelManager.startDuel(userId, false);
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, times(1)).findLobbyById(any());
+        verify(lobbyRepository, times(1)).updateLobby(any());
+        verify(questionBankRepository, times(1)).getRandomQuestion();
+        verify(lobbyQuestionRepository, times(1)).createLobbyQuestion(any());
+    }
+
+    @Test
+    void testStartDuelFailsRandomDatabaseException() {
+        doThrow(new RuntimeException("Simulated db exception"))
+                .when(lobbyPlayerRepository)
+                .findLobbyPlayerByPlayerId(any());
+
+        DuelException e;
+        try {
+            duelManager.startDuel(Strings.EMPTY, false);
+            fail("Expected a duel exception");
+            return;
+        } catch (DuelException ex) {
+            ex.printStackTrace();
+            e = ex;
+        }
+
+        StringWriter writer = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(writer);
+        e.printStackTrace(printWriter);
+        printWriter.flush();
+
+        String stackTrace = writer.toString();
+        assertTrue(e.getHttpStatus().isEmpty());
+        assertEquals("Duel exception occurred.", e.getMessage());
+        assertTrue(stackTrace.contains("Simulated db exception"));
+
+        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, never()).findLobbyById(any());
+        verify(lobbyRepository, never()).updateLobby(any());
+        verify(questionBankRepository, never()).getRandomQuestion();
+        verify(lobbyQuestionRepository, never()).createLobbyQuestion(any());
     }
 }
