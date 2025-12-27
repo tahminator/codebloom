@@ -120,11 +120,13 @@ public class NotifyListener {
                 }
 
                 log.error("Failed to listen to notifications", e);
-                reporter.error("listenLoop", Report.builder()
-                        .environments(env.getActiveProfiles())
-                        .location(Location.BACKEND)
-                        .data(Reporter.throwableToString(e))
-                        .build());
+                reporter.error(
+                        "listenLoop",
+                        Report.builder()
+                                .environments(env.getActiveProfiles())
+                                .location(Location.BACKEND)
+                                .data(Reporter.throwableToString(e))
+                                .build());
 
                 try {
                     Thread.sleep(5000);

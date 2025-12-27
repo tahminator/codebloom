@@ -278,12 +278,14 @@ public class AuthController {
         if (user.getTags().stream()
                 .anyMatch(tag ->
                         tag.getTag().name().equals(schoolEnum.getInternalTag().name()))) {
-            reporter.log("auth", Report.builder()
-                    .data(String.format(
-                            "User %s\nAlready has tag %s",
-                            user.getNickname() != null ? user.getNickname() : user.getDiscordName(),
-                            schoolEnum.getInternalTag().name()))
-                    .build());
+            reporter.log(
+                    "auth",
+                    Report.builder()
+                            .data(String.format(
+                                    "User %s\nAlready has tag %s",
+                                    user.getNickname() != null ? user.getNickname() : user.getDiscordName(),
+                                    schoolEnum.getInternalTag().name()))
+                            .build());
         } else {
             userTagRepository.createTag(schoolTag);
         }

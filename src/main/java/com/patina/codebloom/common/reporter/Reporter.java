@@ -5,13 +5,11 @@ import com.patina.codebloom.common.time.StandardizedLocalDateTime;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.jda.client.JDAClient;
 import com.patina.codebloom.jda.client.options.EmbeddedMessageOptions;
-
-import lombok.NonNull;
-
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import lombok.NonNull;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -39,7 +37,12 @@ public class Reporter {
         }
     }
 
-    /** Report an error. */
+    /**
+     * Report an error.
+     *
+     * @param key a non-null identifer to group report types
+     * @param report the detailed report object containing error metadata
+     */
     @Async
     public void error(@NonNull String key, final Report report) {
         String description = String.format(
@@ -66,7 +69,12 @@ public class Reporter {
                 .build());
     }
 
-    /** Report a log. */
+    /**
+     * Report a log.
+     *
+     * @param key a non-null identifer to group report types
+     * @param report the detailed report object containing error metadata
+     */
     @Async
     public void log(@NonNull String key, final Report report) {
         String description = String.format(
@@ -92,5 +100,4 @@ public class Reporter {
                 .fileBytes(report.getData().getBytes())
                 .build());
     }
-
 }

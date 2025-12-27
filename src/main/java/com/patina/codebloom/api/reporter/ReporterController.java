@@ -60,11 +60,13 @@ public class ReporterController {
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
         }
 
-        reporter.error("reporter error", Report.builder()
-                .data(ingestErrorBody.getTrace())
-                .environments(env.getActiveProfiles())
-                .location(Location.FRONTEND)
-                .build());
+        reporter.error(
+                "reporter error",
+                Report.builder()
+                        .data(ingestErrorBody.getTrace())
+                        .environments(env.getActiveProfiles())
+                        .location(Location.FRONTEND)
+                        .build());
         return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
     }
 
@@ -76,11 +78,13 @@ public class ReporterController {
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
         }
 
-        reporter.log("reporter log", Report.builder()
-                .data(ingestLogBody.getInfo())
-                .environments(env.getActiveProfiles())
-                .location(Location.FRONTEND)
-                .build());
+        reporter.log(
+                "reporter log",
+                Report.builder()
+                        .data(ingestLogBody.getInfo())
+                        .environments(env.getActiveProfiles())
+                        .location(Location.FRONTEND)
+                        .build());
         return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
     }
 }
