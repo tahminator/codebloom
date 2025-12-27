@@ -83,7 +83,7 @@
             "openapi-typescript@7.8.0": "patches/openapi-typescript@7.8.0.patch"
         },
         "overrides": {
-            "brace-expansion": ">=2.0.2",
+            "brace-expansion": "1.1.11",
             "@eslint/plugin-kit": ">=0.3.4",
             "tar": ">=7.5.2",
             "vite": ">=6.4.1"
