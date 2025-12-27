@@ -45,6 +45,7 @@ docker buildx build \
     $BUILD_MODE \
     --file infra/Dockerfile \
     --build-arg SERVER_PROFILES="$SERVER_PROFILES" \
+    --build-arg COMMIT_SHA="$GIT_SHA" \
     $(printf -- '--tag %s ' "${TAGS[@]}") \
     .
 
