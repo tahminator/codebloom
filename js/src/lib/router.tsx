@@ -1,7 +1,7 @@
 import AdminPage from "@/app/admin/admin.page";
 import ClubSignUp from "@/app/club/[clubSlug]/ClubSignUp.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
-import GwcEmbedContainer from "@/app/embed/leaderboard/gwc/GwcEmbed";
+import LeaderboardEmbed from "@/app/embed/leaderboard/LeaderboardEmbed";
 import ErrorPage from "@/app/error/Error.page";
 import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
 import AllLeaderboardsPage from "@/app/leaderboard/all/AllLeaderboards.page";
@@ -70,8 +70,8 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/embed/leaderboard/gwc",
-    element: <GwcEmbedContainer />,
+    path: "/embed/leaderboard",
+    element: <LeaderboardEmbed />,
     errorElement: <ErrorPage />,
   },
   {
