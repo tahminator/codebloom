@@ -5,7 +5,7 @@ BEGIN
     VALUES
         (
             '265dd000-c310-11f0-8d3a-461b1b1abee9',
-            'aa7bfc3d-4849-45a0-83d9-d9c7494fb6df',
+            '1717a2dc-ce77-4853-a620-82177799ad26',
             'October Overflow',
             'Achieved first place on the Patina Network leaderboard',
             true,
@@ -19,7 +19,7 @@ BEGIN
     VALUES
         (
             '365dd000-c310-11f0-8d3a-461b1b1abeea',
-            'aa7bfc3d-4849-45a0-83d9-d9c7494fb6df',
+            '1717a2dc-ce77-4853-a620-82177799ad26',
             'auto november = nullptr;',
             'Secured first place on the global leaderboard',
             true,
