@@ -25,8 +25,20 @@
     },
     "dependencies": {
         "@inkjs/ui": "^2.0.0",
+        "cross-spawn": ">=6.0.6",
+        "electron": ">=35.7.5",
+        "got": ">=11.8.5",
         "ink": "^6.4.0",
         "ink-select-input": "^6.2.0",
-        "ink-text-input": "^6.0.0"
+        "ink-text-input": "^6.0.0",
+        "js-yaml": ">=4.1.1"
+    },
+    "pnpm": {
+        "overrides": {
+            "cross-spawn": ">=6.0.6",
+            "electron": ">=35.7.5",
+            "got": ">=11.8.5",
+            "js-yaml": ">=4.1.1"
+        }
     }
 }
