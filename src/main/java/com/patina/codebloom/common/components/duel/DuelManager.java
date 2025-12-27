@@ -1,5 +1,7 @@
-package com.patina.codebloom.common.components;
+package com.patina.codebloom.common.components.duel;
 
+import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
@@ -12,11 +14,15 @@ import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.dto.question.QuestionBankDto;
 import com.patina.codebloom.common.dto.question.QuestionDto;
 import com.patina.codebloom.common.dto.user.UserDto;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -93,5 +99,39 @@ public class DuelManager {
                 .filter(Objects::nonNull)
                 .map(UserDto::fromUser)
                 .collect(Collectors.toList());
+    }
+
+    public void endDuel(final String lobbyId, boolean isDuelCleanup) throws DuelException {
+        try {
+            var activeLobby = lobbyRepository
+                    .findLobbyById(lobbyId)
+                    .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "Duel cannot be found."));
+
+            if (activeLobby.getStatus() != LobbyStatus.ACTIVE) {
+                throw new DuelException(HttpStatus.CONFLICT, "This duel is not currently active.");
+            }
+
+            var activeLobbyExpiresAt = activeLobby.getExpiresAt();
+            if (!isDuelCleanup && activeLobbyExpiresAt.isAfter(StandardizedOffsetDateTime.now())) {
+                throw new DuelException(HttpStatus.CONFLICT, "This duel is not ready for expiration yet.");
+            }
+
+            var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(activeLobby.getId());
+
+            var winner = lobbyPlayers.stream()
+                    .max(Comparator.comparing(LobbyPlayer::getPoints))
+                    .orElseThrow(() -> new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, """
+                No winner can be found because there are no players in the duel. This should not be happening."""));
+
+            activeLobby.setWinnerId(Optional.of(winner.getPlayerId()));
+            activeLobby.setExpiresAt(StandardizedOffsetDateTime.now());
+            activeLobby.setStatus(LobbyStatus.COMPLETED);
+
+            lobbyRepository.updateLobby(activeLobby);
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DuelException(e);
+        }
     }
 }

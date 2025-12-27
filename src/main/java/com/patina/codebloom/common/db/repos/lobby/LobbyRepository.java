@@ -64,6 +64,12 @@ public interface LobbyRepository {
      */
     List<Lobby> findAvailableLobbies();
 
+    /** Finds all active lobbies. */
+    List<Lobby> findActiveLobbies();
+
+    /** Finds all expired lobbies. */
+    List<Lobby> findExpiredLobbies();
+
     /**
      * Finds active lobby for the given `Player` with a status of ACTIVE.
      *

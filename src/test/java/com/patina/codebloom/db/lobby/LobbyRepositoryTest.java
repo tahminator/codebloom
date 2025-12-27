@@ -198,4 +198,20 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .orElseThrow();
         assertEquals(l, activeLobby);
     }
+
+    @Test
+    @Order(10)
+    void testFindActiveLobbies() {
+        var lobbies = lobbyRepository.findActiveLobbies();
+        assertNotNull(lobbies);
+        assertTrue(!lobbies.isEmpty());
+    }
+
+    @Test
+    @Order(10)
+    void testFindExpiredLobbies() {
+        var lobbies = lobbyRepository.findExpiredLobbies();
+        assertNotNull(lobbies);
+        assertTrue(!lobbies.isEmpty());
+    }
 }

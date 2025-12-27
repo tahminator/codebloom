@@ -1,7 +1,8 @@
 package com.patina.codebloom.api.duel;
 
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
-import com.patina.codebloom.common.components.DuelManager;
+import com.patina.codebloom.common.components.duel.DuelException;
+import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -264,6 +265,46 @@ public class DuelController {
         lobbyRepository.updateLobby(lobby);
 
         return ResponseEntity.ok(ApiResponder.success("Successfully left the lobby.", Empty.of()));
+    }
+
+    @Operation(
+            summary = "End duel",
+            description =
+                    "This endpoint will end the current duel you are in. The duel will only end if it in a state that is endable.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Endpoint is currently non-functional",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(responseCode = "200", description = "Duel has been successfully ended!"),
+            })
+    @PostMapping("/end")
+    public ResponseEntity<ApiResponder<Empty>> endDuel(@Protected final AuthenticationObject authenticationObject) {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+
+        User user = authenticationObject.getUser();
+
+        var lobby = lobbyRepository
+                .findActiveLobbyByLobbyPlayerPlayerId(user.getId())
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Player is not currently in a duel."));
+
+        try {
+            duelManager.endDuel(lobby.getId(), false);
+            return ResponseEntity.ok(ApiResponder.success("Duel successfully ended!", Empty.of()));
+        } catch (DuelException e) {
+            var httpStatus = e.getHttpStatus()
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+
+            throw new ResponseStatusException(httpStatus, e.getMessage());
+        }
     }
 
     @Operation(summary = "Create party", description = "Create a new lobby and become the host")
