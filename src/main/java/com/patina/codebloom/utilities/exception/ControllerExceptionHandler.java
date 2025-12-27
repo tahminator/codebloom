@@ -45,11 +45,13 @@ public class ControllerExceptionHandler {
         rx.printStackTrace();
 
         if (ExcludedExceptions.isValid(rx)) {
-            errorReporter.error("handleThrowable", Report.builder()
-                    .environments(env.getActiveProfiles())
-                    .location(Location.BACKEND)
-                    .data(Reporter.throwableToString(rx))
-                    .build());
+            errorReporter.error(
+                    "handleThrowable",
+                    Report.builder()
+                            .environments(env.getActiveProfiles())
+                            .location(Location.BACKEND)
+                            .data(Reporter.throwableToString(rx))
+                            .build());
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponder.failure(rx.getMessage()));
