@@ -37,11 +37,11 @@ backend-spotless-fix *args:
 
 # Run backend linter, formatter, & tests
 backend-test *args:
-  just backend-fmt && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
+  just backend-spotless && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
 
 # Run backend tests with a debugger
 backend-testd *args:
-  just backend-fmt && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
+  just backend-spotless && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
 
 # Run backend tests and launch Jacoco test coverage viewer if tests pass
 backend-coverage *args:
