@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import lombok.NonNull;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -36,9 +37,14 @@ public class Reporter {
         }
     }
 
-    /** Report an error. */
+    /**
+     * Report an error.
+     *
+     * @param key a non-null identifer to group report types
+     * @param report the detailed report object containing error metadata
+     */
     @Async
-    public void error(final Report report) {
+    public void error(@NonNull String key, final Report report) {
         String description = String.format(
                 """
             An error occurred in Codebloom.
@@ -63,9 +69,14 @@ public class Reporter {
                 .build());
     }
 
-    /** Report a log. */
+    /**
+     * Report a log.
+     *
+     * @param key a non-null identifer to group report types
+     * @param report the detailed report object containing error metadata
+     */
     @Async
-    public void log(final Report report) {
+    public void log(@NonNull String key, final Report report) {
         String description = String.format(
                 """
             Log request has been triggered.
