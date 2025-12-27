@@ -27,12 +27,10 @@ export const useCurrentLeaderboardUsersQuery = (
     initialPage?: number;
     pageSize?: number;
     tieToUrl?: boolean;
-    defaultGwc?: boolean;
   } = {
     initialPage: 1,
     pageSize: 20,
     tieToUrl: true,
-    defaultGwc: false,
   },
 ) => {
   const { filters, toggleFilter, clearFilters, isAnyFilterEnabled } =

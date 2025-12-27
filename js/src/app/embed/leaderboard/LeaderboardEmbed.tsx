@@ -1,13 +1,13 @@
 import { Box } from "@mantine/core";
 
-import GwcEmbedView from "./_components/GwcEmbedView";
+import OrgEmbedView from "./_components/OrgEmbedView";
 
-export default function GwcEmbedContainer() {
+export default function LeaderboardEmbed() {
   return (
     <>
       <Box className="grow">
         <Box p={"lg"}>
-          <GwcEmbedView />
+          <OrgEmbedView />
         </Box>
       </Box>
     </>

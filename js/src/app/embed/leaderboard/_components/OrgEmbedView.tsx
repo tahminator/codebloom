@@ -4,6 +4,7 @@ import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import { ApiTypeUtils } from "@/lib/api/utils/types";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -16,16 +17,14 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
+import { useEffect, useMemo } from "react";
 import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-import GwcBrandHeader from "./GwcBrandHeader";
+import OrgHeader from "./OrgHeader";
 
-/**
- * GWC Leaderboard Embed Page
- */
-export default function GwcLeaderboardEmbed() {
+export default function OrgLeaderboardEmbed() {
   const {
     status,
     isPlaceholderData,
@@ -37,10 +36,27 @@ export default function GwcLeaderboardEmbed() {
     setSearchQuery,
     searchQuery,
     debouncedQuery,
-  } = useCurrentLeaderboardUsersQuery({
-    tieToUrl: false,
-    defaultGwc: true,
-  });
+    filters,
+    onFilterReset,
+  } = useCurrentLeaderboardUsersQuery();
+
+  const activeFilter = useMemo<ApiTypeUtils.FilteredTag | undefined>(() => {
+    const active = Object.typedEntries(filters).filter(
+      ([, enabled]) => enabled,
+    );
+
+    return active.length === 1 ? active[0][0] : undefined;
+  }, [filters]);
+
+  useEffect(() => {
+    const activeCount = Object.typedEntries(filters).filter(
+      ([, enabled]) => enabled,
+    ).length;
+
+    if (activeCount > 1) {
+      onFilterReset();
+    }
+  }, [filters, onFilterReset]);
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -59,7 +75,7 @@ export default function GwcLeaderboardEmbed() {
 
   return (
     <>
-      <GwcBrandHeader />
+      <OrgHeader orgTag={activeFilter} />
       <Center mb="md">
         <Button
           component="a"
