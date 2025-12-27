@@ -6,10 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,7 +19,8 @@ import static org.mockito.Mockito.when;
 
 import com.github.javafaker.Faker;
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
-import com.patina.codebloom.common.components.DuelManager;
+import com.patina.codebloom.common.components.duel.DuelException;
+import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
@@ -1088,5 +1091,88 @@ public class DuelControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
         assertEquals("You are not currently in a lobby!", ex.getReason());
+    }
+
+    @Test
+    void testEndDuelIsInProd() {
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        when(env.isProd()).thenReturn(true);
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> duelController.endDuel(authObj));
+
+        assertEquals(403, exception.getStatusCode().value());
+        assertEquals("Endpoint is currently non-functional", exception.getReason());
+
+        verify(lobbyRepository, times(0)).findActiveLobbyByLobbyPlayerPlayerId(any());
+
+        try {
+            verify(duelManager, times(0)).endDuel(any(), eq(false));
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testEndDuelActivePartyForPlayerCannotBeFound() {
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        when(env.isProd()).thenReturn(false);
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> duelController.endDuel(authObj));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertEquals("Player is not currently in a duel.", exception.getReason());
+
+        verify(lobbyRepository, times(1)).findActiveLobbyByLobbyPlayerPlayerId(eq(user.getId()));
+
+        try {
+            verify(duelManager, times(0)).endDuel(any(), eq(false));
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testEndDuelDuelManagerFailed() {
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        Lobby lobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .joinCode(PartyCodeGenerator.generateCode())
+                .status(LobbyStatus.AVAILABLE)
+                .expiresAt(OffsetDateTime.now().plusMinutes(30))
+                .playerCount(3)
+                .build();
+
+        when(env.isProd()).thenReturn(false);
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
+
+        try {
+            doThrow(new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "This is an example duel exception."))
+                    .when(duelManager)
+                    .endDuel(eq(lobby.getId()), eq(false));
+        } catch (DuelException _) {
+        }
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> duelController.endDuel(authObj));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode());
+        assertEquals("This is an example duel exception.", exception.getReason());
+
+        verify(lobbyRepository, times(1)).findActiveLobbyByLobbyPlayerPlayerId(eq(user.getId()));
+
+        try {
+            verify(duelManager, times(1)).endDuel(any(), eq(false));
+        } catch (DuelException e) {
+            fail(e);
+        }
     }
 }
