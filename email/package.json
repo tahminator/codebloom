@@ -8,6 +8,8 @@
         "export": "email export"
     },
     "dependencies": {
+        "glob": ">=11.1.0",
+        "next": ">=15.4.9",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
@@ -18,5 +20,11 @@
         "@types/react": "^19.0.1",
         "@types/react-dom": "^19.0.1",
         "react-email": "4.2.8"
+    },
+    "pnpm": {
+        "overrides": {
+            "glob": ">=11.1.0",
+            "next": ">=15.4.9"
+        }
     }
 }
