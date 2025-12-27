@@ -1,7 +1,10 @@
 package com.patina.codebloom.common.components.duel;
 
+import com.patina.codebloom.common.db.models.lobby.Lobby;
+import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
@@ -99,6 +102,48 @@ public class DuelManager {
                 .filter(Objects::nonNull)
                 .map(UserDto::fromUser)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * @param playerId - equivalent to User.id
+     * @param isAdminOverride - If user is admin, we can start the duel without needing 2 players.
+     */
+    public void startDuel(final String playerId, final boolean isAdminOverride) throws DuelException {
+        try {
+            LobbyPlayer player = lobbyPlayerRepository
+                    .findLobbyPlayerByPlayerId(playerId)
+                    .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!"));
+
+            Lobby lobby = lobbyRepository
+                    .findLobbyById(player.getLobbyId())
+                    .orElseThrow(
+                            () -> new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "Hmm, something went wrong."));
+
+            if (lobby.getStatus() != LobbyStatus.AVAILABLE) {
+                throw new DuelException(HttpStatus.CONFLICT, "Lobby is not available!");
+            }
+
+            if (!isAdminOverride && lobby.getPlayerCount() < 2) {
+                throw new DuelException(HttpStatus.CONFLICT, "You must have at least 2 players!");
+            }
+
+            lobby.setStatus(LobbyStatus.ACTIVE);
+            lobbyRepository.updateLobby(lobby);
+
+            QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
+
+            LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
+                    .lobbyId(lobby.getId())
+                    .questionBankId(randomQuestion.getId())
+                    .userSolvedCount(0)
+                    .build();
+
+            lobbyQuestionRepository.createLobbyQuestion(lobbyQuestion);
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DuelException(e);
+        }
     }
 
     public void endDuel(final String lobbyId, boolean isDuelCleanup) throws DuelException {
