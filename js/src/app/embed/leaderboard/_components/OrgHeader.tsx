@@ -6,10 +6,9 @@ type OrgHeaderProps = {
   orgTag?: ApiTypeUtils.FilteredTag;
 };
 
-export default function OrgHeader({orgTag}: OrgHeaderProps) {
-  const orgTagLink = orgTag
-    ? ApiUtils.getMetadataByTagEnum(orgTag).icon
-    : undefined;
+export default function OrgHeader({ orgTag }: OrgHeaderProps) {
+  const orgTagLink =
+    orgTag ? ApiUtils.getMetadataByTagEnum(orgTag).icon : undefined;
 
   return (
     <Box p={"sm"}>
