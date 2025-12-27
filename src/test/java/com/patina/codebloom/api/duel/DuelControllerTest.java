@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.javafaker.Faker;
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
+import com.patina.codebloom.api.duel.body.PartyCreatedBody;
 import com.patina.codebloom.common.components.duel.DuelException;
 import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
@@ -348,11 +349,11 @@ public class DuelControllerTest {
 
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = duelController.createParty(authObj);
+        ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertTrue(response.getBody().isSuccess());
-        assertTrue(response.getBody().getPayload() instanceof Empty);
+        assertTrue(response.getBody().getPayload().getCode() != null);
 
         ArgumentCaptor<Lobby> lobbyCaptor = ArgumentCaptor.forClass(Lobby.class);
         ArgumentCaptor<LobbyPlayer> playerCaptor = ArgumentCaptor.forClass(LobbyPlayer.class);
@@ -414,13 +415,18 @@ public class DuelControllerTest {
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user1.getId())).thenReturn(Optional.empty());
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user2.getId())).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response1 = duelController.createParty(authObj1);
-        ResponseEntity<ApiResponder<Empty>> response2 = duelController.createParty(authObj2);
+        ResponseEntity<ApiResponder<PartyCreatedBody>> response1 = duelController.createParty(authObj1);
+        ResponseEntity<ApiResponder<PartyCreatedBody>> response2 = duelController.createParty(authObj2);
 
         assertEquals(200, response1.getStatusCode().value());
         assertEquals(200, response2.getStatusCode().value());
         assertTrue(response1.getBody().isSuccess());
         assertTrue(response2.getBody().isSuccess());
+        assertTrue(response1.getBody().getPayload().getCode() != null);
+        assertTrue(response2.getBody().getPayload().getCode() != null);
+        assertNotEquals(
+                response1.getBody().getPayload().getCode(),
+                response2.getBody().getPayload().getCode());
 
         ArgumentCaptor<Lobby> lobbyCaptor = ArgumentCaptor.forClass(Lobby.class);
         ArgumentCaptor<LobbyPlayer> playerCaptor = ArgumentCaptor.forClass(LobbyPlayer.class);
@@ -513,9 +519,10 @@ public class DuelControllerTest {
 
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = duelController.createParty(authObj);
+        ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertTrue(response.getBody().getPayload().getCode() != null);
 
         ArgumentCaptor<LobbyPlayer> playerCaptor = ArgumentCaptor.forClass(LobbyPlayer.class);
         verify(lobbyPlayerRepository, times(1)).createLobbyPlayer(playerCaptor.capture());
@@ -533,7 +540,8 @@ public class DuelControllerTest {
 
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = duelController.createParty(authObj);
+        ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
+        assertTrue(response.getBody().getPayload().getCode() != null);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
@@ -553,14 +561,14 @@ public class DuelControllerTest {
 
         when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = duelController.createParty(authObj);
+        ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertTrue(response.getBody().isSuccess());
         assertTrue(
                 response.getBody().getMessage().contains("Lobby created successfully"),
                 "Message should indicate successful lobby creation");
-        assertTrue(response.getBody().getMessage().contains("join code"), "Message should mention join code");
+        assertTrue(response.getBody().getPayload().getCode() != null);
     }
 
     @Test
