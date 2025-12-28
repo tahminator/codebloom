@@ -29,7 +29,7 @@ export default function LeaderboardCard({
   nickname,
   tags,
   isLoading = false,
-  embedded = false
+  embedded = false,
 }: {
   placeString: OrdinalString;
   sizeOrder: 1 | 2 | 3;
@@ -41,7 +41,7 @@ export default function LeaderboardCard({
   nickname: string | null;
   tags?: UserTag[];
   isLoading?: boolean;
-  embedded?: boolean
+  embedded?: boolean;
 }) {
   const isTopThree = sizeOrder <= 3;
   const borderColor = (() => {
@@ -89,7 +89,11 @@ export default function LeaderboardCard({
       to={`/user/${userId}`}
     >
       <LoadingOverlay visible={isLoading} />
-      <Text ta="center" size={embedded ? "lg" : "xl"} fw={isTopThree ? 800 : 500}>
+      <Text
+        ta="center"
+        size={embedded ? "lg" : "xl"}
+        fw={isTopThree ? 800 : 500}
+      >
         {placeString}
       </Text>
       <Stack gap={embedded ? 0 : 4} align="center" my="auto">
@@ -105,9 +109,10 @@ export default function LeaderboardCard({
               fw={isTopThree ? 700 : 600}
               truncate
               style={{
-                fontSize: embedded
-                          ? `clamp(.75rem, ${100 / (nickname.length + 5)}vw, 0.25rem)`
-                          : `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
+                fontSize:
+                  embedded ?
+                    `clamp(.75rem, ${100 / (nickname.length + 5)}vw, 0.25rem)`
+                  : `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
               }}
             >
               <IconCircleCheckFilled
@@ -125,9 +130,10 @@ export default function LeaderboardCard({
             fw={isTopThree ? 600 : 500}
             truncate
             style={{
-              fontSize: embedded
-                        ? `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 0.5rem)`
-                        : `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
+              fontSize:
+                embedded ?
+                  `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 0.5rem)`
+                : `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
             }}
           >
             <FaDiscord className="inline" /> {discordName}
@@ -144,7 +150,11 @@ export default function LeaderboardCard({
           <SiLeetcode className="inline" /> {leetcodeUsername}
         </Text>
       </Stack>
-      <Text ta="center" fw={isTopThree ? 700 : 500} size={embedded ? "md" : "lg"}>
+      <Text
+        ta="center"
+        fw={isTopThree ? 700 : 500}
+        size={embedded ? "md" : "lg"}
+      >
         {totalScore} Points
       </Text>
     </Card>

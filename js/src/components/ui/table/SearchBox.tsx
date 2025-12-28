@@ -13,7 +13,7 @@ export default function SearchBox({
 }: {
   query: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
-  smallPadding?: boolean
+  smallPadding?: boolean;
   placeholder: string;
 } & TextInputProps) {
   return (

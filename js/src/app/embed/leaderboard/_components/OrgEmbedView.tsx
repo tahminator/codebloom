@@ -29,7 +29,7 @@ export default function OrgLeaderboardEmbed() {
 
   const pageSizeParam = searchParams.get("pageSize");
   const pageSize = pageSizeParam ? Number(pageSizeParam) : undefined;
-  
+
   const {
     status,
     isPlaceholderData,
@@ -43,7 +43,7 @@ export default function OrgLeaderboardEmbed() {
     debouncedQuery,
     filters,
     onFilterReset,
-  } = useCurrentLeaderboardUsersQuery({pageSize});
+  } = useCurrentLeaderboardUsersQuery({ pageSize });
 
   const activeFilter = useMemo<ApiTypeUtils.FilteredTag | undefined>(() => {
     const active = Object.typedEntries(filters).filter(
