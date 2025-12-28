@@ -11,6 +11,7 @@ import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
@@ -62,6 +63,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .status(LobbyStatus.AVAILABLE)
                 .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                 .playerCount(1)
+                .isTie(false)
                 .build();
 
         lobbyRepository.createLobby(testLobby);
@@ -113,6 +115,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .joinCode("ABC123")
                 .status(LobbyStatus.ACTIVE)
                 .expiresAt(StandardizedOffsetDateTime.now())
+                .isTie(false)
                 .build();
 
         lobbyRepository.createLobby(newActiveLobby);
@@ -183,6 +186,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .status(LobbyStatus.AVAILABLE)
                 .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                 .playerCount(1)
+                .isTie(false)
                 .build();
 
         lobbyRepository.createLobby(l);
@@ -206,10 +210,70 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     void testFindExpiredLobbies() {
         var lobbies = lobbyRepository.findExpiredLobbies();
         assertNotNull(lobbies);
         assertTrue(!lobbies.isEmpty());
+    }
+
+    @Test
+    @Order(12)
+    void testCreateLobbyWithTie() {
+        Lobby tieLobby = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.COMPLETED)
+                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .playerCount(2)
+                .isTie(true)
+                .winnerId(Optional.empty())
+                .build();
+
+        lobbyRepository.createLobby(tieLobby);
+
+        Lobby foundLobby = lobbyRepository.findLobbyById(tieLobby.getId()).orElseThrow();
+        assertTrue(foundLobby.isTie());
+        assertTrue(foundLobby.getWinnerId().isEmpty());
+
+        assertTrue(lobbyRepository.deleteLobbyById(tieLobby.getId()));
+    }
+
+    @Test
+    @Order(13)
+    void testCreateLobbyWithWinner() {
+        Lobby winnerLobby = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.COMPLETED)
+                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .playerCount(2)
+                .isTie(false)
+                .winnerId(Optional.of(testUser.getId()))
+                .build();
+
+        lobbyRepository.createLobby(winnerLobby);
+
+        Lobby foundLobby = lobbyRepository.findLobbyById(winnerLobby.getId()).orElseThrow();
+        assertFalse(foundLobby.isTie());
+        assertTrue(foundLobby.getWinnerId().isPresent());
+        assertEquals(testUser.getId(), foundLobby.getWinnerId().get());
+
+        assertTrue(lobbyRepository.deleteLobbyById(winnerLobby.getId()));
+    }
+
+    @Test
+    @Order(14)
+    void testViolationTieWithWinner() {
+        Lobby invalidLobby = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.COMPLETED)
+                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .playerCount(2)
+                .isTie(true)
+                .winnerId(Optional.of(UUID.randomUUID().toString()))
+                .build();
+
+        assertThrows(Exception.class, () -> {
+            lobbyRepository.createLobby(invalidLobby);
+        });
     }
 }

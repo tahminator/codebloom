@@ -33,6 +33,7 @@ public class LobbySqlRepository implements LobbyRepository {
                 .expiresAt(resultSet.getObject("expiresAt", OffsetDateTime.class))
                 .playerCount(resultSet.getInt("playerCount"))
                 .winnerId(Optional.ofNullable(resultSet.getString("winnerId")))
+                .isTie(resultSet.getBoolean("isTie"))
                 .build();
     }
 
@@ -40,9 +41,9 @@ public class LobbySqlRepository implements LobbyRepository {
     public void createLobby(final Lobby lobby) {
         String sql = """
             INSERT INTO "Lobby"
-                (id, "joinCode", status, "expiresAt", "playerCount", "winnerId")
+                (id, "joinCode", status, "expiresAt", "playerCount", "winnerId", "isTie")
             VALUES
-                (:id, :joinCode, :status, :expiresAt, :playerCount, :winnerId)
+                (:id, :joinCode, :status, :expiresAt, :playerCount, :winnerId, :isTie)
             RETURNING
                 "createdAt"
             """;
@@ -57,6 +58,7 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("expiresAt", StandardizedOffsetDateTime.normalize(lobby.getExpiresAt()));
             stmt.setInt("playerCount", lobby.getPlayerCount());
             stmt.setObject("winnerId", lobby.getWinnerId().map(UUID::fromString).orElse(null));
+            stmt.setBoolean("isTie", lobby.isTie());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -78,7 +80,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt",
                 "expiresAt",
                 "playerCount",
-                "winnerId"
+                "winnerId",
+                "isTie"
             FROM
                 "Lobby"
             WHERE
@@ -110,7 +113,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt",
                 "expiresAt",
                 "playerCount",
-                "winnerId"
+                "winnerId",
+                "isTie"
             FROM
                 "Lobby"
             WHERE
@@ -144,7 +148,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt",
                 "expiresAt",
                 "playerCount",
-                "winnerId"
+                "winnerId",
+                "isTie"
             FROM
                 "Lobby"
             WHERE
@@ -178,7 +183,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt",
                 "expiresAt",
                 "playerCount",
-                "winnerId"
+                "winnerId",
+                "isTie"
             FROM
                 "Lobby"
             WHERE
@@ -214,7 +220,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt",
                 "expiresAt",
                 "playerCount",
-                "winnerId"
+                "winnerId",
+                "isTie"
             FROM
                 "Lobby"
             WHERE
@@ -251,7 +258,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt",
                 "expiresAt",
                 "playerCount",
-                "winnerId"
+                "winnerId",
+                "isTie"
             FROM
                 "Lobby"
             WHERE
@@ -288,7 +296,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 "createdAt",
                 "expiresAt",
                 "playerCount",
-                "winnerId"
+                "winnerId",
+                "isTie"
             FROM
                 "Lobby"
             WHERE
@@ -324,7 +333,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 l."createdAt",
                 l."expiresAt",
                 l."playerCount",
-                l."winnerId"
+                l."winnerId",
+                l."isTie"
             FROM
                 "Lobby" l
             INNER JOIN
@@ -355,7 +365,14 @@ public class LobbySqlRepository implements LobbyRepository {
     public Optional<Lobby> findAvailableLobbyByLobbyPlayerPlayerId(final String lobbyPlayerId) {
         String sql = """
             SELECT
-                l.*
+                l.id,
+                l."joinCode",
+                l.status,
+                l."createdAt",
+                l."expiresAt",
+                l."playerCount",
+                l."winnerId",
+                l."isTie"
             FROM
                 "Lobby" l
             JOIN
@@ -389,7 +406,8 @@ public class LobbySqlRepository implements LobbyRepository {
             SET
                 status = :status,
                 "playerCount" = :playerCount,
-                "winnerId" = :winnerId
+                "winnerId" = :winnerId,
+                "isTie" = :isTie
             WHERE
                 id = :id
             """;
@@ -400,6 +418,7 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setInt("playerCount", lobby.getPlayerCount());
             stmt.setObject("id", UUID.fromString(lobby.getId()));
             stmt.setObject("winnerId", lobby.getWinnerId().map(UUID::fromString).orElse(null));
+            stmt.setBoolean("isTie", lobby.isTie());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
