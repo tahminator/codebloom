@@ -76,7 +76,7 @@ export default function OrgLeaderboardEmbed() {
   return (
     <>
       <OrgHeader orgTag={activeFilter} />
-      <Center mb="md">
+      <Center mb="xs">
         <Button
           component="a"
           href="https://codebloom.patinanetwork.org"
@@ -91,20 +91,23 @@ export default function OrgLeaderboardEmbed() {
         align={{ base: "center", xs: "flex-end" }}
         justify="center"
         gap="md"
-        mb="xl"
+        mb="md"
       >
         {page === 1 && second && !debouncedQuery && (
-          <LeaderboardCard
-            placeString={getOrdinal(second.index)}
-            sizeOrder={2}
-            discordName={second.discordName}
-            leetcodeUsername={second.leetcodeUsername}
-            totalScore={second.totalScore}
-            nickname={second.nickname}
-            width={"300px"}
-            userId={second.id as string}
-            isLoading={isPlaceholderData}
-          />
+          <Box>
+            <LeaderboardCard
+              placeString={getOrdinal(second.index)}
+              sizeOrder={2}
+              discordName={second.discordName}
+              leetcodeUsername={second.leetcodeUsername}
+              totalScore={second.totalScore}
+              nickname={second.nickname}
+              width={"200px"}
+              userId={second.id as string}
+              isLoading={isPlaceholderData}
+              embedded
+            />
+          </Box>
         )}
         {page === 1 && first && !debouncedQuery && (
           <LeaderboardCard
@@ -114,9 +117,10 @@ export default function OrgLeaderboardEmbed() {
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
             nickname={first.nickname}
-            width={"300px"}
+            width={"200px"}
             userId={first.id as string}
             isLoading={isPlaceholderData}
+            embedded
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -127,9 +131,10 @@ export default function OrgLeaderboardEmbed() {
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
             nickname={third.nickname}
-            width={"300px"}
+            width={"200px"}
             userId={third.id as string}
             isLoading={isPlaceholderData}
+            embedded
           />
         )}
       </Flex>
@@ -139,14 +144,14 @@ export default function OrgLeaderboardEmbed() {
           setSearchQuery(event.currentTarget.value);
         }}
         placeholder={"Search for User"}
+        smallPadding
       />
       <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
         <Table
-          verticalSpacing={"lg"}
+          verticalSpacing={"sm"}
           horizontalSpacing={"xs"}
           withRowBorders={false}
           striped
-          my={"sm"}
           pos={"relative"}
         >
           {isPlaceholderData && (

@@ -11,7 +11,7 @@ export default function OrgHeader({ orgTag }: OrgHeaderProps) {
     orgTag ? ApiUtils.getMetadataByTagEnum(orgTag).icon : undefined;
 
   return (
-    <Box p={"sm"}>
+    <Box>
       <Center>
         {orgTagLink && (
           <>
