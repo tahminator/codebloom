@@ -1,11 +1,13 @@
 package com.patina.codebloom.utilities.exception;
 
 import java.util.Set;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 public class ExcludedExceptions {
 
-    private static final Set<Class<?>> EXCEPTIONS = Set.of(NoResourceFoundException.class);
+    private static final Set<Class<?>> EXCEPTIONS =
+            Set.of(NoResourceFoundException.class, HttpRequestMethodNotSupportedException.class);
 
     public static boolean isValid(final Throwable throwable) {
         if (throwable == null) {
