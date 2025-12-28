@@ -74,6 +74,11 @@ public class DuelController {
                         description = "Party with the given code cannot be found",
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
                 @ApiResponse(
+                        responseCode = "410",
+                        description = """
+                There is an issue with the request; check message""",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
                         responseCode = "409",
                         description = """
                 There is a conflict with the request; check message""",
@@ -95,8 +100,7 @@ public class DuelController {
         try {
             partyManager.joinParty(user.getId(), joinPartyBody.getPartyCode());
         } catch (DuelException e) {
-            var httpStatus = e.getHttpStatus()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+            var httpStatus = e.getHttpStatus().orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 
             throw new ResponseStatusException(httpStatus, e.getMessage());
         }
@@ -115,6 +119,15 @@ public class DuelController {
                         responseCode = "401",
                         description = "Unauthorized",
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "The user is not currently in a party.",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = """
+                There is a conflict with the request; check message""",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
                 @ApiResponse(responseCode = "200", description = "Duel successfully started!"),
             })
     @PostMapping("/start")
@@ -128,8 +141,7 @@ public class DuelController {
         try {
             duelManager.startDuel(user.getId(), user.isAdmin());
         } catch (DuelException e) {
-            var httpStatus = e.getHttpStatus()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+            var httpStatus = e.getHttpStatus().orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 
             throw new ResponseStatusException(httpStatus, e.getMessage());
         }
@@ -137,11 +149,23 @@ public class DuelController {
         return ResponseEntity.ok(ApiResponder.success("Duel successfully started!", Empty.of()));
     }
 
-    @Operation(summary = "Leave party", description = "Leave the current lobby")
-    @ApiResponse(responseCode = "200", description = "Lobby left successfully")
-    @ApiResponse(responseCode = "400", description = "Player is not in a lobby")
-    @ApiResponse(responseCode = "500", description = "Failed to leave the lobby")
-    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    @Operation(summary = "Leave party", description = "Leave the current party")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Endpoint is currently non-functional",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "The user is not currently in a party.",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(responseCode = "200", description = "Party left successfully"),
+            })
     @PostMapping("/party/leave")
     public ResponseEntity<ApiResponder<Empty>> leaveParty(@Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
@@ -153,8 +177,7 @@ public class DuelController {
         try {
             partyManager.leaveParty(user.getId());
         } catch (DuelException e) {
-            var httpStatus = e.getHttpStatus()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+            var httpStatus = e.getHttpStatus().orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 
             throw new ResponseStatusException(httpStatus, e.getMessage());
         }
@@ -176,6 +199,15 @@ public class DuelController {
                         responseCode = "401",
                         description = "Unauthorized",
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "The user is not currently in a duel.",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = """
+                There is a conflict with the request; check message""",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
                 @ApiResponse(responseCode = "200", description = "Duel has been successfully ended!"),
             })
     @PostMapping("/end")
@@ -194,8 +226,7 @@ public class DuelController {
         try {
             duelManager.endDuel(lobby.getId(), false);
         } catch (DuelException e) {
-            var httpStatus = e.getHttpStatus()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+            var httpStatus = e.getHttpStatus().orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 
             throw new ResponseStatusException(httpStatus, e.getMessage());
         }
@@ -203,10 +234,27 @@ public class DuelController {
         return ResponseEntity.ok(ApiResponder.success("Duel successfully ended!", Empty.of()));
     }
 
-    @Operation(summary = "Create party", description = "Create a new lobby and become the host")
-    @ApiResponse(responseCode = "200", description = "Lobby created successfully")
-    @ApiResponse(responseCode = "400", description = "Player is already in a lobby")
-    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    @Operation(
+            summary = "Create party",
+            description =
+                    "Create a new party. If successful, will return a party code which can be shared and distributed.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Endpoint is currently non-functional",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = """
+                There is a conflict with the request; check message""",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(responseCode = "200", description = "Party created successfully"),
+            })
     @PostMapping("/party/create")
     public ResponseEntity<ApiResponder<PartyCreatedBody>> createParty(
             @Protected final AuthenticationObject authenticationObject) {
@@ -220,8 +268,7 @@ public class DuelController {
         try {
             joinCode = partyManager.createParty(user.getId());
         } catch (DuelException e) {
-            var httpStatus = e.getHttpStatus()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+            var httpStatus = e.getHttpStatus().orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 
             throw new ResponseStatusException(httpStatus, e.getMessage());
         }
@@ -238,11 +285,18 @@ public class DuelController {
         to use a non-standard SSE implementation over a POST method.
         See https://ideas.digitalocean.com/app-platform/p/http-response-streaming-in-app-platform-for-sse-support.
         """)
-    @ApiResponse(responseCode = "200", description = "Sending live duel data")
-    @ApiResponse(
-            responseCode = "404",
-            description = "Failed to establish SSE connection",
-            content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Endpoint is currently non-functional",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(responseCode = "200", description = "Sending live duel data"),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "A duel with the given code cannot be found.",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
+            })
     @PostMapping(value = "/{lobbyCode}/sse")
     public SseWrapper<ApiResponder<DuelData>> getDuelData(@PathVariable final String lobbyCode) {
         if (env.isProd()) {
