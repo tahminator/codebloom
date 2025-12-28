@@ -20,11 +20,16 @@ import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { useEffect, useMemo } from "react";
 import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import OrgHeader from "./OrgHeader";
 
 export default function OrgLeaderboardEmbed() {
+  const [searchParams] = useSearchParams();
+
+  const pageSizeParam = searchParams.get("pageSize");
+  const pageSize = pageSizeParam ? Number(pageSizeParam) : undefined;
+  
   const {
     status,
     isPlaceholderData,
@@ -38,7 +43,7 @@ export default function OrgLeaderboardEmbed() {
     debouncedQuery,
     filters,
     onFilterReset,
-  } = useCurrentLeaderboardUsersQuery();
+  } = useCurrentLeaderboardUsersQuery({pageSize});
 
   const activeFilter = useMemo<ApiTypeUtils.FilteredTag | undefined>(() => {
     const active = Object.typedEntries(filters).filter(
