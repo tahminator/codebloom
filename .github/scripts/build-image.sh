@@ -41,11 +41,18 @@ else
 fi
 SERVER_PROFILES="${SERVER_PROFILES:-prod}"
 
+if [[ "$SERVER_PROFILES" == "stg" ]]; then
+    VITE_STAGING_ARG="--build-arg VITE_STAGING=true"
+else
+    VITE_STAGING_ARG=""
+fi
+
 docker buildx build \
     $BUILD_MODE \
     --file infra/Dockerfile \
     --build-arg SERVER_PROFILES="$SERVER_PROFILES" \
     --build-arg COMMIT_SHA="$GIT_SHA" \
+    $VITE_STAGING_ARG \
     $(printf -- '--tag %s ' "${TAGS[@]}") \
     .
 

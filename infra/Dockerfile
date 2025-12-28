@@ -16,6 +16,10 @@ RUN corepack enable pnpm && pnpm i --frozen-lockfile
 # Copy the rest of the frontend files
 COPY js/ ./
 
+# accept VITE_STAGING as build argument and expose as environment variable
+ARG VITE_STAGING
+ENV VITE_STAGING=${VITE_STAGING}
+
 # Build the frontend
 RUN pnpm run build
 
