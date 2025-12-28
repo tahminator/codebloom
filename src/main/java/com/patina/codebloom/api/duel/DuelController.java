@@ -4,15 +4,9 @@ import com.patina.codebloom.api.duel.body.JoinLobbyBody;
 import com.patina.codebloom.api.duel.body.PartyCreatedBody;
 import com.patina.codebloom.common.components.duel.DuelException;
 import com.patina.codebloom.common.components.duel.DuelManager;
-import com.patina.codebloom.common.db.models.lobby.Lobby;
-import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
-import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.components.duel.PartyManager;
 import com.patina.codebloom.common.db.models.user.User;
-import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
-import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
-import com.patina.codebloom.common.db.repos.lobby.player.question.LobbyPlayerQuestionRepository;
-import com.patina.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
@@ -20,8 +14,6 @@ import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.env.Env;
 import com.patina.codebloom.common.security.AuthenticationObject;
 import com.patina.codebloom.common.security.annotation.Protected;
-import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
-import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import com.patina.codebloom.common.utils.sse.SseWrapper;
 import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,8 +22,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.OffsetDateTime;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,67 +39,26 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 public class DuelController {
 
-    private static final int MAX_PLAYER_COUNT = 2;
-
     private final Env env;
     private final DuelManager duelManager;
+    private final PartyManager partyManager;
     private final LobbyRepository lobbyRepository;
-    private final LobbyPlayerRepository lobbyPlayerRepository;
     private final LobbyNotifyHandler lobbyNotifyHandler;
-    private final QuestionBankRepository questionBankRepository;
-    private final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository;
-    private final LobbyQuestionRepository lobbyQuestionRepository;
 
     public DuelController(
             final Env env,
             final DuelManager duelManager,
+            final PartyManager partyManager,
             final LobbyRepository lobbyRepository,
-            final LobbyPlayerRepository lobbyPlayerRepository,
-            final LobbyNotifyHandler lobbyNotifyHandler,
-            final QuestionBankRepository questionBankRepository,
-            final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
-            final LobbyQuestionRepository lobbyQuestionRepository) {
+            final LobbyNotifyHandler lobbyNotifyHandler) {
         this.env = env;
         this.duelManager = duelManager;
+        this.partyManager = partyManager;
         this.lobbyRepository = lobbyRepository;
-        this.lobbyPlayerRepository = lobbyPlayerRepository;
         this.lobbyNotifyHandler = lobbyNotifyHandler;
-        this.questionBankRepository = questionBankRepository;
-        this.lobbyPlayerQuestionRepository = lobbyPlayerQuestionRepository;
-        this.lobbyQuestionRepository = lobbyQuestionRepository;
     }
 
-    private void validatePlayerNotInLobby(final String playerId) {
-        var availableLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(playerId);
-
-        if (availableLobby.isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "You are already in a party. Please leave the party, then try again.");
-        }
-
-        var activeLobby = lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(playerId);
-
-        if (activeLobby.isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "You are currently in a duel. Please forfeit the duel, then try again.");
-        }
-    }
-
-    private void validateLobby(final Lobby lobby) {
-        var now = StandardizedOffsetDateTime.now();
-        if (lobby.getExpiresAt().isBefore(now)) {
-            // TODO: Could possibly invalidate this party here if it hasn't been invalidated
-            // yet.
-            throw new ResponseStatusException(HttpStatus.GONE, "The lobby has expired and cannot be joined.");
-        }
-
-        if (lobby.getPlayerCount() == MAX_PLAYER_COUNT) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "This lobby already has the maximum number of players");
-        }
-    }
-
-    @Operation(summary = "Join lobby", description = "Join a lobby by providing the lobby code.")
+    @Operation(summary = "Join party", description = "Join a party by providing the lobby code.")
     @ApiResponses(
             value = {
                 @ApiResponse(
@@ -129,10 +78,10 @@ public class DuelController {
                         description = """
                 There is a conflict with the request; check message""",
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
-                @ApiResponse(responseCode = "200", description = "Lobby has been successfully joined!"),
+                @ApiResponse(responseCode = "200", description = "Party has been successfully joined!"),
             })
-    @PostMapping("/lobby/join")
-    public ResponseEntity<ApiResponder<Empty>> joinLobby(
+    @PostMapping("/party/join")
+    public ResponseEntity<ApiResponder<Empty>> joinParty(
             @Protected final AuthenticationObject authenticationObject,
             @RequestBody final JoinLobbyBody joinPartyBody) {
         if (env.isProd()) {
@@ -143,25 +92,13 @@ public class DuelController {
 
         var user = authenticationObject.getUser();
 
-        var lobby = lobbyRepository
-                .findAvailableLobbyByJoinCode(joinPartyBody.getPartyCode())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "The party with the given code cannot be found."));
+        try {
+            partyManager.joinParty(user.getId(), joinPartyBody.getPartyCode());
+        } catch (DuelException e) {
+            var httpStatus = e.getHttpStatus()
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
 
-        validateLobby(lobby);
-        validatePlayerNotInLobby(user.getId());
-
-        lobbyPlayerRepository.createLobbyPlayer(LobbyPlayer.builder()
-                .lobbyId(lobby.getId())
-                .playerId(user.getId())
-                .build());
-
-        lobby.setPlayerCount(lobby.getPlayerCount() + 1);
-        boolean isSuccessful = lobbyRepository.updateLobby(lobby);
-
-        if (!isSuccessful) {
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Failed to join party. Please try again later.");
+            throw new ResponseStatusException(httpStatus, e.getMessage());
         }
 
         return ResponseEntity.ok(ApiResponder.success("Party successfully joined!", Empty.of()));
@@ -212,37 +149,17 @@ public class DuelController {
         }
 
         User user = authenticationObject.getUser();
-        String playerId = user.getId();
 
-        LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository
-                .findValidLobbyPlayerByPlayerId(playerId)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby."));
+        try {
+            partyManager.leaveParty(user.getId());
+        } catch (DuelException e) {
+            var httpStatus = e.getHttpStatus()
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
 
-        String lobbyId = existingLobbyPlayer.getLobbyId();
-
-        boolean isLobbyPlayerDeleted = lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId());
-        if (!isLobbyPlayerDeleted) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponder.failure("Failed to leave the lobby. Please try again."));
+            throw new ResponseStatusException(httpStatus, e.getMessage());
         }
 
-        Lobby lobby = lobbyRepository
-                .findLobbyById(lobbyId)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong."));
-
-        int updatedPlayerCount = lobby.getPlayerCount() - 1;
-
-        lobby.setPlayerCount(updatedPlayerCount);
-        if (updatedPlayerCount == 0) {
-            lobby.setStatus(LobbyStatus.CLOSED);
-        } else {
-            lobby.setStatus(LobbyStatus.AVAILABLE);
-        }
-        lobbyRepository.updateLobby(lobby);
-
-        return ResponseEntity.ok(ApiResponder.success("Successfully left the lobby.", Empty.of()));
+        return ResponseEntity.ok(ApiResponder.success("Successfully left the party.", Empty.of()));
     }
 
     @Operation(
@@ -276,13 +193,14 @@ public class DuelController {
 
         try {
             duelManager.endDuel(lobby.getId(), false);
-            return ResponseEntity.ok(ApiResponder.success("Duel successfully ended!", Empty.of()));
         } catch (DuelException e) {
             var httpStatus = e.getHttpStatus()
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
 
             throw new ResponseStatusException(httpStatus, e.getMessage());
         }
+
+        return ResponseEntity.ok(ApiResponder.success("Duel successfully ended!", Empty.of()));
     }
 
     @Operation(summary = "Create party", description = "Create a new lobby and become the host")
@@ -297,36 +215,16 @@ public class DuelController {
         }
 
         User user = authenticationObject.getUser();
-        String playerId = user.getId();
 
-        var existingLobbyPlayer = lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(playerId);
+        String joinCode;
+        try {
+            joinCode = partyManager.createParty(user.getId());
+        } catch (DuelException e) {
+            var httpStatus = e.getHttpStatus()
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
 
-        if (existingLobbyPlayer.isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "You are already in a lobby. Please leave your current lobby before creating a new one.");
+            throw new ResponseStatusException(httpStatus, e.getMessage());
         }
-
-        String joinCode = PartyCodeGenerator.generateCode();
-        OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
-
-        Lobby lobby = Lobby.builder()
-                .joinCode(joinCode)
-                .status(LobbyStatus.AVAILABLE)
-                .expiresAt(expiresAt)
-                .playerCount(1)
-                .winnerId(Optional.empty())
-                .build();
-
-        lobbyRepository.createLobby(lobby);
-
-        LobbyPlayer lobbyPlayer = LobbyPlayer.builder()
-                .lobbyId(lobby.getId())
-                .playerId(playerId)
-                .points(0)
-                .build();
-
-        lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
 
         return ResponseEntity.ok(ApiResponder.success(
                 "Lobby created successfully!",
