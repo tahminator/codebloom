@@ -4,7 +4,6 @@ import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { ApiTypeUtils } from "@/lib/api/utils/types";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -45,7 +44,7 @@ export default function OrgLeaderboardEmbed() {
     onFilterReset,
   } = useCurrentLeaderboardUsersQuery({ pageSize });
 
-  const activeFilter = useMemo<ApiTypeUtils.FilteredTag | undefined>(() => {
+  const activeFilter = useMemo(() => {
     const active = Object.typedEntries(filters).filter(
       ([, enabled]) => enabled,
     );
