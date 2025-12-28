@@ -98,7 +98,7 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
             ON
                 l.id = lp."lobbyId"
             WHERE
-                "playerId" = :playerId
+                lp."playerId" = :playerId
             AND
                 (l.status = 'AVAILABLE' OR l.status = 'ACTIVE')
             """;
