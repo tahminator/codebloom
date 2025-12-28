@@ -29,6 +29,7 @@ export default function LeaderboardCard({
   nickname,
   tags,
   isLoading = false,
+  embedded = false
 }: {
   placeString: OrdinalString;
   sizeOrder: 1 | 2 | 3;
@@ -40,6 +41,7 @@ export default function LeaderboardCard({
   nickname: string | null;
   tags?: UserTag[];
   isLoading?: boolean;
+  embedded?: boolean
 }) {
   const isTopThree = sizeOrder <= 3;
   const borderColor = (() => {
@@ -62,11 +64,11 @@ export default function LeaderboardCard({
   const height = (() => {
     switch (sizeOrder) {
       case 1:
-        return "225px";
+        return embedded ? "150px" : "225px";
       case 2:
-        return "215px";
+        return embedded ? "140px" : "215px";
       case 3:
-        return "210px";
+        return embedded ? "135px" : "210px";
     }
   })();
   const displayTags = tags?.slice(0, 3);
@@ -80,17 +82,17 @@ export default function LeaderboardCard({
       style={{
         height,
         width,
-        padding: "1.25rem 1rem",
+        padding: embedded ? "0.5rem 1rem" : "1.25rem 1rem",
         boxShadow,
       }}
       component={Link}
       to={`/user/${userId}`}
     >
       <LoadingOverlay visible={isLoading} />
-      <Text ta="center" size="xl" fw={isTopThree ? 800 : 500}>
+      <Text ta="center" size={embedded ? "lg" : "xl"} fw={isTopThree ? 800 : 500}>
         {placeString}
       </Text>
-      <Stack gap={4} align="center" my="auto">
+      <Stack gap={embedded ? 0 : 4} align="center" my="auto">
         {nickname && (
           <Tooltip
             label={
@@ -103,12 +105,15 @@ export default function LeaderboardCard({
               fw={isTopThree ? 700 : 600}
               truncate
               style={{
-                fontSize: `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
+                fontSize: embedded
+                          ? `clamp(.75rem, ${100 / (nickname.length + 5)}vw, 0.25rem)`
+                          : `clamp(1rem, ${100 / (nickname.length + 5)}vw, 1.25rem)`,
               }}
             >
               <IconCircleCheckFilled
                 className="inline"
                 color={theme.colors.patina[4]}
+                size={embedded ? 13 : 24}
               />{" "}
               {nickname}
             </Text>
@@ -120,7 +125,9 @@ export default function LeaderboardCard({
             fw={isTopThree ? 600 : 500}
             truncate
             style={{
-              fontSize: `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
+              fontSize: embedded
+                        ? `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 0.5rem)`
+                        : `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
             }}
           >
             <FaDiscord className="inline" /> {discordName}
@@ -137,7 +144,7 @@ export default function LeaderboardCard({
           <SiLeetcode className="inline" /> {leetcodeUsername}
         </Text>
       </Stack>
-      <Text ta="center" fw={isTopThree ? 700 : 500} size="lg">
+      <Text ta="center" fw={isTopThree ? 700 : 500} size={embedded ? "md" : "lg"}>
         {totalScore} Points
       </Text>
     </Card>
