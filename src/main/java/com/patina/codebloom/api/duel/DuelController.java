@@ -215,7 +215,7 @@ public class DuelController {
         String playerId = user.getId();
 
         LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository
-                .findLobbyPlayerByPlayerId(playerId)
+                .findValidLobbyPlayerByPlayerId(playerId)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not currently in a lobby."));
 
@@ -299,7 +299,7 @@ public class DuelController {
         User user = authenticationObject.getUser();
         String playerId = user.getId();
 
-        var existingLobbyPlayer = lobbyPlayerRepository.findLobbyPlayerByPlayerId(playerId);
+        var existingLobbyPlayer = lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(playerId);
 
         if (existingLobbyPlayer.isPresent()) {
             throw new ResponseStatusException(

@@ -98,8 +98,9 @@ public class LobbyPlayerRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testFindLobbyPlayerByPlayerId() {
-        LobbyPlayer foundPlayer =
-                lobbyPlayerRepository.findLobbyPlayerByPlayerId(mockPlayerId).orElseThrow();
+        LobbyPlayer foundPlayer = lobbyPlayerRepository
+                .findValidLobbyPlayerByPlayerId(mockPlayerId)
+                .orElseThrow();
         assertEquals(foundPlayer, testLobbyPlayer);
     }
 

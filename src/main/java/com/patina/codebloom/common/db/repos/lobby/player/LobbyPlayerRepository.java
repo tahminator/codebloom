@@ -30,12 +30,12 @@ public interface LobbyPlayerRepository {
     Optional<LobbyPlayer> findLobbyPlayerById(String id);
 
     /**
-     * Finds a lobby player for a specific player ID.
+     * Finds a lobby player for a specific player ID if the attached Lobby is ACTIVE or AVAILABLE.
      *
      * @param playerId the player ID
      * @return an {@code Optional} containing the lobby player if found, or {@code Optional.empty()} otherwise
      */
-    Optional<LobbyPlayer> findLobbyPlayerByPlayerId(String playerId);
+    Optional<LobbyPlayer> findValidLobbyPlayerByPlayerId(String playerId);
 
     /**
      * Finds all players in a specific lobby.

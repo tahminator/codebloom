@@ -84,17 +84,23 @@ public class LobbyPlayerSqlRepository implements LobbyPlayerRepository {
     }
 
     @Override
-    public Optional<LobbyPlayer> findLobbyPlayerByPlayerId(final String playerId) {
+    public Optional<LobbyPlayer> findValidLobbyPlayerByPlayerId(final String playerId) {
         String sql = """
             SELECT
-                id,
-                "lobbyId",
-                "playerId",
-                points
+                lp.id,
+                lp."lobbyId",
+                lp."playerId",
+                lp.points
             FROM
-                "LobbyPlayer"
+                "LobbyPlayer" lp
+            JOIN
+                "Lobby" l
+            ON
+                l.id = lp."lobbyId"
             WHERE
                 "playerId" = :playerId
+            AND
+                (l.status = 'AVAILABLE' OR l.status = 'ACTIVE')
             """;
 
         try (Connection conn = ds.getConnection();
