@@ -121,7 +121,7 @@ public class DuelControllerTest {
                 .playerCount(3)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId()))
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId()))
                 .thenReturn(Optional.of(existingLobbyPlayer));
         when(lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId()))
                 .thenReturn(true);
@@ -159,7 +159,7 @@ public class DuelControllerTest {
                 .points(50)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId()))
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId()))
                 .thenReturn(Optional.of(existingLobbyPlayer));
         when(lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId()))
                 .thenReturn(true);
@@ -201,7 +201,7 @@ public class DuelControllerTest {
                 .playerCount(3)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId()))
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId()))
                 .thenReturn(Optional.of(existingLobbyPlayer));
         when(lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId()))
                 .thenReturn(true);
@@ -229,7 +229,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseStatusException exception =
                 assertThrows(ResponseStatusException.class, () -> duelController.leaveParty(authObj));
@@ -257,7 +257,7 @@ public class DuelControllerTest {
                 .points(50)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId()))
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId()))
                 .thenReturn(Optional.of(existingLobbyPlayer));
         when(lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId()))
                 .thenReturn(false);
@@ -289,7 +289,7 @@ public class DuelControllerTest {
         assertEquals(403, exception.getStatusCode().value());
         assertEquals("Endpoint is currently non-functional", exception.getReason());
 
-        verify(lobbyPlayerRepository, times(0)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(0)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyPlayerRepository, times(0)).deleteLobbyPlayerById(any());
         verify(lobbyRepository, times(0)).findLobbyById(any());
         verify(lobbyRepository, times(0)).updateLobby(any());
@@ -319,7 +319,7 @@ public class DuelControllerTest {
                 .playerCount(1)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId()))
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId()))
                 .thenReturn(Optional.of(existingLobbyPlayer));
         when(lobbyPlayerRepository.deleteLobbyPlayerById(existingLobbyPlayer.getId()))
                 .thenReturn(true);
@@ -347,7 +347,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
 
@@ -388,7 +388,7 @@ public class DuelControllerTest {
                 .points(100)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId()))
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId()))
                 .thenReturn(Optional.of(existingLobbyPlayer));
 
         ResponseStatusException exception =
@@ -412,8 +412,10 @@ public class DuelControllerTest {
         AuthenticationObject authObj1 = createAuthenticationObject(user1);
         AuthenticationObject authObj2 = createAuthenticationObject(user2);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user1.getId())).thenReturn(Optional.empty());
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user2.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user1.getId()))
+                .thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user2.getId()))
+                .thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<PartyCreatedBody>> response1 = duelController.createParty(authObj1);
         ResponseEntity<ApiResponder<PartyCreatedBody>> response2 = duelController.createParty(authObj2);
@@ -448,8 +450,10 @@ public class DuelControllerTest {
         AuthenticationObject authObj1 = createAuthenticationObject(user1);
         AuthenticationObject authObj2 = createAuthenticationObject(user2);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user1.getId())).thenReturn(Optional.empty());
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user2.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user1.getId()))
+                .thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user2.getId()))
+                .thenReturn(Optional.empty());
 
         duelController.createParty(authObj1);
         duelController.createParty(authObj2);
@@ -468,7 +472,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
         OffsetDateTime beforeCreation = OffsetDateTime.now();
 
@@ -505,7 +509,7 @@ public class DuelControllerTest {
         assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
         assertEquals("Endpoint is currently non-functional", exception.getReason());
 
-        verify(lobbyPlayerRepository, times(0)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(0)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, times(0)).createLobby(any());
         verify(lobbyPlayerRepository, times(0)).createLobbyPlayer(any());
     }
@@ -517,7 +521,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
 
@@ -538,7 +542,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
         assertTrue(response.getBody().getPayload().getCode() != null);
@@ -559,7 +563,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<PartyCreatedBody>> response = duelController.createParty(authObj);
 

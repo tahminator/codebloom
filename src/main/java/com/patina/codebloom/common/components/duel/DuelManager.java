@@ -111,7 +111,7 @@ public class DuelManager {
     public void startDuel(final String playerId, final boolean isAdminOverride) throws DuelException {
         try {
             LobbyPlayer player = lobbyPlayerRepository
-                    .findLobbyPlayerByPlayerId(playerId)
+                    .findValidLobbyPlayerByPlayerId(playerId)
                     .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!"));
 
             Lobby lobby = lobbyRepository

@@ -479,7 +479,7 @@ public class DuelManagerTest {
 
     @Test
     void testStartDuelFailsUserIsNotInALobby() {
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(any())).thenReturn(Optional.empty());
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(any())).thenReturn(Optional.empty());
 
         DuelException e;
         try {
@@ -493,7 +493,7 @@ public class DuelManagerTest {
         assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus().orElseThrow());
         assertEquals("You are not currently in a lobby!", e.getMessage());
 
-        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, never()).findLobbyById(any());
         verify(lobbyRepository, never()).updateLobby(any());
         verify(questionBankRepository, never()).getRandomQuestion();
@@ -510,7 +510,7 @@ public class DuelManagerTest {
                 .playerId(userId)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.empty());
 
         DuelException e;
@@ -525,7 +525,7 @@ public class DuelManagerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus().orElseThrow());
         assertEquals("Hmm, something went wrong.", e.getMessage());
 
-        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, times(1)).findLobbyById(any());
         verify(lobbyRepository, never()).updateLobby(any());
         verify(questionBankRepository, never()).getRandomQuestion();
@@ -552,7 +552,7 @@ public class DuelManagerTest {
                 .playerId(userId)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
 
         DuelException e;
@@ -567,7 +567,7 @@ public class DuelManagerTest {
         assertEquals(HttpStatus.CONFLICT, e.getHttpStatus().orElseThrow());
         assertEquals("Lobby is not available!", e.getMessage());
 
-        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, times(1)).findLobbyById(any());
         verify(lobbyRepository, never()).updateLobby(any());
         verify(questionBankRepository, never()).getRandomQuestion();
@@ -594,7 +594,7 @@ public class DuelManagerTest {
                 .playerId(userId)
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
 
         DuelException e;
@@ -609,7 +609,7 @@ public class DuelManagerTest {
         assertEquals(HttpStatus.CONFLICT, e.getHttpStatus().orElseThrow());
         assertEquals("You must have at least 2 players!", e.getMessage());
 
-        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, times(1)).findLobbyById(any());
         verify(lobbyRepository, never()).updateLobby(any());
         verify(questionBankRepository, never()).getRandomQuestion();
@@ -641,7 +641,7 @@ public class DuelManagerTest {
                 .questionSlug("Two Sum")
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
         when(lobbyRepository.updateLobby(any())).thenReturn(true);
         when(questionBankRepository.getRandomQuestion()).thenReturn(questionBank);
@@ -653,7 +653,7 @@ public class DuelManagerTest {
             fail(e);
         }
 
-        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, times(1)).findLobbyById(any());
         verify(lobbyRepository, times(1)).updateLobby(any());
         verify(questionBankRepository, times(1)).getRandomQuestion();
@@ -685,7 +685,7 @@ public class DuelManagerTest {
                 .questionSlug("Two Sum")
                 .build();
 
-        when(lobbyPlayerRepository.findLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
         when(lobbyRepository.updateLobby(any())).thenReturn(true);
         when(questionBankRepository.getRandomQuestion()).thenReturn(questionBank);
@@ -697,7 +697,7 @@ public class DuelManagerTest {
             fail(e);
         }
 
-        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, times(1)).findLobbyById(any());
         verify(lobbyRepository, times(1)).updateLobby(any());
         verify(questionBankRepository, times(1)).getRandomQuestion();
@@ -708,7 +708,7 @@ public class DuelManagerTest {
     void testStartDuelFailsRandomDatabaseException() {
         doThrow(new RuntimeException("Simulated db exception"))
                 .when(lobbyPlayerRepository)
-                .findLobbyPlayerByPlayerId(any());
+                .findValidLobbyPlayerByPlayerId(any());
 
         DuelException e;
         try {
@@ -730,7 +730,7 @@ public class DuelManagerTest {
         assertEquals("Duel exception occurred.", e.getMessage());
         assertTrue(stackTrace.contains("Simulated db exception"));
 
-        verify(lobbyPlayerRepository, times(1)).findLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, never()).findLobbyById(any());
         verify(lobbyRepository, never()).updateLobby(any());
         verify(questionBankRepository, never()).getRandomQuestion();
