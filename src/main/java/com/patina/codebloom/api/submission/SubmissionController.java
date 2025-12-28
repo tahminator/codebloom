@@ -281,6 +281,21 @@ public class SubmissionController {
                 .body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(potd)));
     }
 
+    @GetMapping("/potd/embed")
+    public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotdEmbed(final HttpServletRequest request) {
+        FakeLag.sleep(750);
+
+        POTD potd = potdRepository.getCurrentPOTD();
+
+        if (potd == null || !isSameDay(potd.getCreatedAt())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponder.failure("Sorry, no problem of the day today!"));
+        }
+
+        return ResponseEntity.ok()
+                .body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(potd)));
+    }
+
     @Operation(
             summary = "Returns submission data.",
             description = """

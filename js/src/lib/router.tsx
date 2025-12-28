@@ -4,6 +4,7 @@ import DashboardPage from "@/app/dashboard/Dashboard.page";
 import DuelPage from "@/app/duel/[lobbyCode]/Duel.page";
 import PartyCreationPage from "@/app/duel/create/PartyCreation.page";
 import LeaderboardEmbed from "@/app/embed/leaderboard/LeaderboardEmbed";
+import PotdEmbed from "@/app/embed/potd/PotdEmbed";
 import ErrorPage from "@/app/error/Error.page";
 import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
 import AllLeaderboardsPage from "@/app/leaderboard/all/AllLeaderboards.page";
@@ -74,6 +75,11 @@ export const router = createBrowserRouter([
   {
     path: "/embed/leaderboard",
     element: <LeaderboardEmbed />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/embed/potd",
+    element: <PotdEmbed />,
     errorElement: <ErrorPage />,
   },
   {
