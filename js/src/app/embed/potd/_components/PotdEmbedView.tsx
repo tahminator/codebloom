@@ -15,7 +15,18 @@ export default function PotdEmbedView() {
 
   if (status === "pending") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"40vh"}>
+      <Card
+        withBorder
+        radius="md"
+        p="md"
+        w="100%"
+        h="100vh"
+        display="flex"
+        style={{
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
         <Flex
           direction={"row"}
           justify={"center"}
@@ -31,7 +42,18 @@ export default function PotdEmbedView() {
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"40vh"}>
+      <Card
+        withBorder
+        radius="md"
+        p="md"
+        w="100%"
+        h="100vh"
+        display="flex"
+        style={{
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
         <Flex
           direction={"row"}
           justify={"center"}
@@ -49,7 +71,18 @@ export default function PotdEmbedView() {
 
   if (!data.success) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"40vh"}>
+      <Card
+        withBorder
+        radius="md"
+        p="md"
+        w="100%"
+        h="100vh"
+        display="flex"
+        style={{
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
         <Flex
           direction={"row"}
           justify={"center"}
@@ -68,7 +101,18 @@ export default function PotdEmbedView() {
   const json = data.payload;
 
   return (
-    <Card withBorder padding={"md"} radius={"md"}>
+    <Card
+      withBorder
+      radius="md"
+      p="md"
+      w="100%"
+      h="100vh"
+      display="flex"
+      style={{
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
       <Flex direction={"column"} gap={"xl"} m={"xl"}>
         <Flex direction={"column"} gap={"sm"} align={"center"}>
           <Title style={{ textAlign: "center" }} order={3}>
