@@ -11,7 +11,7 @@ import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
-import com.patina.codebloom.db.BaseRepositoryTest;
+import com.patina.codebloom.config.NoJdaRequired;
 import com.patina.codebloom.scheduled.pg.handler.JobNotifyHandler;
 import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import java.util.UUID;
@@ -27,7 +27,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @ActiveProfiles({"ci", "thread"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
-public class NotifyListenerTest extends BaseRepositoryTest {
+public class NotifyListenerTest extends NoJdaRequired {
 
     @Autowired
     private JobRepository jobRepository;
