@@ -112,7 +112,7 @@ public class DuelManager {
         try {
             LobbyPlayer player = lobbyPlayerRepository
                     .findValidLobbyPlayerByPlayerId(playerId)
-                    .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "You are not currently in a lobby!"));
+                    .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "You are not currently in a party!"));
 
             Lobby lobby = lobbyRepository
                     .findLobbyById(player.getLobbyId())

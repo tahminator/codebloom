@@ -478,7 +478,7 @@ public class DuelManagerTest {
     }
 
     @Test
-    void testStartDuelFailsUserIsNotInALobby() {
+    void testStartDuelFailsUserIsNotInAParty() {
         when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(any())).thenReturn(Optional.empty());
 
         DuelException e;
@@ -491,7 +491,7 @@ public class DuelManagerTest {
         }
 
         assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus().orElseThrow());
-        assertEquals("You are not currently in a lobby!", e.getMessage());
+        assertEquals("You are not currently in a party!", e.getMessage());
 
         verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
         verify(lobbyRepository, never()).findLobbyById(any());
