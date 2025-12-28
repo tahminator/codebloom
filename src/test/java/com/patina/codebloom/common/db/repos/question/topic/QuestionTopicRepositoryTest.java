@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.models.question.topic.QuestionTopic;
 import com.patina.codebloom.common.db.repos.BaseRepositoryTest;
-
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;

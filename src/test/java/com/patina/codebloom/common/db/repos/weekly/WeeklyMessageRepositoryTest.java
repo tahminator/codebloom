@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import com.patina.codebloom.common.db.models.weekly.WeeklyMessage;
 import com.patina.codebloom.common.db.repos.BaseRepositoryTest;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

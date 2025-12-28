@@ -21,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-public class DiscordClubMetadataSqlRepositoryTest extends BaseRepositoryTest {
+public class DiscordClubMetadataRepositoryTest extends BaseRepositoryTest {
 
     private DiscordClubMetadataRepository repo;
     private DiscordClubRepository discordClubRepo;
@@ -30,7 +30,7 @@ public class DiscordClubMetadataSqlRepositoryTest extends BaseRepositoryTest {
     private DiscordClubMetadata testDiscordClubMetadata;
 
     @Autowired
-    public DiscordClubMetadataSqlRepositoryTest(
+    public DiscordClubMetadataRepositoryTest(
             final DiscordClubMetadataRepository repo, final DiscordClubRepository discordClubRepo) {
         this.repo = repo;
         this.discordClubRepo = discordClubRepo;

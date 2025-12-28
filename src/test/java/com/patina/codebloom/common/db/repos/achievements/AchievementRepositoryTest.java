@@ -18,13 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 @TestMethodOrder(OrderAnnotation.class)
 public class AchievementRepositoryTest extends BaseRepositoryTest {
 
-    private AchievementSqlRepository repo;
+    private AchievementRepository repo;
     private Achievement testAchievement;
     private Achievement deletableAchievement;
     private String mockUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
 
     @Autowired
-    public AchievementRepositoryTest(final AchievementSqlRepository repo) {
+    public AchievementRepositoryTest(final AchievementRepository repo) {
         this.repo = repo;
     }
 

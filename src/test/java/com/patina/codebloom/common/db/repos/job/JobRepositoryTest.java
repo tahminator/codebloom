@@ -26,14 +26,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-public class JobSqlRepositoryTest extends BaseRepositoryTest {
+public class JobRepositoryTest extends BaseRepositoryTest {
 
     private JobRepository jobRepository;
     private Job testJob;
     private String mockQuestionId = UUID.randomUUID().toString();
 
     @Autowired
-    public JobSqlRepositoryTest(final JobRepository jobRepository) {
+    public JobRepositoryTest(final JobRepository jobRepository) {
         this.jobRepository = jobRepository;
     }
 
