@@ -1,6 +1,8 @@
 import AdminPage from "@/app/admin/admin.page";
 import ClubSignUp from "@/app/club/[clubSlug]/ClubSignUp.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
+import DuelPage from "@/app/duel/[lobbyCode]/Duel.page";
+import PartyCreationPage from "@/app/duel/create/PartyCreation.page";
 import LeaderboardEmbed from "@/app/embed/leaderboard/LeaderboardEmbed";
 import ErrorPage from "@/app/error/Error.page";
 import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
@@ -15,7 +17,7 @@ import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDet
 import UserSubmissionsPage from "@/app/user/[userId]/submissions/UserSubmissions.page";
 import UserProfilePage from "@/app/user/[userId]/UserProfile.page";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
-import { schoolFF } from "@/lib/ff";
+import { duelFF, schoolFF } from "@/lib/ff";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
@@ -105,6 +107,32 @@ export const router = createBrowserRouter([
   {
     path: "/privacy",
     element: <PolicyPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/duel/create",
+    element:
+      duelFF ?
+        <PartyCreationPage />
+      : <ToastWithRedirect
+          to={"/"}
+          message={
+            "Sorry, this is not available right now. Please try again later."
+          }
+        />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/duel/:lobbyCode",
+    element:
+      duelFF ?
+        <DuelPage />
+      : <ToastWithRedirect
+          to={"/"}
+          message={
+            "Sorry, this is not available right now. Please try again later."
+          }
+        />,
     errorElement: <ErrorPage />,
   },
 ]);
