@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.patina.codebloom.common.db.models.club.Club;
 import com.patina.codebloom.common.db.models.usertag.Tag;
 import com.patina.codebloom.common.db.repos.BaseRepositoryTest;
-
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 @TestMethodOrder(OrderAnnotation.class)
 public class ClubRepositoryTest extends BaseRepositoryTest {
 
-    private ClubSqlRepository repo;
+    private ClubRepository repo;
     private Club testClub;
     private Club deletableClub;
 
     @Autowired
-    public ClubRepositoryTest(final ClubSqlRepository repo) {
+    public ClubRepositoryTest(final ClubRepository repo) {
         this.repo = repo;
     }
 
