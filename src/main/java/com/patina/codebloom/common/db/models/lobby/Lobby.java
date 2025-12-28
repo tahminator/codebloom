@@ -29,4 +29,7 @@ public class Lobby {
 
     @Builder.Default
     private Optional<String> winnerId = Optional.empty();
+
+    @Builder.Default
+    private boolean isTie = false;
 }
