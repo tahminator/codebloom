@@ -272,7 +272,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .winnerId(Optional.of(UUID.randomUUID().toString()))
                 .build();
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(RuntimeException.class, () -> {
             lobbyRepository.createLobby(invalidLobby);
         });
     }
