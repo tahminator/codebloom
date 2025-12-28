@@ -51,12 +51,7 @@ cached-antora-playbook.yml
 node_modules
 /.kotlin/
 
-.env
-.env.local
-.env.production
-.env.development
-.env.staging
-.env.ci
+.env*
 
 # Ignore the static folder, it will be generated in the build process for production use.
 **/static/*
