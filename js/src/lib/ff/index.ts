@@ -2,3 +2,4 @@
 
 export * from "./school";
 export * from "./tag";
+export * from "./duel";
