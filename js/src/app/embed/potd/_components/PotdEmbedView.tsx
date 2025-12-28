@@ -68,24 +68,15 @@ export default function PotdEmbedView() {
   const json = data.payload;
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"40vh"}>
-      <Center>
-        <Title style={{ textAlign: "center" }} order={3}>
-          Problem of the day
-        </Title>
-      </Center>
-      <Center>
-        <Title order={6}> POTD resets at 8:00 EDT everyday</Title>
-      </Center>
-      <Center>
-        <Flex
-          direction={"column"}
-          gap={"sm"}
-          align={"center"}
-          justify={"center"}
-          w={"50%"}
-          h={"100%"}
-        >
+    <Card withBorder padding={"md"} radius={"md"}>
+      <Flex direction={"column"} gap={"xl"} m={"xl"}>
+        <Flex direction={"column"} gap={"sm"} align={"center"}>
+          <Title style={{ textAlign: "center" }} order={3}>
+            Problem of the day
+          </Title>
+          <Title order={6}> POTD resets at 8:00 EDT everyday</Title>
+        </Flex>
+        <Flex direction={"column"} gap={"sm"} align={"center"}>
           <Title style={{ textAlign: "center" }} order={4}>
             {json.title}
           </Title>
@@ -95,6 +86,8 @@ export default function PotdEmbedView() {
           >
             {json.multiplier}x multiplier
           </Badge>
+        </Flex>
+        <Center>
           <Button
             component={Link}
             to={`https://leetcode.com/problems/${json.slug}`}
@@ -105,8 +98,8 @@ export default function PotdEmbedView() {
           >
             Go to question
           </Button>
-        </Flex>
-      </Center>
+        </Center>
+      </Flex>
     </Card>
   );
 }
