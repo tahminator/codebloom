@@ -1,5 +1,6 @@
 package com.patina.codebloom.common.reporter;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.patina.codebloom.common.reporter.report.Report;
 import com.patina.codebloom.common.reporter.throttled.ReportCounter;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
@@ -35,6 +36,7 @@ public class Reporter {
         this.jdaClient = jdaClient;
     }
 
+    @VisibleForTesting
     protected long now() {
         return System.currentTimeMillis();
     }
