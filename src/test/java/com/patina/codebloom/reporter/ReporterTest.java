@@ -3,7 +3,7 @@ package com.patina.codebloom.reporter;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-import com.patina.codebloom.common.reporter.throttled.ThrottledReporter;
+import com.patina.codebloom.common.reporter.Reporter;
 import com.patina.codebloom.jda.client.JDAClient;
 import java.time.Clock;
 import java.time.Duration;
@@ -18,17 +18,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class ThrottledReporterTest {
+class ReporterTest {
 
-    private TestableThrottledReporter throttledReporter;
+    private TestableReporter reporter;
     private JDAClient jdaClient;
     private Instant startTime;
 
     // use clock to fake time change
-    private static class TestableThrottledReporter extends ThrottledReporter {
+    private static class TestableReporter extends Reporter {
         private Clock clock;
 
-        TestableThrottledReporter(JDAClient jdaClient, Clock clock) {
+        TestableReporter(JDAClient jdaClient, Clock clock) {
             super(jdaClient);
             this.clock = clock;
         }
@@ -48,7 +48,7 @@ class ThrottledReporterTest {
         jdaClient = mock(JDAClient.class);
         startTime = Instant.parse("2025-12-27T07:00:00Z");
         Clock fixedClock = Clock.fixed(startTime, ZoneId.of("UTC"));
-        throttledReporter = new TestableThrottledReporter(jdaClient, fixedClock);
+        reporter = new TestableReporter(jdaClient, fixedClock);
     }
 
     @Test
@@ -56,15 +56,15 @@ class ThrottledReporterTest {
     void testExpirationLogic() {
         String key = "expiry-test";
 
-        throttledReporter.shouldReport(key);
+        reporter.shouldReport(key);
 
         Instant later = startTime.plus(Duration.ofMinutes(31));
-        throttledReporter.setClock(Clock.fixed(later, ZoneId.of("UTC")));
+        reporter.setClock(Clock.fixed(later, ZoneId.of("UTC")));
 
-        assertFalse(throttledReporter.shouldReport(key), "Should start a new window after expiry");
+        assertFalse(reporter.shouldReport(key), "Should start a new window after expiry");
 
-        assertFalse(throttledReporter.shouldReport(key));
-        assertTrue(throttledReporter.shouldReport(key));
+        assertFalse(reporter.shouldReport(key));
+        assertTrue(reporter.shouldReport(key));
     }
 
     @Test
@@ -72,11 +72,11 @@ class ThrottledReporterTest {
     void testThresholdReporting() {
         String key = "test-error";
 
-        assertFalse(throttledReporter.shouldReport(key), "1st occurrence should not report");
-        assertFalse(throttledReporter.shouldReport(key), "2nd occurrence should not report");
-        assertTrue(throttledReporter.shouldReport(key), "3rd occurrence should report");
+        assertFalse(reporter.shouldReport(key), "1st occurrence should not report");
+        assertFalse(reporter.shouldReport(key), "2nd occurrence should not report");
+        assertTrue(reporter.shouldReport(key), "3rd occurrence should report");
 
-        assertFalse(throttledReporter.shouldReport(key), "Post-report occurrence should reset and not report");
+        assertFalse(reporter.shouldReport(key), "Post-report occurrence should reset and not report");
     }
 
     @Test
@@ -90,7 +90,7 @@ class ThrottledReporterTest {
 
         for (int i = 0; i < threadCount; i++) {
             executor.execute(() -> {
-                if (throttledReporter.shouldReport(key)) {
+                if (reporter.shouldReport(key)) {
                     successCount.incrementAndGet();
                 }
                 latch.countDown();
@@ -109,15 +109,15 @@ class ThrottledReporterTest {
     void testCleanUp() {
         String key = "expired-key";
 
-        throttledReporter.shouldReport(key);
+        reporter.shouldReport(key);
 
         Instant later = startTime.plus(Duration.ofMinutes(31));
-        throttledReporter.setClock(Clock.fixed(later, ZoneId.of("UTC")));
+        reporter.setClock(Clock.fixed(later, ZoneId.of("UTC")));
 
-        throttledReporter.cleanUp();
+        reporter.cleanUp();
 
-        assertFalse(throttledReporter.shouldReport(key), "Key should have been removed by cleanup");
-        assertFalse(throttledReporter.shouldReport(key));
-        assertTrue(throttledReporter.shouldReport(key));
+        assertFalse(reporter.shouldReport(key), "Key should have been removed by cleanup");
+        assertFalse(reporter.shouldReport(key));
+        assertTrue(reporter.shouldReport(key));
     }
 }
