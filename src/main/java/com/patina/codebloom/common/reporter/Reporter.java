@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import lombok.NonNull;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
@@ -60,6 +59,9 @@ public class Reporter {
      */
     @Async
     public void error(@NonNull String key, final Report report) {
+        if (!shouldReport(key)) {
+            return;
+        }
         String description = String.format(
                 """
             An error occurred in Codebloom.
@@ -92,6 +94,9 @@ public class Reporter {
      */
     @Async
     public void log(@NonNull String key, final Report report) {
+        if (!shouldReport(key)) {
+            return;
+        }
         String description = String.format(
                 """
             Log request has been triggered.
@@ -141,7 +146,7 @@ public class Reporter {
         return false;
     }
 
-     /** Clean up anything that hadn't been reported every 30 minutes. */
+    /** Clean up anything that hadn't been reported every 30 minutes. */
     @Scheduled(fixedRate = TIME_LIMIT_MINUTES, timeUnit = TimeUnit.MINUTES)
     public void cleanUp() {
         long now = now();
