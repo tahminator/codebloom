@@ -281,6 +281,19 @@ public class SubmissionController {
                 .body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(potd)));
     }
 
+    @Operation(
+            summary = "Returns current problem of the day for embedding.",
+            description = """
+        Returns the current problem of the day for use in embeds, as long as there is a problem of the day set for today.
+        This endpoint does not require user authentication and does not check if the user has already completed the problem.
+        """,
+            responses = {
+                @ApiResponse(responseCode = "200", description = "POTD found"),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "POTD not found",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            })
     @GetMapping("/potd/embed")
     public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotdEmbed(final HttpServletRequest request) {
         FakeLag.sleep(750);
