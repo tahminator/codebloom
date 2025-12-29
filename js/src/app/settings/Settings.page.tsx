@@ -52,7 +52,9 @@ export default function SettingsPage() {
     <>
       <Header />
       <DocumentTitle title={`CodeBloom - Verify School & Change Image`} />
-      <DocumentDescription description={`CodeBloom - Verify school email and change CodeBloom profile picture`} />
+      <DocumentDescription
+        description={`CodeBloom - Verify school email and change CodeBloom profile picture`}
+      />
       <Box mih={"90vh"} p={"lg"}>
         <Box>
           <Center>
