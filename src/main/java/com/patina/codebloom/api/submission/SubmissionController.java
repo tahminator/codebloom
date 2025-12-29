@@ -295,7 +295,7 @@ public class SubmissionController {
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             })
     @GetMapping("/potd/embed")
-    public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotdEmbed(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotdEmbed() {
         FakeLag.sleep(750);
 
         POTD potd = potdRepository.getCurrentPOTD();

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useFetchPotdEmbedQuery = () => {
   return useQuery({
-    queryKey: ["potd", new Date().getDay()],
+    queryKey: ["potd", new Date().toDateString()],
     queryFn: fetchPotdEmbed,
   });
 };

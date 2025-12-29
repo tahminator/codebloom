@@ -243,7 +243,7 @@ public class SubmissionControllerTest {
         when(potdRepository.getCurrentPOTD()).thenReturn(potd);
         when(potd.getCreatedAt()).thenReturn(LocalDateTime.now());
 
-        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed(request);
+        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().isSuccess());
@@ -255,7 +255,7 @@ public class SubmissionControllerTest {
     void testGetCurrentPotdEmbedFailure() {
         when(potdRepository.getCurrentPOTD()).thenReturn(null);
 
-        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed(request);
+        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed();
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertFalse(response.getBody().isSuccess());
