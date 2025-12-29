@@ -118,7 +118,7 @@ export default function PotdEmbedView() {
           <Title style={{ textAlign: "center" }} order={3}>
             Problem of the day
           </Title>
-          <Title order={6}> POTD resets at 8:00 EDT everyday</Title>
+          <Title order={6}> POTD resets at 8:00 ET everyday</Title>
         </Flex>
         <Flex direction={"column"} gap={"sm"} align={"center"}>
           <Title style={{ textAlign: "center" }} order={4}>
