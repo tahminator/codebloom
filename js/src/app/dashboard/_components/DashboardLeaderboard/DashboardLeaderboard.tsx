@@ -201,6 +201,7 @@ export default function LeaderboardForDashboard({
                       "This user is a verified member of the Patina Discord server."
                     }
                     color={"dark.4"}
+                    withArrow
                   >
                     <Text ta="center">
                       <IconCircleCheckFilled

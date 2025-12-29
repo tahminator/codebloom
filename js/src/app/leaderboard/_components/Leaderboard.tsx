@@ -251,7 +251,8 @@ export default function LeaderboardIndex() {
                             {entry.nickname && (
                               <Tooltip
                                 label="This user is a verified member of the Patina Discord server."
-                                color="dark.4"
+                                color={"dark.4"}
+                                withArrow
                               >
                                 <Flex align="center" gap={5}>
                                   <IconCircleCheckFilled
