@@ -6,9 +6,9 @@ export default function PotdEmbed() {
   return (
     <>
       <Center>
-          <Flex direction={"column"} flex={1} gap={"md"}>
-            <PotdEmbedView />
-          </Flex>
+        <Flex direction={"column"} flex={1} gap={"md"}>
+          <PotdEmbedView />
+        </Flex>
       </Center>
     </>
   );
