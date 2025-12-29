@@ -62,7 +62,7 @@ function TagBadge({ userTag, size }: TagBadgeProps) {
   const metadata = ApiUtils.getMetadataByTagEnum(userTag.tag);
 
   return (
-    <Tooltip label={metadata.name} withArrow position="top">
+    <Tooltip label={metadata.name} color="dark.4" withArrow position="top">
       <Image
         src={metadata.icon}
         alt={metadata.alt}

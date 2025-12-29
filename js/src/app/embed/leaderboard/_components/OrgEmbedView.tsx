@@ -188,6 +188,7 @@ export default function OrgLeaderboardEmbed() {
                             "This user is a verified member of the Patina Discord server."
                           }
                           color={"dark.4"}
+                          withArrow
                         >
                           <span className="transition-all group-hover:text-blue-500 w-max">
                             <IconCircleCheckFilled
