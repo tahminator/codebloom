@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 public class SubmissionControllerTest {
 
@@ -55,7 +56,7 @@ public class SubmissionControllerTest {
             potdRepository);
 
     @Test
-    void testGetVerificationKey() {
+    void testGetVerificationKeySuccess() {
         AuthenticationObject auth = mock(AuthenticationObject.class);
         User user = mock(User.class);
 
@@ -78,7 +79,17 @@ public class SubmissionControllerTest {
     }
 
     @Test
-    void testSetLeetcodeUsername() {
+    void testGetVerificationKeyFailure() {
+        when(protector.validateSession(request)).thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+        ResponseStatusException ex =
+                assertThrows(ResponseStatusException.class, () -> submissionController.getVerificationKey(request));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusCode());
+    }
+
+    @Test
+    void testSetLeetcodeUsernameSuccess() {
         AuthenticationObject auth = mock(AuthenticationObject.class);
         User user = mock(User.class);
         LeetcodeUsernameObject body = mock(LeetcodeUsernameObject.class);
@@ -115,8 +126,23 @@ public class SubmissionControllerTest {
     }
 
     @Test
-    void testCheckLatestSubmissions() {
-        // Arrange
+    void testSetLeetcodeUsernameFailure() {
+        AuthenticationObject auth = mock(AuthenticationObject.class);
+        User user = mock(User.class);
+        LeetcodeUsernameObject body = mock(LeetcodeUsernameObject.class);
+
+        when(protector.validateSession(request)).thenReturn(auth);
+        when(auth.getUser()).thenReturn(user);
+        when(user.getLeetcodeUsername()).thenReturn("existing");
+
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class, () -> submissionController.setLeetcodeUsername(request, body));
+
+        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+    }
+
+    @Test
+    void testCheckLatestSubmissionsSuccess() {
         AuthenticationObject auth = mock(AuthenticationObject.class);
         User user = mock(User.class);
 
@@ -151,7 +177,22 @@ public class SubmissionControllerTest {
     }
 
     @Test
-    void testGetCurrentPotd() {
+    void testCheckLatestSubmissionsFailure() {
+        AuthenticationObject auth = mock(AuthenticationObject.class);
+        User user = mock(User.class);
+
+        when(protector.validateSession(request)).thenReturn(auth);
+        when(auth.getUser()).thenReturn(user);
+        when(user.getLeetcodeUsername()).thenReturn(null);
+
+        ResponseStatusException ex =
+                assertThrows(ResponseStatusException.class, () -> submissionController.checkLatestSubmissions(request));
+
+        assertEquals(HttpStatus.PRECONDITION_FAILED, ex.getStatusCode());
+    }
+
+    @Test
+    void testGetCurrentPotdSuccess() {
         AuthenticationObject auth = mock(AuthenticationObject.class);
         User user = mock(User.class);
         POTD potd = mock(POTD.class);
@@ -181,7 +222,22 @@ public class SubmissionControllerTest {
     }
 
     @Test
-    void testGetCurrentPotdEmbed() {
+    void testGetCurrentPotdFailure() {
+        AuthenticationObject auth = mock(AuthenticationObject.class);
+        User user = mock(User.class);
+
+        when(protector.validateSession(request)).thenReturn(auth);
+        when(auth.getUser()).thenReturn(user);
+        when(potdRepository.getCurrentPOTD()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotd(request);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertFalse(response.getBody().isSuccess());
+    }
+
+    @Test
+    void testGetCurrentPotdEmbedSuccess() {
         POTD potd = mock(POTD.class);
 
         when(potdRepository.getCurrentPOTD()).thenReturn(potd);
@@ -196,7 +252,17 @@ public class SubmissionControllerTest {
     }
 
     @Test
-    void testGetSubmissionBySubmissionId() {
+    void testGetCurrentPotdEmbedFailure() {
+        when(potdRepository.getCurrentPOTD()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed(request);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertFalse(response.getBody().isSuccess());
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdSuccess() {
         QuestionWithUser question = mock(QuestionWithUser.class);
 
         when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
@@ -215,5 +281,16 @@ public class SubmissionControllerTest {
         }
 
         verify(questionRepository).getQuestionWithUserById("abc123");
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdFailure() {
+        when(questionRepository.getQuestionWithUserById("missing")).thenReturn(null);
+
+        ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
+                submissionController.getSubmissionBySubmissionId(request, "missing");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertFalse(response.getBody().isSuccess());
     }
 }
