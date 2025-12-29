@@ -1,5 +1,3 @@
-import DocumentDescription from "@/components/ui/title/DocumentDescription";
-import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import {
   Box,
   Card,
@@ -10,8 +8,6 @@ import {
 export default function ChangeImageSettingsCard(){
   return (
     <>
-      <DocumentTitle title={`CodeBloom - Changed Image`} />
-      <DocumentDescription description="Instructions on how to update your profile picture." />
       <Box>
         <Card withBorder padding={"md"} radius={"md"}>
           <Box m={"md"}>

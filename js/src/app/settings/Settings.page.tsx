@@ -1,5 +1,7 @@
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -49,6 +51,8 @@ export default function SettingsPage() {
   return (
     <>
       <Header />
+      <DocumentTitle title={`CodeBloom - Verify School & Change Image`} />
+      <DocumentDescription description={`CodeBloom - Verify school email and change CodeBloom profile picture`} />
       <Box mih={"90vh"} p={"lg"}>
         <Box>
           <Center>
@@ -58,7 +62,7 @@ export default function SettingsPage() {
           </Center>
           <Stack gap="md">
             <SchoolVerifySettingsCard schoolExists={schoolExists} />
-            <ChangeImageSettingsCard/>
+            <ChangeImageSettingsCard />
           </Stack>
         </Box>
       </Box>
