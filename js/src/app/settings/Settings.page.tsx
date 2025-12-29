@@ -1,13 +1,16 @@
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
+import DocumentDescription from "@/components/ui/title/DocumentDescription";
+import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { useBackendCallbackParams } from "@/lib/hooks/useBackendCallbackParams";
-import { Box, Center, Loader, Title } from "@mantine/core";
+import { Box, Center, Loader, Stack, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 
+import ChangeImageSettingsCard from "./_components/ChangeImageSettingsCard";
 import SchoolVerifySettingsCard from "./_components/SchoolVerifySettingsCard";
 
 export default function SettingsPage() {
@@ -48,6 +51,8 @@ export default function SettingsPage() {
   return (
     <>
       <Header />
+      <DocumentTitle title={`CodeBloom - Settings`} />
+      <DocumentDescription description={`CodeBloom - Settings`} />
       <Box mih={"90vh"} p={"lg"}>
         <Box>
           <Center>
@@ -55,7 +60,10 @@ export default function SettingsPage() {
               Settings
             </Title>
           </Center>
-          <SchoolVerifySettingsCard schoolExists={schoolExists} />
+          <Stack gap="xl">
+            <SchoolVerifySettingsCard schoolExists={schoolExists} />
+            <ChangeImageSettingsCard />
+          </Stack>
         </Box>
       </Box>
       <Footer />

@@ -1,5 +1,3 @@
-import DocumentDescription from "@/components/ui/title/DocumentDescription";
-import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import { ApiUtils } from "@/lib/api/utils";
 import {
   Box,
@@ -26,8 +24,6 @@ export default function SchoolVerifySettingsCard({
   const toggleModal = () => setModalOpen((prev) => !prev);
   return (
     <>
-      <DocumentTitle title={`CodeBloom - Verify School`} />
-      <DocumentDescription description={`CodeBloom - Verify school email`} />
       <Box>
         <Card withBorder padding={"md"} radius={"md"}>
           <Box m={"md"}>
