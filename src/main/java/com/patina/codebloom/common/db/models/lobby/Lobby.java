@@ -31,5 +31,5 @@ public class Lobby {
     private Optional<String> winnerId = Optional.empty();
 
     @Builder.Default
-    private boolean isTie = false;
+    private boolean tie = false;
 }

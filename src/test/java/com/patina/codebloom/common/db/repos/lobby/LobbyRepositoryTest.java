@@ -63,7 +63,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .status(LobbyStatus.AVAILABLE)
                 .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                 .playerCount(1)
-                .isTie(false)
+                .tie(false)
                 .build();
 
         lobbyRepository.createLobby(testLobby);
@@ -115,7 +115,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .joinCode("ABC123")
                 .status(LobbyStatus.ACTIVE)
                 .expiresAt(StandardizedOffsetDateTime.now())
-                .isTie(false)
+                .tie(false)
                 .build();
 
         lobbyRepository.createLobby(newActiveLobby);
@@ -186,7 +186,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .status(LobbyStatus.AVAILABLE)
                 .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                 .playerCount(1)
-                .isTie(false)
+                .tie(false)
                 .build();
 
         lobbyRepository.createLobby(l);
@@ -225,7 +225,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .status(LobbyStatus.COMPLETED)
                 .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                 .playerCount(2)
-                .isTie(true)
+                .tie(true)
                 .winnerId(Optional.empty())
                 .build();
 
@@ -246,7 +246,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .status(LobbyStatus.COMPLETED)
                 .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                 .playerCount(2)
-                .isTie(false)
+                .tie(false)
                 .winnerId(Optional.of(testUser.getId()))
                 .build();
 
@@ -268,7 +268,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
                 .status(LobbyStatus.COMPLETED)
                 .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
                 .playerCount(2)
-                .isTie(true)
+                .tie(true)
                 .winnerId(Optional.of(UUID.randomUUID().toString()))
                 .build();
 
