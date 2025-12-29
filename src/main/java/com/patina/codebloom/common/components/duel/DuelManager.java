@@ -18,7 +18,6 @@ import com.patina.codebloom.common.dto.question.QuestionBankDto;
 import com.patina.codebloom.common.dto.question.QuestionDto;
 import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,12 +162,22 @@ public class DuelManager {
 
             var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(activeLobby.getId());
 
-            var winner = lobbyPlayers.stream()
-                    .max(Comparator.comparing(LobbyPlayer::getPoints))
-                    .orElseThrow(() -> new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, """
-                No winner can be found because there are no players in the duel. This should not be happening."""));
+            if (lobbyPlayers.size() == 1) {
+                activeLobby.setWinnerId(Optional.of(lobbyPlayers.get(0).getPlayerId()));
+            } else {
+                var playerOne = lobbyPlayers.get(0);
+                var playerTwo = lobbyPlayers.get(1);
+                var playerOnePts = playerOne.getPoints();
+                var playerTwoPts = playerTwo.getPoints();
 
-            activeLobby.setWinnerId(Optional.of(winner.getPlayerId()));
+                if (playerOnePts == playerTwoPts) {
+                    activeLobby.setTie(true);
+                } else {
+                    var winner = playerOnePts > playerTwoPts ? playerOne : playerTwo;
+                    activeLobby.setWinnerId(Optional.of(winner.getPlayerId()));
+                }
+            }
+
             activeLobby.setStatus(LobbyStatus.COMPLETED);
 
             lobbyRepository.updateLobby(activeLobby);

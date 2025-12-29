@@ -1,9 +1,9 @@
 ALTER TABLE "Lobby"
-ADD COLUMN "isTie" BOOLEAN NOT NULL DEFAULT false;
+ADD COLUMN "tie" BOOLEAN NOT NULL DEFAULT false;
 
 ALTER TABLE "Lobby"
 ADD CONSTRAINT "chk_tie_logic" 
 CHECK (
-    ("isTie" = false) OR 
-    ("isTie" = true AND "winnerId" IS NULL)
+    ("tie" = false) OR 
+    ("tie" = true AND "winnerId" IS NULL)
 );

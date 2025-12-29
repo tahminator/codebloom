@@ -424,8 +424,49 @@ public class DuelManagerTest {
 
     @Test
     void testEndDuelPlayersTied() {
-        // TODO:
-        // https://codebloom.notion.site/Add-a-new-field-to-db-for-Lobby-called-isTie-2d57c85563aa80edb675fe388953be3a?source=copy_link
+        Lobby lobby = Lobby.builder()
+                .id("12345467890")
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().minus(30, ChronoUnit.MINUTES))
+                .joinCode("ABC123")
+                .playerCount(2)
+                .status(LobbyStatus.ACTIVE)
+                .winnerId(Optional.empty())
+                .build();
+
+        List<LobbyPlayer> players = List.of(
+                LobbyPlayer.builder()
+                        .id(UUID.randomUUID().toString())
+                        .lobbyId(lobby.getId())
+                        .playerId(UUID.randomUUID().toString())
+                        .points(100)
+                        .build(),
+                LobbyPlayer.builder()
+                        .id(UUID.randomUUID().toString())
+                        .lobbyId(lobby.getId())
+                        .playerId(UUID.randomUUID().toString())
+                        .points(100)
+                        .build());
+
+        when(lobbyRepository.findLobbyById(eq(lobby.getId()))).thenReturn(Optional.of(lobby));
+        when(lobbyPlayerRepository.findPlayersByLobbyId(eq(lobby.getId()))).thenReturn(players);
+
+        try {
+            duelManager.endDuel(lobby.getId(), false);
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        ArgumentCaptor<Lobby> lobbyCaptor = ArgumentCaptor.forClass(Lobby.class);
+        verify(lobbyRepository, times(1)).findLobbyById(lobby.getId());
+        verify(lobbyRepository, times(1)).updateLobby(lobbyCaptor.capture());
+        verify(lobbyPlayerRepository, times(1)).findPlayersByLobbyId(any());
+
+        var updatedLobby = lobbyCaptor.getValue();
+        assertEquals(lobby.getId(), updatedLobby.getId());
+        assertEquals(updatedLobby.getWinnerId(), Optional.empty());
+        assertTrue(!updatedLobby.getWinnerId().isPresent());
+        assertEquals(players.get(0).getPoints(), players.get(1).getPoints());
     }
 
     @Test
