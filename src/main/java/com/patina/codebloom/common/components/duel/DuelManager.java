@@ -162,6 +162,12 @@ public class DuelManager {
 
             var lobbyPlayers = lobbyPlayerRepository.findPlayersByLobbyId(activeLobby.getId());
 
+            if (lobbyPlayers.isEmpty()) {
+                throw new DuelException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "No winner can be found because there are no players in the duel. This should not be happening.");
+            }
+
             if (lobbyPlayers.size() == 1) {
                 activeLobby.setWinnerId(Optional.of(lobbyPlayers.get(0).getPlayerId()));
             } else {
