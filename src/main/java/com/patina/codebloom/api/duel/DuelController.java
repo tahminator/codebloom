@@ -1,10 +1,11 @@
 package com.patina.codebloom.api.duel;
 
 import com.patina.codebloom.api.duel.body.JoinLobbyBody;
-import com.patina.codebloom.api.duel.body.PartyCreatedBody;
+import com.patina.codebloom.api.duel.body.PartyCodeBody;
 import com.patina.codebloom.common.components.duel.DuelException;
 import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.components.duel.PartyManager;
+import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.dto.ApiResponder;
@@ -25,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -256,7 +258,7 @@ public class DuelController {
                 @ApiResponse(responseCode = "200", description = "Party created successfully"),
             })
     @PostMapping("/party/create")
-    public ResponseEntity<ApiResponder<PartyCreatedBody>> createParty(
+    public ResponseEntity<ApiResponder<PartyCodeBody>> createParty(
             @Protected final AuthenticationObject authenticationObject) {
         if (env.isProd()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
@@ -275,7 +277,7 @@ public class DuelController {
 
         return ResponseEntity.ok(ApiResponder.success(
                 "Lobby created successfully!",
-                PartyCreatedBody.builder().code(joinCode).build()));
+                PartyCodeBody.builder().code(joinCode).build()));
     }
 
     @Operation(summary = "SSE endpoint for duel data", description = """
@@ -319,5 +321,49 @@ public class DuelController {
         }
 
         return emitter;
+    }
+
+    @Operation(summary = "Get current party or duel code for user", description = """
+        If the user is authenticated, this endpoint will check if the user is
+        in a party or duel and return the code associated to the game.
+    """)
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Endpoint is currently non-functional",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "The user is not currently in a party or duel.",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(responseCode = "200", description = "Party or duel code was successfully found!"),
+            })
+    @GetMapping("/current")
+    public ResponseEntity<ApiResponder<PartyCodeBody>> getPartyOrDuelCodeForUser(
+            @Protected final AuthenticationObject authenticationObject) {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+
+        var user = authenticationObject.getUser();
+
+        Lobby lobby;
+        try {
+            lobby = duelManager.getLobbyByUserId(user.getId());
+        } catch (DuelException e) {
+            var httpStatus = e.getHttpStatus().orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+
+            throw new ResponseStatusException(httpStatus, e.getMessage());
+        }
+
+        return ResponseEntity.ok()
+                .body(ApiResponder.success(
+                        "Code found!",
+                        PartyCodeBody.builder().code(lobby.getJoinCode()).build()));
     }
 }
