@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -601,6 +602,81 @@ public class DuelControllerTest {
 
         try {
             verify(duelManager, times(1)).endDuel(any(), eq(user.isAdmin()));
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testGetPartyOrDuelCodeForUserFailsInProduction() {
+        when(env.isProd()).thenReturn(true);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.getPartyOrDuelCodeForUser(authObj);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
+        assertEquals("Endpoint is currently non-functional", exception.getReason());
+
+        try {
+            verify(duelManager, never()).getLobbyByUserId(eq(user.getId()));
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testGetPartyOrDuelCodeForUserDuelManagerFailed() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        try {
+            doThrow(new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "This is an example duel exception."))
+                    .when(duelManager)
+                    .getLobbyByUserId(eq(user.getId()));
+        } catch (DuelException _) {
+        }
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> duelController.getPartyOrDuelCodeForUser(authObj));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode());
+        assertEquals("This is an example duel exception.", exception.getReason());
+
+        try {
+            verify(duelManager, times(1)).getLobbyByUserId(any());
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testGetPartyOrDuelCodeForUserHappyPath() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        try {
+            when(duelManager.getLobbyByUserId(eq(user.getId())))
+                    .thenReturn(Lobby.builder().build());
+        } catch (DuelException _) {
+        }
+
+        var response = duelController.getPartyOrDuelCodeForUser(authObj);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var apiResponder = response.getBody();
+        assertTrue(apiResponder.isSuccess());
+
+        try {
+            verify(duelManager, times(1)).getLobbyByUserId(any());
         } catch (DuelException e) {
             fail(e);
         }

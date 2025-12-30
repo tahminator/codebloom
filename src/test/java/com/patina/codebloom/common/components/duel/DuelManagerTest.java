@@ -914,4 +914,85 @@ public class DuelManagerTest {
         verify(questionBankRepository, never()).getRandomQuestion();
         verify(lobbyQuestionRepository, never()).createLobbyQuestion(any());
     }
+
+    @Test
+    void testGetLobbyByUserIdNoPartyOrDuelFound() {
+        String userId = UUID.randomUUID().toString();
+
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(eq(userId)))
+                .thenReturn(Optional.empty());
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(eq(userId))).thenReturn(Optional.empty());
+
+        try {
+            duelManager.getLobbyByUserId(userId);
+            fail("Expected a duel exception");
+        } catch (DuelException e) {
+            assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus().orElseThrow());
+            assertEquals("No duel or party found for the given player.", e.getMessage());
+        }
+
+        verify(lobbyRepository, times(1)).findAvailableLobbyByLobbyPlayerPlayerId(eq(userId));
+        verify(lobbyRepository, times(1)).findActiveLobbyByLobbyPlayerPlayerId(eq(userId));
+    }
+
+    @Test
+    void testGetLobbyByUserIdNoPartyFoundButDuelFound() {
+        String userId = UUID.randomUUID().toString();
+
+        Lobby duel = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now())
+                .joinCode(PartyCodeGenerator.generateCode())
+                .playerCount(1)
+                .winnerId(Optional.empty())
+                .tie(false)
+                .status(LobbyStatus.ACTIVE)
+                .build();
+
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(eq(userId)))
+                .thenReturn(Optional.empty());
+        when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(eq(userId))).thenReturn(Optional.of(duel));
+
+        try {
+            var res = duelManager.getLobbyByUserId(userId);
+            assertNotNull(res);
+            assertEquals(duel, res);
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        verify(lobbyRepository, times(1)).findAvailableLobbyByLobbyPlayerPlayerId(eq(userId));
+        verify(lobbyRepository, times(1)).findActiveLobbyByLobbyPlayerPlayerId(eq(userId));
+    }
+
+    @Test
+    void testGetLobbyByUserIdPartyFound() {
+        String userId = UUID.randomUUID().toString();
+
+        Lobby party = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now())
+                .joinCode(PartyCodeGenerator.generateCode())
+                .playerCount(2)
+                .winnerId(Optional.empty())
+                .tie(false)
+                .status(LobbyStatus.AVAILABLE)
+                .build();
+
+        when(lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(eq(userId)))
+                .thenReturn(Optional.of(party));
+
+        try {
+            var res = duelManager.getLobbyByUserId(userId);
+            assertNotNull(res);
+            assertEquals(party, res);
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        verify(lobbyRepository, times(1)).findAvailableLobbyByLobbyPlayerPlayerId(eq(userId));
+        verify(lobbyRepository, never()).findActiveLobbyByLobbyPlayerPlayerId(eq(userId));
+    }
 }
