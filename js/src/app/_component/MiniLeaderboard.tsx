@@ -177,9 +177,7 @@ export default function MiniLeaderboardDesktop() {
                             (tagFF && entry.tags && entry.tags.length > 0)) && (
                             <Flex align="center" gap={5}>
                               {entry.nickname && (
-                                <Tooltip
-                                  label="This user is a verified member of the Patina Discord server."
-                                >
+                                <Tooltip label="This user is a verified member of the Patina Discord server.">
                                   <Flex align="center" gap={5}>
                                     <IconCircleCheckFilled
                                       color={theme.colors.patina[4]}

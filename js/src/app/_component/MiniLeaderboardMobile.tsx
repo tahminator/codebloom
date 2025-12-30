@@ -155,9 +155,7 @@ export default function MiniLeaderboardMobile() {
                       <Flex direction="column" gap={4} miw={0}>
                         {entry.nickname && (
                           <Flex align="center" gap={6}>
-                            <Tooltip
-                              label="This user is a verified member of the Patina Discord server."
-                            >
+                            <Tooltip label="This user is a verified member of the Patina Discord server.">
                               <Flex align="center" gap={6}>
                                 <IconCircleCheckFilled
                                   color={theme.colors.patina[4]}
