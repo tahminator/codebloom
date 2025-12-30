@@ -130,8 +130,6 @@ export default function UserAdminList() {
                         label={
                           "This user is a verified member of the Patina Discord server."
                         }
-                        color={"dark.4"}
-                        withArrow
                       >
                         <Text
                           ta="center"
