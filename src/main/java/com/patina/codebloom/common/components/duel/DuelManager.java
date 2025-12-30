@@ -32,10 +32,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class DuelManager {
 
     private static final int MAX_LEETCODE_SUBMISSIONS = 5;
@@ -157,6 +159,7 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
     }
@@ -206,18 +209,26 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
     }
 
     public Lobby getLobbyByUserId(String userId) throws DuelException {
-        var lobby = lobbyRepository
-                .findAvailableLobbyByLobbyPlayerPlayerId(userId)
-                .or(() -> lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(userId))
-                .orElseThrow(
-                        () -> new DuelException(HttpStatus.NOT_FOUND, "No duel or party found for the given player."));
+        try {
+            var lobby = lobbyRepository
+                    .findAvailableLobbyByLobbyPlayerPlayerId(userId)
+                    .or(() -> lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(userId))
+                    .orElseThrow(() ->
+                            new DuelException(HttpStatus.NOT_FOUND, "No duel or party found for the given player."));
 
-        return lobby;
+            return lobby;
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
+            throw new DuelException(e);
+        }
     }
 
     public Lobby getDuelByUserId(String userId) throws DuelException {

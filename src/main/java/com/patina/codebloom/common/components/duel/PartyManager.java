@@ -9,6 +9,7 @@ import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  * idea of a "party", such as joining or leaving a party.
  */
 @Component
+@Slf4j
 public class PartyManager {
     private static final int MAX_PLAYER_COUNT = 2;
 
@@ -75,6 +77,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
     }
@@ -108,6 +111,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
     }
@@ -147,6 +151,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
     }
