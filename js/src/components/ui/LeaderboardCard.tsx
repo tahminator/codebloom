@@ -102,8 +102,6 @@ export default function LeaderboardCard({
             label={
               "This user is a verified member of the Patina Discord server."
             }
-            color={"dark.4"}
-            withArrow
           >
             <Text
               ta="center"

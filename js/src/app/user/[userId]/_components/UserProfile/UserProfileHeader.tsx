@@ -48,8 +48,6 @@ export default function UserProfileHeader({ userId }: { userId: string }) {
                 label={
                   "This user is a verified member of the Patina Discord server."
                 }
-                color={"dark.4"}
-                withArrow
               >
                 <Title size="h4" c="patina.4">
                   <IconCircleCheckFilled

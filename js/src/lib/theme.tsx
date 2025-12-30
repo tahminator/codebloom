@@ -25,6 +25,8 @@ export const themeOverride = createTheme({
   components: {
     Tooltip: Tooltip.extend({
       defaultProps: {
+        withArrow: true,
+        color: "dark.4",
         events: { hover: true, focus: true, touch: true },
       },
     }),
