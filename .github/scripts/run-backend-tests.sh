@@ -10,7 +10,7 @@ java -version
 javac -version
 echo "JAVA_HOME=$JAVA_HOME"
 
-./mvnw -B install -D skipTests --no-transfer-progress -Denv.SKIP=true
+./mvnw -B install -D skipTests --no-transfer-progress
 
 ./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
 ./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"

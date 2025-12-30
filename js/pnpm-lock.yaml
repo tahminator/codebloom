@@ -34,9 +34,6 @@ importers:
       '@mantine/notifications':
         specifier: ^8.1.2
         version: 8.1.2(@mantine/core@8.1.2(@mantine/hooks@8.1.2(react@18.3.1))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@8.1.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sentry/react':
-        specifier: ^9.19.0
-        version: 9.19.0(react@18.3.1)
       '@tabler/icons-react':
         specifier: ^3.30.0
         version: 3.30.0(react@18.3.1)
@@ -811,36 +808,6 @@ packages:
     resolution: {integrity: sha512-Q2Mgwt+D8hd5FIPUuPDsvPR7Bguza6yTkJxspDGkZj7tBRn2y4KSWYuIXpftFSjBra76TbKerCV7rgFPQrn+wQ==}
     cpu: [x64]
     os: [win32]
-
-  '@sentry-internal/browser-utils@9.19.0':
-    resolution: {integrity: sha512-DlEHX4eIHe5yIuh/cFu9OiaFuk1CTnFK95zj61I7Q2fxmN43dIwC3xAAGJ/Hy+GDQi7kU+BiS2sudSHSTq81BA==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/feedback@9.19.0':
-    resolution: {integrity: sha512-yixRrv4NfpjhFW56AuUTjVwZlignB9FWAXXyrmRP3SsFeJCFrAsSD8HOxV9RXNr9ePYl7MEU0Agi43YWhJsiAw==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/replay-canvas@9.19.0':
-    resolution: {integrity: sha512-YC8yrOjuKSfQgGniJnzkdbFsWEPTlNpzeeYPTxS4ouH1FwfGrSkPmcddjor2YHaLfiuHHqQ/Vvq70n+zruJH7A==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/replay@9.19.0':
-    resolution: {integrity: sha512-i/X9brRchbAF25yjxLTI7E8eoESRPBgIyQOWoWRXXt2n51iBRTjLXSaEfGvjdN+qrMq/yd6nC1/UqJVxXHeIhA==}
-    engines: {node: '>=18'}
-
-  '@sentry/browser@9.19.0':
-    resolution: {integrity: sha512-efKfPQ0yQkdIkC7qJ5TIHxnecLNENGUYl1YD/TC8yyzW2JRf/3OYo5yg1hY2rhsP5RwQShXlT7uA03ABVIkA4A==}
-    engines: {node: '>=18'}
-
-  '@sentry/core@9.19.0':
-    resolution: {integrity: sha512-I41rKpMJHHZb0z0Nja+Lxto6IkEEmX3uWjnECypF8Z1HIjeJB0+PXl8p/7TeaKYqw2J2GYcRTg7jQZDmvKle1w==}
-    engines: {node: '>=18'}
-
-  '@sentry/react@9.19.0':
-    resolution: {integrity: sha512-tHuzPVbqKsONlFQsy7FqqGjBaujQoLRIDBLlPPMNoiGvP3rodBl6t1v5zoNAq4m47i3MhvpLEYf6C00j1w5UMQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: ^16.14.0 || 17.x || 18.x || 19.x
 
   '@tabler/icons-react@3.30.0':
     resolution: {integrity: sha512-9KZ9D1UNAyjlLkkYp2HBPHdf6lAJ2aelDqh8YYAnnmLF3xwprWKxxW8+zw5jlI0IwdfN4XFFuzqePkaw+DpIOg==}
@@ -1701,9 +1668,6 @@ packages:
 
   highlightjs-vue@1.0.0:
     resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
-
-  hoist-non-react-statics@3.3.2:
-    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
   hookified@1.7.0:
     resolution: {integrity: sha512-XQdMjqC1AyeOzfs+17cnIk7Wdfu1hh2JtcyNfBf5u9jHrT3iZUlGHxLTntFBuk5lwkqJ6l3+daeQdHK5yByHVA==}
@@ -3518,41 +3482,6 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.44.0':
     optional: true
 
-  '@sentry-internal/browser-utils@9.19.0':
-    dependencies:
-      '@sentry/core': 9.19.0
-
-  '@sentry-internal/feedback@9.19.0':
-    dependencies:
-      '@sentry/core': 9.19.0
-
-  '@sentry-internal/replay-canvas@9.19.0':
-    dependencies:
-      '@sentry-internal/replay': 9.19.0
-      '@sentry/core': 9.19.0
-
-  '@sentry-internal/replay@9.19.0':
-    dependencies:
-      '@sentry-internal/browser-utils': 9.19.0
-      '@sentry/core': 9.19.0
-
-  '@sentry/browser@9.19.0':
-    dependencies:
-      '@sentry-internal/browser-utils': 9.19.0
-      '@sentry-internal/feedback': 9.19.0
-      '@sentry-internal/replay': 9.19.0
-      '@sentry-internal/replay-canvas': 9.19.0
-      '@sentry/core': 9.19.0
-
-  '@sentry/core@9.19.0': {}
-
-  '@sentry/react@9.19.0(react@18.3.1)':
-    dependencies:
-      '@sentry/browser': 9.19.0
-      '@sentry/core': 9.19.0
-      hoist-non-react-statics: 3.3.2
-      react: 18.3.1
-
   '@tabler/icons-react@3.30.0(react@18.3.1)':
     dependencies:
       '@tabler/icons': 3.30.0
@@ -4606,10 +4535,6 @@ snapshots:
   highlight.js@10.7.3: {}
 
   highlightjs-vue@1.0.0: {}
-
-  hoist-non-react-statics@3.3.2:
-    dependencies:
-      react-is: 16.13.1
 
   hookified@1.7.0: {}
 
