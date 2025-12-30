@@ -11,6 +11,6 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @ToString
 @EqualsAndHashCode
-public class PartyCreatedBody {
+public class PartyCodeBody {
     private final String code;
 }

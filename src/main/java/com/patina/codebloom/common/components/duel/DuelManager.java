@@ -193,4 +193,14 @@ public class DuelManager {
             throw new DuelException(e);
         }
     }
+
+    public Lobby getLobbyByUserId(String userId) throws DuelException {
+        var lobby = lobbyRepository
+                .findAvailableLobbyByLobbyPlayerPlayerId(userId)
+                .or(() -> lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(userId))
+                .orElseThrow(
+                        () -> new DuelException(HttpStatus.NOT_FOUND, "No duel or party found for the given player."));
+
+        return lobby;
+    }
 }
