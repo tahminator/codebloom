@@ -53,13 +53,24 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    @Order(2)
+    SecurityFilterChain embedSecurity(HttpSecurity http) throws Exception {
+        http.securityMatcher("/embed/potd", "/embed/leaderboard")
+                .headers(headers -> headers.frameOptions(f -> f.sameOrigin())
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("frame-ancestors *")))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+        return http.build();
+    }
+
     /**
      * The authorization endpoint is used to get redirected to the OAuth login page. The redirection endpoint is the
      * callback endpoint on our server that then handles the authentication logic. This handles all other requests with
      * OAuth.
      */
     @Bean
-    @Order(2)
+    @Order(3)
     public SecurityFilterChain oauthSecurityFilterChain(final HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
