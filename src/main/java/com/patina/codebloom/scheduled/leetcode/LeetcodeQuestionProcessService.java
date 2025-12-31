@@ -31,6 +31,7 @@ public class LeetcodeQuestionProcessService {
     private static final int MAX_JOBS_PER_RUN = 10;
     private static final long REQUESTS_OVER_TIME = 1L;
     private static final long MILLISECONDS_TO_WAIT = 100L;
+    private static final int MAX_ATTEMPTS = 3;
 
     private final JobRepository jobRepository;
     private final LeetcodeClient leetcodeClient;
@@ -117,8 +118,14 @@ public class LeetcodeQuestionProcessService {
      * will fetch the question from our backend first, then use the leetcode ID to get submission details.
      */
     private void fetchAndUpdate(final Job job) {
-        log.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
+        if (job.getAttempts() >= MAX_ATTEMPTS) {
+            log.warn("Job {} reached max attempts. Marking as completed.", job.getId());
+            job.setStatus(JobStatus.COMPLETE);
+            return;
+        }
 
+        log.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
+        job.setAttempts(job.getAttempts() + 1);
         job.setStatus(JobStatus.PROCESSING);
         job.setProcessedAt(StandardizedOffsetDateTime.now());
         boolean success = jobRepository.updateJob(job);

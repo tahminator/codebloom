@@ -36,4 +36,7 @@ public class Job {
 
     @NotNullColumn
     private String questionId;
+
+    @NotNullColumn
+    private Integer attempts;
 }

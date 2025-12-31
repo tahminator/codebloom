@@ -31,6 +31,7 @@ public class JobSqlRepository implements JobRepository {
                 .nextAttemptAt(resultSet.getObject("nextAttemptAt", OffsetDateTime.class))
                 .status(JobStatus.valueOf(resultSet.getString("status")))
                 .questionId(resultSet.getString("questionId"))
+                .attempts(resultSet.getInt("attempts"))
                 .build();
     }
 
@@ -74,7 +75,8 @@ public class JobSqlRepository implements JobRepository {
                 "completedAt",
                 "nextAttemptAt",
                 status,
-                "questionId"
+                "questionId",
+                "attempts"
             FROM
                 "Job"
             WHERE
@@ -107,7 +109,8 @@ public class JobSqlRepository implements JobRepository {
                 "completedAt",
                 "nextAttemptAt",
                 status,
-                "questionId"
+                "questionId",
+                "attempts"
             FROM
                 "Job"
             WHERE
@@ -143,7 +146,8 @@ public class JobSqlRepository implements JobRepository {
                 "processedAt" = ?,
                 "completedAt" = ?,
                 "nextAttemptAt" = ?,
-                status = ?
+                status = ?,
+                "attempts" = ?
             WHERE
                 id = ?
             """;
@@ -154,7 +158,8 @@ public class JobSqlRepository implements JobRepository {
             stmt.setObject(2, job.getCompletedAt());
             stmt.setObject(3, job.getNextAttemptAt());
             stmt.setObject(4, job.getStatus().name(), java.sql.Types.OTHER);
-            stmt.setObject(5, UUID.fromString(job.getId()));
+            stmt.setObject(5, job.getAttempts());
+            stmt.setObject(6, UUID.fromString(job.getId()));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;
