@@ -17,6 +17,7 @@ import SettingsPage from "@/app/settings/Settings.page";
 import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDetails.page";
 import UserSubmissionsPage from "@/app/user/[userId]/submissions/UserSubmissions.page";
 import UserProfilePage from "@/app/user/[userId]/UserProfile.page";
+import PageShell from "@/components/ui/page/PageShell";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { duelFF, schoolFF } from "@/lib/ff";
 import { createBrowserRouter } from "react-router-dom";
@@ -24,67 +25,69 @@ import { createBrowserRouter } from "react-router-dom";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootPage />,
+    element: <PageShell children={<RootPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <PageShell children={<LoginPage />} hideHeader hideFooter />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/dashboard",
-    element: <DashboardPage />,
+    element: <PageShell children={<DashboardPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/leaderboard",
-    element: <LeaderboardPage />,
+    element: <PageShell children={<LeaderboardPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/leaderboard/all",
-    element: <AllLeaderboardsPage />,
+    element: <PageShell children={<AllLeaderboardsPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/leaderboard/:leaderboardId",
-    element: <LeaderboardWithIdPage />,
+    element: <PageShell children={<LeaderboardWithIdPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/onboarding",
-    element: <Onboarding />,
+    element: <PageShell children={<Onboarding />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/submission/:submissionId",
-    element: <SubmissionDetailsPage />,
+    element: <PageShell children={<SubmissionDetailsPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/user/:userId",
-    element: <UserProfilePage />,
+    element: <PageShell children={<UserProfilePage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/user/:userId/submissions",
-    element: <UserSubmissionsPage />,
+    element: <PageShell children={<UserSubmissionsPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/embed/leaderboard",
-    element: <LeaderboardEmbed />,
+    element: (
+      <PageShell children={<LeaderboardEmbed />} hideHeader hideFooter />
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/embed/potd",
-    element: <PotdEmbed />,
+    element: <PageShell children={<PotdEmbed />} hideHeader hideFooter />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/admin",
-    element: <AdminPage />,
+    element: <PageShell children={<AdminPage />} />,
     errorElement: <ErrorPage />,
   },
   {
@@ -97,29 +100,29 @@ export const router = createBrowserRouter([
             "Sorry, this is not available right now. Please try again later."
           }
         />
-      : <SettingsPage />,
+      : <PageShell children={<SettingsPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/privacy",
-    element: <PolicyPage />,
+    element: <PageShell children={<PolicyPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/club/:clubSlug?",
-    element: <ClubSignUp />,
+    element: <PageShell children={<ClubSignUp />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/privacy",
-    element: <PolicyPage />,
+    element: <PageShell children={<PolicyPage />} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/duel/create",
     element:
       duelFF ?
-        <PartyCreationPage />
+        <PageShell children={<PartyCreationPage />} />
       : <ToastWithRedirect
           to={"/"}
           message={
@@ -132,7 +135,7 @@ export const router = createBrowserRouter([
     path: "/duel/:lobbyCode",
     element:
       duelFF ?
-        <DuelPage />
+        <PageShell children={<DuelPage />} />
       : <ToastWithRedirect
           to={"/"}
           message={

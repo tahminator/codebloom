@@ -1,5 +1,3 @@
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import { Text, Title, Container, Stack, Anchor } from "@mantine/core";
@@ -13,7 +11,6 @@ export default function PolicyPage() {
       <DocumentDescription
         description={`CodeBloom - View our Privacy Policy`}
       />
-      <Header />
       <Container
         size="sm"
         mt="xl"
@@ -99,7 +96,6 @@ export default function PolicyPage() {
           </section>
         </Stack>
       </Container>
-      <Footer />
     </>
   );
 }

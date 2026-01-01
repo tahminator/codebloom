@@ -1,7 +1,6 @@
-import PageShell from "@/components/ui/page/PageShell";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
-import { Flex, Loader } from "@mantine/core";
+import { Box, Flex, Loader } from "@mantine/core";
 import { useParams } from "react-router";
 
 export default function DuelPage() {
@@ -10,17 +9,15 @@ export default function DuelPage() {
 
   if (status === "pending") {
     return (
-      <PageShell>
-        <Flex
-          direction={"column"}
-          align={"center"}
-          justify={"center"}
-          w={"98vw"}
-          h={"90vh"}
-        >
-          <Loader />
-        </Flex>
-      </PageShell>
+      <Flex
+        direction={"column"}
+        align={"center"}
+        justify={"center"}
+        w={"98vw"}
+        h={"90vh"}
+      >
+        <Loader />
+      </Flex>
     );
   }
 
@@ -49,5 +46,5 @@ export default function DuelPage() {
     );
   }
 
-  return <PageShell>{lobbyCode}</PageShell>;
+  return <Box>{lobbyCode}</Box>;
 }

@@ -1,6 +1,4 @@
 import UsernameForm from "@/app/onboarding/_components/UsernameForm";
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -38,11 +36,5 @@ export default function Onboarding() {
     );
   }
 
-  return (
-    <>
-      <Header />
-      <UsernameForm />
-      <Footer />
-    </>
-  );
+  return <UsernameForm />;
 }

@@ -1,5 +1,3 @@
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
@@ -50,7 +48,6 @@ export default function SettingsPage() {
 
   return (
     <>
-      <Header />
       <DocumentTitle title={`CodeBloom - Settings`} />
       <DocumentDescription description={`CodeBloom - Settings`} />
       <Box mih={"90vh"} p={"lg"}>
@@ -66,7 +63,6 @@ export default function SettingsPage() {
           </Stack>
         </Box>
       </Box>
-      <Footer />
     </>
   );
 }

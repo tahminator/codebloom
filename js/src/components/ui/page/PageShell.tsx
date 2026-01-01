@@ -2,15 +2,30 @@ import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import { Flex, Box } from "@mantine/core";
 import { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 
-export default function PageShell({ children }: { children: ReactNode }) {
+import BannerParent from "../banner/BannerParent";
+
+export default function PageShell({
+  children,
+  hideHeader = false,
+  hideFooter = false,
+}: {
+  children: ReactNode;
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+}) {
+  const location = useLocation();
+  const embedPath = location.pathname.startsWith("/embed");
+
   return (
     <Flex direction={"column"} mih={"100vh"}>
-      <Header />
+      {!embedPath && <BannerParent />}
+      {!hideHeader && <Header />}
       <Box p={"lg"} flex={1}>
         {children}
       </Box>
-      <Footer />
+      {!hideFooter && <Footer />}
     </Flex>
   );
 }
