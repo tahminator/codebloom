@@ -46,6 +46,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 .shouldExpireBy(Optional.ofNullable(resultSet.getTimestamp("shouldExpireBy"))
                         .map(Timestamp::toLocalDateTime)
                         .orElse(null))
+                .syntaxHighlightingLanguage(resultSet.getString("syntaxHighlightingLanguage"))
                 .build();
     }
 
@@ -106,7 +107,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 name,
                 "createdAt",
                 "deletedAt",
-                "shouldExpireBy"
+                "shouldExpireBy",
+                "syntaxHighlightingLanguage"
             FROM "Leaderboard"
             WHERE
                 "deletedAt" IS NULL
@@ -136,7 +138,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 name,
                 "createdAt",
                 "deletedAt",
-                "shouldExpireBy"
+                "shouldExpireBy",
+                "syntaxHighlightingLanguage"
             FROM "Leaderboard"
             WHERE
                 id = :id
@@ -730,7 +733,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             SET
                 name = :name,
                 "createdAt" = :createdAt,
-                "deletedAt" = :deletedAt
+                "deletedAt" = :deletedAt,
+                "syntaxHighlightingLanguage" = :syntaxHighlightingLanguage
             WHERE id = :id
             """;
 
@@ -740,6 +744,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setObject("createdAt", leaderboard.getCreatedAt());
             stmt.setObject("deletedAt", leaderboard.getDeletedAt());
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
+            stmt.setString("syntaxHighlightingLanguage", leaderboard.getSyntaxHighlightingLanguage());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -966,7 +971,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     name,
                     "createdAt",
                     "deletedAt",
-                    "shouldExpireBy"
+                    "shouldExpireBy",
+                    "syntaxHighlightingLanguage"
                 FROM "Leaderboard"
                 WHERE name ILIKE :searchQuery
                 ORDER BY
