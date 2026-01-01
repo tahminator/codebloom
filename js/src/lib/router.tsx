@@ -25,69 +25,119 @@ import { createBrowserRouter } from "react-router-dom";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <PageShell children={<RootPage />} />,
+    element: (
+      <PageShell>
+        <RootPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/login",
-    element: <PageShell children={<LoginPage />} hideHeader hideFooter />,
+    element: (
+      <PageShell hideHeader hideFooter>
+        <LoginPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/dashboard",
-    element: <PageShell children={<DashboardPage />} />,
+    element: (
+      <PageShell>
+        <DashboardPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/leaderboard",
-    element: <PageShell children={<LeaderboardPage />} />,
+    element: (
+      <PageShell>
+        <LeaderboardPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/leaderboard/all",
-    element: <PageShell children={<AllLeaderboardsPage />} />,
+    element: (
+      <PageShell>
+        <AllLeaderboardsPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/leaderboard/:leaderboardId",
-    element: <PageShell children={<LeaderboardWithIdPage />} />,
+    element: (
+      <PageShell>
+        <LeaderboardWithIdPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/onboarding",
-    element: <PageShell children={<Onboarding />} />,
+    element: (
+      <PageShell>
+        <Onboarding />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/submission/:submissionId",
-    element: <PageShell children={<SubmissionDetailsPage />} />,
+    element: (
+      <PageShell>
+        <SubmissionDetailsPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/user/:userId",
-    element: <PageShell children={<UserProfilePage />} />,
+    element: (
+      <PageShell>
+        <UserProfilePage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/user/:userId/submissions",
-    element: <PageShell children={<UserSubmissionsPage />} />,
+    element: (
+      <PageShell>
+        <UserSubmissionsPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/embed/leaderboard",
     element: (
-      <PageShell children={<LeaderboardEmbed />} hideHeader hideFooter />
+      <PageShell hideHeader hideFooter>
+        <LeaderboardEmbed />
+      </PageShell>
     ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/embed/potd",
-    element: <PageShell children={<PotdEmbed />} hideHeader hideFooter />,
+    element: (
+      <PageShell hideHeader hideFooter>
+        <PotdEmbed />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/admin",
-    element: <PageShell children={<AdminPage />} />,
+    element: (
+      <PageShell>
+        <AdminPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
@@ -100,29 +150,36 @@ export const router = createBrowserRouter([
             "Sorry, this is not available right now. Please try again later."
           }
         />
-      : <PageShell children={<SettingsPage />} />,
+      : <PageShell>
+          <SettingsPage />
+        </PageShell>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/privacy",
-    element: <PageShell children={<PolicyPage />} />,
+    element: (
+      <PageShell>
+        <PolicyPage />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/club/:clubSlug?",
-    element: <PageShell children={<ClubSignUp />} />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/privacy",
-    element: <PageShell children={<PolicyPage />} />,
+    element: (
+      <PageShell>
+        <ClubSignUp />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
   {
     path: "/duel/create",
     element:
       duelFF ?
-        <PageShell children={<PartyCreationPage />} />
+        <PageShell>
+          <PartyCreationPage />
+        </PageShell>
       : <ToastWithRedirect
           to={"/"}
           message={
@@ -135,7 +192,9 @@ export const router = createBrowserRouter([
     path: "/duel/:lobbyCode",
     element:
       duelFF ?
-        <PageShell children={<DuelPage />} />
+        <PageShell>
+          <DuelPage />
+        </PageShell>
       : <ToastWithRedirect
           to={"/"}
           message={
