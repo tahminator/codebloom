@@ -82,6 +82,7 @@ public interface LeaderboardRepository {
      *       <li>name
      *       <li>createdAt
      *       <li>deletedAt
+     *       <li>syntaxHighlightingLanguage
      *     </ul>
      */
     boolean updateLeaderboard(Leaderboard leaderboard);

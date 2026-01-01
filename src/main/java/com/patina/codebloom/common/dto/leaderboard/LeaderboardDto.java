@@ -31,6 +31,9 @@ public class LeaderboardDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private LocalDateTime shouldExpireBy;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
+    private String syntaxHighlightingLanguage;
+
     public static LeaderboardDto fromLeaderboard(final Leaderboard leaderboard) {
         return LeaderboardDto.builder()
                 .id(leaderboard.getId())
@@ -38,6 +41,7 @@ public class LeaderboardDto {
                 .createdAt(leaderboard.getCreatedAt())
                 .deletedAt(leaderboard.getDeletedAt())
                 .shouldExpireBy(leaderboard.getShouldExpireBy())
+                .syntaxHighlightingLanguage(leaderboard.getSyntaxHighlightingLanguage())
                 .build();
     }
 }

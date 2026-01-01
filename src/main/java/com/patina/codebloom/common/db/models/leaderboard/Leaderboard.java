@@ -30,4 +30,7 @@ public class Leaderboard {
 
     @NullColumn
     private LocalDateTime shouldExpireBy;
+
+    @NullColumn
+    private String syntaxHighlightingLanguage;
 }
