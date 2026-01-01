@@ -1,5 +1,3 @@
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
@@ -106,7 +104,6 @@ export default function SubmissionDetailsContent({
       <DocumentDescription
         description={`CodeBloom - View ${discordName}'s solution for ${questionTitle}`}
       />
-      <Header />
       <Box p={"lg"}>
         <Center>
           <Title mt="lg" mb="lg" order={3}>
@@ -232,7 +229,6 @@ export default function SubmissionDetailsContent({
           </Card>
         </div>
       </Box>
-      <Footer />
     </>
   );
 }

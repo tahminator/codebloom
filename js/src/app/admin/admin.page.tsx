@@ -1,5 +1,3 @@
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast.tsx";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect.tsx";
 import { useAuthQuery } from "@/lib/api/queries/auth/index.ts";
@@ -32,11 +30,5 @@ export default function AdminPage() {
       />
     );
   }
-  return (
-    <>
-      <Header />
-      <AdminIndex />
-      <Footer />
-    </>
-  );
+  return <AdminIndex />;
 }

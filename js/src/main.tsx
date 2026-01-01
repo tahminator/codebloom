@@ -1,4 +1,3 @@
-import BannerParent from "@/components/ui/banner/BannerParent";
 import ReactQueryProvider from "@/lib/queryProvider";
 import "@mantine/core/styles.css";
 import "@/patches";
@@ -27,7 +26,6 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReactQueryProvider>
       <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
-        <BannerParent />
         <RouterProvider router={router} />
         <Notifications />
       </MantineProvider>

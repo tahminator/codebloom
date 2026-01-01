@@ -3,8 +3,6 @@ import OnboardingLeetcodeUser from "@/app/dashboard/_components/OnboardingLeetco
 import ProblemOfTheDay from "@/app/dashboard/_components/ProblemOfTheDay/ProblemOfTheDay";
 import RecentSubmissions from "@/app/dashboard/_components/RecentSubmissions/RecentSubmissions";
 import RefreshSubmissions from "@/app/dashboard/_components/RefreshSubmissions";
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
@@ -54,7 +52,6 @@ export default function DashboardPage() {
       <DocumentDescription
         description={`CodeBloom - Refresh your latest submissions`}
       />
-      <Header />
       <Flex
         p={"32px"}
         direction={"column"}
@@ -87,7 +84,6 @@ export default function DashboardPage() {
           </Flex>
         </Flex>
       </Flex>
-      <Footer />
     </>
   );
 }

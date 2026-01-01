@@ -1,4 +1,3 @@
-import Header from "@/components/ui/header/Header";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Center, Button, Flex, Box, Text } from "@mantine/core";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -18,7 +17,6 @@ export default function UserProfilePage() {
 
   return (
     <>
-      <Header />
       <Center mt={"xs"} pt={20}>
         <Button
           variant={"outline"}

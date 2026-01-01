@@ -1,5 +1,3 @@
-import { Footer } from "@/components/ui/footer/Footer";
-import Header from "@/components/ui/header/Header";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
@@ -41,7 +39,6 @@ export default function ClubSignupPage() {
         flexDirection: "column",
       }}
     >
-      <Header />
       <Box>
         <ClubSignUpForm
           userId={data.user.id}
@@ -49,7 +46,6 @@ export default function ClubSignupPage() {
           clubSlug={clubSlug}
         />
       </Box>
-      <Footer />
     </Box>
   );
 }

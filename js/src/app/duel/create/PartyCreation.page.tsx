@@ -1,24 +1,21 @@
-import PageShell from "@/components/ui/page/PageShell";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
-import { Flex, Loader } from "@mantine/core";
+import { Box, Flex, Loader } from "@mantine/core";
 
 export default function PartyCreationPage() {
   const { data, status } = useAuthQuery();
 
   if (status === "pending") {
     return (
-      <PageShell>
-        <Flex
-          direction={"column"}
-          align={"center"}
-          justify={"center"}
-          w={"98vw"}
-          h={"90vh"}
-        >
-          <Loader />
-        </Flex>
-      </PageShell>
+      <Flex
+        direction={"column"}
+        align={"center"}
+        justify={"center"}
+        w={"98vw"}
+        h={"90vh"}
+      >
+        <Loader />
+      </Flex>
     );
   }
 
@@ -47,5 +44,5 @@ export default function PartyCreationPage() {
     );
   }
 
-  return <PageShell>Create party</PageShell>;
+  return <Box>Create party</Box>;
 }
