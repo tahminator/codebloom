@@ -10,7 +10,11 @@ export default function LeaderboardPage() {
       <Header />
       <div className="grow">
         <Box p={"lg"}>
-          <LeaderboardMetadata showClock showAllLeaderboardButton />
+          <LeaderboardMetadata
+            showClock
+            showAllLeaderboardButton
+            syntaxStripSize={"md"}
+          />
           <Leaderboard />
         </Box>
       </div>

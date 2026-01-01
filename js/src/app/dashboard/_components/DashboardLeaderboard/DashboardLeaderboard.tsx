@@ -119,7 +119,7 @@ export default function LeaderboardForDashboard({
         justify={"space-between"}
         w={"100%"}
       >
-        <LeaderboardMetadata />
+        <LeaderboardMetadata syntaxStripSize={"md"} />
         <Button
           variant={"light"}
           component={Link}
