@@ -80,7 +80,7 @@ export default function AboutUs() {
           w={"50%"}
         >
           <Box pos={"relative"} p={"xs"}>
-            <LeaderboardMetadata showClock />
+            <LeaderboardMetadata showClock syntaxStripSize={"md"} />
             <MiniLeaderboard />
           </Box>
         </Flex>
@@ -123,7 +123,7 @@ export default function AboutUs() {
         </Stack>
       </Flex>
       <Container hiddenFrom={"lg"}>
-        <LeaderboardMetadata showClock />
+        <LeaderboardMetadata showClock syntaxStripSize={"lg"} />
         <MiniLeaderboardMobile />
       </Container>
       <div ref={targetSectionRef} style={{ padding: "2rem" }}>

@@ -1,4 +1,7 @@
 import PrettyCounter from "@/components/ui/pretty-counter/PrettyCounter";
+import SyntaxStrip, {
+  SyntaxStripSize,
+} from "@/components/ui/syntax/SyntaxStrip";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import { useLeaderboardMetadataByIdQuery } from "@/lib/api/queries/leaderboard";
@@ -10,12 +13,13 @@ import { Link } from "react-router-dom";
 type LeaderboardWithIdMetadataOptions = {
   showClock?: boolean;
   leaderboardId: string;
+  syntaxStripSize?: SyntaxStripSize;
 };
 
 export default function LeaderboardMetadataWithId(
   props: LeaderboardWithIdMetadataOptions,
 ) {
-  const { showClock = false, leaderboardId } = props;
+  const { showClock = false, leaderboardId, syntaxStripSize } = props;
 
   const { data, status } = useLeaderboardMetadataByIdQuery(leaderboardId);
   const [countdown, reset] = useCountdown(-10);
@@ -87,8 +91,14 @@ export default function LeaderboardMetadataWithId(
       <DocumentDescription
         description={`CodeBloom - View ${leaderboardData.name}'s leaderboard`}
       />
-      <Title order={3} ta={"center"} mb={"xs"}>
-        {leaderboardData.name}
+      <Title order={4} ta={"center"} mb={"xs"}>
+        {leaderboardData.syntaxHighlightingLanguage ?
+          <SyntaxStrip
+            size={syntaxStripSize}
+            name={leaderboardData.name}
+            language={leaderboardData.syntaxHighlightingLanguage}
+          />
+        : leaderboardData.name}
       </Title>
       <Title order={6} ta={"center"} mb={"xs"}>
         {showClock && leaderboardData.shouldExpireBy && countdown > 0 && (
