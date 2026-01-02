@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -365,5 +366,57 @@ public class DuelController {
                 .body(ApiResponder.success(
                         "Code found!",
                         PartyCodeBody.builder().code(lobby.getJoinCode()).build()));
+    }
+
+    @Operation(summary = "Process solved questions", description = """
+        Process solved questions inside of a duel for a given user, if the given conditions are met.
+    """)
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Endpoint is currently non-functional",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "The user is not currently in a duel.",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "200",
+                        description =
+                                "The user's solved questions were processed (could still mean no new points were awarded)"),
+            })
+    @PostMapping("/process")
+    public ResponseEntity<ApiResponder<Empty>> processSolvedProblemsInDuel(
+            @Protected final AuthenticationObject authenticationObject) {
+        if (env.isProd()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
+        }
+
+        var user = authenticationObject.getUser();
+
+        Lobby duel;
+        int questionsProcessed;
+        try {
+            duel = duelManager.getDuelByUserId(user.getId());
+            questionsProcessed = duelManager.processSubmissions(user, duel);
+        } catch (DuelException e) {
+            var httpStatus = e.getHttpStatus().orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+
+            throw new ResponseStatusException(httpStatus, e.getMessage());
+        }
+
+        try {
+            lobbyNotifyHandler.handle(duel.getId());
+        } catch (IOException e) {
+            log.error("Failed to trigger lobby notify handler", e);
+        }
+
+        return ResponseEntity.ok()
+                .body(ApiResponder.success(questionsProcessed + " questions successfully processed!", Empty.of()));
     }
 }
