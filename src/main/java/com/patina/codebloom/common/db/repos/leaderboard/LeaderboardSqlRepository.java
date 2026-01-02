@@ -77,9 +77,9 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     public void addNewLeaderboard(final Leaderboard leaderboard) {
         String sql = """
             INSERT INTO "Leaderboard"
-                (id, name)
+                (id, name, "shouldExpireBy", "syntaxHighlightingLanguage")
             VALUES
-                (:id, :name)
+                (:id, :name, :shouldExpireBy, :syntaxHighlightingLanguage)
             RETURNING
                 "createdAt"
             """;
@@ -88,6 +88,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
             stmt.setString("name", leaderboard.getName());
+            stmt.setObject("shouldExpireBy", leaderboard.getShouldExpireBy());
+            stmt.setString("syntaxHighlightingLanguage", leaderboard.getSyntaxHighlightingLanguage());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();

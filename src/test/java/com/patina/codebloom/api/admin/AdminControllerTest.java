@@ -1,8 +1,7 @@
 package com.patina.codebloom.api.admin;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.patina.codebloom.api.admin.body.NewLeaderboardBody;
@@ -17,6 +16,7 @@ import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.security.Protector;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -203,6 +203,123 @@ public class AdminControllerTest {
         verify(leaderboardRepository).getRecentLeaderboardMetadata();
         verify(leaderboardRepository)
                 .addNewLeaderboard(argThat(leaderboard -> "Challenge 2024".equals(leaderboard.getName())));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+    }
+
+    @Test
+    void testCreateLeaderboardWithShouldExpireBy() {
+        OffsetDateTime futureDate = OffsetDateTime.now().plusDays(30);
+
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                .name("Challenge 2024")
+                .shouldExpireBy(futureDate)
+                .build();
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository)
+                .addNewLeaderboard(argThat(leaderboard -> leaderboard.getShouldExpireBy() != null));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+    }
+
+    @Test
+    void testCreateLeaderboardWithPastShouldExpireBy() {
+        OffsetDateTime pastDate = OffsetDateTime.now().minusDays(30);
+
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                .name("Challenge 2024")
+                .shouldExpireBy(pastDate)
+                .build();
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals(
+                "The expiration date must be in the future.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
+    }
+
+    @Test
+    void testCreateLeaderboardWithSyntaxHighlightingLanguage() {
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                .name("Challenge 2024")
+                .syntaxHighlightingLanguage("python")
+                .build();
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository).addNewLeaderboard(argThat(leaderboard -> "python"
+                .equals(leaderboard.getSyntaxHighlightingLanguage())));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+    }
+
+    @Test
+    void testCreateLeaderboardWithAllOptionalFields() {
+        OffsetDateTime futureDate = OffsetDateTime.now().plusDays(30);
+
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                .name("Challenge 2024")
+                .shouldExpireBy(futureDate)
+                .syntaxHighlightingLanguage("python")
+                .build();
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository)
+                .addNewLeaderboard(argThat(leaderboard -> leaderboard.getShouldExpireBy() != null
+                        && "python".equals(leaderboard.getSyntaxHighlightingLanguage())));
+        verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+    }
+
+    @Test
+    void testCreateLeaderboardWithNullOptionalFields() {
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                .name("Challenge 2024")
+                .shouldExpireBy(null)
+                .syntaxHighlightingLanguage(null)
+                .build();
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository)
+                .addNewLeaderboard(argThat(leaderboard -> leaderboard.getShouldExpireBy() == null
+                        && leaderboard.getSyntaxHighlightingLanguage() == null));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
     }
 }
