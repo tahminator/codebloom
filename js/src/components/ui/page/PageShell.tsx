@@ -22,7 +22,7 @@ export default function PageShell({
     <Flex direction={"column"} mih={"100vh"}>
       {!embedPath && <BannerParent />}
       {!hideHeader && <Header />}
-      <Box p={"lg"} flex={1}>
+      <Box p={embedPath ? undefined : "lg"} flex={1}>
         {children}
       </Box>
       {!hideFooter && <Footer />}
