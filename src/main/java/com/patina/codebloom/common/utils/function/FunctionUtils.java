@@ -3,7 +3,9 @@ package com.patina.codebloom.common.utils.function;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class FunctionUtils {
 
     /**
@@ -66,5 +68,14 @@ public class FunctionUtils {
             res = fn.get();
         }
         return res;
+    }
+
+    /** Swallows exceptions and logs them without breaking control flow. */
+    public static void swallow(ThrowableProcedure procedure) {
+        try {
+            procedure.run();
+        } catch (Exception e) {
+            log.error("Exception swallowed", e);
+        }
     }
 }
