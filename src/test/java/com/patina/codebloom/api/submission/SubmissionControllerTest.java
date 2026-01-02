@@ -26,6 +26,8 @@ import com.patina.codebloom.common.submissions.SubmissionsHandler;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -265,6 +267,7 @@ public class SubmissionControllerTest {
     void testGetSubmissionBySubmissionIdSuccess() {
         QuestionWithUser question = mock(QuestionWithUser.class);
 
+        when(question.getCreatedAt()).thenReturn(LocalDateTime.now());
         when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
 
         try (MockedStatic<FakeLag> fakeLag = mockStatic(FakeLag.class)) {
@@ -275,8 +278,7 @@ public class SubmissionControllerTest {
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertTrue(response.getBody().isSuccess());
-            assertEquals(
-                    "Problem of the day has been fetched!", response.getBody().getMessage());
+            assertEquals("Submission has been fetched!", response.getBody().getMessage());
             assertNotNull(response.getBody().getPayload());
         }
 
@@ -292,5 +294,105 @@ public class SubmissionControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertFalse(response.getBody().isSuccess());
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdWithValidDateRange() {
+        QuestionWithUser question = mock(QuestionWithUser.class);
+        LocalDateTime submissionTime = LocalDateTime.of(2025, 6, 15, 12, 0);
+        OffsetDateTime startDate = OffsetDateTime.of(2025, 6, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+        OffsetDateTime endDate = OffsetDateTime.of(2025, 6, 30, 23, 59, 59, 0, ZoneOffset.UTC);
+
+        when(question.getCreatedAt()).thenReturn(submissionTime);
+        when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
+
+        ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
+                submissionController.getSubmissionBySubmissionId(request, "abc123", startDate, endDate);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().isSuccess());
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdBeforeStartDate() {
+        QuestionWithUser question = mock(QuestionWithUser.class);
+        LocalDateTime submissionTime = LocalDateTime.of(2025, 5, 15, 12, 0);
+        OffsetDateTime startDate = OffsetDateTime.of(2025, 6, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+
+        when(question.getCreatedAt()).thenReturn(submissionTime);
+        when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
+
+        ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
+                submissionController.getSubmissionBySubmissionId(request, "abc123", startDate, null);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals(
+                "Submission is outside the specified date range.",
+                response.getBody().getMessage());
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdAfterEndDate() {
+        QuestionWithUser question = mock(QuestionWithUser.class);
+        LocalDateTime submissionTime = LocalDateTime.of(2025, 7, 15, 12, 0);
+        OffsetDateTime endDate = OffsetDateTime.of(2025, 6, 30, 23, 59, 59, 0, ZoneOffset.UTC);
+
+        when(question.getCreatedAt()).thenReturn(submissionTime);
+        when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
+
+        ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
+                submissionController.getSubmissionBySubmissionId(request, "abc123", null, endDate);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals(
+                "Submission is outside the specified date range.",
+                response.getBody().getMessage());
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdStartDateAfterEndDate() {
+        OffsetDateTime startDate = OffsetDateTime.of(2025, 7, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+        OffsetDateTime endDate = OffsetDateTime.of(2025, 6, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+
+        ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
+                submissionController.getSubmissionBySubmissionId(request, "abc123", startDate, endDate);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals("startDate cannot be after endDate.", response.getBody().getMessage());
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdWithOnlyStartDate() {
+        QuestionWithUser question = mock(QuestionWithUser.class);
+        LocalDateTime submissionTime = LocalDateTime.of(2025, 6, 15, 12, 0);
+        OffsetDateTime startDate = OffsetDateTime.of(2025, 6, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+
+        when(question.getCreatedAt()).thenReturn(submissionTime);
+        when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
+
+        ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
+                submissionController.getSubmissionBySubmissionId(request, "abc123", startDate, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().isSuccess());
+    }
+
+    @Test
+    void testGetSubmissionBySubmissionIdWithOnlyEndDate() {
+        QuestionWithUser question = mock(QuestionWithUser.class);
+        LocalDateTime submissionTime = LocalDateTime.of(2025, 6, 15, 12, 0);
+        OffsetDateTime endDate = OffsetDateTime.of(2025, 6, 30, 23, 59, 59, 0, ZoneOffset.UTC);
+
+        when(question.getCreatedAt()).thenReturn(submissionTime);
+        when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
+
+        ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
+                submissionController.getSubmissionBySubmissionId(request, "abc123", null, endDate);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().isSuccess());
     }
 }

@@ -26,6 +26,7 @@ import com.patina.codebloom.common.simpleredis.SimpleRedis;
 import com.patina.codebloom.common.submissions.SubmissionsHandler;
 import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 import com.patina.codebloom.common.time.StandardizedLocalDateTime;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.log.LogExecutionTime;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,10 +38,8 @@ import jakarta.validation.Valid;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -340,10 +339,8 @@ public class SubmissionController {
     public ResponseEntity<ApiResponder<QuestionWithUserDto>> getSubmissionBySubmissionId(
             final HttpServletRequest request,
             @PathVariable final String submissionId,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS Z")
-                    final OffsetDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS Z")
-                    final OffsetDateTime endDate) {
+            @RequestParam(required = false) final OffsetDateTime startDate,
+            @RequestParam(required = false) final OffsetDateTime endDate) {
         FakeLag.sleep(750);
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
@@ -358,14 +355,16 @@ public class SubmissionController {
                     .body(ApiResponder.failure("Sorry, submission could not be found."));
         }
 
-        OffsetDateTime createdAt = question.getCreatedAt().atOffset(ZoneOffset.UTC);
+        LocalDateTime createdAt = question.getCreatedAt();
+        OffsetDateTime normalizedStartDate = StandardizedOffsetDateTime.normalize(startDate);
+        OffsetDateTime normalizedEndDate = StandardizedOffsetDateTime.normalize(endDate);
 
-        if (startDate != null && createdAt.isBefore(startDate)) {
+        if (normalizedStartDate != null && createdAt.isBefore(normalizedStartDate.toLocalDateTime())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponder.failure("Submission is outside the specified date range."));
         }
 
-        if (endDate != null && createdAt.isAfter(endDate)) {
+        if (normalizedEndDate != null && createdAt.isAfter(normalizedEndDate.toLocalDateTime())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponder.failure("Submission is outside the specified date range."));
         }
