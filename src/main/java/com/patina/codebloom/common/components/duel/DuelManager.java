@@ -4,7 +4,9 @@ import com.patina.codebloom.common.db.models.lobby.Lobby;
 import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayerQuestion;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
+import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyQuestionRepository;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
@@ -17,7 +19,13 @@ import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.dto.question.QuestionBankDto;
 import com.patina.codebloom.common.dto.question.QuestionDto;
 import com.patina.codebloom.common.dto.user.UserDto;
+import com.patina.codebloom.common.leetcode.LeetcodeClient;
+import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.common.submissions.SubmissionsHandler;
+import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import com.patina.codebloom.common.utils.function.FunctionUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +38,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DuelManager {
 
+    private static final int MAX_LEETCODE_SUBMISSIONS = 5;
+
     private final LobbyRepository lobbyRepository;
     private final LobbyQuestionRepository lobbyQuestionRepository;
     private final LobbyPlayerRepository lobbyPlayerRepository;
@@ -37,6 +47,8 @@ public class DuelManager {
     private final QuestionRepository questionRepository;
     private final QuestionBankRepository questionBankRepository;
     private final UserRepository userRepository;
+    private final LeetcodeClient leetcodeClient;
+    private final SubmissionsHandler submissionsHandler;
 
     public DuelManager(
             final LobbyRepository lobbyRepository,
@@ -45,7 +57,9 @@ public class DuelManager {
             final LobbyPlayerQuestionRepository lobbyPlayerQuestionRepository,
             final QuestionRepository questionRepository,
             final QuestionBankRepository questionBankRepository,
-            final UserRepository userRepository) {
+            final UserRepository userRepository,
+            final ThrottledLeetcodeClient throttledLeetcodeClient,
+            final SubmissionsHandler submissionsHandler) {
         this.lobbyRepository = lobbyRepository;
         this.lobbyQuestionRepository = lobbyQuestionRepository;
         this.lobbyPlayerRepository = lobbyPlayerRepository;
@@ -53,6 +67,8 @@ public class DuelManager {
         this.questionRepository = questionRepository;
         this.questionBankRepository = questionBankRepository;
         this.userRepository = userRepository;
+        this.leetcodeClient = throttledLeetcodeClient;
+        this.submissionsHandler = submissionsHandler;
     }
 
     private Map<String, List<QuestionDto>> buildPlayerSolvedQuestionsMap(final String lobbyId) {
@@ -202,5 +218,47 @@ public class DuelManager {
                         () -> new DuelException(HttpStatus.NOT_FOUND, "No duel or party found for the given player."));
 
         return lobby;
+    }
+
+    public int processSubmission(User user) throws DuelException {
+        var lobby = lobbyRepository
+                .findActiveLobbyByLobbyPlayerPlayerId(user.getId())
+                .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "No duel found for the given player."));
+        var lobbyPlayer = lobbyPlayerRepository
+                .findValidLobbyPlayerByPlayerId(user.getId())
+                .orElseThrow(() -> new DuelException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, "A duel was found but the player instance cannot be found."));
+
+        List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobby.getId());
+
+        var solvableQuestionTitlesSet = lobbyQuestions.stream()
+                .map(LobbyQuestion::getQuestionBankId)
+                .map(questionBankRepository::getQuestionById)
+                .map(QuestionBank::getQuestionTitle)
+                .collect(Collectors.toSet());
+
+        List<LeetcodeSubmission> leetcodeSubmissions =
+                leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername(), MAX_LEETCODE_SUBMISSIONS);
+
+        var solvedLeetcodeSubmissions = leetcodeSubmissions.stream()
+                .filter(s -> solvableQuestionTitlesSet.contains(s.getTitle()))
+                .toList();
+
+        List<AcceptedSubmission> acceptedSubmissions =
+                submissionsHandler.handleSubmissions(solvedLeetcodeSubmissions, user);
+
+        List<LobbyPlayerQuestion> lobbyPlayerQuestions = acceptedSubmissions.stream()
+                .map(s -> LobbyPlayerQuestion.builder()
+                        .lobbyPlayerId(lobbyPlayer.getId())
+                        // should not be null, but let's not end up in a crashed state because of this.
+                        .questionId(Optional.ofNullable(s.questionId()))
+                        .points(Optional.ofNullable(s.points()))
+                        .build())
+                .toList();
+
+        lobbyPlayerQuestions.forEach(
+                q -> FunctionUtils.swallow(() -> lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(q)));
+
+        return lobbyPlayerQuestions.size();
     }
 }
