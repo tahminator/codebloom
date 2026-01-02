@@ -36,8 +36,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +48,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -315,12 +319,17 @@ public class SubmissionController {
         Returns the submission data from any user, as long as the user making the request is authenticated.
         This includes the scraped LeetCode description, which is HTML that has been sanitized by the server,
         so it is safe to use on the frontend.
+        Optional startDate and endDate parameters can be provided to filter the submission by createdAt date range.
         """,
             responses = {
                 @ApiResponse(responseCode = "200", description = "Question found"),
                 @ApiResponse(
+                        responseCode = "400",
+                        description = "Invalid date range (startDate is after endDate)",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
                         responseCode = "404",
-                        description = "Question not found",
+                        description = "Question not found or outside date range",
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
                 @ApiResponse(
                         responseCode = "401",
@@ -329,8 +338,18 @@ public class SubmissionController {
             })
     @GetMapping("/submission/{submissionId}")
     public ResponseEntity<ApiResponder<QuestionWithUserDto>> getSubmissionBySubmissionId(
-            final HttpServletRequest request, @PathVariable final String submissionId) {
+            final HttpServletRequest request,
+            @PathVariable final String submissionId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS Z")
+                    final OffsetDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS Z")
+                    final OffsetDateTime endDate) {
         FakeLag.sleep(750);
+
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponder.failure("startDate cannot be after endDate."));
+        }
 
         QuestionWithUser question = questionRepository.getQuestionWithUserById(submissionId);
 
@@ -339,8 +358,20 @@ public class SubmissionController {
                     .body(ApiResponder.failure("Sorry, submission could not be found."));
         }
 
+        OffsetDateTime createdAt = question.getCreatedAt().atOffset(ZoneOffset.UTC);
+
+        if (startDate != null && createdAt.isBefore(startDate)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponder.failure("Submission is outside the specified date range."));
+        }
+
+        if (endDate != null && createdAt.isAfter(endDate)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponder.failure("Submission is outside the specified date range."));
+        }
+
         return ResponseEntity.ok()
                 .body(ApiResponder.success(
-                        "Problem of the day has been fetched!", QuestionWithUserDto.fromQuestionWithUser(question)));
+                        "Submission has been fetched!", QuestionWithUserDto.fromQuestionWithUser(question)));
     }
 }

@@ -271,7 +271,7 @@ public class SubmissionControllerTest {
             fakeLag.when(() -> FakeLag.sleep(anyInt())).thenAnswer(inv -> null);
 
             ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
-                    submissionController.getSubmissionBySubmissionId(request, "abc123");
+                    submissionController.getSubmissionBySubmissionId(request, "abc123", null, null);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertTrue(response.getBody().isSuccess());
@@ -288,7 +288,7 @@ public class SubmissionControllerTest {
         when(questionRepository.getQuestionWithUserById("missing")).thenReturn(null);
 
         ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
-                submissionController.getSubmissionBySubmissionId(request, "missing");
+                submissionController.getSubmissionBySubmissionId(request, "missing", null, null);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertFalse(response.getBody().isSuccess());
