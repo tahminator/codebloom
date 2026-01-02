@@ -55,23 +55,6 @@ public class DuelManager {
         this.userRepository = userRepository;
     }
 
-    public DuelData generateDuelData(final String lobbyId) {
-        var fetchedLobby =
-                lobbyRepository.findLobbyById(lobbyId).map(LobbyDto::fromLobby).orElse(null);
-
-        List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId).stream()
-                .map(lq -> questionBankRepository.getQuestionById(lq.getQuestionBankId()))
-                .map(QuestionBankDto::fromQuestionBank)
-                .collect(Collectors.toList());
-
-        return DuelData.builder()
-                .lobby(fetchedLobby)
-                .questions(lobbyQuestions)
-                .players(buildPlayersInLobby(lobbyId))
-                .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
-                .build();
-    }
-
     private Map<String, List<QuestionDto>> buildPlayerSolvedQuestionsMap(final String lobbyId) {
         Map<String, List<QuestionDto>> playerQuestionsMap = new HashMap<>();
 
@@ -101,6 +84,23 @@ public class DuelManager {
                 .filter(Objects::nonNull)
                 .map(UserDto::fromUser)
                 .collect(Collectors.toList());
+    }
+
+    public DuelData generateDuelData(final String lobbyId) {
+        var fetchedLobby =
+                lobbyRepository.findLobbyById(lobbyId).map(LobbyDto::fromLobby).orElse(null);
+
+        List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId).stream()
+                .map(lq -> questionBankRepository.getQuestionById(lq.getQuestionBankId()))
+                .map(QuestionBankDto::fromQuestionBank)
+                .collect(Collectors.toList());
+
+        return DuelData.builder()
+                .lobby(fetchedLobby)
+                .questions(lobbyQuestions)
+                .players(buildPlayersInLobby(lobbyId))
+                .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
+                .build();
     }
 
     /**
