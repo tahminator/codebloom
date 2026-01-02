@@ -187,7 +187,7 @@ public class SubmissionsHandler {
                     .submissionId(String.valueOf(leetcodeSubmission.getId()))
                     .build();
 
-            questionRepository.createQuestion(newQuestion);
+            var createdQuestion = questionRepository.createQuestion(newQuestion);
 
             Job newJob = Job.builder()
                     .questionId(newQuestion.getId())
@@ -203,7 +203,8 @@ public class SubmissionsHandler {
                             .topic(LeetcodeTopicEnum.fromValue(topic.getSlug()))
                             .build()));
 
-            acceptedSubmissions.add(new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), points));
+            acceptedSubmissions.add(
+                    new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), createdQuestion.getId(), points));
 
             UserWithScore recentUserMetadata = userRepository.getUserWithScoreByIdAndLeaderboardId(
                     user.getId(), recentLeaderboard.getId(), UserFilterOptions.DEFAULT);
