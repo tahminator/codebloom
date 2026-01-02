@@ -252,6 +252,27 @@ public class AdminControllerTest {
     }
 
     @Test
+    void testCreateLeaderboardWithCurrentTimeShouldExpireBy() {
+        OffsetDateTime current = OffsetDateTime.now();
+
+        NewLeaderboardBody body = NewLeaderboardBody.builder()
+                .name("Challenge 2024")
+                .shouldExpireBy(current)
+                .build();
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals(
+                "The expiration date must be in the future.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+        verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
+    }
+
+    @Test
     void testCreateLeaderboardWithSyntaxHighlightingLanguage() {
         NewLeaderboardBody body = NewLeaderboardBody.builder()
                 .name("Challenge 2024")
