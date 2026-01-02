@@ -95,8 +95,21 @@ public class AdminController {
             leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
         }
 
-        // TODO - Implement the logic to support shouldExpireBy
-        Leaderboard newLeaderboard = Leaderboard.builder().name(name).build();
+        OffsetDateTime shouldExpireBy = StandardizedOffsetDateTime.normalize(newLeaderboardBody.getShouldExpireBy());
+
+        if (shouldExpireBy != null) {
+            OffsetDateTime now = StandardizedOffsetDateTime.now();
+            if (!now.isBefore(shouldExpireBy)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponder.failure("The expiration date must be in the future."));
+            }
+        }
+
+        Leaderboard newLeaderboard = Leaderboard.builder()
+                .name(name)
+                .shouldExpireBy(shouldExpireBy != null ? shouldExpireBy.toLocalDateTime() : null)
+                .syntaxHighlightingLanguage(newLeaderboardBody.getSyntaxHighlightingLanguage())
+                .build();
 
         leaderboardRepository.addNewLeaderboard(newLeaderboard);
         leaderboardRepository.addAllUsersToLeaderboard(newLeaderboard.getId());
