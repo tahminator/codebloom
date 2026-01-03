@@ -1,8 +1,10 @@
 import { adminSchema } from "@/app/admin/_components/types";
 import { useCreateLeaderboardMutation } from "@/lib/api/queries/admin";
 import { Modal, Button, TextInput } from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import d from "dayjs";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -15,12 +17,20 @@ function NewLeaderboardForm({
 }: NewLeaderboardFormProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const { mutate, status } = useCreateLeaderboardMutation();
-  const form = useForm({
-    validate: zodResolver(adminSchema(currentLeaderboardName)),
+  const schema = adminSchema(currentLeaderboardName);
+  const form = useForm<z.infer<typeof schema>>({
+    validate: zodResolver(schema),
     initialValues: {
       name: "",
       confirmation: "",
+      shouldExpireBy: null,
+      syntaxHighlightingLanguage: null,
     },
+    transformValues: ({ shouldExpireBy, syntaxHighlightingLanguage, ...values }) => ({
+      ...values,
+      shouldExpireBy: shouldExpireBy ? d(shouldExpireBy).toISOString() : null,
+      syntaxHighlightingLanguage: syntaxHighlightingLanguage,
+    }),
   });
   const toggleModal = () => {
     setModalOpen((prev) => !prev);
@@ -32,7 +42,7 @@ function NewLeaderboardForm({
       color: "blue",
     });
     mutate(
-      { name: values.name },
+      {  ...values },
       {
         onSuccess: async (data) => {
           notifications.show({
@@ -64,11 +74,32 @@ function NewLeaderboardForm({
             label="New leaderboard name"
             error={form.errors.name}
             mb="sm"
+            withAsterisk
+          />
+          <DateTimePicker
+            {...form.getInputProps("shouldExpireBy")}
+            label="When should leaderboard expire?"
+            valueFormat="DD MMM YYYY hh:mm:ss A"
+            aria-label="When should leaderboard expire?"
+            withSeconds
+            clearable
+            mb="sm"
+            timePickerProps={{
+              format: "12h",
+            }}
+          />
+          <TextInput
+            {...form.getInputProps("syntaxHighlightingLanguage")}
+            label="Syntax highlighting language"
+            placeholder="cpp"
+            error={form.errors.syntaxHighlightingLanguage}
+            mb="sm"
           />
           <TextInput
             {...form.getInputProps("confirmation")}
             label={`Type "${currentLeaderboardName}" to confirm`}
             error={form.errors.confirmation}
+            withAsterisk
           />
           <Button
             type="submit"
