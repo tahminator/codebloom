@@ -6,4 +6,6 @@ export const adminSchema = (leaderboardName: string) =>
       .string()
       .trim()
       .refine((s) => s == leaderboardName),
+    shouldExpireBy: z.string().nullable(),
+    syntaxHighlightingLanguage: z.string().nullable(),
   });
