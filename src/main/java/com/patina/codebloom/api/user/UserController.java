@@ -12,6 +12,7 @@ import com.patina.codebloom.common.dto.question.QuestionDto;
 import com.patina.codebloom.common.dto.user.UserDto;
 import com.patina.codebloom.common.lag.FakeLag;
 import com.patina.codebloom.common.page.Page;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -90,6 +92,10 @@ public class UserController {
             responses = {
                 @ApiResponse(responseCode = "200", description = "Successful"),
                 @ApiResponse(
+                        responseCode = "400",
+                        description = "Invalid date range (startDate is after endDate)",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
                         responseCode = "401",
                         description = "Not authenticated",
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
@@ -111,17 +117,31 @@ public class UserController {
             @Parameter(description = "Filter for questions with at least one of the topics provided")
                     @RequestParam(required = false, defaultValue = "")
                     final Set<String> topics,
+            @Parameter(description = "Start date to filter submissions by createdAt (inclusive)")
+                    @RequestParam(required = false)
+                    final OffsetDateTime startDate,
+            @Parameter(description = "End date to filter submissions by createdAt (inclusive)")
+                    @RequestParam(required = false)
+                    final OffsetDateTime endDate,
             @PathVariable final String userId) {
         FakeLag.sleep(500);
+
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "startDate cannot be after endDate.");
+        }
+
+        final OffsetDateTime normalizedStartDate = StandardizedOffsetDateTime.normalize(startDate);
+        final OffsetDateTime normalizedEndDate = StandardizedOffsetDateTime.normalize(endDate);
 
         final int parsedPageSize = Math.min(pageSize, SUBMISSIONS_PAGE_SIZE);
 
         LeetcodeTopicEnum[] topicEnums = questionTopicService.stringsToEnums(topics);
 
-        ArrayList<Question> questions =
-                questionRepository.getQuestionsByUserId(userId, page, parsedPageSize, query, pointFilter, topicEnums);
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
+                userId, page, parsedPageSize, query, pointFilter, topicEnums, normalizedStartDate, normalizedEndDate);
 
-        int totalQuestions = questionRepository.getQuestionCountByUserId(userId, query, pointFilter, topics);
+        int totalQuestions = questionRepository.getQuestionCountByUserId(
+                userId, query, pointFilter, topics, normalizedStartDate, normalizedEndDate);
         int totalPages = (int) Math.ceil((double) totalQuestions / parsedPageSize);
         boolean hasNextPage = page < totalPages;
 

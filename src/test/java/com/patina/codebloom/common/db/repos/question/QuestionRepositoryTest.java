@@ -112,7 +112,7 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
     @Order(3)
     void testGetQuestionsByUserId() {
         ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
-                testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {});
+                testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {}, null, null);
 
         assertNotNull(questions, "Questions list should not be null");
         assertTrue(questions.size() > 0, "Questions list should contain at least one question");
@@ -172,7 +172,7 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
     @Order(6)
     void testGetQuestionCountByUserId() {
         int count = questionRepository.getQuestionCountByUserId(
-                testQuestion.getUserId(), "", false, Collections.emptySet());
+                testQuestion.getUserId(), "", false, Collections.emptySet(), null, null);
 
         assertTrue(count > 0, "Question count should be greater than 0");
 

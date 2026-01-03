@@ -3,6 +3,7 @@ package com.patina.codebloom.common.db.repos.question;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +32,14 @@ public interface QuestionRepository {
     QuestionWithUser getQuestionWithUserById(String id);
 
     ArrayList<Question> getQuestionsByUserId(
-            String userId, int page, int pageSize, String query, boolean pointFilter, LeetcodeTopicEnum[] topics);
+            String userId,
+            int page,
+            int pageSize,
+            String query,
+            boolean pointFilter,
+            LeetcodeTopicEnum[] topics,
+            OffsetDateTime startDate,
+            OffsetDateTime endDate);
 
     /**
      * @note - The provided object's methods will be overridden with any returned data from the database.
@@ -78,5 +86,11 @@ public interface QuestionRepository {
 
     boolean questionExistsBySubmissionId(String submissionId);
 
-    int getQuestionCountByUserId(String userId, String query, boolean filterPoints, Set<String> topics);
+    int getQuestionCountByUserId(
+            String userId,
+            String query,
+            boolean filterPoints,
+            Set<String> topics,
+            OffsetDateTime startDate,
+            OffsetDateTime endDate);
 }
