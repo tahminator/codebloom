@@ -7,6 +7,8 @@ import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.models.question.QuestionWithUser;
 import com.patina.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import com.patina.codebloom.common.db.repos.BaseRepositoryTest;
+import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -208,5 +210,103 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
 
         assertNotNull(incompleteQuestions);
         assertTrue(incompleteQuestions.size() >= 0);
+    }
+
+    @Test
+    @Order(10)
+    void testGetQuestionsByUserIdWithStartDateFilter() {
+        OffsetDateTime pastDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().minusYears(1));
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
+                testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {}, pastDate, null);
+
+        assertNotNull(questions, "Questions list should not be null");
+        boolean foundTestQuestion = questions.stream().anyMatch(q -> q.getId().equals(testQuestion.getId()));
+        assertTrue(foundTestQuestion, "Test question should be found when startDate is in the past");
+
+        OffsetDateTime futureDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().plusYears(1));
+        ArrayList<Question> emptyQuestions = questionRepository.getQuestionsByUserId(
+                testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {}, futureDate, null);
+
+        assertNotNull(emptyQuestions, "Questions list should not be null");
+        boolean foundTestQuestionInFuture =
+                emptyQuestions.stream().anyMatch(q -> q.getId().equals(testQuestion.getId()));
+        assertFalse(foundTestQuestionInFuture, "Test question should not be found when startDate is in the future");
+
+        log.info("Successfully verified startDate filtering");
+    }
+
+    @Test
+    @Order(11)
+    void testGetQuestionsByUserIdWithEndDateFilter() {
+        OffsetDateTime futureDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().plusYears(1));
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
+                testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {}, null, futureDate);
+
+        assertNotNull(questions, "Questions list should not be null");
+        boolean foundTestQuestion = questions.stream().anyMatch(q -> q.getId().equals(testQuestion.getId()));
+        assertTrue(foundTestQuestion, "Test question should be found when endDate is in the future");
+
+        OffsetDateTime pastDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().minusYears(1));
+        ArrayList<Question> emptyQuestions = questionRepository.getQuestionsByUserId(
+                testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {}, null, pastDate);
+
+        assertNotNull(emptyQuestions, "Questions list should not be null");
+        boolean foundTestQuestionInPast =
+                emptyQuestions.stream().anyMatch(q -> q.getId().equals(testQuestion.getId()));
+        assertFalse(foundTestQuestionInPast, "Test question should not be found when endDate is in the past");
+
+        log.info("Successfully verified endDate filtering");
+    }
+
+    @Test
+    @Order(12)
+    void testGetQuestionsByUserIdWithDateRange() {
+        OffsetDateTime pastDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().minusYears(1));
+        OffsetDateTime futureDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().plusYears(1));
+        ArrayList<Question> questions = questionRepository.getQuestionsByUserId(
+                testQuestion.getUserId(), 1, 20, "", false, new LeetcodeTopicEnum[] {}, pastDate, futureDate);
+
+        assertNotNull(questions, "Questions list should not be null");
+        boolean foundTestQuestion = questions.stream().anyMatch(q -> q.getId().equals(testQuestion.getId()));
+        assertTrue(foundTestQuestion, "Test question should be found within date range");
+
+        for (Question q : questions) {
+            assertNotNull(q.getCreatedAt(), "Question createdAt should not be null");
+        }
+
+        log.info("Successfully verified date range filtering with {} questions", questions.size());
+    }
+
+    @Test
+    @Order(13)
+    void testGetQuestionCountByUserIdWithDateFilters() {
+        int totalCount = questionRepository.getQuestionCountByUserId(
+                testQuestion.getUserId(), "", false, Collections.emptySet(), null, null);
+
+        OffsetDateTime pastDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().minusYears(1));
+        int countWithPastStart = questionRepository.getQuestionCountByUserId(
+                testQuestion.getUserId(), "", false, Collections.emptySet(), pastDate, null);
+
+        assertEquals(totalCount, countWithPastStart, "Count with past startDate should equal total count");
+
+        OffsetDateTime futureDate =
+                StandardizedOffsetDateTime.normalize(OffsetDateTime.now().plusYears(1));
+        int countWithFutureStart = questionRepository.getQuestionCountByUserId(
+                testQuestion.getUserId(), "", false, Collections.emptySet(), futureDate, null);
+
+        assertEquals(0, countWithFutureStart, "Count with future startDate should be 0");
+
+        log.info(
+                "Successfully verified date filtering on count: total={}, withPastStart={}, withFutureStart={}",
+                totalCount,
+                countWithPastStart,
+                countWithFutureStart);
     }
 }

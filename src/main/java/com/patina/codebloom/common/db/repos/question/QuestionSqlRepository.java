@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -368,63 +369,46 @@ public class QuestionSqlRepository implements QuestionRepository {
                 JOIN "User" u ON q."userId" = u.id
                 LEFT JOIN "QuestionTopic" t ON t."questionId" = q."id"
                 WHERE
-                    q."userId" = ?
-                    AND q."questionTitle" ILIKE ?
-                    AND (NOT ? OR q."pointsAwarded" <> 0)
+                    q."userId" = :userId
+                    AND q."questionTitle" ILIKE :query
+                    AND (NOT :pointFilter OR q."pointsAwarded" <> 0)
                     AND (
-                        ? = '{}'::"LeetcodeTopicEnum"[]
-                        OR t."topic" = ANY(?)
+                        :topics = '{}'::"LeetcodeTopicEnum"[]
+                        OR t."topic" = ANY(:topics)
                     )
-                    AND (? IS NULL OR q."createdAt" >= ?)
-                    AND (? IS NULL OR q."createdAt" <= ?)
+                    AND (cast(:startDate AS timestamptz) IS NULL OR q."createdAt" >= :startDate)
+                    AND (cast(:endDate AS timestamptz) IS NULL OR q."createdAt" <= :endDate)
                 ORDER BY q.id, q."submittedAt" DESC
             ) sub
             ORDER BY "submittedAt" DESC
-            LIMIT ? OFFSET ?;
+            LIMIT :pageSize OFFSET :offset;
             """;
 
         try (Connection conn = ds.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
-            stmt.setString(2, "%" + query + "%");
-            stmt.setBoolean(3, pointFilter);
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("userId", UUID.fromString(userId));
+            stmt.setString("query", "%" + query + "%");
+            stmt.setBoolean("pointFilter", pointFilter);
 
             String[] sqlValues = Arrays.stream(topics)
                     .map(LeetcodeTopicEnum::getLeetcodeEnum)
                     .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
-            stmt.setArray(4, topicsArray);
-            stmt.setArray(5, topicsArray);
-            stmt.setObject(6, startDate);
-            stmt.setObject(7, startDate);
-            stmt.setObject(8, endDate);
-            stmt.setObject(9, endDate);
-            stmt.setInt(10, pageSize);
-            stmt.setInt(11, (page - 1) * pageSize);
+            stmt.setArray("topics", topicsArray);
+            if (startDate == null) {
+                stmt.setNull("startDate", Types.TIMESTAMP_WITH_TIMEZONE);
+            } else {
+                stmt.setObject("startDate", startDate);
+            }
+            if (endDate == null) {
+                stmt.setNull("endDate", Types.TIMESTAMP_WITH_TIMEZONE);
+            } else {
+                stmt.setObject("endDate", endDate);
+            }
+            stmt.setInt("pageSize", pageSize);
+            stmt.setInt("offset", (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    var questionId = rs.getString("id");
-                    var questionSlug = rs.getString("questionSlug");
-                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
-                    var questionNumber = rs.getInt("questionNumber");
-                    var questionLink = rs.getString("questionLink");
-                    int points = rs.getInt("pointsAwarded");
-                    Integer pointsAwarded;
-                    if (rs.wasNull()) {
-                        pointsAwarded = null;
-                    } else {
-                        pointsAwarded = points;
-                    }
-                    var questionTitle = rs.getString("questionTitle");
-                    var description = rs.getString("description");
-                    var acceptanceRate = rs.getFloat("acceptanceRate");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    var runtime = rs.getString("runtime");
-                    var memory = rs.getString("memory");
-                    var code = rs.getString("code");
-                    var language = rs.getString("language");
-                    var submissionId = rs.getString("submissionId");
                     Question question = mapResultSetToQuestion(rs);
                     questions.add(question);
                 }
@@ -602,8 +586,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                 :topics = '{}'::"LeetcodeTopicEnum"[]
                 OR qt."topic" = ANY(:topics)
             )
-            AND (:startDate IS NULL OR q."createdAt" >= :startDate)
-            AND (:endDate IS NULL OR q."createdAt" <= :endDate)
+            AND (cast(:startDate AS timestamptz) IS NULL OR q."createdAt" >= :startDate)
+            AND (cast(:endDate AS timestamptz) IS NULL OR q."createdAt" <= :endDate)
             """;
 
         try (Connection conn = ds.getConnection();
@@ -617,8 +601,16 @@ public class QuestionSqlRepository implements QuestionRepository {
                     .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray("topics", topicsArray);
-            stmt.setObject("startDate", startDate);
-            stmt.setObject("endDate", endDate);
+            if (startDate == null) {
+                stmt.setNull("startDate", Types.TIMESTAMP_WITH_TIMEZONE);
+            } else {
+                stmt.setObject("startDate", startDate);
+            }
+            if (endDate == null) {
+                stmt.setNull("endDate", Types.TIMESTAMP_WITH_TIMEZONE);
+            } else {
+                stmt.setObject("endDate", endDate);
+            }
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
