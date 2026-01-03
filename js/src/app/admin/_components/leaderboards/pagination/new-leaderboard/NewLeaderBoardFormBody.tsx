@@ -26,7 +26,11 @@ function NewLeaderboardForm({
       shouldExpireBy: null,
       syntaxHighlightingLanguage: null,
     },
-    transformValues: ({ shouldExpireBy, syntaxHighlightingLanguage, ...values }) => ({
+    transformValues: ({
+      shouldExpireBy,
+      syntaxHighlightingLanguage,
+      ...values
+    }) => ({
       ...values,
       shouldExpireBy: shouldExpireBy ? d(shouldExpireBy).toISOString() : null,
       syntaxHighlightingLanguage: syntaxHighlightingLanguage,
@@ -42,7 +46,7 @@ function NewLeaderboardForm({
       color: "blue",
     });
     mutate(
-      {  ...values },
+      { ...values },
       {
         onSuccess: async (data) => {
           notifications.show({
