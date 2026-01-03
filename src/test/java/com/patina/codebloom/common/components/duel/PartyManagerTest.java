@@ -71,7 +71,7 @@ public class PartyManagerTest {
         assertEquals(LobbyStatus.AVAILABLE, createdLobby.getStatus());
         assertEquals(1, createdLobby.getPlayerCount());
         assertTrue(createdLobby.getWinnerId().isEmpty());
-        assertNotNull(createdLobby.getExpiresAt());
+        assertNull(createdLobby.getExpiresAt());
 
         LobbyPlayer createdPlayer = playerCaptor.getValue();
         assertEquals(user.getId(), createdPlayer.getPlayerId());
@@ -152,30 +152,20 @@ public class PartyManagerTest {
     }
 
     @Test
-    void testPartyExpirationTimeIsSet30MinutesInFuture() throws DuelException {
+    void testPartyExpirationTimeIsNullOnCreation() throws DuelException {
         User user = createRandomUser();
 
         when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(user.getId())).thenReturn(Optional.empty());
 
-        OffsetDateTime beforeCreation = OffsetDateTime.now();
-
         partyManager.createParty(user.getId());
-
-        OffsetDateTime afterCreation = OffsetDateTime.now();
 
         ArgumentCaptor<Lobby> lobbyCaptor = ArgumentCaptor.forClass(Lobby.class);
         verify(lobbyRepository, times(1)).createLobby(lobbyCaptor.capture());
 
         Lobby createdLobby = lobbyCaptor.getValue();
-        OffsetDateTime expiresAt = createdLobby.getExpiresAt();
-
-        OffsetDateTime expectedExpiration = beforeCreation.plusMinutes(30);
-        assertTrue(
-                expiresAt.isAfter(expectedExpiration.minusSeconds(5)),
-                "Expiration time should be after expected 30 minute mark");
-        assertTrue(
-                expiresAt.isBefore(afterCreation.plusMinutes(30).plusSeconds(5)),
-                "Expiration time should be before expected 30 minute mark plus buffer");
+        assertNull(
+                createdLobby.getExpiresAt(),
+                "expiresAt should be null when party is created, only set when duel starts");
     }
 
     @Test

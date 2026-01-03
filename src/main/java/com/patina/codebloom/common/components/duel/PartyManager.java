@@ -7,7 +7,6 @@ import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
-import java.time.OffsetDateTime;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,7 @@ public class PartyManager {
                             new DuelException(HttpStatus.NOT_FOUND, "The party with the given code cannot be found."));
 
             var now = StandardizedOffsetDateTime.now();
-            if (lobby.getExpiresAt().isBefore(now)) {
+            if (lobby.getExpiresAt() != null && lobby.getExpiresAt().isBefore(now)) {
                 // TODO: Could possibly invalidate this party here if it hasn't been invalidated
                 // yet.
                 throw new DuelException(HttpStatus.GONE, "The lobby has expired and cannot be joined.");
@@ -127,12 +126,11 @@ public class PartyManager {
             }
 
             String joinCode = PartyCodeGenerator.generateCode();
-            OffsetDateTime expiresAt = StandardizedOffsetDateTime.now().plusMinutes(30);
 
             Lobby lobby = Lobby.builder()
                     .joinCode(joinCode)
                     .status(LobbyStatus.AVAILABLE)
-                    .expiresAt(expiresAt)
+                    .expiresAt(null)
                     .playerCount(1)
                     .winnerId(Optional.empty())
                     .build();

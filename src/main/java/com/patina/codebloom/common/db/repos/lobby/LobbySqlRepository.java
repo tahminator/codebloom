@@ -407,7 +407,8 @@ public class LobbySqlRepository implements LobbyRepository {
                 status = :status,
                 "playerCount" = :playerCount,
                 "winnerId" = :winnerId,
-                "tie" = :tie
+                "tie" = :tie,
+                "expiresAt" = :expiresAt
             WHERE
                 id = :id
             """;
@@ -419,6 +420,7 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("id", UUID.fromString(lobby.getId()));
             stmt.setObject("winnerId", lobby.getWinnerId().map(UUID::fromString).orElse(null));
             stmt.setBoolean("tie", lobby.isTie());
+            stmt.setObject("expiresAt", StandardizedOffsetDateTime.normalize(lobby.getExpiresAt()));
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;

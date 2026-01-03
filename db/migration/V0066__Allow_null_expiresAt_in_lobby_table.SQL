@@ -1,0 +1,4 @@
+ALTER TABLE
+    "Lobby"
+ALTER COLUMN
+    "expiresAt" DROP NOT NULL;
