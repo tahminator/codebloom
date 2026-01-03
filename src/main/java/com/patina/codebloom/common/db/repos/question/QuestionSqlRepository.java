@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -337,7 +338,9 @@ public class QuestionSqlRepository implements QuestionRepository {
             final int pageSize,
             final String query,
             final boolean pointFilter,
-            final LeetcodeTopicEnum[] topics) {
+            final LeetcodeTopicEnum[] topics,
+            final OffsetDateTime startDate,
+            final OffsetDateTime endDate) {
         ArrayList<Question> questions = new ArrayList<>();
         String sql = """
             SELECT *
@@ -372,6 +375,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                         ? = '{}'::"LeetcodeTopicEnum"[]
                         OR t."topic" = ANY(?)
                     )
+                    AND (? IS NULL OR q."createdAt" >= ?)
+                    AND (? IS NULL OR q."createdAt" <= ?)
                 ORDER BY q.id, q."submittedAt" DESC
             ) sub
             ORDER BY "submittedAt" DESC
@@ -390,8 +395,12 @@ public class QuestionSqlRepository implements QuestionRepository {
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray(4, topicsArray);
             stmt.setArray(5, topicsArray);
-            stmt.setInt(6, pageSize);
-            stmt.setInt(7, (page - 1) * pageSize);
+            stmt.setObject(6, startDate);
+            stmt.setObject(7, startDate);
+            stmt.setObject(8, endDate);
+            stmt.setObject(9, endDate);
+            stmt.setInt(10, pageSize);
+            stmt.setInt(11, (page - 1) * pageSize);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var questionId = rs.getString("id");
@@ -571,7 +580,12 @@ public class QuestionSqlRepository implements QuestionRepository {
 
     @Override
     public int getQuestionCountByUserId(
-            final String userId, final String query, final boolean pointFilter, final Set<String> topics) {
+            final String userId,
+            final String query,
+            final boolean pointFilter,
+            final Set<String> topics,
+            final OffsetDateTime startDate,
+            final OffsetDateTime endDate) {
         String sql = """
             SELECT
                 COUNT(DISTINCT q.id)
@@ -588,6 +602,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                 :topics = '{}'::"LeetcodeTopicEnum"[]
                 OR qt."topic" = ANY(:topics)
             )
+            AND (:startDate IS NULL OR q."createdAt" >= :startDate)
+            AND (:endDate IS NULL OR q."createdAt" <= :endDate)
             """;
 
         try (Connection conn = ds.getConnection();
@@ -601,6 +617,8 @@ public class QuestionSqlRepository implements QuestionRepository {
                     .toArray(String[]::new);
             Array topicsArray = conn.createArrayOf("\"LeetcodeTopicEnum\"", sqlValues);
             stmt.setArray("topics", topicsArray);
+            stmt.setObject("startDate", startDate);
+            stmt.setObject("endDate", endDate);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
