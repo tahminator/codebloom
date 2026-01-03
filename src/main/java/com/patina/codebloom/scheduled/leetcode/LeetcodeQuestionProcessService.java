@@ -121,8 +121,13 @@ public class LeetcodeQuestionProcessService {
         if (job.getAttempts() >= MAX_ATTEMPTS) {
             log.warn("Job {} reached max attempts. Marking as completed.", job.getId());
             job.setStatus(JobStatus.COMPLETE);
+            jobRepository.updateJob(job);
             return;
         }
+        // reset db
+        // migrate
+        // run tests
+        // run dev
 
         log.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
         job.setAttempts(job.getAttempts() + 1);
@@ -134,7 +139,7 @@ public class LeetcodeQuestionProcessService {
         }
 
         try {
-            log.debug("Fetching question from backend with ID: {}", job.getQuestionId());
+            log.warn("Fetching question from backend with ID: {}", job.getQuestionId());
             Question question = questionRepository.getQuestionById(job.getQuestionId());
 
             if (question == null) {
