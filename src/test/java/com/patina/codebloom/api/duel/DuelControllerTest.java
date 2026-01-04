@@ -681,4 +681,87 @@ public class DuelControllerTest {
             fail(e);
         }
     }
+
+    @Test
+    void testProcessSolvedProblemsInDuelFailsInProduction() {
+        when(env.isProd()).thenReturn(true);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            duelController.processSolvedProblemsInDuel(authObj);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
+        assertEquals("Endpoint is currently non-functional", exception.getReason());
+
+        try {
+            verify(duelManager, never()).processSubmissions(eq(user), any());
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testProcessSolvedProblemsDuelManagerFailed() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        try {
+            when(duelManager.getDuelByUserId(eq(user.getId())))
+                    .thenReturn(Lobby.builder().build());
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        try {
+            doThrow(new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "This is an example duel exception."))
+                    .when(duelManager)
+                    .processSubmissions(eq(user), any());
+        } catch (DuelException _) {
+        }
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> duelController.processSolvedProblemsInDuel(authObj));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode());
+        assertEquals("This is an example duel exception.", exception.getReason());
+
+        try {
+            verify(duelManager, times(1)).processSubmissions(eq(user), any());
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testProcessSolvedProblemsHappyPath() {
+        when(env.isProd()).thenReturn(false);
+
+        User user = createRandomUser();
+        AuthenticationObject authObj = createAuthenticationObject(user);
+
+        try {
+            when(duelManager.getDuelByUserId(eq(user.getId())))
+                    .thenReturn(Lobby.builder().build());
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        var response = duelController.processSolvedProblemsInDuel(authObj);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var apiResponder = response.getBody();
+        assertTrue(apiResponder.isSuccess());
+
+        try {
+            verify(duelManager, times(1)).processSubmissions(eq(user), any());
+        } catch (DuelException e) {
+            fail(e);
+        }
+    }
 }

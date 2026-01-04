@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.github.javafaker.Faker;
 import com.patina.codebloom.common.db.models.lobby.Lobby;
+import com.patina.codebloom.common.db.models.lobby.LobbyQuestion;
 import com.patina.codebloom.common.db.models.lobby.LobbyStatus;
 import com.patina.codebloom.common.db.models.lobby.player.LobbyPlayer;
 import com.patina.codebloom.common.db.models.question.bank.QuestionBank;
@@ -21,12 +22,17 @@ import com.patina.codebloom.common.db.repos.user.UserRepository;
 import com.patina.codebloom.common.dto.lobby.DuelData;
 import com.patina.codebloom.common.dto.lobby.LobbyDto;
 import com.patina.codebloom.common.dto.user.UserDto;
+import com.patina.codebloom.common.leetcode.models.LeetcodeSubmission;
+import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
+import com.patina.codebloom.common.submissions.SubmissionsHandler;
+import com.patina.codebloom.common.submissions.object.AcceptedSubmission;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.common.utils.duel.PartyCodeGenerator;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,6 +53,8 @@ public class DuelManagerTest {
     private QuestionRepository questionRepository = mock(QuestionRepository.class);
     private QuestionBankRepository questionBankRepository = mock(QuestionBankRepository.class);
     private UserRepository userRepository = mock(UserRepository.class);
+    private ThrottledLeetcodeClient throttledLeetcodeClient = mock(ThrottledLeetcodeClient.class);
+    private SubmissionsHandler submissionsHandler = mock(SubmissionsHandler.class);
 
     public DuelManagerTest() {
         this.duelManager = new DuelManager(
@@ -56,8 +64,21 @@ public class DuelManagerTest {
                 lobbyPlayerQuestionRepository,
                 questionRepository,
                 questionBankRepository,
-                userRepository);
+                userRepository,
+                throttledLeetcodeClient,
+                submissionsHandler);
         this.faker = Faker.instance();
+    }
+
+    private User createRandomUser() {
+        return User.builder()
+                .id(UUID.randomUUID().toString())
+                .discordId(String.valueOf(faker.number().randomNumber(18, true)))
+                .discordName(faker.name().username())
+                .leetcodeUsername(faker.name().username())
+                .admin(false)
+                .verifyKey(faker.crypto().md5())
+                .build();
     }
 
     private Lobby.LobbyBuilder randomPartialLobby() {
@@ -994,5 +1015,150 @@ public class DuelManagerTest {
 
         verify(lobbyRepository, times(1)).findAvailableLobbyByLobbyPlayerPlayerId(eq(userId));
         verify(lobbyRepository, never()).findActiveLobbyByLobbyPlayerPlayerId(eq(userId));
+    }
+
+    @Test
+    void testProcessSubmissionsLobbyGivenButNoLobbyPlayerInstanceFound() {
+        var user = createRandomUser();
+        var activeLobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .joinCode(PartyCodeGenerator.generateCode())
+                .status(LobbyStatus.ACTIVE)
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().plus(30, ChronoUnit.MINUTES))
+                .build();
+
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(user.getId())))
+                .thenReturn(Optional.empty());
+
+        DuelException e;
+        try {
+            duelManager.processSubmissions(user, activeLobby);
+            fail("Expected an exception");
+            return;
+        } catch (DuelException ex) {
+            ex.printStackTrace();
+            e = ex;
+        }
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus().orElseThrow());
+        assertEquals("A duel was found but the player instance cannot be found.", e.getMessage());
+
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(eq(user.getId()));
+        verify(lobbyQuestionRepository, never()).findLobbyQuestionsByLobbyId(any());
+        verify(questionBankRepository, never()).getQuestionById(any());
+        verify(throttledLeetcodeClient, never()).findSubmissionsByUsername(any(), anyInt());
+        verify(submissionsHandler, never()).handleSubmissions(any(), any());
+        verify(lobbyPlayerQuestionRepository, never()).createLobbyPlayerQuestion(any());
+        verify(lobbyPlayerRepository, never()).updateLobbyPlayer(any());
+    }
+
+    @Test
+    void testProcessSubmissionsFailsRandomDatabaseException() {
+        var user = createRandomUser();
+        var activeLobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .joinCode(PartyCodeGenerator.generateCode())
+                .status(LobbyStatus.ACTIVE)
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().plus(30, ChronoUnit.MINUTES))
+                .build();
+
+        doThrow(new RuntimeException("Simulated db exception"))
+                .when(lobbyPlayerRepository)
+                .findValidLobbyPlayerByPlayerId(any());
+
+        DuelException e;
+        try {
+            duelManager.processSubmissions(user, activeLobby);
+            fail("Expected a duel exception");
+            return;
+        } catch (DuelException ex) {
+            ex.printStackTrace();
+            e = ex;
+        }
+
+        StringWriter writer = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(writer);
+        e.printStackTrace(printWriter);
+        printWriter.flush();
+
+        String stackTrace = writer.toString();
+        assertTrue(e.getHttpStatus().isEmpty());
+        assertEquals("Duel exception occurred.", e.getMessage());
+        assertTrue(stackTrace.contains("Simulated db exception"));
+
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, never()).findLobbyById(any());
+        verify(lobbyRepository, never()).updateLobby(any());
+        verify(questionBankRepository, never()).getRandomQuestion();
+        verify(lobbyQuestionRepository, never()).createLobbyQuestion(any());
+    }
+
+    @Test
+    void testProcessSubmissionsSuccessful() {
+        var user = createRandomUser();
+        var activeLobby = Lobby.builder()
+                .id(UUID.randomUUID().toString())
+                .joinCode(PartyCodeGenerator.generateCode())
+                .status(LobbyStatus.ACTIVE)
+                .createdAt(StandardizedOffsetDateTime.now())
+                .expiresAt(StandardizedOffsetDateTime.now().plus(30, ChronoUnit.MINUTES))
+                .build();
+
+        var lobbyPlayer = LobbyPlayer.builder()
+                .id(UUID.randomUUID().toString())
+                .lobbyId(activeLobby.getId())
+                .playerId(user.getId())
+                .points(0)
+                .build();
+
+        var questionBank = QuestionBank.builder()
+                .id(UUID.randomUUID().toString())
+                .questionSlug("two-sum")
+                .questionTitle("Two Sum")
+                .build();
+
+        var lobbyQuestion = LobbyQuestion.builder()
+                .id(UUID.randomUUID().toString())
+                .lobbyId(activeLobby.getId())
+                .questionBankId(questionBank.getId())
+                .userSolvedCount(0)
+                .build();
+
+        var leetcodeSubmission =
+                new LeetcodeSubmission(1, "Two Sum", "two-sum", java.time.LocalDateTime.now(), "Accepted");
+
+        var acceptedSubmission = new AcceptedSubmission("Two Sum", "question-id-123", 100);
+
+        when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(user.getId())))
+                .thenReturn(Optional.of(lobbyPlayer));
+        when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(eq(activeLobby.getId())))
+                .thenReturn(List.of(lobbyQuestion));
+        when(questionBankRepository.getQuestionById(eq(questionBank.getId()))).thenReturn(questionBank);
+        when(throttledLeetcodeClient.findSubmissionsByUsername(eq(user.getLeetcodeUsername()), eq(5)))
+                .thenReturn(List.of(leetcodeSubmission));
+        when(submissionsHandler.handleSubmissions(any(), eq(user))).thenReturn(new ArrayList<>() {
+            {
+                add(acceptedSubmission);
+            }
+        });
+        doNothing().when(lobbyPlayerQuestionRepository).createLobbyPlayerQuestion(any());
+        when(lobbyPlayerRepository.updateLobbyPlayer(any())).thenReturn(true);
+
+        try {
+            int result = duelManager.processSubmissions(user, activeLobby);
+            assertEquals(1, result);
+        } catch (DuelException e) {
+            fail(e);
+        }
+
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(eq(user.getId()));
+        verify(lobbyQuestionRepository, times(1)).findLobbyQuestionsByLobbyId(eq(activeLobby.getId()));
+        verify(questionBankRepository, times(1)).getQuestionById(eq(questionBank.getId()));
+        verify(throttledLeetcodeClient, times(1)).findSubmissionsByUsername(eq(user.getLeetcodeUsername()), eq(5));
+        verify(submissionsHandler, times(1)).handleSubmissions(any(), eq(user));
+        verify(lobbyPlayerQuestionRepository, times(1)).createLobbyPlayerQuestion(any());
+        verify(lobbyPlayerRepository, times(1)).updateLobbyPlayer(any());
     }
 }
