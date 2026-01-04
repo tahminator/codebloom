@@ -12,6 +12,8 @@ import com.patina.codebloom.common.db.models.user.User;
 import com.patina.codebloom.common.db.repos.lobby.LobbyRepository;
 import com.patina.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -222,6 +224,36 @@ public class PartyManagerTest {
     }
 
     @Test
+    void testCreatePartyThrowsNonDuelException() {
+        User user = createRandomUser();
+
+        doThrow(new RuntimeException("Simulated db exception"))
+                .when(lobbyPlayerRepository)
+                .findValidLobbyPlayerByPlayerId(any());
+
+        try {
+            partyManager.createParty(user.getId());
+            fail("Expected a duel exception");
+        } catch (DuelException e) {
+            e.printStackTrace();
+
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
+            printWriter.flush();
+
+            String stackTrace = writer.toString();
+            assertTrue(e.getHttpStatus().isEmpty());
+            assertEquals("Duel exception occurred.", e.getMessage());
+            assertTrue(stackTrace.contains("Simulated db exception"));
+        }
+
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
+        verify(lobbyRepository, never()).createLobby(any());
+        verify(lobbyPlayerRepository, never()).createLobbyPlayer(any());
+    }
+
+    @Test
     void testJoinPartyCannotFindLobbyByJoinCode() {
         User user = createRandomUser();
         String partyCode = "ABC123";
@@ -416,6 +448,37 @@ public class PartyManagerTest {
     }
 
     @Test
+    void testJoinPartyThrowsNonDuelException() {
+        User user = createRandomUser();
+        String partyCode = "ABC123";
+
+        doThrow(new RuntimeException("Simulated db exception"))
+                .when(lobbyRepository)
+                .findAvailableLobbyByJoinCode(any());
+
+        try {
+            partyManager.joinParty(user.getId(), partyCode);
+            fail("Expected a duel exception");
+        } catch (DuelException e) {
+            e.printStackTrace();
+
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
+            printWriter.flush();
+
+            String stackTrace = writer.toString();
+            assertTrue(e.getHttpStatus().isEmpty());
+            assertEquals("Duel exception occurred.", e.getMessage());
+            assertTrue(stackTrace.contains("Simulated db exception"));
+        }
+
+        verify(lobbyRepository, times(1)).findAvailableLobbyByJoinCode(eq(partyCode));
+        verify(lobbyPlayerRepository, never()).createLobbyPlayer(any());
+        verify(lobbyRepository, never()).updateLobby(any());
+    }
+
+    @Test
     void testLeavePartySuccessWhenUserInPartyAndLobbyHasMultiplePlayers() throws DuelException {
         User user = createRandomUser();
 
@@ -595,5 +658,35 @@ public class PartyManagerTest {
         Lobby updatedLobby = lobbyCaptor.getValue();
         assertEquals(0, updatedLobby.getPlayerCount());
         assertEquals(LobbyStatus.CLOSED, updatedLobby.getStatus());
+    }
+
+    @Test
+    void testLeavePartyThrowsNonDuelException() {
+        User user = createRandomUser();
+
+        doThrow(new RuntimeException("Simulated db exception"))
+                .when(lobbyPlayerRepository)
+                .findValidLobbyPlayerByPlayerId(any());
+
+        try {
+            partyManager.leaveParty(user.getId());
+            fail("Expected a duel exception");
+        } catch (DuelException e) {
+            e.printStackTrace();
+
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
+            printWriter.flush();
+
+            String stackTrace = writer.toString();
+            assertTrue(e.getHttpStatus().isEmpty());
+            assertEquals("Duel exception occurred.", e.getMessage());
+            assertTrue(stackTrace.contains("Simulated db exception"));
+        }
+
+        verify(lobbyPlayerRepository, times(1)).findValidLobbyPlayerByPlayerId(any());
+        verify(lobbyPlayerRepository, never()).deleteLobbyPlayerById(any());
+        verify(lobbyRepository, never()).updateLobby(any());
     }
 }

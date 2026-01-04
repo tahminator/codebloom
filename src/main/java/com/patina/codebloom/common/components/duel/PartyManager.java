@@ -77,6 +77,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
@@ -111,6 +112,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
@@ -151,6 +153,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
