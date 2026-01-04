@@ -235,41 +235,54 @@ public class DuelManager {
     }
 
     public int processSubmissions(User user, Lobby activeLobby) throws DuelException {
-        var lobbyPlayer = lobbyPlayerRepository
-                .findValidLobbyPlayerByPlayerId(user.getId())
-                .orElseThrow(() -> new DuelException(
-                        HttpStatus.INTERNAL_SERVER_ERROR, "A duel was found but the player instance cannot be found."));
+        try {
+            var lobbyPlayer = lobbyPlayerRepository
+                    .findValidLobbyPlayerByPlayerId(user.getId())
+                    .orElseThrow(() -> new DuelException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "A duel was found but the player instance cannot be found."));
 
-        List<LobbyQuestion> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(activeLobby.getId());
+            List<LobbyQuestion> lobbyQuestions =
+                    lobbyQuestionRepository.findLobbyQuestionsByLobbyId(activeLobby.getId());
 
-        var solvableQuestionTitlesSet = lobbyQuestions.stream()
-                .map(LobbyQuestion::getQuestionBankId)
-                .map(questionBankRepository::getQuestionById)
-                .map(QuestionBank::getQuestionTitle)
-                .collect(Collectors.toSet());
+            var solvableQuestionTitlesSet = lobbyQuestions.stream()
+                    .map(LobbyQuestion::getQuestionBankId)
+                    .map(questionBankRepository::getQuestionById)
+                    .map(QuestionBank::getQuestionTitle)
+                    .collect(Collectors.toSet());
 
-        List<LeetcodeSubmission> leetcodeSubmissions =
-                leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername(), MAX_LEETCODE_SUBMISSIONS);
+            List<LeetcodeSubmission> leetcodeSubmissions =
+                    leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername(), MAX_LEETCODE_SUBMISSIONS);
 
-        var solvedLeetcodeSubmissions = leetcodeSubmissions.stream()
-                .filter(s -> solvableQuestionTitlesSet.contains(s.getTitle()))
-                .toList();
+            var solvedLeetcodeSubmissions = leetcodeSubmissions.stream()
+                    .filter(s -> solvableQuestionTitlesSet.contains(s.getTitle()))
+                    .toList();
 
-        List<AcceptedSubmission> acceptedSubmissions =
-                submissionsHandler.handleSubmissions(solvedLeetcodeSubmissions, user);
+            List<AcceptedSubmission> acceptedSubmissions =
+                    submissionsHandler.handleSubmissions(solvedLeetcodeSubmissions, user);
 
-        List<LobbyPlayerQuestion> lobbyPlayerQuestions = acceptedSubmissions.stream()
-                .map(s -> LobbyPlayerQuestion.builder()
-                        .lobbyPlayerId(lobbyPlayer.getId())
-                        // should not be null, but let's not end up in a crashed state because of this.
-                        .questionId(Optional.ofNullable(s.questionId()))
-                        .points(Optional.ofNullable(s.points()))
-                        .build())
-                .toList();
+            List<LobbyPlayerQuestion> lobbyPlayerQuestions = acceptedSubmissions.stream()
+                    .map(s -> LobbyPlayerQuestion.builder()
+                            .lobbyPlayerId(lobbyPlayer.getId())
+                            // should not be null, but let's not end up in a crashed state because of this.
+                            .questionId(Optional.ofNullable(s.questionId()))
+                            .points(Optional.of(s.points()))
+                            .build())
+                    .toList();
 
-        lobbyPlayerQuestions.forEach(
-                q -> FunctionUtils.swallow(() -> lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(q)));
+            lobbyPlayerQuestions.forEach(
+                    q -> FunctionUtils.swallow(() -> lobbyPlayerQuestionRepository.createLobbyPlayerQuestion(q)));
 
-        return lobbyPlayerQuestions.size();
+            lobbyPlayer.setPoints(acceptedSubmissions.stream()
+                    .mapToInt(AcceptedSubmission::points)
+                    .sum());
+            lobbyPlayerRepository.updateLobbyPlayer(lobbyPlayer);
+
+            return lobbyPlayerQuestions.size();
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DuelException(e);
+        }
     }
 }
