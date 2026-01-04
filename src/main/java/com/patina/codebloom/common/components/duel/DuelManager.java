@@ -159,6 +159,7 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
@@ -209,6 +210,7 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
@@ -226,6 +228,7 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
