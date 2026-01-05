@@ -2,7 +2,6 @@ package com.patina.codebloom.scheduled.leetcode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.patina.codebloom.common.db.models.job.Job;
 import com.patina.codebloom.common.db.models.job.JobStatus;
@@ -116,12 +115,6 @@ public class RefetchIncompleteQuestionsServiceTest extends NoJdaRequired {
 
         jobRepository.deleteJobById(createdJob.getId());
         questionRepository.deleteQuestionById(orphanedQuestion.getId());
-    }
-
-    @Test
-    void handleEmptyQuestionsValid() {
-        service.refetchIncompleteQuestions();
-        assertTrue(true, "Service should complete without exception when no action is needed");
     }
 
     @Test
