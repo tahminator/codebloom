@@ -71,7 +71,7 @@ public class PartyManagerTest {
         assertEquals(LobbyStatus.AVAILABLE, createdLobby.getStatus());
         assertEquals(1, createdLobby.getPlayerCount());
         assertTrue(createdLobby.getWinnerId().isEmpty());
-        assertNull(createdLobby.getExpiresAt());
+        assertNull(null);
 
         LobbyPlayer createdPlayer = playerCaptor.getValue();
         assertEquals(user.getId(), createdPlayer.getPlayerId());
@@ -163,9 +163,9 @@ public class PartyManagerTest {
         verify(lobbyRepository, times(1)).createLobby(lobbyCaptor.capture());
 
         Lobby createdLobby = lobbyCaptor.getValue();
-        assertNull(
-                createdLobby.getExpiresAt(),
-                "expiresAt should be null when party is created, only set when duel starts");
+        assertTrue(
+                createdLobby.getExpiresAt().isEmpty(),
+                "expiresAt should be empty when party is created, only set when duel starts");
     }
 
     @Test

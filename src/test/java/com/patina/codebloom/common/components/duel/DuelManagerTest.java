@@ -730,7 +730,7 @@ public class DuelManagerTest {
         Lobby lobby = Lobby.builder()
                 .id(UUID.randomUUID().toString())
                 .createdAt(StandardizedOffsetDateTime.now())
-                .expiresAt(StandardizedOffsetDateTime.now().minus(30, ChronoUnit.MINUTES))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().minus(30, ChronoUnit.MINUTES)))
                 .joinCode("ABC123")
                 .playerCount(2)
                 .status(LobbyStatus.ACTIVE)
@@ -1070,7 +1070,7 @@ public class DuelManagerTest {
         Lobby lobby = Lobby.builder()
                 .id(UUID.randomUUID().toString())
                 .createdAt(StandardizedOffsetDateTime.now())
-                .expiresAt(StandardizedOffsetDateTime.now().plusMinutes(30))
+                .expiresAt(null)
                 .joinCode(PartyCodeGenerator.generateCode())
                 .playerCount(2)
                 .status(LobbyStatus.AVAILABLE)
@@ -1121,7 +1121,7 @@ public class DuelManagerTest {
         Lobby lobby = Lobby.builder()
                 .id(UUID.randomUUID().toString())
                 .createdAt(StandardizedOffsetDateTime.now())
-                .expiresAt(StandardizedOffsetDateTime.now().plusMinutes(30))
+                .expiresAt(null)
                 .joinCode(PartyCodeGenerator.generateCode())
                 .playerCount(2)
                 .status(LobbyStatus.AVAILABLE)
@@ -1434,7 +1434,7 @@ public class DuelManagerTest {
                 .joinCode(PartyCodeGenerator.generateCode())
                 .status(LobbyStatus.ACTIVE)
                 .createdAt(StandardizedOffsetDateTime.now())
-                .expiresAt(StandardizedOffsetDateTime.now().plus(30, ChronoUnit.MINUTES))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plus(30, ChronoUnit.MINUTES)))
                 .build();
 
         var lobbyPlayer = LobbyPlayer.builder()
@@ -1476,6 +1476,7 @@ public class DuelManagerTest {
         verify(lobbyPlayerRepository, never()).updateLobbyPlayer(any());
     }
 
+    @Test
     void testProcessSubmissionsThrowsNonDuelExceptionFromQuestionBankRepository() {
         var user = createRandomUser();
         var activeLobby = Lobby.builder()
@@ -1483,7 +1484,7 @@ public class DuelManagerTest {
                 .joinCode(PartyCodeGenerator.generateCode())
                 .status(LobbyStatus.ACTIVE)
                 .createdAt(StandardizedOffsetDateTime.now())
-                .expiresAt(StandardizedOffsetDateTime.now().plus(30, ChronoUnit.MINUTES))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plus(30, ChronoUnit.MINUTES)))
                 .build();
 
         var lobbyPlayer = LobbyPlayer.builder()
