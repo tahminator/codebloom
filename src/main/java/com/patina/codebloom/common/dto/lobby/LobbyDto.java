@@ -43,7 +43,7 @@ public class LobbyDto {
                 .id(lobby.getId())
                 .joinCode(lobby.getJoinCode())
                 .status(lobby.getStatus())
-                .expiresAt(lobby.getExpiresAt())
+                .expiresAt(lobby.getExpiresAt().orElse(null))
                 .createdAt(lobby.getCreatedAt())
                 .playerCount(lobby.getPlayerCount())
                 .winnerId(lobby.getWinnerId().orElse(null))

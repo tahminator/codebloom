@@ -14,6 +14,7 @@ import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.config.NoJdaRequired;
 import com.patina.codebloom.scheduled.pg.handler.JobNotifyHandler;
 import com.patina.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,7 @@ public class NotifyListenerTest extends NoJdaRequired {
         Lobby testLobby = Lobby.builder()
                 .joinCode("TEST-" + UUID.randomUUID().toString().substring(0, 8))
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(0)
                 .build();
 
@@ -73,7 +74,7 @@ public class NotifyListenerTest extends NoJdaRequired {
         Lobby testLobby = Lobby.builder()
                 .joinCode("UPD-" + UUID.randomUUID().toString().substring(0, 8))
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(0)
                 .build();
 

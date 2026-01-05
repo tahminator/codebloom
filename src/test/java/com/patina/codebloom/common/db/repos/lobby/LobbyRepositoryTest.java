@@ -61,7 +61,8 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         testLobby = Lobby.builder()
                 .joinCode(mockJoinCode)
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(1)
                 .tie(false)
                 .build();
@@ -114,7 +115,7 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         Lobby newActiveLobby = Lobby.builder()
                 .joinCode("ABC123")
                 .status(LobbyStatus.ACTIVE)
-                .expiresAt(StandardizedOffsetDateTime.now())
+                .expiresAt(java.util.Optional.of(StandardizedOffsetDateTime.now()))
                 .tie(false)
                 .build();
 
@@ -181,17 +182,19 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
 
         userRepository.createUser(u);
 
-        var l = Lobby.builder()
+        Lobby l = Lobby.builder()
                 .joinCode("ABC123")
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(1)
                 .tie(false)
                 .build();
 
         lobbyRepository.createLobby(l);
 
-        var lp = LobbyPlayer.builder().lobbyId(l.getId()).playerId(u.getId()).build();
+        LobbyPlayer lp =
+                LobbyPlayer.builder().lobbyId(l.getId()).playerId(u.getId()).build();
 
         lobbyPlayerRepository.createLobbyPlayer(lp);
 
@@ -223,7 +226,8 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         Lobby tieLobby = Lobby.builder()
                 .joinCode("ABC123")
                 .status(LobbyStatus.COMPLETED)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(2)
                 .tie(true)
                 .winnerId(Optional.empty())
@@ -244,7 +248,8 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         Lobby winnerLobby = Lobby.builder()
                 .joinCode("ABC123")
                 .status(LobbyStatus.COMPLETED)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(2)
                 .tie(false)
                 .winnerId(Optional.of(testUser.getId()))
@@ -266,7 +271,8 @@ public class LobbyRepositoryTest extends BaseRepositoryTest {
         Lobby invalidLobby = Lobby.builder()
                 .joinCode("ABC123")
                 .status(LobbyStatus.COMPLETED)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(2)
                 .tie(true)
                 .winnerId(Optional.of(UUID.randomUUID().toString()))

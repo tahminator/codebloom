@@ -23,7 +23,8 @@ public class Lobby {
 
     private OffsetDateTime createdAt;
 
-    private OffsetDateTime expiresAt;
+    @Builder.Default
+    private Optional<OffsetDateTime> expiresAt = Optional.empty();
 
     private int playerCount;
 
