@@ -317,8 +317,7 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
 
         assertNotNull(incompleteQuestions, "The list of incomplete questions should not be null");
         if (!incompleteQuestions.isEmpty()) {
-            boolean foundQuestion = incompleteQuestions.stream()
-                    .anyMatch(q -> q.getId() != null);
+            boolean foundQuestion = incompleteQuestions.stream().anyMatch(q -> q.getId() != null);
             assertTrue(foundQuestion, "Returned questions should have valid IDs");
         }
 
