@@ -771,4 +771,39 @@ public class QuestionSqlRepository implements QuestionRepository {
 
         return questions;
     }
+
+    @Override
+    public ArrayList<Question> getAllIncompleteQuestionsWithNoJob() {
+        ArrayList<Question> questions = new ArrayList<>();
+        String sql = """
+        SELECT
+            q.*
+        FROM
+            "Question" q
+        WHERE (
+            (q."runtime" IS NULL OR q."runtime" = '')
+            OR (q."memory" IS NULL OR q."memory" = '')
+            OR (q."code" IS NULL OR q."code" = '')
+            OR (q."language" IS NULL OR q."language" = '')
+        )
+        AND NOT EXISTS (
+            SELECT 1
+            FROM "Job" j
+            WHERE j."questionId" = q.id::text
+            AND j.status IN ('INCOMPLETE', 'PROCESSING')
+        )
+        """;
+
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    questions.add(mapResultSetToQuestion(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve incomplete questions with no active job", e);
+        }
+        return questions;
+    }
 }

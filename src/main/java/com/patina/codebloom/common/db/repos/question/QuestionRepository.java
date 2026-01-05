@@ -68,6 +68,14 @@ public interface QuestionRepository {
     ArrayList<Question> getAllIncompleteQuestions();
 
     /**
+     * @note - Finds all incomplete questions that don't currently have an attached {@code INCOMPLETE} or
+     *     {@code PROCESSING} job attached.
+     * @return questions missing a runtime, memory, code, language, or description and no attached job with
+     *     {@code INCOMPLETE} or {@code PROCESSING}
+     */
+    ArrayList<Question> getAllIncompleteQuestionsWithNoJob();
+
+    /**
      * @note - Special case that will do a reverse-lookup on `QuestionTopic` to return all `Question` rows that do not
      *     have any assigned topics yet.
      */
