@@ -37,9 +37,7 @@ public class PartyManager {
                             new DuelException(HttpStatus.NOT_FOUND, "The party with the given code cannot be found."));
 
             var now = StandardizedOffsetDateTime.now();
-            if (lobby.getExpiresAt() != null
-                    && lobby.getExpiresAt().isPresent()
-                    && lobby.getExpiresAt().get().isBefore(now)) {
+            if (lobby.getExpiresAt().isPresent() && lobby.getExpiresAt().get().isBefore(now)) {
                 // TODO: Could possibly invalidate this party here if it hasn't been invalidated
                 // yet.
                 throw new DuelException(HttpStatus.GONE, "The lobby has expired and cannot be joined.");
@@ -132,7 +130,7 @@ public class PartyManager {
             Lobby lobby = Lobby.builder()
                     .joinCode(joinCode)
                     .status(LobbyStatus.AVAILABLE)
-                    .expiresAt(null)
+                    .expiresAt(Optional.empty())
                     .playerCount(1)
                     .winnerId(Optional.empty())
                     .build();

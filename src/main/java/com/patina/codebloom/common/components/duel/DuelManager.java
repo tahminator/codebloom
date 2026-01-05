@@ -184,7 +184,6 @@ public class DuelManager {
 
             var activeLobbyExpiresAt = activeLobby.getExpiresAt();
             if (!isDuelCleanup
-                    && activeLobbyExpiresAt != null
                     && activeLobbyExpiresAt.isPresent()
                     && activeLobbyExpiresAt.get().isAfter(StandardizedOffsetDateTime.now())) {
                 throw new DuelException(HttpStatus.CONFLICT, "This duel is not ready for expiration yet.");
