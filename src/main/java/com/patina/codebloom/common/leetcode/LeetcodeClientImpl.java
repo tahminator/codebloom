@@ -324,7 +324,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             String code = baseNode.path("code").asText();
             String langName = baseNode.path("lang").path("name").asText();
             String langVerboseName = baseNode.path("lang").path("verboseName").asText();
-            Lang lang = (langName != null && langVerboseName != null) ? new Lang(langName, langVerboseName) : null;
+            Lang lang = (Strings.isNullOrEmpty(langName) || Strings.isNullOrEmpty(langVerboseName))
+                    ? null
+                    : new Lang(langName, langVerboseName);
 
             // if any of these are empty, then extremely likely that we're throttled.
             if (Strings.isNullOrEmpty(runtimeDisplay) || Strings.isNullOrEmpty(memoryDisplay)) {

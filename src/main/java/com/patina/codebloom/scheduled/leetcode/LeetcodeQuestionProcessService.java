@@ -5,6 +5,7 @@ import com.patina.codebloom.common.db.models.job.JobStatus;
 import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.leetcode.LeetcodeClient;
 import com.patina.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
@@ -13,6 +14,7 @@ import io.github.bucket4j.BlockingBucket;
 import io.github.bucket4j.Bucket;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.extern.slf4j.Slf4j;
@@ -78,10 +80,10 @@ public class LeetcodeQuestionProcessService {
 
     @Scheduled(initialDelay = 0, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
     @Async
-    public void drainQueue() {
+    public CompletableFuture<Empty> drainQueue() {
         if (!LOCK.tryLock()) {
             log.info("thread attempted to drain queue, but queue is already being drained.");
-            return;
+            return CompletableFuture.completedFuture(Empty.of());
         }
 
         try {
@@ -111,6 +113,7 @@ public class LeetcodeQuestionProcessService {
         } finally {
             LOCK.unlock();
         }
+        return CompletableFuture.completedFuture(Empty.of());
     }
 
     /**
@@ -124,10 +127,6 @@ public class LeetcodeQuestionProcessService {
             jobRepository.updateJob(job);
             return;
         }
-        // reset db
-        // migrate
-        // run tests
-        // run dev
 
         log.info("Processing job {} for questionId: {}", job.getId(), job.getQuestionId());
         job.setAttempts(job.getAttempts() + 1);
@@ -139,14 +138,14 @@ public class LeetcodeQuestionProcessService {
         }
 
         try {
-            log.warn("Fetching question from backend with ID: {}", job.getQuestionId());
+            log.info("Fetching question from backend with ID: {}", job.getQuestionId());
             Question question = questionRepository.getQuestionById(job.getQuestionId());
 
             if (question == null) {
                 throw new RuntimeException("No question found in backend with ID: " + job.getQuestionId());
             }
 
-            log.debug("Found question: {} ({})", question.getQuestionTitle(), question.getQuestionSlug());
+            log.info("Found question: {} ({})", question.getQuestionTitle(), question.getQuestionSlug());
 
             boolean dataFound = false;
 
@@ -154,12 +153,12 @@ public class LeetcodeQuestionProcessService {
                     && !question.getSubmissionId().isEmpty()) {
                 try {
                     int submissionId = Integer.parseInt(question.getSubmissionId());
-                    log.debug("Fetching submission details from Leetcode for submission ID: {}", submissionId);
+                    log.info("Fetching submission details from Leetcode for submission ID: {}", submissionId);
 
                     var detailedSubmission = leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
 
                     if (detailedSubmission != null) {
-                        log.debug("Successfully fetched submission details for submission ID: {}", submissionId);
+                        log.info("Successfully fetched submission details for submission ID: {}", submissionId);
 
                         question.setRuntime(detailedSubmission.getRuntimeDisplay());
                         question.setMemory(detailedSubmission.getMemoryDisplay());
@@ -170,7 +169,7 @@ public class LeetcodeQuestionProcessService {
                         }
 
                         questionRepository.updateQuestion(question);
-                        log.debug("Successfully updated question ID: {} with submission details", question.getId());
+                        log.info("Successfully updated question ID: {} with submission details", question.getId());
                         dataFound = true;
                     } else {
                         log.warn("No detailed submission found for submission ID: {}", submissionId);

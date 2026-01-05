@@ -38,5 +38,5 @@ public class Job {
     private String questionId;
 
     @NotNullColumn
-    private Integer attempts;
+    private int attempts;
 }
