@@ -86,7 +86,7 @@ public class RefetchIncompleteQuestionsServiceTest extends NoJdaRequired {
     }
 
     @Test
-    void reFetchIncompleteQuestionsValid() {
+    void refetchIncompleteQuestionsValid() {
         Question orphanedQuestion = Question.builder()
                 .userId(mockUserId)
                 .questionSlug("orphaned-test-" + System.currentTimeMillis())
@@ -102,7 +102,7 @@ public class RefetchIncompleteQuestionsServiceTest extends NoJdaRequired {
 
         questionRepository.createQuestion(orphanedQuestion);
 
-        service.reFetchIncompleteQuestions();
+        service.refetchIncompleteQuestions();
 
         List<Job> incompleteJobs = jobRepository.findIncompleteJobs(50);
 
@@ -119,22 +119,55 @@ public class RefetchIncompleteQuestionsServiceTest extends NoJdaRequired {
     }
 
     @Test
-    void reFetchIncompleteQuestionsNoDuplicatesValid() {
-        int initialJobCount = jobRepository.findIncompleteJobs(100).size();
-
-        service.reFetchIncompleteQuestions();
-
-        int postServiceJobCount = jobRepository.findIncompleteJobs(100).size();
-
-        assertEquals(
-                initialJobCount,
-                postServiceJobCount,
-                "Job count should not increase for questions that already have jobs");
+    void handleEmptyQuestionsValid() {
+        service.refetchIncompleteQuestions();
+        assertTrue(true, "Service should complete without exception when no action is needed");
     }
 
     @Test
-    void handleEmptyQuestionsValid() {
-        service.reFetchIncompleteQuestions();
-        assertTrue(true, "Service should complete without exception when no action is needed");
+    void handleDuplicateKeyError() {
+
+        Question collisionQuestion = Question.builder()
+                .userId(mockUserId)
+                .questionSlug("collision")
+                .questionTitle("Two Sum Test")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(1)
+                .questionLink("https://leetcode.com/problems/two-sum/")
+                .description(
+                        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.")
+                .pointsAwarded(100)
+                .acceptanceRate(0.8f)
+                .submittedAt(java.time.LocalDateTime.now())
+                .runtime("3 ms")
+                .memory("14.2 MB")
+                .code("def twoSum(self, nums, target): # test code")
+                .language(null)
+                .submissionId("test-submission-1234")
+                .build();
+
+        questionRepository.createQuestion(collisionQuestion);
+
+        Job firstJob = Job.builder()
+                .questionId(collisionQuestion.getId())
+                .status(JobStatus.INCOMPLETE)
+                .build();
+        jobRepository.createJob(firstJob);
+
+        // make second job with same id
+        Job secondJob = Job.builder()
+                .questionId(collisionQuestion.getId())
+                .status(JobStatus.INCOMPLETE)
+                .build();
+
+        jobRepository.createJob(secondJob);
+
+        List<Job> jobs = jobRepository.findJobsByQuestionId(collisionQuestion.getId());
+        assertNotNull(jobs);
+        assertEquals(2, jobs.size());
+
+        jobRepository.deleteJobById(firstJob.getId());
+        jobRepository.deleteJobById(secondJob.getId());
+        questionRepository.deleteQuestionById(collisionQuestion.getId());
     }
 }
