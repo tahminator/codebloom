@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.patina.codebloom.common.components.duel.DuelException;
 import com.patina.codebloom.common.components.duel.DuelManager;
 import com.patina.codebloom.common.dto.ApiResponder;
 import com.patina.codebloom.common.dto.lobby.DuelData;
@@ -38,7 +39,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testRegisterAddsEmitterToSet() throws IOException {
+    void testRegisterAddsEmitterToSet() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
@@ -51,7 +52,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testRegisterSendsInitialData() throws IOException {
+    void testRegisterSendsInitialData() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
@@ -63,7 +64,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testRegisterHandlesExceptionAndRemovesEmitter() throws IOException {
+    void testRegisterHandlesExceptionAndRemovesEmitter() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
@@ -76,7 +77,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testRegisterDoesNotAddDuplicateEmitter() throws IOException {
+    void testRegisterDoesNotAddDuplicateEmitter() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
@@ -89,7 +90,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testDeregisterRemovesPartyId() throws IOException {
+    void testDeregisterRemovesPartyId() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
@@ -102,7 +103,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testHandleWithValidPartyId() throws IOException {
+    void testHandleWithValidPartyId() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
@@ -115,7 +116,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testHandleWithInvalidPartyId() throws IOException {
+    void testHandleWithInvalidPartyId() throws IOException, DuelException {
         String partyId = "non-existent-party";
 
         lobbyNotifyHandler.handle(partyId);
@@ -125,7 +126,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testGetDataSuccess() throws IOException {
+    void testGetDataSuccess() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
@@ -137,7 +138,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testGetDataFailure() throws IOException {
+    void testGetDataFailure() throws IOException, DuelException {
         String partyId = "test-party-id";
         when(duelManager.generateDuelData(partyId)).thenThrow(new RuntimeException("Database connection failed"));
 
@@ -147,7 +148,7 @@ public class LobbyNotifyHandlerTest {
     }
 
     @Test
-    void testRegisterCleansUpEmptySetAfterException() throws IOException {
+    void testRegisterCleansUpEmptySetAfterException() throws IOException, DuelException {
         String partyId = "test-party-id";
         DuelData mockDuelData = DuelData.DEFAULT;
         when(duelManager.generateDuelData(partyId)).thenReturn(mockDuelData);
