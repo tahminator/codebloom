@@ -1,6 +1,7 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { ApiURL } from "@/lib/api/common/apiURL";
 import { fetchEventSource } from "@/lib/api/common/fetchEventSource";
+import { useGetCurrentDuelOrPartyQuery } from "@/lib/api/queries/duels";
 import { Api } from "@/lib/api/types";
 import { useEffect, useMemo, useState } from "react";
 
@@ -14,7 +15,41 @@ type FinalDuelStreamData = DuelStreamData & {
   status: "success" | "pending" | "error";
 };
 
-export const useDuelData = (lobbyCode: string): FinalDuelStreamData => {
+export const useMyDuelOrPartyData = (): FinalDuelStreamData => {
+  const { data, status, error } = useGetCurrentDuelOrPartyQuery();
+  const d = useDuelOrPartyData(data?.payload?.code || "");
+
+  if (status === "pending") {
+    return {
+      data: null,
+      isConnected: false,
+      error: null,
+      status: "pending",
+    };
+  }
+
+  if (status === "error") {
+    return {
+      data: null,
+      isConnected: false,
+      error,
+      status: "error",
+    };
+  }
+
+  if (!data.success) {
+    return {
+      data: null,
+      isConnected: false,
+      error: null,
+      status: "success",
+    };
+  }
+
+  return d;
+};
+
+export const useDuelOrPartyData = (lobbyCode: string): FinalDuelStreamData => {
   const [state, setState] = useState<DuelStreamData>({
     data: null,
     isConnected: false,
