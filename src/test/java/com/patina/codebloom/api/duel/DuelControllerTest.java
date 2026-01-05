@@ -384,7 +384,7 @@ public class DuelControllerTest {
 
     @Test
     @DisplayName("SSE endpoint - lobby does not exist")
-    void getDuelDataLobbyDoesNotExist() {
+    void getDuelDataLobbyDoesNotExist() throws DuelException {
         when(env.isProd()).thenReturn(false);
 
         when(lobbyRepository.findActiveLobbyByJoinCode(any())).thenReturn(Optional.empty());
