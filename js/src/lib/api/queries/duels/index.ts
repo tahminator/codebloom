@@ -116,14 +116,14 @@ async function endParty() {
 }
 
 // Current
-export const useGetCurrentDuelQuery = () => {
+export const useGetCurrentDuelOrPartyQuery = () => {
   return useQuery({
     queryKey: ["party"],
-    queryFn: getCurrentDuel,
+    queryFn: getCurrentDuelOrParty,
   });
 };
 
-async function getCurrentDuel() {
+async function getCurrentDuelOrParty() {
   const { url, method, res } = ApiURL.create("/api/duel/current", {
     method: "GET",
   });
