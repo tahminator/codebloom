@@ -99,6 +99,42 @@ public class JobSqlRepository implements JobRepository {
     }
 
     @Override
+    public List<Job> findJobsByQuestionId(String id) {
+        List<Job> result = new ArrayList<>();
+        String sql = """
+            SELECT
+                id,
+                "createdAt",
+                "processedAt",
+                "completedAt",
+                "nextAttemptAt",
+                status,
+                "questionId",
+                "attempts"
+            FROM
+                "Job"
+            WHERE
+                "questionId" = ?
+            ORDER BY
+                "nextAttemptAt" ASC
+            """;
+
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(parseResultSetToJob(rs));
+                }
+            }
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find jobs by question id of " + id, e);
+        }
+    }
+
+    @Override
     public List<Job> findIncompleteJobs(final int maxJobs) {
         List<Job> result = new ArrayList<>();
         String sql = """

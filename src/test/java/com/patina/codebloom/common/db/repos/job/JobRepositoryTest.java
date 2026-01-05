@@ -1,6 +1,7 @@
 package com.patina.codebloom.common.db.repos.job;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -28,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Slf4j
 public class JobRepositoryTest extends BaseRepositoryTest {
 
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
     private Job testJob;
     private String mockQuestionId = UUID.randomUUID().toString();
 
@@ -94,5 +95,21 @@ public class JobRepositoryTest extends BaseRepositoryTest {
         assertNotNull(updatedJob.getProcessedAt());
         assertNotNull(updatedJob.getCompletedAt());
         assertNotNull(updatedJob.getNextAttemptAt());
+    }
+
+    @Test
+    @Order(4)
+    void testFindJobsByQuestionId() {
+        List<Job> jobs = jobRepository.findJobsByQuestionId(mockQuestionId);
+
+        assertNotNull(jobs, "The returned list should never be null");
+        assertFalse(jobs.isEmpty(), "The list should contain at least the test job created in setup");
+
+        boolean containsTestJob = jobs.stream().anyMatch(j -> j.getId().equals(testJob.getId()));
+
+        assertTrue(containsTestJob, "The list should contain the specific test job associated with this question ID");
+
+        boolean allMatchId = jobs.stream().allMatch(j -> j.getQuestionId().equals(mockQuestionId));
+        assertTrue(allMatchId, "All returned jobs must match the requested question ID");
     }
 }
