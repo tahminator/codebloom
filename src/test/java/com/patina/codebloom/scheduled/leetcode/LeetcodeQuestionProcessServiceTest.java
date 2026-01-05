@@ -11,9 +11,11 @@ import com.patina.codebloom.common.db.models.question.Question;
 import com.patina.codebloom.common.db.models.question.QuestionDifficulty;
 import com.patina.codebloom.common.db.repos.job.JobRepository;
 import com.patina.codebloom.common.db.repos.question.QuestionRepository;
+import com.patina.codebloom.common.dto.Empty;
 import com.patina.codebloom.common.time.StandardizedOffsetDateTime;
 import com.patina.codebloom.config.NoJdaRequired;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -176,5 +178,47 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
     @Test
     void drainQueueValid() {
         service.drainQueue();
+    }
+
+    @Test
+    void maxAttemptsReached() {
+
+        Question tempQuestion = Question.builder()
+                .userId(mockUserId)
+                .questionSlug("max-attempts-test-" + System.currentTimeMillis())
+                .questionTitle("Max Attempts Test")
+                .questionDifficulty(QuestionDifficulty.Easy)
+                .questionNumber(99)
+                .questionLink("https://leetcode.com/problems/max-attempts-test/")
+                .description("Test for max attempts sentinel value")
+                .pointsAwarded(120)
+                .acceptanceRate(0.7f)
+                .submittedAt(java.time.LocalDateTime.now())
+                .submissionId("99999")
+                .build();
+
+        tempQuestion = questionRepository.createQuestion(tempQuestion);
+
+        Job maxAttemptJob = Job.builder()
+                .questionId(tempQuestion.getId())
+                .status(JobStatus.INCOMPLETE)
+                .nextAttemptAt(StandardizedOffsetDateTime.now().minusHours(1))
+                .build();
+
+        jobRepository.createJob(maxAttemptJob);
+
+        CompletableFuture<Empty> future = service.drainQueue();
+        future.join();
+
+        Job updatedJob = jobRepository.findJobById(maxAttemptJob.getId());
+        assertNotNull(updatedJob);
+        assertEquals(JobStatus.COMPLETE, updatedJob.getStatus());
+
+        Question updatedQuestion = questionRepository.getQuestionById(tempQuestion.getId());
+        assertNotNull(updatedQuestion);
+        assertEquals("99999", updatedQuestion.getSubmissionId());
+
+        jobRepository.deleteJobById(maxAttemptJob.getId());
+        questionRepository.deleteQuestionById(tempQuestion.getId());
     }
 }
