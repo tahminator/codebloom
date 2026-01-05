@@ -4,6 +4,10 @@ set shell := ["bash", "-uc"]
 migrate *args:
   dotenvx run -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db {{args}}
 
+# Drop local DB
+drop *args:
+  dotenvx run -- ./mvnw flyway:clean -Dflyway.locations=filesystem:./db -Dflyway.cleanDisabled=false {{args}}
+
 # Manually migrate STAGING DB if needed (CAREFUL!!!)
 migrate-stg *args:
   dotenvx run -f .env.staging -- ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration {{args}}
