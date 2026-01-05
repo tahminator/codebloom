@@ -309,4 +309,19 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
                 countWithPastStart,
                 countWithFutureStart);
     }
+
+    @Test
+    @Order(14)
+    void testGetAllIncompleteQuestionsWithNoJob() {
+        List<Question> incompleteQuestions = questionRepository.getAllIncompleteQuestionsWithNoJob();
+
+        assertNotNull(incompleteQuestions, "The list of incomplete questions should not be null");
+        if (!incompleteQuestions.isEmpty()) {
+            boolean foundQuestion = incompleteQuestions.stream()
+                    .anyMatch(q -> q.getId() != null);
+            assertTrue(foundQuestion, "Returned questions should have valid IDs");
+        }
+
+        log.info("Successfully retrieved {} incomplete questions with no associated job", incompleteQuestions.size());
+    }
 }
