@@ -104,21 +104,28 @@ public class DuelManager {
                 .collect(Collectors.toList());
     }
 
-    public DuelData generateDuelData(final String lobbyId) {
-        var fetchedLobby =
-                lobbyRepository.findLobbyById(lobbyId).map(LobbyDto::fromLobby).orElse(null);
+    public DuelData generateDuelData(final String lobbyId) throws DuelException {
+        try {
+            var fetchedLobby = lobbyRepository
+                    .findLobbyById(lobbyId)
+                    .map(LobbyDto::fromLobby)
+                    .orElse(null);
 
-        List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId).stream()
-                .map(lq -> questionBankRepository.getQuestionById(lq.getQuestionBankId()))
-                .map(QuestionBankDto::fromQuestionBank)
-                .collect(Collectors.toList());
+            List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId).stream()
+                    .map(lq -> questionBankRepository.getQuestionById(lq.getQuestionBankId()))
+                    .map(QuestionBankDto::fromQuestionBank)
+                    .collect(Collectors.toList());
 
-        return DuelData.builder()
-                .lobby(fetchedLobby)
-                .questions(lobbyQuestions)
-                .players(buildPlayersInLobby(lobbyId))
-                .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
-                .build();
+            return DuelData.builder()
+                    .lobby(fetchedLobby)
+                    .questions(lobbyQuestions)
+                    .players(buildPlayersInLobby(lobbyId))
+                    .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
+                    .build();
+        } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
+            throw new DuelException(e);
+        }
     }
 
     /**
@@ -159,7 +166,6 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
@@ -210,7 +216,6 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
@@ -228,7 +233,6 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
@@ -244,6 +248,7 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
     }
@@ -296,6 +301,7 @@ public class DuelManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
             throw new DuelException(e);
         }
     }
