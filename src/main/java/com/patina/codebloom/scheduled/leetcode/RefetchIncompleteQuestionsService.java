@@ -30,7 +30,7 @@ public class RefetchIncompleteQuestionsService {
     }
 
     @Scheduled(initialDelay = 0, fixedDelay = 24, timeUnit = TimeUnit.HOURS)
-    public void reFetchIncompleteQuestions() {
+    public void refetchIncompleteQuestions() {
         ArrayList<Question> questions = questionRepository.getAllIncompleteQuestionsWithNoJob();
 
         if (questions.isEmpty()) {
