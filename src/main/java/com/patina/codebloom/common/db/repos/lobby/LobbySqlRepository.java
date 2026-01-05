@@ -30,7 +30,7 @@ public class LobbySqlRepository implements LobbyRepository {
                 .joinCode(resultSet.getString("joinCode"))
                 .status(LobbyStatus.valueOf(resultSet.getString("status")))
                 .createdAt(resultSet.getObject("createdAt", OffsetDateTime.class))
-                .expiresAt(resultSet.getObject("expiresAt", OffsetDateTime.class))
+                .expiresAt(Optional.of(resultSet.getObject("expiresAt", OffsetDateTime.class)))
                 .playerCount(resultSet.getInt("playerCount"))
                 .winnerId(Optional.ofNullable(resultSet.getString("winnerId")))
                 .tie(resultSet.getBoolean("tie"))
@@ -55,7 +55,12 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("id", UUID.fromString(lobby.getId()));
             stmt.setString("joinCode", lobby.getJoinCode());
             stmt.setObject("status", lobby.getStatus().name(), java.sql.Types.OTHER);
-            stmt.setObject("expiresAt", StandardizedOffsetDateTime.normalize(lobby.getExpiresAt()));
+            stmt.setObject(
+                    "expiresAt",
+                    lobby.getExpiresAt().isPresent()
+                            ? StandardizedOffsetDateTime.normalize(
+                                    lobby.getExpiresAt().get())
+                            : null);
             stmt.setInt("playerCount", lobby.getPlayerCount());
             stmt.setObject("winnerId", lobby.getWinnerId().map(UUID::fromString).orElse(null));
             stmt.setBoolean("tie", lobby.isTie());
@@ -420,7 +425,12 @@ public class LobbySqlRepository implements LobbyRepository {
             stmt.setObject("id", UUID.fromString(lobby.getId()));
             stmt.setObject("winnerId", lobby.getWinnerId().map(UUID::fromString).orElse(null));
             stmt.setBoolean("tie", lobby.isTie());
-            stmt.setObject("expiresAt", StandardizedOffsetDateTime.normalize(lobby.getExpiresAt()));
+            stmt.setObject(
+                    "expiresAt",
+                    lobby.getExpiresAt().isPresent()
+                            ? StandardizedOffsetDateTime.normalize(
+                                    lobby.getExpiresAt().get())
+                            : null);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected == 1;

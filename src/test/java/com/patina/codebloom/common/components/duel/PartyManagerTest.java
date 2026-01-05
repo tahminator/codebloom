@@ -265,7 +265,7 @@ public class PartyManagerTest {
         Lobby mockLobby = Lobby.builder()
                 .id(randomUUID())
                 .joinCode(partyCode)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .status(LobbyStatus.AVAILABLE)
                 .playerCount(1)
                 .winnerId(Optional.empty())
@@ -292,7 +292,7 @@ public class PartyManagerTest {
                 .id(randomUUID())
                 .joinCode(partyCode)
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(2)
                 .winnerId(Optional.empty())
                 .build();
@@ -317,7 +317,7 @@ public class PartyManagerTest {
         Lobby mockLobby = Lobby.builder()
                 .id(randomUUID())
                 .joinCode(partyCode)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .status(LobbyStatus.AVAILABLE)
                 .playerCount(1)
                 .winnerId(Optional.empty())
@@ -325,7 +325,7 @@ public class PartyManagerTest {
 
         Lobby existingLobby = Lobby.builder()
                 .id(randomUUID())
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .status(LobbyStatus.AVAILABLE)
                 .winnerId(Optional.empty())
                 .build();
@@ -353,7 +353,7 @@ public class PartyManagerTest {
                 .id(randomUUID())
                 .joinCode(partyCode)
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(1)
                 .winnerId(Optional.empty())
                 .build();
@@ -361,7 +361,7 @@ public class PartyManagerTest {
         Lobby activeLobby = Lobby.builder()
                 .id(randomUUID())
                 .status(LobbyStatus.ACTIVE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .winnerId(Optional.empty())
                 .build();
 
@@ -389,7 +389,7 @@ public class PartyManagerTest {
                 .id(randomUUID())
                 .joinCode(partyCode)
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(1)
                 .winnerId(Optional.empty())
                 .build();
@@ -421,7 +421,7 @@ public class PartyManagerTest {
                 .joinCode(partyCode)
                 .status(LobbyStatus.AVAILABLE)
                 .playerCount(1)
-                .expiresAt(pastTime)
+                .expiresAt(Optional.of(pastTime))
                 .winnerId(Optional.empty())
                 .build();
 
@@ -484,7 +484,7 @@ public class PartyManagerTest {
                 .id(lobbyId)
                 .joinCode("ABC123")
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(OffsetDateTime.now().plusMinutes(30))
+                .expiresAt(Optional.of(OffsetDateTime.now().plusMinutes(30)))
                 .playerCount(3)
                 .winnerId(Optional.empty())
                 .build();
@@ -550,7 +550,7 @@ public class PartyManagerTest {
                 .id(lobbyId)
                 .joinCode("ABC123")
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(OffsetDateTime.now().plusMinutes(30))
+                .expiresAt(Optional.of(OffsetDateTime.now().plusMinutes(30)))
                 .playerCount(3)
                 .winnerId(Optional.empty())
                 .build();
@@ -629,7 +629,7 @@ public class PartyManagerTest {
                 .id(lobbyId)
                 .joinCode("ABC123")
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(OffsetDateTime.now().plusMinutes(30))
+                .expiresAt(Optional.of(OffsetDateTime.now().plusMinutes(30)))
                 .playerCount(1)
                 .winnerId(Optional.empty())
                 .build();

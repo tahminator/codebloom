@@ -50,7 +50,7 @@ public class LobbyPlayerRepositoryTest extends BaseRepositoryTest {
         testLobby = Lobby.builder()
                 .joinCode(mockJoinCode)
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(StandardizedOffsetDateTime.now().plusHours(1))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
                 .playerCount(1)
                 .winnerId(Optional.empty())
                 .build();

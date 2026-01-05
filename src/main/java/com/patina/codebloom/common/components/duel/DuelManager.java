@@ -152,7 +152,7 @@ public class DuelManager {
             }
 
             lobby.setStatus(LobbyStatus.ACTIVE);
-            lobby.setExpiresAt(StandardizedOffsetDateTime.now().plusMinutes(30));
+            lobby.setExpiresAt(Optional.of(StandardizedOffsetDateTime.now().plusMinutes(30)));
             lobbyRepository.updateLobby(lobby);
 
             QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
@@ -185,7 +185,8 @@ public class DuelManager {
             var activeLobbyExpiresAt = activeLobby.getExpiresAt();
             if (!isDuelCleanup
                     && activeLobbyExpiresAt != null
-                    && activeLobbyExpiresAt.isAfter(StandardizedOffsetDateTime.now())) {
+                    && activeLobbyExpiresAt.isPresent()
+                    && activeLobbyExpiresAt.get().isAfter(StandardizedOffsetDateTime.now())) {
                 throw new DuelException(HttpStatus.CONFLICT, "This duel is not ready for expiration yet.");
             }
 

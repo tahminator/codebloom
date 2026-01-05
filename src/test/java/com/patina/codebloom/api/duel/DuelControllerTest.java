@@ -412,7 +412,7 @@ public class DuelControllerTest {
         Lobby activeLobby = Lobby.builder()
                 .id(lobbyId)
                 .joinCode(PartyCodeGenerator.generateCode())
-                .expiresAt(StandardizedOffsetDateTime.now().plus(1, ChronoUnit.HOURS))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plus(1, ChronoUnit.HOURS)))
                 .status(LobbyStatus.ACTIVE)
                 .playerCount(2)
                 .build();
@@ -438,7 +438,7 @@ public class DuelControllerTest {
         Lobby availableLobby = Lobby.builder()
                 .id(lobbyId)
                 .joinCode(PartyCodeGenerator.generateCode())
-                .expiresAt(StandardizedOffsetDateTime.now().plus(1, ChronoUnit.HOURS))
+                .expiresAt(Optional.of(StandardizedOffsetDateTime.now().plus(1, ChronoUnit.HOURS)))
                 .status(LobbyStatus.AVAILABLE)
                 .playerCount(1)
                 .build();
@@ -578,7 +578,7 @@ public class DuelControllerTest {
                 .id(UUID.randomUUID().toString())
                 .joinCode(PartyCodeGenerator.generateCode())
                 .status(LobbyStatus.AVAILABLE)
-                .expiresAt(OffsetDateTime.now().plusMinutes(30))
+                .expiresAt(Optional.of(OffsetDateTime.now().plusMinutes(30)))
                 .playerCount(3)
                 .build();
 
