@@ -29,6 +29,14 @@ public interface JobRepository {
     Job findJobById(String id);
 
     /**
+     * Returns all the jobs with the specified question id.
+     *
+     * @param id
+     * @return A list of jobs that are joined to the question id.
+     */
+    List<Job> findJobsByQuestionId(String id);
+
+    /**
      * Finds incomplete jobs ordered by nextAttemptAt (earliest first).
      *
      * @param maxJobs the maximum number of jobs to return
