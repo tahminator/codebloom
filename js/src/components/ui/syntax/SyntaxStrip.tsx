@@ -17,7 +17,7 @@ export default function SyntaxStrip({
       case "sm":
         return "0.75em";
       case "md":
-        return "0.875em";
+        return "0.8em";
       case "lg":
         return "1em";
     }

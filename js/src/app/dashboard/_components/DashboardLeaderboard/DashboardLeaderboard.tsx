@@ -116,10 +116,16 @@ export default function LeaderboardForDashboard({
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Flex
         direction={{ base: "column", md: "row" }}
-        justify={"space-between"}
+        justify={{ base: "center", md: "space-between" }}
+        align={{ base: "center", md: "center" }}
+        wrap={"wrap"}
         w={"100%"}
+        gap={{ base: "xs", md: "md" }}
+        mb={{ base: "xs", md: "sm" }}
       >
-        <LeaderboardMetadata syntaxStripSize={"md"} />
+        <Flex align="center" gap="sm" style={{ flex: 2, minWidth: 0 }}>
+          <LeaderboardMetadata syntaxStripSize={"md"} />
+        </Flex>
         <Button
           variant={"light"}
           component={Link}
@@ -128,6 +134,13 @@ export default function LeaderboardForDashboard({
               `/leaderboard?${selectedFilterKey}=true`
             : "/leaderboard"
           }
+          style={{
+            minWidth: 110,
+            marginLeft: "12px",
+            marginTop: 0,
+            flexShrink: 0,
+            alignSelf: "center",
+          }}
         >
           View all
         </Button>
