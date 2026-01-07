@@ -15,11 +15,11 @@ export default function SyntaxStrip({
   const s = (() => {
     switch (size) {
       case "sm":
-        return "0.75em";
+        return "0.62em";
       case "md":
-        return "0.875em";
+        return "0.72em";
       case "lg":
-        return "1em";
+        return "0.85em";
     }
   })();
 
@@ -33,9 +33,11 @@ export default function SyntaxStrip({
         minWidth: 0,
         maxWidth: "100%",
         margin: 0,
-        padding: "2px 6px",
+        marginRight: 16,
+        padding: "1.5px 12px",
         borderRadius: "4px",
         fontSize: s,
+        lineHeight: 1.15,
       }}
       wrapLongLines={true}
     >
