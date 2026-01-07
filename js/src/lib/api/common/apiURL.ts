@@ -229,7 +229,7 @@ export class ApiURL<
     }
 
     for (const [k, v] of Object.entries(queries)) {
-      if (v != null) {
+      if (v !== null && v !== undefined) {
         url.searchParams.set(k, String(v));
       }
     }
