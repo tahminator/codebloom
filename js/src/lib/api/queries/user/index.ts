@@ -1,6 +1,7 @@
 import { ApiURL } from "@/lib/api/common/apiURL";
 import { LeetcodeTopicEnum } from "@/lib/api/types/autogen/schema";
 import { usePagination } from "@/lib/hooks/usePagination";
+import useURLDateRange from "@/lib/hooks/useURLDateRange";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { notifications } from "@mantine/notifications";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -49,18 +50,14 @@ export const useUserSubmissionsQuery = ({
       debounce: 500,
     },
   );
-  const [startDate, setStartDate, debouncedStartDate] = useURLState<
-    string | undefined
-  >("startDate", "", {
-    enabled: tieToUrl,
-    debounce: 500,
-  });
-  const [endDate, setEndDate, debouncedEndDate] = useURLState<
-    string | undefined
-  >("endDate", "", {
-    enabled: tieToUrl,
-    debounce: 500,
-  });
+  const {
+    startDate,
+    endDate,
+    setStartDate,
+    setEndDate,
+    debouncedStartDate,
+    debouncedEndDate,
+  } = useURLDateRange(tieToUrl);
 
   const [_topics, _setTopics] = useURLState<string>("topics", "", {
     enabled: tieToUrl,
@@ -242,21 +239,18 @@ async function fetchUserSubmissions({
   startDate?: string;
   endDate?: string;
 }) {
-  // Preprocess dates only if they don't have time components
-  // If startDate is just a date (YYYY-MM-DD), set to start of day as ISO string
-  // If endDate is just a date (YYYY-MM-DD), set to end of day as ISO string
-  // Otherwise, keep the existing time components
+  // if seconds are not included, use start of day and end of day
   const processedStartDate =
     startDate ?
       startDate.includes(":") ?
-        startDate
-      : d(startDate).startOf("day").toISOString()
+        d.utc(startDate).toISOString()
+      : d(startDate).startOf("day").utc().toISOString()
     : undefined;
   const processedEndDate =
     endDate ?
       endDate.includes(":") ?
-        endDate
-      : d(endDate).endOf("day").toISOString()
+        d.utc(endDate).toISOString()
+      : d(endDate).endOf("day").utc().toISOString()
     : undefined;
 
   const { url, method, res } = ApiURL.create("/api/user/{userId}/submissions", {
