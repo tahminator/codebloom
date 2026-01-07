@@ -45,7 +45,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
+            log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
     }
@@ -56,7 +56,7 @@ public class PartyManager {
         } catch (DuelException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
+            log.error("Exception thrown in PartyManager", e);
             throw new DuelException(e);
         }
     }
