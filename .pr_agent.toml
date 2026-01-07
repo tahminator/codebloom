@@ -1,0 +1,24 @@
+[pr_code_suggestions]
+# Enable committable code suggestions
+commitable_code_suggestions = true
+dual_publishing_score_threshold = -1  # -1 to disable dual publishing
+focus_only_on_problems = true
+extra_instructions = ""
+enable_help_text = false
+enable_chat_text = false
+persistent_comment = true
+max_history_len = 4
+publish_output_no_suggestions = true
+# Enable apply suggestions checkbox
+apply_suggestions_checkbox = true
+# Suggestions scoring
+suggestions_score_threshold = 0  # [0-10] - recommend not to set above 8
+new_score_mechanism = true
+new_score_mechanism_th_high = 9
+new_score_mechanism_th_medium = 7
+# Params for '/improve --extended' mode
+auto_extended_mode = true
+num_code_suggestions_per_chunk = 3
+num_best_practice_suggestions = 1
+max_number_of_calls = 3
+parallel_calls = true

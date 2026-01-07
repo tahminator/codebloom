@@ -22,6 +22,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci
+
       - name: Run 'Check Notion PR' composite action
         uses: ./.github/composite/check-notion-pr
         id: notion_check
@@ -29,6 +36,23 @@ jobs:
           PR_ID: ${{ github.event.number }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Echo Notion context
+        run: |
+          echo "Context: ${{ steps.notion_check.outputs.context }}"
+
+      - name: Qodo PR-Agent
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          config.model: "gemini/gemini-2.5-pro"
+          config.fallback_models: '["gemini/gemini-2.5-pro"]'
+          config.verbosity_level: "2"
+          GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          pr_reviewer.extra_instructions: "Review this PR in the context of the following Notion task: ${{ steps.notion_check.outputs.context }}"
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "true"
 
       - name: Run 'Check Notion Commits' composite action
         uses: ./.github/composite/check-notion-commits
