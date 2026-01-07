@@ -24,10 +24,10 @@ export default function UserSubmissionsPage() {
           <Button
             variant={"outline"}
             onClick={() => {
-              navigate(-1);
+              navigate(userId);
             }}
           >
-            ← Go back
+            ← Go to profile
           </Button>
         </Center>
         <UserSubmissions userId={userId} />
