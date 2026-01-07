@@ -58,9 +58,14 @@ PGPASSWORD="$DATABASE_PASSWORD" psql \
         WHEN \"schoolEmail\" IS NOT NULL THEN 'test_' || encode(gen_random_bytes(4), 'hex') || '@example.com'
         ELSE NULL 
       END,
-      \"profileUrl\" = 'https://via.placeholder.com/150',
-      \"leetcodeUsername\" = NULL
+      \"profileUrl\" = 'https://via.placeholder.com/150'
     WHERE \"admin\" IS NOT TRUE;
+
+    -- Scramble admin user data
+    UPDATE \"User\" 
+    SET 
+      \"leetcodeUsername\" = NULL
+    WHERE \"admin\" IS TRUE;
 
     -- Update DiscordClubMetadata for 'Patina Network'
     UPDATE \"DiscordClubMetadata\" m
