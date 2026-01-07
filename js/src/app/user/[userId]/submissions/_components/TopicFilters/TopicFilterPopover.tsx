@@ -19,7 +19,7 @@ export default function TopicFilterPopover({
   onChange,
   onClear,
 }: TopicFilterPopoverProps) {
-  const [opened, { toggle }] = useDisclosure(false);
+  const [opened, { toggle, open, close }] = useDisclosure(false);
   const [search, setSearch] = useState("");
 
   const filteredTopics = useMemo(
@@ -35,14 +35,18 @@ export default function TopicFilterPopover({
   );
 
   return (
-    <Popover
-      opened={opened}
-      position="bottom-start"
-      closeOnEscape
-      withinPortal={false}
-      shadow="md"
-      transitionProps={{ keepMounted: false }}
-    >
+      <Popover
+        opened={opened}
+        onChange={(o) => (o ? open() : close())}
+        position="bottom-start"
+        closeOnEscape
+        withinPortal
+        zIndex={10000}
+        closeOnClickOutside={false}   
+        shadow="md"
+        transitionProps={{ keepMounted: true }}  
+      >
+
       <Popover.Target>
         <Button fullWidth variant="light" color="gray" onClick={toggle}>
           Topics
