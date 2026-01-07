@@ -469,7 +469,7 @@ jobs:
                       const commitHash = '${{ needs.getPRHead.outputs.sha }}';
 
                       const results = ${{ toJSON(needs.*.result) }};
-                      const jobNames = ['getPRHead', 'checkExistingImage', 'sendMessage', 'backendTests', 'frontendTests', 'validateDBSchema', 'buildImage', 'promoteExisting', 'redeploy'];
+                      const jobNames = ['getPRHead', 'checkExistingImage', 'sendMessage', 'backendTests', 'backendPreTest', 'frontendTests', 'validateDBSchema', 'buildImage', 'promoteExisting', 'redeploy'];
                       const failedJobs = jobNames.filter((name, index) => results[index] === 'failure');
                       const cancelledJobs = jobNames.filter((name, index) => results[index] === 'cancelled');
                       const successJobs = jobNames.filter((name, index) => results[index] === 'success');
