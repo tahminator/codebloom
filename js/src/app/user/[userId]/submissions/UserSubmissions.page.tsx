@@ -24,7 +24,7 @@ export default function UserSubmissionsPage() {
           <Button
             variant={"outline"}
             onClick={() => {
-              navigate(userId);
+              navigate(`/user/${userId}`);
             }}
           >
             ← Go to profile
