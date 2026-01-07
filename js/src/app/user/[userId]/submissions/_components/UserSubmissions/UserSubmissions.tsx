@@ -139,6 +139,12 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                 </Flex>
               }
             />
+            <DateRangePopover
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
           </FilterDropdown>
         )}
       </Group>
