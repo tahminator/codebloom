@@ -40,6 +40,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DuelManager {
 
+    @FunctionalInterface
+    private interface DuelSupplier<T> {
+        T get() throws DuelException;
+    }
+
+    @FunctionalInterface
+    private interface DuelProcedure {
+        void run() throws DuelException;
+    }
+
     private static final int MAX_LEETCODE_SUBMISSIONS = 5;
 
     private final LobbyRepository lobbyRepository;
@@ -104,8 +114,30 @@ public class DuelManager {
                 .collect(Collectors.toList());
     }
 
-    public DuelData generateDuelData(final String lobbyId) throws DuelException {
+    private <T> T wrap(DuelSupplier<T> supplier) throws DuelException {
         try {
+            return supplier.get();
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
+            throw new DuelException(e);
+        }
+    }
+
+    private void wrap(DuelProcedure procedure) throws DuelException {
+        try {
+            procedure.run();
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
+            throw new DuelException(e);
+        }
+    }
+
+    public DuelData generateDuelData(final String lobbyId) throws DuelException {
+        return wrap(() -> {
             var fetchedLobby = lobbyRepository
                     .findLobbyById(lobbyId)
                     .map(LobbyDto::fromLobby)
@@ -122,10 +154,7 @@ public class DuelManager {
                     .players(buildPlayersInLobby(lobbyId))
                     .playerQuestions(buildPlayerSolvedQuestionsMap(lobbyId))
                     .build();
-        } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 
     /**
@@ -133,7 +162,7 @@ public class DuelManager {
      * @param isAdminOverride - If user is admin, we can start the duel without needing 2 players.
      */
     public void startDuel(final String playerId, final boolean isAdminOverride) throws DuelException {
-        try {
+        wrap(() -> {
             LobbyPlayer player = lobbyPlayerRepository
                     .findValidLobbyPlayerByPlayerId(playerId)
                     .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "You are not currently in a party!"));
@@ -164,16 +193,11 @@ public class DuelManager {
                     .build();
 
             lobbyQuestionRepository.createLobbyQuestion(lobbyQuestion);
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 
     public void endDuel(final String lobbyId, boolean isDuelCleanup) throws DuelException {
-        try {
+        wrap(() -> {
             var activeLobby = lobbyRepository
                     .findLobbyById(lobbyId)
                     .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "Duel cannot be found."));
@@ -216,16 +240,11 @@ public class DuelManager {
             activeLobby.setStatus(LobbyStatus.COMPLETED);
 
             lobbyRepository.updateLobby(activeLobby);
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 
     public Lobby getLobbyByUserId(String userId) throws DuelException {
-        try {
+        return wrap(() -> {
             var lobby = lobbyRepository
                     .findAvailableLobbyByLobbyPlayerPlayerId(userId)
                     .or(() -> lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(userId))
@@ -233,31 +252,21 @@ public class DuelManager {
                             new DuelException(HttpStatus.NOT_FOUND, "No duel or party found for the given player."));
 
             return lobby;
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 
     public Lobby getDuelByUserId(String userId) throws DuelException {
-        try {
+        return wrap(() -> {
             var lobby = lobbyRepository
                     .findActiveLobbyByLobbyPlayerPlayerId(userId)
                     .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "No duel found for the given player."));
 
             return lobby;
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 
     public int processSubmissions(User user, Lobby activeLobby) throws DuelException {
-        try {
+        return wrap(() -> {
             var lobbyPlayer = lobbyPlayerRepository
                     .findValidLobbyPlayerByPlayerId(user.getId())
                     .orElseThrow(() -> new DuelException(
@@ -301,11 +310,6 @@ public class DuelManager {
             lobbyPlayerRepository.updateLobbyPlayer(lobbyPlayer);
 
             return lobbyPlayerQuestions.size();
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in DuelManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 }

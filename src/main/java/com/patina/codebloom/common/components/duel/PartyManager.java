@@ -19,6 +19,16 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class PartyManager {
+    @FunctionalInterface
+    private interface DuelSupplier<T> {
+        T get() throws DuelException;
+    }
+
+    @FunctionalInterface
+    private interface DuelProcedure {
+        void run() throws DuelException;
+    }
+
     private static final int MAX_PLAYER_COUNT = 2;
 
     private final LobbyRepository lobbyRepository;
@@ -29,8 +39,30 @@ public class PartyManager {
         this.lobbyPlayerRepository = lobbyPlayerRepository;
     }
 
-    public void joinParty(String userId, String partyCode) throws DuelException {
+    private <T> T wrap(DuelSupplier<T> supplier) throws DuelException {
         try {
+            return supplier.get();
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
+            throw new DuelException(e);
+        }
+    }
+
+    private void wrap(DuelProcedure procedure) throws DuelException {
+        try {
+            procedure.run();
+        } catch (DuelException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception thrown in DuelManager", e);
+            throw new DuelException(e);
+        }
+    }
+
+    public void joinParty(String userId, String partyCode) throws DuelException {
+        wrap(() -> {
             var lobby = lobbyRepository
                     .findAvailableLobbyByJoinCode(partyCode)
                     .orElseThrow(() ->
@@ -73,16 +105,11 @@ public class PartyManager {
                 throw new DuelException(
                         HttpStatus.INTERNAL_SERVER_ERROR, "Failed to join party. Please try again later.");
             }
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in PartyManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 
     public void leaveParty(String userId) throws DuelException {
-        try {
+        wrap(() -> {
             LobbyPlayer existingLobbyPlayer = lobbyPlayerRepository
                     .findValidLobbyPlayerByPlayerId(userId)
                     .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "You are not currently in a lobby."));
@@ -107,16 +134,11 @@ public class PartyManager {
                 lobby.setStatus(LobbyStatus.AVAILABLE);
             }
             lobbyRepository.updateLobby(lobby);
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in PartyManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 
     public String createParty(String userId) throws DuelException {
-        try {
+        return wrap(() -> {
             var existingLobbyPlayer = lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(userId);
 
             if (existingLobbyPlayer.isPresent()) {
@@ -146,11 +168,6 @@ public class PartyManager {
             lobbyPlayerRepository.createLobbyPlayer(lobbyPlayer);
 
             return joinCode;
-        } catch (DuelException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception thrown in PartyManager", e);
-            throw new DuelException(e);
-        }
+        });
     }
 }
