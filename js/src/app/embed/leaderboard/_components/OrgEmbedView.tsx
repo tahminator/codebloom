@@ -82,8 +82,8 @@ export default function OrgLeaderboardEmbed() {
       <OrgHeader orgTag={activeFilter} />
       <Center mb="xs">
         <Button
-          component="a"
-          href="https://codebloom.patinanetwork.org"
+          component={Link}
+          to="/"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -180,6 +180,9 @@ export default function OrgLeaderboardEmbed() {
                       direction={"column"}
                       component={Link}
                       to={`/user/${entry.id}`}
+                      reloadDocument
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="group"
                     >
                       {entry.nickname ?
