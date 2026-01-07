@@ -134,10 +134,10 @@ export default function LeaderboardForDashboard({
               `/leaderboard?${selectedFilterKey}=true`
             : "/leaderboard"
           }
+          w="100%"
+          mt={{ base: "md", md: 0 }}
           style={{
             minWidth: 110,
-            marginLeft: "12px",
-            marginTop: 0,
             flexShrink: 0,
             alignSelf: "center",
           }}
