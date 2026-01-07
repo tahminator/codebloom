@@ -16,6 +16,9 @@ outputs:
   notion_id:
     description: "The parsed Notion ID"
     value: ${{ steps.parse_id.outputs.id }}
+  context:
+    description: "The Notion task title and description combined"
+    value: ${{ steps.check_notion.outputs.context }}
 
 runs:
   using: "composite"
@@ -71,7 +74,7 @@ runs:
             --header "Notion-Version: 2025-09-03" \
             --data "${BODY}" \
             https://api.notion.com/v1/data_sources/$NOTION_TASK_DB_ID/query \
-        | jq '(.results[0] // null) | {id: .properties.ID.unique_id.number, public_url: .public_url }')
+        | jq '(.results[0] // null) | {id: .properties.ID.unique_id.number, public_url: .public_url, page_id: .id, title: ((.properties."Task name".title // []) | map(.plain_text) | join("")) }')
 
         if [ -z "$result" ] || [ "$result" = "null" ] || [ "$result" = "[]" ]; then
             echo "found=false" >> "$GITHUB_OUTPUT"
@@ -90,9 +93,60 @@ runs:
                 echo "notion_id=null" >> "$GITHUB_OUTPUT"
             else
                 PUBLIC_URL=$(echo "$result" | jq -r '.public_url')
+                PAGE_ID=$(echo "$result" | jq -r '.page_id')
+                TITLE=$(echo "$result" | jq -r '.title // ""')
+                
+                # Fetch block children to get description
+                blocks_response=$(curl --request GET \
+                    --header "accept: application/json" \
+                    --header "Authorization: Bearer ${NOTION_SECRET}" \
+                    --header "Notion-Version: 2025-09-03" \
+                    "https://api.notion.com/v1/blocks/${PAGE_ID}/children")
+                
+                echo "=== Block Children Response ==="
+                echo "$blocks_response" | jq '.'
+                echo "==============================="
+                
+                # Extract text from all blocks and join them
+                DESCRIPTION=$(echo "$blocks_response" | jq -r '
+                  [.results[]? | 
+                    if .type == "paragraph" and (.paragraph.rich_text? // null) != null then 
+                      [.paragraph.rich_text[]? | .plain_text // ""] | join("")
+                    elif .type == "bulleted_list_item" and (.bulleted_list_item.rich_text? // null) != null then 
+                      "- " + ([.bulleted_list_item.rich_text[]? | .plain_text // ""] | join(""))
+                    elif .type == "numbered_list_item" and (.numbered_list_item.rich_text? // null) != null then 
+                      "- " + ([.numbered_list_item.rich_text[]? | .plain_text // ""] | join(""))
+                    elif .type == "heading_1" and (.heading_1.rich_text? // null) != null then 
+                      "# " + ([.heading_1.rich_text[]? | .plain_text // ""] | join(""))
+                    elif .type == "heading_2" and (.heading_2.rich_text? // null) != null then 
+                      "## " + ([.heading_2.rich_text[]? | .plain_text // ""] | join(""))
+                    elif .type == "heading_3" and (.heading_3.rich_text? // null) != null then 
+                      "### " + ([.heading_3.rich_text[]? | .plain_text // ""] | join(""))
+                    elif .type == "quote" and (.quote.rich_text? // null) != null then 
+                      "> " + ([.quote.rich_text[]? | .plain_text // ""] | join(""))
+                    elif .type == "to_do" and (.to_do.rich_text? // null) != null then 
+                      (if .to_do.checked then "[x] " else "[ ] " end) + ([.to_do.rich_text[]? | .plain_text // ""] | join(""))
+                    elif .type == "toggle" and (.toggle.rich_text? // null) != null then 
+                      [.toggle.rich_text[]? | .plain_text // ""] | join("")
+                    elif .type == "callout" and (.callout.rich_text? // null) != null then 
+                      [.callout.rich_text[]? | .plain_text // ""] | join("")
+                    elif .type == "code" and (.code.rich_text? // null) != null then 
+                      "```" + (.code.language // "") + "\n" + ([.code.rich_text[]? | .plain_text // ""] | join("")) + "\n```"
+                    else 
+                      empty 
+                    end
+                  ] | map(select(length > 0)) | join("\n")')
+                
+                CONTEXT="${TITLE}\n${DESCRIPTION}"
+                
                 echo "found=true" >> "$GITHUB_OUTPUT"
                 echo "public_url=$PUBLIC_URL" >> "$GITHUB_OUTPUT"
                 echo "notion_id=$PARSED_ID" >> "$GITHUB_OUTPUT"
+                {
+                  echo "context<<EOF"
+                  echo -e "${TITLE}\n${DESCRIPTION}"
+                  echo "EOF"
+                } >> "$GITHUB_OUTPUT"
             fi
         fi
 
