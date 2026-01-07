@@ -2,7 +2,9 @@ import { ApiURL } from "@/lib/api/common/apiURL";
 import { LeetcodeTopicEnum } from "@/lib/api/types/autogen/schema";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
+import { notifications } from "@mantine/notifications";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import d from "dayjs";
 import { useCallback, useEffect, useMemo } from "react";
 
 /**
@@ -47,6 +49,18 @@ export const useUserSubmissionsQuery = ({
       debounce: 500,
     },
   );
+  const [startDate, setStartDate, debouncedStartDate] = useURLState<
+    string | undefined
+  >("startDate", "", {
+    enabled: tieToUrl,
+    debounce: 500,
+  });
+  const [endDate, setEndDate, debouncedEndDate] = useURLState<
+    string | undefined
+  >("endDate", "", {
+    enabled: tieToUrl,
+    debounce: 500,
+  });
 
   const [_topics, _setTopics] = useURLState<string>("topics", "", {
     enabled: tieToUrl,
@@ -90,6 +104,8 @@ export const useUserSubmissionsQuery = ({
       pageSize,
       pointFilter,
       topics,
+      debouncedStartDate,
+      debouncedEndDate,
     ],
     queryFn: () =>
       fetchUserSubmissions({
@@ -99,9 +115,20 @@ export const useUserSubmissionsQuery = ({
         pageSize,
         pointFilter,
         topics,
+        startDate: debouncedStartDate,
+        endDate: debouncedEndDate,
       }),
     placeholderData: keepPreviousData,
   });
+
+  useEffect(() => {
+    if (query.status === "success" && !query.data.success) {
+      notifications.show({
+        message: query.data.message,
+        color: "red",
+      });
+    }
+  }, [query.data?.message, query.data?.success, query.status]);
 
   return {
     ...query,
@@ -118,6 +145,10 @@ export const useUserSubmissionsQuery = ({
     topics,
     setTopics,
     clearTopics,
+    startDate,
+    endDate,
+    setStartDate,
+    setEndDate,
   };
 };
 
@@ -199,6 +230,8 @@ async function fetchUserSubmissions({
   pageSize,
   pointFilter,
   topics,
+  startDate,
+  endDate,
 }: {
   page: number;
   userId: string;
@@ -206,7 +239,26 @@ async function fetchUserSubmissions({
   pageSize: number;
   pointFilter: boolean;
   topics?: string[];
+  startDate?: string;
+  endDate?: string;
 }) {
+  // Preprocess dates only if they don't have time components
+  // If startDate is just a date (YYYY-MM-DD), set to start of day as ISO string
+  // If endDate is just a date (YYYY-MM-DD), set to end of day as ISO string
+  // Otherwise, keep the existing time components
+  const processedStartDate =
+    startDate ?
+      startDate.includes(":") ?
+        startDate
+      : d(startDate).startOf("day").toISOString()
+    : undefined;
+  const processedEndDate =
+    endDate ?
+      endDate.includes(":") ?
+        endDate
+      : d(endDate).endOf("day").toISOString()
+    : undefined;
+
   const { url, method, res } = ApiURL.create("/api/user/{userId}/submissions", {
     method: "GET",
     params: {
@@ -218,6 +270,8 @@ async function fetchUserSubmissions({
       pageSize,
       pointFilter,
       topics,
+      startDate: processedStartDate,
+      endDate: processedEndDate,
     },
   });
 
