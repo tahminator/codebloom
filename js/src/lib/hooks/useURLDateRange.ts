@@ -15,12 +15,12 @@ type DateRangeStateObject = {
  * as `undefined` within the codebase.
  *
  * @returns {DateRangeStateObject} A paginator object containing:
- * - `startDate` (number): Start date as `string | undefined`.
- * - `endDate` (number): End date as `string | undefined`.
+ * - `startDate` (string | undefined): Start date.
+ * - `endDate` (string | undefined): End date.
  * - `setStartDate` (function): Set start date.
  * - `setEndDate` (function): Set end date.
- * - `debouncedStartDate` (number): Start date as `string | undefined`, debounced
- * - `debouncedEndDate` (number): End date as `string | undefined`, debounced
+ * - `debouncedStartDate` (string | undefined): Start date, debounced
+ * - `debouncedEndDate` (string | undefined): End date, debounced
  */
 export default function useURLDateRange(
   enabled = false,
