@@ -170,7 +170,7 @@ export default function SubmissionDetailsContent({
                 navigate(`/user/${userId}`);
               }}
             >
-              ← Go back to profile
+              ← Go to profile
             </Button>
           </Center>
           <Card shadow="xs" padding="lg" radius="lg" mt="xl">

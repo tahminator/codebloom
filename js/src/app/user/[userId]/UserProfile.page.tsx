@@ -1,6 +1,6 @@
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Center, Button, Flex, Box, Text } from "@mantine/core";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import ProfilePicture from "./_components/UserProfile/ProfilePicture/ProfilePicture";
 import UserProfileHeader from "./_components/UserProfile/UserProfileHeader";
@@ -9,7 +9,6 @@ import MiniUserSubmissions from "./submissions/_components/UserSubmissions/MiniU
 
 export default function UserProfilePage() {
   const { userId } = useParams();
-  const navigate = useNavigate();
 
   if (!userId) {
     return <ToastWithRedirect to={-1} message={"This user ID is not valid."} />;
@@ -17,16 +16,7 @@ export default function UserProfilePage() {
 
   return (
     <>
-      <Center mt={"xs"} pt={20}>
-        <Button
-          variant={"outline"}
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          ← Go back
-        </Button>
-      </Center>
+      <Center mt={"xs"} pt={20}></Center>
       <Center>
         <Flex
           direction={{ base: "column", sm: "row" }}
