@@ -22,6 +22,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci
+
       - name: Run 'Check Notion PR' composite action
         uses: ./.github/composite/check-notion-pr
         id: notion_check
@@ -29,6 +36,47 @@ jobs:
           PR_ID: ${{ github.event.number }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Echo Notion context
+        run: |
+          echo "Context: ${{ steps.notion_check.outputs.context }}"
+
+      - name: Qodo PR-Agent
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          config.model: "gemini/gemini-2.5-pro"
+          config.fallback_models: '["gemini/gemini-2.5-pro"]'
+          config.verbosity_level: "2"
+          pr_reviewer.extra_instructions: "Review this PR in the context of the following Notion task: ${{ steps.notion_check.outputs.context }}"
+          pr_reviewer.enable_review_labels_security: "false"
+          pr_reviewer.enable_review_labels_effort: "false"
+          pr_description.publish_description_as_comment: "true"
+          pr_description.publish_description_as_comment_persistent: "true"
+          pr_description.publish_labels: "false"
+          pr_description.add_original_user_description: "false"
+          pr_code_suggestions.commitable_code_suggestions: "true"
+          pr_code_suggestions.dual_publishing_score_threshold: "-1"
+          pr_code_suggestions.focus_only_on_problems: "true"
+          pr_code_suggestions.enable_help_text: "false"
+          pr_code_suggestions.enable_chat_text: "false"
+          pr_code_suggestions.persistent_comment: "false"
+          pr_code_suggestions.max_history_len: "4"
+          pr_code_suggestions.publish_output_no_suggestions: "true"
+          pr_code_suggestions.apply_suggestions_checkbox: "true"
+          pr_code_suggestions.suggestions_score_threshold: "0"
+          pr_code_suggestions.new_score_mechanism: "true"
+          pr_code_suggestions.new_score_mechanism_th_high: "9"
+          pr_code_suggestions.new_score_mechanism_th_medium: "7"
+          pr_code_suggestions.auto_extended_mode: "true"
+          pr_code_suggestions.num_code_suggestions_per_chunk: "3"
+          pr_code_suggestions.num_best_practice_suggestions: "1"
+          pr_code_suggestions.max_number_of_calls: "3"
+          pr_code_suggestions.parallel_calls: "true"
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "true"
 
       - name: Run 'Check Notion Commits' composite action
         uses: ./.github/composite/check-notion-commits
