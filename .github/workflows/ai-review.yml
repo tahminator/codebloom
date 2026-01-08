@@ -13,7 +13,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: pr-ai-${{ github.event.number || github.event.issue.number }}
+  group: pr-ai-${{ github.event.number || github.event.issue.number }}-${{ github.event.comment.body || 'pr' }}
   cancel-in-progress: true
 
 jobs:
