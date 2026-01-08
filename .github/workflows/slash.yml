@@ -47,5 +47,6 @@ jobs:
                   token: ${{ env.GH_PAT }}
                   commands: |
                       deploy
+                      ai
                   static-args: |
                       prId=${{ github.event.issue.number || -1 }}
