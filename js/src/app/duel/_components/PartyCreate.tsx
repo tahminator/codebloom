@@ -1,5 +1,6 @@
 import { useCreatePartyMutation } from "@/lib/api/queries/duels";
 import { Box, Button } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { useNavigate } from "react-router";
 
 export default function PartyCreate() {
@@ -9,9 +10,12 @@ export default function PartyCreate() {
   const onCreate = () => {
     mutate(undefined, {
       onSuccess: (response) => {
-        console.log(response);
-
-        navigate(`/duel/${response.payload?.code}`);
+        const code = response.payload?.code;
+        if (code) {
+          navigate(`/duel/${code}`);
+        } else {
+          notifications.show({ message: "Failed to create party" });
+        }
       },
     });
   };
