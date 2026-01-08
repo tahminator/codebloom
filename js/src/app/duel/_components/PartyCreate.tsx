@@ -18,7 +18,18 @@ export default function PartyCreate() {
 
   return (
     <Box w="100%" px="lg">
-      <Button w="100%" onClick={onCreate}>
+      <Button
+        w="100%"
+        h="10vh"
+        radius="10px"
+        onClick={onCreate}
+        style={{
+          fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
+          backgroundColor: "#1c3513",
+          border: "2px solid green",
+          color: "white",
+        }}
+      >
         Create
       </Button>
     </Box>
