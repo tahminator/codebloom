@@ -1,11 +1,13 @@
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
-import { Box, Flex, Loader } from "@mantine/core";
+import { useLeavePartyMutation } from "@/lib/api/queries/duels";
+import { Box, Button, Flex, Loader } from "@mantine/core";
 import { useParams } from "react-router";
 
 export default function DuelPage() {
   const { lobbyCode } = useParams<{ lobbyCode: string }>();
   const { data, status } = useAuthQuery();
+  const { mutate } = useLeavePartyMutation();
 
   if (status === "pending") {
     return (
@@ -46,5 +48,9 @@ export default function DuelPage() {
     );
   }
 
-  return <Box>{lobbyCode}</Box>;
+  return (
+    <Box>
+      {lobbyCode} <Button onClick={() => mutate()}>Leave Party</Button>
+    </Box>
+  );
 }
