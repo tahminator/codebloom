@@ -468,11 +468,11 @@ jobs:
                       const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
                       const commitHash = '${{ needs.getPRHead.outputs.sha }}';
 
-                      const results = ${{ toJSON(needs.*.result) }};
-                      const jobNames = ['getPRHead', 'checkExistingImage', 'sendMessage', 'backendTests', 'backendPreTest', 'frontendTests', 'validateDBSchema', 'buildImage', 'promoteExisting', 'redeploy'];
-                      const failedJobs = jobNames.filter((name, index) => results[index] === 'failure');
-                      const cancelledJobs = jobNames.filter((name, index) => results[index] === 'cancelled');
-                      const successJobs = jobNames.filter((name, index) => results[index] === 'success');
+                      const needsObj = ${{ toJSON(needs) }};
+                      const jobNames = Object.keys(needsObj);
+                      const failedJobs = jobNames.filter((name) => needsObj[name].result === 'failure');
+                      const cancelledJobs = jobNames.filter((name) => needsObj[name].result === 'cancelled');
+                      const successJobs = jobNames.filter((name) => needsObj[name].result === 'success');
 
                       let statusMessage;
                       if (failedJobs.length > 0 && cancelledJobs.length > 0) {
