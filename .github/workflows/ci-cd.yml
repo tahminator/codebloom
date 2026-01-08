@@ -292,31 +292,10 @@ jobs:
 
             - name: Transform App Spec with secrets
               run: bash .github/scripts/transform-yaml-with-env.sh .do/prod/app.yml .env.production
-
+    
             - name: Update App Spec on DigitalOcean
               run: |
                 doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/prod/app.yml
-
-            - name: Trigger App Platform Redeploy
-              run: |
-                  RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
-                  -X POST \
-                  -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
-                  -H "Content-Type: application/json" \
-                  https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments)
-
-                  HTTP_BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//g')
-                  HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-
-                  echo "$HTTP_STATUS"
-
-                  if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
-                      exit 1
-                  fi
-
-                  DEPLOYMENT_ID=$(echo "$HTTP_BODY" | jq -r '.deployment.id')
-
-                  echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_ENV
 
             - name: Poll Deployment Status
               run: |
