@@ -9,13 +9,17 @@ export default function PartyJoin() {
   const navigate = useNavigate();
   const [partyCode, setPartyCode] = useState("");
 
-  const onJoin = (partyCode: string) => {
+  const onJoin = (code: string) => {
+    if (!code) {
+      notifications.show({ message: "Please enter a party code" });
+      return;
+    }
     mutate(
-      { partyCode },
+      { partyCode: code },
       {
         onSuccess: (data) => {
           if (data.success) {
-            navigate(`/duel/${partyCode}`);
+            navigate(`/duel/${code}`);
           } else {
             notifications.show({
               message: "Party Unavailable",
@@ -35,14 +39,28 @@ export default function PartyJoin() {
         onChange={(event) => setPartyCode(event.currentTarget.value)}
         styles={{
           input: {
+            borderRadius: "10px",
+            fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
+            height: "10vh",
             backgroundColor: "#333833",
-            border: "0.2vw solid rgba(255,255,255,0.75)",
+            border: "2px solid rgba(255,255,255,0.75)",
             textAlign: "center",
           },
         }}
       />
       <Box w="100%" px="lg">
-        <Button w="100%" onClick={() => onJoin(partyCode)}>
+        <Button
+          w="100%"
+          h="10vh"
+          radius="10px"
+          onClick={() => onJoin(partyCode)}
+          style={{
+            fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
+            backgroundColor: "#1c3513",
+            border: "2px solid green",
+            color: "white",
+          }}
+        >
           Join
         </Button>
       </Box>
