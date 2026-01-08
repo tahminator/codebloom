@@ -47,17 +47,13 @@ export default function PartyEntry() {
   }
 
   return (
-    <Container
-      style={{
-        width: "50%",
-      }}
-    >
-      <Stack align="center" mb="5vh">
+    <Container px="clamp(12px, 4vw, 64px)">
+      <Stack align="center" mb="3vh">
         <Title
           order={2}
           style={{
             color: "white",
-            fontSize: "clamp(1.4rem, 3vw, 2.4rem)",
+            fontSize: "clamp(1.4rem, 3vw, 5rem)",
             textAlign: "center",
           }}
         >
@@ -67,7 +63,7 @@ export default function PartyEntry() {
           c="dimmed"
           ta="center"
           style={{
-            fontSize: "clamp(0.8rem, 2.2vw, 1rem)",
+            fontSize: "clamp(0.8rem, 2.2vw, 1.2rem)",
             width: "90%",
           }}
         >
@@ -76,15 +72,17 @@ export default function PartyEntry() {
       </Stack>
       <Paper
         radius="lg"
+        bg="#212325"
         style={{
           width: "100%",
           padding: "5%",
-          border: "0.2vw solid rgba(0,255,125,0.5)",
+          border: "0.2vw solid #a8acb1",
+          margin: "0 auto",
         }}
       >
         <Flex direction="row" wrap="wrap" justify="space-between" gap="xs">
           <PartyJoin />
-          <Divider color="white" w="100%" />
+          <Divider color="#656b70" w="100%" size="3px" />
           <PartyCreate />
         </Flex>
       </Paper>
