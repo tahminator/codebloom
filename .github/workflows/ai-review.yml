@@ -98,11 +98,12 @@ jobs:
             - Verify that environment variables and secrets are handled securely
             - Check for potential performance bottlenecks or N+1 query issues
             - Ensure proper test coverage for critical paths
+          pr_reviewer.persistent_comment: "false"
           pr_reviewer.enable_review_labels_security: "false"
           pr_reviewer.enable_review_labels_effort: "false"
           pr_reviewer.final_update_message: "false"
           pr_description.publish_description_as_comment: "true"
-          pr_description.publish_description_as_comment_persistent: "true"
+          pr_description.publish_description_as_comment_persistent: "false"
           pr_description.publish_labels: "false"
           pr_description.add_original_user_description: "false"
           pr_code_suggestions.commitable_code_suggestions: "true"
