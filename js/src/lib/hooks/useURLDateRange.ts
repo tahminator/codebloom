@@ -31,7 +31,9 @@ export default function useURLDateRange(
     "",
     {
       enabled,
-      debounce,
+      // See 618: Hacky solution to stagger the render loop between startDate and endDate
+      // so that they don't work with stale data and override each other.
+      debounce: debounce + 5,
     },
   );
   const [_endDate, _setEndDate, _debouncedEndDate] = useURLState<string>(
@@ -39,7 +41,9 @@ export default function useURLDateRange(
     "",
     {
       enabled,
-      debounce,
+      // See 618: Hacky solution to stagger the render loop between startDate and endDate
+      // so that they don't work with stale data and override each other.
+      debounce: debounce - 5,
     },
   );
 
