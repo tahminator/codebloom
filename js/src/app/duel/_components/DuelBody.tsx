@@ -60,7 +60,7 @@ function DuelBody({
   if (status === "error" || error) {
     return (
       <ToastWithRedirect
-        to={"/duel/create"}
+        to={"/duel"}
         message={"Hmm, something went wrong."}
       />
     );
@@ -69,7 +69,7 @@ function DuelBody({
   if (!data || !data.success) {
     return (
       <ToastWithRedirect
-        to={"/duel/create"}
+        to={"/duel"}
         message={"Please join or create a duel first."}
       />
     );

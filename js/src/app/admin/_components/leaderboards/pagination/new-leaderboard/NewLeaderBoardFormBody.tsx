@@ -76,7 +76,6 @@ function NewLeaderboardForm({
           <TextInput
             {...form.getInputProps("name")}
             label="New leaderboard name"
-            error={form.errors.name}
             mb="sm"
             withAsterisk
           />

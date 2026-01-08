@@ -1,17 +1,30 @@
 import { useJoinPartyMutation } from "@/lib/api/queries/duels";
-import { Box, Button, Input } from "@mantine/core";
+import { partyCodeSchema } from "@/lib/api/schema/duel";
+import { Button, TextInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useState } from "react";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useNavigate } from "react-router-dom";
+import z from "zod";
 
 export default function PartyJoin() {
   const { mutate } = useJoinPartyMutation();
   const navigate = useNavigate();
-  const [partyCode, setPartyCode] = useState("");
 
-  const onJoin = (code: string) => {
+  const form = useForm({
+    validate: zodResolver(partyCodeSchema),
+    initialValues: {
+      joinCode: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof partyCodeSchema>) => {
+    const code = values.joinCode;
     if (!code) {
-      notifications.show({ message: "Please enter a party code" });
+      notifications.show({
+        message: "Please enter a party code",
+        color: "red",
+      });
       return;
     }
     mutate(
@@ -21,9 +34,7 @@ export default function PartyJoin() {
           if (data.success) {
             navigate(`/duel/${code}`);
           } else {
-            notifications.show({
-              message: "Party Unavailable",
-            });
+            form.setFieldError("joinCode", data.message);
           }
         },
       },
@@ -31,39 +42,23 @@ export default function PartyJoin() {
   };
 
   return (
-    <>
-      <Input
+    <form onSubmit={form.onSubmit(onSubmit)}>
+      <TextInput
+        {...form.getInputProps("joinCode")}
         w={"100%"}
-        px="lg"
-        value={partyCode}
-        onChange={(event) => setPartyCode(event.currentTarget.value)}
+        placeholder="Enter Party Code"
+        radius="md"
+        pb="xs"
+        error={form.errors.joinCode}
         styles={{
           input: {
-            borderRadius: "10px",
-            fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
-            height: "10vh",
-            backgroundColor: "#333833",
-            border: "2px solid rgba(255,255,255,0.75)",
             textAlign: "center",
           },
         }}
       />
-      <Box w="100%" px="lg">
-        <Button
-          w="100%"
-          h="10vh"
-          radius="10px"
-          onClick={() => onJoin(partyCode)}
-          style={{
-            fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
-            backgroundColor: "#1c3513",
-            border: "2px solid green",
-            color: "white",
-          }}
-        >
-          Join
-        </Button>
-      </Box>
-    </>
+      <Button fullWidth radius="md" type="submit">
+        Join
+      </Button>
+    </form>
   );
 }

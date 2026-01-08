@@ -11,7 +11,7 @@ export default function DuelPage() {
   if (!lobbyCode) {
     return (
       <ToastWithRedirect
-        to={"/duel/create"}
+        to={"/duel"}
         message={"Please join or create a party first."}
       />
     );
