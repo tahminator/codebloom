@@ -15,23 +15,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Post AI review commands
-        uses: actions/github-script@v7
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prId = ${{ github.event.client_payload.slash_command.args.named.prId }};
-            const commands = ['/review', '/describe', '/improve'];
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci
 
-            for (const command of commands) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prId,
-                body: command
-              });
+      - name: Post /review command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.client_payload.slash_command.args.named.prId }}
+          message: "/review"
+          token: ${{ env.GH_PAT }}
 
-              await new Promise(resolve => setTimeout(resolve, 1000));
-            }
+      - name: Post /describe command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.client_payload.slash_command.args.named.prId }}
+          message: "/describe"
+          token: ${{ env.GH_PAT }}
 
-            console.log(`Posted ${commands.length} AI review commands on PR #${prId}`);
+      - name: Post /improve command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.client_payload.slash_command.args.named.prId }}
+          message: "/improve"
+          token: ${{ env.GH_PAT }}
