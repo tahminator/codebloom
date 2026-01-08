@@ -12,6 +12,10 @@ inputs:
   message:
     description: "Message body to post on the PR"
     required: true
+  token:
+    description: "GitHub token to use (defaults to GITHUB_TOKEN)"
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: "composite"
@@ -19,6 +23,7 @@ runs:
     - name: Post PR Message
       uses: actions/github-script@v7
       with:
+        github-token: ${{ inputs.token }}
         script: |
           const prId = ${{ inputs.prId }};
           const message = ${{ toJSON(inputs.message) }};
