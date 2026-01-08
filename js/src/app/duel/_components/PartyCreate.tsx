@@ -1,35 +1,35 @@
 import { useCreatePartyMutation } from "@/lib/api/queries/duels";
 import { Box, Button } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
 export default function PartyCreate() {
   const { mutate } = useCreatePartyMutation();
+
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const onCreate = () => {
     mutate(undefined, {
-      onSuccess: (response) => {
-        console.log(response);
+      onSuccess: async (data) => {
+        if (!data.success) {
+          notifications.show({
+            message: data.message,
+            color: "red",
+          });
+          return;
+        }
 
-        navigate(`/duel/${response.payload?.code}`);
+        await queryClient.invalidateQueries({ queryKey: ["party"] });
+        navigate(`/duel/current`);
       },
     });
   };
 
   return (
-    <Box w="100%" px="lg">
-      <Button
-        w="100%"
-        h="10vh"
-        radius="10px"
-        onClick={onCreate}
-        style={{
-          fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
-          backgroundColor: "#1c3513",
-          border: "2px solid green",
-          color: "white",
-        }}
-      >
+    <Box w="100%">
+      <Button fullWidth radius="md" onClick={onCreate}>
         Create
       </Button>
     </Box>
