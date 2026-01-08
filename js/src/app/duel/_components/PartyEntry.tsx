@@ -61,7 +61,7 @@ export default function PartyEntry() {
             textAlign: "center",
           }}
         >
-          Create or Join a Lobby
+          Create or Join a Party
         </Title>
         <Text
           c="dimmed"
@@ -71,7 +71,7 @@ export default function PartyEntry() {
             width: "90%",
           }}
         >
-          Generate a lobby code to host, or enter one to join a friend.
+          Generate a party code to host, or enter one to join a friend.
         </Text>
       </Stack>
       <Paper
