@@ -87,6 +87,9 @@ export default function LeaderboardCard({
       }}
       component={Link}
       to={`/user/${userId}`}
+      reloadDocument={embedded}
+      target={embedded ? "_blank" : undefined}
+      rel={embedded ? "noopener noreferrer" : undefined}
     >
       <LoadingOverlay visible={isLoading} />
       <Text
