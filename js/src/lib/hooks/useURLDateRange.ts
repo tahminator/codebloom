@@ -10,6 +10,10 @@ type DateRangeStateObject = {
   debouncedStartDate: string | undefined;
 };
 
+// See 618: Hacky solution to stagger the render loop between startDate and endDate
+// so that they don't work with stale data and override each other.
+const STAGGER_MS = 5;
+
 /**
  * Wrapper over {@code useURLState} that allows empty date ranges in URL but is represented
  * as `undefined` within the codebase.
@@ -31,9 +35,7 @@ export default function useURLDateRange(
     "",
     {
       enabled,
-      // See 618: Hacky solution to stagger the render loop between startDate and endDate
-      // so that they don't work with stale data and override each other.
-      debounce: debounce + 5,
+      debounce: Math.max(0, debounce),
     },
   );
   const [_endDate, _setEndDate, _debouncedEndDate] = useURLState<string>(
@@ -41,9 +43,7 @@ export default function useURLDateRange(
     "",
     {
       enabled,
-      // See 618: Hacky solution to stagger the render loop between startDate and endDate
-      // so that they don't work with stale data and override each other.
-      debounce: debounce - 5,
+      debounce: Math.max(0, debounce) + STAGGER_MS,
     },
   );
 
