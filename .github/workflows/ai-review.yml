@@ -20,6 +20,7 @@ jobs:
   getPRHead:
     name: Get PR head SHA
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && (github.event.comment.body == '/review' || github.event.comment.body == '/describe' || github.event.comment.body == '/improve'))
     outputs:
       sha: ${{ steps.pr-head.outputs.result }}
       prId: ${{ github.event.number || github.event.issue.number  }}
