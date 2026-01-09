@@ -15,7 +15,7 @@ export default function SchoolSection() {
   const schools = ApiUtils.getAllSupportedTagEnumMetadata();
   const steps = [
     "Sign up for CodeBloom with your Discord account",
-    "Follow the onboarding instructions to link your LeetCode account with Codebloom",
+    "Follow the onboarding instructions to link your LeetCode account with CodeBloom",
     "Head to Settings (top right icon > Settings)",
     "Register with your university email to join your school's leaderboard",
   ];
@@ -42,7 +42,7 @@ export default function SchoolSection() {
                 key={school.apiKey}
                 align="center"
                 gap={8}
-                style={{ width: "150px", flexShrink: 0 }}
+                style={{ width: "150px"}}
               >
                 <Image
                   src={school.icon}
