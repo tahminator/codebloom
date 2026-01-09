@@ -50,7 +50,7 @@ export default function AboutUs() {
               cursor: "pointer",
             }}
           >
-            Join your university leaderboard! Register here
+            Happy CodeBloom 1 Year Anniversary! 🎉
           </Badge>
           <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
@@ -99,7 +99,7 @@ export default function AboutUs() {
               cursor: "pointer",
             }}
           >
-            Join your university leaderboard! Register here
+            Happy CodeBloom 1 Year Anniversary! 🎉
           </Badge>
           <Title order={5} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
