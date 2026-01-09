@@ -42,7 +42,7 @@ export default function SchoolSection() {
                 key={school.apiKey}
                 align="center"
                 gap={8}
-                style={{ width: "150px"}}
+                style={{ width: "150px" }}
               >
                 <Image
                   src={school.icon}
