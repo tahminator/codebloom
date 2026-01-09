@@ -1,6 +1,7 @@
 import MiniLeaderboard from "@/app/_component/MiniLeaderboard";
 import MiniLeaderboardMobile from "@/app/_component/MiniLeaderboardMobile";
 import OurFeatures from "@/app/_component/OurFeatures";
+import SchoolSection from "@/app/_component/SchoolSection";
 import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import {
   Badge,
@@ -126,6 +127,7 @@ export default function AboutUs() {
         <LeaderboardMetadata showClock syntaxStripSize={"lg"} />
         <MiniLeaderboardMobile />
       </Container>
+      <SchoolSection />
       <div ref={targetSectionRef} style={{ padding: "2rem" }}>
         <OurFeatures />
       </div>
