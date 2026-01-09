@@ -6,7 +6,10 @@ import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
-import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import {
+  useCurrentLeaderboardUsersQuery,
+  useLeaderboardUsersByIdQuery,
+} from "@/lib/api/queries/leaderboard";
 import { ApiUtils } from "@/lib/api/utils";
 import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
@@ -29,7 +32,19 @@ import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-export default function LeaderboardIndex() {
+export default function LeaderboardIndex({
+  leaderboardId,
+}: {
+  leaderboardId?: string;
+}) {
+  const currentQueryResult = useCurrentLeaderboardUsersQuery();
+  const idQueryResult = useLeaderboardUsersByIdQuery({
+    leaderboardId: leaderboardId || "",
+  });
+
+  const queryResult = leaderboardId ? idQueryResult : currentQueryResult;
+  const isHistorical = !!leaderboardId;
+
   const {
     data,
     status,
@@ -42,12 +57,17 @@ export default function LeaderboardIndex() {
     debouncedQuery,
     filters,
     toggleFilter,
-    isAnyFilterEnabled,
     globalIndex,
     toggleGlobalIndex,
-    onFilterReset,
     isPlaceholderData,
-  } = useCurrentLeaderboardUsersQuery();
+  } = queryResult;
+
+  const isAnyFilterEnabled =
+    "isAnyFilterEnabled" in queryResult ?
+      queryResult.isAnyFilterEnabled
+    : undefined;
+  const onFilterReset =
+    "onFilterReset" in queryResult ? queryResult.onFilterReset : undefined;
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -63,12 +83,21 @@ export default function LeaderboardIndex() {
 
   const pageData = data.payload;
   const [first, second, third] = pageData.items;
-  const cardItems = pageData.items.filter((_, index) => {
-    if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index)) {
-      return false;
+
+  const isAnyFilterActive =
+    isAnyFilterEnabled ?? Object.values(filters).some(Boolean);
+
+  const clearFilters = () => {
+    if (typeof onFilterReset === "function") {
+      onFilterReset();
+    } else {
+      Object.entries(filters).forEach(([key, isActive]) => {
+        if (isActive) toggleFilter(key as keyof typeof filters);
+      });
+
+      if (globalIndex) toggleGlobalIndex();
     }
-    return true;
-  });
+  };
 
   return (
     <>
@@ -158,7 +187,7 @@ export default function LeaderboardIndex() {
           <FilterDropdownItem
             value={globalIndex}
             toggle={toggleGlobalIndex}
-            disabled={!isAnyFilterEnabled}
+            disabled={!isAnyFilterActive}
             switchMode
             name={
               <Flex gap="xs" align="center">
@@ -169,9 +198,9 @@ export default function LeaderboardIndex() {
           <Button
             variant="subtle"
             color="red"
-            onClick={() => onFilterReset()}
+            onClick={clearFilters}
             fullWidth
-            disabled={!isAnyFilterEnabled && !globalIndex}
+            disabled={!isAnyFilterActive && !globalIndex}
           >
             Clear Filters
           </Button>
@@ -189,96 +218,202 @@ export default function LeaderboardIndex() {
           <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
         )}
         <Stack gap="md">
-          {cardItems.map((entry) => {
-            return (
-              <Card
-                key={entry.id}
-                component={Link}
-                to={`/user/${entry.id}`}
-                shadow="sm"
-                padding="lg"
-                radius="md"
-                withBorder
-                bg={theme.colors.dark[7]}
-                styles={{
-                  root: {
-                    borderColor: theme.colors.dark[5],
-                  },
-                }}
-                style={{
-                  transition: "all 0.2s ease",
-                  textDecoration: "none",
-                }}
-              >
-                <Flex
-                  direction="row"
-                  justify="space-between"
-                  align="center"
-                  gap="md"
+          {pageData.items
+            .filter((_, index) => {
+              if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index)) {
+                return false;
+              }
+              return true;
+            })
+            .map((entry) => {
+              const cardContent = (
+                <Card
+                  key={entry.id}
+                  shadow="sm"
+                  padding="lg"
+                  radius="md"
+                  withBorder
+                  bg={theme.colors.dark[7]}
+                  styles={{
+                    root: {
+                      borderColor: theme.colors.dark[5],
+                    },
+                  }}
+                  style={{
+                    transition: "all 0.2s ease",
+                    textDecoration: "none",
+                  }}
                 >
-                  <Flex align="center" gap="md">
-                    <Text
-                      size="xl"
-                      fw={700}
-                      c={theme.colors.patina[4]}
-                      miw={50}
-                    >
-                      #{entry.index}
-                    </Text>
-                    <Flex direction="column" gap="xs">
-                      <Stack gap="xs">
-                        <Flex
-                          direction={{ base: "column", xs: "row" }}
-                          gap={{ base: "xs", xs: "md" }}
-                          align={{ base: "flex-start", xs: "center" }}
-                        >
-                          <Flex align="center" gap={6}>
-                            <FaDiscord size={16} />
-                            <Text size="md" fw={600}>
-                              {entry.discordName}
-                            </Text>
+                  <Flex
+                    direction="row"
+                    justify="space-between"
+                    align="center"
+                    gap="md"
+                  >
+                    <Flex align="center" gap="md">
+                      <Text
+                        size="xl"
+                        fw={700}
+                        c={theme.colors.patina[4]}
+                        miw={50}
+                      >
+                        #{entry.index}
+                      </Text>
+                      <Flex direction="column" gap="xs">
+                        <Stack gap="xs">
+                          <Flex
+                            direction={{ base: "column", xs: "row" }}
+                            gap={{ base: "xs", xs: "md" }}
+                            align={{ base: "flex-start", xs: "center" }}
+                          >
+                            <Flex align="center" gap={6}>
+                              <FaDiscord size={16} />
+                              <Text size="md" fw={600}>
+                                {entry.discordName}
+                              </Text>
+                            </Flex>
+                            <Flex align="center" gap={6}>
+                              <SiLeetcode size={16} />
+                              <Text size="md" fw={600}>
+                                {entry.leetcodeUsername}
+                              </Text>
+                            </Flex>
                           </Flex>
-                          <Flex align="center" gap={6}>
-                            <SiLeetcode size={16} />
-                            <Text size="md" fw={600}>
-                              {entry.leetcodeUsername}
-                            </Text>
-                          </Flex>
-                        </Flex>
-                        {(entry.nickname ||
-                          (tagFF && entry.tags?.length > 0)) && (
-                          <Flex align="center" gap={5}>
-                            {entry.nickname && (
-                              <Tooltip label="This user is a verified member of the Patina Discord server.">
-                                <Flex align="center" gap={5}>
-                                  <IconCircleCheckFilled
-                                    color={theme.colors.patina[4]}
-                                    size={18}
-                                  />
-                                  <Text size="sm">{entry.nickname}</Text>
-                                </Flex>
-                              </Tooltip>
-                            )}
-                            {entry.nickname &&
-                              tagFF &&
-                              entry.tags?.length > 0 && (
-                                <Divider orientation="vertical" h={20} />
+                          {(entry.nickname ||
+                            (tagFF && entry.tags?.length > 0)) && (
+                            <Flex align="center" gap={5}>
+                              {entry.nickname && (
+                                <Tooltip label="This user is a verified member of the Patina Discord server.">
+                                  <Flex align="center" gap={5}>
+                                    <IconCircleCheckFilled
+                                      color={theme.colors.patina[4]}
+                                      size={18}
+                                    />
+                                    <Text size="sm">{entry.nickname}</Text>
+                                  </Flex>
+                                </Tooltip>
                               )}
-                            {tagFF && entry.tags?.length > 0 && (
-                              <TagList tags={entry.tags} size={16} gap="xs" />
-                            )}
-                          </Flex>
-                        )}
-                      </Stack>
+                              {entry.nickname &&
+                                tagFF &&
+                                entry.tags?.length > 0 && (
+                                  <Divider orientation="vertical" h={20} />
+                                )}
+                              {tagFF && entry.tags?.length > 0 && (
+                                <TagList tags={entry.tags} size={16} gap="xs" />
+                              )}
+                            </Flex>
+                          )}
+                        </Stack>
+                      </Flex>
                     </Flex>
+                    <Text size="lg" fw={600} miw={100} ta="right">
+                      {entry.totalScore} Pts
+                    </Text>
                   </Flex>
-                  <Text size="lg" fw={600} miw={100} ta="right">
-                    {entry.totalScore} Pts
-                  </Text>
-                </Flex>
-              </Card>
-            );
-          })}
+                </Card>
+              );
+
+              if (isHistorical) {
+                return (
+                  <Tooltip
+                    key={entry.id}
+                    label="Ability to view profiles at a specific time are not supported yet."
+                    color="dark.4"
+                  >
+                    {cardContent}
+                  </Tooltip>
+                );
+              }
+
+              return (
+                <Card
+                  key={entry.id}
+                  component={Link}
+                  to={`/user/${entry.id}`}
+                  shadow="sm"
+                  padding="lg"
+                  radius="md"
+                  withBorder
+                  bg={theme.colors.dark[7]}
+                  styles={{
+                    root: {
+                      borderColor: theme.colors.dark[5],
+                    },
+                  }}
+                  style={{
+                    transition: "all 0.2s ease",
+                    textDecoration: "none",
+                  }}
+                >
+                  <Flex
+                    direction="row"
+                    justify="space-between"
+                    align="center"
+                    gap="md"
+                  >
+                    <Flex align="center" gap="md">
+                      <Text
+                        size="xl"
+                        fw={700}
+                        c={theme.colors.patina[4]}
+                        miw={50}
+                      >
+                        #{entry.index}
+                      </Text>
+                      <Flex direction="column" gap="xs">
+                        <Stack gap="xs">
+                          <Flex
+                            direction={{ base: "column", xs: "row" }}
+                            gap={{ base: "xs", xs: "md" }}
+                            align={{ base: "flex-start", xs: "center" }}
+                          >
+                            <Flex align="center" gap={6}>
+                              <FaDiscord size={16} />
+                              <Text size="md" fw={600}>
+                                {entry.discordName}
+                              </Text>
+                            </Flex>
+                            <Flex align="center" gap={6}>
+                              <SiLeetcode size={16} />
+                              <Text size="md" fw={600}>
+                                {entry.leetcodeUsername}
+                              </Text>
+                            </Flex>
+                          </Flex>
+                          {(entry.nickname ||
+                            (tagFF && entry.tags?.length > 0)) && (
+                            <Flex align="center" gap={5}>
+                              {entry.nickname && (
+                                <Tooltip label="This user is a verified member of the Patina Discord server.">
+                                  <Flex align="center" gap={5}>
+                                    <IconCircleCheckFilled
+                                      color={theme.colors.patina[4]}
+                                      size={18}
+                                    />
+                                    <Text size="sm">{entry.nickname}</Text>
+                                  </Flex>
+                                </Tooltip>
+                              )}
+                              {entry.nickname &&
+                                tagFF &&
+                                entry.tags?.length > 0 && (
+                                  <Divider orientation="vertical" h={20} />
+                                )}
+                              {tagFF && entry.tags?.length > 0 && (
+                                <TagList tags={entry.tags} size={16} gap="xs" />
+                              )}
+                            </Flex>
+                          )}
+                        </Stack>
+                      </Flex>
+                    </Flex>
+                    <Text size="lg" fw={600} miw={100} ta="right">
+                      {entry.totalScore} Pts
+                    </Text>
+                  </Flex>
+                </Card>
+              );
+            })}
         </Stack>
       </Box>
       <Center my={"sm"}>
