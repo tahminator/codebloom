@@ -90,13 +90,14 @@ export default function LeaderboardIndex({
   const clearFilters = () => {
     if (typeof onFilterReset === "function") {
       onFilterReset();
-    } else {
+      return;
+    }
+    if (filters) {
       Object.entries(filters).forEach(([key, isActive]) => {
         if (isActive) toggleFilter(key as keyof typeof filters);
       });
-
-      if (globalIndex) toggleGlobalIndex();
     }
+    if (globalIndex) toggleGlobalIndex();
   };
 
   return (
