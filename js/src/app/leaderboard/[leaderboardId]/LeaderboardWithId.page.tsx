@@ -13,7 +13,7 @@ export default function LeaderboardWithIdPage() {
   return (
     <Box>
       <LeaderboardMetadata leaderboardId={leaderboardId} />
-      <Leaderboard leaderboardId={leaderboardId} isHistorical />
+      <Leaderboard leaderboardId={leaderboardId} />
     </Box>
   );
 }
