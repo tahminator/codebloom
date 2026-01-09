@@ -4,7 +4,10 @@ import SyntaxStrip, {
 } from "@/components/ui/syntax/SyntaxStrip";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
-import { useCurrentLeaderboardMetadataQuery } from "@/lib/api/queries/leaderboard";
+import {
+  useCurrentLeaderboardMetadataQuery,
+  useLeaderboardMetadataByIdQuery,
+} from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
 import { Box, Button, Center, Skeleton, Title } from "@mantine/core";
 import { useEffect } from "react";
@@ -14,6 +17,7 @@ type LeaderboardMetadataOptions = {
   showClock?: boolean;
   showAllLeaderboardButton?: boolean;
   syntaxStripSize?: SyntaxStripSize;
+  leaderboardId?: string;
 };
 
 export default function LeaderboardMetadata(
@@ -23,9 +27,13 @@ export default function LeaderboardMetadata(
     showClock = false,
     showAllLeaderboardButton = false,
     syntaxStripSize,
+    leaderboardId,
   } = props;
 
-  const { data, status } = useCurrentLeaderboardMetadataQuery();
+  const currentMetadata = useCurrentLeaderboardMetadataQuery();
+  const idMetadata = useLeaderboardMetadataByIdQuery(leaderboardId || "");
+
+  const { data, status } = leaderboardId ? idMetadata : currentMetadata;
   const [countdown, reset] = useCountdown(-10);
 
   useEffect(() => {
