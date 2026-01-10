@@ -1,8 +1,10 @@
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
-import { Box, Flex, Loader } from "@mantine/core";
+import { Flex, Loader } from "@mantine/core";
 
-export default function PartyCreationPage() {
+import PartyEntry from "./_components/PartyEntry";
+
+export default function PartyEntryPage() {
   const { data, status } = useAuthQuery();
 
   if (status === "pending") {
@@ -44,5 +46,5 @@ export default function PartyCreationPage() {
     );
   }
 
-  return <Box>Create party</Box>;
+  return <PartyEntry />;
 }

@@ -1,4 +1,5 @@
 import {
+  Card,
   createTheme,
   CSSVariablesResolver,
   DEFAULT_THEME,
@@ -28,6 +29,15 @@ export const themeOverride = createTheme({
         withArrow: true,
         color: "dark.4",
         events: { hover: true, focus: true, touch: true },
+      },
+    }),
+
+    Card: Card.extend({
+      defaultProps: {
+        shadow: "sm",
+        padding: "lg",
+        radius: "md",
+        withBorder: true,
       },
     }),
   },
