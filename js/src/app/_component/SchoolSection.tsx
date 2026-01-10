@@ -9,26 +9,37 @@ import {
   Center,
   Image,
   Divider,
+  List,
+  Button,
 } from "@mantine/core";
+import { useState } from "react";
+
+const schools = ApiUtils.getAllSupportedTagEnumMetadata();
+const steps = [
+  "Sign up for CodeBloom with your Discord account",
+  "Follow the onboarding instructions to link your LeetCode account with CodeBloom",
+  "Head to Settings (top right icon > Settings)",
+  "Register with your university email to join your school's leaderboard",
+];
+
+const SCHOOLS_PER_ROW = Math.floor(1200 / (150 + 32));
+const INITIAL_SCHOOLS_COUNT = SCHOOLS_PER_ROW;
 
 export default function SchoolSection() {
-  const schools = ApiUtils.getAllSupportedTagEnumMetadata();
-  const steps = [
-    "Sign up for CodeBloom with your Discord account",
-    "Follow the onboarding instructions to link your LeetCode account with CodeBloom",
-    "Head to Settings (top right icon > Settings)",
-    "Register with your university email to join your school's leaderboard",
-  ];
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleSchools =
+    showAll ? schools : schools.slice(0, INITIAL_SCHOOLS_COUNT);
 
   return (
     <Box py="xl" mb="xl">
       <Container size="xl">
         <Center mb="xl">
-          <Title order={3} style={{ marginBottom: "2rem" }}>
+          <Title order={3} mb="2rem">
             Supported Universities & Colleges
           </Title>
         </Center>
-        <Center>
+        <Stack gap="md" align="center">
           <Flex
             wrap="wrap"
             gap="2rem"
@@ -37,13 +48,8 @@ export default function SchoolSection() {
               maxWidth: "1200px",
             }}
           >
-            {schools.map((school) => (
-              <Stack
-                key={school.apiKey}
-                align="center"
-                gap={8}
-                style={{ width: "150px" }}
-              >
+            {visibleSchools.map((school) => (
+              <Stack key={school.apiKey} align="center" gap={8} w={150}>
                 <Image
                   src={school.icon}
                   alt={school.alt}
@@ -57,30 +63,28 @@ export default function SchoolSection() {
               </Stack>
             ))}
           </Flex>
-        </Center>
+          {schools.length > INITIAL_SCHOOLS_COUNT && (
+            <Button
+              variant="default"
+              onClick={() => setShowAll((prev) => !prev)}
+            >
+              {showAll ? "Show Less" : "Show All"}
+            </Button>
+          )}
+        </Stack>
         <Divider my="xl" />
         <Center mt="xl">
-          <Stack
-            gap="md"
-            align="center"
-            style={{ width: "100%", maxWidth: 720 }}
-          >
-            <Title order={4} style={{ color: "#4cffb0", textAlign: "center" }}>
-              Join in just a few simple steps:
+          <Stack gap="md" align="center" w="100%" maw={720}>
+            <Title order={4} c="#4cffb0" ta="center">
+              Join your University Leaderboard (4 Easy Steps):
             </Title>
-            <ol
-              style={{
-                listStyleType: "decimal",
-                paddingInlineStart: "1.25rem",
-                marginTop: "1rem",
-              }}
-            >
+            <List type="ordered" listStyleType="decimal" spacing="sm">
               {steps.map((step, index) => (
-                <li key={index} style={{ marginBottom: "0.75rem" }}>
+                <List.Item key={index}>
                   <Text size="md">{step}</Text>
-                </li>
+                </List.Item>
               ))}
-            </ol>
+            </List>
           </Stack>
         </Center>
       </Container>
