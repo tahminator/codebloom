@@ -34,33 +34,18 @@ export default function PartyJoin() {
     <>
       <Input
         w={"100%"}
-        px="lg"
+        placeholder="Enter Party Code"
         value={partyCode}
         onChange={(event) => setPartyCode(event.currentTarget.value)}
+        radius="10px"
         styles={{
           input: {
-            borderRadius: "10px",
-            fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
-            height: "10vh",
-            backgroundColor: "#333833",
-            border: "2px solid rgba(255,255,255,0.75)",
             textAlign: "center",
           },
         }}
       />
-      <Box w="100%" px="lg">
-        <Button
-          w="100%"
-          h="10vh"
-          radius="10px"
-          onClick={() => onJoin(partyCode)}
-          style={{
-            fontSize: "clamp(1.9rem, 3vw, 2.2rem)",
-            backgroundColor: "#1c3513",
-            border: "2px solid green",
-            color: "white",
-          }}
-        >
+      <Box>
+        <Button fullWidth radius="10px" onClick={() => onJoin(partyCode)}>
           Join
         </Button>
       </Box>
