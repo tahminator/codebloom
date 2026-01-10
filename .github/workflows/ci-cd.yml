@@ -294,17 +294,26 @@ jobs:
               run: bash .github/scripts/transform-yaml-with-env.sh .do/prod/app.yml .env.production
     
             - name: Update App Spec on DigitalOcean
+              id: update-app
               run: |
-                doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/prod/app.yml
+                OUTPUT=$(doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml --output json)
+                
+                DEPLOYMENT_ID=$(echo "$OUTPUT" | jq -r '.[0] | (.in_progress_deployment.id // .deployments[0].id // .active_deployment.id) // empty')
+                
+                if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" == "null" ]; then
+                  echo "Failed to get deployment ID"
+                  exit 1
+                fi
+                
+                echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
 
             - name: Poll Deployment Status
               run: |
-                  DEPLOYMENT_ID="$deployment_id"
 
-                   if [ -z "$DEPLOYMENT_ID" ]; then
-                       echo "Deployment ID is empty."
-                       exit 1
-                   fi
+                if [ -z "$DEPLOYMENT_ID" ]; then
+                      echo "Deployment ID is empty."
+                      exit 1
+                fi
 
                   echo "Waiting for deployment to be promoted."
 
