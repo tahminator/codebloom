@@ -12,7 +12,7 @@ import {
   List,
   Button,
 } from "@mantine/core";
-import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 
 const schools = ApiUtils.getAllSupportedTagEnumMetadata();
 const steps = [
@@ -26,7 +26,7 @@ const SCHOOLS_PER_ROW = Math.floor(1200 / (150 + 32));
 const INITIAL_SCHOOLS_COUNT = SCHOOLS_PER_ROW;
 
 export default function SchoolSection() {
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, { toggle }] = useDisclosure(false);
 
   const visibleSchools =
     showAll ? schools : schools.slice(0, INITIAL_SCHOOLS_COUNT);
@@ -40,14 +40,7 @@ export default function SchoolSection() {
           </Title>
         </Center>
         <Stack gap="md" align="center">
-          <Flex
-            wrap="wrap"
-            gap="2rem"
-            justify="center"
-            style={{
-              maxWidth: "1200px",
-            }}
-          >
+          <Flex wrap="wrap" gap="2rem" justify="center" maw="1200px">
             {visibleSchools.map((school) => (
               <Stack key={school.apiKey} align="center" gap={8} w={150}>
                 <Image
@@ -64,10 +57,7 @@ export default function SchoolSection() {
             ))}
           </Flex>
           {schools.length > INITIAL_SCHOOLS_COUNT && (
-            <Button
-              variant="default"
-              onClick={() => setShowAll((prev) => !prev)}
-            >
+            <Button variant="default" onClick={toggle}>
               {showAll ? "Show Less" : "Show All"}
             </Button>
           )}
