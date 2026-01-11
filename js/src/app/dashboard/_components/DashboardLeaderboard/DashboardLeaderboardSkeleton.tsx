@@ -1,57 +1,28 @@
-import { Card, Flex, Skeleton, Text, Title } from "@mantine/core";
-import { FaDiscord } from "react-icons/fa";
-import { SiLeetcode } from "react-icons/si";
+import { Card, Flex, Skeleton } from "@mantine/core";
 
 export default function DashboardLeaderboardSkeleton() {
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-      <Flex direction={"row"} justify={"space-between"} w={"100%"}>
-        <Title order={4}>
-          <Skeleton>Really long tVal name</Skeleton>
-        </Title>
+      <Flex direction={"row"} justify={"space-between"} w={"100%"} mb="md">
+        <Skeleton w={"8rem"} h={"1.75rem"} />
         <Skeleton w={"5.55rem"} h={"2.25rem"} />
       </Flex>
+      <Flex justify="center" mb="xl" gap="xxs">
+        <Skeleton visible width="50%" height="36px" />
+        <Skeleton visible width="50%" height="36px" />
+      </Flex>
       <Flex direction={"column"} gap={"md"} m={"xs"}>
-        {Array(5)
+        {Array(6)
           .fill(0)
-          .map((_, idx) => {
+          .map((_, index) => {
             return (
-              <Skeleton key={idx}>
-                <Flex
-                  direction={"row"}
-                  justify={"space-between"}
-                  style={{
-                    borderRadius: "4px",
-                    padding: "var(--mantine-spacing-xs)",
-                  }}
-                  p={"xs"}
-                >
-                  <Text>{idx + 1}.</Text>
-                  <Flex direction={"column"}>
-                    <Text ta="center">
-                      <FaDiscord
-                        style={{
-                          display: "inline",
-                          marginLeft: "4px",
-                          marginRight: "4px",
-                        }}
-                      />
-                      tVal name
-                    </Text>
-                    <Text ta="center">
-                      <SiLeetcode
-                        style={{
-                          display: "inline",
-                          marginLeft: "4px",
-                          marginRight: "4px",
-                        }}
-                      />
-                      tVal name
-                    </Text>
-                  </Flex>
-                  <Text>tVal score</Text>
-                </Flex>
-              </Skeleton>
+              <Skeleton
+                key={index}
+                w={"100%"}
+                h={"4.5rem"}
+                bg="rgba(255, 255, 255, 0.02)"
+                radius={8}
+              />
             );
           })}
       </Flex>

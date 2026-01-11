@@ -5,8 +5,7 @@ export default function UserProfileHeaderSkeleton() {
     <>
       <Flex direction={"row"} wrap={"wrap"}>
         <Stack justify="center">
-          <Skeleton height={30} width={190} />
-          <Skeleton height={30} width={190} />
+          <Skeleton height={70} width={190} />
         </Stack>
       </Flex>
     </>

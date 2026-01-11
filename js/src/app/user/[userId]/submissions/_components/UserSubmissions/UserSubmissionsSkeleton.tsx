@@ -1,11 +1,17 @@
-import { Box, Center, Skeleton, Table } from "@mantine/core";
+import {
+  Center,
+  Skeleton,
+  Stack,
+  Group,
+  Paper,
+  Flex,
+  ScrollArea,
+} from "@mantine/core";
 
-// TODO - Make this nicer
 export default function UserSubmissionsSkeleton() {
-  // <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"}>
   return (
     <>
-      <Box style={{ overflowX: "auto" }} maw={"100%"} miw={"66%"} p="xs">
+      <ScrollArea maw="100%" miw="66%" p="xs">
         <Skeleton
           visible
           width="80px"
@@ -14,67 +20,34 @@ export default function UserSubmissionsSkeleton() {
           display="block"
         ></Skeleton>
         <Center mb="md">
-          <Skeleton
-            visible
-            width="100%"
-            height="38px"
-            style={{ marginTop: "0.5rem" }}
-          >
-            <div style={{ width: "100%", height: "36px" }} />
-          </Skeleton>
+          <Skeleton visible w="100%" h={38} mt={8} />
         </Center>
-        <Table
-          verticalSpacing={"lg"}
-          horizontalSpacing={"xs"}
-          withRowBorders={false}
-          striped
-          my={"sm"}
-          pos={"relative"}
-        >
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
-              </Table.Th>
-              <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
-              </Table.Th>
-              <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
-              </Table.Th>
-              <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
-              </Table.Th>
-              <Table.Th>
-                <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
-              </Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {Array(20)
-              .fill(0)
-              .map((_, index) => (
-                <Table.Tr key={index}>
-                  <Table.Td>
-                    <Skeleton visible width={"1rem"} height={"1rem"} />
-                  </Table.Td>
-                  <Table.Td>
-                    <Skeleton visible width={"8rem"} height={"1.75rem"} />
-                  </Table.Td>
-                  <Table.Td>
-                    <Skeleton visible width={"2rem"} height={"1rem"} />
-                  </Table.Td>
-                  <Table.Td>
-                    <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
-                  </Table.Td>
-                  <Table.Td>
-                    <Skeleton visible width={"1.75rem"} height={"0.75rem"} />
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-          </Table.Tbody>
-        </Table>
-      </Box>
+        <Stack gap="md" my="sm">
+          {Array(2)
+            .fill(0)
+            .map((_, index) => (
+              <Paper
+                key={index}
+                bg="rgba(255, 255, 255, 0.02)"
+                radius={8}
+                p="md"
+              >
+                <Group justify="space-between" align="flex-start" mb="sm">
+                  <Skeleton visible width="40%" height="70px" />
+                  <Skeleton visible width="40px" height="12px" />
+                </Group>
+                <Group justify="flex-end">
+                  <Skeleton visible width="40px" height="12px" />
+                </Group>
+              </Paper>
+            ))}
+        </Stack>
+        <Flex p="xl" display="flex" justify="center">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} height={30} width={30} mr={8} />
+          ))}
+        </Flex>
+      </ScrollArea>
     </>
   );
 }
