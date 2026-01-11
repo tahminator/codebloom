@@ -41,7 +41,7 @@ export default function PartyWaitingBody({
   const canDuelStart = bothPlayersPresent || currentUser.admin;
 
   const onLeave = () => {
-    leavePartyMutate(void 0, {
+    leavePartyMutate(undefined, {
       onError: () => {
         notifications.show({
           message: "Hmm, something went wrong.",
@@ -57,7 +57,7 @@ export default function PartyWaitingBody({
   };
 
   const onStart = () => {
-    startDuelMutate(void 0, {
+    startDuelMutate(undefined, {
       onError: () => {
         notifications.show({
           message: "Hmm, something went wrong.",
