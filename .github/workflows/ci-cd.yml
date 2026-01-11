@@ -295,16 +295,25 @@ jobs:
     
             - name: Update App Spec on DigitalOcean
               run: |
-                doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/prod/app.yml
+                OUTPUT=$(doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/prod/app.yml --update-sources --output json)
+                echo "doctl output: $OUTPUT"
 
+                DEPLOYMENT_ID=$(echo "$OUTPUT" | jq -r '.[0].pending_deployment.id // .[0].in_progress_deployment.id // .[0].active_deployment.id // empty' | head -n 1)
+
+                if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" == "null" ]; then
+                    echo "Failed to extract deployment ID from app update response"
+                    exit 1
+                fi
+
+                echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
+                  
             - name: Poll Deployment Status
               run: |
-                  DEPLOYMENT_ID="$deployment_id"
 
-                   if [ -z "$DEPLOYMENT_ID" ]; then
+                  if [ -z "$DEPLOYMENT_ID" ]; then
                        echo "Deployment ID is empty."
                        exit 1
-                   fi
+                  fi
 
                   echo "Waiting for deployment to be promoted."
 
