@@ -1,0 +1,123 @@
+import PlayerCard from "@/app/duel/[lobbyCode]/_components/PlayerCard";
+import {
+  useLeavePartyMutation,
+  useStartDuelMutation,
+} from "@/lib/api/queries/duels";
+import { Api } from "@/lib/api/types";
+import {
+  Box,
+  Stack,
+  Card,
+  Text,
+  Center,
+  CopyButton,
+  Button,
+  Group,
+  Badge,
+} from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+
+type DuelData = Api<"DuelData">;
+type User = Api<"UserDto">;
+
+export default function PartyWaitingBody({
+  duelData,
+  currentUser,
+}: {
+  duelData: DuelData;
+  currentUser: User;
+}) {
+  const { lobby, players } = duelData;
+  const { mutate: leavePartyMutate } = useLeavePartyMutation();
+  const { mutate: startDuelMutate } = useStartDuelMutation();
+
+  const playerOne = players[0] ?? null;
+  const playerTwo = players[1] ?? null;
+  const bothPlayersPresent = !!playerOne && !!playerTwo;
+  const canDuelStart = bothPlayersPresent || currentUser.admin;
+
+  const onLeave = () => {
+    leavePartyMutate(void 0, {
+      onSuccess: (data) => {
+        if (data.success) {
+          notifications.show({
+            message: data.message,
+          });
+        }
+      },
+    });
+  };
+
+  const onStart = () => {
+    startDuelMutate(void 0, {
+      onSuccess: (data) => {
+        if (data.success) {
+          notifications.show({
+            message: data.message,
+          });
+        }
+      },
+    });
+  };
+
+  return (
+    <Box
+      style={{
+        minHeight: "85vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Stack maw={480} w="100%" gap="xl">
+        <Card padding="lg" radius="lg" withBorder>
+          <Center mb="lg">
+            <CopyButton value={lobby.joinCode}>
+              {({ copied, copy }) => (
+                <Button
+                  size="md"
+                  variant="filled"
+                  onClick={copy}
+                  color={"dark.7"}
+                  bdrs={"md"}
+                >
+                  <Group>
+                    <Text fw={700} ff="monospace" c="white" size="lg">
+                      {lobby.joinCode}
+                    </Text>
+                    <Badge
+                      color={copied ? "teal" : undefined}
+                      variant="filled"
+                      size="md"
+                    >
+                      {copied ? "✓ Copied" : "Copy"}
+                    </Badge>
+                  </Group>
+                </Button>
+              )}
+            </CopyButton>
+          </Center>
+          <Stack gap="lg">
+            <PlayerCard player={playerOne} currentUserId={currentUser.id} />
+            <Center>
+              <Text c="dimmed" fw={700} size="3.5rem" fs={"italic"}>
+                VS
+              </Text>
+            </Center>
+            <PlayerCard player={playerTwo} currentUserId={currentUser.id} />
+            <Stack mt="md">
+              <Group justify="center">
+                <Button color="red" size="md" onClick={onLeave}>
+                  Leave Party
+                </Button>
+                <Button size="md" onClick={onStart} disabled={!canDuelStart}>
+                  Start Duel
+                </Button>
+              </Group>
+            </Stack>
+          </Stack>
+        </Card>
+      </Stack>
+    </Box>
+  );
+}

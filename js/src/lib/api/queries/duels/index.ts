@@ -3,18 +3,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiURL } from "../../common/apiURL";
 
 // Start
-export const useStartPartyMutation = () => {
+export const useStartDuelMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: startParty,
+    mutationFn: startDuel,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["party"] });
     },
   });
 };
 
-async function startParty() {
+async function startDuel() {
   const { url, method, res } = ApiURL.create("/api/duel/start", {
     method: "POST",
   });

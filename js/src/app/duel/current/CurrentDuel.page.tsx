@@ -1,21 +1,10 @@
-import { DuelWithIdBody } from "@/app/duel/_components/DuelBody";
+import { CurrentDuelBody } from "@/app/duel/_components/DuelBody";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Flex, Loader } from "@mantine/core";
-import { useParams } from "react-router";
 
-export default function DuelPage() {
-  const { lobbyCode } = useParams<{ lobbyCode: string }>();
+export default function CurrentDuelPage() {
   const { data, status } = useAuthQuery();
-
-  if (!lobbyCode) {
-    return (
-      <ToastWithRedirect
-        to={"/duel/create"}
-        message={"Please join or create a party first."}
-      />
-    );
-  }
 
   if (status === "pending") {
     return (
@@ -56,5 +45,5 @@ export default function DuelPage() {
     );
   }
 
-  return <DuelWithIdBody code={lobbyCode} currentUser={data.user} />;
+  return <CurrentDuelBody currentUser={data.user} />;
 }
