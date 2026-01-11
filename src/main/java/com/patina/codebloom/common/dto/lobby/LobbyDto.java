@@ -26,7 +26,7 @@ public class LobbyDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LobbyStatus status;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, nullable = true)
     private OffsetDateTime expiresAt;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

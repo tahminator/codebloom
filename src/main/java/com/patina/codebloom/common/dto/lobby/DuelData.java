@@ -22,14 +22,17 @@ public class DuelData {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private LobbyDto lobby;
 
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private List<QuestionBankDto> questions;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Builder.Default
+    private List<QuestionBankDto> questions = List.of();
 
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private List<UserDto> players;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Builder.Default
+    private List<UserDto> players = List.of();
 
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private Map<String, List<QuestionDto>> playerQuestions;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Builder.Default
+    private Map<String, List<QuestionDto>> playerQuestions = Map.of();
 
     public static final DuelData DEFAULT = builder().build();
 }
