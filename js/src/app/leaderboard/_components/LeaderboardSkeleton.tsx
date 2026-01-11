@@ -52,7 +52,7 @@ export default function LeaderboardSkeleton() {
             </Group>
           </Paper>
         ))}
-      <Flex p="xl" display="flex" justify="center">
+      <Flex p="xl" justify="center">
         {[...Array(8)].map((_, i) => (
           <Skeleton key={i} height={30} width={30} mr={8} />
         ))}
