@@ -167,6 +167,14 @@ runs:
         message: |
           Task ID ${{ steps.parse_id.outputs.id || 'N/A'}} does not exist on Notion. Please set a valid Notion task ID to the start of the PR title.
 
+    - name: Send a message to the PR if title does not have number prefix
+      if: steps.parse_id.outcome == 'failure'
+      uses: ./.github/composite/send-message
+      with:
+        prId: ${{ inputs.PR_ID }}
+        message: |
+          Pleae add the ID of your notion ticket to the title of the PR. For example: `420 - Foo Bar`
+
     - name: Fail if task does not exist
       if: steps.check_notion.outputs.found == 'false'
       shell: bash
