@@ -40,15 +40,10 @@ export default function AboutUs() {
           w={"50%"}
         >
           <Badge
-            component={Link}
-            to={"/settings"}
             variant={"gradient"}
             gradient={{ from: "green", to: "cyan", deg: 90 }}
             size={"xl"}
             m={"md"}
-            style={{
-              cursor: "pointer",
-            }}
           >
             Celebrating CodeBloom's 1 Year Anniversary! 🎉
           </Badge>
@@ -89,15 +84,10 @@ export default function AboutUs() {
       <Flex h={"80vh"} w={"100vw"} hiddenFrom="lg">
         <Stack align={"center"} justify={"center"} h={"100%"} w={"100vw"}>
           <Badge
-            component={Link}
-            to={"/settings"}
             variant={"gradient"}
             gradient={{ from: "green", to: "cyan", deg: 90 }}
             size={"sm"}
             m={"md"}
-            style={{
-              cursor: "pointer",
-            }}
           >
             Celebrating CodeBloom's 1 Year Anniversary! 🎉
           </Badge>
