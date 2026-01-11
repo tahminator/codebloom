@@ -30,8 +30,10 @@ export default function PartyWaitingBody({
   playable: boolean;
 }) {
   const { lobby, players } = duelData;
-  const { mutate: leavePartyMutate } = useLeavePartyMutation();
-  const { mutate: startDuelMutate } = useStartDuelMutation();
+  const { mutate: leavePartyMutate, isPending: isLeavePartyPending } =
+    useLeavePartyMutation();
+  const { mutate: startDuelMutate, isPending: isStartDuelPending } =
+    useStartDuelMutation();
 
   const playerOne = players[0] ?? null;
   const playerTwo = players[1] ?? null;
@@ -40,24 +42,32 @@ export default function PartyWaitingBody({
 
   const onLeave = () => {
     leavePartyMutate(void 0, {
+      onError: () => {
+        notifications.show({
+          message: "Hmm, something went wrong.",
+        });
+      },
       onSuccess: (data) => {
-        if (data.success) {
-          notifications.show({
-            message: data.message,
-          });
-        }
+        notifications.show({
+          message: data.message,
+          color: data.success ? undefined : "red",
+        });
       },
     });
   };
 
   const onStart = () => {
     startDuelMutate(void 0, {
+      onError: () => {
+        notifications.show({
+          message: "Hmm, something went wrong.",
+        });
+      },
       onSuccess: (data) => {
-        if (data.success) {
-          notifications.show({
-            message: data.message,
-          });
-        }
+        notifications.show({
+          message: data.message,
+          color: data.success ? undefined : "red",
+        });
       },
     });
   };
@@ -103,10 +113,20 @@ export default function PartyWaitingBody({
             <Stack mt="md">
               {playable && (
                 <Group justify="center">
-                  <Button color="red" size="md" onClick={onLeave}>
+                  <Button
+                    color="red"
+                    size="md"
+                    onClick={onLeave}
+                    loading={isLeavePartyPending}
+                  >
                     Leave Party
                   </Button>
-                  <Button size="md" onClick={onStart} disabled={!canDuelStart}>
+                  <Button
+                    size="md"
+                    onClick={onStart}
+                    disabled={!canDuelStart}
+                    loading={isStartDuelPending}
+                  >
                     Start Duel
                   </Button>
                 </Group>
