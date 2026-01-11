@@ -168,7 +168,7 @@ runs:
           Task ID ${{ steps.parse_id.outputs.id || 'N/A'}} does not exist on Notion. Please set a valid Notion task ID to the start of the PR title.
 
     - name: Send a message to the PR if title does not have number prefix
-      if: steps.parse_id.outcome == 'failure'
+      if: failure() && steps.parse_id.outcome == 'failure'
       uses: ./.github/composite/send-message
       with:
         prId: ${{ inputs.PR_ID }}
