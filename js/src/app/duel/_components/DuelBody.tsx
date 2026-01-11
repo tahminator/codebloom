@@ -17,7 +17,7 @@ export function CurrentDuelBody({
 }) {
   const query = useMyDuelOrPartyData();
 
-  return <DuelBody query={query} currentUser={currentUser} />;
+  return <DuelBody query={query} currentUser={currentUser} playable />;
 }
 
 export function DuelWithIdBody({
@@ -35,9 +35,11 @@ export function DuelWithIdBody({
 function DuelBody({
   currentUser,
   query,
+  playable = false,
 }: {
   currentUser: User;
   query: ReturnType<typeof useDuelOrPartyData>;
+  playable?: boolean;
 }) {
   const { data, status, error } = query;
 
@@ -79,7 +81,13 @@ function DuelBody({
     case LobbyStatus.CLOSED:
       return <></>;
     case LobbyStatus.AVAILABLE:
-      return <PartyWaitingBody duelData={duelData} currentUser={currentUser} />;
+      return (
+        <PartyWaitingBody
+          duelData={duelData}
+          currentUser={currentUser}
+          playable={playable}
+        />
+      );
     case LobbyStatus.ACTIVE:
       return <></>;
     case LobbyStatus.COMPLETED:
