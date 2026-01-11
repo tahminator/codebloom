@@ -5,7 +5,6 @@ import {
 } from "@/lib/api/queries/duels";
 import { Api } from "@/lib/api/types";
 import {
-  Box,
   Stack,
   Card,
   Text,
@@ -14,6 +13,7 @@ import {
   Button,
   Group,
   Badge,
+  Flex,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 
@@ -63,14 +63,7 @@ export default function PartyWaitingBody({
   };
 
   return (
-    <Box
-      style={{
-        minHeight: "85vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <Flex mih={"85vh"} justify={"center"} align={"center"}>
       <Stack maw={480} w="100%" gap="xl">
         <Card padding="lg" radius="lg" withBorder>
           <Center mb="lg">
@@ -122,6 +115,6 @@ export default function PartyWaitingBody({
           </Stack>
         </Card>
       </Stack>
-    </Box>
+    </Flex>
   );
 }
