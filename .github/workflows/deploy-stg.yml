@@ -378,32 +378,18 @@ jobs:
               run: bash .github/scripts/transform-yaml-with-env.sh .do/stg/app.yml .env.staging
 
             - name: Update App Spec on DigitalOcean
-              id: update-app
               run: |
-                OUTPUT=$(doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml --output json)
+                OUTPUT=$(doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml --update-sources --output json)
                 echo "doctl output: $OUTPUT"
-                
-                DEPLOYMENT_ID=$(echo "$OUTPUT" | jq -r '.active_deployment.id // .in_progress_deployment.id // .deployments[0].id // empty' | head -n 1)
-                
+
+                DEPLOYMENT_ID=$(echo "$OUTPUT" | jq -r '.[0].pending_deployment.id // .[0].in_progress_deployment.id // .[0].active_deployment.id // empty' | head -n 1)
+
                 if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" == "null" ]; then
                     echo "Failed to extract deployment ID from app update response"
-                    echo "Attempting to get latest deployment via API..."
-                    
-                    DEPLOY_RESPONSE=$(curl -s -X GET \
-                        -H "Content-Type: application/json" \
-                        -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
-                        "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments")
-                    
-                    DEPLOYMENT_ID=$(echo "$DEPLOY_RESPONSE" | jq -r '.deployments[0].id')
-                fi
-                
-                if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" == "null" ]; then
-                    echo "Failed to get deployment ID"
                     exit 1
                 fi
-                
+
                 echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
-                echo "Deployment ID: $DEPLOYMENT_ID"
 
             - name: Poll Deployment Status
               run: |
