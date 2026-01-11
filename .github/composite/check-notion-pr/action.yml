@@ -42,10 +42,11 @@ runs:
         set -euo pipefail
 
         TITLE="$(gh pr view "${{ inputs.PR_ID }}" --json title -q .title)"
-        PREFIX="$(echo "$TITLE" | grep -oE '^-?[0-9]+')"
+        PREFIX="$(echo "$TITLE" | grep -oE '^-?[0-9]+' || true)"
 
         if [ -z "$PREFIX" ]; then
           echo "No numeric prefix found in PR title: $TITLE" >&2
+          echo "status=failed" >> "$GITHUB_OUTPUT"
           exit 1
         fi
 
@@ -166,6 +167,18 @@ runs:
         prId: ${{ inputs.PR_ID }}
         message: |
           Task ID ${{ steps.parse_id.outputs.id || 'N/A'}} does not exist on Notion. Please set a valid Notion task ID to the start of the PR title.
+
+    - name: Send a message to the PR if title does not have number prefix
+      if: failure() && steps.parse_id.outcome == 'failure'
+      uses: ./.github/composite/send-message
+      with:
+        prId: ${{ inputs.PR_ID }}
+        message: |
+          ## TITLE ID REQUIRED
+
+          Please add the ID of your Notion ticket to the title of the PR. 
+
+          **Example:** `420: Foo Bar`
 
     - name: Fail if task does not exist
       if: steps.check_notion.outputs.found == 'false'
