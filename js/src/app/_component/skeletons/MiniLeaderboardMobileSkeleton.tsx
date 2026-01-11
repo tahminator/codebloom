@@ -1,13 +1,12 @@
-import { Center, Flex, Skeleton, Table } from "@mantine/core";
+import { Box, Flex, Paper, Skeleton } from "@mantine/core";
 
 export default function MiniLeaderboardMobileSkeleton() {
   return (
-    <>
-      <Center mb="md">
-        <Skeleton visible width="100%" height="36px">
-          <div style={{ width: "100%", height: "36px" }} />
-        </Skeleton>
-      </Center>
+    <Box pos={"relative"} p={"xs"}>
+      <Flex justify="center" mb="xl" gap="xxs">
+        <Skeleton visible flex={1} maw="180px" w="50%" height="36px" />
+        <Skeleton visible flex={1} maw="180px" w="50%" height="36px" />
+      </Flex>
       <Flex
         direction={{ base: "column", xs: "row" }}
         align={{ base: "center", xs: "flex-end" }}
@@ -29,41 +28,26 @@ export default function MiniLeaderboardMobileSkeleton() {
             );
           })}
       </Flex>
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th></Table.Th>
-            <Table.Th>
-              <Skeleton visible width={"3rem"} height={"0.75rem"} />
-            </Table.Th>
-            <Table.Th>
-              <Skeleton visible width={"2rem"} height={"0.75rem"} />
-            </Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {Array(2)
-            .fill(0)
-            .map((_, index) => (
-              <Table.Tr key={index}>
-                <Table.Td>
-                  <Skeleton visible width={"1rem"} height={"1rem"} />
-                </Table.Td>
-                <Table.Td>
-                  <Skeleton visible width={"8rem"} height={"3rem"} />
-                </Table.Td>
-                <Table.Td>
-                  <Skeleton visible width={"2rem"} height={"1rem"} />
-                </Table.Td>
-              </Table.Tr>
-            ))}
-        </Table.Tbody>
-      </Table>
-      <Center mb="md" mt={"md"}>
-        <Skeleton visible width="100%" height="36px">
-          <div style={{ width: "100%", height: "36px" }} />
-        </Skeleton>
-      </Center>
-    </>
+      {Array(2)
+        .fill(0)
+        .map((_, index) => (
+          <Paper
+            key={index}
+            mb="md"
+            p="md"
+            bg="rgba(255, 255, 255, 0.02)"
+            radius={8}
+          >
+            <Flex justify="space-between" align="center">
+              <Flex align="center" gap="md">
+                <Skeleton visible width="2rem" height="1.5rem" />
+                <Skeleton visible width="120px" height="3rem" />
+              </Flex>
+              <Skeleton visible width="2rem" height="1.5rem" />
+            </Flex>
+          </Paper>
+        ))}
+      <Skeleton visible width="100%" height="40px" mt="md" radius="md" />
+    </Box>
   );
 }

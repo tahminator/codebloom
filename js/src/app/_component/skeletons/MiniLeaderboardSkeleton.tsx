@@ -1,13 +1,12 @@
-import { Box, Card, Center, Flex, Skeleton, Table } from "@mantine/core";
+import { Box, Card, Flex, Paper, Skeleton } from "@mantine/core";
 
 export default function MiniLeaderboardSkeleton() {
   return (
     <Box pos={"relative"} p={"xs"}>
-      <Center mb="md">
-        <Skeleton visible width="100%" height="36px">
-          <div style={{ width: "100%", height: "36px" }} />
-        </Skeleton>
-      </Center>
+      <Flex justify="center" mb="xl" gap="xxs">
+        <Skeleton visible width="50%" height="36px" />
+        <Skeleton visible width="50%" height="36px" />
+      </Flex>
       <Flex
         direction={{ base: "column", xs: "row" }}
         align={{ base: "center", xs: "flex-end" }}
@@ -31,50 +30,33 @@ export default function MiniLeaderboardSkeleton() {
                   shadow="sm"
                   radius="md"
                   className={`border-2 flex flex-col items-center justify-center`}
-                  style={{
-                    height,
-                    width: "200px",
-                  }}
+                  h={height}
+                  w="200px"
                 />
               </Skeleton>
             );
           })}
       </Flex>
-      <Table horizontalSpacing="lg">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th></Table.Th>
-            <Table.Th>
-              <Skeleton visible width={"3rem"} height={"0.75rem"} />
-            </Table.Th>
-            <Table.Th>
-              <Skeleton visible width={"2rem"} height={"0.75rem"} />
-            </Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {Array(2)
-            .fill(0)
-            .map((_, index) => (
-              <Table.Tr key={index}>
-                <Table.Td>
-                  <Skeleton visible width={"1rem"} height={"1rem"} mx={"xs"} />
-                </Table.Td>
-                <Table.Td>
-                  <Skeleton visible width={"8rem"} height={"3rem"} mr={"xs"} />
-                </Table.Td>
-                <Table.Td>
-                  <Skeleton visible width={"2rem"} height={"1rem"} mr={"xs"} />
-                </Table.Td>
-              </Table.Tr>
-            ))}
-        </Table.Tbody>
-      </Table>
-      <Center mb="md" mt={"md"}>
-        <Skeleton visible width="100%" height="36px">
-          <div style={{ width: "100%", height: "36px" }} />
-        </Skeleton>
-      </Center>
+      {Array(2)
+        .fill(0)
+        .map((_, index) => (
+          <Paper
+            key={index}
+            mb="md"
+            p="md"
+            bg="rgba(255, 255, 255, 0.02)"
+            radius={8}
+          >
+            <Flex justify="space-between" align="center">
+              <Flex align="center" gap="md">
+                <Skeleton visible width="2rem" height="1.75rem" />
+                <Skeleton visible width="10rem" height="3rem" />
+              </Flex>
+              <Skeleton visible width="4rem" height="1.5rem" />
+            </Flex>
+          </Paper>
+        ))}
+      <Skeleton visible width="100%" height="30px" mt="md" radius="md" />
     </Box>
   );
 }

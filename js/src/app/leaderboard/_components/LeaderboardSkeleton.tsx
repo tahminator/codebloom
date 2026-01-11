@@ -1,4 +1,4 @@
-import { Center, Flex, Skeleton, Table } from "@mantine/core";
+import { Center, Flex, Group, Paper, Skeleton } from "@mantine/core";
 
 /**
  * @todo - Could possibly scan the URL for page number and define different skeletons based off of that.
@@ -27,55 +27,36 @@ export default function LeaderboardSkeleton() {
             );
           })}
       </Flex>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "1rem",
-          paddingTop: "2rem",
-        }}
-      >
-        <Skeleton visible width={"100px"} height={"36px"}>
-          <div style={{ width: "100%", height: "36px" }} />
-        </Skeleton>
-      </div>
+      <Flex justify="flex-end" mb="md" pt="2rem">
+        <Skeleton visible width={"100px"} height={"36px"} />
+      </Flex>
       <Center mb="md">
-        <Skeleton visible width="100%" height="36px">
-          <div style={{ width: "100%", height: "36px" }} />
-        </Skeleton>
+        <Skeleton visible width="100%" height="36px" />
       </Center>
-      <Table horizontalSpacing="lg">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>
-              <Skeleton visible width={"1rem"} height={"0.75rem"} />
-            </Table.Th>
-            <Table.Th>
-              <Skeleton visible width={"3rem"} height={"0.75rem"} />
-            </Table.Th>
-            <Table.Th>
-              <Skeleton visible width={"2rem"} height={"0.75rem"} />
-            </Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {Array(17)
-            .fill(0)
-            .map((_, index) => (
-              <Table.Tr key={index}>
-                <Table.Td>
-                  <Skeleton visible width={"1rem"} height={"1rem"} pl={"lg"} />
-                </Table.Td>
-                <Table.Td>
-                  <Skeleton visible width={"8rem"} height={"3rem"} pl={"lg"} />
-                </Table.Td>
-                <Table.Td>
-                  <Skeleton visible width={"2rem"} height={"1rem"} mr={"xs"} />
-                </Table.Td>
-              </Table.Tr>
-            ))}
-        </Table.Tbody>
-      </Table>
+      {Array(17)
+        .fill(0)
+        .map((_, index) => (
+          <Paper
+            key={index}
+            mb="md"
+            p="md"
+            bg="rgba(255, 255, 255, 0.02)"
+            radius={8}
+          >
+            <Group justify="space-between" align="center">
+              <Flex align="center" gap="md">
+                <Skeleton visible width="2rem" height="2rem" />
+                <Skeleton visible w="60%" maw={320} miw={120} height="3rem" />
+              </Flex>
+              <Skeleton visible w="4rem" height="2rem" />
+            </Group>
+          </Paper>
+        ))}
+      <Flex p="xl" display="flex" justify="center">
+        {[...Array(8)].map((_, i) => (
+          <Skeleton key={i} height={30} width={30} mr={8} />
+        ))}
+      </Flex>
     </>
   );
 }
