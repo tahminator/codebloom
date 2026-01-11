@@ -3,6 +3,7 @@ import ClubSignUp from "@/app/club/[clubSlug]/ClubSignUp.page";
 import DashboardPage from "@/app/dashboard/Dashboard.page";
 import DuelPage from "@/app/duel/[lobbyCode]/Duel.page";
 import PartyCreationPage from "@/app/duel/create/PartyCreation.page";
+import CurrentDuelPage from "@/app/duel/current/CurrentDuel.page";
 import LeaderboardEmbed from "@/app/embed/leaderboard/LeaderboardEmbed";
 import PotdEmbed from "@/app/embed/potd/PotdEmbed";
 import ErrorPage from "@/app/error/Error.page";
@@ -179,6 +180,21 @@ export const router = createBrowserRouter([
       duelFF ?
         <PageShell>
           <PartyCreationPage />
+        </PageShell>
+      : <ToastWithRedirect
+          to={"/"}
+          message={
+            "Sorry, this is not available right now. Please try again later."
+          }
+        />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/duel/current",
+    element:
+      duelFF ?
+        <PageShell>
+          <CurrentDuelPage />
         </PageShell>
       : <ToastWithRedirect
           to={"/"}
