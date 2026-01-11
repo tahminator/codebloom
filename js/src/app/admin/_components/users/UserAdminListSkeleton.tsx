@@ -10,7 +10,7 @@ export default function UserAdminListSkeleton() {
           <Box p={"md"} />
         </Skeleton>
       ))}
-      <Flex p="xl" display="flex" justify="center">
+      <Flex p="xl" justify="center">
         {[...Array(8)].map((_, i) => (
           <Skeleton key={i} height={30} width={30} mr={8} />
         ))}

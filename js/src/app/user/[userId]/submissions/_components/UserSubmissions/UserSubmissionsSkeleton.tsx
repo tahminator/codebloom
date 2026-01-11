@@ -42,7 +42,7 @@ export default function UserSubmissionsSkeleton() {
               </Paper>
             ))}
         </Stack>
-        <Flex p="xl" display="flex" justify="center">
+        <Flex p="xl" justify="center">
           {[...Array(3)].map((_, i) => (
             <Skeleton key={i} height={30} width={30} mr={8} />
           ))}

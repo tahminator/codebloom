@@ -4,8 +4,8 @@ export default function MiniLeaderboardMobileSkeleton() {
   return (
     <Box pos={"relative"} p={"xs"}>
       <Flex justify="center" mb="xl" gap="xxs">
-        <Skeleton visible flex={1} maw="180px" w="50%" height="36px" />
-        <Skeleton visible flex={1} maw="180px" w="50%" height="36px" />
+        <Skeleton visible maw="180px" w="50%" height="36px" />
+        <Skeleton visible maw="180px" w="50%" height="36px" />
       </Flex>
       <Flex
         direction={{ base: "column", xs: "row" }}
