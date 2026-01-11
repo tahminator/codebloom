@@ -62,5 +62,5 @@ runs:
       if: steps.verify.outcome == 'failure'
       shell: bash
       run: |
-        echo "One or more commits do not match the Notion ID"
+        echo "One or more commits do not match the Notion ID."
         exit 1
