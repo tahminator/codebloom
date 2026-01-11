@@ -23,9 +23,11 @@ type User = Api<"UserDto">;
 export default function PartyWaitingBody({
   duelData,
   currentUser,
+  playable,
 }: {
   duelData: DuelData;
   currentUser: User;
+  playable: boolean;
 }) {
   const { lobby, players } = duelData;
   const { mutate: leavePartyMutate } = useLeavePartyMutation();
@@ -106,14 +108,16 @@ export default function PartyWaitingBody({
             </Center>
             <PlayerCard player={playerTwo} currentUserId={currentUser.id} />
             <Stack mt="md">
-              <Group justify="center">
-                <Button color="red" size="md" onClick={onLeave}>
-                  Leave Party
-                </Button>
-                <Button size="md" onClick={onStart} disabled={!canDuelStart}>
-                  Start Duel
-                </Button>
-              </Group>
+              {playable && (
+                <Group justify="center">
+                  <Button color="red" size="md" onClick={onLeave}>
+                    Leave Party
+                  </Button>
+                  <Button size="md" onClick={onStart} disabled={!canDuelStart}>
+                    Start Duel
+                  </Button>
+                </Group>
+              )}
             </Stack>
           </Stack>
         </Card>
