@@ -42,10 +42,11 @@ runs:
         set -euo pipefail
 
         TITLE="$(gh pr view "${{ inputs.PR_ID }}" --json title -q .title)"
-        PREFIX="$(echo "$TITLE" | grep -oE '^-?[0-9]+')"
+        PREFIX="$(echo "$TITLE" | grep -oE '^-?[0-9]+' || true)"
 
         if [ -z "$PREFIX" ]; then
           echo "No numeric prefix found in PR title: $TITLE" >&2
+          echo "status=failed" >> "$GITHUB_OUTPUT"
           exit 1
         fi
 
