@@ -40,7 +40,7 @@
         "react-icons": "^5.4.0",
         "react-router": "^6.28.1",
         "react-router-dom": "^6.28.1",
-        "react-syntax-highlighter": "^15.6.6",
+        "react-shiki": "^0.9.1",
         "tar": ">=7.5.2",
         "use-debounce": "^10.0.4",
         "use-immer": "^0.11.0",
