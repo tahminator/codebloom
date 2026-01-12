@@ -19,8 +19,7 @@ import { FaDiscord } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import ShikiHighlighter from "react-shiki";
 
 import classes from "./SubmissionDetailsContent.module.css";
 
@@ -213,17 +212,12 @@ export default function SubmissionDetailsContent({
                   <Text>Runtime: {runtime ?? ""}</Text>
                   <Text>Memory: {memory ?? ""}</Text>
                 </Flex>
-                <SyntaxHighlighter
-                  style={gruvboxDark}
-                  customStyle={{
-                    overflow: "auto",
-                    minWidth: 0,
-                    borderRadius: "8px",
-                  }}
+                <ShikiHighlighter
                   language={parsedLanguage}
+                  theme="github-dark-dimmed"
                 >
-                  {code ?? "No code available."}
-                </SyntaxHighlighter>
+                  {code.trim() ?? "No code available."}
+                </ShikiHighlighter>
               </>
             }
           </Card>
