@@ -465,17 +465,17 @@ jobs:
                       let statusMessage;
                       let status = false;
                       if (failedJobs.length > 0 && cancelledJobs.length > 0) {
-                         statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}\n\n**`;
-                         status = false;
+                        statusMessage = `**Staging deployment failed and was cancelled** for commit ${commitHash}`;
+                        status = false;
                       } else if (failedJobs.length > 0) {
-                         statusMessage = `**Staging deployment failed** for commit ${commitHash}\n\n**`;
-                         status = false;
+                        statusMessage = `**Staging deployment failed** for commit ${commitHash}`;
+                        status = false;
                       } else if (cancelledJobs.length > 0) {
-                         statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}\n\n`;
-                         status = false;
+                        statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}`;
+                        status = false;
                       } else {
-                         statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
-                         status = true;
+                        statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
+                        status = true;
                       }
 
 
