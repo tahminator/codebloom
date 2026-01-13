@@ -209,11 +209,12 @@ export const useLeaderboardUsersByIdQuery = ({
   tieToUrl?: boolean;
   leaderboardId: string;
 }) => {
-  const { filters, toggleFilter } = useFilters({
-    onFilterChange: () => {
-      goTo(1);
-    },
-  });
+  const { filters, toggleFilter, clearFilters, isAnyFilterEnabled } =
+    useFilters({
+      onFilterChange: () => {
+        goTo(1);
+      },
+    });
   const { page, goBack, goForward, goTo } = usePagination({
     initialPage: initialPage,
     tieToUrl: tieToUrl,
@@ -252,6 +253,15 @@ export const useLeaderboardUsersByIdQuery = ({
     goTo(1);
   }, [goTo, setGlobalIndex]);
 
+  const onFilterReset = useCallback(() => {
+    clearFilters();
+    goTo(1);
+
+    if (globalIndex) {
+      toggleGlobalIndex();
+    }
+  }, [clearFilters, goTo, globalIndex, toggleGlobalIndex]);
+
   const query = useQuery({
     queryKey: [
       "leaderboard",
@@ -289,6 +299,8 @@ export const useLeaderboardUsersByIdQuery = ({
     debouncedQuery,
     pageSize,
     toggleGlobalIndex,
+    isAnyFilterEnabled,
+    onFilterReset,
   };
 };
 

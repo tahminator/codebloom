@@ -17,23 +17,32 @@ type LeaderboardMetadataOptions = {
   showClock?: boolean;
   showAllLeaderboardButton?: boolean;
   syntaxStripSize?: SyntaxStripSize;
-  leaderboardId?: string;
 };
 
-export default function LeaderboardMetadata(
+export function CurrentLeaderboardMetadata(
   props: LeaderboardMetadataOptions = {},
 ) {
-  const {
-    showClock = false,
-    showAllLeaderboardButton = false,
-    syntaxStripSize,
-    leaderboardId,
-  } = props;
+  const query = useCurrentLeaderboardMetadataQuery();
+  return <LeaderboardMetadata query={query} {...props} />;
+}
 
-  const currentMetadata = useCurrentLeaderboardMetadataQuery();
-  const idMetadata = useLeaderboardMetadataByIdQuery(leaderboardId || "");
+export function LeaderboardMetadataById({
+  leaderboardId,
+  ...props
+}: LeaderboardMetadataOptions & { leaderboardId: string }) {
+  const query = useLeaderboardMetadataByIdQuery(leaderboardId);
+  return <LeaderboardMetadata query={query} {...props} />;
+}
 
-  const { data, status } = leaderboardId ? idMetadata : currentMetadata;
+export default function LeaderboardMetadata({
+  query,
+  showClock = false,
+  showAllLeaderboardButton = false,
+  syntaxStripSize,
+}: LeaderboardMetadataOptions & {
+  query: ReturnType<typeof useCurrentLeaderboardMetadataQuery>;
+}) {
+  const { data, status } = query;
   const [countdown, reset] = useCountdown(-10);
 
   useEffect(() => {

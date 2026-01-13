@@ -1,5 +1,5 @@
-import Leaderboard from "@/app/leaderboard/_components/Leaderboard";
-import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import { CurrentLeaderboard } from "@/app/leaderboard/_components/Leaderboard";
+import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import { Box } from "@mantine/core";
 
 export default function LeaderboardPage() {
@@ -7,12 +7,12 @@ export default function LeaderboardPage() {
     <div className="flex flex-col min-h-screen">
       <div className="grow">
         <Box>
-          <LeaderboardMetadata
+          <CurrentLeaderboardMetadata
             showClock
             showAllLeaderboardButton
             syntaxStripSize={"md"}
           />
-          <Leaderboard />
+          <CurrentLeaderboard />
         </Box>
       </div>
     </div>
