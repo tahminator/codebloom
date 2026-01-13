@@ -48,10 +48,12 @@ export default function PartyWaitingBody({
         });
       },
       onSuccess: (data) => {
-        notifications.show({
-          message: data.message,
-          color: data.success ? undefined : "red",
-        });
+        if (!data.success) {
+          notifications.show({
+            message: data.message,
+            color: "red",
+          });
+        }
       },
     });
   };
@@ -64,10 +66,12 @@ export default function PartyWaitingBody({
         });
       },
       onSuccess: (data) => {
-        notifications.show({
-          message: data.message,
-          color: data.success ? undefined : "red",
-        });
+        if (!data.success) {
+          notifications.show({
+            message: data.message,
+            color: "red",
+          });
+        }
       },
     });
   };
