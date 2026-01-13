@@ -2,7 +2,7 @@ import MiniLeaderboard from "@/app/_component/MiniLeaderboard";
 import MiniLeaderboardMobile from "@/app/_component/MiniLeaderboardMobile";
 import OurFeatures from "@/app/_component/OurFeatures";
 import SchoolSection from "@/app/_component/SchoolSection";
-import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import {
   Badge,
   Box,
@@ -50,7 +50,7 @@ export default function AboutUs() {
           <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
           </Title>
-          <Title order={3}>Patina’s LeetCode Challenge!</Title>
+          <Title order={3}>Patina's LeetCode Challenge!</Title>
           <div
             style={{
               padding: "1rem",
@@ -76,7 +76,7 @@ export default function AboutUs() {
           w={"50%"}
         >
           <Box pos={"relative"} p={"xs"}>
-            <LeaderboardMetadata showClock syntaxStripSize={"md"} />
+            <CurrentLeaderboardMetadata showClock syntaxStripSize={"md"} />
             <MiniLeaderboard />
           </Box>
         </Flex>
@@ -94,7 +94,7 @@ export default function AboutUs() {
           <Title order={5} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
           </Title>
-          <Title order={5}>Patina’s LeetCode Challenge!</Title>
+          <Title order={5}>Patina's LeetCode Challenge!</Title>
           <div
             style={{
               padding: "1rem",
@@ -114,7 +114,7 @@ export default function AboutUs() {
         </Stack>
       </Flex>
       <Container hiddenFrom={"lg"}>
-        <LeaderboardMetadata showClock syntaxStripSize={"lg"} />
+        <CurrentLeaderboardMetadata showClock syntaxStripSize={"lg"} />
         <MiniLeaderboardMobile />
       </Container>
       <SchoolSection />
