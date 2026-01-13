@@ -1,5 +1,4 @@
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import ShikiHighlighter from "react-shiki";
 
 export type SyntaxStripSize = "sm" | "md" | "lg";
 
@@ -24,10 +23,13 @@ export default function SyntaxStrip({
   })();
 
   return (
-    <SyntaxHighlighter
+    <ShikiHighlighter
+      theme="github-dark-dimmed"
       language={language}
-      style={vs2015}
-      customStyle={{
+      showLanguage={false}
+      structure="inline"
+      as="span"
+      style={{
         display: "inline-block",
         overflow: "auto",
         minWidth: 0,
@@ -39,9 +41,8 @@ export default function SyntaxStrip({
         fontSize: s,
         lineHeight: 1.15,
       }}
-      wrapLongLines={true}
     >
       {name}
-    </SyntaxHighlighter>
+    </ShikiHighlighter>
   );
 }
