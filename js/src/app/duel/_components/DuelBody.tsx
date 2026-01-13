@@ -1,3 +1,4 @@
+import { useLobbyNavigation } from "@/app/duel/_hooks/useDuelNavigation";
 import PartyWaitingBody from "@/app/duel/[lobbyCode]/_components/party/PartyWaitingBody";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import {
@@ -16,6 +17,7 @@ export function CurrentDuelBody({
   currentUser: Api<"UserDto">;
 }) {
   const query = useMyDuelOrPartyData();
+  useLobbyNavigation();
 
   return <DuelBody query={query} currentUser={currentUser} playable />;
 }
@@ -41,9 +43,9 @@ function DuelBody({
   query: ReturnType<typeof useDuelOrPartyData>;
   playable?: boolean;
 }) {
-  const { data, status, error } = query;
+  const { data } = query;
 
-  if (status === "pending") {
+  if (!data) {
     return (
       <Flex
         direction={"column"}
@@ -54,15 +56,6 @@ function DuelBody({
       >
         <Loader />
       </Flex>
-    );
-  }
-
-  if (status === "error" || error) {
-    return (
-      <ToastWithRedirect
-        to={"/duel"}
-        message={"Hmm, something went wrong."}
-      />
     );
   }
 

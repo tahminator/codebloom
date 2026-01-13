@@ -77,8 +77,8 @@ export const useCreatePartyMutation = () => {
 
   return useMutation({
     mutationFn: createParty,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["party"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["party"] });
     },
   });
 };

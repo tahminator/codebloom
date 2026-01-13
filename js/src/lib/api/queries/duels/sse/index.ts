@@ -3,57 +3,20 @@ import { ApiURL } from "@/lib/api/common/apiURL";
 import { fetchEventSource } from "@/lib/api/common/fetchEventSource";
 import { useGetCurrentDuelOrPartyQuery } from "@/lib/api/queries/duels";
 import { Api } from "@/lib/api/types";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
-type DuelStreamData = {
-  data: UnknownApiResponse<Api<"DuelData">> | null;
-  isConnected: boolean;
-  error: Error | null;
-};
-
-type FinalDuelStreamData = DuelStreamData & {
-  status: "success" | "pending" | "error";
-};
-
-export const useMyDuelOrPartyData = (): FinalDuelStreamData => {
-  const { data, status, error } = useGetCurrentDuelOrPartyQuery();
+export const useMyDuelOrPartyData = () => {
+  const { data } = useGetCurrentDuelOrPartyQuery();
   const d = useDuelOrPartyData(data?.payload?.code || "");
-
-  if (status === "pending") {
-    return {
-      data: null,
-      isConnected: false,
-      error: null,
-      status: "pending",
-    };
-  }
-
-  if (status === "error") {
-    return {
-      data: null,
-      isConnected: false,
-      error,
-      status: "error",
-    };
-  }
-
-  if (!data.success) {
-    return {
-      data: null,
-      isConnected: false,
-      error: null,
-      status: "success",
-    };
-  }
 
   return d;
 };
 
-export const useDuelOrPartyData = (lobbyCode: string): FinalDuelStreamData => {
-  const [state, setState] = useState<DuelStreamData>({
-    data: null,
-    isConnected: false,
-    error: null,
+export const useDuelOrPartyData = (lobbyCode: string) => {
+  const queryClient = useQueryClient();
+  const query = useQuery<UnknownApiResponse<Api<"DuelData">>>({
+    queryKey: ["duel", lobbyCode],
   });
 
   useEffect(() => {
@@ -63,72 +26,38 @@ export const useDuelOrPartyData = (lobbyCode: string): FinalDuelStreamData => {
 
     const controller = new AbortController();
 
-    const connect = async () => {
-      const { url, method, res } = ApiURL.create("/api/duel/{lobbyCode}/sse", {
-        method: "POST",
-        params: {
-          lobbyCode: lobbyCode,
-        },
-      });
+    const { url, method, res } = ApiURL.create("/api/duel/{lobbyCode}/sse", {
+      method: "POST",
+      params: {
+        lobbyCode,
+      },
+    });
 
-      const controller = new AbortController();
+    fetchEventSource(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: controller.signal,
 
-      await fetchEventSource(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        signal: controller.signal,
+      onmessage(ev) {
+        try {
+          const data = res(JSON.parse(ev.data));
+          queryClient.setQueryData(["duel", lobbyCode], data);
+        } catch (e) {
+          console.error("Failed to parse SSE message", e);
+        }
+      },
 
-        async onopen(response) {
-          if (response.ok) {
-            setState((prev) => ({ ...prev, isConnected: true, error: null }));
-            return;
-          }
-        },
-
-        onmessage(ev) {
-          try {
-            const data = res(JSON.parse(ev.data));
-            setState((prev) => ({ ...prev, data: data, isConnected: true }));
-          } catch (e) {
-            console.error("Failed to parse SSE message", e);
-            throw e;
-          }
-        },
-
-        onerror(err) {
-          if (err instanceof Error) {
-            if (err.message) {
-              setState((prev) => ({ ...prev, error: err, isConnected: false }));
-            }
-          }
-        },
-
-        onclose() {
-          setState((prev) => ({ ...prev, isConnected: false }));
-        },
-      });
-    };
-    connect();
+      onerror(err) {
+        console.error("SSE error", err);
+      },
+    });
 
     return () => {
       controller.abort();
-      setState((prev) => ({ ...prev, isConnected: false, error: null }));
     };
-  }, [lobbyCode]);
+  }, [lobbyCode, queryClient]);
 
-  const status = useMemo(() => {
-    if (state.data && state.isConnected) {
-      return "success";
-    }
-
-    if (!state.isConnected && state.error) {
-      return "error";
-    }
-
-    return "pending";
-  }, [state.data, state.error, state.isConnected]);
-
-  return { ...state, status };
+  return query;
 };
