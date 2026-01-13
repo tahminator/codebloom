@@ -380,7 +380,6 @@ jobs:
             - name: Update App Spec on DigitalOcean
               run: |
                 OUTPUT=$(doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml --update-sources --output json)
-                echo "doctl output: $OUTPUT"
 
                 DEPLOYMENT_ID=$(echo "$OUTPUT" | jq -r '.[0].pending_deployment.id // .[0].in_progress_deployment.id // .[0].active_deployment.id // empty' | head -n 1)
 
