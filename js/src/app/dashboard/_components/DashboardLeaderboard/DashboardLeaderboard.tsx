@@ -1,7 +1,7 @@
 import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
 import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
-import LeaderboardMetadata from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import {
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
@@ -119,7 +119,7 @@ export default function LeaderboardForDashboard({
         justify={"space-between"}
         w={"100%"}
       >
-        <LeaderboardMetadata syntaxStripSize={"md"} />
+        <CurrentLeaderboardMetadata syntaxStripSize={"md"} />
         <Button
           variant={"light"}
           component={Link}
