@@ -42,7 +42,7 @@ export function LeaderboardById({ leaderboardId }: { leaderboardId: string }) {
   return <LeaderboardIndex query={query} isPrevious />;
 }
 
-export default function LeaderboardIndex({
+function LeaderboardIndex({
   query,
   isPrevious = false,
 }: {

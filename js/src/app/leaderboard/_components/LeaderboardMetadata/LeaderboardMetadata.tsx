@@ -34,7 +34,7 @@ export function LeaderboardMetadataById({
   return <LeaderboardMetadata query={query} {...props} />;
 }
 
-export default function LeaderboardMetadata({
+function LeaderboardMetadata({
   query,
   showClock = false,
   showAllLeaderboardButton = false,
