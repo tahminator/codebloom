@@ -52,6 +52,8 @@ docker buildx build \
     --file infra/Dockerfile \
     --build-arg SERVER_PROFILES="$SERVER_PROFILES" \
     --build-arg COMMIT_SHA="$GIT_SHA" \
+    --cache-from=type=gha \
+    --cache-to=type=gha,mode=max \
     $VITE_STAGING_ARG \
     $(printf -- '--tag %s ' "${TAGS[@]}") \
     .

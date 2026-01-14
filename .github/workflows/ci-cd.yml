@@ -163,6 +163,9 @@ jobs:
                   javac -version
                   echo "JAVA_HOME=$JAVA_HOME"
 
+            - name: Expose GitHub Runtime
+              uses: crazy-max/ghaction-github-runtime@v3
+
             - name: Load secrets
               uses: ./.github/composite/load-secrets
               with:
@@ -172,6 +175,8 @@ jobs:
 
             - name: Run script
               run: bash .github/scripts/build-image.sh
+              env:
+                DOCKER_UPLOAD: false
 
     validateDBSchema:
         name: Validate DB Schema on Prod DB
@@ -242,10 +247,11 @@ jobs:
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
                 UNLOAD_ENVIRONMENTS: ci,ci-app
 
+            - name: Expose GitHub Runtime
+              uses: crazy-max/ghaction-github-runtime@v3
+
             - name: Run script
               run: bash .github/scripts/build-image.sh
-              env:
-                  SERVER_PROFILES: stg
 
     redeploy:
         name: Redeploy on DigitalOcean
