@@ -89,9 +89,6 @@ export default function LeaderboardIndex({
     return true;
   });
 
-  const isAnyFilterActive =
-    isAnyFilterEnabled || Object.values(filters).some(Boolean);
-
   const PossibleTooltip = ({ children }: { children: JSX.Element }) =>
     isPrevious ?
       <Tooltip
@@ -190,7 +187,7 @@ export default function LeaderboardIndex({
           <FilterDropdownItem
             value={globalIndex}
             toggle={toggleGlobalIndex}
-            disabled={!isAnyFilterActive}
+            disabled={!isAnyFilterEnabled}
             switchMode
             name={
               <Flex gap="xs" align="center">
@@ -203,7 +200,7 @@ export default function LeaderboardIndex({
             color="red"
             onClick={onFilterReset}
             fullWidth
-            disabled={!isAnyFilterActive && !globalIndex}
+            disabled={!isAnyFilterEnabled && !globalIndex}
           >
             Clear Filters
           </Button>
