@@ -128,11 +128,11 @@ export default function UserSubmissions({ userId }: { userId: string }) {
         </Box>
         {isMobile && (
           <FilterDropdown buttonName="Filters">
-              <TopicFilterPopover
-                value={topics}
-                selectedTopicsSet={selectedTopicsSet}
-                onChange={setTopics}
-                onClear={clearTopics}
+            <TopicFilterPopover
+              value={topics}
+              selectedTopicsSet={selectedTopicsSet}
+              onChange={setTopics}
+              onClear={clearTopics}
             />
             <FilterDropdownItem
               value={pointFilter}

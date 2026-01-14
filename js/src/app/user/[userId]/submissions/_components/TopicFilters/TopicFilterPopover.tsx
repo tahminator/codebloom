@@ -5,7 +5,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 const isTestEnv = import.meta.env.MODE === "test";
 
-
 type TopicFilterPopoverProps = {
   value: LeetcodeTopicEnum[];
   selectedTopicsSet: Set<LeetcodeTopicEnum>;
