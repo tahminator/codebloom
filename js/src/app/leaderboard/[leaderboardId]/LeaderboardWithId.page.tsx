@@ -15,7 +15,10 @@ export default function LeaderboardWithIdPage() {
   return (
     <>
       <Box>
-        <LeaderboardMetadataById leaderboardId={leaderboardId} />
+        <LeaderboardMetadataById
+          leaderboardId={leaderboardId}
+          showAllLeaderboardButton
+        />
         <LeaderboardById leaderboardId={leaderboardId} />
       </Box>
     </>
