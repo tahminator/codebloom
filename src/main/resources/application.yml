@@ -45,11 +45,9 @@ spring:
     async:
       request-timeout: 3h
 
-  resources:
-    add-mappings: false
-
   web:
     resources:
+      add-mappings: false
       cache:
         cachecontrol:
           max-age: 30m
