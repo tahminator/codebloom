@@ -1,6 +1,5 @@
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { ApiURL } from "../../common/apiURL";
 
 // Start
 export const useStartDuelMutation = () => {

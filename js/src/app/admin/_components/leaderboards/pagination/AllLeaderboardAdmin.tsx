@@ -1,12 +1,11 @@
+import AllLeaderboardAdminSkeleton from "@/app/admin/_components/leaderboards/pagination/AllLeaderboardAdminSkeleton";
+import NewLeaderboardForm from "@/app/admin/_components/leaderboards/pagination/new-leaderboard/NewLeaderBoardFormBody";
 import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
 import { useAllLeaderboardsMetadataQuery } from "@/lib/api/queries/leaderboard";
 import { timeDiff } from "@/lib/timeDiff";
 import { Box, Flex, Overlay, Table, Text, Tooltip } from "@mantine/core";
 import { Link } from "react-router-dom";
-
-import AllLeaderboardAdminSkeleton from "./AllLeaderboardAdminSkeleton";
-import NewLeaderboardForm from "./new-leaderboard/NewLeaderBoardFormBody";
 
 export default function AllLeaderboardAdmin() {
   const {

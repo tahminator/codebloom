@@ -1,8 +1,7 @@
+import PartyEntry from "@/app/duel/_components/PartyEntry";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { Flex, Loader } from "@mantine/core";
-
-import PartyEntry from "./_components/PartyEntry";
 
 export default function PartyEntryPage() {
   const { data, status } = useAuthQuery();

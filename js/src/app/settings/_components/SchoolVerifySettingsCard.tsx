@@ -1,3 +1,4 @@
+import SchoolEmailModal from "@/app/settings/_components/SchoolEmailModal";
 import { ApiUtils } from "@/lib/api/utils";
 import {
   Box,
@@ -10,8 +11,6 @@ import {
   Flex,
 } from "@mantine/core";
 import { useState } from "react";
-
-import SchoolEmailModal from "./SchoolEmailModal";
 
 type SchoolVerifyProps = {
   schoolExists: boolean;

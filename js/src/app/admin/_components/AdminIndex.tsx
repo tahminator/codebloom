@@ -1,10 +1,9 @@
+import DeleteAnnouncementButton from "@/app/admin/_components/announcements/DeleteAnnouncementButton";
 import NewAnnouncementModal from "@/app/admin/_components/announcements/NewAnnouncementModal";
+import IncompleteQuestionList from "@/app/admin/_components/incomplete/IncompleteQuestionList";
+import AllLeaderboardAdmin from "@/app/admin/_components/leaderboards/pagination/AllLeaderboardAdmin";
 import UserAdminList from "@/app/admin/_components/users/UserAdminList";
 import { Flex, Title } from "@mantine/core";
-
-import DeleteAnnouncementButton from "./announcements/DeleteAnnouncementButton";
-import IncompleteQuestionList from "./incomplete/IncompleteQuestionList";
-import AllLeaderboardAdmin from "./leaderboards/pagination/AllLeaderboardAdmin";
 
 export default function AdminIndex() {
   return (

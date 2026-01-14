@@ -1,4 +1,6 @@
+import AvatarButton from "@/components/ui/auth/AvatarButton";
 import SkeletonButton from "@/components/ui/auth/SkeletonButton";
+import classes from "@/components/ui/header/Header.module.css";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import {
   Box,
@@ -12,9 +14,6 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
-
-import AvatarButton from "../auth/AvatarButton";
-import classes from "./Header.module.css";
 
 export default function Header() {
   const { data, status } = useAuthQuery();

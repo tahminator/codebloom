@@ -1,9 +1,8 @@
+import AdminIndex from "@/app/admin/_components/AdminIndex.tsx";
 import Toast from "@/components/ui/toast/Toast.tsx";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect.tsx";
 import { useAuthQuery } from "@/lib/api/queries/auth/index.ts";
 import { Loader } from "@mantine/core";
-
-import AdminIndex from "./_components/AdminIndex.tsx";
 
 export default function AdminPage() {
   const { data, status } = useAuthQuery();

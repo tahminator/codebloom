@@ -1,11 +1,10 @@
+import ProfilePicture from "@/app/user/[userId]/_components/UserProfile/ProfilePicture/ProfilePicture";
+import UserProfileHeader from "@/app/user/[userId]/_components/UserProfile/UserProfileHeader";
+import UserTags from "@/app/user/[userId]/_components/UserProfile/UserTags/UserTags";
+import MiniUserSubmissions from "@/app/user/[userId]/submissions/_components/UserSubmissions/MiniUserSubmissions";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { Center, Button, Flex, Box, Text } from "@mantine/core";
 import { Link, useParams } from "react-router-dom";
-
-import ProfilePicture from "./_components/UserProfile/ProfilePicture/ProfilePicture";
-import UserProfileHeader from "./_components/UserProfile/UserProfileHeader";
-import UserTags from "./_components/UserProfile/UserTags/UserTags";
-import MiniUserSubmissions from "./submissions/_components/UserSubmissions/MiniUserSubmissions";
 
 export default function UserProfilePage() {
   const { userId } = useParams();

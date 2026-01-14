@@ -1,11 +1,10 @@
+import UserTagsSkeleton from "@/app/user/[userId]/_components/UserProfile/UserTags/UserTagsSkeleton";
 import TagList from "@/components/ui/tags/TagList";
 import UserAchievement from "@/components/ui/tags/UserAchievement";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { Group, Text, Stack } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
-
-import UserTagsSkeleton from "./UserTagsSkeleton";
 
 export default function UserTags({ userId }: { userId: string }) {
   const { data, status } = useUserProfileQuery({ userId });

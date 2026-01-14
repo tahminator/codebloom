@@ -1,6 +1,5 @@
+import OrgEmbedView from "@/app/embed/leaderboard/_components/OrgEmbedView";
 import { Box } from "@mantine/core";
-
-import OrgEmbedView from "./_components/OrgEmbedView";
 
 export default function LeaderboardEmbed() {
   return (

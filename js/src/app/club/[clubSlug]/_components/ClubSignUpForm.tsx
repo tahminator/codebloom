@@ -1,3 +1,4 @@
+import ClubSignUpSkeleton from "@/app/club/[clubSlug]/_components/ClubSignUpSkeleton";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import {
@@ -22,8 +23,6 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import z from "zod";
-
-import ClubSignUpSkeleton from "./ClubSignUpSkeleton";
 
 type ClubSignUpProps = {
   userId: string;

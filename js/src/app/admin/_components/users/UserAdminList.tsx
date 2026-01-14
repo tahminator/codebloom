@@ -1,3 +1,4 @@
+import UserAdminListSkeleton from "@/app/admin/_components/users/UserAdminListSkeleton";
 import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
 import { useToggleAdminMutation } from "@/lib/api/queries/admin";
@@ -7,8 +8,6 @@ import { Box, Button, Overlay, Table, Text, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaDiscord } from "react-icons/fa";
-
-import UserAdminListSkeleton from "./UserAdminListSkeleton";
 
 /**
  * This function renders a list of users of which the toggle button launches a modal that allows you to

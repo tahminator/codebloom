@@ -1,6 +1,5 @@
+import PotdEmbedView from "@/app/embed/potd/_components/PotdEmbedView";
 import { Center, Flex } from "@mantine/core";
-
-import PotdEmbedView from "./_components/PotdEmbedView";
 
 export default function PotdEmbed() {
   return (
