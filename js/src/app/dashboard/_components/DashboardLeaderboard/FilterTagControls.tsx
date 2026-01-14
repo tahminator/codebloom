@@ -93,6 +93,7 @@ export default function FilterTagsControl({
       variant="light"
       data={segments}
       onChange={onChange}
+      mt="sm"
     />
   );
 }
