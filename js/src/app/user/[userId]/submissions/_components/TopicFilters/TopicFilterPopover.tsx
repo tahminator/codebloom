@@ -3,6 +3,8 @@ import { ApiUtils } from "@/lib/api/utils";
 import { Button, Chip, Flex, Popover, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMemo, useState } from "react";
+const isTestEnv = import.meta.env.MODE === "test";
+
 
 type TopicFilterPopoverProps = {
   value: LeetcodeTopicEnum[];
@@ -40,7 +42,7 @@ export default function TopicFilterPopover({
       onChange={(o) => (o ? open() : close())}
       position="bottom-start"
       closeOnEscape
-      withinPortal
+      withinPortal={!isTestEnv}
       shadow="md"
       transitionProps={{ keepMounted: true }}
     >
