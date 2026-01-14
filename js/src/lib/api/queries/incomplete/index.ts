@@ -1,6 +1,5 @@
+import { ApiURL } from "@/lib/api/common/apiURL";
 import { useQuery } from "@tanstack/react-query";
-
-import { ApiURL } from "../../common/apiURL";
 
 export const useIncompleteQuestionQuery = () => {
   return useQuery({

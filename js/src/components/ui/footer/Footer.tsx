@@ -1,9 +1,8 @@
 import { GotoAdminPageButton } from "@/components/ui/admin-button/AdminButton";
+import styles from "@/components/ui/footer/Footer.module.css";
 import { ActionIcon, Text, Anchor } from "@mantine/core";
 import { ReactNode } from "react";
 import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
-
-import styles from "./Footer.module.css";
 
 import Logo from "/logo.png";
 

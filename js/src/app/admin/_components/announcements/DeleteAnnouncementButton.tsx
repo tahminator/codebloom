@@ -1,8 +1,7 @@
+import DeleteAnnouncementModal from "@/app/admin/_components/announcements/DeleteAnnouncementModal";
 import { useLatestAnnouncement } from "@/lib/api/queries/announcement";
 import { Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-
-import DeleteAnnouncementModal from "./DeleteAnnouncementModal";
 
 export default function DeleteAnnouncementButton() {
   const { data, status } = useLatestAnnouncement();

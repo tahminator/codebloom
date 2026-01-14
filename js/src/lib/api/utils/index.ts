@@ -1,9 +1,8 @@
 import { LeetcodeTopicEnum, Tag } from "@/lib/api/types/autogen/schema";
 import { UserTag } from "@/lib/api/types/usertag";
+import { TAG_METADATA_LIST, UNUSED_TAGS } from "@/lib/api/utils/metadata/tag";
+import { TOPIC_METADATA_LIST } from "@/lib/api/utils/metadata/topic";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
-
-import { TAG_METADATA_LIST, UNUSED_TAGS } from "./metadata/tag";
-import { TOPIC_METADATA_LIST } from "./metadata/topic";
 
 /**
  * A collection of helpful utilities to help transform & use data returned from the API.

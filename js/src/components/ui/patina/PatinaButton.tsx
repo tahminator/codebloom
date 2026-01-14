@@ -1,7 +1,6 @@
+import classes from "@/components/ui/patina/PatinaButton.module.css";
 import { UnstyledButton, UnstyledButtonProps } from "@mantine/core";
 import { forwardRef } from "react";
-
-import classes from "./PatinaButton.module.css";
 
 export const PatinaButton = forwardRef<HTMLButtonElement, UnstyledButtonProps>(
   (props, ref) => (

@@ -1,4 +1,5 @@
 import DateRangePopover from "@/app/user/[userId]/submissions/_components/DateRangePopover/DateRangePopover";
+import TopicFilterPopover from "@/app/user/[userId]/submissions/_components/TopicFilters/TopicFilterPopover";
 import UserSubmissionsSkeleton from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissionsSkeleton";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
@@ -25,8 +26,6 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-
-import TopicFilterPopover from "../TopicFilters/TopicFilterPopover";
 
 export default function UserSubmissions({ userId }: { userId: string }) {
   const {

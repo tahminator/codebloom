@@ -1,3 +1,4 @@
+import IncompleteQuestionListSkeleton from "@/app/admin/_components/incomplete/IncompleteQuestionListSkeleton";
 import {
   langNameToIcon,
   langNameKey,
@@ -16,8 +17,6 @@ import {
   Text,
 } from "@mantine/core";
 import { Link } from "react-router-dom";
-
-import IncompleteQuestionListSkeleton from "./IncompleteQuestionListSkeleton";
 
 /**
  * Renders a scrollable list of incomplete questions.

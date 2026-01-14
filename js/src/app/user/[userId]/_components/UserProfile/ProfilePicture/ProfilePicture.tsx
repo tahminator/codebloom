@@ -1,8 +1,7 @@
+import ProfilePictureSkeleton from "@/app/user/[userId]/_components/UserProfile/ProfilePicture/ProfilePictureSkeleton";
 import Toast from "@/components/ui/toast/Toast";
 import { useUserProfileQuery } from "@/lib/api/queries/user";
 import { Avatar, Center } from "@mantine/core";
-
-import ProfilePictureSkeleton from "./ProfilePictureSkeleton";
 
 export default function ProfilePicture({ userId }: { userId: string }) {
   const { data, status } = useUserProfileQuery({ userId });

@@ -55,6 +55,7 @@
         "@types/react-syntax-highlighter": "^15.5.13",
         "@vitejs/plugin-react": "^4.3.4",
         "eslint": "^9.17.0",
+        "eslint-plugin-no-relative-import-paths": "^1.6.1",
         "eslint-plugin-perfectionist": "^4.8.0",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^5.1.0",

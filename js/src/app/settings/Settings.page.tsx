@@ -1,3 +1,5 @@
+import ChangeImageSettingsCard from "@/app/settings/_components/ChangeImageSettingsCard";
+import SchoolVerifySettingsCard from "@/app/settings/_components/SchoolVerifySettingsCard";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
@@ -7,9 +9,6 @@ import { useBackendCallbackParams } from "@/lib/hooks/useBackendCallbackParams";
 import { Box, Center, Loader, Stack, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
-
-import ChangeImageSettingsCard from "./_components/ChangeImageSettingsCard";
-import SchoolVerifySettingsCard from "./_components/SchoolVerifySettingsCard";
 
 export default function SettingsPage() {
   const { data, status } = useAuthQuery();

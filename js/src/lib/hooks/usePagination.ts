@@ -1,6 +1,5 @@
+import { useURLState } from "@/lib/hooks/useUrlState";
 import { useCallback } from "react";
-
-import { useURLState } from "./useUrlState";
 
 type Paginator = {
   page: number;

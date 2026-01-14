@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import noRelativeImportPaths from "eslint-plugin-no-relative-import-paths";
 import perfectionist from "eslint-plugin-perfectionist";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -26,10 +27,23 @@ export default tseslint.config(
     plugins: {
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
+      "no-relative-import-paths": noRelativeImportPaths,
       react: react,
+    },
+    settings: {
+      "import/resolver": {
+        alias: {
+          map: [["@", "./src"]],
+          extensions: [".ts", ".tsx", ".js", ".jsx"],
+        },
+      },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      "no-relative-import-paths/no-relative-import-paths": [
+        "error",
+        { allowSameFolder: true, rootDir: "src", prefix: "@" },
+      ],
       "react/jsx-newline": [
         "error",
         {

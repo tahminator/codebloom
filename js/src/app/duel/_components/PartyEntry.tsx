@@ -1,8 +1,7 @@
+import PartyCreate from "@/app/duel/_components/PartyCreate";
+import PartyJoin from "@/app/duel/_components/PartyJoin";
 import { useLobbyNavigation } from "@/app/duel/_hooks/useDuelNavigation";
 import { Flex, Divider, Card, Stack } from "@mantine/core";
-
-import PartyCreate from "./PartyCreate";
-import PartyJoin from "./PartyJoin";
 
 export default function PartyEntry() {
   useLobbyNavigation();

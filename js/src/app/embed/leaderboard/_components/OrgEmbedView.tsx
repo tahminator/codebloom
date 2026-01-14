@@ -1,3 +1,4 @@
+import OrgHeader from "@/app/embed/leaderboard/_components/OrgHeader";
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
@@ -20,8 +21,6 @@ import { useEffect, useMemo } from "react";
 import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link, useSearchParams } from "react-router-dom";
-
-import OrgHeader from "./OrgHeader";
 
 export default function OrgLeaderboardEmbed() {
   const [searchParams] = useSearchParams();

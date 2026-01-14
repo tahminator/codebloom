@@ -1,10 +1,9 @@
+import BannerParent from "@/components/ui/banner/BannerParent";
 import { Footer } from "@/components/ui/footer/Footer";
 import Header from "@/components/ui/header/Header";
 import { Flex, Box } from "@mantine/core";
 import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
-
-import BannerParent from "../banner/BannerParent";
 
 export default function PageShell({
   children,

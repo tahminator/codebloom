@@ -1,3 +1,4 @@
+import classes from "@/app/submission/[submissionId]/_components/SubmissionDetailsContent.module.css";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
@@ -20,8 +21,6 @@ import { FiExternalLink } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ShikiHighlighter from "react-shiki";
-
-import classes from "./SubmissionDetailsContent.module.css";
 
 export default function SubmissionDetailsContent({
   submissionId,

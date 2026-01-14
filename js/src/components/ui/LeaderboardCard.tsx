@@ -1,3 +1,4 @@
+import TagList from "@/components/ui/tags/TagList";
 import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
 import { OrdinalString } from "@/lib/helper/ordinal";
@@ -15,8 +16,6 @@ import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
-
-import TagList from "./tags/TagList";
 
 export default function LeaderboardCard({
   placeString,
