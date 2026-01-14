@@ -313,6 +313,9 @@ jobs:
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
                 UNLOAD_ENVIRONMENTS: ci,ci-app
 
+            - name: Expose GitHub Runtime
+              uses: crazy-max/ghaction-github-runtime@v3
+
             - name: Run script
               run: bash .github/scripts/build-image.sh
               env:
