@@ -7,12 +7,12 @@ export function useLobbyNavigation() {
   const { data } = useMyDuelOrPartyData();
 
   useEffect(() => {
-    if (data?.success) {
+    if (data?.success && data.payload.lobby.joinCode) {
       navigate("/duel/current");
     } else {
       navigate("/duel");
     }
-  }, [data?.success, navigate]);
+  }, [data?.payload?.lobby.joinCode, data?.success, navigate]);
 
   return;
 }

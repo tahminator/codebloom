@@ -1,9 +1,6 @@
 import { ApiURL } from "@/lib/api/common/apiURL";
 import { ApiUtils } from "@/lib/api/utils";
-import {
-  TagEnumToBooleanFilterObject,
-  useFilters,
-} from "@/lib/hooks/useFilters";
+import { useFilters } from "@/lib/hooks/useFilters";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import {
@@ -77,24 +74,37 @@ export const useCurrentLeaderboardUsersQuery = (
     goTo(1);
   }, [setGlobalIndex, goTo]);
 
-  const query = useQuery({
-    queryKey: [
-      "leaderboard",
-      "users",
-      page,
-      pageSize,
-      debouncedQuery,
-      filters,
-      globalIndex,
-    ],
-    queryFn: () =>
-      fetchLeaderboardUsers({
+  const { url, method, res, queryKey } = ApiURL.create(
+    "/api/leaderboard/current/user/all",
+    {
+      method: "GET",
+      queries: {
         page,
         pageSize,
-        filters,
-        globalIndex,
         query: debouncedQuery,
-      }),
+        globalIndex,
+        ...Object.typedFromEntries(
+          Object.typedEntries(filters).map(([tagEnum, filterEnabled]) => {
+            const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+
+            return [metadata.apiKey, filterEnabled];
+          }),
+        ),
+      },
+    },
+  );
+
+  const query = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+
+      const json = res(await response.json());
+
+      return json;
+    },
     placeholderData: keepPreviousData,
   });
 
@@ -167,17 +177,29 @@ export const useAllLeaderboardsMetadataQuery = ({
     [_setSearchQuery, goTo],
   );
 
+  const { url, method, res, queryKey } = ApiURL.create(
+    "/api/leaderboard/all/metadata",
+    {
+      method: "GET",
+      queries: {
+        page,
+        pageSize,
+        query: debouncedQuery,
+      },
+    },
+  );
+
   const query = useQuery({
-    queryKey: [
-      "leaderboard",
-      "metadata",
-      "all",
-      page,
-      pageSize,
-      debouncedQuery,
-    ],
-    queryFn: () =>
-      fetchAllLeaderboardsMetadata({ page, pageSize, query: debouncedQuery }),
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+
+      const json = res(await response.json());
+
+      return json;
+    },
     placeholderData: keepPreviousData,
   });
 
@@ -262,26 +284,39 @@ export const useLeaderboardUsersByIdQuery = ({
     }
   }, [clearFilters, goTo, globalIndex, toggleGlobalIndex]);
 
-  const query = useQuery({
-    queryKey: [
-      "leaderboard",
-      leaderboardId,
-      "users",
-      page,
-      pageSize,
-      debouncedQuery,
-      filters,
-      globalIndex,
-    ],
-    queryFn: () =>
-      fetchLeaderboardUsersByLeaderboardId({
+  const { url, res, method, queryKey } = ApiURL.create(
+    "/api/leaderboard/{leaderboardId}/user/all",
+    {
+      method: "GET",
+      params: {
         leaderboardId,
+      },
+      queries: {
+        query: debouncedQuery,
         page,
         pageSize,
-        filters,
         globalIndex,
-        query: debouncedQuery,
-      }),
+        ...Object.fromEntries(
+          Object.typedEntries(filters).map(([tagEnum, filterEnabled]) => {
+            const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+
+            return [metadata.apiKey, filterEnabled];
+          }),
+        ),
+      },
+    },
+  );
+  const query = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+
+      const json = res(await response.json());
+
+      return json;
+    },
     placeholderData: keepPreviousData,
   });
 
@@ -308,9 +343,24 @@ export const useLeaderboardUsersByIdQuery = ({
  * Fetch the details about a leaderboard (excluding users)
  */
 export const useCurrentLeaderboardMetadataQuery = () => {
+  const { url, method, res, queryKey } = ApiURL.create(
+    "/api/leaderboard/current/metadata",
+    {
+      method: "GET",
+    },
+  );
+
   return useQuery({
-    queryKey: ["leaderboard", "metadata"],
-    queryFn: useCurrentLeaderboardMetadata,
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+
+      const json = res(await response.json());
+
+      return json;
+    },
   });
 };
 
@@ -318,9 +368,27 @@ export const useCurrentLeaderboardMetadataQuery = () => {
  * Fetch the details about a leaderboard by ID (excluding users)
  */
 export const useLeaderboardMetadataByIdQuery = (leaderboardId: string) => {
+  const { url, method, res, queryKey } = ApiURL.create(
+    "/api/leaderboard/{leaderboardId}/metadata",
+    {
+      method: "GET",
+      params: {
+        leaderboardId,
+      },
+    },
+  );
+
   return useQuery({
-    queryKey: ["leaderboard", leaderboardId, "metadata"],
-    queryFn: () => getLeaderboardMetadataById(leaderboardId),
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+
+      const json = res(await response.json());
+
+      return json;
+    },
   });
 };
 
@@ -331,12 +399,36 @@ export const useLeaderboardMetadataByIdQuery = (leaderboardId: string) => {
 export const useUsersTotalPoints = () => {
   const queryClient = useQueryClient();
 
+  const { url, method, res } = ApiURL.create("/api/leetcode/check", {
+    method: "POST",
+  });
+
   return useMutation({
-    mutationFn: updateTotalPoints,
+    mutationFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+
+      const json = res(await response.json());
+
+      // returns wait-until rate limit number.
+      // TODO - Make it a header
+      if (response.status === 429) {
+        return { ...json, message: Number(json.message) };
+      }
+
+      return json;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["submission"] });
-      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-      queryClient.invalidateQueries({ queryKey: ["potd"] });
+      queryClient.invalidateQueries({
+        queryKey: ApiURL.prefix("/api/leaderboard"),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ApiURL.prefix("/api/leetcode/submission"),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ApiURL.prefix("/api/leetcode/potd"),
+      });
     },
   });
 };
@@ -346,171 +438,8 @@ export const useUsersTotalPoints = () => {
  */
 export const useFixMyPointsPrefetch = ({ userId }: { userId: string }) => {
   const queryClient = useQueryClient();
-  queryClient.prefetchQuery({
-    queryKey: ["leaderboard", "user", "me"],
-    queryFn: () => getMyRecentLeaderboardData({ userId }),
-  });
-  return;
-};
 
-/**
- * Fetch the specific submission data of the authenticated user.
- */
-export const useMyRecentLeaderboardData = ({ userId }: { userId: string }) => {
-  return useQuery({
-    queryKey: ["leaderboard", "user", "me"],
-    queryFn: () => getMyRecentLeaderboardData({ userId }),
-  });
-};
-
-async function fetchLeaderboardUsers({
-  page,
-  query,
-  pageSize,
-  filters,
-  globalIndex,
-}: {
-  page: number;
-  query: string;
-  pageSize: number;
-  filters: TagEnumToBooleanFilterObject;
-  globalIndex: boolean;
-}) {
-  const { url, method, res } = ApiURL.create(
-    "/api/leaderboard/current/user/all",
-    {
-      method: "GET",
-      queries: {
-        page,
-        pageSize,
-        query,
-        globalIndex,
-        ...Object.typedFromEntries(
-          Object.typedEntries(filters).map(([tagEnum, filterEnabled]) => {
-            const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
-
-            return [metadata.apiKey, filterEnabled];
-          }),
-        ),
-      },
-    },
-  );
-
-  const response = await fetch(url, {
-    method,
-  });
-
-  const json = res(await response.json());
-
-  return json;
-}
-
-async function fetchLeaderboardUsersByLeaderboardId({
-  page,
-  query,
-  pageSize,
-  filters,
-  globalIndex,
-  leaderboardId,
-}: {
-  page: number;
-  query: string;
-  pageSize: number;
-  filters: TagEnumToBooleanFilterObject;
-  globalIndex: boolean;
-  leaderboardId: string;
-}) {
-  const { url, res, method } = ApiURL.create(
-    "/api/leaderboard/{leaderboardId}/user/all",
-    {
-      method: "GET",
-      params: {
-        leaderboardId,
-      },
-      queries: {
-        query,
-        page,
-        pageSize,
-        globalIndex,
-        ...Object.fromEntries(
-          Object.typedEntries(filters).map(([tagEnum, filterEnabled]) => {
-            const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
-
-            return [metadata.apiKey, filterEnabled];
-          }),
-        ),
-      },
-    },
-  );
-  const response = await fetch(url, {
-    method,
-  });
-
-  const json = res(await response.json());
-
-  return json;
-}
-
-async function useCurrentLeaderboardMetadata() {
-  const { url, method, res } = ApiURL.create(
-    "/api/leaderboard/current/metadata",
-    {
-      method: "GET",
-    },
-  );
-  const response = await fetch(url, {
-    method,
-  });
-
-  const json = res(await response.json());
-
-  return json;
-}
-
-async function getLeaderboardMetadataById(leaderboardId: string) {
-  const { url, method, res } = ApiURL.create(
-    "/api/leaderboard/{leaderboardId}/metadata",
-    {
-      method: "GET",
-      params: {
-        leaderboardId,
-      },
-    },
-  );
-  const response = await fetch(url, {
-    method,
-  });
-
-  const json = res(await response.json());
-
-  return json;
-}
-
-async function updateTotalPoints() {
-  const { url, method, res } = ApiURL.create("/api/leetcode/check", {
-    method: "POST",
-  });
-  const response = await fetch(url, {
-    method,
-  });
-
-  const json = res(await response.json());
-
-  // returns wait-until rate limit number.
-  // TODO - Make it a header
-  if (response.status === 429) {
-    return { ...json, message: Number(json.message) };
-  }
-
-  return json;
-}
-
-export async function getMyRecentLeaderboardData({
-  userId,
-}: {
-  userId: string;
-}) {
-  const { url, method, res } = ApiURL.create(
+  const { url, method, res, queryKey } = ApiURL.create(
     "/api/leaderboard/current/user/{userId}",
     {
       method: "GET",
@@ -519,37 +448,46 @@ export async function getMyRecentLeaderboardData({
       },
     },
   );
-  const response = await fetch(url, {
-    method,
-  });
 
-  const json = res(await response.json());
+  queryClient.prefetchQuery({
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
 
-  return json;
-}
+      const json = res(await response.json());
 
-async function fetchAllLeaderboardsMetadata({
-  page,
-  pageSize,
-  query,
-}: {
-  page: number;
-  query: string;
-  pageSize: number;
-}) {
-  const { url, method, res } = ApiURL.create("/api/leaderboard/all/metadata", {
-    method: "GET",
-    queries: {
-      page,
-      pageSize,
-      query,
+      return json;
     },
   });
-  const response = await fetch(url, {
-    method,
+  return;
+};
+
+/**
+ * Fetch the specific submission data of the authenticated user.
+ */
+export const useMyRecentLeaderboardData = ({ userId }: { userId: string }) => {
+  const { url, method, res, queryKey } = ApiURL.create(
+    "/api/leaderboard/current/user/{userId}",
+    {
+      method: "GET",
+      params: {
+        userId,
+      },
+    },
+  );
+
+  return useQuery({
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+
+      const json = res(await response.json());
+
+      return json;
+    },
   });
-
-  const json = res(await response.json());
-
-  return json;
-}
+};
