@@ -92,6 +92,16 @@ export default function LeaderboardIndex({
   const isAnyFilterActive =
     isAnyFilterEnabled || Object.values(filters).some(Boolean);
 
+  const PossibleTooltip = ({ children }: { children: JSX.Element }) =>
+    isPrevious ?
+      <Tooltip
+        label="Ability to view profiles at a specific time are not supported yet."
+        color="dark.4"
+      >
+        {children}
+      </Tooltip>
+    : <>{children}</>;
+
   return (
     <>
       <Flex
@@ -211,110 +221,11 @@ export default function LeaderboardIndex({
           <Overlay zIndex={1000} backgroundOpacity={0.35} blur={4} />
         )}
         <Stack gap="md">
-          {cardItems.map((entry) => {
-            if (isPrevious) {
-              return (
-                <Tooltip
-                  key={entry.id}
-                  label="Ability to view profiles at a specific time are not supported yet."
-                  color="dark.4"
-                >
-                  <Card
-                    shadow="sm"
-                    padding="lg"
-                    radius="md"
-                    withBorder
-                    bg={theme.colors.dark[7]}
-                    styles={{
-                      root: {
-                        borderColor: theme.colors.dark[5],
-                      },
-                    }}
-                    style={{
-                      transition: "all 0.2s ease",
-                      textDecoration: "none",
-                    }}
-                  >
-                    <Flex
-                      direction="row"
-                      justify="space-between"
-                      align="center"
-                      gap="md"
-                    >
-                      <Flex align="center" gap="md">
-                        <Text
-                          size="xl"
-                          fw={700}
-                          c={theme.colors.patina[4]}
-                          miw={50}
-                        >
-                          #{entry.index}
-                        </Text>
-                        <Flex direction="column" gap="xs">
-                          <Stack gap="xs">
-                            <Flex
-                              direction={{ base: "column", xs: "row" }}
-                              gap={{ base: "xs", xs: "md" }}
-                              align={{ base: "flex-start", xs: "center" }}
-                            >
-                              <Flex align="center" gap={6}>
-                                <FaDiscord size={16} />
-                                <Text size="md" fw={600}>
-                                  {entry.discordName}
-                                </Text>
-                              </Flex>
-                              <Flex align="center" gap={6}>
-                                <SiLeetcode size={16} />
-                                <Text size="md" fw={600}>
-                                  {entry.leetcodeUsername}
-                                </Text>
-                              </Flex>
-                            </Flex>
-                            {(entry.nickname ||
-                              (tagFF && entry.tags?.length > 0)) && (
-                              <Flex align="center" gap={5}>
-                                {entry.nickname && (
-                                  <Tooltip label="This user is a verified member of the Patina Discord server.">
-                                    <Flex align="center" gap={5}>
-                                      <IconCircleCheckFilled
-                                        color={theme.colors.patina[4]}
-                                        size={18}
-                                      />
-                                      <Text size="sm">{entry.nickname}</Text>
-                                    </Flex>
-                                  </Tooltip>
-                                )}
-                                {entry.nickname &&
-                                  tagFF &&
-                                  entry.tags?.length > 0 && (
-                                    <Divider orientation="vertical" h={20} />
-                                  )}
-                                {tagFF && entry.tags?.length > 0 && (
-                                  <TagList
-                                    tags={entry.tags}
-                                    size={16}
-                                    gap="xs"
-                                  />
-                                )}
-                              </Flex>
-                            )}
-                          </Stack>
-                        </Flex>
-                      </Flex>
-                      <Text size="lg" fw={600} miw={100} ta="right">
-                        {entry.totalScore} Pts
-                      </Text>
-                    </Flex>
-                  </Card>
-                </Tooltip>
-              );
-            }
-
-            return (
+          {cardItems.map((entry) => (
+            <PossibleTooltip key={entry.id}>
               <Card
-                key={entry.id}
                 component={Link}
-                to={`/user/${entry.id}`}
+                to={isPrevious ? "#" : `/user/${entry.id}`}
                 shadow="sm"
                 padding="lg"
                 radius="md"
@@ -397,8 +308,8 @@ export default function LeaderboardIndex({
                   </Text>
                 </Flex>
               </Card>
-            );
-          })}
+            </PossibleTooltip>
+          ))}
         </Stack>
       </Box>
       <Center my={"sm"}>
