@@ -53,7 +53,7 @@ WORKDIR /app
 COPY mvnw pom.xml ./
 COPY .mvn/ .mvn/
 RUN ./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
-RUN ./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
+RUN ./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install firefox"
 COPY --from=backend-build /app/target/*.jar app.jar
 
 ARG SERVER_PROFILES=prod
