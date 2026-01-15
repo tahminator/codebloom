@@ -42,7 +42,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "no-relative-import-paths/no-relative-import-paths": [
         "error",
-        { allowSameFolder: true, rootDir: "src", prefix: "@" },
+        { allowSameFolder: false, rootDir: "src", prefix: "@" },
       ],
       "react/jsx-newline": [
         "error",
