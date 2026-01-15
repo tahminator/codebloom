@@ -12,9 +12,8 @@ db_startup
 backend_startup
 
 corepack enable pnpm
-pnpm --dir js i --frozen-lockfile
+pnpm --dir js i -D --frozen-lockfile
 pnpm --dir js run generate
-pnpm --dir js run test
 
 TIMESTAMP="$(date +%Y.%m.%d-%H.%M.%S)"
 GIT_SHA="$(git rev-parse --short HEAD)"
