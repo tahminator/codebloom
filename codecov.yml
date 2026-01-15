@@ -4,7 +4,7 @@ coverage:
       default:
         target: 80
         threshold: 0
-        base: main
+        base: auto
         flags:
           - unit
         paths:
