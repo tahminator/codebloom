@@ -1,0 +1,20 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80
+        threshold: 0
+        base: main
+        flags:
+          - unit
+        paths:
+          - "src"
+        branches:
+          - main
+        if_ci_failed: success
+        informational: false
+        only_pulls: true
+  comment:
+    layout: "reach,diff,flags,tree"
+    behavior: default
+    require_changes: false
