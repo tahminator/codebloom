@@ -13,7 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
-import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,10 +26,10 @@ public class RateLimitingFilter implements Filter {
     private static final long STATIC_RATE_LIMIT_CAPACITY = 100L;
     private static final long STATIC_REFILL_INTERVAL_MILLIS = 1000L;
 
-    private final SimpleRedis redis;
+    private final SimpleRedisProvider redis;
     private final ObjectMapper objectMapper;
 
-    public RateLimitingFilter(final SimpleRedis redis, final ObjectMapper objectMapper) {
+    public RateLimitingFilter(final SimpleRedisProvider redis, final ObjectMapper objectMapper) {
         this.redis = redis;
         this.objectMapper = objectMapper;
     }
@@ -57,11 +58,12 @@ public class RateLimitingFilter implements Filter {
         String bucketKey = remoteAddr + (isApiPath ? ":api" : ":static");
 
         Bucket bucket;
+        var slot = SimpleRedisSlot.GLOBAL_RATE_LIMIT;
         synchronized (this) {
-            bucket = (Bucket) redis.get(2, bucketKey);
+            bucket = (Bucket) redis.get(slot, bucketKey);
             if (bucket == null) {
-                redis.put(2, bucketKey, createNewBucket(rateLimitCapacity, refillInterval));
-                bucket = (Bucket) redis.get(2, bucketKey);
+                redis.put(slot, bucketKey, createNewBucket(rateLimitCapacity, refillInterval));
+                bucket = (Bucket) redis.get(slot, bucketKey);
             }
         }
 
