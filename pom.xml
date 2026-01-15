@@ -9,7 +9,7 @@
         <version>3.5.6</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.patina</groupId>
+    <groupId>org.patinanetwork</groupId>
     <artifactId>codebloom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>codebloom</name>
@@ -240,8 +240,8 @@
                                 <format>XML</format>
                             </formats>
                             <excludes>
-                                <exclude>com/patina/codebloom/common/utils/**</exclude>
-                                <exclude>com/patina/codebloom/common/dto/**</exclude>
+                                <exclude>org/patinanetwork/codebloom/common/utils/**</exclude>
+                                <exclude>org/patinanetwork/codebloom/common/dto/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>

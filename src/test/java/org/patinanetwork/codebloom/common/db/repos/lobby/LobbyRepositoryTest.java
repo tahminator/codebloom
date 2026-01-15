@@ -1,0 +1,285 @@
+package org.patinanetwork.codebloom.common.db.repos.lobby;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.patinanetwork.codebloom.common.db.models.lobby.Lobby;
+import org.patinanetwork.codebloom.common.db.models.lobby.LobbyStatus;
+import org.patinanetwork.codebloom.common.db.models.lobby.player.LobbyPlayer;
+import org.patinanetwork.codebloom.common.db.models.user.User;
+import org.patinanetwork.codebloom.common.db.repos.BaseRepositoryTest;
+import org.patinanetwork.codebloom.common.db.repos.lobby.player.LobbyPlayerRepository;
+import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
+import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
+@Slf4j
+public class LobbyRepositoryTest extends BaseRepositoryTest {
+
+    private LobbyRepository lobbyRepository;
+    private LobbyPlayerRepository lobbyPlayerRepository;
+    private UserRepository userRepository;
+    private Lobby testLobby;
+    private User testUser;
+    private LobbyPlayer testLobbyPlayer;
+    private String mockJoinCode = "TEST-" + UUID.randomUUID().toString().substring(0, 8);
+    private String mockWinnerId = UUID.randomUUID().toString();
+
+    @Autowired
+    public LobbyRepositoryTest(
+            final LobbyRepository lobbyRepository,
+            final LobbyPlayerRepository lobbyPlayerRepository,
+            final UserRepository userRepository) {
+        this.lobbyRepository = lobbyRepository;
+        this.lobbyPlayerRepository = lobbyPlayerRepository;
+        this.userRepository = userRepository;
+    }
+
+    @BeforeAll
+    void setup() {
+        testUser = User.builder()
+                .discordId(String.valueOf(System.currentTimeMillis()))
+                .discordName("TestUser")
+                .build();
+
+        userRepository.createUser(testUser);
+
+        testLobby = Lobby.builder()
+                .joinCode(mockJoinCode)
+                .status(LobbyStatus.AVAILABLE)
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
+                .playerCount(1)
+                .tie(false)
+                .build();
+
+        lobbyRepository.createLobby(testLobby);
+
+        testLobbyPlayer = LobbyPlayer.builder()
+                .lobbyId(testLobby.getId())
+                .playerId(testUser.getId())
+                .build();
+
+        lobbyPlayerRepository.createLobbyPlayer(testLobbyPlayer);
+    }
+
+    @AfterAll
+    void cleanup() {
+        assertTrue(lobbyPlayerRepository.deleteLobbyPlayerById(testLobbyPlayer.getId()));
+
+        boolean lobbyDeleted = lobbyRepository.deleteLobbyById(testLobby.getId());
+
+        if (!lobbyDeleted) {
+            fail("Failed to delete test lobby");
+        }
+
+        boolean userDeleted = userRepository.deleteUserById(testUser.getId());
+
+        if (!userDeleted) {
+            fail("Failed to delete test user");
+        }
+    }
+
+    @Test
+    @Order(1)
+    void testFindLobbyById() {
+        var foundLobby = lobbyRepository.findLobbyById(testLobby.getId()).orElseThrow();
+        assertEquals(foundLobby, testLobby);
+    }
+
+    @Test
+    @Order(2)
+    void testfindAvailableLobbyByJoinCode() {
+        Lobby foundLobby =
+                lobbyRepository.findAvailableLobbyByJoinCode(mockJoinCode).orElseThrow();
+        assertEquals(testLobby, foundLobby);
+    }
+
+    @Test
+    @Order(3)
+    void testFindActiveLobbyByJoinCode() {
+        Lobby newActiveLobby = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.ACTIVE)
+                .expiresAt(java.util.Optional.of(StandardizedOffsetDateTime.now()))
+                .tie(false)
+                .build();
+
+        lobbyRepository.createLobby(newActiveLobby);
+
+        Lobby foundLobby = lobbyRepository.findActiveLobbyByJoinCode("ABC123").orElseThrow();
+        assertEquals(newActiveLobby, foundLobby);
+
+        assertTrue(lobbyRepository.deleteLobbyById(newActiveLobby.getId()));
+    }
+
+    @Test
+    @Order(4)
+    void testFindLobbiesByStatus() {
+        List<Lobby> availableLobbies = lobbyRepository.findLobbiesByStatus(LobbyStatus.AVAILABLE);
+        assertNotNull(availableLobbies);
+        assertTrue(availableLobbies.contains(testLobby));
+    }
+
+    @Test
+    @Order(5)
+    void testFindAvailableLobbies() {
+        List<Lobby> availableLobbies = lobbyRepository.findAvailableLobbies();
+        assertNotNull(availableLobbies);
+        assertTrue(availableLobbies.contains(testLobby));
+    }
+
+    @Test
+    @Order(6)
+    void testUpdateLobby() {
+        testLobby.setStatus(LobbyStatus.ACTIVE);
+        testLobby.setPlayerCount(2);
+
+        boolean updateResult = lobbyRepository.updateLobby(testLobby);
+        assertTrue(updateResult);
+
+        Lobby updatedLobby = lobbyRepository.findLobbyById(testLobby.getId()).orElseThrow();
+        assertEquals(testLobby, updatedLobby);
+    }
+
+    @Test
+    @Order(7)
+    void testFindActiveLobbyByLobbyPlayerId() {
+        var activeLobby = lobbyRepository
+                .findActiveLobbyByLobbyPlayerPlayerId(testUser.getId())
+                .orElseThrow();
+        assertEquals(testLobby, activeLobby);
+    }
+
+    @Test
+    @Order(8)
+    void testFindAvailableLobbyByLobbyPlayerIdEmpty() {
+        var activeLobby = lobbyRepository.findAvailableLobbyByLobbyPlayerPlayerId(testUser.getId());
+        assertTrue(activeLobby.isEmpty());
+    }
+
+    @Test
+    @Order(9)
+    void testFindAvailableLobbyByLobbyPlayerIdMocked() {
+        var u = User.builder()
+                .discordId(String.valueOf(System.currentTimeMillis()))
+                .discordName("TestUser2")
+                .build();
+
+        userRepository.createUser(u);
+
+        Lobby l = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.AVAILABLE)
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
+                .playerCount(1)
+                .tie(false)
+                .build();
+
+        lobbyRepository.createLobby(l);
+
+        LobbyPlayer lp =
+                LobbyPlayer.builder().lobbyId(l.getId()).playerId(u.getId()).build();
+
+        lobbyPlayerRepository.createLobbyPlayer(lp);
+
+        var activeLobby = lobbyRepository
+                .findAvailableLobbyByLobbyPlayerPlayerId(u.getId())
+                .orElseThrow();
+        assertEquals(l, activeLobby);
+    }
+
+    @Test
+    @Order(10)
+    void testFindActiveLobbies() {
+        var lobbies = lobbyRepository.findActiveLobbies();
+        assertNotNull(lobbies);
+        assertTrue(!lobbies.isEmpty());
+    }
+
+    @Test
+    @Order(11)
+    void testFindExpiredLobbies() {
+        var lobbies = lobbyRepository.findExpiredLobbies();
+        assertNotNull(lobbies);
+        assertTrue(!lobbies.isEmpty());
+    }
+
+    @Test
+    @Order(12)
+    void testCreateLobbyWithTie() {
+        Lobby tieLobby = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.COMPLETED)
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
+                .playerCount(2)
+                .tie(true)
+                .winnerId(Optional.empty())
+                .build();
+
+        lobbyRepository.createLobby(tieLobby);
+
+        Lobby foundLobby = lobbyRepository.findLobbyById(tieLobby.getId()).orElseThrow();
+        assertTrue(foundLobby.isTie());
+        assertTrue(foundLobby.getWinnerId().isEmpty());
+
+        assertTrue(lobbyRepository.deleteLobbyById(tieLobby.getId()));
+    }
+
+    @Test
+    @Order(13)
+    void testCreateLobbyWithWinner() {
+        Lobby winnerLobby = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.COMPLETED)
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
+                .playerCount(2)
+                .tie(false)
+                .winnerId(Optional.of(testUser.getId()))
+                .build();
+
+        lobbyRepository.createLobby(winnerLobby);
+
+        Lobby foundLobby = lobbyRepository.findLobbyById(winnerLobby.getId()).orElseThrow();
+        assertFalse(foundLobby.isTie());
+        assertTrue(foundLobby.getWinnerId().isPresent());
+        assertEquals(testUser.getId(), foundLobby.getWinnerId().get());
+
+        assertTrue(lobbyRepository.deleteLobbyById(winnerLobby.getId()));
+    }
+
+    @Test
+    @Order(14)
+    void testViolationTieWithWinner() {
+        Lobby invalidLobby = Lobby.builder()
+                .joinCode("ABC123")
+                .status(LobbyStatus.COMPLETED)
+                .expiresAt(
+                        java.util.Optional.of(StandardizedOffsetDateTime.now().plusHours(1)))
+                .playerCount(2)
+                .tie(true)
+                .winnerId(Optional.of(UUID.randomUUID().toString()))
+                .build();
+
+        assertThrows(RuntimeException.class, () -> {
+            lobbyRepository.createLobby(invalidLobby);
+        });
+    }
+}
