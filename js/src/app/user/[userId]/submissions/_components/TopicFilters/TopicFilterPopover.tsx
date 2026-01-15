@@ -3,7 +3,6 @@ import { ApiUtils } from "@/lib/api/utils";
 import { Button, Chip, Flex, Popover, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMemo, useState } from "react";
-const isTestEnv = import.meta.env.MODE === "test";
 
 type TopicFilterPopoverProps = {
   value: LeetcodeTopicEnum[];
@@ -20,7 +19,7 @@ export default function TopicFilterPopover({
   onChange,
   onClear,
 }: TopicFilterPopoverProps) {
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { toggle }] = useDisclosure(false);
   const [search, setSearch] = useState("");
 
   const filteredTopics = useMemo(
@@ -38,15 +37,14 @@ export default function TopicFilterPopover({
   return (
     <Popover
       opened={opened}
-      onChange={(o) => (o ? open() : close())}
       position="bottom-start"
       closeOnEscape
-      withinPortal={!isTestEnv}
+      withinPortal={false}
       shadow="md"
-      transitionProps={{ keepMounted: true }}
+      transitionProps={{ keepMounted: false }}
     >
       <Popover.Target>
-        <Button fullWidth variant="light" color="gray" onClick={open}>
+        <Button fullWidth variant="light" color="gray" onClick={toggle}>
           Topics
         </Button>
       </Popover.Target>
