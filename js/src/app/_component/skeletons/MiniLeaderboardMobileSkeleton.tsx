@@ -7,6 +7,7 @@ export default function MiniLeaderboardMobileSkeleton() {
         <Skeleton visible maw="180px" w="50%" height="36px" />
         <Skeleton visible maw="180px" w="50%" height="36px" />
       </Flex>
+      <div></div>
       <Flex
         direction={{ base: "column", xs: "row" }}
         align={{ base: "center", xs: "flex-end" }}
