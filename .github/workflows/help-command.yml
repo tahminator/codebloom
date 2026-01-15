@@ -1,0 +1,35 @@
+name: PR Help Comment
+run-name: PR Help Comment
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  prHelpComment:
+    name: PR Help Comment
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Help Comment
+        uses: actions/checkout@v4
+      
+      - name: Send PR Help Message
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.pull_request.number }}
+          message: |
+            ### Available PR Commands
+            
+            - `/ai` - Triggers all AI review commands at once
+            - `/review` - AI review of the PR changes
+            - `/describe` - AI-powered description of the PR
+            - `/improve` - AI-powered suggestions
+            - `/deploy` - Deploy to staging
+            
+            See: https://github.com/tahminator/codebloom/wiki/CI-Commands
