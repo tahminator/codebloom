@@ -121,12 +121,12 @@ function LeaderboardMetadata({
           />
         : leaderboardData.name}
       </Title>
-      <Title order={6} ta={"center"} mb={"xs"}>
+      <Title order={6} ta={"center"} mb={0}>
         {showClock && leaderboardData.shouldExpireBy && countdown > 0 && (
           <PrettyCounter size={"lg"} time={countdown} />
         )}
       </Title>
-      <Box ta={"center"} mb={"md"}>
+      <Box ta={"center"}>
         {showAllLeaderboardButton && (
           <Button component={Link} to={"/leaderboard/all"}>
             View All Leaderboards
