@@ -63,7 +63,7 @@ jobs:
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
+                UNLOAD_ENVIRONMENTS: ci,ci-app
 
             - name: Run script
               run: bash .github/scripts/run-backend-tests.sh
@@ -74,23 +74,10 @@ jobs:
                 name: jacoco-report
                 path: target/site/jacoco/
 
-            - name: Add JaCoCo PR comment
-              id: jacoco
-              uses: madrapps/jacoco-report@v1.7.2
+            - name: Upload coverage reports to Codecov
+              uses: codecov/codecov-action@v5
               with:
-                paths: |
-                  target/site/jacoco/jacoco.xml
-                token: ${{ secrets.GITHUB_TOKEN }}
-                min-coverage-overall: 40
-                min-coverage-changed-files: 80
-            
-            - name: Fail PR if changed files coverage is less than 80%
-              if: ${{ steps.jacoco.outputs.coverage-changed-files < 80.0 }}
-              uses: actions/github-script@v6
-              with:
-                script: |
-                  core.setFailed('Changed files test coverage is below 80%. Please add or update tests for any new code to meet the required coverage threshold.')
-                
+                token: ${{ secrets.CODECOV_TOKEN }}
 
     frontendTests:
         name: Frontend Tests
