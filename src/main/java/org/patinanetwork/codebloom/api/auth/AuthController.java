@@ -37,7 +37,8 @@ import org.patinanetwork.codebloom.common.schools.magic.MagicLink;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.security.Protector;
 import org.patinanetwork.codebloom.common.security.annotation.Protected;
-import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,7 +69,7 @@ public class AuthController {
     private final UserTagRepository userTagRepository;
     private final Reporter reporter;
     private final ReactEmailClient reactEmailClient;
-    private final SimpleRedis simpleRedis;
+    private final SimpleRedisProvider simpleRedis;
 
     public AuthController(
             final SessionRepository sessionRepository,
@@ -80,7 +81,7 @@ public class AuthController {
             final UserTagRepository userTagRepository,
             final Reporter reporter,
             final ReactEmailClient reactEmailClient,
-            final SimpleRedis simpleRedis) {
+            final SimpleRedisProvider simpleRedis) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
@@ -182,8 +183,9 @@ public class AuthController {
         }
 
         // 10 second rate limit
-        if (simpleRedis.containsKey(1, userId)) {
-            long timeThen = (long) simpleRedis.get(1, userId);
+        var slot = SimpleRedisSlot.VERIFICATION_EMAIL_SENDING;
+        if (simpleRedis.containsKey(slot, userId)) {
+            long timeThen = (long) simpleRedis.get(slot, userId);
             long timeNow = System.currentTimeMillis();
             long difference = (timeNow - timeThen) / 1000;
 
@@ -195,7 +197,7 @@ public class AuthController {
             }
         }
 
-        simpleRedis.put(1, userId, System.currentTimeMillis());
+        simpleRedis.put(slot, userId, System.currentTimeMillis());
 
         MagicLink magicLink = new MagicLink(email, userId);
         try {
