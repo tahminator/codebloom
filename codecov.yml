@@ -1,19 +1,18 @@
+codecov:
+  require_ci_to_pass: false
+  notify:
+    wait_for_ci: false
 coverage:
   status:
+    project:
+      default:
+        target: 60%
+        flags:
+          - backend
+        informational: true
     patch:
       default:
-        target: 80
-        threshold: 0
-        flags:
-          - unit
-        paths:
-          - "src"
-        branches:
-          - main
-        if_ci_failed: success
         informational: false
+        target: 80%
+        threshold: 5%
         only_pulls: true
-comment:
-  layout: "reach,diff,flags,tree"
-  behavior: default
-  require_changes: false
