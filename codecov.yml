@@ -14,7 +14,7 @@ coverage:
         if_ci_failed: success
         informational: false
         only_pulls: true
-  comment:
-    layout: "reach,diff,flags,tree"
-    behavior: default
-    require_changes: false
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
