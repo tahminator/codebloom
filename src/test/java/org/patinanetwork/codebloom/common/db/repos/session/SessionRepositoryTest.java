@@ -72,4 +72,34 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
         assertFalse(sessionList.isEmpty());
         assertTrue(sessionList.stream().anyMatch(session -> session.getId().equals(testSession.getId())));
     }
+
+    @Test
+    void testDeleteSessionById() {
+        Session tempSession = Session.builder()
+                .userId(mockUserId)
+                .expiresAt(StandardizedLocalDateTime.now().plusHours(1))
+                .build();
+
+        sessionRepository.createSession(tempSession);
+
+        boolean isSuccessful = sessionRepository.deleteSessionById(tempSession.getId());
+        assertTrue(isSuccessful);
+        log.info("Deleted session with ID: {}", tempSession.getId());
+    }
+
+    @Test
+    void testDeleteSessionsByUserId() {
+        Session tempSession = Session.builder()
+                .userId(mockUserId)
+                .expiresAt(StandardizedLocalDateTime.now().plusHours(1))
+                .build();
+
+        sessionRepository.createSession(tempSession);
+
+        boolean isSuccessful = sessionRepository.deleteSessionsByUserId(mockUserId);
+        assertTrue(isSuccessful);
+        log.info("Deleted sessions for user ID: {}", mockUserId);
+
+        sessionRepository.createSession(testSession);
+    }
 }

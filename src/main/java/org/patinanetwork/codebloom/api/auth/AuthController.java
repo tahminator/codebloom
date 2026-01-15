@@ -155,6 +155,39 @@ public class AuthController {
     }
 
     @Operation(
+            summary = "Logs user out from all sessions",
+            description =
+                    "Logs the user out from all authenticated sessions across all devices. This is a Redirect route that does redirects as responses.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "302",
+                        description =
+                                "Redirect to `/login?success=true&message=\"Successful logout message here.\"` on successful authentication.",
+                        content = @Content),
+            })
+    @GetMapping("/logout/all")
+    public RedirectView logoutAll(final HttpServletRequest request, final HttpServletResponse response) {
+        try {
+            AuthenticationObject authenticationObject = protector.validateSession(request);
+
+            String userId = authenticationObject.getUser().getId();
+
+            sessionRepository.deleteSessionsByUserId(userId);
+
+            ResponseCookie strippedCookie = ResponseCookie.from("session_token", "")
+                    .path("/")
+                    .httpOnly(true)
+                    .maxAge(0)
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, strippedCookie.toString());
+
+            return new RedirectView("/login?success=true&message=You have been logged out from all devices!");
+        } catch (Exception e) {
+            return new RedirectView("/login?success=false&message=You are not logged in.");
+        }
+    }
+
+    @Operation(
             summary = "Enroll with a school email (if supported)",
             description = """
         Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.

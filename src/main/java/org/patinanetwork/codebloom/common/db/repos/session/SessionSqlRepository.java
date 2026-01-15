@@ -108,4 +108,19 @@ public class SessionSqlRepository implements SessionRepository {
             throw new RuntimeException("Error while deleting session", e);
         }
     }
+
+    @Override
+    public boolean deleteSessionsByUserId(final String userId) {
+        String sql = "DELETE FROM \"Session\" WHERE \"userId\"=?";
+
+        try (Connection conn = ds.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, UUID.fromString(userId));
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while deleting sessions", e);
+        }
+    }
 }
