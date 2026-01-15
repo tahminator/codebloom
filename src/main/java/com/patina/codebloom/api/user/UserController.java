@@ -39,9 +39,7 @@ import org.springframework.web.server.ResponseStatusException;
         description =
                 "This controller is responsible for handling general user data, such as user profile, user submissions, and more.")
 @RequestMapping("/api/user")
-/**
- * simulated be change
- */
+/** simulated be change */
 public class UserController {
 
     /* Page size for submissions */
