@@ -1,0 +1,117 @@
+spring:
+  application:
+    name: codebloom
+
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  flyway:
+    enabled: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          discord:
+            client-id: ${DISCORD_CLIENT_ID}
+            client-secret: ${DISCORD_CLIENT_SECRET}
+            scope: identify,email
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/api/auth/flow/callback/{registrationId}"
+        provider:
+          discord:
+            authorization-uri: https://discord.com/oauth2/authorize
+            token-uri: https://discord.com/api/oauth2/token
+            user-info-uri: https://discord.com/api/users/@me
+            user-name-attribute: username
+
+  threads:
+    virtual:
+      enabled: true
+
+  main:
+    keep-alive: true
+
+  mvc:
+    async:
+      request-timeout: PT3H
+
+  web:
+    resources:
+      add-mappings: false
+      cache:
+        cachecontrol:
+          max-age: 30m
+          public: true
+
+springdoc:
+  swagger-ui:
+    enabled: ${ENABLE_DOCUMENTATION}
+  api-docs:
+    enabled: ${ENABLE_DOCUMENTATION}
+    version: OPENAPI_3_0
+
+github:
+  username: ${GH_USERNAME}
+  password: ${GH_PASSWORD}
+  email:
+    host: ${GH_EMAIL_HOST}
+    port: ${GH_EMAIL_PORT}
+    type: ${GH_EMAIL_TYPE}
+    username: ${GH_EMAIL_USERNAME}
+    password: ${GH_EMAIL_PASSWORD}
+
+jda:
+  discord:
+    token: ${DISCORD_TOKEN}
+    patina:
+      guild-id: ${DISCORD_PATINA_GUILD_ID}
+      leetcode-channel-id: ${DISCORD_PATINA_LEETCODE_CHANNEL_ID}
+    reporting:
+      error:
+        guild-id: ${DISCORD_REPORTING_GUILD_ID}
+        channel-id: ${DISCORD_REPORTING_CHANNEL_ID}
+      log:
+        guild-id: ${DISCORD_REPORTING_LOG_GUILD_ID}
+        channel-id: ${DISCORD_REPORTING_LOG_CHANNEL_ID}
+
+codebloom:
+  email:
+    host: ${CODEBLOOM_EMAIL_HOST}
+    port: ${CODEBLOOM_EMAIL_PORT}
+    type: ${CODEBLOOM_EMAIL_TYPE}
+    username: ${CODEBLOOM_EMAIL_USERNAME}
+    password: ${CODEBLOOM_EMAIL_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+
+security:
+  actuator:
+    username: ${ACTUATOR_USERNAME}
+    password: ${ACTUATOR_PASSWORD}
+
+secret:
+  key: ${SECRET_KEY}
+
+server:
+  url: ${SERVER_URL}
+
+app:
+  commit:
+    sha: "@commit.sha@"
