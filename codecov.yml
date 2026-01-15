@@ -1,10 +1,9 @@
 coverage:
   status:
-    project:
+    patch:
       default:
         target: 80
         threshold: 0
-        base: auto
         flags:
           - unit
         paths:
