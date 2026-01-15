@@ -10,6 +10,7 @@ export default function LeaderboardPage() {
           <CurrentLeaderboardMetadata
             showClock
             showAllLeaderboardButton
+            buttonMarginY={"md"}
             syntaxStripSize={"md"}
           />
           <CurrentLeaderboard />

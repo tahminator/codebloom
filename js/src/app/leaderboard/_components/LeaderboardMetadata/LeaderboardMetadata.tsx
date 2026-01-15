@@ -9,13 +9,21 @@ import {
   useLeaderboardMetadataByIdQuery,
 } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import { Box, Button, Center, Skeleton, Title } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Center,
+  Skeleton,
+  Title,
+  type BoxProps,
+} from "@mantine/core";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 type LeaderboardMetadataOptions = {
   showClock?: boolean;
   showAllLeaderboardButton?: boolean;
+  buttonMarginY?: BoxProps["my"];
   syntaxStripSize?: SyntaxStripSize;
 };
 
@@ -38,6 +46,7 @@ function LeaderboardMetadata({
   query,
   showClock = false,
   showAllLeaderboardButton = false,
+  buttonMarginY,
   syntaxStripSize,
 }: LeaderboardMetadataOptions & {
   query: ReturnType<typeof useCurrentLeaderboardMetadataQuery>;
@@ -126,13 +135,13 @@ function LeaderboardMetadata({
           <PrettyCounter size={"lg"} time={countdown} />
         )}
       </Title>
-      <Box ta={"center"}>
-        {showAllLeaderboardButton && (
+      {showAllLeaderboardButton && (
+        <Box ta={"center"} my={buttonMarginY}>
           <Button component={Link} to={"/leaderboard/all"}>
             View All Leaderboards
           </Button>
-        )}
-      </Box>
+        </Box>
+      )}
     </>
   );
 }
