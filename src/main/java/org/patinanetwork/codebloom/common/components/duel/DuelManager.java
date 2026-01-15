@@ -312,4 +312,11 @@ public class DuelManager {
             return lobbyPlayerQuestions.size();
         });
     }
+
+    public void testMethod() throws DuelException {
+        wrap(() -> {
+            lobbyPlayerRepository.findLobbyPlayerById("");
+            lobbyRepository.findActiveLobbies();
+        });
+    }
 }
