@@ -17,31 +17,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  prHelpComment:
-    name: PR Help Comment
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'opened'
-    
-    steps:
-      - name: Help Comment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Available PR Commands:
-            
-            - \`/ai\` - Triggers all AI review commands at once
-            - \`/review\` - AI review of the PR changes
-            - \`/describe\` - AI-powered description of the PR
-            - \`/improve\` - AI-powered suggestions
-            - \`/deploy\` - Deploy to staging
-            
-            See: https://github.com/tahminator/codebloom/wiki/CI-Commands`
-            });
-
   getPRHead:
     name: Get PR head SHA
     runs-on: ubuntu-latest
