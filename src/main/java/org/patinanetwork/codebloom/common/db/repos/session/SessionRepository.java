@@ -19,4 +19,6 @@ public interface SessionRepository {
     ArrayList<Session> getSessionsByUserId(String userId);
 
     boolean deleteSessionById(String id);
+
+    boolean deleteSessionsByUserId(String userId);
 }
