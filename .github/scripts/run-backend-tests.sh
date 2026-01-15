@@ -3,8 +3,10 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$DIR/local-db.sh"
+source "$DIR/run-backend-instance.sh"
+source "$DIR/run-frontend-instance.sh"
 
-trap db_cleanup EXIT
+trap 'db_cleanup; backend_cleanup; frontend_cleanup' EXIT
 
 java -version
 javac -version
@@ -22,5 +24,11 @@ pnpm i --frozen-lockfile
 cd ..
 
 db_startup
+
+backend_startup
+
+frontend_startup
+
+backend_cleanup
 
 ./mvnw clean verify -Dspring.profiles.active=ci
