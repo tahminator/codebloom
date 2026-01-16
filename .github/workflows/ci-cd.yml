@@ -37,59 +37,11 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
             - name: Load secrets
-              uses: ./.github/composite/load-secrets
+              uses: ./.github/composite/test/backend-test
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
-
-            - uses: oven-sh/setup-bun@v2
-              with:
-                bun-version: latest
-
-            - name: Cache Bun dependencies
-              uses: actions/cache@v4
-              with:
-                path: ~/.bun/install/cache
-                key: ${{ runner.os }}-bun-${{ hashFiles('**/pnpm-lock.yaml') }}
-                restore-keys: |
-                  ${{ runner.os }}-bun-
-
-            - name: Install deps
-              shell: bash
-              run: bun install --cwd .github/scripts --frozen-lockfile
-
-            - name: Run script
-              shell: bash
-              run: bun .github/scripts/run-backend-tests.ts
-
-            - name: Upload JaCoCo HTML report
-              uses: actions/upload-artifact@v4
-              with:
-                name: jacoco-report
-                path: target/site/jacoco/
-
-            - name: Upload coverage reports to Codecov
-              uses: codecov/codecov-action@v5
-              with:
-                token: ${{ secrets.CODECOV_TOKEN }}
 
     frontendTests:
         name: Frontend Tests
@@ -100,57 +52,11 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Fix a bug with corepack by installing corepack globally
-              run: npm i -g corepack@latest
-              working-directory: js
-
             - name: Load secrets
-              uses: ./.github/composite/load-secrets
+              uses: ./.github/composite/test/frontend-test
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
-
-            - uses: oven-sh/setup-bun@v2
-              with:
-                bun-version: latest
-
-            - name: Cache Bun dependencies
-              uses: actions/cache@v4
-              with:
-                path: ~/.bun/install/cache
-                key: ${{ runner.os }}-bun-${{ hashFiles('**/pnpm-lock.yaml') }}
-                restore-keys: |
-                  ${{ runner.os }}-bun-
-
-            - name: Install deps
-              shell: bash
-              run: bun install --cwd .github/scripts --frozen-lockfile
-
-            - name: Run script
-              shell: bash
-              run: bun .github/scripts/run-frontend-tests.ts
 
     testBuildImage:
         name: Build Test Docker Image
