@@ -15,7 +15,6 @@ import {
   Center,
   Skeleton,
   Title,
-  type BoxProps,
 } from "@mantine/core";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -23,7 +22,6 @@ import { Link } from "react-router-dom";
 type LeaderboardMetadataOptions = {
   showClock?: boolean;
   showAllLeaderboardButton?: boolean;
-  buttonMarginY?: BoxProps["my"];
   syntaxStripSize?: SyntaxStripSize;
 };
 
@@ -46,7 +44,6 @@ function LeaderboardMetadata({
   query,
   showClock = false,
   showAllLeaderboardButton = false,
-  buttonMarginY,
   syntaxStripSize,
 }: LeaderboardMetadataOptions & {
   query: ReturnType<typeof useCurrentLeaderboardMetadataQuery>;
@@ -136,8 +133,8 @@ function LeaderboardMetadata({
         )}
       </Title>
       {showAllLeaderboardButton && (
-        <Box ta={"center"} my={buttonMarginY}>
-          <Button component={Link} to={"/leaderboard/all"}>
+        <Box ta={"center"} my="md">
+          <Button component={Link} to="/leaderboard/all">
             View All Leaderboards
           </Button>
         </Box>
