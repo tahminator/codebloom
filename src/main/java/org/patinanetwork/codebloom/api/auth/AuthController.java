@@ -181,7 +181,7 @@ public class AuthController {
                     .maxAge(0)
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, strippedCookie.toString());
-            
+
             return new RedirectView("/login?success=true&message=You have been logged out from all devices!");
         } catch (Exception e) {
             return new RedirectView("/login?success=false&message=You are not logged in.");
