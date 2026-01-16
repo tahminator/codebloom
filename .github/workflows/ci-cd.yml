@@ -68,7 +68,6 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: ~/.bun/install/cache
-                # Hash your lockfile to invalidate the cache when dependencies change
                 key: ${{ runner.os }}-bun-${{ hashFiles('**/pnpm-lock.yaml') }}
                 restore-keys: |
                   ${{ runner.os }}-bun-
@@ -133,8 +132,25 @@ jobs:
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
                 UNLOAD_ENVIRONMENTS: ci-app
 
+            - uses: oven-sh/setup-bun@v2
+              with:
+                bun-version: latest
+
+            - name: Cache Bun dependencies
+              uses: actions/cache@v4
+              with:
+                path: ~/.bun/install/cache
+                key: ${{ runner.os }}-bun-${{ hashFiles('**/pnpm-lock.yaml') }}
+                restore-keys: |
+                  ${{ runner.os }}-bun-
+
+            - name: Install deps
+              shell: bash
+              run: bun install --cwd .github/scripts --frozen-lockfile
+
             - name: Run script
-              run: bash .github/scripts/run-frontend-tests.sh
+              shell: bash
+              run: bun .github/scripts/run-frontend-tests.ts
 
     testBuildImage:
         name: Build Test Docker Image

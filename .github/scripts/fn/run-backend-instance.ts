@@ -42,7 +42,8 @@ async function start() {
 
     if (!ready) {
       console.error("Backend failed to start in time.");
-      end();
+      await end();
+      process.exit(1);
     }
 
     console.log("backend ready");
@@ -58,10 +59,13 @@ async function end() {
       be.kill();
     }
     console.log(cyan("=== BACKEND LOGS ==="));
-    console.log(cyan(await Bun.file("backend.log").text()));
-    console.log(cyan("=== BACKEND LOGS ==="));
+    const logs = await Bun.file("backend.log").text();
+    logs
+      .split("\n")
+      .filter((s) => s.length > 0)
+      .forEach((line) => console.log(cyan(line)));
+    console.log(cyan("=== BACKEND LOGS END ==="));
   }
-  process.exit(1);
 }
 
 export const backend = {
