@@ -1,4 +1,5 @@
 import { $ } from "bun";
+import { brightGreen, brightMagenta } from "./colors";
 
 async function start() {
   try {
@@ -36,6 +37,7 @@ async function start() {
 
     if (!ready) {
       console.error("postgres failed to start in time.");
+      await end();
       process.exit(1);
     }
 
@@ -58,7 +60,15 @@ async function start() {
 
 async function end() {
   console.log("Stopping and removing postgres container...");
-  await $`docker logs codebloom-db`.nothrow();
+
+  console.log(brightMagenta("=== DB LOGS ==="));
+  const logs = await $`docker logs codebloom-db`.text();
+  logs
+    .split("\n")
+    .filter((s) => s.length > 0)
+    .forEach((line) => console.log(brightMagenta(line)));
+  console.log(brightMagenta("=== DB LOGS END ==="));
+
   await $`docker stop codebloom-db`.quiet().nothrow();
   await $`docker rm codebloom-db`.quiet().nothrow();
 
