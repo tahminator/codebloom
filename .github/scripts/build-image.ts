@@ -64,9 +64,9 @@ async function main() {
     const buildMode = shouldDockerUpload ? "--push" : "--load";
 
     const viteStagingArg =
-      serverProfiles === "stg" ? "--build-arg VITE_STAGING=true" : "";
+      serverProfiles === "stg" ? ["--build-arg", "VITE_STAGING=true"] : [];
 
-    const tagArgs = tags.map((tag) => `--tag ${tag}`).join(" ");
+    const tagArgs = tags.flatMap((tag) => ["--tag", tag]);
 
     await $`docker buildx build ${buildMode} \
               --file infra/Dockerfile \
