@@ -3,6 +3,8 @@ package org.patinanetwork.codebloom.common.simpleredis;
 import jakarta.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -44,16 +46,14 @@ public class SimpleRedisProvider {
         return (SimpleRedis<T>) redis;
     }
 
-    /** Clear the hashmap at a given slot. */
-    public void clearIndex(final SimpleRedisSlot<?> slot) {
-        SimpleRedis<?> redis = store.get(slot.getIndex());
-        if (redis != null) {
-            redis.clear();
-        }
+    /** Clear Redis database at scheduled rate. */
+    @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
+    public void autoCleanup() {
+        clearAll();
     }
 
     /** Clear the entire database of all it's values */
-    public void clearAll() {
-        store.values().forEach(Map::clear);
+    private void clearAll() {
+        store.values().stream().filter(SimpleRedis::isShouldEvict).forEach(SimpleRedis::clear);
     }
 }
