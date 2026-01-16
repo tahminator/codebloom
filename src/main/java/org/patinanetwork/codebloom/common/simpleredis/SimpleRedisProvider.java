@@ -44,36 +44,6 @@ public class SimpleRedisProvider {
         return (SimpleRedis<T>) redis;
     }
 
-    /** Puts a value from the hashmap at the given Redis database slot. */
-    public <V> void put(final SimpleRedisSlot<V> slot, final String key, final V value) {
-        select(slot).put(key, value);
-    }
-
-    /** Returns value of {@code key} at Redis database {@code slot} */
-    public <V> V get(final SimpleRedisSlot<V> slot, final String key) {
-        return select(slot).get(key);
-    }
-
-    /** Removes a value from the hashmap at the given index. */
-    public <V> void remove(final SimpleRedisSlot<V> slot, final String key) {
-        select(slot).remove(key);
-    }
-
-    /** Checks whether a key exists at the hashmap at the given database. */
-    public <V> boolean containsKey(final SimpleRedisSlot<V> slot, final String key) {
-        return select(slot).containsKey(key);
-    }
-
-    /** Returns the size of the database. */
-    public int size() {
-        return store.size();
-    }
-
-    /** Returns the size of the specified database. */
-    public <V> int size(final SimpleRedisSlot<V> slot) {
-        return select(slot).size();
-    }
-
     /** Clear the hashmap at a given slot. */
     public void clearIndex(final SimpleRedisSlot<?> slot) {
         SimpleRedis<?> redis = store.get(slot.getIndex());
