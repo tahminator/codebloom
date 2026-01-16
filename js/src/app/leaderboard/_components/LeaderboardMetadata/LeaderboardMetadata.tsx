@@ -9,13 +9,7 @@ import {
   useLeaderboardMetadataByIdQuery,
 } from "@/lib/api/queries/leaderboard";
 import useCountdown from "@/lib/hooks/useCountdown";
-import {
-  Box,
-  Button,
-  Center,
-  Skeleton,
-  Title,
-} from "@mantine/core";
+import { Box, Button, Center, Skeleton, Title } from "@mantine/core";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
