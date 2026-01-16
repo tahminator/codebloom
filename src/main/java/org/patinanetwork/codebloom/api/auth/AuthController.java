@@ -36,6 +36,7 @@ import org.patinanetwork.codebloom.common.schools.magic.MagicLink;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.security.Protector;
 import org.patinanetwork.codebloom.common.security.annotation.Protected;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
@@ -67,7 +68,7 @@ public class AuthController {
     private final UserTagRepository userTagRepository;
     private final Reporter reporter;
     private final ReactEmailClient reactEmailClient;
-    private final SimpleRedisProvider simpleRedis;
+    private final SimpleRedis<Long> simpleRedis;
 
     public AuthController(
             final SessionRepository sessionRepository,
@@ -79,7 +80,7 @@ public class AuthController {
             final UserTagRepository userTagRepository,
             final Reporter reporter,
             final ReactEmailClient reactEmailClient,
-            final SimpleRedisProvider simpleRedis) {
+            final SimpleRedisProvider simpleRedisProvider) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
         this.userRepository = userRepository;
@@ -89,7 +90,7 @@ public class AuthController {
         this.userTagRepository = userTagRepository;
         this.reporter = reporter;
         this.reactEmailClient = reactEmailClient;
-        this.simpleRedis = simpleRedis;
+        this.simpleRedis = simpleRedisProvider.select(SimpleRedisSlot.VERIFICATION_EMAIL_SENDING);
     }
 
     @Operation(
@@ -180,10 +181,8 @@ public class AuthController {
                     "The email is not part of our supported schools domains: " + supportedSchools);
         }
 
-        // 10 second rate limit
-        var slot = SimpleRedisSlot.VERIFICATION_EMAIL_SENDING;
-        if (simpleRedis.containsKey(slot, userId)) {
-            long timeThen = (long) simpleRedis.get(slot, userId);
+        if (simpleRedis.containsKey(userId)) {
+            long timeThen = simpleRedis.get(userId);
             long timeNow = System.currentTimeMillis();
             long difference = (timeNow - timeThen) / 1000;
 
@@ -195,7 +194,7 @@ public class AuthController {
             }
         }
 
-        simpleRedis.put(slot, userId, System.currentTimeMillis());
+        simpleRedis.put(userId, System.currentTimeMillis());
 
         MagicLink magicLink = new MagicLink(email, userId);
         try {
