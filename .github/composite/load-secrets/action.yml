@@ -37,8 +37,24 @@ runs:
       shell: bash
       run: git-crypt --version
 
-    - name: Run load secrets script
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Cache Bun dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - name: Install deps
       shell: bash
-      run: bash .github/scripts/load-secrets.sh
+      run: bun install --cwd .github/scripts --frozen-lockfile
+
+    - name: Run script
+      shell: bash
+      run: bun .github/scripts/load-secrets.ts
       env:
         UNLOAD_ENVIRONMENTS: ${{ inputs.UNLOAD_ENVIRONMENTS }}
