@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.patinanetwork.codebloom.api.submission.body.LeetcodeUsernameObject;
@@ -27,6 +28,7 @@ import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
 import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.security.Protector;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
 import org.patinanetwork.codebloom.common.submissions.SubmissionsHandler;
@@ -39,7 +41,8 @@ public class SubmissionControllerTest {
 
     private final UserRepository userRepository = mock(UserRepository.class);
     private final Protector protector = mock(Protector.class);
-    private final SimpleRedisProvider simpleRedis = mock(SimpleRedisProvider.class);
+    private final SimpleRedis<Long> simpleRedis = mock(SimpleRedis.class);
+    private final SimpleRedisProvider simpleRedisProvider = mock(SimpleRedisProvider.class);
     private final ThrottledLeetcodeClient leetcodeClient = mock(ThrottledLeetcodeClient.class);
     private final SubmissionsHandler submissionsHandler = mock(SubmissionsHandler.class);
     private final QuestionRepository questionRepository = mock(QuestionRepository.class);
@@ -47,14 +50,21 @@ public class SubmissionControllerTest {
 
     private final HttpServletRequest request = mock(HttpServletRequest.class);
 
-    private final SubmissionController submissionController = new SubmissionController(
-            userRepository,
-            protector,
-            simpleRedis,
-            leetcodeClient,
-            submissionsHandler,
-            questionRepository,
-            potdRepository);
+    private SubmissionController submissionController;
+
+    @BeforeEach
+    void setUp() {
+        when(simpleRedisProvider.select(SimpleRedisSlot.SUBMISSION_REFRESH)).thenReturn(simpleRedis);
+
+        this.submissionController = new SubmissionController(
+                userRepository,
+                protector,
+                simpleRedisProvider,
+                leetcodeClient,
+                submissionsHandler,
+                questionRepository,
+                potdRepository);
+    }
 
     @Test
     void testGetVerificationKeySuccess() {
@@ -156,8 +166,7 @@ public class SubmissionControllerTest {
         when(user.getLeetcodeUsername()).thenReturn("leetcodeUser");
         when(user.getId()).thenReturn("abcdefg123456");
 
-        when(simpleRedis.containsKey(SimpleRedisSlot.SUBMISSION_REFRESH, "abcdefg123456"))
-                .thenReturn(false);
+        when(simpleRedis.containsKey("abcdefg123456")).thenReturn(false);
 
         when(leetcodeClient.findSubmissionsByUsername("leetcodeUser", 20)).thenReturn(leetcodeSubs);
 
