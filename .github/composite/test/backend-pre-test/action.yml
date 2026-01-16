@@ -20,6 +20,22 @@ runs:
         javac -version
         echo "JAVA_HOME=$JAVA_HOME"
 
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Cache Bun dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('.github/scripts/bun.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - name: Install deps
+      shell: bash
+      run: bun install --cwd .github/scripts --frozen-lockfile
+
     - name: Run script
       shell: bash
-      run: bash .github/scripts/run-backend-compile-tests.sh
+      run: bun .github/scripts/run-backend-compile-tests.ts

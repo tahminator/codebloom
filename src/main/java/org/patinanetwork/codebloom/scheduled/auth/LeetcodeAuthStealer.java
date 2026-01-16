@@ -163,7 +163,6 @@ public class LeetcodeAuthStealer {
     }
 
     String stealCookieImpl() {
-        LOCK.writeLock().lock();
         try (Playwright playwright = Playwright.create();
                 Browser browser = playwright
                         .firefox()
@@ -273,10 +272,7 @@ public class LeetcodeAuthStealer {
             } else {
                 log.info("Should be authenticated but not authenticated.");
             }
-        } finally {
-            LOCK.writeLock().unlock();
         }
-
         return null;
     }
 }
