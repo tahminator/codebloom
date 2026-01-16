@@ -3,20 +3,14 @@ package org.patinanetwork.codebloom.common.simpleredis;
 import jakarta.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
  * This KeyValueStore works very similarly to a Redis database, but in memory. The first parameter of {@code index} is
  * used to determine a specific index to utilize, similar to {@code REDIS_INSTANCE/0}. Within each index you can use all
- * the same features that you may normally use, such as putting and getting.
- *
- * <p>Databases (indices):
- *
- * <p>0 - Submission Refresh
- *
- * <p>1 - Verification Email Sending
- *
- * <p>2 - Global rate limiting
+ * the same features that you may normally use inside of any {@code Map} class, such as putting and getting.
  */
 @Service
 public class SimpleRedisProvider {
@@ -26,16 +20,18 @@ public class SimpleRedisProvider {
     /** Initialize the Redis store with indices of all the databases we support. */
     @PostConstruct
     public void init() {
-        register(SimpleRedisSlot.GLOBAL_RATE_LIMIT);
-        register(SimpleRedisSlot.SUBMISSION_REFRESH);
-        register(SimpleRedisSlot.VERIFICATION_EMAIL_SENDING);
+        SimpleRedisSlot.ALL.stream().forEach(this::register);
     }
 
     private <T> void register(final SimpleRedisSlot<T> slot) {
         store.put(slot.getIndex(), new SimpleRedis<T>());
     }
 
-    /** Selects database slot. Throws exception if slot doesn't exist. */
+    /**
+     * Selects database slot.
+     *
+     * @throws IllegalArgumentException if database slot does not exist.
+     */
     public <T> SimpleRedis<T> select(final SimpleRedisSlot<T> slot) {
         SimpleRedis<?> redis = store.get(slot.getIndex());
         if (redis == null) {
@@ -44,16 +40,14 @@ public class SimpleRedisProvider {
         return (SimpleRedis<T>) redis;
     }
 
-    /** Clear the hashmap at a given slot. */
-    public void clearIndex(final SimpleRedisSlot<?> slot) {
-        SimpleRedis<?> redis = store.get(slot.getIndex());
-        if (redis != null) {
-            redis.clear();
-        }
+    /** Clears all evictable databases every 24 hours. */
+    @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
+    public void autoCleanup() {
+        clearAll();
     }
 
-    /** Clear the entire database of all it's values */
-    public void clearAll() {
-        store.values().forEach(Map::clear);
+    /** Clear all databases with {@code shouldEvict = true} */
+    private void clearAll() {
+        store.values().stream().filter(SimpleRedis::isShouldEvict).forEach(SimpleRedis::clear);
     }
 }
