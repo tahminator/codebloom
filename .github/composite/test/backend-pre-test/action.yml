@@ -20,6 +20,24 @@ runs:
         javac -version
         echo "JAVA_HOME=$JAVA_HOME"
 
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 10
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: "pnpm"
+        cache-dependency-path: ".github/scripts/pnpm-lock.yaml"
+
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Install deps
+      shell: bash
+      run: pnpm --dir .github/scripts install --frozen-lockfile
+
     - name: Run script
       shell: bash
-      run: bash .github/scripts/run-backend-compile-tests.sh
+      run: bun .github/scripts/run-backend-compile-tests.ts
