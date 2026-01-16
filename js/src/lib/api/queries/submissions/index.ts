@@ -9,18 +9,7 @@ export const useSubmissionDetailsQuery = ({
 }: {
   submissionId: string;
 }) => {
-  return useQuery({
-    queryKey: ["submission", submissionId],
-    queryFn: () => fetchSubmissionDetails({ submissionId }),
-  });
-};
-
-async function fetchSubmissionDetails({
-  submissionId,
-}: {
-  submissionId: string;
-}) {
-  const { url, method, res } = ApiURL.create(
+  const { url, method, res, queryKey } = ApiURL.create(
     "/api/leetcode/submission/{submissionId}",
     {
       method: "GET",
@@ -29,10 +18,16 @@ async function fetchSubmissionDetails({
       },
     },
   );
-  const response = await fetch(url, {
-    method,
-  });
-  const json = res(await response.json());
 
-  return json;
-}
+  return useQuery({
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(url, {
+        method,
+      });
+      const json = res(await response.json());
+
+      return json;
+    },
+  });
+};

@@ -5,6 +5,16 @@ import { If } from "@/lib/reporter/types/optional";
 type MaybeParams<T> =
   keyof T extends never ? { params?: undefined } : { params: T };
 
+type Split<S extends string, D extends string> =
+  S extends `${infer Head}${D}${infer Tail}` ?
+    Head extends "" ?
+      Split<Tail, D>
+    : [Head, ...Split<Tail, D>]
+  : S extends "" ? []
+  : [S];
+
+type PathSegments<T extends string> = Split<T, "/">;
+
 type HttpMethodLower =
   | "get"
   | "post"
@@ -17,6 +27,13 @@ type HttpMethodLower =
 type HttpMethodUpper = Uppercase<HttpMethodLower>;
 
 type PathsKey = keyof paths;
+type CleanPath<T extends string> = T extends `/${infer Rest}` ? Rest : T;
+type GetSegments<S extends string, Acc extends string = ""> =
+  S extends `${infer Head}/${infer Tail}` ?
+    `${Acc}/${Head}` | GetSegments<Tail, `${Acc}/${Head}`>
+  : `${Acc}/${S}`;
+type PathsSegments<TKey extends PathsKey> = GetSegments<CleanPath<TKey>>;
+
 type PathsMethods<TKey extends PathsKey> = paths[TKey];
 type PathsMethodKey<TKey extends PathsKey> = keyof PathsMethods<TKey>;
 type PathMethodResult<
@@ -110,6 +127,37 @@ export class ApiURL<
   private readonly _method: Uppercase<
     Extract<PathsMethodKey<TPathKey>, string>
   >;
+  private readonly _key: readonly unknown[];
+
+  private static _generateKey<
+    const TPath extends PathsKey,
+    const TMethod extends HttpMethodUpper,
+    const TParams,
+    const TQueries,
+  >(
+    path: TPath,
+    options: {
+      method: TMethod;
+      params: TParams;
+      queries: TQueries;
+    },
+  ): readonly [
+    ...PathSegments<TPath>,
+    { method: TMethod; params: TParams; queries: TQueries },
+  ] {
+    const segments = path.split("/").filter((segment) => segment.length > 0);
+    return [
+      ...segments,
+      {
+        method: options.method,
+        params: options.params,
+        queries: options.queries,
+      },
+    ] as unknown as readonly [
+      ...PathSegments<TPath>,
+      { method: TMethod; params: TParams; queries: TQueries },
+    ];
+  }
 
   /**
    * Static factory method to create an `ApiURL`.
@@ -202,6 +250,12 @@ export class ApiURL<
       // never should happen, unless someone disobeys type contract
       throw Error("method passed into ApiURL is not a valid string");
     }
+
+    this._key = ApiURL._generateKey(path, {
+      method: this._method as HttpMethodUpper,
+      params,
+      queries,
+    });
 
     let resolved: string = path;
     if (params) {
@@ -328,6 +382,98 @@ export class ApiURL<
         PathParamToOperations<TPathKey, TPathMethod>
       >
     >;
+  }
+
+  static prefix<const TCreatePathKey extends PathsKey>(
+    prefix: PathsSegments<TCreatePathKey>,
+  ) {
+    return [...prefix.split("/").filter((s) => s.length > 0)];
+  }
+
+  /**
+   * Generate a type-safe React Query key for caching and invalidation (static version).
+   *
+   * @param path - The API URL path.
+   * @param {Object} options - Configuration options.
+   * @param {TCreatePathMethod} options.method - The HTTP method.
+   * @param {Object} options.params - Path parameters (if URL is dynamic).
+   * @param {Object} options.queries - Query parameters.
+   *
+   * @returns An array suitable for use as a React Query key, with path segments split by "/".
+   *
+   * @example
+   * ```ts
+   * useMutation({
+   *   mutationFn: () => { ... },
+   *   onSuccess: () => {
+   *     queryClient.invalidateQueries({ queryKey: ApiURL.key("/api/auth/validate"), {
+   *       method: "GET",
+   *     }})
+   *   }
+   * });
+   * ```
+   */
+  static queryKey<
+    const TCreatePathKey extends PathsKey,
+    const TCreatePathMethod extends HttpMethodUpper &
+      Uppercase<Extract<PathsMethodKey<TCreatePathKey>, string>>,
+  >(
+    path: TCreatePathKey,
+    options: {
+      method: TCreatePathMethod;
+    } & MaybeParams<
+      PathOperationsToPathParams<
+        PathParamToOperations<TCreatePathKey, Lowercase<TCreatePathMethod>>
+      >
+    > & {
+        queries?: PathOperationsToPathQueries<
+          PathParamToOperations<TCreatePathKey, Lowercase<TCreatePathMethod>>
+        >;
+      },
+  ): readonly [
+    ...PathSegments<TCreatePathKey>,
+    {
+      method: TCreatePathMethod;
+      params: PathOperationsToPathParams<
+        PathParamToOperations<TCreatePathKey, Lowercase<TCreatePathMethod>>
+      >;
+      queries:
+        | PathOperationsToPathQueries<
+            PathParamToOperations<TCreatePathKey, Lowercase<TCreatePathMethod>>
+          >
+        | undefined;
+    },
+  ] {
+    return ApiURL._generateKey(path, {
+      method: options.method,
+      params: (options as { params?: unknown })
+        .params as PathOperationsToPathParams<
+        PathParamToOperations<TCreatePathKey, Lowercase<TCreatePathMethod>>
+      >,
+      queries: options.queries,
+    });
+  }
+
+  /**
+   * Get the React Query key for this instance.
+   *
+   * @returns The query key array for this API URL instance.
+   *
+   * @example
+   * ```ts
+   * const api = ApiURL.create("/api/user/{id}", {
+   *   method: "GET",
+   *   params: { id: "123" },
+   * });
+   *
+   * useQuery({
+   *   queryKey: api.key,
+   *   queryFn: () => fetch(api.url),
+   * });
+   * ```
+   */
+  get queryKey(): readonly unknown[] {
+    return this._key;
   }
 
   toString(): string {
