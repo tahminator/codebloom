@@ -5,8 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This is a KeyValueStore that works similarly to a Redis database, but in memory. The {@code value} will be typed to
  * the specific database slot being utilized.
- * <p>
- * Example usage:
+ *
+ * <p>Example usage:
+ *
  * <pre>{@code
  * public Controller(final SimpleRedisProvider provider) {
  * this.simpleRedis = provider.select(

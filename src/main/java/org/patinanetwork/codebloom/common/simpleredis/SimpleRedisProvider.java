@@ -37,9 +37,11 @@ public class SimpleRedisProvider {
         store.put(slot.getIndex(), new SimpleRedis<T>());
     }
 
-    /** Selects database slot.
+    /**
+     * Selects database slot.
+     *
      * @throws IllegalArgumentException If database slot does not exist.
-    */
+     */
     public <T> SimpleRedis<T> select(final SimpleRedisSlot<T> slot) {
         SimpleRedis<?> redis = store.get(slot.getIndex());
         if (redis == null) {
