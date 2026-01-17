@@ -13,6 +13,7 @@ import {
 import { ApiUtils } from "@/lib/api/utils";
 import { schoolFF, tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
+import { useLeaderboardSubmissionsUrl } from "@/lib/hooks/useLeaderboardSubmissionsUrl";
 import { theme } from "@/lib/theme";
 import {
   Box,
@@ -64,9 +65,10 @@ function LeaderboardIndex({
     globalIndex,
     toggleGlobalIndex,
     isPlaceholderData,
-    isAnyFilterEnabled,
-    onFilterReset,
-  } = query;
+  } = useCurrentLeaderboardUsersQuery();
+
+  const { getUserSubmissionsUrl, startDate, endDate } =
+    useLeaderboardSubmissionsUrl();
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -120,6 +122,8 @@ function LeaderboardIndex({
             userId={second.id}
             tags={second.tags}
             isLoading={isPlaceholderData}
+            startDate={startDate}
+            endDate={endDate}
           />
         )}
         {page === 1 && first && !debouncedQuery && (
@@ -134,6 +138,8 @@ function LeaderboardIndex({
             userId={first.id}
             tags={first.tags}
             isLoading={isPlaceholderData}
+            startDate={startDate}
+            endDate={endDate}
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -148,6 +154,8 @@ function LeaderboardIndex({
             userId={third.id}
             tags={third.tags}
             isLoading={isPlaceholderData}
+            startDate={startDate}
+            endDate={endDate}
           />
         )}
       </Flex>
@@ -222,7 +230,7 @@ function LeaderboardIndex({
             <PossibleTooltip key={entry.id}>
               <Card
                 component={Link}
-                to={isPrevious ? "#" : `/user/${entry.id}`}
+                to={isPrevious ? "#" : getUserSubmissionsUrl(entry.id)}
                 shadow="sm"
                 padding="lg"
                 radius="md"

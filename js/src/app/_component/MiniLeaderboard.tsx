@@ -6,6 +6,7 @@ import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { Tag } from "@/lib/api/types/autogen/schema";
 import { tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
+import { useLeaderboardSubmissionsUrl } from "@/lib/hooks/useLeaderboardSubmissionsUrl";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -25,6 +26,9 @@ import { Link } from "react-router-dom";
 export default function MiniLeaderboardDesktop() {
   const { data, status, filters, toggleFilter, isPlaceholderData } =
     useCurrentLeaderboardUsersQuery({ pageSize: 5, tieToUrl: false });
+
+  const { getUserSubmissionsUrl, startDate, endDate } =
+    useLeaderboardSubmissionsUrl();
 
   if (status === "pending") {
     return <MiniLeaderboardSkeleton />;
@@ -85,6 +89,8 @@ export default function MiniLeaderboardDesktop() {
               width={"200px"}
               userId={second.id}
               isLoading={isPlaceholderData}
+              startDate={startDate}
+              endDate={endDate}
             />
           )}
           {first && (
@@ -98,6 +104,8 @@ export default function MiniLeaderboardDesktop() {
               width={"200px"}
               userId={first.id}
               isLoading={isPlaceholderData}
+              startDate={startDate}
+              endDate={endDate}
             />
           )}
           {third && (
@@ -111,6 +119,8 @@ export default function MiniLeaderboardDesktop() {
               width={"200px"}
               userId={third.id}
               isLoading={isPlaceholderData}
+              startDate={startDate}
+              endDate={endDate}
             />
           )}
         </Flex>
@@ -122,7 +132,7 @@ export default function MiniLeaderboardDesktop() {
                 <Card
                   key={entry.id}
                   component={Link}
-                  to={`/user/${entry.id}`}
+                  to={getUserSubmissionsUrl(entry.id)}
                   withBorder
                   radius="md"
                   padding="lg"

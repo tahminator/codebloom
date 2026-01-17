@@ -29,6 +29,8 @@ export default function LeaderboardCard({
   tags,
   isLoading = false,
   embedded = false,
+  startDate,
+  endDate,
 }: {
   placeString: OrdinalString;
   sizeOrder: 1 | 2 | 3;
@@ -41,6 +43,8 @@ export default function LeaderboardCard({
   tags?: UserTag[];
   isLoading?: boolean;
   embedded?: boolean;
+  startDate?: string;
+  endDate?: string;
 }) {
   const isTopThree = sizeOrder <= 3;
   const borderColor = (() => {
@@ -72,6 +76,18 @@ export default function LeaderboardCard({
   })();
   const displayTags = tags?.slice(0, 3);
 
+  const getUserSubmissionsUrl = () => {
+    const params = new URLSearchParams();
+    if (startDate) {
+      params.set("startDate", startDate);
+    }
+    if (endDate) {
+      params.set("endDate", endDate);
+    }
+    const queryString = params.toString();
+    return `/user/${userId}/submissions${queryString ? `?${queryString}` : ""}`;
+  };
+
   return (
     <Card
       withBorder
@@ -85,7 +101,7 @@ export default function LeaderboardCard({
         boxShadow,
       }}
       component={Link}
-      to={`/user/${userId}`}
+      to={getUserSubmissionsUrl()}
       reloadDocument={embedded}
       target={embedded ? "_blank" : undefined}
       rel={embedded ? "noopener noreferrer" : undefined}
