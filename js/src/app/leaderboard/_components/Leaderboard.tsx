@@ -7,11 +7,17 @@ import SearchBox from "@/components/ui/table/SearchBox";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import {
+  useCurrentLeaderboardMetadataQuery,
   useCurrentLeaderboardUsersQuery,
+  useLeaderboardMetadataByIdQuery,
   useLeaderboardUsersByIdQuery,
 } from "@/lib/api/queries/leaderboard";
 import { ApiUtils } from "@/lib/api/utils";
 import { schoolFF, tagFF } from "@/lib/ff";
+import {
+  formatLeaderboardDateRange,
+  getUserSubmissionsUrl,
+} from "@/lib/helper/leaderboardDateRange";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -34,20 +40,48 @@ import { Link } from "react-router-dom";
 
 export function CurrentLeaderboard() {
   const query = useCurrentLeaderboardUsersQuery();
-  return <LeaderboardIndex query={query} />;
+  const metadataQuery = useCurrentLeaderboardMetadataQuery();
+
+  const dateRange =
+    metadataQuery.data?.success ?
+      formatLeaderboardDateRange(metadataQuery.data.payload)
+    : undefined;
+
+  return (
+    <LeaderboardIndex
+      query={query}
+      startDate={dateRange?.startDate}
+      endDate={dateRange?.endDate}
+    />
+  );
 }
 
 export function LeaderboardById({ leaderboardId }: { leaderboardId: string }) {
   const query = useLeaderboardUsersByIdQuery({ leaderboardId });
-  return <LeaderboardIndex query={query} isPrevious />;
+  const metadataQuery = useLeaderboardMetadataByIdQuery(leaderboardId);
+
+  const dateRange =
+    metadataQuery.data?.success ?
+      formatLeaderboardDateRange(metadataQuery.data.payload)
+    : undefined;
+
+  return (
+    <LeaderboardIndex
+      query={query}
+      startDate={dateRange?.startDate}
+      endDate={dateRange?.endDate}
+    />
+  );
 }
 
 function LeaderboardIndex({
   query,
-  isPrevious = false,
+  startDate,
+  endDate,
 }: {
   query: ReturnType<typeof useCurrentLeaderboardUsersQuery>;
-  isPrevious?: boolean;
+  startDate?: string;
+  endDate?: string;
 }) {
   const {
     data,
@@ -89,15 +123,7 @@ function LeaderboardIndex({
     return true;
   });
 
-  const PossibleTooltip = ({ children }: { children: JSX.Element }) =>
-    isPrevious ?
-      <Tooltip
-        label="Ability to view profiles at a specific time are not supported yet."
-        color="dark.4"
-      >
-        {children}
-      </Tooltip>
-    : <>{children}</>;
+  const dateRange = startDate ? { startDate, endDate } : undefined;
 
   return (
     <>
@@ -120,6 +146,8 @@ function LeaderboardIndex({
             userId={second.id}
             tags={second.tags}
             isLoading={isPlaceholderData}
+            startDate={startDate}
+            endDate={endDate}
           />
         )}
         {page === 1 && first && !debouncedQuery && (
@@ -134,6 +162,8 @@ function LeaderboardIndex({
             userId={first.id}
             tags={first.tags}
             isLoading={isPlaceholderData}
+            startDate={startDate}
+            endDate={endDate}
           />
         )}
         {page === 1 && third && !debouncedQuery && (
@@ -148,6 +178,8 @@ function LeaderboardIndex({
             userId={third.id}
             tags={third.tags}
             isLoading={isPlaceholderData}
+            startDate={startDate}
+            endDate={endDate}
           />
         )}
       </Flex>
@@ -219,93 +251,87 @@ function LeaderboardIndex({
         )}
         <Stack gap="md">
           {cardItems.map((entry) => (
-            <PossibleTooltip key={entry.id}>
-              <Card
-                component={Link}
-                to={isPrevious ? "#" : `/user/${entry.id}`}
-                shadow="sm"
-                padding="lg"
-                radius="md"
-                withBorder
-                bg={theme.colors.dark[7]}
-                styles={{
-                  root: {
-                    borderColor: theme.colors.dark[5],
-                  },
-                }}
-                style={{
-                  transition: "all 0.2s ease",
-                  textDecoration: "none",
-                }}
+            <Card
+              key={entry.id}
+              component={Link}
+              to={getUserSubmissionsUrl(entry.id, dateRange)}
+              shadow="sm"
+              padding="lg"
+              radius="md"
+              withBorder
+              bg={theme.colors.dark[7]}
+              styles={{
+                root: {
+                  borderColor: theme.colors.dark[5],
+                },
+              }}
+              style={{
+                transition: "all 0.2s ease",
+                textDecoration: "none",
+              }}
+            >
+              <Flex
+                direction="row"
+                justify="space-between"
+                align="center"
+                gap="md"
               >
-                <Flex
-                  direction="row"
-                  justify="space-between"
-                  align="center"
-                  gap="md"
-                >
-                  <Flex align="center" gap="md">
-                    <Text
-                      size="xl"
-                      fw={700}
-                      c={theme.colors.patina[4]}
-                      miw={50}
-                    >
-                      #{entry.index}
-                    </Text>
-                    <Flex direction="column" gap="xs">
-                      <Stack gap="xs">
-                        <Flex
-                          direction={{ base: "column", xs: "row" }}
-                          gap={{ base: "xs", xs: "md" }}
-                          align={{ base: "flex-start", xs: "center" }}
-                        >
-                          <Flex align="center" gap={6}>
-                            <FaDiscord size={16} />
-                            <Text size="md" fw={600}>
-                              {entry.discordName}
-                            </Text>
-                          </Flex>
-                          <Flex align="center" gap={6}>
-                            <SiLeetcode size={16} />
-                            <Text size="md" fw={600}>
-                              {entry.leetcodeUsername}
-                            </Text>
-                          </Flex>
-                        </Flex>
-                        {(entry.nickname ||
-                          (tagFF && entry.tags?.length > 0)) && (
-                          <Flex align="center" gap={5}>
-                            {entry.nickname && (
-                              <Tooltip label="This user is a verified member of the Patina Discord server.">
-                                <Flex align="center" gap={5}>
-                                  <IconCircleCheckFilled
-                                    color={theme.colors.patina[4]}
-                                    size={18}
-                                  />
-                                  <Text size="sm">{entry.nickname}</Text>
-                                </Flex>
-                              </Tooltip>
-                            )}
-                            {entry.nickname &&
-                              tagFF &&
-                              entry.tags?.length > 0 && (
-                                <Divider orientation="vertical" h={20} />
-                              )}
-                            {tagFF && entry.tags?.length > 0 && (
-                              <TagList tags={entry.tags} size={16} gap="xs" />
-                            )}
-                          </Flex>
-                        )}
-                      </Stack>
-                    </Flex>
-                  </Flex>
-                  <Text size="lg" fw={600} miw={100} ta="right">
-                    {entry.totalScore} Pts
+                <Flex align="center" gap="md">
+                  <Text size="xl" fw={700} c={theme.colors.patina[4]} miw={50}>
+                    #{entry.index}
                   </Text>
+                  <Flex direction="column" gap="xs">
+                    <Stack gap="xs">
+                      <Flex
+                        direction={{ base: "column", xs: "row" }}
+                        gap={{ base: "xs", xs: "md" }}
+                        align={{ base: "flex-start", xs: "center" }}
+                      >
+                        <Flex align="center" gap={6}>
+                          <FaDiscord size={16} />
+                          <Text size="md" fw={600}>
+                            {entry.discordName}
+                          </Text>
+                        </Flex>
+                        <Flex align="center" gap={6}>
+                          <SiLeetcode size={16} />
+                          <Text size="md" fw={600}>
+                            {entry.leetcodeUsername}
+                          </Text>
+                        </Flex>
+                      </Flex>
+                      {(entry.nickname ||
+                        (tagFF && entry.tags?.length > 0)) && (
+                        <Flex align="center" gap={5}>
+                          {entry.nickname && (
+                            <Tooltip label="This user is a verified member of the Patina Discord server.">
+                              <Flex align="center" gap={5}>
+                                <IconCircleCheckFilled
+                                  color={theme.colors.patina[4]}
+                                  size={18}
+                                />
+                                <Text size="sm">{entry.nickname}</Text>
+                              </Flex>
+                            </Tooltip>
+                          )}
+                          {entry.nickname &&
+                            tagFF &&
+                            entry.tags?.length > 0 && (
+                              <Divider orientation="vertical" h={20} />
+                            )}
+                          {tagFF && entry.tags?.length > 0 && (
+                            <TagList tags={entry.tags} size={16} gap="xs" />
+                          )}
+                        </Flex>
+                      )}
+                    </Stack>
+                  </Flex>
                 </Flex>
-              </Card>
-            </PossibleTooltip>
+                <Text size="lg" fw={600} miw={100} ta="right">
+                  {entry.totalScore} Pts
+                </Text>
+              </Flex>
+            </Card>
           ))}
         </Stack>
       </Box>
