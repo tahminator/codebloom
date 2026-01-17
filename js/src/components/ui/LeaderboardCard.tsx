@@ -1,6 +1,7 @@
 import TagList from "@/components/ui/tags/TagList";
 import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
+import { getUserSubmissionsUrl } from "@/lib/helper/leaderboardDateRange";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -29,6 +30,8 @@ export default function LeaderboardCard({
   tags,
   isLoading = false,
   embedded = false,
+  startDate,
+  endDate,
 }: {
   placeString: OrdinalString;
   sizeOrder: 1 | 2 | 3;
@@ -41,6 +44,8 @@ export default function LeaderboardCard({
   tags?: UserTag[];
   isLoading?: boolean;
   embedded?: boolean;
+  startDate?: string;
+  endDate?: string;
 }) {
   const isTopThree = sizeOrder <= 3;
   const borderColor = (() => {
@@ -72,6 +77,9 @@ export default function LeaderboardCard({
   })();
   const displayTags = tags?.slice(0, 3);
 
+  const dateRange =
+    startDate ? { startDate, endDate: endDate ?? undefined } : undefined;
+
   return (
     <Card
       withBorder
@@ -85,7 +93,7 @@ export default function LeaderboardCard({
         boxShadow,
       }}
       component={Link}
-      to={`/user/${userId}`}
+      to={getUserSubmissionsUrl(userId, dateRange)}
       reloadDocument={embedded}
       target={embedded ? "_blank" : undefined}
       rel={embedded ? "noopener noreferrer" : undefined}
