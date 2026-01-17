@@ -4,6 +4,9 @@ import io.github.bucket4j.Bucket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Slots for Redis databases that are supported. The slots internally map to an index and the class of the value stored.
+ */
 @Getter
 @AllArgsConstructor
 public final class SimpleRedisSlot<V> {

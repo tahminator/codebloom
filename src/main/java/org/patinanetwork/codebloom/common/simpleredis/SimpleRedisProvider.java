@@ -28,16 +28,18 @@ public class SimpleRedisProvider {
     /** Initialize the Redis store with indices of all the databases we support. */
     @PostConstruct
     public void init() {
-        register(SimpleRedisSlot.GLOBAL_RATE_LIMIT);
         register(SimpleRedisSlot.SUBMISSION_REFRESH);
         register(SimpleRedisSlot.VERIFICATION_EMAIL_SENDING);
+        register(SimpleRedisSlot.GLOBAL_RATE_LIMIT);
     }
 
     private <T> void register(final SimpleRedisSlot<T> slot) {
         store.put(slot.getIndex(), new SimpleRedis<T>());
     }
 
-    /** Selects database slot. Throws exception if slot doesn't exist. */
+    /** Selects database slot.
+     * @throws IllegalArgumentException If database slot does not exist.
+    */
     public <T> SimpleRedis<T> select(final SimpleRedisSlot<T> slot) {
         SimpleRedis<?> redis = store.get(slot.getIndex());
         if (redis == null) {
@@ -46,13 +48,13 @@ public class SimpleRedisProvider {
         return (SimpleRedis<T>) redis;
     }
 
-    /** Clear Redis database at scheduled rate. */
+    /** Clears all evictable databases every 24 hours. */
     @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
     public void autoCleanup() {
         clearAll();
     }
 
-    /** Clear the entire database of all it's values */
+    /** Clear all databases with {@code shouldEvict = true} */
     private void clearAll() {
         store.values().stream().filter(SimpleRedis::isShouldEvict).forEach(SimpleRedis::clear);
     }
