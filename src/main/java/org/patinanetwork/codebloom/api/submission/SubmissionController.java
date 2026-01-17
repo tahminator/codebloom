@@ -34,6 +34,8 @@ import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeCl
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.security.Protector;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
 import org.patinanetwork.codebloom.common.submissions.SubmissionsHandler;
 import org.patinanetwork.codebloom.common.submissions.object.AcceptedSubmission;
 import org.patinanetwork.codebloom.common.time.StandardizedLocalDateTime;
@@ -61,7 +63,7 @@ public class SubmissionController {
 
     private final UserRepository userRepository;
     private final Protector protector;
-    private final SimpleRedis simpleRedis;
+    private final SimpleRedis<Long> simpleRedis;
     private final LeetcodeClient leetcodeClient;
     private final SubmissionsHandler submissionsHandler;
     private final QuestionRepository questionRepository;
@@ -80,14 +82,14 @@ public class SubmissionController {
     public SubmissionController(
             final UserRepository userRepository,
             final Protector protector,
-            final SimpleRedis simpleRedis,
+            final SimpleRedisProvider simpleRedisProvider,
             final ThrottledLeetcodeClient throttledLeetcodeClient,
             final SubmissionsHandler submissionsHandler,
             final QuestionRepository questionRepository,
             final POTDRepository potdRepository) {
         this.userRepository = userRepository;
         this.protector = protector;
-        this.simpleRedis = simpleRedis;
+        this.simpleRedis = simpleRedisProvider.select(SimpleRedisSlot.SUBMISSION_REFRESH);
         this.leetcodeClient = throttledLeetcodeClient;
         this.submissionsHandler = submissionsHandler;
         this.questionRepository = questionRepository;
@@ -216,8 +218,8 @@ public class SubmissionController {
                     "You cannot access this resource without setting a Leetcode username first.");
         }
 
-        if (simpleRedis.containsKey(0, user.getId())) {
-            long timeThen = (long) simpleRedis.get(0, user.getId());
+        if (simpleRedis.containsKey(user.getId())) {
+            long timeThen = simpleRedis.get(user.getId());
             long timeNow = System.currentTimeMillis();
             long difference = (timeNow - timeThen) / 1000;
 
@@ -227,7 +229,7 @@ public class SubmissionController {
             }
         }
 
-        simpleRedis.put(0, user.getId(), System.currentTimeMillis());
+        simpleRedis.put(user.getId(), System.currentTimeMillis());
 
         List<LeetcodeSubmission> leetcodeSubmissions =
                 leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername(), 20);

@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.time.Duration;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,11 +27,11 @@ public class RateLimitingFilter implements Filter {
     private static final long STATIC_RATE_LIMIT_CAPACITY = 100L;
     private static final long STATIC_REFILL_INTERVAL_MILLIS = 1000L;
 
-    private final SimpleRedis redis;
+    private final SimpleRedis<Bucket> simpleRedis;
     private final ObjectMapper objectMapper;
 
-    public RateLimitingFilter(final SimpleRedis redis, final ObjectMapper objectMapper) {
-        this.redis = redis;
+    public RateLimitingFilter(final SimpleRedisProvider simpleRedisProvider, final ObjectMapper objectMapper) {
+        this.simpleRedis = simpleRedisProvider.select(SimpleRedisSlot.GLOBAL_RATE_LIMIT);
         this.objectMapper = objectMapper;
     }
 
@@ -58,10 +60,10 @@ public class RateLimitingFilter implements Filter {
 
         Bucket bucket;
         synchronized (this) {
-            bucket = (Bucket) redis.get(2, bucketKey);
+            bucket = simpleRedis.get(bucketKey);
             if (bucket == null) {
-                redis.put(2, bucketKey, createNewBucket(rateLimitCapacity, refillInterval));
-                bucket = (Bucket) redis.get(2, bucketKey);
+                simpleRedis.put(bucketKey, createNewBucket(rateLimitCapacity, refillInterval));
+                bucket = simpleRedis.get(bucketKey);
             }
         }
 

@@ -1,64 +1,44 @@
 package org.patinanetwork.codebloom.common.simpleredis;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.stereotype.Service;
 
 /**
- * This KeyValueStore works very similarly to a Redis database, but in memory. The first parameter of `index` is used to
- * determine a specific index to utilize, similar to `REDIS_INSTANCE/0`. Within each index you can use all the same
- * features that you may normally use, such as putting and getting.
+ * This is a KeyValueStore that works similarly to a Redis database, but in memory. The {@code value} will be typed to
+ * the specific database slot being utilized.
  *
- * <p>Databases (indices):
+ * <p>Example usage:
  *
- * <p>0 - Submission Refresh
- *
- * <p>1 - Verification Email Sending
- *
- * <p>2 - Global rate limiting
+ * <pre>{@code
+ * public Controller(final SimpleRedisProvider provider) {
+ * this.simpleRedis = provider.select(
+ * SimpleRedisSlot.VERIFICATION_EMAIL_SENDING // this selects the VERIFICATION_EMAIL_SENDING database
+ * );
+ * }
+ * }</pre>
  */
-@Service
-public class SimpleRedis {
+public class SimpleRedis<T> extends ConcurrentHashMap<String, T> {
+    private boolean shouldEvict;
 
-    private final Map<Integer, Map<String, Object>> store = new ConcurrentHashMap<>();
-
-    /** Puts a value from the hashmap at the given index. */
-    public void put(final int index, final String key, final Object value) {
-        store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).put(key, value);
+    public SimpleRedis() {
+        this(true);
     }
 
-    /** Gets a value from the hashmap at the given index. */
-    public Object get(final int index, final String key) {
-        return store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).get(key);
+    public SimpleRedis(final boolean shouldEvict) {
+        this.shouldEvict = shouldEvict;
     }
 
-    /** Removes a value from the hashmap at the given index. */
-    public void remove(final int index, final String key) {
-        store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).remove(key);
+    /**
+     * Cast object value as type of {@code SimpleRedisSlot} in database slot.
+     *
+     * @param key
+     * @return typed value
+     */
+    public T get(String key) {
+        Object value = super.get(key);
+        return (T) value;
     }
 
-    /** Checks whether a key exists at the hashmap at the given index. */
-    public boolean containsKey(final int index, final String key) {
-        return store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).containsKey(key);
-    }
-
-    /** Returns the size of the store. */
-    public int size() {
-        return store.size();
-    }
-
-    /** Returns the size of the hashmap at the given index. */
-    public int size(final int index) {
-        return store.computeIfAbsent(index, k -> new ConcurrentHashMap<>()).size();
-    }
-
-    /** Clear the hashmap at a given index. */
-    public void clearIndex(final int index) {
-        store.remove(index);
-    }
-
-    /** Clear the entire store of all it's indexes */
-    public void clearAll() {
-        store.clear();
+    protected boolean isShouldEvict() {
+        return shouldEvict;
     }
 }
