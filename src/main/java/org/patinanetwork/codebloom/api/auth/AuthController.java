@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -145,6 +146,43 @@ public class AuthController {
             response.addHeader(HttpHeaders.SET_COOKIE, strippedCookie.toString());
 
             return new RedirectView("/login?success=true&message=You have been logged out!");
+        } catch (Exception e) {
+            return new RedirectView("/login?success=false&message=You are not logged in.");
+        }
+    }
+
+    @Operation(
+            summary = "Logs user out from all sessions",
+            description =
+                    "Logs the user out from all authenticated sessions across all devices. This is a Redirect route that does redirects as responses.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "302",
+                        description =
+                                "Redirect to `/login?success=true&message=\"Successful logout message here.\"` on successful authentication.",
+                        content = @Content),
+            })
+    @GetMapping("/logout/all")
+    public RedirectView logoutAll(final HttpServletRequest request, final HttpServletResponse response) {
+        try {
+            AuthenticationObject authenticationObject = protector.validateSession(request);
+
+            String userId = authenticationObject.getUser().getId();
+
+            ArrayList<Session> allSessions = sessionRepository.getSessionsByUserId(userId);
+
+            for (Session session : allSessions) {
+                sessionRepository.deleteSessionById(session.getId());
+            }
+
+            ResponseCookie strippedCookie = ResponseCookie.from("session_token", "")
+                    .path("/")
+                    .httpOnly(true)
+                    .maxAge(0)
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, strippedCookie.toString());
+
+            return new RedirectView("/login?success=true&message=You have been logged out from all devices!");
         } catch (Exception e) {
             return new RedirectView("/login?success=false&message=You are not logged in.");
         }
