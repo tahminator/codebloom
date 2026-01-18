@@ -6,8 +6,11 @@ import {
   type App_response,
   type App_variable_definition,
 } from "@digitalocean/dots";
-import { prodSpec, stgSpec } from "../../.do/specs";
-import { getEnvVariables } from "./load-secrets";
+import { prodSpec, stgSpec } from "../../../.do/specs";
+import { getEnvVariables } from "load-secrets/env/load";
+import type { Environment } from "redeploy/types";
+import { _createAppAndgetAppId } from "redeploy/apps/create";
+import { _getAppId } from "redeploy/apps/get";
 
 const projectId = (() => {
   const v = process.env.DIGITALOCEAN_PROJECT_ID;
@@ -38,8 +41,6 @@ const environment: Environment = (() => {
   return v;
 })();
 
-type Environment = "staging" | "production";
-
 async function main() {
   console.log("start setup of do");
   const authProvider = new DigitalOceanApiKeyAuthenticationProvider(token);
@@ -69,19 +70,33 @@ async function main() {
 
   const spec = environment === "staging" ? stgSpec(envs) : prodSpec(envs);
 
-  console.log("making do call...");
+  const appId = await (async () => {
+    const v = await _getAppId(client, environment, projectId);
+
+    if (v) {
+      return v;
+    }
+
+    const v2 = await _createAppAndgetAppId(client, projectId, spec);
+    if (!v2) {
+      throw new Error(
+        "App not found and failed to create as well. Please alert Codebloom team.",
+      );
+    }
+
+    return v2;
+  })();
+
   let res: App_response | undefined;
   try {
-    res = await client.v2.apps.post({
+    res = await client.v2.apps.byApp_Id(appId).put({
       spec,
-      projectId,
+      updateAllSourceVersions: true,
     });
   } catch (e) {
     console.error(e);
     return process.exit(1);
   }
-  console.log("do call done");
-
   console.log(res?.app ?? "failed");
 
   await migrateDb(environment);
