@@ -69,6 +69,7 @@ async function main() {
 
   const spec = environment === "staging" ? stgSpec(envs) : prodSpec(envs);
 
+  console.log("making do call...");
   let res: App_response | undefined;
   try {
     res = await client.v2.apps.post({
@@ -79,8 +80,9 @@ async function main() {
     console.error(e);
     return process.exit(1);
   }
+  console.log("do call done");
 
-  console.log(res?.app ?? "undefined");
+  console.log(res?.app ?? "failed");
 
   await migrateDb(environment);
 }
