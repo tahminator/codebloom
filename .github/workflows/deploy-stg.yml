@@ -220,8 +220,8 @@ jobs:
             - name: Load secrets
               uses: ./.github/composite/load-secrets
               with:
-                GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
                 UNLOAD_ENVIRONMENTS: ci
 
             - name: Validate DB Schema
