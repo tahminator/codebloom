@@ -72,7 +72,7 @@ export function prodSpec(envs: App_variable_definition[]): App_spec {
 export function stgSpec(envs: App_variable_definition[]): App_spec {
   return {
     ...DIGITALOCEAN_BASE_SPEC,
-    name: "codebloom-stg",
+    name: "codebloom-staging",
     services: [
       {
         ...DIGITALOCEAN_BASE_SERVICE,
@@ -81,6 +81,12 @@ export function stgSpec(envs: App_variable_definition[]): App_spec {
           tag: "staging-latest",
         },
         envs,
+      },
+    ],
+    domains: [
+      {
+        domain: "stg.codebloom.patinanetwork.org",
+        type: "DEFAULT",
       },
     ],
   };
