@@ -222,7 +222,7 @@ jobs:
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci
+                UNLOAD_ENVIRONMENTS: staging
 
             - name: Validate DB Schema
               run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
