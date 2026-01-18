@@ -86,7 +86,7 @@ export function stgSpec(envs: App_variable_definition[]): App_spec {
     domains: [
       {
         domain: "stg.codebloom.patinanetwork.org",
-        type: "DEFAULT",
+        type: "PRIMARY",
       },
     ],
   };
