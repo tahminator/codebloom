@@ -76,7 +76,7 @@ async function main() {
               --cache-to=type=gha,mode=max \
               ${viteStagingArg} \
               ${tagArgs} \
-              .`.quiet();
+              .`;
 
     console.log("Image pushed successfully.");
   } finally {
