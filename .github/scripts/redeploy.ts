@@ -48,7 +48,9 @@ async function main() {
   console.log("step of do created");
 
   console.log("env load pls");
-  await $`git-crypt unlock`;
+
+  // should already be called
+  // await $`git-crypt unlock`;
   const loaded = await getEnvVariables([environment]);
   console.log("env load done");
 
