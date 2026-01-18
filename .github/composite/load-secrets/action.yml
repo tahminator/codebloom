@@ -39,6 +39,6 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/load-secrets.ts
+      run: bun .github/scripts/load-secrets
       env:
         UNLOAD_ENVIRONMENTS: ${{ inputs.UNLOAD_ENVIRONMENTS }}
