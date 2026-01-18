@@ -41,12 +41,16 @@ const environment: Environment = (() => {
 type Environment = "staging" | "production";
 
 async function main() {
+  console.log("start setup of do");
   const authProvider = new DigitalOceanApiKeyAuthenticationProvider(token);
   const adapter = new FetchRequestAdapter(authProvider);
   const client = createDigitalOceanClient(adapter);
+  console.log("step of do created");
 
+  console.log("env load pls");
   await $`git-crypt unlock`;
   const loaded = await getEnvVariables([environment]);
+  console.log("env load done");
 
   const envs: App_variable_definition[] = loaded
     .entries()
