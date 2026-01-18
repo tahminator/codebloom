@@ -23,41 +23,7 @@ async function main() {
     .map((e) => e.trim())
     .filter(Boolean);
 
-  const loaded = new Map<string, string>();
-
-  for (const env of envs) {
-    const envFile = Bun.file(`.env.${env}`);
-    if (await envFile.exists()) {
-      console.log(`Loading ${envFile.name}`);
-
-      const content = await envFile.text();
-      const lines = content.split("\n").filter((s) => s.length > 0);
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith("#")) continue;
-
-        const match = trimmed.split("=").filter((s) => s.length > 0);
-        if (match.length === 2) {
-          const [key, value] = match;
-          const cleanKey = key.trim();
-          let cleanValue = value.trim();
-          if (
-            (cleanValue.startsWith('"') && cleanValue.endsWith('"')) ||
-            (cleanValue.startsWith("'") && cleanValue.endsWith("'"))
-          ) {
-            cleanValue = cleanValue.slice(1, -1);
-          }
-
-          if (!loaded.has(cleanKey)) {
-            loaded.set(cleanKey, cleanValue);
-          }
-        }
-      }
-    } else {
-      console.log(`Warning: ${envFile} not found`);
-    }
-  }
+  const loaded = await getEnvVariables(envs, false);
 
   const githubEnv = process.env.GITHUB_ENV;
   if (!githubEnv) {
@@ -84,6 +50,56 @@ async function main() {
   }
 
   githubEnvFileWriter.flush();
+}
+
+export async function getEnvVariables(
+  environments: string[],
+  mask = true,
+): Promise<Map<string, string>> {
+  const loaded = new Map<string, string>();
+
+  for (const env of environments) {
+    const envFile = Bun.file(`.env.${env}`);
+    if (await envFile.exists()) {
+      console.log(`Loading ${envFile.name}`);
+
+      const content = await envFile.text();
+      const lines = content.split("\n").filter((s) => s.length > 0);
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#")) continue;
+
+        const match = trimmed.split("=").filter((s) => s.length > 0);
+        if (match.length === 2) {
+          const [key, value] = match as [string, string];
+          const cleanKey = key.trim();
+          let cleanValue = value.trim();
+          if (
+            (cleanValue.startsWith('"') && cleanValue.endsWith('"')) ||
+            (cleanValue.startsWith("'") && cleanValue.endsWith("'"))
+          ) {
+            cleanValue = cleanValue.slice(1, -1);
+          }
+
+          if (!loaded.has(cleanKey)) {
+            loaded.set(cleanKey, cleanValue);
+          }
+        }
+      }
+    } else {
+      console.log(`Warning: ${envFile} not found`);
+    }
+  }
+
+  if (mask) {
+    for (const [varName, value] of loaded.entries()) {
+      console.log(`Masking ${varName}`);
+      console.log(`::add-mask::${value}`);
+    }
+  }
+
+  return loaded;
 }
 
 main()
