@@ -56,7 +56,7 @@ runs:
       with:
         GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
         GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
-        UNLOAD_ENVIRONMENTS: ci,staging
+        UNLOAD_ENVIRONMENTS: ci
 
     - name: Expose GitHub Runtime
       uses: crazy-max/ghaction-github-runtime@v3
@@ -86,3 +86,5 @@ runs:
         DOCKER_UPLOAD: ${{ inputs.DOCKER_UPLOAD }}
         TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
         SERVER_PROFILES: ${{ inputs.SERVER_PROFILES }}
+        DIGITALOCEAN_PROJECT_ID: ${{ if(inputs.ENVIRONMENT == 'staging', env.STG_DIGITALOCEAN_PROJECT_ID, env.PROD_DIGITALOCEAN_PROJECT_ID) }}
+        DIGITALOCEAN_PAT: ${{ if(inputs.ENVIRONMENT == 'staging', env.STG_DIGITALOCEAN_PAT, env.PROD_DIGITALOCEAN_PAT) }}
