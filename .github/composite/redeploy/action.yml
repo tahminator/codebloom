@@ -63,7 +63,7 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/redeploy.ts
+      run: bun .github/scripts/redeploy
       env:
         DOCKER_UPLOAD: ${{ inputs.DOCKER_UPLOAD }}
         TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
