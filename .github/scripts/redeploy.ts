@@ -74,7 +74,7 @@ async function main() {
     return process.exit(1);
   }
 
-  console.log(res?.app?.projectId);
+  console.log(res?.app ?? "undefined");
 
   await migrateDb(environment);
 }
