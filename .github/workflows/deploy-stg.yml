@@ -139,7 +139,7 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Run backend pre test
+            - name: Run workflow
               uses: ./.github/composite/test/backend-pre-test
 
     backendTests:
@@ -154,36 +154,11 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/test/backend-test
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
-
-            - name: Run script
-              run: bash .github/scripts/run-backend-tests.sh
 
     frontendTests:
         name: Frontend Tests
@@ -197,40 +172,11 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Fix a bug with corepack by installing corepack globally
-              run: npm i -g corepack@latest
-              working-directory: js
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/test/frontend-test
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
-
-            - name: Run script
-              run: bash .github/scripts/run-frontend-tests.sh
 
     validateDBSchema:
         name: Validate DB Schema on Staging DB
@@ -290,37 +236,13 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/build-image
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
-
-            - name: Expose GitHub Runtime
-              uses: crazy-max/ghaction-github-runtime@v3
-
-            - name: Run script
-              run: bash .github/scripts/build-image.sh
-              env:
-                  TAG_PREFIX: staging-
-                  SERVER_PROFILES: stg
+                TAG_PREFIX: staging-
+                SERVER_PROFILES: stg
 
     redeploy:
         name: Redeploy on DigitalOcean
@@ -334,100 +256,12 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/build-image
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,staging
-
-            - name: Install doctl
-              uses: digitalocean/action-doctl@v2
-              with:
-                token: ${{ env.DIGITAL_OCEAN_PAT }}
-
-            - name: Check for DB changes
-              id: db-changes
-              run: |
-                git fetch origin main:main
-                if git diff --name-only main...${{ needs.getPRHead.outputs.sha }} | grep -q '^db/'; then
-                  echo "changed=true" >> $GITHUB_OUTPUT
-                  echo "DB changes detected"
-                else
-                  echo "changed=false" >> $GITHUB_OUTPUT
-                  echo "No DB changes detected"
-                fi
-
-            - name: Migrate Staging DB
-              if: steps.db-changes.outputs.changed == 'true'
-              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
-
-            - name: Transform App Spec with secrets
-              run: bash .github/scripts/transform-yaml-with-env.sh .do/stg/app.yml .env.staging
-
-            - name: Update App Spec on DigitalOcean
-              run: |
-                OUTPUT=$(doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/stg/app.yml --update-sources --output json)
-
-                DEPLOYMENT_ID=$(echo "$OUTPUT" | jq -r '.[0].pending_deployment.id // .[0].in_progress_deployment.id // .[0].active_deployment.id // empty' | head -n 1)
-
-                if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" == "null" ]; then
-                    echo "Failed to extract deployment ID from app update response"
-                    exit 1
-                fi
-
-                echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
-
-            - name: Poll Deployment Status
-              run: |
-
-                  if [ -z "$DEPLOYMENT_ID" ]; then
-                       echo "Deployment ID is empty."
-                       exit 1
-                  fi
-
-                  echo "Waiting for deployment to be promoted."
-
-                  for i in {1..60}; do
-                      RESPONSE=$(curl -s -X GET \
-                          -H "Content-Type: application/json" \
-                          -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
-                          "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
-
-                      PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
-
-                      echo "Deployment phase: $PHASE"
-
-                      if [ "$PHASE" == "ACTIVE" ]; then
-                          echo "Deployment is active."
-                          exit 0
-                      elif [ "$PHASE" == "SUPERSEDED" ] || [ "$PHASE" == "ERROR" ] || [ "$PHASE" == "CANCELED" ]; then
-                          echo "Deployment failed with phase: $PHASE"
-                          exit 1
-                      fi
-
-                      echo "Waiting for deployment to complete, sleep 10... ($i/60)"
-                      sleep 10
-                  done
-
-                  echo "Deployment did not reach a valid state within 10 minutes."
-                  exit 1
+                ENVIRONMENT: staging
 
     notifyStatus:
         name: Notify on deployment status
