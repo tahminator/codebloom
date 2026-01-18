@@ -257,7 +257,7 @@ jobs:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
             - name: Run workflow
-              uses: ./.github/composite/build-image
+              uses: ./.github/composite/redeploy
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
