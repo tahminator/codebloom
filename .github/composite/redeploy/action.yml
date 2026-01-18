@@ -88,4 +88,4 @@ runs:
         TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
         SERVER_PROFILES: ${{ inputs.SERVER_PROFILES }}
         DIGITALOCEAN_PROJECT_ID: ${{ inputs.ENVIRONMENT == 'staging' && env.STG_DIGITAL_OCEAN_PROJECT_ID || env.PROD_DIGITAL_OCEAN_PROJECT_ID }}
-        DIGITALOCEAN_PAT: ${{ inputs.ENVIRONMENT == 'staging' && env.STG_DIGITAL_OCEAN_PAT || env.PROD_DIGITAL_OCEAN_PAT
+        DIGITALOCEAN_PAT: ${{ inputs.ENVIRONMENT == 'staging' && env.STG_DIGITAL_OCEAN_PAT || env.PROD_DIGITAL_OCEAN_PAT }}
