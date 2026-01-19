@@ -31,7 +31,8 @@ const notionDbId = (() => {
 })();
 
 async function main() {
-  const _ = checkNotionPrAndGetTask(notionSecret, prId, notionDbId);
+  const task = await checkNotionPrAndGetTask(notionSecret, prId, notionDbId);
+  console.log(task.taskContent);
 }
 
 main()
