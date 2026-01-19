@@ -1,4 +1,5 @@
-import { $ } from "bun";
+import type { Environment } from "redeploy/types";
+
 import {
   createDigitalOceanClient,
   DigitalOceanApiKeyAuthenticationProvider,
@@ -6,12 +7,12 @@ import {
   type App_response,
   type App_variable_definition,
 } from "@digitalocean/dots";
-import { prodSpec, stgSpec } from "../../../.do/specs";
 import { getEnvVariables } from "load-secrets/env/load";
-import type { Environment } from "redeploy/types";
 import { _createAppAndgetAppId } from "redeploy/apps/create";
 import { _getAppId } from "redeploy/apps/get";
 import { _migrateDb } from "redeploy/db";
+
+import { prodSpec, stgSpec } from "../../../.do/specs";
 
 const projectId = (() => {
   const v = process.env.DIGITALOCEAN_PROJECT_ID;
