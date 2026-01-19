@@ -22,7 +22,7 @@ runs:
   steps:
     - name: Run script
       shell: bash
-      run: bun .github/scripts/send-message/gha
+      run: bun .github/scripts/utils/send-message/gha
       env:
         PR_ID: ${{ inputs.prId }}
         MESSAGE: ${{ inputs.message }}
