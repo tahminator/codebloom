@@ -1,3 +1,0 @@
-CREATE TABLE IF NOT EXISTS "FakeTable" (
-    id UUID PRIMARY KEY
-)
