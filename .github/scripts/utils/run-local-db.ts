@@ -42,17 +42,21 @@ async function start() {
       process.exit(1);
     }
 
-    process.env.DATABASE_HOST = "localhost";
-    process.env.DATABASE_PORT = "5440";
-    process.env.DATABASE_NAME = "codebloom";
-    process.env.DATABASE_USER = "postgres";
-    process.env.DATABASE_PASSWORD = "postgres";
+    const env = {
+      DATABASE_HOST: "localhost",
+      DATABASE_PORT: "5440",
+      DATABASE_NAME: "codebloom",
+      DATABASE_USER: "postgres",
+      DATABASE_PASSWORD: "postgres",
+    };
 
     console.log("postres started, running migrations...");
 
-    await $`./mvnw flyway:migrate -Dflyway.locations=filesystem:./db`;
+    await $.env(env)`./mvnw flyway:migrate -Dflyway.locations=filesystem:./db`;
 
     console.log("postgres ready");
+
+    return env;
   } catch (e) {
     console.error(e);
     end();
