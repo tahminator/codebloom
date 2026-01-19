@@ -17,7 +17,7 @@ async function uploadToCodecov(token: string, dir: string) {
     }
   } catch {
     console.log("Codecov not installed, installing now...");
-    await $`curl -Os https://cli.codecov.io/latest/macos/codecov`;
+    await $`curl -Os https://cli.codecov.io/latest/linux/codecov`;
     await $`chmod +x codecov`;
   }
 
