@@ -1,22 +1,16 @@
+import type { App_spec } from "@digitalocean/dots";
 import type { DigitalOceanClient } from "@digitalocean/dots/src/dots/digitalOceanClient";
-import type { Environment } from "redeploy/types";
 
 export async function _getAppId(
   client: DigitalOceanClient,
-  environment: Environment,
   projectId: string,
+  spec: App_spec,
 ): Promise<string | null> {
-  const appName = (() => {
-    if (environment === "staging") {
-      return "codebloom-staging";
-    }
+  const appName = spec.name;
 
-    if (environment === "production") {
-      return "codebloom-prod";
-    }
-
-    throw new Error("This environment is not currently supported");
-  })();
+  if (!appName) {
+    throw new Error("App spec name missing, can't find app");
+  }
 
   const res = await client.v2.apps.get({
     queryParameters: {

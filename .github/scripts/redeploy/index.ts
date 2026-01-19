@@ -68,7 +68,7 @@ async function main() {
   const spec = environment === "staging" ? stgSpec(envs) : prodSpec(envs);
 
   const appId = await (async () => {
-    const v = await _getAppId(client, environment, projectId);
+    const v = await _getAppId(client, projectId, spec);
 
     if (v) {
       return v;
