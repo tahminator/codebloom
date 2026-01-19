@@ -71,20 +71,29 @@ jobs:
       - name: Post /review command
         uses: ./.github/composite/send-message
         with:
-          prId: ${{ github.event.client_payload.slash_command.args.named.prId }}
+          prId: ${{
+            (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId)
+            || github.event.inputs.prId
+            }}
           message: "/review"
           token: ${{ env.GH_PAT }}
 
       - name: Post /describe command
         uses: ./.github/composite/send-message
         with:
-          prId: ${{ github.event.client_payload.slash_command.args.named.prId }}
+          prId: ${{
+            (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId)
+            || github.event.inputs.prId
+            }}
           message: "/describe"
           token: ${{ env.GH_PAT }}
 
       - name: Post /improve command
         uses: ./.github/composite/send-message
         with:
-          prId: ${{ github.event.client_payload.slash_command.args.named.prId }}
+          prId: ${{
+            (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId)
+            || github.event.inputs.prId
+            }}
           message: "/improve"
           token: ${{ env.GH_PAT }}
