@@ -9,7 +9,11 @@ async function main() {
     const localDbEnv = await db.start();
     await backend.start(env);
 
-    const $$ = $.env({ ...Object.fromEntries(env), ...localDbEnv });
+    const $$ = $.env({
+      ...process.env,
+      ...Object.fromEntries(env),
+      ...localDbEnv,
+    });
 
     await $`corepack enable pnpm`;
     await $`pnpm --dir js i --frozen-lockfile`;

@@ -33,7 +33,7 @@ async function main() {
   // should already be called
   // await $`git-crypt unlock`;
 
-  const { token, projectId } = parseCiEnv(await getEnvVariables([".env.ci"]));
+  const { token, projectId } = parseCiEnv(await getEnvVariables(["ci"]));
   const appEnv = await getEnvVariables([environment]);
 
   await _migrateDb({
