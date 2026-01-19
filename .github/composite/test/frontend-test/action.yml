@@ -15,8 +15,8 @@ runs:
     - name: Setup CI
       uses: ./.github/composite/setup-ci
       with:
-        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
 
     - name: Set up pnpm
       uses: pnpm/action-setup@master
@@ -35,4 +35,4 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/run-frontend-tests.ts
+      run: bun .github/scripts/test/run-frontend-tests

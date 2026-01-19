@@ -37,7 +37,7 @@ jobs:
                 repo: context.repo.repo,
                 pull_number: parseInt(prId, 10)
             });
-              return pr.head.sha;
+            return pr.head.sha;
 
   aiCodeReview:
     name: Run AI Code Review on the PR
@@ -50,30 +50,12 @@ jobs:
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
 
-      - name: Load secrets
-        uses: ./.github/composite/load-secrets
+      - name: Setup composite workflow
+        uses: ./.github/composite/notion-checks
         with:
+          PR_ID: ${{ needs.getPRHead.outputs.sha }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          UNLOAD_ENVIRONMENTS: ci
-
-      - name: Run 'Check Notion PR' composite action
-        uses: ./.github/composite/check-notion-pr
-        id: notion_check
-        with:
-          PR_ID: ${{ needs.getPRHead.outputs.prId }}
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Echo Notion context
-        run: |
-          echo "Context: ${{ steps.notion_check.outputs.context }}"
-
-      - name: Run 'Check Notion Commits' composite action
-        uses: ./.github/composite/check-notion-commits
-        with:
-          PR_ID: ${{ needs.getPRHead.outputs.prId }}
-          NOTION_ID: ${{ steps.notion_check.outputs.notion_id }}
 
       - name: Qodo PR-Agent
         uses: qodo-ai/pr-agent@main
