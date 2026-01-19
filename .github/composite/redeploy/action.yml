@@ -12,6 +12,9 @@ inputs:
     description: '"staging" or "production"'
     required: false
     default: production
+  SHA:
+    description: "(Staging only). Current commit SHA"
+    required: false
 
 runs:
   using: "composite"
@@ -69,3 +72,4 @@ runs:
         TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
         SERVER_PROFILES: ${{ inputs.SERVER_PROFILES }}
         ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+        SHA: ${{ inputs.SHA }}
