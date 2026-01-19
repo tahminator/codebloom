@@ -53,7 +53,7 @@ jobs:
       - name: Setup composite workflow
         uses: ./.github/composite/notion-checks
         with:
-          PR_ID: ${{ needs.getPRHead.outputs.sha }}
+          PR_ID: ${{ github.event.number ||  github.event.issue.number }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
