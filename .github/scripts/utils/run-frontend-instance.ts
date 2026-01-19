@@ -1,5 +1,5 @@
 import { $ } from "bun";
-import { brightGreen, pink } from "utils/colors";
+import { pink } from "utils/colors";
 
 let fe: Bun.Subprocess<"ignore", Bun.BunFile, "inherit"> | undefined;
 
