@@ -2,10 +2,10 @@ import { checkNotionPrAndGetTask } from "notion/pr";
 
 export * from "./pr";
 
-const notionPat = (() => {
-  const v = process.env.NOTION_PAT;
+const notionSecret = (() => {
+  const v = process.env.NOTION_SECRET;
   if (!v) {
-    throw new Error("NOTION_PAT is required");
+    throw new Error("NOTION_SECRET is required");
   }
   return v;
 })();
@@ -31,7 +31,7 @@ const notionDbId = (() => {
 })();
 
 async function main() {
-  const _ = checkNotionPrAndGetTask(notionPat, prId, notionDbId);
+  const _ = checkNotionPrAndGetTask(notionSecret, prId, notionDbId);
 }
 
 main()
