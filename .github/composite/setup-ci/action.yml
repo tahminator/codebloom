@@ -19,10 +19,15 @@ runs:
       shell: bash
       if: inputs.GH_TOKEN != ''
       run: echo "GH_TOKEN=${{ inputs.GH_TOKEN }}" >> $GITHUB_ENV
+
     - name: Export GitHub Token (default)
       shell: bash
       if: inputs.GH_TOKEN == ''
       run: echo "GH_TOKEN=${{ github.token }}" >> $GITHUB_ENV
+
+    - name: Verify Token Length
+      run: echo "GH_TOKEN length is ${#GH_TOKEN}"
+
     - name: Disable man-db
       shell: bash
       run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
