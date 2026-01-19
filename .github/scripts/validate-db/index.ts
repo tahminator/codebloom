@@ -21,7 +21,9 @@ const environment: Environment = (() => {
 export async function main() {
   // make sure you checkout the repo first.
 
-  const appEnv = await getEnvVariables([environment]);
+  const appEnv = await getEnvVariables([
+    environment === "staging" ? "staging" : "production-ro",
+  ]);
 
   const onlyCheckPendingMigrationFlag =
     environment === "staging" ?
