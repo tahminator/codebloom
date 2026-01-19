@@ -45,7 +45,7 @@ export async function getEnvVariables(
         }
       }
     } else {
-      console.log(`Warning: ${envFile} not found`);
+      console.warn(`Warning: ${envFile} not found`);
     }
   }
 
