@@ -16,6 +16,12 @@ async function main() {
     const localDbEnv = await db.start();
     const ciAppEnv = await getEnvVariables(["ci-app"]);
 
+    console.log({
+      ...process.env,
+      ...Object.fromEntries(ciAppEnv),
+      ...localDbEnv,
+    });
+
     const $$ = $.env({
       ...process.env,
       ...Object.fromEntries(ciAppEnv),
