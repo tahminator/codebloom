@@ -1,5 +1,5 @@
 name: "Validate DB"
-description: "Validate DB against "
+description: "Validate the current db/ folder at a current commit against a database"
 
 inputs:
   GPG_PRIVATE_KEY:
@@ -8,6 +8,14 @@ inputs:
   GPG_PASSPHRASE:
     description: "GPG Passphrase"
     required: true
+  ENVIRONMENT:
+    description: '"staging" or "production"'
+    required: false
+    default: production
+  SHA:
+    description: "Current commit SHA"
+    required: false
+    default: ${{ github.sha }}
 
 runs:
   using: "composite"
