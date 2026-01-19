@@ -8,7 +8,7 @@ export async function _migrateDb({
   sha,
 }: {
   environment: Environment;
-  env: Map<string, string>;
+  env: Record<string, string>;
   sha?: string;
 }): Promise<void> {
   await $`git fetch origin main:main`;
@@ -25,6 +25,6 @@ export async function _migrateDb({
   }
 
   await $.env(
-    Object.fromEntries(env),
+    env,
   )`./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration`;
 }

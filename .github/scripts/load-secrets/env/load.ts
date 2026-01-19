@@ -14,7 +14,7 @@ let isGitCryptUnlocked = false;
 export async function getEnvVariables(
   environments: string[],
   mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING = true,
-): Promise<Map<string, string>> {
+): Promise<Record<string, string>> {
   if (!isGitCryptUnlocked) {
     await $`git-crypt unlock`;
     isGitCryptUnlocked = true;
@@ -68,5 +68,5 @@ export async function getEnvVariables(
     }
   }
 
-  return loaded;
+  return Object.fromEntries(loaded);
 }

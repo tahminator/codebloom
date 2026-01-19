@@ -50,9 +50,9 @@ async function main() {
   });
 }
 
-function parseCiEnv(ciEnv: Map<string, string>) {
+function parseCiEnv(ciEnv: Record<string, string>) {
   const token = (() => {
-    const v = ciEnv.get("DIGITALOCEAN_PAT");
+    const v = ciEnv["DIGITALOCEAN_PAT"];
     if (!v) {
       throw new Error("Missing DIGITALOCEAN_PAT from .env.ci");
     }
@@ -60,7 +60,7 @@ function parseCiEnv(ciEnv: Map<string, string>) {
   })();
 
   const projectId = (() => {
-    const v = ciEnv.get("DIGITALOCEAN_PROJECT_ID");
+    const v = ciEnv["DIGITALOCEAN_PROJECT_ID"];
     if (!v) {
       throw new Error("Missing DIGITALOCEAN_PROJECT_ID from .env.ci");
     }

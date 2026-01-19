@@ -4,7 +4,7 @@ import { cyan } from "@/../utils/colors";
 
 let be: Bun.Subprocess<"ignore", Bun.BunFile, "inherit"> | undefined;
 
-async function start(env: Map<string, string>) {
+async function start(env: Record<string, string>) {
   try {
     console.log("Starting backend instance...");
 
@@ -16,7 +16,7 @@ async function start(env: Map<string, string>) {
     be = Bun.spawn(
       ["./mvnw", "-Dspring-boot.run.profiles=ci", "spring-boot:run"],
       {
-        env: { ...process.env, ...Object.fromEntries(env) },
+        env: { ...process.env, ...env },
         stdout: logFile,
       },
     );

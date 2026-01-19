@@ -32,7 +32,7 @@ async function start() {
         break;
       }
 
-      console.log(`Waiting for backend... (${i}/${attempts})`);
+      console.log(`Waiting for postgres... (${i}/${attempts})`);
       await Bun.sleep(2000);
     }
 
