@@ -16,7 +16,7 @@ async function start(env: Map<string, string>) {
     be = Bun.spawn(
       ["./mvnw", "-Dspring-boot.run.profiles=ci", "spring-boot:run"],
       {
-        env: Object.fromEntries(env),
+        env: { ...process.env, ...Object.fromEntries(env) },
         stdout: logFile,
       },
     );
