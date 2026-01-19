@@ -46,3 +46,4 @@ runs:
       run: bun .github/scripts/notion
       env:
         PR_ID: ${{ inputs.PR_ID }}
+        GH_TOKEN: ${{ github.token }}
