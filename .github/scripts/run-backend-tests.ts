@@ -1,5 +1,5 @@
 import { $ } from "bun";
-import { db } from "./fn/run-local-db";
+import { db } from "utils/run-local-db";
 
 async function main() {
   try {

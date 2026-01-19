@@ -45,7 +45,7 @@ export default function AboutUs() {
             size={"xl"}
             m={"md"}
           >
-            Celebrating CodeBloom's 1 Year Anniversary! 🎉
+            Greetings from Bun Shell!
           </Badge>
           <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with

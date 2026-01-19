@@ -1,6 +1,5 @@
 import type { App_spec } from "@digitalocean/dots";
 import type { DigitalOceanClient } from "@digitalocean/dots/src/dots/digitalOceanClient";
-import type { Environment } from "redeploy/types";
 
 export async function _createAppAndgetAppId(
   client: DigitalOceanClient,
