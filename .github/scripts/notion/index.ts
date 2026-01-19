@@ -18,7 +18,7 @@ const prId = (() => {
 
 async function main() {
   const { notionDbId, notionSecret } = parseCiEnv(
-    await getEnvVariables([".env.ci"]),
+    await getEnvVariables(["ci"]),
   );
 
   const { taskId, taskContent } = await checkNotionPrAndGetTask(
