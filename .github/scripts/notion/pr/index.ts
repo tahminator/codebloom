@@ -42,8 +42,6 @@ export async function checkNotionPrAndGetTask(
     process.exit(1);
   }
 
-  console.log(task);
-
   const blocks = await _fetchBlocks(client, task.id);
 
   return {
