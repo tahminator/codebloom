@@ -3,8 +3,8 @@ description: "Run backend linter & formatter checks + attempt to compile (NO TES
 runs:
   using: "composite"
   steps:
-    - name: Disable man-db
-      uses: ./.github/composite/disable-mandb
+    - name: Setup CI
+      uses: ./.github/composite/setup-ci
 
     - name: Set up OpenJDK 25
       uses: actions/setup-java@v4
@@ -19,22 +19,6 @@ runs:
         java -version
         javac -version
         echo "JAVA_HOME=$JAVA_HOME"
-
-    - uses: oven-sh/setup-bun@v2
-      with:
-        bun-version: latest
-
-    - name: Cache Bun dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.bun/install/cache
-        key: ${{ runner.os }}-bun-${{ hashFiles('.github/scripts/bun.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-bun-
-
-    - name: Install deps
-      shell: bash
-      run: bun install --cwd .github/scripts --frozen-lockfile
 
     - name: Run script
       shell: bash
