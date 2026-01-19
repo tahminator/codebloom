@@ -32,11 +32,15 @@ const notionDbId = (() => {
 })();
 
 async function main() {
-  const task = await checkNotionPrAndGetTask(notionSecret, prId, notionDbId);
+  const { taskId, taskContent } = await checkNotionPrAndGetTask(
+    notionSecret,
+    prId,
+    notionDbId,
+  );
 
-  console.log(task.taskContent);
+  console.log(taskContent);
 
-  await _checkCommits(prId);
+  await _checkCommits(taskId);
 }
 
 main()

@@ -49,5 +49,6 @@ export async function checkNotionPrAndGetTask(
   return {
     task,
     taskContent: blocks.join("\n"),
+    taskId: ticketNum,
   };
 }
