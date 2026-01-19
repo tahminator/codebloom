@@ -31,4 +31,6 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/run-backend-tests
+      run: bun .github/scripts/validate-db
+      env:
+        ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
