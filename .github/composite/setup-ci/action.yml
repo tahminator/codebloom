@@ -26,6 +26,7 @@ runs:
       run: echo "GH_TOKEN=${{ github.token }}" >> $GITHUB_ENV
 
     - name: Verify Token Length
+      shell: bash
       run: echo "GH_TOKEN length is ${#GH_TOKEN}"
 
     - name: Disable man-db
