@@ -34,6 +34,12 @@ jobs:
               with:
                 ref: ${{ steps.pr-head.outputs.result }}
 
+            - name: Setup CI
+              uses: ./.github/composite/setup-ci
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
             - name: Load secrets
               uses: ./.github/composite/load-secrets
               with:
