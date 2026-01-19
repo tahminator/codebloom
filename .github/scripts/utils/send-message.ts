@@ -2,7 +2,7 @@ import { Octokit } from "@octokit/rest";
 import { RequestError } from "octokit";
 
 const githubToken = (() => {
-  const v = process.env.GITHUB_TOKEN;
+  const v = process.env.GH_TOKEN;
   return v;
 })();
 
