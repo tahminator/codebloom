@@ -2,9 +2,6 @@ name: "Setup CI"
 description: "Setup dependencies required to run CI (disable man-db)"
 
 inputs:
-  GH_TOKEN:
-    description: "GitHub token for sending messages. Set this to secrets.GITHUB_TOKEN for default logic."
-    required: false
   GPG_PASSPHRASE:
     description: "GPG passphrase if secrets will be used."
     required: false
@@ -17,12 +14,6 @@ runs:
   steps:
     - name: Export GitHub Token
       shell: bash
-      if: inputs.GH_TOKEN != ''
-      run: echo "GH_TOKEN=${{ inputs.GH_TOKEN }}" >> $GITHUB_ENV
-
-    - name: Export GitHub Token (default)
-      shell: bash
-      if: inputs.GH_TOKEN == ''
       run: echo "GH_TOKEN=${{ github.token }}" >> $GITHUB_ENV
 
     - name: Verify Token Length
