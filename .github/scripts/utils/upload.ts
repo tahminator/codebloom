@@ -10,9 +10,8 @@ export async function uploadBackendTests(token: string) {
 }
 
 async function uploadToCodecov(token: string, dir: string) {
-  try {
-    await $`./codecov --help`;
-  } catch {
+  const { exitCode } = await $`./codecov --help`.nothrow();
+  if (exitCode != 0) {
     await $`curl -Os https://cli.codecov.io/latest/linux/codecov`;
     await $`sudo chmod +x codecov`;
     await $`./codecov --help`;
@@ -38,8 +37,6 @@ async function uploadToCodecov(token: string, dir: string) {
 // can only run in github actions.
 async function uploadArtifact(dir: string, artifactName: string) {
   const client = new DefaultArtifactClient();
-
-  console.log("rootDir", process.cwd());
 
   const { id, size } = await client.uploadArtifact(
     artifactName,
