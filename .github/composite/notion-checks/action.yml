@@ -44,3 +44,5 @@ runs:
     - name: Run script
       shell: bash
       run: bun .github/scripts/notion
+      env:
+        PR_ID: ${{ inputs.PR_ID }}
