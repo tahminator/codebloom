@@ -20,7 +20,6 @@ export async function sendMessage(
   token?: string,
 ) {
   try {
-    console.log(owner, repo);
     if (!token && !githubToken) {
       throw new Error("Some token should be set");
     }
@@ -37,13 +36,13 @@ export async function sendMessage(
         body: message,
       });
     } catch (e) {
-      let d: string;
+      let s: string;
       if (e instanceof RequestError) {
-        d = JSON.stringify(e.response?.data);
+        s = JSON.stringify(e.response?.data);
       } else {
-        d = String(e);
+        s = String(e);
       }
-      throw new Error(`GitHub API Error\n\n${d}`);
+      throw new Error(`GitHub API Error\n\n${s}`);
     }
   } catch (e) {
     console.error("Failed to post GitHub error message\n", e);

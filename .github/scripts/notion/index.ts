@@ -16,6 +16,9 @@ const prId = (() => {
   return n;
 })();
 
+const getGhaOutput = process.env.GET_GHA_OUTPUT === "true";
+const githubOutputFile = process.env.GITHUB_OUTPUT;
+
 async function main() {
   const { notionDbId, notionSecret } = parseCiEnv(
     await getEnvVariables(["ci"]),
@@ -28,6 +31,13 @@ async function main() {
   );
 
   console.log(taskContent);
+
+  if (getGhaOutput && githubOutputFile) {
+    const w = Bun.file(githubOutputFile).writer();
+    await w.write(`context<<EOF\n${taskContent}\nEOF\n`);
+    await w.flush();
+    await w.end();
+  }
 
   await _checkCommits(taskId, prId);
 }

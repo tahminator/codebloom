@@ -16,7 +16,7 @@ const excludedVars = [
 ];
 
 /**
- * @deprecated this is no longer usable.
+ * @deprecated this is no longer a supported flow.
  */
 async function main() {
   const envs = unloadEnvironments

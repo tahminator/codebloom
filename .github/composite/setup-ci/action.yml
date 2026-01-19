@@ -8,13 +8,17 @@ inputs:
   GPG_PRIVATE_KEY:
     description: "GPG private key if secrets will be used."
     required: false
+  GITHUB_TOKEN:
+    description: "GitHub token used to send message"
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: "composite"
   steps:
     - name: Export GitHub Token
       shell: bash
-      run: echo "GH_TOKEN=${{ github.token }}" >> $GITHUB_ENV
+      run: echo "GH_TOKEN=${{ inputs.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
     - name: Disable man-db
       shell: bash

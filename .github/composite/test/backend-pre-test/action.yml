@@ -15,4 +15,4 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/run-backend-compile-tests.ts
+      run: bun .github/scripts/test/run-backend-compile-tests

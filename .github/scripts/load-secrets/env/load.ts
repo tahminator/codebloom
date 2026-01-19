@@ -58,6 +58,11 @@ export async function getEnvVariables(
 
   if (mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING) {
     for (const [varName, value] of loaded.entries()) {
+      if (value === "true" || value === "false" || value === "") {
+        console.log(`Not masking ${varName}: true/false/empty value`);
+        continue;
+      }
+
       console.log(`Masking ${varName}`);
       console.log(`::add-mask::${value}`);
     }

@@ -49,7 +49,7 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/build-image.ts
+      run: bun .github/scripts/build-image
       env:
         DOCKER_UPLOAD: ${{ inputs.DOCKER_UPLOAD }}
         TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
