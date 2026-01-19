@@ -1,6 +1,6 @@
 import { $ } from "bun";
-import { db } from "./fn/run-local-db";
-import { backend } from "./fn/run-backend-instance";
+import { backend } from "utils/run-backend-instance";
+import { db } from "utils/run-local-db";
 
 process.env.TZ = "America/New_York";
 
