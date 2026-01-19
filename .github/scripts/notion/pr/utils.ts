@@ -1,8 +1,9 @@
-import type { Client } from "@notionhq/client";
 import type {
   BlockObjectResponse,
   RichTextItemResponse,
 } from "@notionhq/client/build/src/api-endpoints";
+
+import { isFullBlock, type Client } from "@notionhq/client";
 
 export async function _fetchBlocks(
   client: Client,
@@ -16,21 +17,16 @@ export async function _fetchBlocks(
   const lines: string[] = [];
 
   for (const block of response.results) {
-    if (!("type" in block)) continue;
+    if (!isFullBlock(block)) continue;
 
-    const blockResponse = block as BlockObjectResponse;
-    const markdown = blockToMarkdown(blockResponse, indent);
+    const markdown = blockToMarkdown(block, indent);
 
     if (markdown) {
       lines.push(markdown);
     }
 
-    if (blockResponse.has_children) {
-      const childLines = await _fetchBlocks(
-        client,
-        blockResponse.id,
-        indent + "  ",
-      );
+    if (block.has_children) {
+      const childLines = await _fetchBlocks(client, block.id, indent + "  ");
       lines.push(...childLines);
     }
   }
