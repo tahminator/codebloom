@@ -1,3 +1,4 @@
+import { _checkCommits } from "notion/commits";
 import { checkNotionPrAndGetTask } from "notion/pr";
 
 export * from "./pr";
@@ -32,7 +33,10 @@ const notionDbId = (() => {
 
 async function main() {
   const task = await checkNotionPrAndGetTask(notionSecret, prId, notionDbId);
+
   console.log(task.taskContent);
+
+  await _checkCommits(prId);
 }
 
 main()
