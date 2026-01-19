@@ -33,7 +33,7 @@ export async function sendMessage(
         issue_number: prId,
         owner,
         repo,
-        body: JSON.stringify({ body: message }),
+        body: message,
       });
     } catch (e) {
       let d: string;
