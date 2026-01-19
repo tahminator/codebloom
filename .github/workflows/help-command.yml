@@ -37,3 +37,4 @@ jobs:
             - `/deploy` - Deploy to staging
             
             See: https://github.com/tahminator/codebloom/wiki/CI-Commands
+
