@@ -11,6 +11,7 @@ import { getEnvVariables } from "load-secrets/env/load";
 import type { Environment } from "redeploy/types";
 import { _createAppAndgetAppId } from "redeploy/apps/create";
 import { _getAppId } from "redeploy/apps/get";
+import { _migrateDb } from "redeploy/db";
 
 const projectId = (() => {
   const v = process.env.DIGITALOCEAN_PROJECT_ID;
@@ -42,18 +43,13 @@ const environment: Environment = (() => {
 })();
 
 async function main() {
-  console.log("start setup of do");
   const authProvider = new DigitalOceanApiKeyAuthenticationProvider(token);
   const adapter = new FetchRequestAdapter(authProvider);
   const client = createDigitalOceanClient(adapter);
-  console.log("step of do created");
-
-  console.log("env load pls");
 
   // should already be called
   // await $`git-crypt unlock`;
   const loaded = await getEnvVariables([environment]);
-  console.log("env load done");
 
   const envs: App_variable_definition[] = loaded
     .entries()
@@ -97,13 +93,41 @@ async function main() {
     console.error(e);
     return process.exit(1);
   }
-  console.log(res?.app ?? "failed");
 
-  await migrateDb(environment);
-}
+  const pendingDeploymentId = res?.app?.pendingDeployment?.id;
 
-async function migrateDb(environment: Environment) {
-  await $`git fetch origin main:main`;
+  if (!pendingDeploymentId) {
+    console.error("Failed to find pending deployment.");
+    process.exit(1);
+  }
+
+  let ready = false;
+  const attempts = 60;
+
+  for (let i = 1; i <= attempts; i++) {
+    const res = await client.v2.apps
+      .byApp_Id(appId)
+      .deployments.byDeployment_id(pendingDeploymentId)
+      .get();
+
+    const phase = res?.deployment?.phase ?? "UNKNOWN";
+
+    console.log("Deployment phase:", phase);
+
+    if (phase === "ACTIVE") {
+      console.log("Deployment has completed!");
+      ready = true;
+      break;
+    }
+
+    console.log(`Waiting for deployment to complete... (${i}/${attempts})`);
+    await Bun.sleep(10000);
+  }
+
+  if (!ready) {
+    console.error("Deployment did not reach a valid state within 10 minutes.");
+    process.exit(1);
+  }
 }
 
 main()
