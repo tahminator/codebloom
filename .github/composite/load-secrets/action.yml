@@ -1,5 +1,6 @@
 name: "Load Secrets"
 description: "Load secrets & mask all loaded secrets"
+
 inputs:
   GPG_PRIVATE_KEY:
     description: "GPG Private Key"
@@ -9,6 +10,7 @@ inputs:
     required: true
   UNLOAD_ENVIRONMENTS:
     description: "Comma separated string of what environment files to load"
+
 runs:
   using: "composite"
   steps:

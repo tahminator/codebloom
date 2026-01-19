@@ -2,6 +2,12 @@ name: "Re-Deploy to DigitalOcean"
 description: "Trigger a deployment to DigitalOcean and migrate the associated database."
 
 inputs:
+  GPG_PRIVATE_KEY:
+    description: "GPG Private Key"
+    required: true
+  GPG_PASSPHRASE:
+    description: "GPG Passphrase"
+    required: true
   ENVIRONMENT:
     description: '"staging" or "production"'
     required: false
@@ -15,6 +21,9 @@ runs:
   steps:
     - name: Setup CI
       uses: ./.github/composite/setup-ci
+      with:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: Set up pnpm
       uses: pnpm/action-setup@master
