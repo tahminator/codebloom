@@ -1,0 +1,25 @@
+name: "Setup CI"
+description: "Setup dependencies required to run CI (disable man-db)"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Disable man-db
+      shell: bash
+      run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Cache Bun dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('.github/scripts/bun.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - name: Install deps
+      shell: bash
+      run: bun install --cwd .github/scripts --frozen-lockfile
