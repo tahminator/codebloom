@@ -29,6 +29,9 @@ runs:
         java-version: "25"
         cache: "maven"
 
+    - name: Expose GitHub Runtime
+      uses: crazy-max/ghaction-github-runtime@v3
+
     - name: Run script
       shell: bash
       run: bun .github/scripts/test/run-backend-tests
