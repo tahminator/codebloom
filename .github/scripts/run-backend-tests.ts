@@ -5,9 +5,16 @@ import { db } from "utils/run-local-db";
 async function main() {
   try {
     const env = await getEnvVariables(["ci-app"]);
-    const $$ = $.env(Object.fromEntries(env));
+    const localDbEnv = await db.start();
 
-    await db.start();
+    if (!localDbEnv) {
+      throw new Error("Local db empty when it should not be");
+    }
+
+    const $$ = $.env({
+      ...Object.fromEntries(env),
+      ...localDbEnv,
+    });
 
     await $`./mvnw -B install -D skipTests --no-transfer-progress`;
 

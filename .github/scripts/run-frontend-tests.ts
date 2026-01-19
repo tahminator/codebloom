@@ -6,10 +6,10 @@ import { db } from "utils/run-local-db";
 async function main() {
   try {
     const env = await getEnvVariables(["ci-app"]);
-    const $$ = $.env(Object.fromEntries(env));
-
-    await db.start();
+    const localDbEnv = await db.start();
     await backend.start(env);
+
+    const $$ = $.env({ ...Object.fromEntries(env), ...localDbEnv });
 
     await $`corepack enable pnpm`;
     await $`pnpm --dir js i --frozen-lockfile`;
