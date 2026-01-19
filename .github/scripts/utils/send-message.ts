@@ -29,12 +29,14 @@ export async function sendMessage(
     });
 
     try {
-      await client.rest.issues.createComment({
+      const res = await client.rest.issues.createComment({
         issue_number: prId,
         owner,
         repo,
         body: message,
       });
+
+      console.log(res);
     } catch (e) {
       let d: string;
       if (e instanceof RequestError) {
