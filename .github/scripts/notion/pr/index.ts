@@ -30,8 +30,6 @@ export async function checkNotionPrAndGetTask(
 
   const ticketNum = parseInt(title, 10);
 
-  console.log(title, ticketNum);
-
   if (!Number.isNaN(ticketNum) && (ticketNum <= 0 || ticketNum > 999)) {
     await sendMessage(prId, `No numeric prefix found in PR title: ${title}`);
     process.exit(1);
@@ -43,6 +41,8 @@ export async function checkNotionPrAndGetTask(
     sendMessage(prId, "Notion task is not expected page type");
     process.exit(1);
   }
+
+  console.log(task);
 
   const blocks = await _fetchBlocks(client, task.id);
 
