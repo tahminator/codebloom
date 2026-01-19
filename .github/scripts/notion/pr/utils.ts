@@ -14,6 +14,8 @@ export async function _fetchBlocks(
     block_id: blockId,
   });
 
+  console.log(response);
+
   const lines: string[] = [];
 
   for (const block of response.results) {
