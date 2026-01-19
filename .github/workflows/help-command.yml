@@ -16,6 +16,12 @@ jobs:
     steps:
       - name: Help Comment
         uses: actions/checkout@v4
+
+      - name: Setup CI
+        uses: ./.github/composite/setup-ci
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       
       - name: Send PR Help Message
         uses: ./.github/composite/send-message
