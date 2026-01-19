@@ -2,7 +2,7 @@ name: AI Command Handler
 run-name: Triggering AI review commands on PR #${{ github.event.client_payload.slash_command.args.named.prId }}
 
 concurrency:
-  group: ai-command-${{ github.event.client_payload.slash_command.args.named.prId }}
+  group: ai-command-${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
   cancel-in-progress: true
 
 on:
