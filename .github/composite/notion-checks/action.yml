@@ -1,0 +1,46 @@
+name: "Run Notion Checks"
+description: "Run Notion validation(s) on the given PR ID"
+
+inputs:
+  PR_ID:
+    description: "PR ID"
+    required: true
+  GPG_PRIVATE_KEY:
+    description: "GPG Private Key"
+    required: true
+  GPG_PASSPHRASE:
+    description: "GPG Passphrase"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Disable man-db
+      uses: ./.github/composite/disable-mandb
+
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Cache Bun dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('.github/scripts/bun.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - name: Install deps
+      shell: bash
+      run: bun install --cwd .github/scripts --frozen-lockfile
+
+    - name: Load secrets
+      uses: ./.github/composite/load-secrets
+      with:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        UNLOAD_ENVIRONMENTS: ci
+
+    - name: Run script
+      shell: bash
+      run: bun .github/scripts/notion

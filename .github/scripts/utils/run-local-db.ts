@@ -1,5 +1,6 @@
 import { $ } from "bun";
-import { brightGreen, brightMagenta } from "./colors";
+
+import { brightMagenta } from "@/../utils/colors";
 
 async function start() {
   try {

@@ -1,5 +1,6 @@
 import { $ } from "bun";
-import { cyan } from "./colors";
+
+import { cyan } from "@/../utils/colors";
 
 let be: Bun.Subprocess<"ignore", Bun.BunFile, "inherit"> | undefined;
 
@@ -34,7 +35,9 @@ async function start() {
           ready = true;
           break;
         }
-      } catch (_) {}
+      } catch (_) {
+        /* empty */
+      }
 
       console.log(`Waiting for backend... (${i}/${attempts})`);
       await Bun.sleep(2000);
