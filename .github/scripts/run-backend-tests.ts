@@ -1,8 +1,12 @@
 import { $ } from "bun";
+import { getEnvVariables } from "load-secrets/env/load";
 import { db } from "utils/run-local-db";
 
 async function main() {
   try {
+    const env = await getEnvVariables(["ci-app"]);
+    const $$ = $.env(Object.fromEntries(env));
+
     await db.start();
 
     await $`./mvnw -B install -D skipTests --no-transfer-progress`;
@@ -13,7 +17,7 @@ async function main() {
     await $`corepack enable pnpm`;
     await $`cd email && pnpm i --frozen-lockfile && ./email.sh && cd ..`;
 
-    await $`./mvnw clean verify -Dspring.profiles.active=ci`;
+    await $$`./mvnw clean verify -Dspring.profiles.active=ci`;
   } finally {
     await db.end();
   }

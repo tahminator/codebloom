@@ -16,18 +16,18 @@ export async function _migrateDo({
   token,
   environment,
   projectId,
-  envVariables,
+  env,
 }: {
   token: string;
   environment: Environment;
   projectId: string;
-  envVariables: Map<string, string>;
+  env: Map<string, string>;
 }): Promise<void> {
   const authProvider = new DigitalOceanApiKeyAuthenticationProvider(token);
   const adapter = new FetchRequestAdapter(authProvider);
   const client = createDigitalOceanClient(adapter);
 
-  const envs: App_variable_definition[] = envVariables
+  const envs: App_variable_definition[] = env
     .entries()
     .map(([key, value]) => {
       const env: App_variable_definition = {

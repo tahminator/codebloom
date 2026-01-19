@@ -4,22 +4,6 @@ import { getEnvVariables } from "load-secrets/env/load";
 import { _migrateDb } from "redeploy/db";
 import { _migrateDo } from "redeploy/do";
 
-const projectId = (() => {
-  const v = process.env.DIGITALOCEAN_PROJECT_ID;
-  if (!v) {
-    throw new Error("Project ID is required");
-  }
-  return v;
-})();
-
-const token = (() => {
-  const v = process.env.DIGITALOCEAN_PAT;
-  if (!v) {
-    throw new Error("DigitalOcean PAT is required");
-  }
-  return v;
-})();
-
 const environment: Environment = (() => {
   const v = process.env.ENVIRONMENT;
   if (!v) {
@@ -42,17 +26,18 @@ const sha = (() => {
       "SHA must be available in ENV if script is being run in staging environment.",
     );
   }
-
   return v;
 })();
 
 async function main() {
   // should already be called
   // await $`git-crypt unlock`;
-  const envVariables = await getEnvVariables([environment]);
+
+  const { token, projectId } = parseCiEnv(await getEnvVariables([".env.ci"]));
+  const appEnv = await getEnvVariables([environment]);
 
   await _migrateDb({
-    envVariables,
+    env: appEnv,
     environment,
     sha,
   });
@@ -61,8 +46,31 @@ async function main() {
     projectId,
     token,
     environment,
-    envVariables,
+    env: appEnv,
   });
+}
+
+function parseCiEnv(ciEnv: Map<string, string>) {
+  const token = (() => {
+    const v = ciEnv.get("DIGITALOCEAN_PAT");
+    if (!v) {
+      throw new Error("Missing DIGITALOCEAN_PAT from .env.ci");
+    }
+    return v;
+  })();
+
+  const projectId = (() => {
+    const v = ciEnv.get("DIGITALOCEAN_PROJECT_ID");
+    if (!v) {
+      throw new Error("Missing DIGITALOCEAN_PROJECT_ID from .env.ci");
+    }
+    return v;
+  })();
+
+  return {
+    token,
+    projectId,
+  };
 }
 
 main()

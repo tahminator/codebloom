@@ -2,12 +2,6 @@ name: "Re-Deploy to DigitalOcean"
 description: "Trigger a deployment to DigitalOcean and migrate the associated database."
 
 inputs:
-  GPG_PRIVATE_KEY:
-    description: "GPG Private Key"
-    required: true
-  GPG_PASSPHRASE:
-    description: "GPG Passphrase"
-    required: true
   ENVIRONMENT:
     description: '"staging" or "production"'
     required: false
@@ -36,13 +30,6 @@ runs:
         distribution: "temurin"
         java-version: "25"
         cache: "maven"
-
-    - name: Load secrets
-      uses: ./.github/composite/load-secrets
-      with:
-        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
-        UNLOAD_ENVIRONMENTS: ci
 
     - name: Expose GitHub Runtime
       uses: crazy-max/ghaction-github-runtime@v3
