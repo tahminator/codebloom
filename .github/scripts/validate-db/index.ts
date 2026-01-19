@@ -32,7 +32,7 @@ export async function main() {
 
   await $.env({
     ...process.env,
-    ...Object.fromEntries(appEnv),
+    ...appEnv,
   })`./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration ${onlyCheckPendingMigrationFlag}`;
 }
 
