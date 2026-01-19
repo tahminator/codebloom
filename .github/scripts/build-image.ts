@@ -15,20 +15,13 @@ async function main() {
     const { dockerHubPat } = parseCiEnv(ciEnv);
     const localDbEnv = await db.start();
     const ciAppEnv = await getEnvVariables(["ci-app"]);
-
-    console.log({
-      ...process.env,
-      ...Object.fromEntries(ciAppEnv),
-      ...localDbEnv,
-    });
+    await backend.start(ciAppEnv);
 
     const $$ = $.env({
       ...process.env,
       ...Object.fromEntries(ciAppEnv),
       ...localDbEnv,
     });
-
-    await backend.start(ciEnv);
 
     await $`corepack enable pnpm`;
     await $`pnpm --dir js i -D --frozen-lockfile`;
