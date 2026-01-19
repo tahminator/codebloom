@@ -12,6 +12,7 @@ async function main() {
     }
 
     const $$ = $.env({
+      ...process.env,
       ...Object.fromEntries(env),
       ...localDbEnv,
     });
