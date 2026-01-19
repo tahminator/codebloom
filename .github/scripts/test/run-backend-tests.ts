@@ -23,7 +23,7 @@ async function main() {
 
     const $$ = $.env({
       ...process.env,
-      ...Object.fromEntries(ciAppEnv),
+      ...ciAppEnv,
       ...localDbEnv,
     });
 
@@ -45,9 +45,9 @@ async function main() {
   }
 }
 
-function parseCiEnv(ciEnv: Map<string, string>) {
+function parseCiEnv(ciEnv: Record<string, string>) {
   const codecovToken = (() => {
-    const v = ciEnv.get("CODECOV_TOKEN");
+    const v = ciEnv["CODECOV_TOKEN"];
     if (!v) {
       throw new Error("Missing CODECOV_TOKEN from .env.ci");
     }

@@ -19,7 +19,7 @@ async function main() {
 
     const $$ = $.env({
       ...process.env,
-      ...Object.fromEntries(ciAppEnv),
+      ...ciAppEnv,
       ...localDbEnv,
     });
 
@@ -90,9 +90,9 @@ async function main() {
   }
 }
 
-function parseCiEnv(ciEnv: Map<string, string>) {
+function parseCiEnv(ciEnv: Record<string, string>) {
   const dockerHubPat = (() => {
-    const v = ciEnv.get("DOCKER_HUB_PAT");
+    const v = ciEnv["DOCKER_HUB_PAT"];
     if (!v) {
       throw new Error("Missing DOCKER_HUB_PAT from .env.ci");
     }

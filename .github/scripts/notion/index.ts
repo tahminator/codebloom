@@ -42,9 +42,9 @@ async function main() {
   await _checkCommits(taskId, prId);
 }
 
-function parseCiEnv(ciEnv: Map<string, string>) {
+function parseCiEnv(ciEnv: Record<string, string>) {
   const notionDbId = (() => {
-    const v = ciEnv.get("NOTION_TASK_DB_ID");
+    const v = ciEnv["NOTION_TASK_DB_ID"];
     if (!v) {
       throw new Error("Missing NOTION_TASK_DB_ID from .env.ci");
     }
@@ -52,7 +52,7 @@ function parseCiEnv(ciEnv: Map<string, string>) {
   })();
 
   const notionSecret = (() => {
-    const v = ciEnv.get("NOTION_SECRET");
+    const v = ciEnv["NOTION_SECRET"];
     if (!v) {
       throw new Error("Missing NOTION_SECRET from .env.ci");
     }

@@ -11,14 +11,14 @@ async function main() {
 
     const $$ = $.env({
       ...process.env,
-      ...Object.fromEntries(ciAppEnv),
+      ...ciAppEnv,
       ...localDbEnv,
     });
 
     await $`corepack enable pnpm`;
     await $`pnpm --dir js i --frozen-lockfile`;
     await $$`pnpm --dir js run generate`;
-    await $`pnpm --dir js run test`;
+    await $$`pnpm --dir js run test`;
   } finally {
     await backend.end();
     await db.end();

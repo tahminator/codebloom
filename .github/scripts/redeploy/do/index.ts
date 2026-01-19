@@ -21,15 +21,14 @@ export async function _migrateDo({
   token: string;
   environment: Environment;
   projectId: string;
-  env: Map<string, string>;
+  env: Record<string, string>;
 }): Promise<void> {
   const authProvider = new DigitalOceanApiKeyAuthenticationProvider(token);
   const adapter = new FetchRequestAdapter(authProvider);
   const client = createDigitalOceanClient(adapter);
 
-  const envs: App_variable_definition[] = env
-    .entries()
-    .map(([key, value]) => {
+  const envs: App_variable_definition[] = Object.entries(env).map(
+    ([key, value]) => {
       const env: App_variable_definition = {
         key,
         value,
@@ -37,9 +36,8 @@ export async function _migrateDo({
         type: "SECRET",
       };
       return env;
-    })
-    .toArray();
-
+    },
+  );
   const spec = environment === "staging" ? stgSpec(envs) : prodSpec(envs);
 
   const appId = await (async () => {
