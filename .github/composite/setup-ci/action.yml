@@ -11,7 +11,7 @@ runs:
   steps:
     - name: Export GitHub Token
       shell: bash
-      if: inputs.GH_TOKEN != ""
+      if: inputs.GH_TOKEN != ''
       run: echo "GH_TOKEN=${{ inputs.GH_TOKEN }}" >> $GITHUB_ENV
     - name: Disable man-db
       shell: bash
