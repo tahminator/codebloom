@@ -1,12 +1,10 @@
 import { $ } from "bun";
 import { sendMessage } from "utils/send-message";
 
-export async function _checkCommits(taskId: number) {
+export async function _checkCommits(taskId: number, prId: number) {
   const taskIdString = taskId.toString();
 
-  console.log(taskIdString);
-
-  const res = await $`gh pr view ${taskId} --json commits`.text();
+  const res = await $`gh pr view ${prId} --json commits`.text();
   const { commits } = JSON.parse(res) as {
     commits?: { messageHeadline: string }[];
   };

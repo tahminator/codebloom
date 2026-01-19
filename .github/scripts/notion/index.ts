@@ -40,7 +40,7 @@ async function main() {
 
   console.log(taskContent);
 
-  await _checkCommits(taskId);
+  await _checkCommits(taskId, prId);
 }
 
 main()
