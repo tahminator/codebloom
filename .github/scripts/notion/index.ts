@@ -1,15 +1,8 @@
+import { getEnvVariables } from "load-secrets/env/load";
 import { _checkCommits } from "notion/commits";
 import { checkNotionPrAndGetTask } from "notion/pr";
 
 export * from "./pr";
-
-const notionSecret = (() => {
-  const v = process.env.NOTION_SECRET;
-  if (!v) {
-    throw new Error("NOTION_SECRET is required");
-  }
-  return v;
-})();
 
 const prId = (() => {
   const v = process.env.PR_ID;
@@ -23,15 +16,11 @@ const prId = (() => {
   return n;
 })();
 
-const notionDbId = (() => {
-  const v = process.env.NOTION_TASK_DB_ID;
-  if (!v) {
-    throw new Error("NOTION_TASK_DB_ID is required");
-  }
-  return v;
-})();
-
 async function main() {
+  const { notionDbId, notionSecret } = parseCiEnv(
+    await getEnvVariables([".env.ci"]),
+  );
+
   const { taskId, taskContent } = await checkNotionPrAndGetTask(
     notionSecret,
     prId,
@@ -41,6 +30,29 @@ async function main() {
   console.log(taskContent);
 
   await _checkCommits(taskId, prId);
+}
+
+function parseCiEnv(ciEnv: Map<string, string>) {
+  const notionDbId = (() => {
+    const v = ciEnv.get("NOTION_TASK_DB_ID");
+    if (!v) {
+      throw new Error("Missing NOTION_TASK_DB_ID from .env.ci");
+    }
+    return v;
+  })();
+
+  const notionSecret = (() => {
+    const v = ciEnv.get("NOTION_SECRET");
+    if (!v) {
+      throw new Error("Missing NOTION_SECRET from .env.ci");
+    }
+    return v;
+  })();
+
+  return {
+    notionDbId,
+    notionSecret,
+  };
 }
 
 main()

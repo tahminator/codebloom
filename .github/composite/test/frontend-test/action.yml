@@ -1,14 +1,6 @@
 name: "Frontend Test"
 description: "Run frontend tests"
 
-inputs:
-  GPG_PRIVATE_KEY:
-    description: "GPG Private Key"
-    required: true
-  GPG_PASSPHRASE:
-    description: "GPG Passphrase"
-    required: true
-
 runs:
   using: "composite"
   steps:
@@ -29,13 +21,6 @@ runs:
         distribution: "temurin"
         java-version: "25"
         cache: "maven"
-
-    - name: Load secrets
-      uses: ./.github/composite/load-secrets
-      with:
-        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
-        UNLOAD_ENVIRONMENTS: ci-app
 
     - name: Run script
       shell: bash

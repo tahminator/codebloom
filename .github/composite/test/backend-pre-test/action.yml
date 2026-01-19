@@ -13,13 +13,6 @@ runs:
         java-version: "25"
         cache: "maven"
 
-    - name: Verify Java version
-      shell: bash
-      run: |
-        java -version
-        javac -version
-        echo "JAVA_HOME=$JAVA_HOME"
-
     - name: Run script
       shell: bash
       run: bun .github/scripts/run-backend-compile-tests.ts

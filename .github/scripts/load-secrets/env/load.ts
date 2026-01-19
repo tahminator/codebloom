@@ -1,8 +1,10 @@
+import { $ } from "bun";
+
+let isGitCryptUnlocked = false;
+
 /**
  * @param environments - List of environment files to load.
- * @param mask - Should variables be masked. Defaults to `true`. __NOTE: This will only work in a GitHub Action runner.__
- *
- * __NOTE: Be very careful of setting `mask` to `false`.__
+ * @param mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING - Should variables be masked. Defaults to `true`. __NOTE: This will only work in a GitHub Action runner.__
  *
  * @returns a map of the loaded environments as a key and value inside of a map.
  *
@@ -11,8 +13,13 @@
  */
 export async function getEnvVariables(
   environments: string[],
-  mask = true,
+  mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING = true,
 ): Promise<Map<string, string>> {
+  if (!isGitCryptUnlocked) {
+    await $`git-crypt unlock`;
+    isGitCryptUnlocked = true;
+  }
+
   const loaded = new Map<string, string>();
 
   for (const env of environments) {
@@ -49,7 +56,7 @@ export async function getEnvVariables(
     }
   }
 
-  if (mask) {
+  if (mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING) {
     for (const [varName, value] of loaded.entries()) {
       console.log(`Masking ${varName}`);
       console.log(`::add-mask::${value}`);

@@ -20,7 +20,7 @@ export async function sendMessage(
   token?: string,
 ) {
   try {
-    if (!githubToken && !token) {
+    if (!token && !githubToken) {
       throw new Error("Some token should be set");
     }
 
