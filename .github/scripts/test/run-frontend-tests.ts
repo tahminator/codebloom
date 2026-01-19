@@ -7,7 +7,7 @@ async function main() {
   try {
     const ciAppEnv = await getEnvVariables(["ci-app"]);
     const localDbEnv = await db.start();
-    await backend.start(ciAppEnv);
+    await backend.start({ ...ciAppEnv, ...localDbEnv });
 
     const $$ = $.env({
       ...process.env,

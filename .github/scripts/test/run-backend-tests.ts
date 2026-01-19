@@ -13,7 +13,7 @@ async function main() {
     const localDbEnv = await db.start();
 
     // backend starts so we can generate schema, then kill it.
-    await backend.start(ciAppEnv);
+    await backend.start({ ...ciAppEnv, ...localDbEnv });
     await frontend.start(ciAppEnv);
     await backend.end();
 
