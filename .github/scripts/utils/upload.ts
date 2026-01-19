@@ -10,23 +10,38 @@ export async function uploadBackendTests(token: string) {
 }
 
 async function uploadToCodecov(token: string, dir: string) {
-  const { exitCode } = await $`./codecov --help`.nothrow();
-  if (exitCode != 0) {
-    await $`curl -Os https://cli.codecov.io/latest/linux/codecov`;
-    await $`sudo chmod +x codecov`;
-    await $`./codecov --help`;
+  try {
+    const { exitCode } = Bun.spawnSync(["./codecov", "--help"]);
+    if (exitCode != 0) {
+      throw Error();
+    }
+  } catch {
+    console.log("Codecov not installed, installing now...");
+    await $`curl -Os https://cli.codecov.io/latest/macos/codecov`;
+    await $`chmod +x codecov`;
   }
 
-  const $$ = $.env({
+  const env = {
     ...process.env,
     CODECOV_TOKEN: token,
+  };
+
+  console.log("Setting up Codecov in CI...");
+  const p1 = Bun.spawnSync(["./codecov", "upload-process"], {
+    env,
   });
 
-  await $$`./codecov upload-process`.nothrow();
+  if (p1.exitCode != 0) {
+    console.error(p1.stderr);
+    throw new Error(`Failed to load Codecov process\n\n${p1.stderr}`);
+  }
 
   try {
     console.log(`Uploading reports from ${dir} to Codecov...`);
-    await $$`./codecov do-upload --dir ${dir} --non-interactive`;
+    const p2 = Bun.spawnSync(["./codecov", "do-upload", "--dir", dir]);
+    if (p2.exitCode != 0) {
+      throw new Error(`Failed to load Codecov process\n\n${p2.stderr}`);
+    }
     console.log("Codecov upload successful.");
   } catch (error) {
     console.error("Failed to upload to Codecov:", error);
@@ -34,7 +49,9 @@ async function uploadToCodecov(token: string, dir: string) {
   }
 }
 
-// can only run in github actions.
+/*
+ * can only run in github actions.
+ */
 async function uploadArtifact(dir: string, artifactName: string) {
   const client = new DefaultArtifactClient();
 

@@ -30,7 +30,7 @@ async function main() {
 
     await $$`./mvnw clean verify -Dspring.profiles.active=ci`;
 
-    uploadBackendTests(codecovToken);
+    await uploadBackendTests(codecovToken);
   } finally {
     await db.end();
   }
