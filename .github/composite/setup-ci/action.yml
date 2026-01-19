@@ -3,7 +3,7 @@ description: "Setup dependencies required to run CI (disable man-db)"
 
 inputs:
   GH_TOKEN:
-    description: "GitHub token for sending messages. Set this to ${{ secrets.GITHUB_TOKEN }} for default logic."
+    description: "GitHub token for sending messages. Set this to secrets.GITHUB_TOKEN for default logic."
     required: false
 
 runs:
