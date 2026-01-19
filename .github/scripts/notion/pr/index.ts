@@ -30,6 +30,8 @@ export async function checkNotionPrAndGetTask(
 
   const ticketNum = parseInt(title, 10);
 
+  console.log(title, ticketNum);
+
   if (!Number.isNaN(ticketNum) && (ticketNum <= 0 || ticketNum > 999)) {
     await sendMessage(prId, `No numeric prefix found in PR title: ${title}`);
     process.exit(1);
