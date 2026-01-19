@@ -113,8 +113,6 @@ async function main() {
       .deployments.byDeployment_id(pendingDeploymentId)
       .get();
 
-    console.log("debug, dont keep in", res?.deployment);
-
     const phase = res?.deployment?.phase ?? "UNKNOWN";
 
     console.log("Deployment phase:", phase);
