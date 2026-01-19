@@ -1,4 +1,3 @@
-import { $ } from "bun";
 import { getEnvVariables } from "load-secrets/env/load";
 
 // UNLOAD_ENVIRONMENTS="prod,staging,dev"
@@ -16,9 +15,10 @@ const excludedVars = [
   "JAVA_HOME",
 ];
 
+/**
+ * @deprecated this is no longer usable.
+ */
 async function main() {
-  await $`git-crypt unlock`;
-
   const envs = unloadEnvironments
     .split(",")
     .map((e) => e.trim())
