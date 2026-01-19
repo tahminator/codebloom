@@ -20,14 +20,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup CI
-      uses: ./.github/composite/setup-ci
-      with:
-        GITHUB_TOKEN: ${{ inputs.token }}
-
     - name: Run script
       shell: bash
       run: bun .github/scripts/send-message/gha
       env:
         PR_ID: ${{ inputs.prId }}
         MESSAGE: ${{ inputs.message }}
+        GH_TOKEN: ${{ inputs.token }}
