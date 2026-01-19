@@ -1,4 +1,5 @@
 import { $ } from "bun";
+import { getEnvVariables } from "load-secrets/env/load";
 import { backend } from "utils/run-backend-instance";
 import { db } from "utils/run-local-db";
 
@@ -8,19 +9,18 @@ const tagPrefix = process.env.TAG_PREFIX || "";
 const shouldDockerUpload = Boolean(process.env.DOCKER_UPLOAD) || false;
 const serverProfiles = process.env.SERVER_PROFILES || "prod";
 
-const dockerHubPat = process.env.DOCKER_HUB_PAT;
-if (!dockerHubPat) {
-  throw new Error("DOCKER_HUB_PAT is required.");
-}
-
 async function main() {
   try {
+    const ciEnv = await getEnvVariables(["env"]);
+    const { dockerHubPat } = parseCiEnv(ciEnv);
+    const $$ = $.env(Object.fromEntries(ciEnv));
+
     await db.start();
-    await backend.start();
+    await backend.start(ciEnv);
 
     await $`corepack enable pnpm`;
     await $`pnpm --dir js i -D --frozen-lockfile`;
-    await $`pnpm --dir js run generate`;
+    await $$`pnpm --dir js run generate`;
 
     // copy old tz format from build-image.sh
     const timestamp = new Date()
@@ -83,6 +83,18 @@ async function main() {
     await backend.end();
     await db.end();
   }
+}
+
+function parseCiEnv(ciEnv: Map<string, string>) {
+  const dockerHubPat = (() => {
+    const v = ciEnv.get("DOCKER_HUB_PAT");
+    if (!v) {
+      throw new Error("Missing DOCKER_HUB_PAT from .env.ci");
+    }
+    return v;
+  })();
+
+  return { dockerHubPat };
 }
 
 main()
