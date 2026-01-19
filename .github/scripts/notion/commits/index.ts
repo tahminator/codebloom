@@ -31,7 +31,7 @@ export async function _checkCommits(taskId: number, prId: number) {
   const failedList = failedCommits.join("\n");
 
   await sendMessage(
-    taskId,
+    prId,
     `
 ### Commit Validation Failed
 The following commits do not start with the required Notion ID \`${taskIdString}\`:
