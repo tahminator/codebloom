@@ -16,7 +16,7 @@ export async function getEnvVariables(
   mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING = true,
 ): Promise<Record<string, string>> {
   if (!isGitCryptUnlocked) {
-    await $`git-crypt unlock`;
+    await $`git-crypt unlock`.nothrow();
     isGitCryptUnlocked = true;
   }
 

@@ -62,6 +62,14 @@ export function brightWhite(s: string) {
   return `${BRIGHT_WHITE}${s}${RESET}`;
 }
 
+export function pink(s: string) {
+  return `${PINK}${s}${RESET}`;
+}
+
+export function orange(s: string) {
+  return `${ORANGE}${s}${RESET}`;
+}
+
 export function bold(s: string) {
   return `${BOLD}${s}${RESET}`;
 }
@@ -95,6 +103,9 @@ const BRIGHT_BLUE = "\x1b[94m";
 const BRIGHT_MAGENTA = "\x1b[95m";
 const BRIGHT_CYAN = "\x1b[96m";
 const BRIGHT_WHITE = "\x1b[97m";
+
+const PINK = "\x1b[38;5;213m";
+const ORANGE = "\x1b[38;5;214m";
 
 const RESET = "\x1b[0m";
 const BOLD = "\x1b[1m";

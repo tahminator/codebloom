@@ -1,16 +1,15 @@
 import { $ } from "bun";
-import { brightGreen } from "utils/colors";
+import { brightGreen, pink } from "utils/colors";
 
 let fe: Bun.Subprocess<"ignore", Bun.BunFile, "inherit"> | undefined;
 
 async function start(env: Record<string, string>) {
   try {
-    console.log("Starting frontend instance...");
+    const $$ = $.env({ ...process.env, ...env });
+    await $$`pnpm --v`;
 
-    await $`pnpm --v`;
-
-    await $`pnpm --dir js i --frozen-lockfile`;
-    await $`pnpm --dir js run generate`;
+    await $$`pnpm --dir js i --frozen-lockfile`;
+    await $$`pnpm --dir js run generate`;
     const logFile = Bun.file("frontend.log");
     fe = Bun.spawn(["pnpm", "--dir", "js", "dev"], {
       env: { ...process.env, ...env },
@@ -57,13 +56,13 @@ async function end() {
     if (!fe.killed) {
       fe.kill();
     }
-    console.log(brightGreen("=== FRONTEND LOGS ==="));
+    console.log(pink("=== FRONTEND LOGS ==="));
     const logs = await Bun.file("frontend.log").text();
     logs
       .split("\n")
       .filter((s) => s.length > 0)
-      .forEach((line) => console.log(brightGreen(line)));
-    console.log(brightGreen("=== FRONTEND LOGS END ==="));
+      .forEach((line) => console.log(pink(line)));
+    console.log(pink("=== FRONTEND LOGS END ==="));
   }
 }
 
