@@ -25,6 +25,9 @@ runs:
   steps:
     - name: Setup CI
       uses: ./.github/composite/setup-ci
+      with:
+        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
 
     - name: Set up pnpm
       uses: pnpm/action-setup@master
@@ -40,13 +43,6 @@ runs:
         distribution: "temurin"
         java-version: "25"
         cache: "maven"
-
-    - name: Load secrets
-      uses: ./.github/composite/load-secrets
-      with:
-        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
-        UNLOAD_ENVIRONMENTS: ci,ci-app
 
     - name: Expose GitHub Runtime
       uses: crazy-max/ghaction-github-runtime@v3

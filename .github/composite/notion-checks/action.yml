@@ -5,12 +5,21 @@ inputs:
   PR_ID:
     description: "PR ID"
     required: true
+  GPG_PRIVATE_KEY:
+    description: "GPG Private Key"
+    required: true
+  GPG_PASSPHRASE:
+    description: "GPG Passphrase"
+    required: true
 
 runs:
   using: "composite"
   steps:
     - name: Setup CI
       uses: ./.github/composite/setup-ci
+      with:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: Run script
       shell: bash

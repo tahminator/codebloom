@@ -5,6 +5,12 @@ inputs:
   GH_TOKEN:
     description: "GitHub token for sending messages. Set this to secrets.GITHUB_TOKEN for default logic."
     required: false
+  GPG_PASSPHRASE:
+    description: "GPG passphrase if secrets will be used."
+    required: false
+  GPG_PRIVATE_KEY:
+    description: "GPG private key if secrets will be used."
+    required: false
 
 runs:
   using: "composite"
@@ -32,3 +38,14 @@ runs:
     - name: Install deps
       shell: bash
       run: bun install --cwd .github/scripts --frozen-lockfile
+
+    - name: Load GPG secret key
+      uses: crazy-max/ghaction-import-gpg@v6
+      if: inputs.GPG_PRIVATE_KEY != "" && inputs.GPG_PASSPHRASE != ""
+      with:
+        gpg_private_key: ${{ inputs.GPG_PRIVATE_KEY }}
+        passphrase: ${{ inputs.GPG_PASSPHRASE }}
+
+    - name: Install git-crypt
+      if: inputs.GPG_PRIVATE_KEY != "" && inputs.GPG_PASSPHRASE != ""
+      uses: flydiverny/setup-git-crypt@v4
