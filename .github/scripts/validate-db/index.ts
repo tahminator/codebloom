@@ -27,7 +27,7 @@ export async function main() {
 
   const onlyCheckPendingMigrationFlag =
     environment === "staging" ?
-      '-Dflyway.ignoreMigrationPatterns="*:pending"'
+      "-Dflyway.ignoreMigrationPatterns=*:pending"
     : "";
 
   await $.env({
