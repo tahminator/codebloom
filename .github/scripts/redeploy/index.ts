@@ -4,8 +4,6 @@ import { getEnvVariables } from "load-secrets/env/load";
 import { _migrateDb } from "redeploy/db";
 import { _migrateDo } from "redeploy/do";
 
-const sha = process.env.SHA;
-
 const projectId = (() => {
   const v = process.env.DIGITALOCEAN_PROJECT_ID;
   if (!v) {
@@ -29,7 +27,20 @@ const environment: Environment = (() => {
   }
 
   if (v !== "staging" && v !== "production") {
-    throw new Error('Environment must be "staging" or "production"');
+    throw new Error(
+      'Environment must be the string literal "staging" or "production"',
+    );
+  }
+
+  return v;
+})();
+
+const sha = (() => {
+  const v = process.env.SHA;
+  if (environment === "staging" && !v) {
+    throw new Error(
+      "SHA must be available in ENV if script is being run in staging environment.",
+    );
   }
 
   return v;

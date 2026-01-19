@@ -273,6 +273,7 @@ jobs:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
                 ENVIRONMENT: staging
+                SHA: ${{ needs.getPRHead.outputs.sha }}
 
     notifyStatus:
         name: Notify on deployment status

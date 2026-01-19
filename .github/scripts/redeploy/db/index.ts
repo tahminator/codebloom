@@ -14,11 +14,6 @@ export async function _migrateDb({
   await $`git fetch origin main:main`;
 
   if (environment === "staging") {
-    if (!sha) {
-      throw new Error(
-        "SHA must be available in ENV if script is being run in staging environment.",
-      );
-    }
     const diffOutput = await $`git diff --name-only main...${sha}`.text();
     const files = diffOutput.split("\n");
 
