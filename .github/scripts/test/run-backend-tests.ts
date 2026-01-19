@@ -1,9 +1,12 @@
 import { $ } from "bun";
 import { getEnvVariables } from "load-secrets/env/load";
 import { db } from "utils/run-local-db";
+import { uploadBackendTests } from "utils/upload";
 
 async function main() {
   try {
+    const ciEnv = await getEnvVariables(["ci"]);
+    const { codecovToken } = parseCiEnv(ciEnv);
     const ciAppEnv = await getEnvVariables(["ci-app"]);
     const localDbEnv = await db.start();
 
@@ -26,9 +29,23 @@ async function main() {
     await $`cd email && pnpm i --frozen-lockfile && ./email.sh && cd ..`;
 
     await $$`./mvnw clean verify -Dspring.profiles.active=ci`;
+
+    uploadBackendTests(codecovToken);
   } finally {
     await db.end();
   }
+}
+
+function parseCiEnv(ciEnv: Map<string, string>) {
+  const codecovToken = (() => {
+    const v = ciEnv.get("CODECOV_TOKEN");
+    if (!v) {
+      throw new Error("Missing CODECOV_TOKEN from .env.ci");
+    }
+    return v;
+  })();
+
+  return { codecovToken };
 }
 
 main()
