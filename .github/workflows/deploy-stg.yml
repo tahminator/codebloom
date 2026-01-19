@@ -247,13 +247,13 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            # - name: Run workflow
-            #   uses: ./.github/composite/build-image
-            #   with:
-            #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-            #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-            #     TAG_PREFIX: staging-
-            #     SERVER_PROFILES: stg
+            - name: Run workflow
+              uses: ./.github/composite/build-image
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                TAG_PREFIX: staging-
+                SERVER_PROFILES: stg
 
     redeploy:
         name: Redeploy on DigitalOcean

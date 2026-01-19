@@ -102,6 +102,8 @@ async function main() {
     process.exit(1);
   }
 
+  console.log("Deployment ID:", pendingDeploymentId);
+
   let ready = false;
   const attempts = 60;
 
@@ -110,6 +112,8 @@ async function main() {
       .byApp_Id(appId)
       .deployments.byDeployment_id(pendingDeploymentId)
       .get();
+
+    console.log("debug, dont keep in", res?.deployment);
 
     const phase = res?.deployment?.phase ?? "UNKNOWN";
 
