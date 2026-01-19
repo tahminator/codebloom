@@ -1,4 +1,4 @@
-import type { Environment } from "redeploy/types";
+import type { Environment } from "types";
 
 import {
   DigitalOceanApiKeyAuthenticationProvider,
