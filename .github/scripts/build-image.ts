@@ -14,10 +14,11 @@ async function main() {
     const ciEnv = await getEnvVariables(["ci"]);
     const { dockerHubPat } = parseCiEnv(ciEnv);
     const localDbEnv = await db.start();
+    const ciAppEnv = await getEnvVariables(["ci-app"]);
 
     const $$ = $.env({
       ...process.env,
-      ...Object.fromEntries(ciEnv),
+      ...Object.fromEntries(ciAppEnv),
       ...localDbEnv,
     });
 

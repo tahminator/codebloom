@@ -4,7 +4,7 @@ import { db } from "utils/run-local-db";
 
 async function main() {
   try {
-    const env = await getEnvVariables(["ci-app"]);
+    const ciAppEnv = await getEnvVariables(["ci-app"]);
     const localDbEnv = await db.start();
 
     if (!localDbEnv) {
@@ -13,7 +13,7 @@ async function main() {
 
     const $$ = $.env({
       ...process.env,
-      ...Object.fromEntries(env),
+      ...Object.fromEntries(ciAppEnv),
       ...localDbEnv,
     });
 
