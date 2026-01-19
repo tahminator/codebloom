@@ -5,13 +5,13 @@ import { db } from "utils/run-local-db";
 
 async function main() {
   try {
-    const env = await getEnvVariables(["ci-app"]);
+    const ciAppEnv = await getEnvVariables(["ci-app"]);
     const localDbEnv = await db.start();
-    await backend.start(env);
+    await backend.start(ciAppEnv);
 
     const $$ = $.env({
       ...process.env,
-      ...Object.fromEntries(env),
+      ...Object.fromEntries(ciAppEnv),
       ...localDbEnv,
     });
 
