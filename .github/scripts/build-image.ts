@@ -11,11 +11,16 @@ const serverProfiles = process.env.SERVER_PROFILES || "prod";
 
 async function main() {
   try {
-    const ciEnv = await getEnvVariables(["env"]);
+    const ciEnv = await getEnvVariables(["ci"]);
     const { dockerHubPat } = parseCiEnv(ciEnv);
-    const $$ = $.env(Object.fromEntries(ciEnv));
+    const localDbEnv = await db.start();
 
-    await db.start();
+    const $$ = $.env({
+      ...process.env,
+      ...Object.fromEntries(ciEnv),
+      ...localDbEnv,
+    });
+
     await backend.start(ciEnv);
 
     await $`corepack enable pnpm`;
