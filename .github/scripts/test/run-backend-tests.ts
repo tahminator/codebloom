@@ -1,5 +1,7 @@
 import { $ } from "bun";
 import { getEnvVariables } from "load-secrets/env/load";
+import { backend } from "utils/run-backend-instance";
+import { frontend } from "utils/run-frontend-instance";
 import { db } from "utils/run-local-db";
 import { uploadBackendTests } from "utils/upload";
 
@@ -9,6 +11,11 @@ async function main() {
     const { codecovToken } = parseCiEnv(ciEnv);
     const ciAppEnv = await getEnvVariables(["ci-app"]);
     const localDbEnv = await db.start();
+
+    // backend starts so we can generate schema, then kill it.
+    await backend.start(ciAppEnv);
+    await frontend.start(ciAppEnv);
+    await backend.end();
 
     if (!localDbEnv) {
       throw new Error("Local db empty when it should not be");
@@ -33,6 +40,8 @@ async function main() {
     await uploadBackendTests(codecovToken);
   } finally {
     await db.end();
+    await frontend.end();
+    await backend.end();
   }
 }
 
