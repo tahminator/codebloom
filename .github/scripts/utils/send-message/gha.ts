@@ -24,7 +24,7 @@ const message = (() => {
  * @deprecated usable but is not recommended.
  */
 export async function main() {
-  sendMessage(prId, message);
+  await sendMessage(prId, message);
 }
 
 main()
