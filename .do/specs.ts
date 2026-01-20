@@ -66,6 +66,12 @@ export function prodSpec(envs: App_variable_definition[]): App_spec {
         envs,
       },
     ],
+    domains: [
+      {
+        domain: "codebloom.patinanetwork.org",
+        type: "PRIMARY",
+      },
+    ],
   };
 }
 
