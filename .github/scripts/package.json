@@ -31,5 +31,8 @@
         "eslint-plugin-perfectionist": "^5.3.1",
         "global": "^4.4.0",
         "typescript-eslint": "^8.53.0"
+    },
+    "patchedDependencies": {
+        "@digitalocean/dots@1.7.0": "patches/@digitalocean%2Fdots@1.7.0.patch"
     }
 }
