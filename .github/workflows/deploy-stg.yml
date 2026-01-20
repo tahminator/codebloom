@@ -133,6 +133,24 @@ jobs:
                   docker push tahminator/codebloom:staging-latest
                   echo "Promoted staging-$SHA7 to staging-latest"
 
+    frontendPreTest:
+        name: Frontend Pre Test
+        runs-on: ubuntu-latest
+        needs: [getPRHead, checkExistingImage]
+        if: needs.checkExistingImage.outputs.image-exists == 'false'
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ needs.getPRHead.outputs.sha }}
+
+            - name: Run workflow
+              uses: ./.github/composite/test/frontend-pre-test
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
     backendPreTest:
         name: Backend Compile Test
         runs-on: ubuntu-latest
@@ -147,43 +165,6 @@ jobs:
 
             - name: Run workflow
               uses: ./.github/composite/test/backend-pre-test
-
-    backendTests:
-        name: Backend Tests
-        runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendPreTest]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
-
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
-
-            - name: Run workflow
-              uses: ./.github/composite/test/backend-test
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UPLOAD_TEST_COV: false
-
-    frontendTests:
-        name: Frontend Tests
-        runs-on: ubuntu-latest
-        needs: [getPRHead, checkExistingImage, backendPreTest]
-        if: needs.checkExistingImage.outputs.image-exists == 'false'
-
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.getPRHead.outputs.sha }}
-
-            - name: Run workflow
-              uses: ./.github/composite/test/frontend-test
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     validateDBSchema:
         name: Validate DB Schema on Staging DB
@@ -212,10 +193,9 @@ jobs:
             [
                 getPRHead,
                 checkExistingImage,
-                frontendTests,
-                backendTests,
                 validateDBSchema,
                 backendPreTest,
+                frontendPreTest,
             ]
         if: needs.checkExistingImage.outputs.image-exists == 'false'
 
@@ -262,9 +242,8 @@ jobs:
                 getPRHead,
                 checkExistingImage,
                 sendMessage,
-                backendTests,
                 backendPreTest,
-                frontendTests,
+                frontendPreTest,
                 validateDBSchema,
                 buildImage,
                 promoteExisting,
