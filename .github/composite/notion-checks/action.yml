@@ -1,0 +1,39 @@
+name: "Run Notion Checks"
+description: "Run Notion validation(s) on the given PR ID"
+
+inputs:
+  PR_ID:
+    description: "PR ID"
+    required: true
+  GPG_PRIVATE_KEY:
+    description: "GPG Private Key"
+    required: true
+  GPG_PASSPHRASE:
+    description: "GPG Passphrase"
+    required: true
+  GET_GHA_OUTPUT:
+    description: "If true, will output an object with data that can be interfaced in GitHub Actions."
+    required: false
+    default: false
+
+outputs:
+  context:
+    description: "Notion task context for AI review"
+    value: ${{ steps.run_script.outputs.context }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup CI
+      uses: ./.github/composite/setup-ci
+      with:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Run script
+      id: run_script
+      shell: bash
+      run: bun .github/scripts/notion
+      env:
+        PR_ID: ${{ inputs.PR_ID }}
+        GET_GHA_OUTPUT: ${{ inputs.GET_GHA_OUTPUT }}
