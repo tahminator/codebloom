@@ -23,6 +23,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "@digitalocean/dots@1.7.0": "patches/@digitalocean%2Fdots@1.7.0.patch",
+  },
   "packages": {
     "@actions/artifact": ["@actions/artifact@5.0.2", "", { "dependencies": { "@actions/core": "^2.0.0", "@actions/github": "^6.0.1", "@actions/http-client": "^3.0.1", "@azure/storage-blob": "^12.29.1", "@octokit/core": "^5.2.1", "@octokit/plugin-request-log": "^1.0.4", "@octokit/plugin-retry": "^3.0.9", "@octokit/request": "^8.4.1", "@octokit/request-error": "^5.1.1", "@protobuf-ts/plugin": "^2.2.3-alpha.1", "archiver": "^7.0.1", "jwt-decode": "^3.1.2", "unzip-stream": "^0.3.1" } }, "sha512-NmA+THO1s/Ubqf5y34EZofB1FRORcToa3T8Mb3/Z87TCCozTtvBUaxDn8OPPwgyYQ4ft0nd01Z4kFSu2DTWqGw=="],
 
