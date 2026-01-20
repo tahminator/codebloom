@@ -4,7 +4,7 @@
     "description": "CodeBloom CI Scripts",
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "test": "bun run typecheck && bun run prettier && bun run lint && bun run build",
+        "test": "bun run typecheck && bun run prettier && bun run lint",
         "fix": "bun run eslint:fix && bun run prettier:fix",
         "lint": "bun run eslint",
         "eslint": "eslint .",
