@@ -25,7 +25,7 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Run backend pre test
+            - name: Run workflow
               uses: ./.github/composite/test/backend-pre-test
 
     backendTests:
@@ -37,47 +37,12 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/test/backend-test
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
-
-            - name: Run script
-              run: bash .github/scripts/run-backend-tests.sh
-
-            - name: Upload JaCoCo HTML report
-              uses: actions/upload-artifact@v4
-              with:
-                name: jacoco-report
-                path: target/site/jacoco/
-
-            - name: Upload coverage reports to Codecov
-              uses: codecov/codecov-action@v5
-              with:
-                token: ${{ secrets.CODECOV_TOKEN }}
+                UPLOAD_TEST_COV: true
 
     frontendTests:
         name: Frontend Tests
@@ -88,40 +53,11 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Fix a bug with corepack by installing corepack globally
-              run: npm i -g corepack@latest
-              working-directory: js
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/test/frontend-test
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci-app
-
-            - name: Run script
-              run: bash .github/scripts/run-frontend-tests.sh
 
     testBuildImage:
         name: Build Test Docker Image
@@ -134,35 +70,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Expose GitHub Runtime
-              uses: crazy-max/ghaction-github-runtime@v3
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/build-image
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
-
-            - name: Run script
-              run: bash .github/scripts/build-image.sh
-              env:
+                TAG_PREFIX: test-
                 DOCKER_UPLOAD: false
 
     validateDBSchema:
@@ -174,31 +87,11 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/validate-db
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: production-ro
-
-            - name: Validate DB Schema
-              run: ./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns="*:pending"
 
     buildImage:
         name: Build Docker Image & Upload to Registry
@@ -211,34 +104,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/build-image
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,ci-app
 
-            - name: Expose GitHub Runtime
-              uses: crazy-max/ghaction-github-runtime@v3
-
-            - name: Run script
-              run: bash .github/scripts/build-image.sh
 
     redeploy:
         name: Redeploy on DigitalOcean
@@ -252,84 +123,8 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Disable man-db
-              uses: ./.github/composite/disable-mandb
-
-            - name: Set up OpenJDK 25
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "25"
-                  cache: "maven"
-
-            - name: Verify Java version
-              run: |
-                  java -version
-                  javac -version
-                  echo "JAVA_HOME=$JAVA_HOME"
-
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
+            - name: Run workflow
+              uses: ./.github/composite/redeploy
               with:
                 GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
                 GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci,production
-
-            - name: Install doctl
-              uses: digitalocean/action-doctl@v2
-              with:
-                token: ${{ env.DIGITAL_OCEAN_PAT }}
-
-            - name: Migrate Production DB
-              run: ./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration
-
-            - name: Transform App Spec with secrets
-              run: bash .github/scripts/transform-yaml-with-env.sh .do/prod/app.yml .env.production
-    
-            - name: Update App Spec on DigitalOcean
-              run: |
-                OUTPUT=$(doctl apps update ${{ env.DIGITAL_OCEAN_APP_ID }} --spec .do/prod/app.yml --update-sources --output json)
-
-                DEPLOYMENT_ID=$(echo "$OUTPUT" | jq -r '.[0].pending_deployment.id // .[0].in_progress_deployment.id // .[0].active_deployment.id // empty' | head -n 1)
-
-                if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" == "null" ]; then
-                    echo "Failed to extract deployment ID from app update response"
-                    exit 1
-                fi
-
-                echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
-                  
-            - name: Poll Deployment Status
-              run: |
-
-                  if [ -z "$DEPLOYMENT_ID" ]; then
-                       echo "Deployment ID is empty."
-                       exit 1
-                  fi
-
-                  echo "Waiting for deployment to be promoted."
-
-                  for i in {1..60}; do
-                      RESPONSE=$(curl -s -X GET \
-                          -H "Content-Type: application/json" \
-                          -H "Authorization: Bearer ${{ env.DIGITAL_OCEAN_PAT }}" \
-                          "https://api.digitalocean.com/v2/apps/${{ env.DIGITAL_OCEAN_APP_ID }}/deployments/$DEPLOYMENT_ID")
-
-                      PHASE=$(echo "$RESPONSE" | jq -r '.deployment.phase')
-
-                      echo "Deployment phase: $PHASE"
-
-                      if [ "$PHASE" == "ACTIVE" ]; then
-                          echo "Deployment is active."
-                          exit 0
-                      elif [ "$PHASE" == "SUPERSEDED" ] || [ "$PHASE" == "ERROR" ] || [ "$PHASE" == "CANCELED" ]; then
-                          echo "Deployment failed with phase: $PHASE"
-                          exit 1
-                      fi
-
-                      echo "Waiting for deployment to complete, sleep 10... ($i/60)"
-                      sleep 10
-                  done
-
-                  echo "Deployment did not reach a valid state within 10 minutes."
-                  exit 1
