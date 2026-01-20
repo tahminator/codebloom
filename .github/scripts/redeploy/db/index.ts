@@ -11,7 +11,7 @@ export async function _migrateDb({
   env: Record<string, string>;
   sha?: string;
 }): Promise<void> {
-  await $`git fetch origin main:main`;
+  await $`git fetch origin main`;
 
   if (environment === "staging") {
     const diffOutput = await $`git diff --name-only main...${sha}`.text();
