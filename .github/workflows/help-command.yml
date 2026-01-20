@@ -27,5 +27,4 @@ jobs:
         shell: bash
         run: bun .github/scripts/help-message
         env:
-          ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-          PR_ID: ${{ github.event.inputs.prId }}
+          PR_ID: ${{ github.event.pull_request.number }}
