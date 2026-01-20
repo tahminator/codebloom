@@ -28,3 +28,4 @@ jobs:
         run: bun .github/scripts/help-message
         env:
           ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+          PR_ID: ${{ github.event.inputs.prId }}
