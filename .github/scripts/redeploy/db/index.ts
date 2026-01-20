@@ -12,7 +12,7 @@ export async function _migrateDb({
   sha?: string;
 }): Promise<void> {
   if (environment === "staging") {
-    await $`git fetch origin main`;
+    await $`git fetch origin main:main`;
     const diffOutput = await $`git diff --name-only main...${sha}`.text();
     const files = diffOutput.split("\n");
 
