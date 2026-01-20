@@ -160,12 +160,12 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            # - name: Run workflow
-            #   uses: ./.github/composite/test/backend-test
-            #   with:
-            #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-            #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-            #     UPLOAD_TEST_COV: false
+            - name: Run workflow
+              uses: ./.github/composite/test/backend-test
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+                UPLOAD_TEST_COV: false
 
     frontendTests:
         name: Frontend Tests
@@ -179,11 +179,11 @@ jobs:
               with:
                   ref: ${{ needs.getPRHead.outputs.sha }}
 
-            # - name: Run workflow
-            #   uses: ./.github/composite/test/frontend-test
-            #   with:
-            #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-            #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+            - name: Run workflow
+              uses: ./.github/composite/test/frontend-test
+              with:
+                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     validateDBSchema:
         name: Validate DB Schema on Staging DB
