@@ -34,7 +34,7 @@ async function main() {
 
   const githubEnvFileWriter = Bun.file(githubEnv).writer();
 
-  for (const [varName, value] of loaded.entries()) {
+  for (const [varName, value] of Object.entries(loaded)) {
     githubEnvFileWriter.write(`${varName}=${value}\n`);
     if (excludedVars.includes(varName)) {
       console.log(`Not masking ${varName}: Excluded`);
