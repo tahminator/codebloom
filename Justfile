@@ -97,6 +97,12 @@ devd *args:
 ci-test-stg pr_name pr_id:
   gh workflow run .github/workflows/deploy-stg.yml --ref {{pr_name}} --field prId={{pr_id}}
 
+# Triggers the /ai command workflow for the following environment. Must be authenticated on gh.
+# NOTE: Triggering workflow this way can cause a buildup of tasks (broken concurrency group).
+# As such, this should only be used in one branch at a time.
+ci-test-ai pr_name pr_id:
+  gh workflow run .github/workflows/ai-command.yml --ref {{pr_name}} --field prId={{pr_id}}
+
 # Interactive script to add a user's GPG public key so they can decrypt keys
 git-crypt-add-user:
   cd scripts && pnpm i && pnpm run git-crypt-add-user && clear && node git-crypt/add-user
