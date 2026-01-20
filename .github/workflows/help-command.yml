@@ -12,22 +12,19 @@ jobs:
   prHelpComment:
     name: PR Help Comment
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Help Comment
         uses: actions/checkout@v4
-      
-      - name: Send PR Help Message
-        uses: ./.github/composite/send-message
+
+      - name: Setup CI
+        uses: ./.github/composite/setup-ci
         with:
-          prId: ${{ github.event.pull_request.number }}
-          message: |
-            ### Available PR Commands
-            
-            - `/ai` - Triggers all AI review commands at once
-            - `/review` - AI review of the PR changes
-            - `/describe` - AI-powered description of the PR
-            - `/improve` - AI-powered suggestions
-            - `/deploy` - Deploy to staging
-            
-            See: https://github.com/tahminator/codebloom/wiki/CI-Commands
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Run script
+        shell: bash
+        run: bun .github/scripts/help-message
+        env:
+          PR_ID: ${{ github.event.pull_request.number }}

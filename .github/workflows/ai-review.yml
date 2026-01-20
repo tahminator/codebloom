@@ -37,7 +37,7 @@ jobs:
                 repo: context.repo.repo,
                 pull_number: parseInt(prId, 10)
             });
-              return pr.head.sha;
+            return pr.head.sha;
 
   aiCodeReview:
     name: Run AI Code Review on the PR
@@ -50,30 +50,19 @@ jobs:
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
 
+      - name: Setup composite workflow
+        uses: ./.github/composite/notion-checks
+        with:
+          PR_ID: ${{ github.event.number ||  github.event.issue.number }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
       - name: Load secrets
         uses: ./.github/composite/load-secrets
         with:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           UNLOAD_ENVIRONMENTS: ci
-
-      - name: Run 'Check Notion PR' composite action
-        uses: ./.github/composite/check-notion-pr
-        id: notion_check
-        with:
-          PR_ID: ${{ needs.getPRHead.outputs.prId }}
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Echo Notion context
-        run: |
-          echo "Context: ${{ steps.notion_check.outputs.context }}"
-
-      - name: Run 'Check Notion Commits' composite action
-        uses: ./.github/composite/check-notion-commits
-        with:
-          PR_ID: ${{ needs.getPRHead.outputs.prId }}
-          NOTION_ID: ${{ steps.notion_check.outputs.notion_id }}
 
       - name: Qodo PR-Agent
         uses: qodo-ai/pr-agent@main
@@ -103,6 +92,9 @@ jobs:
           pr_reviewer.enable_review_labels_effort: "false"
           pr_reviewer.final_update_message: "false"
           pr_description.publish_description_as_comment: "true"
+          pr_description.extra_instructions: |
+            Below is some additional context for the PR from the connected Notion task:
+            ${{ steps.notion_check.outputs.context }}
           pr_description.publish_description_as_comment_persistent: "false"
           pr_description.publish_labels: "false"
           pr_description.add_original_user_description: "false"
@@ -112,8 +104,23 @@ jobs:
           pr_code_suggestions.enable_help_text: "false"
           pr_code_suggestions.enable_chat_text: "false"
           pr_code_suggestions.persistent_comment: "false"
-          pr_code_suggestions.max_history_len: "4"
+          pr_code_suggestions.max_history_len: "10"
           pr_code_suggestions.publish_output_no_suggestions: "true"
+          pr_code_suggestions.extra_instructions: |
+            Scrutinize this PR in the context of the following Notion task:
+            ${{ steps.notion_check.outputs.context }}
+
+            Additional review guidelines:
+            - Verify that the implementation matches the acceptance criteria from the Notion task
+            - Check for proper error handling and edge cases
+            - Ensure code follows existing patterns and architecture in the codebase
+            - Look for potential security vulnerabilities or data validation issues
+            - Verify that database migrations (if any) are reversible and safe
+            - Check for proper logging and monitoring considerations
+            - Ensure API endpoints follow RESTful conventions and existing API patterns
+            - Verify that environment variables and secrets are handled securely
+            - Check for potential performance bottlenecks or N+1 query issues
+            - Ensure proper test coverage for critical paths
           pr_code_suggestions.apply_suggestions_checkbox: "true"
           pr_code_suggestions.suggestions_score_threshold: "0"
           pr_code_suggestions.new_score_mechanism: "true"

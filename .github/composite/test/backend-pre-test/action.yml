@@ -3,8 +3,8 @@ description: "Run backend linter & formatter checks + attempt to compile (NO TES
 runs:
   using: "composite"
   steps:
-    - name: Disable man-db
-      uses: ./.github/composite/disable-mandb
+    - name: Setup CI
+      uses: ./.github/composite/setup-ci
 
     - name: Set up OpenJDK 25
       uses: actions/setup-java@v4
@@ -13,13 +13,6 @@ runs:
         java-version: "25"
         cache: "maven"
 
-    - name: Verify Java version
-      shell: bash
-      run: |
-        java -version
-        javac -version
-        echo "JAVA_HOME=$JAVA_HOME"
-
     - name: Run script
       shell: bash
-      run: bash .github/scripts/run-backend-compile-tests.sh
+      run: bun .github/scripts/test/run-backend-compile-tests

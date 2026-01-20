@@ -1,5 +1,6 @@
 name: "Load Secrets"
 description: "Load secrets & mask all loaded secrets"
+
 inputs:
   GPG_PRIVATE_KEY:
     description: "GPG Private Key"
@@ -9,12 +10,10 @@ inputs:
     required: true
   UNLOAD_ENVIRONMENTS:
     description: "Comma separated string of what environment files to load"
+
 runs:
   using: "composite"
   steps:
-    - name: Disable man-db
-      uses: ./.github/composite/disable-mandb
-
     - name: Check GPG secret key & passphrase exists
       shell: bash
       run: |
@@ -37,8 +36,8 @@ runs:
       shell: bash
       run: git-crypt --version
 
-    - name: Run load secrets script
+    - name: Run script
       shell: bash
-      run: bash .github/scripts/load-secrets.sh
+      run: bun .github/scripts/load-secrets
       env:
         UNLOAD_ENVIRONMENTS: ${{ inputs.UNLOAD_ENVIRONMENTS }}
