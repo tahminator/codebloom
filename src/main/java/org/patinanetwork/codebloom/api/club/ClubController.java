@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.club;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.patinanetwork.codebloom.api.admin.body.RegisterClubBody;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/club")
 @Tag(name = "General Club Routes")
+@Timed(value = "controller.execution")
 public class ClubController {
 
     private final ClubService clubService;

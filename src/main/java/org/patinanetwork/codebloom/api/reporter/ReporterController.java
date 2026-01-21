@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.reporter;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.patinanetwork.codebloom.api.reporter.body.IngestErrorsBody;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Reporter route", description = """
     This controller allows the frontend to report anything at runtime (log or error), which will then be ingested by the server.""")
 @RequestMapping("/api/reporter")
+@Timed(value = "controller.execution")
 public class ReporterController {
 
     private final Reporter reporter;

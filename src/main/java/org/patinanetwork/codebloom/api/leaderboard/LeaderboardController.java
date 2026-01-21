@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.leaderboard;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,6 +37,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/leaderboard")
 @Tag(name = "Leaderboard routes")
+@Timed(value = "controller.execution")
 public class LeaderboardController {
 
     private static final int MAX_LEADERBOARD_PAGE_SIZE = 20;

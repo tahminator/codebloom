@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.submission;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,6 +55,7 @@ import org.springframework.web.server.ResponseStatusException;
     such as setting LeetCode username, fetching the problem of the day, retreiving submission data, and more.
     """)
 @RequestMapping("/api/leetcode")
+@Timed(value = "controller.execution")
 public class SubmissionController {
 
     // 5 Minute rate limit to avoid abuse.

@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Basic server metadata")
+@Timed(value = "controller.execution")
 public class ApiController {
 
     @Operation(summary = "Basic metadata about the server")
