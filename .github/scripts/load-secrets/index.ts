@@ -24,7 +24,9 @@ async function main() {
     .map((e) => e.trim())
     .filter(Boolean);
 
-  const loaded = await getEnvVariables(envs, false);
+  const loaded = await getEnvVariables(envs, {
+    mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING: false,
+  });
 
   const githubEnv = process.env.GITHUB_ENV;
   if (!githubEnv) {

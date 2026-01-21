@@ -1,96 +1,126 @@
 import { $ } from "bun";
+import { sendMessage } from "utils/send-message";
+
 import { getEnvVariables } from "../load-secrets/env/load";
 
-type CopyProdDbOptions = {
-  baseDir?: string;
-  environments?: string[];
-};
+const AUTHORIZED_USER = "tahminator";
 
-type Env = {
-  DATABASE_HOST: string;
-  DATABASE_PORT: string;
-  DATABASE_USER: string;
-  DATABASE_PASSWORD: string;
-  PRODUCTION_DATABASE_NAME: string;
-  STAGING_DATABASE_NAME: string;
-};
-
-async function loadEnv(environments: string[], baseDir: string): Promise<Env> {
-  const envVars = await getEnvVariables(environments, baseDir, false);
-
-  const requiredKeys: (keyof Env)[] = [
-    "DATABASE_HOST",
-    "DATABASE_PORT",
-    "DATABASE_USER",
-    "DATABASE_PASSWORD",
-    "PRODUCTION_DATABASE_NAME",
-    "STAGING_DATABASE_NAME",
-  ];
-
-  const missing = requiredKeys.filter((key) => !envVars[key]);
-
-  if (missing.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missing.join(", ")}`,
-    );
+const prId = (() => {
+  const v = process.env.PR_ID;
+  if (!v) {
+    throw new Error("PR_ID is required");
   }
+  const n = Number(v);
+  if (Number.isNaN(n)) {
+    throw new Error("PR_ID must be a number");
+  }
+  return n;
+})();
 
-  return envVars as Env;
+const username = (() => {
+  const v = process.env.GITHUB_ACTOR;
+  if (!v) {
+    throw new Error("GITHUB_ACTOR is required");
+  }
+  return v;
+})();
+
+async function main() {
+  try {
+    if (username !== AUTHORIZED_USER) {
+      throw new Error("You are not authorized!");
+    }
+
+    const env = await getEnvVariables(["production"], {
+      baseDir: "infra",
+    });
+
+    const flywayEnv = {
+      ...env,
+      DATABASE_NAME: env.STAGING_DATABASE_NAME,
+    };
+
+    const pgEnv = {
+      ...env,
+      PGPASSWORD: env.DATABASE_PASSWORD,
+    };
+
+    console.log("Cleaning staging database...");
+    await $.env(flywayEnv)`./mvnw flyway:clean -Dflyway.cleanDisabled=false`;
+
+    console.log("Copying production database to staging...");
+    await $.env(pgEnv)`PGPASSWORD="$DATABASE_PASSWORD" pg_dump \
+      --host="$DATABASE_HOST" \
+      --port="$DATABASE_PORT" \
+      --username="$DATABASE_USER" \
+      --dbname="$PRODUCTION_DATABASE_NAME" \
+      --verbose \
+      --clean \
+      --if-exists \
+      --format=plain \
+      | sed '/SET transaction_timeout/d' \
+      | PGPASSWORD="$DATABASE_PASSWORD" psql \
+          --host="$DATABASE_HOST" \
+          --port="$DATABASE_PORT" \
+          --username="$DATABASE_USER" \
+          --dbname="$STAGING_DATABASE_NAME" \
+          --echo-errors \
+          --single-transaction`;
+
+    console.log("Cleaning unneccesary data...");
+    await $.env(pgEnv)`PGPASSWORD="$DATABASE_PASSWORD" psql \
+      --host="$DATABASE_HOST" \
+      --port="$DATABASE_PORT" \
+      --username="$DATABASE_USER" \
+      --dbname="$STAGING_DATABASE_NAME" \
+      --command="
+      DELETE FROM \"ApiKey\";
+      DELETE FROM \"Auth\";
+      DELETE FROM \"Club\";
+      DELETE FROM \"Session\";
+      
+      -- Scramble non-admin user data
+      UPDATE \"User\" 
+      SET 
+        \"nickname\" = CASE 
+          WHEN \"nickname\" IS NOT NULL THEN 'user_' || encode(gen_random_bytes(8), 'hex')
+          ELSE NULL 
+        END,
+        \"verifyKey\" = encode(gen_random_bytes(16), 'hex'),
+        \"schoolEmail\" = CASE 
+          WHEN \"schoolEmail\" IS NOT NULL THEN 'test_' || encode(gen_random_bytes(4), 'hex') || '@example.com'
+          ELSE NULL 
+        END,
+        \"profileUrl\" = 'https://via.placeholder.com/150'
+      WHERE \"admin\" IS NOT TRUE;
+
+      -- Scramble admin user data
+      UPDATE \"User\" 
+      SET 
+        \"leetcodeUsername\" = NULL
+      WHERE \"admin\" IS TRUE;
+
+      -- Update DiscordClubMetadata for 'Patina Network'
+      UPDATE \"DiscordClubMetadata\" m
+      SET 
+        \"guildId\" = '1389762654452580373',
+        \"leaderboardChannelId\" = '1401739528057655436'
+      FROM \"DiscordClub\" c
+      WHERE c.\"id\" = m.\"discordClubId\"
+        AND c.\"name\" = 'Patina Network';
+    "`;
+
+    await sendMessage(prId, `Database copy command completed successfully!`);
+  } catch (e) {
+    await sendMessage(prId, `Database copy command failed!`);
+    throw e;
+  }
 }
 
-function resolveCwd(baseDir?: string) {
-  return baseDir && baseDir.trim().length > 0 ? baseDir : ".";
-}
-
-export async function copyProdDb(opts: CopyProdDbOptions = {}) {
-  const baseDir = opts.baseDir ?? "";
-  const environments = opts.environments ?? ["production"];
-  const cwd = resolveCwd(baseDir);
-
-  const env = await loadEnv(environments, baseDir);
-
-  const flywayEnv = {
-    ...process.env,
-    DATABASE_NAME: env.STAGING_DATABASE_NAME,
-  } as Record<string, string>;
-
-  const pgEnv = {
-    ...process.env,
-    PGPASSWORD: env.DATABASE_PASSWORD,
-  } as Record<string, string>;
-
-  console.log("Cleaning staging database...");
-  await $.env(
-    flywayEnv,
-  )`cd ${cwd} && ./mvnw flyway:clean -Dflyway.cleanDisabled=false`;
-
-  console.log("Copying production database to staging...");
-  await $.env(pgEnv)`cd ${cwd} && pg_dump \
-    --host=${env.DATABASE_HOST} \
-    --port=${env.DATABASE_PORT} \
-    --username=${env.DATABASE_USER} \
-    --dbname=${env.PRODUCTION_DATABASE_NAME} \
-    --verbose \
-    --clean \
-    --if-exists \
-    --format=plain \
-    | sed '/SET transaction_timeout/d' \
-    | psql \
-        --host=${env.DATABASE_HOST} \
-        --port=${env.DATABASE_PORT} \
-        --username=${env.DATABASE_USER} \
-        --dbname=${env.STAGING_DATABASE_NAME} \
-        --echo-errors \
-        --single-transaction`;
-
-  console.log("Database copy completed successfully!");
-}
-
-copyProdDb({ baseDir: "infra", environments: ["production"] })
+main()
   .then(() => {
     process.exit();
   })
-  .catch((e) => {
-    console.error(e);
+  .catch(() => {
     process.exit(1);
   });
