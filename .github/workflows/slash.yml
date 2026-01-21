@@ -2,57 +2,58 @@ name: Slash Command Dispatch
 run-name: Slash Command Dispatch
 
 on:
-    issue_comment:
-        types: [created]
+  issue_comment:
+    types: [created]
 
 permissions:
-    contents: write
-    issues: write
-    pull-requests: write
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
-    slashCommandDispatch:
-        runs-on: ubuntu-latest
+  slashCommandDispatch:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Get PR head SHA
-              id: pr-head
-              uses: actions/github-script@v7
-              with:
-                  result-encoding: string
-                  script: |
-                      const prId = ${{ github.event.issue.number }};
-                      const { data: pr } = await github.rest.pulls.get({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          pull_number: parseInt(prId, 10)
-                      });
-                       return pr.head.sha;
+    steps:
+      - name: Get PR head SHA
+        id: pr-head
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const prId = ${{ github.event.issue.number }};
+            const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: parseInt(prId, 10)
+            });
+             return pr.head.sha;
 
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-              with:
-                ref: ${{ steps.pr-head.outputs.result }}
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr-head.outputs.result }}
 
-            - name: Setup CI
-              uses: ./.github/composite/setup-ci
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Setup CI
+        uses: ./.github/composite/setup-ci
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-            - name: Load secrets
-              uses: ./.github/composite/load-secrets
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UNLOAD_ENVIRONMENTS: ci
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci
 
-            - name: Slash Command Dispatch
-              uses: peter-evans/slash-command-dispatch@v4
-              with:
-                  token: ${{ env.GH_PAT }}
-                  commands: |
-                      deploy
-                      ai
-                  static-args: |
-                      prId=${{ github.event.issue.number || -1 }}
+      - name: Slash Command Dispatch
+        uses: peter-evans/slash-command-dispatch@v4
+        with:
+          token: ${{ env.GH_PAT }}
+          commands: |
+            deploy
+            ai
+            copy
+          static-args: |
+            prId=${{ github.event.issue.number || -1 }}
