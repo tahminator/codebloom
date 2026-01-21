@@ -1,4 +1,5 @@
 import { useMyRecentLeaderboardData } from "@/lib/api/queries/leaderboard";
+import { getUserSubmissionsUrl } from "@/lib/helper/leaderboardDateRange";
 import { theme } from "@/lib/theme";
 import { Flex, Skeleton, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
@@ -6,7 +7,15 @@ import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-export default function MyCurrentPoints({ userId }: { userId: string }) {
+export default function MyCurrentPoints({
+  userId,
+  startDate,
+  endDate,
+}: {
+  userId: string;
+  startDate?: string;
+  endDate?: string;
+}) {
   const { data, status } = useMyRecentLeaderboardData({ userId });
 
   if (status === "pending") {
@@ -64,13 +73,16 @@ export default function MyCurrentPoints({ userId }: { userId: string }) {
 
   const userData = data.payload;
 
+  const dateRange =
+    startDate ? { startDate, endDate: endDate ?? undefined } : undefined;
+
   return (
     <Flex
       component={Link}
       direction={"column"}
       gap={"md"}
       m={"xs"}
-      to={`/user/${userId}`}
+      to={getUserSubmissionsUrl(userId, dateRange)}
       className="group transition-all"
     >
       <Flex
