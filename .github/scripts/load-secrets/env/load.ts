@@ -13,6 +13,7 @@ let isGitCryptUnlocked = false;
  */
 export async function getEnvVariables(
   environments: string[],
+  baseDir = "",
   mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING = true,
 ): Promise<Record<string, string>> {
   if (!isGitCryptUnlocked) {
@@ -23,7 +24,8 @@ export async function getEnvVariables(
   const loaded = new Map<string, string>();
 
   for (const env of environments) {
-    const envFile = Bun.file(`.env.${env}`);
+    const path = baseDir ? `${baseDir}/.env.${env}` : `.env.${env}`;
+    const envFile = Bun.file(path);
     if (await envFile.exists()) {
       console.log(`Loading ${envFile.name}`);
 
