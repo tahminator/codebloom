@@ -98,6 +98,11 @@ Error Reporting:
 
 ---
 
+> [!NOTE]
+> Codebloom is open-source and happily accepts contributions from the community. However, all pull requests are subject to review by the development team. Please click [here](https://github.com/tahminator/codebloom/wiki/Contributing) to learn more.
+
+---
+
 <!-- INSTRUCTIONS -->
 
 ### Wiki:
