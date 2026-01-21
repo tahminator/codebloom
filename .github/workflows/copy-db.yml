@@ -20,28 +20,8 @@ permissions:
   statuses: write
 
 jobs:
-  authorize:
-    name: Check Tahminator
-    runs-on: ubuntu-latest
-    steps:
-      - name: Authorize User
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const user = context.eventName === 'repository_dispatch' 
-              ? context.payload.sender.login 
-              : context.actor;
-
-            const AUTHORIZED_USER = 'tahminator';
-
-            if (user !== AUTHORIZED_USER) {
-              core.setFailed(`Only @${AUTHORIZED_USER} can use the /copy command.`);
-              process.exit(1);
-            }
-
   copy:
     name: Copy Production Database to Staging
-    needs: authorize
     runs-on: ubuntu-latest
     steps:
       - name: Get PR head SHA
@@ -72,28 +52,15 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Load secrets
-        uses: ./.github/composite/load-secrets
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
         with:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          UNLOAD_ENVIRONMENTS: ci
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
 
       - name: Copy Production Database to Staging
         run: bun .github/scripts/copy-prod-db/index.ts
-
-      - name: Post success message
-        uses: ./.github/composite/send-message
-        if: success()
-        with:
-          prId: ${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
-          message: "Successfully copied production database to staging"
-          token: ${{ env.GH_PAT }}
-
-      - name: Post failure message
-        uses: ./.github/composite/send-message
-        if: failure()
-        with:
-          prId: ${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
-          message: "Failed to copy production database to staging."
-          token: ${{ env.GH_PAT }}
+        env:
+          PR_ID: ${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
+          GITHUB_ACTOR: ${{ github.event.client_payload.github.actor || github.actor }}

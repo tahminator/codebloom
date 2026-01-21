@@ -1,9 +1,15 @@
 import { $ } from "bun";
 
+type Opts = {
+  baseDir?: string;
+  mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING?: boolean;
+};
+
 let isGitCryptUnlocked = false;
 
 /**
  * @param environments - List of environment files to load.
+ * @param baseDir - Directory of environment variable.
  * @param mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING - Should variables be masked. Defaults to `true`. __NOTE: This will only work in a GitHub Action runner.__
  *
  * @returns a map of the loaded environments as a key and value inside of a map.
@@ -13,9 +19,12 @@ let isGitCryptUnlocked = false;
  */
 export async function getEnvVariables(
   environments: string[],
-  baseDir = "",
-  mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING = true,
+  opts?: Opts,
 ): Promise<Record<string, string>> {
+  const {
+    baseDir = "",
+    mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING = true,
+  } = opts ?? {};
   if (!isGitCryptUnlocked) {
     await $`git-crypt unlock`.nothrow();
     isGitCryptUnlocked = true;
