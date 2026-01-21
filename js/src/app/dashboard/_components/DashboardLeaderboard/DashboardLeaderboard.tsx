@@ -3,11 +3,16 @@ import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
 import {
+  useCurrentLeaderboardMetadataQuery,
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
 } from "@/lib/api/queries/leaderboard";
 import { Api } from "@/lib/api/types";
 import { ApiUtils } from "@/lib/api/utils";
+import {
+  formatLeaderboardDateRange,
+  getUserSubmissionsUrl,
+} from "@/lib/helper/leaderboardDateRange";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -40,6 +45,12 @@ export default function LeaderboardForDashboard({
       pageSize: 5,
       tieToUrl: false,
     });
+
+  const metadataQuery = useCurrentLeaderboardMetadataQuery();
+  const dateRange =
+    metadataQuery.data?.success ?
+      formatLeaderboardDateRange(metadataQuery.data.payload)
+    : undefined;
   const [selectedFilterKey, setSelectedFilterKey] = useState<
     string | undefined
   >();
@@ -140,7 +151,11 @@ export default function LeaderboardForDashboard({
       />
       {!inTop5 && (
         <>
-          <MyCurrentPoints userId={userId} />
+          <MyCurrentPoints
+            userId={userId}
+            startDate={dateRange?.startDate}
+            endDate={dateRange?.endDate}
+          />
           <Divider orientation={"horizontal"} />
         </>
       )}
@@ -175,7 +190,7 @@ export default function LeaderboardForDashboard({
           return (
             <Flex
               component={Link}
-              to={`/user/${user.id}`}
+              to={getUserSubmissionsUrl(user.id, dateRange)}
               key={idx}
               direction={"row"}
               justify={"space-between"}
