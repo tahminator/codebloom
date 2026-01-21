@@ -1,5 +1,6 @@
+import type { components } from "@/lib/api/types/schema";
+
 import TagList from "@/components/ui/tags/TagList";
-import { UserTag } from "@/lib/api/types/usertag";
 import { tagFF } from "@/lib/ff";
 import { getUserSubmissionsUrl } from "@/lib/helper/leaderboardDateRange";
 import { OrdinalString } from "@/lib/helper/ordinal";
@@ -41,7 +42,7 @@ export default function LeaderboardCard({
   width: CSSProperties["width"];
   userId: string;
   nickname: string | null;
-  tags?: UserTag[];
+  tags?: components["schemas"]["UserTag"][];
   isLoading?: boolean;
   embedded?: boolean;
   startDate?: string;

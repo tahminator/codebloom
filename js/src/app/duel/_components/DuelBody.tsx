@@ -6,7 +6,7 @@ import {
   useMyDuelOrPartyData,
 } from "@/lib/api/queries/duels/sse";
 import { Api } from "@/lib/api/types";
-import { LobbyStatus } from "@/lib/api/types/autogen/schema";
+import { LobbyStatus } from "@/lib/api/types/schema";
 import { Flex, Loader } from "@mantine/core";
 
 type User = Api<"UserDto">;

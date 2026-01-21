@@ -1,4 +1,4 @@
-import { components } from "@/lib/api/types/autogen/schema";
+import { components } from "@/lib/api/types/schema";
 
 /**
  * Equivalent to an empty object: {}

@@ -3,7 +3,7 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { Tag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/schema";
 import { tagFF } from "@/lib/ff";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";

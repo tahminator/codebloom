@@ -1,3 +1,5 @@
+import type { components } from "@/lib/api/types/schema";
+
 import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardLeaderboard/DashboardLeaderboardSkeleton";
 import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
@@ -6,7 +8,6 @@ import {
   useCurrentLeaderboardUsersQuery,
   useFixMyPointsPrefetch,
 } from "@/lib/api/queries/leaderboard";
-import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
 import { theme } from "@/lib/theme";
 import {
@@ -30,7 +31,7 @@ export default function LeaderboardForDashboard({
   userTags,
 }: {
   userId: string;
-  userTags: UserTag[];
+  userTags: components["schemas"]["UserTag"][];
 }) {
   // Hack to fix a race condition.
   useFixMyPointsPrefetch({ userId });

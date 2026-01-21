@@ -1,4 +1,4 @@
-import { LeetcodeTopicEnum } from "@/lib/api/types/autogen/schema";
+import { LeetcodeTopicEnum } from "@/lib/api/types/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { Button, Chip, Flex, Popover, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";

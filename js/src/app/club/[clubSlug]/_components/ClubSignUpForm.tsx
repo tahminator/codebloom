@@ -1,3 +1,5 @@
+import type { components } from "@/lib/api/types/schema";
+
 import ClubSignUpSkeleton from "@/app/club/[clubSlug]/_components/ClubSignUpSkeleton";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
@@ -6,7 +8,6 @@ import {
   useVerifyPasswordMutation,
 } from "@/lib/api/queries/club";
 import { clubVerificationFormSchema } from "@/lib/api/schema/club";
-import { UserTag } from "@/lib/api/types/usertag";
 import {
   Button,
   Center,
@@ -26,7 +27,7 @@ import z from "zod";
 
 type ClubSignUpProps = {
   userId: string;
-  userTags: UserTag[];
+  userTags: components["schemas"]["UserTag"][];
   clubSlug: string;
 };
 
