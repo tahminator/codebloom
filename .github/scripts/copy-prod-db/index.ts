@@ -1,7 +1,9 @@
 import { $ } from "bun";
+import { getEnvVariables } from "../load-secrets/env/load";
 
 type CopyProdDbOptions = {
   baseDir?: string;
+  environments?: string[];
 };
 
 type Env = {
@@ -13,7 +15,9 @@ type Env = {
   STAGING_DATABASE_NAME: string;
 };
 
-function loadEnv(): Env {
+async function loadEnv(environments: string[], baseDir: string): Promise<Env> {
+  const envVars = await getEnvVariables(environments, baseDir, false);
+
   const requiredKeys: (keyof Env)[] = [
     "DATABASE_HOST",
     "DATABASE_PORT",
@@ -23,7 +27,7 @@ function loadEnv(): Env {
     "STAGING_DATABASE_NAME",
   ];
 
-  const missing = requiredKeys.filter((key) => !process.env[key]);
+  const missing = requiredKeys.filter((key) => !envVars[key]);
 
   if (missing.length > 0) {
     throw new Error(
@@ -31,14 +35,7 @@ function loadEnv(): Env {
     );
   }
 
-  return {
-    DATABASE_HOST: process.env.DATABASE_HOST!,
-    DATABASE_PORT: process.env.DATABASE_PORT!,
-    DATABASE_USER: process.env.DATABASE_USER!,
-    DATABASE_PASSWORD: process.env.DATABASE_PASSWORD!,
-    PRODUCTION_DATABASE_NAME: process.env.PRODUCTION_DATABASE_NAME!,
-    STAGING_DATABASE_NAME: process.env.STAGING_DATABASE_NAME!,
-  };
+  return envVars as Env;
 }
 
 function resolveCwd(baseDir?: string) {
@@ -47,9 +44,10 @@ function resolveCwd(baseDir?: string) {
 
 export async function copyProdDb(opts: CopyProdDbOptions = {}) {
   const baseDir = opts.baseDir ?? "";
+  const environments = opts.environments ?? ["production"];
   const cwd = resolveCwd(baseDir);
 
-  const env = loadEnv();
+  const env = await loadEnv(environments, baseDir);
 
   const flywayEnv = {
     ...process.env,
@@ -88,7 +86,7 @@ export async function copyProdDb(opts: CopyProdDbOptions = {}) {
   console.log("Database copy completed successfully!");
 }
 
-copyProdDb()
+copyProdDb({ baseDir: "infra", environments: ["production"] })
   .then(() => {
     process.exit();
   })

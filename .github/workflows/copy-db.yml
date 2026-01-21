@@ -77,7 +77,7 @@ jobs:
         with:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          UNLOAD_ENVIRONMENTS: infra/.env.production
+          UNLOAD_ENVIRONMENTS: ci
 
       - name: Copy Production Database to Staging
         run: bun .github/scripts/copy-prod-db/index.ts
