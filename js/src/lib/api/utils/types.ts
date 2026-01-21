@@ -1,4 +1,4 @@
-import type { components } from "@/lib/api/types/schema";
+import type { Api } from "@/lib/api/types";
 
 import { Tag } from "@/lib/api/types/schema";
 
@@ -64,7 +64,7 @@ export namespace ApiTypeUtils {
    * @see {@link UserTag}
    * @see {@link FilteredTag}
    */
-  export type FilteredUserTag = components["schemas"]["UserTag"] & {
+  export type FilteredUserTag = Api<"UserTag"> & {
     tag: FilteredTag;
   };
 
