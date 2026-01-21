@@ -1,0 +1,99 @@
+name: Copy Production DB to Staging
+run-name: Copy Production DB to Staging
+
+concurrency:
+  group: copy-db-pr-${{ github.event.client_payload.slash_command.args.named.prId }}
+  cancel-in-progress: true
+
+on:
+  repository_dispatch:
+    types: [copy-command]
+  workflow_dispatch:
+    inputs:
+      prId:
+        description: "PR to confirm success to"
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  authorize:
+    name: Check Tahminator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authorize User
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const user = context.eventName === 'repository_dispatch' 
+              ? context.payload.sender.login 
+              : context.actor;
+
+            const AUTHORIZED_USER = 'tahminator';
+
+            if (user !== AUTHORIZED_USER) {
+              core.setFailed(`Only @${AUTHORIZED_USER} can use the /copy command.`);
+              process.exit(1);
+            }
+
+  copy:
+    name: Copy Production Database to Staging
+    needs: authorize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR head SHA
+        id: pr-head
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const payload = context.payload;
+            const prId = payload.inputs ? payload.inputs.prId : payload.client_payload.slash_command.args.named.prId;
+
+            const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: parseInt(prId, 10)
+            });
+
+            return pr.head.sha;
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr-head.outputs.result }}
+
+      - name: Setup CI
+        uses: ./.github/composite/setup-ci
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: infra/.env.production
+
+      - name: Copy Production Database to Staging
+        run: bash infra/copy-prod-db.sh
+
+      - name: Post success message
+        uses: ./.github/composite/send-message
+        if: success()
+        with:
+          prId: ${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
+          message: "Successfully copied production database to staging"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post failure message
+        uses: ./.github/composite/send-message
+        if: failure()
+        with:
+          prId: ${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
+          message: "Failed to copy production database to staging."
+          token: ${{ env.GH_PAT }}
