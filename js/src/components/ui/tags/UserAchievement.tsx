@@ -1,6 +1,6 @@
 import AchievementCarousel from "@/components/ui/carousel/ItemCarousel";
 import { Api } from "@/lib/api/types";
-import { AchievementPlaceEnum } from "@/lib/api/types/autogen/schema";
+import { AchievementPlaceEnum } from "@/lib/api/types/schema";
 import { ApiUtils } from "@/lib/api/utils";
 import { Image, Tooltip, Box, Text, Stack, Divider } from "@mantine/core";
 import dayjs from "dayjs";

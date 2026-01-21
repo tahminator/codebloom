@@ -1,4 +1,4 @@
-import { Tag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/schema";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
 /**

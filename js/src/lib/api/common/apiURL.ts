@@ -1,5 +1,5 @@
 import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
-import { operations, paths } from "@/lib/api/types/autogen/schema";
+import { operations, paths } from "@/lib/api/types/schema";
 import { If } from "@/lib/reporter/types/optional";
 
 type MaybeParams<T> =

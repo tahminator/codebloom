@@ -1,19 +1,20 @@
+import type { components } from "@/lib/api/types/schema";
+
 import AchievementCarousel from "@/components/ui/carousel/ItemCarousel";
-import { UserTag } from "@/lib/api/types/usertag";
 import { ApiUtils } from "@/lib/api/utils";
 import { tagFF } from "@/lib/ff";
 import { Image, Tooltip, Stack, Divider, Text } from "@mantine/core";
 import { useMemo } from "react";
 
 interface TagListProps {
-  tags: UserTag[];
+  tags: components["schemas"]["UserTag"][];
   size?: number;
   gap?: string | number;
   expanded?: boolean;
 }
 
 interface TagBadgeProps {
-  userTag: UserTag;
+  userTag: components["schemas"]["UserTag"];
   size: number;
 }
 

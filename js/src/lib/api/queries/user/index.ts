@@ -1,5 +1,5 @@
 import { ApiURL } from "@/lib/api/common/apiURL";
-import { LeetcodeTopicEnum } from "@/lib/api/types/autogen/schema";
+import { LeetcodeTopicEnum } from "@/lib/api/types/schema";
 import { usePagination } from "@/lib/hooks/usePagination";
 import useURLDateRange from "@/lib/hooks/useURLDateRange";
 import { useURLState } from "@/lib/hooks/useUrlState";

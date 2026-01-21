@@ -1,5 +1,6 @@
-import { Tag } from "@/lib/api/types/autogen/schema";
-import { UserTag } from "@/lib/api/types/usertag";
+import type { components } from "@/lib/api/types/schema";
+
+import { Tag } from "@/lib/api/types/schema";
 
 /**
  * A collection of helpful types to help transform & use data returned from the API.
@@ -63,7 +64,7 @@ export namespace ApiTypeUtils {
    * @see {@link UserTag}
    * @see {@link FilteredTag}
    */
-  export type FilteredUserTag = UserTag & {
+  export type FilteredUserTag = components["schemas"]["UserTag"] & {
     tag: FilteredTag;
   };
 

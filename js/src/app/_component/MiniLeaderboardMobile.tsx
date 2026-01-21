@@ -2,7 +2,7 @@ import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeader
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
-import { Tag } from "@/lib/api/types/autogen/schema";
+import { Tag } from "@/lib/api/types/schema";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
