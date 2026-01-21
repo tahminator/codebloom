@@ -103,6 +103,9 @@ ci-test-stg pr_name pr_id:
 ci-test-ai pr_name pr_id:
   gh workflow run .github/workflows/ai-command.yml --ref {{pr_name}} --field prId={{pr_id}}
 
+ci-test-copy pr_name pr_id:
+  gh workflow run .github/workflows/copy-db.yml --ref {{pr_name}} --field prId={{pr_id}}
+
 # Interactive script to add a user's GPG public key so they can decrypt keys
 git-crypt-add-user:
   cd scripts && pnpm i && pnpm run git-crypt-add-user && clear && node git-crypt/add-user
