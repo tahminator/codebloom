@@ -19,8 +19,12 @@ import {
   ScrollArea,
   Group,
   CopyButton,
+  Pagination,
+  ActionIcon,
 } from "@mantine/core";
-import { useState } from "react";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconMaximize } from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 
 type DuelData = Api<"DuelData">;
 type User = Api<"UserDto">;
@@ -32,6 +36,8 @@ type Problems = {
   language?: string;
   topics?: Array<{ id: string; topic: unknown }>;
 };
+
+type SectionKey = "player1" | "available" | "player2";
 
 const getPlayerDisplayName = (player: User | null): string => {
   return player?.leetcodeUsername || "Player";
@@ -57,6 +63,9 @@ export default function DuelActiveBody({
 }) {
   const { players, questions, lobby } = duelData;
   const [showForfeit, setShowForfeit] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const [expanded, setExpanded] = useState<SectionKey | null>(null);
+  const [activePage, setActivePage] = useState(1);
 
   const [playerOne, playerTwo] = players;
 
@@ -71,36 +80,215 @@ export default function DuelActiveBody({
     currentUser.id === playerTwo.id
   );
 
-  // Replace with actual time calculation from duelData.lobby.expiresAt
+  // TODO: Replace with actual time calculation from duelData.lobby.expiresAt
   const mockTimeLeft = "29:45"; // Format: MM:SS
+
+  const createSections = (hideTitle = false, compact = false) => [
+    {
+      key: "player1" as const,
+      title: getPlayerDisplayName(playerOne),
+      content: (
+        <PlayerSolvedSection
+          player={playerOne}
+          solved={playerOneSolved}
+          showControls={isCurrentPlayerOne}
+          compact={compact}
+          hideTitle={hideTitle}
+        />
+      ),
+    },
+    {
+      key: "available" as const,
+      title: "Available",
+      content: (
+        <QuestionsSection
+          questions={questions}
+          compact={compact}
+          hideTitle={hideTitle}
+        />
+      ),
+    },
+    {
+      key: "player2" as const,
+      title: getPlayerDisplayName(playerTwo),
+      content: (
+        <PlayerSolvedSection
+          player={playerTwo}
+          solved={playerTwoSolved}
+          showControls={isCurrentPlayerTwo}
+          compact={compact}
+          hideTitle={hideTitle}
+        />
+      ),
+    },
+  ];
+
+  const mobileSections = useMemo(
+    () => createSections(true, false),
+    [
+      playerOne,
+      playerTwo,
+      playerOneSolved,
+      playerTwoSolved,
+      questions,
+      isCurrentPlayerOne,
+      isCurrentPlayerTwo,
+    ],
+  );
+
+  const copyJoinCodeButton = () => (
+    <CopyButton value={lobby.joinCode}>
+      {({ copied, copy }) => (
+        <Button
+          size="md"
+          variant="filled"
+          onClick={copy}
+          color="dark.7"
+          radius="md"
+        >
+          <Group gap="xs">
+            <Text fw={700} ff="monospace" c="white" size="lg">
+              {lobby.joinCode}
+            </Text>
+            <Badge
+              color={copied ? "teal" : undefined}
+              variant="filled"
+              size="md"
+            >
+              {copied ? "✓ Copied" : "Copy"}
+            </Badge>
+          </Group>
+        </Button>
+      )}
+    </CopyButton>
+  );
+
+  const countdownTimer = () => (
+    <Card withBorder bg="dark.8" p="xs">
+      <Text
+        size="xl"
+        fw={650}
+        ta="center"
+        c="white"
+        w={isMobile ? 300 : undefined}
+      >
+        {mockTimeLeft}
+      </Text>
+    </Card>
+  );
+
+  const playerControls = (isPlayer: boolean) =>
+    isPlayer && (
+      <>
+        <Button size="sm" onClick={() => {}}>
+          Submit
+        </Button>
+        <Button color="red" size="sm" onClick={() => setShowForfeit(true)}>
+          Forfeit
+        </Button>
+      </>
+    );
+
+  if (isMobile) {
+    return (
+      <>
+        <Flex direction="column" h="90vh" w="100%">
+          <Box flex={1} w="100%" px="md" py="md">
+            {activePage === 1 && (
+              <Stack gap="md" h="100%" align="center" justify="center">
+                {copyJoinCodeButton()}
+                <Group gap="xl" align="center">
+                  <PlayerCard player={playerOne} />
+                  <PlayerCard player={playerTwo} />
+                </Group>
+                {(isCurrentPlayerOne || isCurrentPlayerTwo) && (
+                  <Button
+                    color="red"
+                    size="sm"
+                    onClick={() => setShowForfeit(true)}
+                    w={150}
+                  >
+                    Forfeit
+                  </Button>
+                )}
+              </Stack>
+            )}
+            {activePage === 2 && (
+              <Flex
+                direction="column"
+                h="90vh"
+                w="100%"
+                align="center"
+                justify="center"
+                gap="md"
+              >
+                {countdownTimer()}
+                <Card p="md" withBorder w={370} h="85vh">
+                  <Stack gap={0} h="100%">
+                    {(expanded ?
+                      mobileSections.filter((s) => s.key === expanded)
+                    : mobileSections
+                    ).map((section, idx, arr) => (
+                      <Box
+                        key={section.key}
+                        flex={expanded ? 1 : undefined}
+                        h={expanded ? "100%" : "auto"}
+                      >
+                        <Group justify="space-between" align="center" mb="xs">
+                          <Text size="sm" fw={600}>
+                            {section.title}
+                          </Text>
+                          <ActionIcon
+                            variant="subtle"
+                            onClick={() =>
+                              setExpanded((prev) =>
+                                prev === section.key ? null : section.key,
+                              )
+                            }
+                          >
+                            <IconMaximize size={18} />
+                          </ActionIcon>
+                        </Group>
+                        {section.content}
+                        {idx < arr.length - 1 && !expanded && (
+                          <Divider my="md" />
+                        )}
+                      </Box>
+                    ))}
+                  </Stack>
+                </Card>
+                {(isCurrentPlayerOne || isCurrentPlayerTwo) && (
+                  <Stack gap="sm" align="center">
+                    <Button size="md" onClick={() => {}} w={200}>
+                      Submit
+                    </Button>
+                  </Stack>
+                )}
+              </Flex>
+            )}
+            <Flex justify="center" py="md">
+              <Pagination
+                total={2}
+                value={activePage}
+                onChange={setActivePage}
+                size="md"
+              />
+            </Flex>
+          </Box>
+        </Flex>
+        <ForfeitModal
+          opened={showForfeit}
+          onClose={() => setShowForfeit(false)}
+          onConfirm={() => setShowForfeit(false)}
+        />
+      </>
+    );
+  }
 
   return (
     <>
       <Box pos="fixed" top={20} right={20}>
-        <CopyButton value={lobby.joinCode}>
-          {({ copied, copy }) => (
-            <Button
-              size="md"
-              variant="filled"
-              onClick={copy}
-              color={"dark.7"}
-              bdrs={"md"}
-            >
-              <Group>
-                <Text fw={700} ff="monospace" c="white" size="lg">
-                  {lobby.joinCode}
-                </Text>
-                <Badge
-                  color={copied ? "teal" : undefined}
-                  variant="filled"
-                  size="md"
-                >
-                  {copied ? "✓ Copied" : "Copy"}
-                </Badge>
-              </Group>
-            </Button>
-          )}
-        </CopyButton>
+        {copyJoinCodeButton()}
       </Box>
       <Box pos="fixed" top={20} left={20}>
         <Card withBorder bg="dark.8">
@@ -109,23 +297,10 @@ export default function DuelActiveBody({
           </Text>
         </Card>
       </Box>
-      <Flex gap="lg" w="100%" h="85vh" justify="center" align="center">
+      <Flex gap="lg" w="100%" h="100vh" justify="center" align="center">
         <Stack>
           <PlayerCard player={playerOne} />
-          {isCurrentPlayerOne && (
-            <>
-              <Button size="sm" onClick={() => {}}>
-                Submit
-              </Button>
-              <Button
-                color="red"
-                size="sm"
-                onClick={() => setShowForfeit(true)}
-              >
-                Forfeit
-              </Button>
-            </>
-          )}
+          {playerControls(isCurrentPlayerOne)}
         </Stack>
         <Card p="md" withBorder w={400} h="80vh">
           <Stack gap={0} h="100%">
@@ -138,20 +313,7 @@ export default function DuelActiveBody({
         </Card>
         <Stack>
           <PlayerCard player={playerTwo} />
-          {isCurrentPlayerTwo && (
-            <>
-              <Button size="sm" onClick={() => {}}>
-                Submit
-              </Button>
-              <Button
-                color="red"
-                size="sm"
-                onClick={() => setShowForfeit(true)}
-              >
-                Forfeit
-              </Button>
-            </>
-          )}
+          {playerControls(isCurrentPlayerTwo)}
         </Stack>
       </Flex>
       <ForfeitModal
@@ -164,8 +326,12 @@ export default function DuelActiveBody({
 }
 
 function PlayerCard({ player }: { player: User | null }) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const size = isMobile ? 150 : 175;
+  const avatarSize = isMobile ? 65 : 70;
+
   return (
-    <Card radius="md" withBorder p="md" w={175} h={175}>
+    <Card radius="md" withBorder p="md" w={size} h={size}>
       <Flex
         direction="column"
         align="center"
@@ -173,7 +339,7 @@ function PlayerCard({ player }: { player: User | null }) {
         h="100%"
         gap="sm"
       >
-        <Avatar size={70}>{getPlayerAvatar(player)}</Avatar>
+        <Avatar size={avatarSize}>{getPlayerAvatar(player)}</Avatar>
         <Text size="sm" fw={600} ta="center">
           {getPlayerDisplayName(player)}
         </Text>
@@ -185,41 +351,98 @@ function PlayerCard({ player }: { player: User | null }) {
 function PlayerSolvedSection({
   player,
   solved = [],
+  showControls = false,
+  compact = false,
+  hideTitle = false,
 }: {
   player: User | null;
   solved?: Problems[];
+  showControls?: boolean;
+  compact?: boolean;
+  hideTitle?: boolean;
 }) {
+  const emptyMessage = (
+    <Text size="sm" c="dimmed">
+      No solved problems yet
+    </Text>
+  );
+  const problemsList =
+    solved.length > 0 ?
+      solved.map((q) => <QuestionCard key={q.id} question={q} />)
+    : emptyMessage;
+
+  if (compact) {
+    return (
+      <Stack gap="sm">
+        <Group align="center" gap="sm">
+          <Avatar size={48}>{getPlayerAvatar(player)}</Avatar>
+          <Text fw={600}>{getPlayerDisplayName(player)}</Text>
+        </Group>
+        <ScrollArea h={180} type="always" offsetScrollbars>
+          <Stack gap="xs">{problemsList}</Stack>
+        </ScrollArea>
+        {showControls && (
+          <Group grow>
+            <Button color="red" variant="light" radius="md">
+              Forfeit
+            </Button>
+          </Group>
+        )}
+      </Stack>
+    );
+  }
+
   return (
     <Box pb="md" flex={1} style={{ overflow: "hidden" }}>
-      <Text size="sm" fw={600} mb="xs" ta="center">
-        {getPlayerDisplayName(player)}'s problem(s) solved
-      </Text>
+      {!hideTitle && (
+        <Text size="sm" fw={600} mb="xs" ta="center">
+          {getPlayerDisplayName(player)}
+        </Text>
+      )}
       <ScrollArea h="100%">
-        <Stack gap="xs">
-          {solved.length > 0 ?
-            solved.map((question) => (
-              <QuestionCard key={question.id} question={question} />
-            ))
-          : null}
-        </Stack>
+        <Stack gap="xs">{problemsList}</Stack>
       </ScrollArea>
     </Box>
   );
 }
 
-function QuestionsSection({ questions }: { questions?: Problems[] }) {
+function QuestionsSection({
+  questions = [],
+  compact = false,
+  hideTitle = false,
+}: {
+  questions?: Problems[];
+  compact?: boolean;
+  hideTitle?: boolean;
+}) {
+  const emptyMessage = (
+    <Text size="sm" c="dimmed">
+      No available questions
+    </Text>
+  );
+  const questionsList =
+    questions.length > 0 ?
+      questions.map((q) => <QuestionCard key={q.id} question={q} />)
+    : emptyMessage;
+
+  if (compact) {
+    return (
+      <Stack gap="sm">
+        <ScrollArea h={220} type="always" offsetScrollbars>
+          <Stack gap="xs">{questionsList}</Stack>
+        </ScrollArea>
+      </Stack>
+    );
+  }
+
   return (
     <Box flex={1}>
-      <Text size="sm" fw={600} mb="xs" ta="center">
-        Available
-      </Text>
-      <Stack gap="xs">
-        {questions && questions.length > 0 ?
-          questions.map((question) => (
-            <QuestionCard key={question.id} question={question} />
-          ))
-        : null}
-      </Stack>
+      {!hideTitle && (
+        <Text size="sm" fw={600} mb="xs" ta="center">
+          Available
+        </Text>
+      )}
+      <Stack gap="xs">{questionsList}</Stack>
     </Box>
   );
 }
@@ -252,28 +475,28 @@ function ForfeitModal({
   );
 }
 
+const getDifficultyColor = (difficulty: string) => {
+  const difficultyMap: Record<string, string | undefined> = {
+    Easy: undefined,
+    Medium: "yellow",
+    Hard: "red",
+  };
+  return difficultyMap[difficulty];
+};
+
+const getAcceptanceColor = (rate: number) => {
+  const percentage = rate * 100;
+  if (percentage >= 75) return undefined;
+  if (percentage >= 50) return "yellow";
+  return "red";
+};
+
 function QuestionCard({ question }: { question: Problems }) {
   const getTopicName = (t: unknown): string => {
     const fn = ApiUtils.getTopicEnumMetadataByTopicEnum as unknown as (
       x: unknown,
     ) => { name: string };
     return fn(t).name;
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    const difficultyMap: Record<string, string | undefined> = {
-      Easy: undefined,
-      Medium: "yellow",
-      Hard: "red",
-    };
-    return difficultyMap[difficulty];
-  };
-
-  const getAcceptanceColor = (rate: number) => {
-    const percentage = rate * 100;
-    if (percentage >= 75) return undefined;
-    if (percentage >= 50) return "yellow";
-    return "red";
   };
 
   const LanguageIcon =
