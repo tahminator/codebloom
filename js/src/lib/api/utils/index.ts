@@ -1,4 +1,4 @@
-import type { components } from "@/lib/api/types/schema";
+import type { Api } from "@/lib/api/types";
 
 import { LeetcodeTopicEnum, Tag } from "@/lib/api/types/schema";
 import { TAG_METADATA_LIST, UNUSED_TAGS } from "@/lib/api/utils/metadata/tag";
@@ -16,7 +16,7 @@ export class ApiUtils {
   private static readonly _TOPIC_METADATA_LIST = TOPIC_METADATA_LIST;
 
   private static _isSupportedTag(
-    tag: components["schemas"]["UserTag"],
+    tag: Api<"UserTag">,
   ): tag is ApiTypeUtils.FilteredUserTag {
     return !ApiUtils._UNUSED_TAGS.includes(tag.tag);
   }
@@ -133,7 +133,7 @@ export class ApiUtils {
    * @see {@link _UNUSED_TAGS}
    */
   static filterUnusedTags(
-    tags: components["schemas"]["UserTag"][],
+    tags: Api<"UserTag">[],
   ): ApiTypeUtils.FilteredUserTag[] {
     return tags.filter(ApiUtils._isSupportedTag);
   }

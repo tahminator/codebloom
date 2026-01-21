@@ -1,4 +1,4 @@
-import { components } from "@/lib/api/types/schema";
+import type { Api } from "@/lib/api/types";
 
 /**
  * Equivalent to an empty object: {}
@@ -16,4 +16,4 @@ import { components } from "@/lib/api/types/schema";
  * }
  * ```
  */
-export type Empty = components["schemas"]["Empty"];
+export type Empty = Api<"Empty">;
