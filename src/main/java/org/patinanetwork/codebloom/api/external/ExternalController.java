@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.external;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Tag(name = "External Api Routes", description = """
     These routes house the logic for External Apis. """)
 @RequestMapping("/api/external")
+@Timed(value = "controller.execution")
 public class ExternalController {
 
     private final ApiKeyRepository apiKeyRepository;

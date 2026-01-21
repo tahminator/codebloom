@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.user.v2;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
         description =
                 "This controller is responsible for handling general user data, such as user profile, user submissions, and more.")
 @RequestMapping("/api/user/v2")
+@Timed(value = "controller.execution")
 public class UserV2Controller {
 
     private final QuestionRepository questionRepository;

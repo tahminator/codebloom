@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.duel;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,6 +41,7 @@ import org.springframework.web.server.ResponseStatusException;
     This controller houses the logic for live Leetcode duels. """)
 @RequestMapping("/api/duel")
 @Slf4j
+@Timed(value = "controller.execution")
 public class DuelController {
 
     private final Env env;

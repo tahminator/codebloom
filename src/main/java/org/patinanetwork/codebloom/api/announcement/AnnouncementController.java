@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.announcement;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
         as well as admins being able to set a new announcement.
     """)
 @RequestMapping("/api/announcement")
+@Timed(value = "controller.execution")
 public class AnnouncementController {
 
     private final Protector protector;

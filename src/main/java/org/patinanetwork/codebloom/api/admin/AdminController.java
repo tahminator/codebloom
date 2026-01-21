@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.admin;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,6 +44,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @Tag(name = "Admin routes", description = "This controller is responsible for handling all admin routes.")
 @RequestMapping("/api/admin")
+@Timed(value = "controller.execution")
 public class AdminController {
 
     private final UserRepository userRepository;

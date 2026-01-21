@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.auth;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,6 +54,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 @Tag(name = "Authentication Routes")
 @RequestMapping("/api/auth")
+@Timed(value = "controller.execution")
 public class AuthController {
 
     private static final double SECONDS_TO_WAIT = 10;
