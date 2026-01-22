@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.api.auth.security;
 
+import io.micrometer.core.annotation.Timed;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,6 @@ import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
 import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import org.patinanetwork.codebloom.common.time.StandardizedLocalDateTime;
-import org.patinanetwork.codebloom.common.utils.log.LogExecutionTime;
 import org.patinanetwork.codebloom.common.utils.pair.Pair;
 import org.patinanetwork.codebloom.jda.client.JDAClient;
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     @Override
-    @LogExecutionTime(reportToDiscord = true)
+    @Timed(value = "controller.execution")
     public void onAuthenticationSuccess(
             final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication)
             throws IOException, ServletException {
