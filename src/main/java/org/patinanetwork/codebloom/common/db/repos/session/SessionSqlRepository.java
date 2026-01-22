@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 import javax.sql.DataSource;
+import org.patinanetwork.codebloom.common.db.helper.NamedPreparedStatement;
 import org.patinanetwork.codebloom.common.db.models.Session;
 import org.springframework.stereotype.Component;
 
@@ -111,11 +112,16 @@ public class SessionSqlRepository implements SessionRepository {
 
     @Override
     public boolean deleteSessionsByUserId(final String userId) {
-        String sql = "DELETE FROM \"Session\" WHERE \"userId\"=?";
+        String sql = """
+                DELETE FROM
+                    "Session"
+                WHERE
+                    "userId" = :userId
+            """;
 
         try (Connection conn = ds.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setObject(1, UUID.fromString(userId));
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("userId", UUID.fromString(userId));
             int rowsAffected = stmt.executeUpdate();
 
             return rowsAffected > 0;
