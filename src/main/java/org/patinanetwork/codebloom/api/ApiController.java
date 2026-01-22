@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.utilities.ServerMetadataObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Timed(value = "controller.execution")
 public class ApiController {
 
+    @Value("${app.commit.sha:unknown}")
+    private String commitSha;
+
     @Operation(summary = "Basic metadata about the server")
     @GetMapping
     public ResponseEntity<ApiResponder<ServerMetadataObject>> apiIndex(final HttpServletRequest request) {
-        return ResponseEntity.ok().body(ApiResponder.success("Hello from Codebloom!", new ServerMetadataObject()));
+        return ResponseEntity.ok()
+                .body(ApiResponder.success("Hello from Codebloom!", new ServerMetadataObject(commitSha)));
     }
 }

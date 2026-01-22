@@ -10,9 +10,9 @@ public class ServerMetadataObject {
     private String description;
     private ArrayList<String> authors;
 
-    public ServerMetadataObject() {
+    public ServerMetadataObject(final String commitSha) {
         this.name = "Codebloom";
-        this.version = "v1.0.0";
+        this.version = commitSha;
         this.description = "LeetCode leaderboard for Patina Network members to track progress and motivate each other.";
         this.authors = new ArrayList<>(Arrays.asList(
                 "Alisha Zaman", "Alfardil Alam", "Angela Yu", "Tahmid Ahmed", "Arshadul Monir", "Nancy Huang"));
