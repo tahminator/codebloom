@@ -80,7 +80,7 @@ jobs:
           UNLOAD_ENVIRONMENTS: infra/.env.production
 
       - name: Copy Production Database to Staging
-        run: bash infra/copy-prod-db.sh
+        run: bun .github/scripts/copy-prod-db/index.ts
 
       - name: Post success message
         uses: ./.github/composite/send-message
