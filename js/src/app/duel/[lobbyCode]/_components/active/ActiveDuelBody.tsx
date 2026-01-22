@@ -1,3 +1,4 @@
+import transition from "@/app/duel/[lobbyCode]/_components/active/ActiveDuelBody.module.css";
 import {
   langNameKey,
   langNameToIcon,
@@ -180,10 +181,15 @@ export default function DuelActiveBody({
   const playerControls = (isPlayer: boolean) =>
     isPlayer && (
       <>
-        <Button size="sm" onClick={() => {}}>
+        <Button w={165} size="sm" onClick={() => {}}>
           Submit
         </Button>
-        <Button color="red" size="sm" onClick={() => setShowForfeit(true)}>
+        <Button
+          color="red"
+          w={165}
+          size="sm"
+          onClick={() => setShowForfeit(true)}
+        >
           Forfeit
         </Button>
       </>
@@ -192,12 +198,12 @@ export default function DuelActiveBody({
   if (isMobile) {
     return (
       <>
-        <Flex direction="column" h="90vh" w="100%">
+        <Flex direction="column" h="85vh" w="100%">
           <Box flex={1} w="100%" px="md" py="md">
             {activePage === 1 && (
-              <Stack gap="md" h="100%" align="center" justify="center">
+              <Stack gap="lg" h="100%" align="center" justify="center">
                 {copyJoinCodeButton()}
-                <Group gap="xl" align="center">
+                <Group gap="xl" align="center" wrap="nowrap">
                   <PlayerCard player={playerOne} />
                   <PlayerCard player={playerTwo} />
                 </Group>
@@ -214,47 +220,71 @@ export default function DuelActiveBody({
               </Stack>
             )}
             {activePage === 2 && (
-              <Flex
-                direction="column"
-                h="90vh"
-                w="100%"
-                align="center"
-                justify="center"
-                gap="md"
-              >
+              <Flex direction="column" h="85vh" align="center" gap="md">
                 {countdownTimer()}
-                <Card p="md" withBorder w={370} h="85vh">
+                <Card p="md" withBorder w={370} h="80vh">
                   <Stack gap={0} h="100%">
-                    {(expanded ?
-                      mobileSections.filter((s) => s.key === expanded)
-                    : mobileSections
-                    ).map((section, idx, arr) => (
-                      <Box
-                        key={section.key}
-                        flex={expanded ? 1 : undefined}
-                        h={expanded ? "100%" : "auto"}
-                      >
-                        <Group justify="space-between" align="center" mb="xs">
-                          <Text size="sm" fw={600}>
-                            {section.title}
-                          </Text>
-                          <ActionIcon
-                            variant="subtle"
-                            onClick={() =>
-                              setExpanded((prev) =>
-                                prev === section.key ? null : section.key,
-                              )
-                            }
+                    {mobileSections.map((section, idx, arr) => {
+                      const isPlayerSection =
+                        section.key === "player1" || section.key === "player2";
+                      const isExpanded = expanded === section.key;
+                      const isHidden = expanded && !isExpanded;
+
+                      return (
+                        <Box
+                          key={section.key}
+                          flex={
+                            expanded ?
+                              isExpanded ?
+                                1
+                              : 0
+                            : isPlayerSection ?
+                              "1 1 0"
+                            : "0 0 auto"
+                          }
+                          pb={idx < arr.length - 1 && !expanded ? "md" : 0}
+                          className={`${transition.sectionBox} ${isHidden ? transition.sectionBoxHidden : ""}`}
+                        >
+                          <Box
+                            className={`${transition.sectionContent} ${
+                              isExpanded || (isPlayerSection && !expanded) ?
+                                transition.sectionContentScrollable
+                              : transition.sectionContentVisible
+                            }`}
                           >
-                            <IconMaximize size={18} />
-                          </ActionIcon>
-                        </Group>
-                        {section.content}
-                        {idx < arr.length - 1 && !expanded && (
-                          <Divider my="md" />
-                        )}
-                      </Box>
-                    ))}
+                            <Group justify="space-between" mb="xs">
+                              <Text size="sm" fw={600}>
+                                {section.title}
+                              </Text>
+                              <ActionIcon
+                                variant="subtle"
+                                onClick={() =>
+                                  setExpanded((prev) =>
+                                    prev === section.key ? null : section.key,
+                                  )
+                                }
+                                className={`${transition.expandIcon} ${isExpanded ? transition.expandIconRotated : ""}`}
+                              >
+                                <IconMaximize size={18} />
+                              </ActionIcon>
+                            </Group>
+                            <Box
+                              style={{
+                                overflowY: "inherit",
+                              }}
+                            >
+                              {section.content}
+                            </Box>
+                          </Box>
+                          {idx < arr.length - 1 && !expanded && (
+                            <Divider
+                              mt="md"
+                              className={`${transition.divider} ${isHidden ? transition.dividerHidden : ""}`}
+                            />
+                          )}
+                        </Box>
+                      );
+                    })}
                   </Stack>
                 </Card>
                 {(isCurrentPlayerOne || isCurrentPlayerTwo) && (
@@ -297,12 +327,17 @@ export default function DuelActiveBody({
           </Text>
         </Card>
       </Box>
-      <Flex gap="lg" w="100%" h="100vh" justify="center" align="center">
-        <Stack>
+      <Flex gap="lg" w="100%" h="86vh" justify="center" align="center">
+        <Flex
+          direction="column"
+          align="center"
+          gap="md"
+          mt={isCurrentPlayerTwo ? -104 : 0}
+        >
           <PlayerCard player={playerOne} />
           {playerControls(isCurrentPlayerOne)}
-        </Stack>
-        <Card p="md" withBorder w={400} h="80vh">
+        </Flex>
+        <Card p="md" withBorder w={400} h="92vh">
           <Stack gap={0} h="100%">
             <PlayerSolvedSection player={playerOne} solved={playerOneSolved} />
             <Divider my="md" />
@@ -311,10 +346,15 @@ export default function DuelActiveBody({
             <PlayerSolvedSection player={playerTwo} solved={playerTwoSolved} />
           </Stack>
         </Card>
-        <Stack>
+        <Flex
+          direction="column"
+          align="center"
+          gap="md"
+          mt={isCurrentPlayerTwo ? 0 : -104}
+        >
           <PlayerCard player={playerTwo} />
           {playerControls(isCurrentPlayerTwo)}
-        </Stack>
+        </Flex>
       </Flex>
       <ForfeitModal
         opened={showForfeit}
@@ -327,8 +367,8 @@ export default function DuelActiveBody({
 
 function PlayerCard({ player }: { player: User | null }) {
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const size = isMobile ? 150 : 175;
-  const avatarSize = isMobile ? 65 : 70;
+  const size = isMobile ? 160 : 175;
+  const avatarSize = isMobile ? 75 : 70;
 
   return (
     <Card radius="md" withBorder p="md" w={size} h={size}>
@@ -379,7 +419,7 @@ function PlayerSolvedSection({
           <Text fw={600}>{getPlayerDisplayName(player)}</Text>
         </Group>
         <ScrollArea h={180} type="always" offsetScrollbars>
-          <Stack gap="xs">{problemsList}</Stack>
+          <Stack gap={6}>{problemsList}</Stack>
         </ScrollArea>
         {showControls && (
           <Group grow>
@@ -400,7 +440,7 @@ function PlayerSolvedSection({
         </Text>
       )}
       <ScrollArea h="100%">
-        <Stack gap="xs">{problemsList}</Stack>
+        <Stack gap={6}>{problemsList}</Stack>
       </ScrollArea>
     </Box>
   );
@@ -429,7 +469,7 @@ function QuestionsSection({
     return (
       <Stack gap="sm">
         <ScrollArea h={220} type="always" offsetScrollbars>
-          <Stack gap="xs">{questionsList}</Stack>
+          <Stack gap={6}>{questionsList}</Stack>
         </ScrollArea>
       </Stack>
     );
@@ -442,7 +482,7 @@ function QuestionsSection({
           Available
         </Text>
       )}
-      <Stack gap="xs">{questionsList}</Stack>
+      <Stack gap={6}>{questionsList}</Stack>
     </Box>
   );
 }
@@ -514,10 +554,6 @@ function QuestionCard({ question }: { question: Problems }) {
                 {question.questionTitle}
               </Text>
             </Flex>
-          </Group>
-        </Group>
-        <Group justify="space-between" wrap="wrap" gap="xs">
-          <Group gap="xs">
             <Badge
               size="sm"
               color={getDifficultyColor(question.questionDifficulty)}
