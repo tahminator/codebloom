@@ -281,7 +281,7 @@ jobs:
                         statusMessage = `**Staging deployment was cancelled** for commit ${commitHash}`;
                         status = false;
                       } else {
-                        statusMessage = `**Staging deployment succeeded** for commit ${commitHash}`;
+                        statusMessage = `**[Staging deployment succeeded](${runUrl})** for commit ${commitHash}`;
                         status = true;
                       }
 
@@ -293,6 +293,7 @@ jobs:
                         state: status ? 'success' : 'failure',
                         context: "Successful deployment to staging",
                         description: status ? undefined : "Successful deployment to staging is required",
+                        target_url: runUrl,
                       });
 
                       await github.rest.issues.createComment({
