@@ -12,10 +12,14 @@ public class ServerMetadataObject {
 
     public ServerMetadataObject(final String commitSha) {
         this.name = "Codebloom";
-        this.version = commitSha;
+        this.version = (commitSha == null || commitSha.isBlank()) ? "unknown" : commitSha;
         this.description = "LeetCode leaderboard for Patina Network members to track progress and motivate each other.";
         this.authors = new ArrayList<>(Arrays.asList(
                 "Alisha Zaman", "Alfardil Alam", "Angela Yu", "Tahmid Ahmed", "Arshadul Monir", "Nancy Huang"));
+    }
+
+    public ServerMetadataObject() {
+        this("unknown");
     }
 
     public String getName() {
