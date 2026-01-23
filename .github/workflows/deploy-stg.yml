@@ -70,6 +70,16 @@ jobs:
                           body: `The command to deploy to staging for the commit ${commitHash} has been triggered. [View action run](${runUrl})`
                       });
 
+                      await github.rest.repos.createCommitStatus({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          sha: commitHash,
+                          state: 'pending',
+                          target_url: runUrl,
+                          context: 'Deploy to staging',
+                          description: 'Deployment to staging in progress...',
+                      });
+
     checkExistingImage:
         name: Check if image already exists
         runs-on: ubuntu-latest
@@ -291,7 +301,8 @@ jobs:
                         repo: context.repo.repo,
                         sha: commitHash,
                         state: status ? 'success' : 'failure',
-                        context: "Successful deployment to staging",
+                        target_url: runUrl,
+                        context: "Deploy to staging",
                         description: status ? undefined : "Successful deployment to staging is required",
                       });
 
