@@ -63,7 +63,8 @@ public class AuthControllerTest {
 
     @BeforeEach
     void setup() {
-        when(simpleRedisProvider.select(SimpleRedisSlot.SUBMISSION_REFRESH)).thenReturn(simpleRedis);
+        when(simpleRedisProvider.select(SimpleRedisSlot.VERIFICATION_EMAIL_SENDING))
+                .thenReturn(simpleRedis);
         this.authController = new AuthController(
                 sessionRepository,
                 protector,
