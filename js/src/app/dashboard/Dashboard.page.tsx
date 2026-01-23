@@ -8,7 +8,7 @@ import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
-import { Center, Flex, Loader, Title } from "@mantine/core";
+import { Center, Flex, Loader, Title, Box } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 export default function DashboardPage() {
@@ -52,38 +52,40 @@ export default function DashboardPage() {
       <DocumentDescription
         description={`CodeBloom - Refresh your latest submissions`}
       />
-      <Flex
-        p={"32px"}
-        direction={"column"}
-        gap={"lg"}
+      <Box
+        mx="-lg"
+        w="100vw"
+        maw="100vw"
         style={{
-          width: "98vw",
-          minHeight: "90vh",
+          overflowX: "hidden",
+          touchAction: "pan-y",
         }}
       >
-        <Center>
-          <Title order={2}>Dashboard</Title>
-        </Center>
-        <Center>
-          {!data.user.leetcodeUsername ?
-            <OnboardingLeetcodeUser />
-          : <RefreshSubmissions schoolRegistered={schoolRegistered} />}
-        </Center>
-        <Flex direction={smallPhone ? "row" : "column"} gap={"md"}>
-          <Flex direction={"column"} flex={1}>
-            <ProblemOfTheDay />
-          </Flex>
-          <Flex direction={"column"} flex={1}>
-            <DashboardLeaderboard
-              userId={data.user.id}
-              userTags={data.user.tags}
-            />
-          </Flex>
-          <Flex direction={"column"} flex={1}>
-            <RecentSubmissions userId={data.user.id} />
+        <Flex p={"32px"} direction={"column"} gap={"lg"} w="100%" mih="90vh">
+          <Center>
+            <Title order={2}>Dashboard</Title>
+          </Center>
+          <Center>
+            {!data.user.leetcodeUsername ?
+              <OnboardingLeetcodeUser />
+            : <RefreshSubmissions schoolRegistered={schoolRegistered} />}
+          </Center>
+          <Flex direction={smallPhone ? "row" : "column"} gap={"md"}>
+            <Flex direction={"column"} flex={1}>
+              <ProblemOfTheDay />
+            </Flex>
+            <Flex direction={"column"} flex={1}>
+              <DashboardLeaderboard
+                userId={data.user.id}
+                userTags={data.user.tags}
+              />
+            </Flex>
+            <Flex direction={"column"} flex={1}>
+              <RecentSubmissions userId={data.user.id} />
+            </Flex>
           </Flex>
         </Flex>
-      </Flex>
+      </Box>
     </>
   );
 }
