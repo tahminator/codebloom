@@ -30,8 +30,16 @@ export default function AboutUs() {
   };
 
   return (
-    <>
-      <Flex direction={"row"} h={"92vh"} w={"98vw"} visibleFrom="lg">
+    <Box
+      mx="-lg"
+      w="100vw"
+      maw="100vw"
+      style={{
+        overflowX: "hidden",
+        touchAction: "pan-y",
+      }}
+    >
+      <Flex direction={"row"} h={"92vh"} w={"100%"} visibleFrom="lg">
         <Flex
           align={"center"}
           justify={"center"}
@@ -47,15 +55,11 @@ export default function AboutUs() {
           >
             Celebrating CodeBloom's 1 Year Anniversary! 🎉
           </Badge>
-          <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
+          <Title order={3} style={{ color: "#4cffb0" }}>
             Level Up Your Coding with
           </Title>
           <Title order={3}>Patina's LeetCode Challenge!</Title>
-          <div
-            style={{
-              padding: "1rem",
-            }}
-          >
+          <Box p="1rem">
             <Center>
               <Group gap="sm">
                 <Button variant="white" onClick={scrollToSection}>
@@ -66,7 +70,7 @@ export default function AboutUs() {
                 </Link>
               </Group>
             </Center>
-          </div>
+          </Box>
         </Flex>
         <Flex
           align={"center"}
@@ -81,8 +85,8 @@ export default function AboutUs() {
           </Box>
         </Flex>
       </Flex>
-      <Flex h={"80vh"} w={"100vw"} hiddenFrom="lg">
-        <Stack align={"center"} justify={"center"} h={"100%"} w={"100vw"}>
+      <Flex h={"80vh"} w={"100%"} hiddenFrom="lg">
+        <Stack align={"center"} justify={"center"} h={"100%"} w={"100%"}>
           <Badge
             variant={"gradient"}
             gradient={{ from: "green", to: "cyan", deg: 90 }}
@@ -91,15 +95,11 @@ export default function AboutUs() {
           >
             Celebrating CodeBloom's 1 Year Anniversary! 🎉
           </Badge>
-          <Title order={5} style={{ color: "#4cffb0", alignItems: "center" }}>
+          <Title order={5} style={{ color: "#4cffb0" }}>
             Level Up Your Coding with
           </Title>
           <Title order={5}>Patina's LeetCode Challenge!</Title>
-          <div
-            style={{
-              padding: "1rem",
-            }}
-          >
+          <Box p="1rem">
             <Center>
               <Group gap="sm">
                 <Button variant="white" onClick={scrollToSection}>
@@ -110,17 +110,19 @@ export default function AboutUs() {
                 </Link>
               </Group>
             </Center>
-          </div>
+          </Box>
         </Stack>
       </Flex>
       <Container hiddenFrom={"lg"}>
         <CurrentLeaderboardMetadata showClock syntaxStripSize={"lg"} />
         <MiniLeaderboardMobile />
       </Container>
-      <SchoolSection />
-      <div ref={targetSectionRef} style={{ padding: "2rem" }}>
+      <Box px="lg">
+        <SchoolSection />
+      </Box>
+      <Box p="2rem" ref={targetSectionRef}>
         <OurFeatures />
-      </div>
-    </>
+      </Box>
+    </Box>
   );
 }
