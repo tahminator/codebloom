@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.patinanetwork.codebloom.api.auth.body.EmailBody;
@@ -36,6 +37,8 @@ import org.patinanetwork.codebloom.common.schools.magic.MagicLink;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.security.Protector;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
+import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -43,21 +46,24 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class AuthControllerTest {
 
-    private final AuthController authController;
-    private final Faker faker;
+    private final SessionRepository sessionRepository = mock(SessionRepository.class);
+    private final Protector protector = mock(Protector.class);
+    private final JWTClient jwtClient = mock(JWTClient.class);
+    private final UserRepository userRepository = mock(UserRepository.class);
+    private final OfficialCodebloomEmail emailClient = mock(OfficialCodebloomEmail.class);
+    private final ServerUrlUtils serverUrlUtils = mock(ServerUrlUtils.class);
+    private final UserTagRepository userTagRepository = mock(UserTagRepository.class);
+    private final Reporter reporter = mock(Reporter.class);
+    private final ReactEmailClient reactEmailClient = mock(ReactEmailClient.class);
+    private final SimpleRedis<Long> simpleRedis = mock(SimpleRedis.class);
+    private final SimpleRedisProvider simpleRedisProvider = mock(SimpleRedisProvider.class);
 
-    private SessionRepository sessionRepository = mock(SessionRepository.class);
-    private Protector protector = mock(Protector.class);
-    private JWTClient jwtClient = mock(JWTClient.class);
-    private UserRepository userRepository = mock(UserRepository.class);
-    private OfficialCodebloomEmail emailClient = mock(OfficialCodebloomEmail.class);
-    private ServerUrlUtils serverUrlUtils = mock(ServerUrlUtils.class);
-    private UserTagRepository userTagRepository = mock(UserTagRepository.class);
-    private Reporter reporter = mock(Reporter.class);
-    private ReactEmailClient reactEmailClient = mock(ReactEmailClient.class);
-    private SimpleRedis simpleRedis = mock(SimpleRedis.class);
+    private AuthController authController;
+    private Faker faker;
 
-    public AuthControllerTest() {
+    @BeforeEach
+    void setup() {
+        when(simpleRedisProvider.select(SimpleRedisSlot.SUBMISSION_REFRESH)).thenReturn(simpleRedis);
         this.authController = new AuthController(
                 sessionRepository,
                 protector,
@@ -68,7 +74,7 @@ public class AuthControllerTest {
                 userTagRepository,
                 reporter,
                 reactEmailClient,
-                simpleRedis);
+                simpleRedisProvider);
         this.faker = Faker.instance();
     }
 
@@ -233,6 +239,7 @@ public class AuthControllerTest {
                 assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, request));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertNotNull(exception.getReason());
         assertTrue(exception.getReason().contains("not part of our supported schools domains"));
 
         verify(protector, times(1)).validateSession(request);
@@ -249,17 +256,18 @@ public class AuthControllerTest {
         EmailBody emailBody = new EmailBody("test@myhunter.cuny.edu");
 
         when(protector.validateSession(request)).thenReturn(authObj);
-        when(simpleRedis.containsKey(1, user.getId())).thenReturn(true);
-        when(simpleRedis.get(1, user.getId())).thenReturn(System.currentTimeMillis());
+        when(simpleRedis.containsKey(user.getId())).thenReturn(true);
+        when(simpleRedis.get(user.getId())).thenReturn(System.currentTimeMillis());
 
         ResponseStatusException exception =
                 assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, request));
 
         assertEquals(HttpStatus.TOO_MANY_REQUESTS, exception.getStatusCode());
+        assertNotNull(exception.getReason());
         assertTrue(exception.getReason().contains("Please try again in"));
 
         verify(protector, times(1)).validateSession(request);
-        verify(simpleRedis, times(1)).containsKey(1, user.getId());
+        verify(simpleRedis, times(1)).containsKey(user.getId());
     }
 
     @Test
@@ -299,7 +307,7 @@ public class AuthControllerTest {
         EmailBody emailBody = new EmailBody("test@myhunter.cuny.edu");
 
         when(protector.validateSession(request)).thenReturn(authObj);
-        when(simpleRedis.containsKey(1, user.getId())).thenReturn(false);
+        when(simpleRedis.containsKey(user.getId())).thenReturn(false);
         when(jwtClient.encode(any(MagicLink.class), any(Duration.class))).thenReturn("mock-token");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(reactEmailClient.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
@@ -315,7 +323,7 @@ public class AuthControllerTest {
 
         verify(protector, times(1)).validateSession(request);
         verify(emailClient, times(1)).sendMessage(any(SendEmailOptions.class));
-        verify(simpleRedis, times(1)).put(eq(1), eq(user.getId()), any(Long.class));
+        verify(simpleRedis, times(1)).put(eq(user.getId()), any(Long.class));
     }
 
     @Test
