@@ -30,15 +30,7 @@ export default function AboutUs() {
   };
 
   return (
-    <Box
-      mx="-lg"
-      w="100vw"
-      maw="100vw"
-      style={{
-        overflowX: "hidden",
-        touchAction: "pan-y",
-      }}
-    >
+    <Box mx="-lg">
       <Flex direction={"row"} h={"92vh"} w={"100%"} visibleFrom="lg">
         <Flex
           align={"center"}
@@ -55,11 +47,11 @@ export default function AboutUs() {
           >
             Celebrating CodeBloom's 1 Year Anniversary! 🎉
           </Badge>
-          <Title order={3} style={{ color: "#4cffb0" }}>
+          <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
           </Title>
           <Title order={3}>Patina's LeetCode Challenge!</Title>
-          <Box p="1rem">
+          <Box p="xs">
             <Center>
               <Group gap="sm">
                 <Button variant="white" onClick={scrollToSection}>
