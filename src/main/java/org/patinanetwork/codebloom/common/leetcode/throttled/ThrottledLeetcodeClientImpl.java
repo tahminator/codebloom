@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.leetcode.throttled;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BlockingBucket;
 import io.github.bucket4j.Bucket;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Set;
@@ -41,8 +42,9 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
         }
     }
 
-    public ThrottledLeetcodeClientImpl(final LeetcodeAuthStealer leetcodeAuthStealer, final Reporter reporter) {
-        super(leetcodeAuthStealer, reporter);
+    public ThrottledLeetcodeClientImpl(
+            final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer, final Reporter reporter) {
+        super(meterRegistry, leetcodeAuthStealer, reporter);
         this.rateLimiter = initializeBucket();
     }
 
