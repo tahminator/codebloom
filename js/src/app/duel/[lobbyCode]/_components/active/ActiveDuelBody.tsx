@@ -231,7 +231,7 @@ export default function DuelActiveBody({
                       const isHidden = expanded && !isExpanded;
 
                       return (
-                        <Box
+                        <Stack
                           key={section.key}
                           flex={
                             expanded ?
@@ -242,15 +242,19 @@ export default function DuelActiveBody({
                               "1 1 0"
                             : "0 0 auto"
                           }
-                          pb={idx < arr.length - 1 && !expanded ? "md" : 0}
-                          className={`${transition.sectionBox} ${isHidden ? transition.sectionBoxHidden : ""}`}
+                          style={{ overflow: "hidden" }}
+                          opacity={isHidden ? 0 : 1}
+                          className={transition.sectionBox}
                         >
-                          <Box
-                            className={`${transition.sectionContent} ${
-                              isExpanded || (isPlayerSection && !expanded) ?
-                                transition.sectionContentScrollable
-                              : transition.sectionContentVisible
-                            }`}
+                          <Flex
+                            direction="column"
+                            h="100%"
+                            style={{
+                              overflow:
+                                isExpanded || (isPlayerSection && !expanded) ?
+                                  "auto"
+                                : "visible",
+                            }}
                           >
                             <Group justify="space-between" mb="xs">
                               <Text size="sm" fw={600}>
@@ -275,14 +279,15 @@ export default function DuelActiveBody({
                             >
                               {section.content}
                             </Box>
-                          </Box>
+                          </Flex>
                           {idx < arr.length - 1 && !expanded && (
                             <Divider
-                              mt="md"
-                              className={`${transition.divider} ${isHidden ? transition.dividerHidden : ""}`}
+                              my="xs"
+                              opacity={isHidden ? 0 : 1}
+                              className={transition.divider}
                             />
                           )}
-                        </Box>
+                        </Stack>
                       );
                     })}
                   </Stack>
