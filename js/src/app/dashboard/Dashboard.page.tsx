@@ -52,15 +52,7 @@ export default function DashboardPage() {
       <DocumentDescription
         description={`CodeBloom - Refresh your latest submissions`}
       />
-      <Box
-        mx="-lg"
-        w="100vw"
-        maw="100vw"
-        style={{
-          overflowX: "hidden",
-          touchAction: "pan-y",
-        }}
-      >
+      <Box mx="-lg">
         <Flex p={"32px"} direction={"column"} gap={"lg"} w="100%" mih="90vh">
           <Center>
             <Title order={2}>Dashboard</Title>
