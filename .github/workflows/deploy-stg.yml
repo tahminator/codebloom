@@ -303,7 +303,7 @@ jobs:
                         state: status ? 'success' : 'failure',
                         target_url: runUrl,
                         context: "Deploy to staging",
-                        description: status ? undefined : "Successful deployment to staging is required",
+                        description: status ? "Staging deployment succeeded" : "Staging deployment failed",
                       });
 
                       await github.rest.issues.createComment({
