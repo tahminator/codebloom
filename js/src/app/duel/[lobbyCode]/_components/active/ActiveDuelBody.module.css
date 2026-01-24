@@ -1,28 +1,5 @@
 .sectionBox {
-    display: flex;
-    flex-direction: column;
-    opacity: 1;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    overflow: hidden;
-}
-
-.sectionBoxHidden {
-    opacity: 0;
-}
-
-.sectionContent {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    transition: overflow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.sectionContentScrollable {
-    overflow: auto;
-}
-
-.sectionContentVisible {
-    overflow: visible;
 }
 
 .expandIcon {
@@ -35,8 +12,4 @@
 
 .divider {
     transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.dividerHidden {
-    opacity: 0;
 }
