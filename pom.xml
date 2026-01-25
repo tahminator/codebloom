@@ -251,6 +251,7 @@
                             <excludes>
                                 <exclude>org/patinanetwork/codebloom/common/utils/**</exclude>
                                 <exclude>org/patinanetwork/codebloom/common/dto/**</exclude>
+                                <exclude>org/patinanetwork/codebloom/playwright/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>
