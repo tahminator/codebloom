@@ -1,59 +1,72 @@
 package org.patinanetwork.codebloom.scheduled.auth;
-/*
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-
 import org.patinanetwork.codebloom.common.db.models.auth.Auth;
 import org.patinanetwork.codebloom.common.db.repos.auth.AuthRepository;
-import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmail;
 import org.patinanetwork.codebloom.common.env.Env;
 import org.patinanetwork.codebloom.common.jedis.JedisClient;
+import org.patinanetwork.codebloom.common.lag.FakeLag;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
+import org.patinanetwork.codebloom.playwright.PlaywrightClient;
 
 public class LeetcodeAuthStealerTest {
     private LeetcodeAuthStealer leetcodeAuthStealer;
 
     private JedisClient jedisClient;
     private AuthRepository authRepository;
-    private GithubOAuthEmail email;
     private Reporter reporter;
     private Env env;
+    private MeterRegistry meterRegistry;
+    private PlaywrightClient playwrightClient;
 
     @BeforeEach
     void setUp() {
         jedisClient = mock(JedisClient.class);
         authRepository = mock(AuthRepository.class);
-        email = mock(GithubOAuthEmail.class);
         reporter = mock(Reporter.class);
         env = mock(Env.class);
+        meterRegistry = new SimpleMeterRegistry();
+        playwrightClient = mock(PlaywrightClient.class);
 
-        leetcodeAuthStealer = spy(new LeetcodeAuthStealer(jedisClient, authRepository, email, reporter, env));
+        leetcodeAuthStealer = spy(
+                new LeetcodeAuthStealer(jedisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
 
         when(env.isCi()).thenReturn(false);
+        playwrightClientResolvesSlowly("this value doesnt matter, stub the return if you need");
+    }
+
+    private void playwrightClientResolvesSlowly(String valueToReturn) {
+        when(playwrightClient.getLeetcodeCookie(any(), any())).thenAnswer(invocation -> {
+            FakeLag.sleep(1000);
+            return valueToReturn.getBytes();
+        });
     }
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies multiple threads can acquire read locks concurrently across the same thread pool - Auth Repository")
+    @DisplayName(
+            "Verifies multiple threads can acquire read locks concurrently across the same thread pool - Auth Repository")
     void testReadLockConcurrentAccessSameThreadPoolAuthRepo() throws InterruptedException {
         Auth mockAuth = Auth.builder()
-                        .token("test-token")
-                        .csrf("test-csrf")
-                        .createdAt(StandardizedOffsetDateTime.now())
-                        .build();
+                .token("test-token")
+                .csrf("test-csrf")
+                .createdAt(StandardizedOffsetDateTime.now())
+                .build();
         when(authRepository.getMostRecentAuth()).thenReturn(mockAuth);
 
         leetcodeAuthStealer.stealAuthCookie();
@@ -96,7 +109,8 @@ public class LeetcodeAuthStealerTest {
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies multiple threads can acquire read locks concurrently across the same thread pool - New cookie fetched")
+    @DisplayName(
+            "Verifies multiple threads can acquire read locks concurrently across the same thread pool - New cookie fetched")
     void testReadLockConcurrentAccessSameThreadPoolNewCookieFetched() throws InterruptedException {
         when(authRepository.getMostRecentAuth()).thenReturn(null);
         doReturn("cookie").when(leetcodeAuthStealer).stealCookieImpl();
@@ -140,13 +154,14 @@ public class LeetcodeAuthStealerTest {
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies multiple threads can acquire read locks concurrently across different thread pools - Auth Repository")
+    @DisplayName(
+            "Verifies multiple threads can acquire read locks concurrently across different thread pools - Auth Repository")
     void testReadLockConcurrentAccessDifferentThreadPoolsAuthRepository() throws InterruptedException {
         Auth mockAuth = Auth.builder()
-                        .token("test-token")
-                        .csrf("test-csrf")
-                        .createdAt(StandardizedOffsetDateTime.now())
-                        .build();
+                .token("test-token")
+                .csrf("test-csrf")
+                .createdAt(StandardizedOffsetDateTime.now())
+                .build();
         when(authRepository.getMostRecentAuth()).thenReturn(mockAuth);
 
         leetcodeAuthStealer.stealAuthCookie();
@@ -204,12 +219,15 @@ public class LeetcodeAuthStealerTest {
         assertTrue(doneLatch.await(5, TimeUnit.SECONDS));
         pool1.shutdown();
 
-        assertTrue(maxConcurrentReads.get() > 1, "Multiple read locks should be acquired concurrently across different thread pools");
+        assertTrue(
+                maxConcurrentReads.get() > 1,
+                "Multiple read locks should be acquired concurrently across different thread pools");
     }
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies multiple threads can acquire read locks concurrently across different thread pools - New cookie fetched")
+    @DisplayName(
+            "Verifies multiple threads can acquire read locks concurrently across different thread pools - New cookie fetched")
     void testReadLockConcurrentAccessDifferentThreadPoolsFetchedNewCookie() throws InterruptedException {
         when(authRepository.getMostRecentAuth()).thenReturn(null);
         doReturn("string").when(leetcodeAuthStealer).stealCookieImpl();
@@ -270,7 +288,9 @@ public class LeetcodeAuthStealerTest {
         assertTrue(doneLatch.await(5, TimeUnit.SECONDS));
         pool1.shutdown();
 
-        assertTrue(maxConcurrentReads.get() > 1, "Multiple read locks should be acquired concurrently across different thread pools");
+        assertTrue(
+                maxConcurrentReads.get() > 1,
+                "Multiple read locks should be acquired concurrently across different thread pools");
     }
 
     @Test
@@ -317,7 +337,9 @@ public class LeetcodeAuthStealerTest {
         assertTrue(doneLatch.await(10, TimeUnit.SECONDS));
         pool.shutdown();
 
-        assertTrue(isOneWriteBlockingOtherWrites.get(), "Write locks should be exclusive within the same thread pool - only one at a time");
+        assertTrue(
+                isOneWriteBlockingOtherWrites.get(),
+                "Write locks should be exclusive within the same thread pool - only one at a time");
     }
 
     @Test
@@ -366,12 +388,15 @@ public class LeetcodeAuthStealerTest {
         pool1.shutdown();
         pool2.shutdown();
 
-        assertTrue(isOneWriteBlockingOtherWrites.get(), "Write locks should be exclusive across different thread pools - only one at a time");
+        assertTrue(
+                isOneWriteBlockingOtherWrites.get(),
+                "Write locks should be exclusive across different thread pools - only one at a time");
     }
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies that no read operations can happen when stealing authentication cookie in the same thread pool")
+    @DisplayName(
+            "Verifies that no read operations can happen when stealing authentication cookie in the same thread pool")
     void testReadWriteLockInteractionSameThreadPool() throws InterruptedException {
         when(authRepository.getMostRecentAuth()).thenReturn(null);
 
@@ -418,7 +443,8 @@ public class LeetcodeAuthStealerTest {
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies that no read operations can happen when stealing authentication cookie in different thread pools")
+    @DisplayName(
+            "Verifies that no read operations can happen when stealing authentication cookie in different thread pools")
     void testReadWriteLockInteractionDifferentThreadPools() throws InterruptedException {
         when(authRepository.getMostRecentAuth()).thenReturn(null);
 
@@ -462,13 +488,15 @@ public class LeetcodeAuthStealerTest {
         writePool.shutdown();
         readPool.shutdown();
 
-        assertTrue(readBlockedByWrite.get(),
-                        "Read operations from different thread pool should wait for write lock to be released");
+        assertTrue(
+                readBlockedByWrite.get(),
+                "Read operations from different thread pool should wait for write lock to be released");
     }
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies that no read operations can happen when reloading authentication cookie in the same thread pool")
+    @DisplayName(
+            "Verifies that no read operations can happen when reloading authentication cookie in the same thread pool")
     void testReloadCookieReadWriteLockInteractionSameThreadPool() throws InterruptedException {
         ExecutorService pool = Executors.newFixedThreadPool(4);
         CountDownLatch startLatch = new CountDownLatch(1);
@@ -513,7 +541,8 @@ public class LeetcodeAuthStealerTest {
 
     @Test
     @Timeout(10)
-    @DisplayName("Verifies that no read operations can happen when reloading authentication cookie in different thread pools")
+    @DisplayName(
+            "Verifies that no read operations can happen when reloading authentication cookie in different thread pools")
     void testReloadCookieReadWriteLockInteractionDifferentThreadPools() throws InterruptedException {
         ExecutorService writePool = Executors.newFixedThreadPool(1);
         ExecutorService readPool = Executors.newFixedThreadPool(3);
@@ -555,8 +584,8 @@ public class LeetcodeAuthStealerTest {
         writePool.shutdown();
         readPool.shutdown();
 
-        assertTrue(readBlockedByWrite.get(),
-                        "Read operations from different thread pool should wait for write lock to be released");
+        assertTrue(
+                readBlockedByWrite.get(),
+                "Read operations from different thread pool should wait for write lock to be released");
     }
 }
-    */
