@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,13 +48,13 @@ public class LeetcodeAuthStealerTest {
                 new LeetcodeAuthStealer(jedisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
 
         when(env.isCi()).thenReturn(false);
-        playwrightClientResolvesSlowly("this value doesnt matter, stub the return if you need");
+        playwrightClientResolvesSlowly(Auth.builder().build());
     }
 
-    private void playwrightClientResolvesSlowly(String valueToReturn) {
+    private void playwrightClientResolvesSlowly(Auth authToReturn) {
         when(playwrightClient.getLeetcodeCookie(any(), any())).thenAnswer(invocation -> {
             FakeLag.sleep(1000);
-            return valueToReturn.getBytes();
+            return Optional.ofNullable(authToReturn);
         });
     }
 
