@@ -1,219 +1,551 @@
 package org.patinanetwork.codebloom.common.leetcode;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty;
+import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeQuestion;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import org.patinanetwork.codebloom.common.leetcode.models.POTD;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
-import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
-import org.patinanetwork.codebloom.config.TestJobNotifyListener;
+import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.scheduled.auth.LeetcodeAuthStealer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@ActiveProfiles("ci")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@Import(TestJobNotifyListener.class)
 public class LeetcodeClientTest {
 
-    private final LeetcodeClient leetcodeClient;
-    private final LeetcodeAuthStealer leetcodeAuthStealer;
+    private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    private final LeetcodeAuthStealer leetcodeAuthStealer = mock(LeetcodeAuthStealer.class);
+    private final Reporter reporter = mock(Reporter.class);
+    private final HttpClient httpClient = mock(HttpClient.class);
+    private final HttpResponse<String> httpResponse = mock(HttpResponse.class);
 
-    @Autowired
-    public LeetcodeClientTest(
-            final ThrottledLeetcodeClient throttledLeetcodeClient, final LeetcodeAuthStealer leetcodeAuthStealer) {
-        this.leetcodeClient = throttledLeetcodeClient;
-        this.leetcodeAuthStealer = leetcodeAuthStealer;
+    private final LeetcodeClientImpl leetcodeClient;
+
+    public LeetcodeClientTest() throws Exception {
+        leetcodeClient = new LeetcodeClientImpl(meterRegistry, leetcodeAuthStealer, reporter);
+        setupMockHttpClient(leetcodeClient, httpClient);
+    }
+
+    void setupMockHttpClient(LeetcodeClientImpl leetcodeClient, HttpClient httpClient) throws Exception {
+        leetcodeClient.client = httpClient;
+    }
+
+    @BeforeEach
+    void setup() {
+        when(leetcodeAuthStealer.getCookie()).thenReturn("test-session-cookie");
+        when(leetcodeAuthStealer.getCsrf()).thenReturn(null);
     }
 
     @Test
-    void questionSlugValid() {
-        LeetcodeQuestion question = leetcodeClient.findQuestionBySlug("trapping-rain-water");
+    void testFindQuestionBySlug() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "question": {
+                      "questionId": "42",
+                      "title": "Trapping Rain Water",
+                      "titleSlug": "trapping-rain-water",
+                      "difficulty": "Hard",
+                      "content": "<p>Given n non-negative integers...</p>",
+                      "stats": "{\\"acRate\\":\\"49.4%\\"}",
+                      "topicTags": [
+                        {"name": "Array", "slug": "array"},
+                        {"name": "Two Pointers", "slug": "two-pointers"}
+                      ]
+                    }
+                  }
+                }
+                """;
 
-        assertTrue(question != null);
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
 
-        assertTrue(question.getLink() != null);
-        assertTrue(question.getLink().length() != 0);
+        LeetcodeQuestion result = leetcodeClient.findQuestionBySlug("trapping-rain-water");
 
-        assertTrue(question.getQuestionId() != 0);
-
-        assertTrue(question.getQuestionTitle() != null);
-        assertTrue(question.getQuestionTitle().length() != 0);
-
-        assertTrue(question.getTitleSlug() != null);
-        assertTrue(question.getTitleSlug().length() != 0);
-
-        assertTrue(question.getDifficulty() != null);
-        assertTrue(question.getDifficulty().length() != 0);
-
-        assertTrue(question.getQuestion() != null);
-        assertTrue(question.getQuestion().length() != 0);
-
-        assertTrue(question.getAcceptanceRate() != 0.0f);
+        assertNotNull(result);
+        assertEquals(42, result.getQuestionId());
+        assertEquals("Trapping Rain Water", result.getQuestionTitle());
+        assertEquals("trapping-rain-water", result.getTitleSlug());
+        assertEquals("Hard", result.getDifficulty());
+        assertEquals("https://leetcode.com/problems/trapping-rain-water", result.getLink());
+        assertEquals(0.494f, result.getAcceptanceRate(), 0.001);
+        assertNotNull(result.getTopics());
+        assertEquals(2, result.getTopics().size());
     }
 
-    // @Test
-    // void submissionIdValid() {
-    // LeetcodeDetailedQuestion submission = FunctionUtils.tryAgainIfFail(
-    // () -> leetcodeClient.findSubmissionDetailBySubmissionId(1588648200),
-    // res -> !Strings.isNullOrEmpty(res.getRuntimeDisplay()),
-    // () -> leetcodeAuthStealer.reloadCookie().join());
+    @ParameterizedTest
+    @ValueSource(ints = {500, 302, 403})
+    void testFindQuestionBySlugThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
+        String responseJson = """
+                {
+                  "data": {}
+                }
+                """;
 
-    // assertTrue(submission != null);
+        when(httpResponse.statusCode()).thenReturn(statusCode);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+        when(httpResponse.headers()).thenReturn(HttpHeaders.of(Map.of(), (a, b) -> true));
 
-    // assertTrue(submission.getRuntimeDisplay() != null);
-    // assertTrue(submission.getRuntimeDisplay().length() != 0);
-
-    // assertTrue(submission.getRuntimePercentile() != 0.0f);
-
-    // assertTrue(submission.getMemoryDisplay() != null);
-    // assertTrue(submission.getMemoryDisplay().length() != 0);
-
-    // assertTrue(submission.getMemoryPercentile() != 0.0f);
-
-    // assertTrue(submission.getCode() != null);
-    // assertTrue(submission.getCode().length() != 0);
-
-    // assertTrue(submission.getLang() != null);
-    // }
-
-    @Test
-    void potdValid() {
-        POTD potd = leetcodeClient.getPotd();
-
-        assertTrue(potd != null);
-
-        assertTrue(potd.getTitle() != null);
-        assertTrue(potd.getTitle().length() != 0);
-
-        assertTrue(potd.getTitleSlug() != null);
-        assertTrue(potd.getTitleSlug().length() != 0);
-
-        assertTrue(potd.getDifficulty() != null);
-    }
-
-    @Test
-    void userProfileValid() {
-        UserProfile profile = leetcodeClient.getUserProfile("az2924");
-
-        assertTrue(profile != null);
-
-        assertTrue(profile.getUsername() != null);
-        assertTrue(profile.getUsername().length() != 0);
-
-        assertTrue(profile.getRanking() != null);
-        assertTrue(profile.getRanking().length() != 0);
-
-        assertTrue(profile.getUserAvatar() != null);
-        assertTrue(profile.getUserAvatar().length() != 0);
-
-        assertTrue(profile.getRealName() != null);
-        assertTrue(profile.getRealName().length() != 0);
-
-        assertTrue(profile.getAboutMe() != null);
-        assertTrue(profile.getAboutMe().length() != 0);
-    }
-
-    @Test
-    void userListValid() {
-        List<LeetcodeSubmission> userList = leetcodeClient.findSubmissionsByUsername("az2924");
-
-        assertTrue(userList != null);
-
-        assertNotNull(userList, "Expecting a non-zero list of submissions");
-    }
-
-    // @Test
-    // void stressTestConcurrent() throws InterruptedException {
-    // int threadCount = 100;
-    // int requestsPerThread = 27;
-
-    // Thread[] threads = new Thread[threadCount];
-    // AtomicInteger tries = new AtomicInteger();
-    // AtomicInteger failures = new AtomicInteger();
-
-    // for (int t = 0; t < threadCount; t++) {
-    // threads[t] = new Thread(() -> {
-    // for (int i = 0; i < requestsPerThread; i++) {
-    // try {
-    // if (tries.get() % 100 == 0) {
-    // System.out.println("tries (ongoing): " + tries.get());
-    // }
-    // tries.incrementAndGet();
-    // List<LeetcodeSubmission> userList =
-    // leetcodeClient.findSubmissionsByUsername("az2924");
-    // assertNotNull(userList);
-    // } catch (Exception e) {
-    // System.out.println("tries (failed): " + tries.get());
-    // failures.incrementAndGet();
-    // }
-    // }
-    // });
-    // threads[t].start();
-    // }
-
-    // for (Thread thread : threads) {
-    // thread.join();
-    // }
-
-    // // TODO: Figure out why the failures are always around 1 to 5. For now, do
-    // not
-    // // fail tests with anything over 10 requests.
-    // if (failures.get() > 10) {
-    // fail("Failed to reach 5000 requests from leetcode client. Failures: " +
-    // failures.get());
-    // }
-    // }
-
-    @Test
-    void assertAllAvailableTopics() {
-        // if this value is no longer true, make a new ticket on Notion to update the
-        // enums stored in the database, THEN update this count.
-        int expectedTagsCount = 72;
-
-        Set<LeetcodeTopicTag> topicTags = leetcodeClient.getAllTopicTags();
-        assertEquals(expectedTagsCount, topicTags.size());
-    }
-
-    @Test
-    void assertAllLeetcodeProblems() {
-        List<LeetcodeQuestion> questions = leetcodeClient.getAllProblems();
-
-        assertTrue(questions.size() > 0);
-    }
-
-    @Test
-    void assertTwentyReturnedSubmissions() {
-        List<LeetcodeSubmission> submissions = leetcodeClient.findSubmissionsByUsername("az2924");
-        // make sure we are getting 20 submissions
-        int count = 0;
-        for (LeetcodeSubmission submission : submissions) {
-            assertNotNull(submission);
-            count++;
+        try {
+            leetcodeClient.findQuestionBySlug("trapping-rain-water");
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
+            verify(leetcodeAuthStealer, times(1)).reloadCookie();
         }
-        assertEquals(20, count);
     }
 
     @Test
-    void assertFiveReturnedSubmissions() {
-        List<LeetcodeSubmission> submissions = leetcodeClient.findSubmissionsByUsername("az2924", 5);
-        // make sure we are getting 5 submissions
-        int count = 0;
-        for (LeetcodeSubmission submission : submissions) {
-            assertNotNull(submission);
-            count++;
+    void testFindSubmissionsByUsername() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "recentAcSubmissionList": [
+                      {
+                        "id": "1234567",
+                        "title": "Two Sum",
+                        "titleSlug": "two-sum",
+                        "timestamp": "1640995200",
+                        "statusDisplay": "Accepted"
+                      },
+                      {
+                        "id": "1234568",
+                        "title": "Add Two Numbers",
+                        "titleSlug": "add-two-numbers",
+                        "timestamp": "1640995300",
+                        "statusDisplay": "Accepted"
+                      }
+                    ]
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        List<LeetcodeSubmission> result = leetcodeClient.findSubmissionsByUsername("testuser");
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Two Sum", result.get(0).getTitle());
+        assertEquals("two-sum", result.get(0).getTitleSlug());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {500, 302, 403})
+    void testFindSubmissionsByUsernameThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
+        String responseJson = """
+                {
+                  "data": {}
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(statusCode);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+        when(httpResponse.headers()).thenReturn(HttpHeaders.of(Map.of(), (a, b) -> true));
+
+        try {
+            leetcodeClient.findSubmissionsByUsername("testuser");
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
+            verify(leetcodeAuthStealer, times(1)).reloadCookie();
         }
-        assertEquals(5, count);
+    }
+
+    @Test
+    void testFindSubmissionsByUsernameWithLimit() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "recentAcSubmissionList": [
+                      {
+                        "id": "1234567",
+                        "title": "Two Sum",
+                        "titleSlug": "two-sum",
+                        "timestamp": "1640995200",
+                        "statusDisplay": "Accepted"
+                      }
+                    ]
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        List<LeetcodeSubmission> result = leetcodeClient.findSubmissionsByUsername("testuser", 5);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testFindSubmissionDetailBySubmissionId() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "submissionDetails": {
+                      "runtime": 45,
+                      "runtimeDisplay": "45 ms",
+                      "runtimePercentile": 85.5,
+                      "memory": 14000000,
+                      "memoryDisplay": "14 MB",
+                      "memoryPercentile": 72.3,
+                      "code": "class Solution {}",
+                      "lang": {
+                        "name": "java",
+                        "verboseName": "Java"
+                      }
+                    }
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        LeetcodeDetailedQuestion result = leetcodeClient.findSubmissionDetailBySubmissionId(1234567);
+
+        assertNotNull(result);
+        assertEquals(45, result.getRuntime());
+        assertEquals("45 ms", result.getRuntimeDisplay());
+        assertEquals(85.5f, result.getRuntimePercentile(), 0.01);
+        assertEquals(14000000, result.getMemory());
+        assertEquals("14 MB", result.getMemoryDisplay());
+        assertEquals(72.3f, result.getMemoryPercentile(), 0.01);
+        assertEquals("class Solution {}", result.getCode());
+        assertNotNull(result.getLang());
+        assertEquals("java", result.getLang().getName());
+        assertEquals("Java", result.getLang().getVerboseName());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {500, 302, 403})
+    void testFindSubmissionDetailBySubmissionIdThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
+        String responseJson = """
+                {
+                  "data": {}
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(statusCode);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+        when(httpResponse.headers()).thenReturn(HttpHeaders.of(Map.of(), (a, b) -> true));
+
+        try {
+            leetcodeClient.findSubmissionDetailBySubmissionId(1234567);
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
+            verify(leetcodeAuthStealer, times(1)).reloadCookie();
+        }
+    }
+
+    @Test
+    void testGetPotd() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "activeDailyCodingChallengeQuestion": {
+                      "question": {
+                        "titleSlug": "two-sum",
+                        "title": "Two Sum",
+                        "difficulty": "Easy"
+                      }
+                    }
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        POTD result = leetcodeClient.getPotd();
+
+        assertNotNull(result);
+        assertEquals("Two Sum", result.getTitle());
+        assertEquals("two-sum", result.getTitleSlug());
+        assertEquals(QuestionDifficulty.Easy, result.getDifficulty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {500, 302, 403})
+    void testGetPotdThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
+        String responseJson = """
+                {
+                  "data": {}
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(statusCode);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+        when(httpResponse.headers()).thenReturn(HttpHeaders.of(Map.of(), (a, b) -> true));
+
+        try {
+            leetcodeClient.getPotd();
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
+            verify(leetcodeAuthStealer, times(1)).reloadCookie();
+        }
+    }
+
+    @Test
+    void testGetUserProfile() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "matchedUser": {
+                      "username": "testuser",
+                      "profile": {
+                        "ranking": "12345",
+                        "userAvatar": "https://example.com/avatar.jpg",
+                        "realName": "Test User",
+                        "aboutMe": "Passionate coder"
+                      }
+                    }
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        UserProfile result = leetcodeClient.getUserProfile("testuser");
+
+        assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
+        assertEquals("12345", result.getRanking());
+        assertEquals("https://example.com/avatar.jpg", result.getUserAvatar());
+        assertEquals("Test User", result.getRealName());
+        assertEquals("Passionate coder", result.getAboutMe());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {500, 302, 403})
+    void testGetUserProfileThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
+        String responseJson = """
+                {
+                  "data": {}
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(statusCode);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+        when(httpResponse.headers()).thenReturn(HttpHeaders.of(Map.of(), (a, b) -> true));
+
+        try {
+            leetcodeClient.getUserProfile("testuser");
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
+            verify(leetcodeAuthStealer, times(1)).reloadCookie();
+        }
+    }
+
+    @Test
+    void testGetAllTopicTags() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "questionTopicTags": {
+                      "edges": [
+                        {
+                          "node": {
+                            "name": "Array",
+                            "slug": "array"
+                          }
+                        },
+                        {
+                          "node": {
+                            "name": "Hash Table",
+                            "slug": "hash-table"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        Set<LeetcodeTopicTag> result = leetcodeClient.getAllTopicTags();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {500, 302, 403})
+    void testGetAllTopicTagsThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
+        String responseJson = """
+                {
+                  "data": {}
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(statusCode);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+        when(httpResponse.headers()).thenReturn(HttpHeaders.of(Map.of(), (a, b) -> true));
+
+        try {
+            leetcodeClient.getAllTopicTags();
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
+            verify(leetcodeAuthStealer, times(1)).reloadCookie();
+        }
+    }
+
+    @Test
+    void testGetAllProblems() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "problemsetQuestionListV2": {
+                      "questions": [
+                        {
+                          "questionFrontendId": 1,
+                          "title": "Two Sum",
+                          "titleSlug": "two-sum",
+                          "difficulty": "Easy",
+                          "acRate": 49.4,
+                          "topicTags": [
+                            {"name": "Array", "slug": "array"},
+                            {"name": "Hash Table", "slug": "hash-table"}
+                          ]
+                        },
+                        {
+                          "questionFrontendId": 2,
+                          "title": "Add Two Numbers",
+                          "titleSlug": "add-two-numbers",
+                          "difficulty": "Medium",
+                          "acRate": 42.1,
+                          "topicTags": [
+                            {"name": "Linked List", "slug": "linked-list"}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        List<LeetcodeQuestion> result = leetcodeClient.getAllProblems();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Two Sum", result.get(0).getQuestionTitle());
+        assertEquals("Add Two Numbers", result.get(1).getQuestionTitle());
+    }
+
+    @Test
+    void testGetAllProblemsQuestionsIsNotArray() throws Exception {
+        String responseJson = """
+                {
+                  "data": {
+                    "problemsetQuestionListV2": {
+                      "questions": {
+                          "questionFrontendId": 2,
+                          "title": "Add Two Numbers",
+                          "titleSlug": "add-two-numbers",
+                          "difficulty": "Medium",
+                          "acRate": 42.1,
+                          "topicTags": [
+                            {"name": "Linked List", "slug": "linked-list"}
+                          ]
+                      }
+                    }
+                  }
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        try {
+            leetcodeClient.getAllProblems();
+            fail("Expected exceptions");
+        } catch (Exception e) {
+            assertTrue(e.getCause()
+                    .getMessage()
+                    .contains("The expected shape of getting topics did not match the received body"));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {500, 302, 403})
+    void testGetAllProblemsThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
+        String responseJson = """
+                {
+                  "data": {}
+                }
+                """;
+
+        when(httpResponse.statusCode()).thenReturn(statusCode);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+        when(httpResponse.headers()).thenReturn(HttpHeaders.of(Map.of(), (a, b) -> true));
+
+        try {
+            leetcodeClient.getAllProblems();
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
+            verify(leetcodeAuthStealer, times(1)).reloadCookie();
+        }
     }
 }

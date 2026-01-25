@@ -2,6 +2,7 @@ package org.patinanetwork.codebloom.common.leetcode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -50,7 +51,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     private final ObjectMapper mapper;
 
     private final MeterRegistry meterRegistry;
-    private final HttpClient client;
+
+    @VisibleForTesting
+    HttpClient client;
+
     private final LeetcodeAuthStealer leetcodeAuthStealer;
     private final Reporter reporter;
 
