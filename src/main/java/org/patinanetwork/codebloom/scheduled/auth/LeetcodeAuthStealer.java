@@ -30,7 +30,10 @@ public class LeetcodeAuthStealer {
     @VisibleForTesting
     static final String METRIC_NAME = "leetcode.client.execution";
 
-    static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
+    @VisibleForTesting
+    // CHECKSTYLE:OFF
+    final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
+    // CHECKSTYLE:ON
 
     private volatile String cookie;
     private volatile String csrf;

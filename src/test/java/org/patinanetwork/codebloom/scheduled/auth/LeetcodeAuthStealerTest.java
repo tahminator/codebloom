@@ -35,8 +35,7 @@ public class LeetcodeAuthStealerTest {
     private MeterRegistry meterRegistry;
     private PlaywrightClient playwrightClient;
 
-    @BeforeEach
-    void setUp() {
+    public LeetcodeAuthStealerTest() {
         jedisClient = mock(JedisClient.class);
         authRepository = mock(AuthRepository.class);
         reporter = mock(Reporter.class);
@@ -46,7 +45,10 @@ public class LeetcodeAuthStealerTest {
 
         leetcodeAuthStealer = spy(
                 new LeetcodeAuthStealer(jedisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
+    }
 
+    @BeforeEach
+    void setup() {
         when(env.isCi()).thenReturn(false);
         playwrightClientResolvesSlowly(Auth.builder().build());
     }
