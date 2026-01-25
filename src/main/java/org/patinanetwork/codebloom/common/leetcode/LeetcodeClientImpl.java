@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.net.URI;
@@ -46,7 +47,8 @@ import org.springframework.stereotype.Component;
 public class LeetcodeClientImpl implements LeetcodeClient {
 
     private static final String GRAPHQL_ENDPOINT = "https://leetcode.com/graphql";
-    private static final String METRIC_NAME = "leetcode.client.execution";
+    private static final String TIMED_METRIC_NAME = "leetcode.client.execution";
+    private static final String ERROR_COUNT_METRIC_NAME = "leetcode.client.exception";
 
     private final ObjectMapper mapper;
 
@@ -70,13 +72,29 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     private Timer timer() {
         var stackFrame = StackWalker.getInstance()
+                // skip timer() invocation
                 .walk(frames -> frames.skip(1).findFirst())
                 .orElseThrow();
 
         String methodName = stackFrame.getMethodName();
         String className = stackFrame.getClassName();
 
-        return meterRegistry.timer(METRIC_NAME, "class", className, "method", methodName);
+        return meterRegistry.timer(TIMED_METRIC_NAME, "class", className, "method", methodName);
+    }
+
+    private Counter errorCounter() {
+        var stackFrame = StackWalker.getInstance()
+                .walk(frames -> frames.skip(1)
+                        // wrapped in lambda, find LeetcodeClientImpl then strip lambda calls.
+                        .filter(frame -> frame.getClassName().equals(LeetcodeClientImpl.class.getName()))
+                        .filter(frame -> !frame.getMethodName().startsWith("lambda$"))
+                        .findFirst())
+                .orElseThrow();
+
+        String methodName = stackFrame.getMethodName();
+        String className = stackFrame.getClassName();
+
+        return meterRegistry.counter(ERROR_COUNT_METRIC_NAME, "class", className, "method", methodName);
     }
 
     private String buildCookieHeader() {
@@ -211,6 +229,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                         .topics(tags)
                         .build();
             } catch (Exception e) {
+                errorCounter().increment();
                 throw new RuntimeException("Error fetching the API", e);
             }
         });
@@ -291,6 +310,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
                 return submissions;
             } catch (Exception e) {
+                errorCounter().increment();
                 throw new RuntimeException("Error fetching the API", e);
             }
         });
@@ -376,6 +396,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
                 return question;
             } catch (Exception e) {
+                errorCounter().increment();
                 throw new RuntimeException("Error fetching the API", e);
             }
         });
@@ -431,6 +452,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
                 return new POTD(title, titleSlug, difficulty);
             } catch (Exception e) {
+                errorCounter().increment();
                 throw new RuntimeException("Error fetching the API", e);
             }
         });
@@ -491,6 +513,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
                 return new UserProfile(returnedUsername, ranking, userAvatar, realName, aboutMe);
             } catch (Exception e) {
+                errorCounter().increment();
                 throw new RuntimeException("Error fetching the API", e);
             }
         });
@@ -548,6 +571,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
                 return result;
             } catch (Exception e) {
+                errorCounter().increment();
                 throw new RuntimeException("Error getting topics from Leetcode API", e);
             }
         });
@@ -617,6 +641,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 }
                 return result;
             } catch (Exception e) {
+                errorCounter().increment();
                 throw new RuntimeException("Error getting all problems from Leetcode API", e);
             }
         });
