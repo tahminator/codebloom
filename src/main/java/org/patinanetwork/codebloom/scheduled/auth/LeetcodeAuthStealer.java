@@ -1,35 +1,23 @@
 package org.patinanetwork.codebloom.scheduled.auth;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Browser.NewContextOptions;
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.ElementHandle;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
-import com.microsoft.playwright.options.LoadState;
+import com.google.common.annotations.VisibleForTesting;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.models.auth.Auth;
 import org.patinanetwork.codebloom.common.db.repos.auth.AuthRepository;
-import org.patinanetwork.codebloom.common.email.Email;
-import org.patinanetwork.codebloom.common.email.Message;
-import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmail;
 import org.patinanetwork.codebloom.common.env.Env;
 import org.patinanetwork.codebloom.common.jedis.JedisClient;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.reporter.report.Report;
 import org.patinanetwork.codebloom.common.reporter.report.location.Location;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
+import org.patinanetwork.codebloom.playwright.PlaywrightClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -39,7 +27,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class LeetcodeAuthStealer {
 
-    private static final String METRIC_NAME = "leetcode.client.execution";
+    @VisibleForTesting
+    static final String METRIC_NAME = "leetcode.client.execution";
 
     static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
 
@@ -57,27 +46,24 @@ public class LeetcodeAuthStealer {
 
     private final JedisClient jedisClient;
     private final AuthRepository authRepository;
-    private final Email email;
     private final Reporter reporter;
     private final Env env;
     private final MeterRegistry meterRegistry;
-
-    private static final String USER_AGENT =
-            "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
+    private final PlaywrightClient playwrightClient;
 
     public LeetcodeAuthStealer(
             final JedisClient jedisClient,
             final AuthRepository authRepository,
-            final GithubOAuthEmail email,
             final Reporter reporter,
             final Env env,
-            MeterRegistry meterRegistry) {
+            MeterRegistry meterRegistry,
+            PlaywrightClient playwrightClient) {
         this.jedisClient = jedisClient;
         this.authRepository = authRepository;
-        this.email = email;
         this.reporter = reporter;
         this.env = env;
         this.meterRegistry = meterRegistry;
+        this.playwrightClient = playwrightClient;
     }
 
     private Timer timer() {
@@ -189,119 +175,21 @@ public class LeetcodeAuthStealer {
     String stealCookieImpl() {
         return timer().record(() -> {
             LOCK.writeLock().lock();
-            try (Playwright playwright = Playwright.create();
-                    Browser browser = playwright
-                            .firefox()
-                            .launch(new BrowserType.LaunchOptions()
-                                    .setHeadless(true)
-                                    .setTimeout(40000));
-                    BrowserContext context = browser.newContext(
-                            new NewContextOptions().setUserAgent(USER_AGENT).setStorageState(null))) {
-                context.clearCookies();
-
-                log.info("Loaded browser context");
-
-                Page page = context.newPage();
-
-                page.navigate("https://leetcode.com/accounts/github/login/?next=%2F");
-
-                log.info("Navigated to leetcode.com login");
-
-                page.waitForLoadState(LoadState.NETWORKIDLE);
-
-                page.fill("#login_field", githubUsername);
-                page.fill("#password", githubPassword);
-
-                log.info("Filled in credentials, clicking login...");
-
-                page.click("input[name=\"commit\"]");
-
-                if (page.isVisible("#device-verification-prompt") || page.isVisible("#session-otp-input-description")) {
-                    log.info("2FA Required");
-                    List<Message> messages;
-
-                    page.waitForTimeout(10000);
-
-                    try {
-                        messages = email.getPastMessages();
-                    } catch (Exception e) {
-                        log.info("Failed to retrieve past messages");
-                        throw new RuntimeException("Failed to retrieve past messages", e);
+            try {
+                Optional<Auth> auth = playwrightClient.getLeetcodeCookie(githubUsername, githubPassword);
+                if (auth.isPresent()) {
+                    var a = auth.get();
+                    this.csrf = a.getCsrf();
+                    this.cookie = a.getToken();
+                    if (env.isCi()) {
+                        log.info("in ci, stored in redis as well");
+                        jedisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS); // 4 hours.
                     }
-
-                    Message target = null;
-                    for (Message m : messages) {
-                        // Don't break so we can get the newest available code.
-                        if (m.getSubject().equals("[GitHub] Please verify your device")) {
-                            log.info("Found verification email");
-                            target = m;
-                        }
-                    }
-
-                    if (target == null) {
-                        throw new RuntimeException(
-                                "Something went wrong when parsing the inbox. Manual intervention required");
-                    }
-
-                    String code = CodeExtractor.extractCode(target.getMessage());
-
-                    log.info("Found code in email, will fill now...");
-
-                    if (code == null) {
-                        throw new RuntimeException("Code was not found in the email. Manual intervention required.");
-                    }
-
-                    page.fill("input[name='otp']", code);
-
-                    log.info("Page filled!");
-                }
-
-                if (page.isVisible("button[name=\"authorize\"]")) {
-                    List<ElementHandle> buttons = page.querySelectorAll("button[name=\"authorize\"]");
-                    if (buttons.size() > 1) {
-                        // Click the second button (which is the actual authorize button)
-                        buttons.get(1).click();
-                    }
-                    log.info("Authorization button clicked");
-                }
-
-                page.waitForURL("https://leetcode.com/");
-
-                log.info("Back to leetcode.com!");
-
-                // if (page.isVisible("h1:has-text(\"Login Cancelled\")")) {
-                // page.navigate("https://leetcode.com/accounts/github/login/?next=%2F");
-                // page.waitForTimeout(100000);
-                // }
-
-                if (page.url().equals("https://leetcode.com/")) {
-                    Map<String, String> cookieMap = page.context().cookies().stream()
-                            .filter(cookie -> cookie.name.equals("LEETCODE_SESSION") || cookie.name.equals("csrftoken"))
-                            .collect(Collectors.toMap(cookie -> cookie.name, cookie -> cookie.value));
-
-                    String sessionToken = cookieMap.get("LEETCODE_SESSION");
-                    String csrf = cookieMap.get("csrftoken");
-                    if (sessionToken != null) {
-                        log.info("Cookie found!");
-                        authRepository.createAuth(Auth.builder()
-                                .token(sessionToken)
-                                .csrf(cookieMap.get("csrftoken"))
-                                .build());
-                        if (env.isCi()) {
-                            log.info("in ci, stored in redis as well");
-                            jedisClient.setAuth(sessionToken, 4, ChronoUnit.HOURS); // 4 hours.
-                        }
-                        this.cookie = sessionToken;
-                        this.csrf = csrf;
-                        return sessionToken;
-                    }
-                } else {
-                    log.info("Should be authenticated but not authenticated.");
+                    return cookie;
                 }
             } finally {
                 LOCK.writeLock().unlock();
             }
-
             return null;
         });
     }
