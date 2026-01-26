@@ -16,3 +16,5 @@ coverage:
         target: 80%
         threshold: 5%
         only_pulls: true
+comment:
+  behavior: new # delete old and post new.
