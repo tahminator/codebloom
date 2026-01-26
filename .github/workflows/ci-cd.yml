@@ -2,129 +2,128 @@ name: CI/CD
 run-name: Running CI/CD on ${{ github.actor }}'s commits
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
+  push:
+    branches:
+      - main
+  pull_request:
 
 permissions:
-    contents: write
-    issues: write
-    pull-requests: write
+  contents: write
+  issues: write
+  pull-requests: write
 
 concurrency:
-    group: ci-${{ github.ref }}
-    cancel-in-progress: true
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    backendPreTest:
-        name: Backend Pre Test
-        runs-on: ubuntu-latest
+  backendPreTest:
+    name: Backend Pre Test
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-            - name: Run workflow
-              uses: ./.github/composite/test/backend-pre-test
+      - name: Run workflow
+        uses: ./.github/composite/test/backend-pre-test
 
-    backendTests:
-        name: Backend Tests
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+  backendTests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-            - name: Run workflow
-              uses: ./.github/composite/test/backend-test
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                UPLOAD_TEST_COV: true
+      - name: Run workflow
+        uses: ./.github/composite/test/backend-test
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UPLOAD_TEST_COV: true
 
-    frontendTests:
-        name: Frontend Tests
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+  frontendTests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-            - name: Run workflow
-              uses: ./.github/composite/test/frontend-test
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Run workflow
+        uses: ./.github/composite/test/frontend-test
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-    testBuildImage:
-        name: Build Test Docker Image
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+  testBuildImage:
+    name: Build Test Docker Image
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-        if: github.ref_name != 'main'
+    if: github.ref_name != 'main'
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Run workflow
-              uses: ./.github/composite/build-image
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-                TAG_PREFIX: test-
-                DOCKER_UPLOAD: false
+      - name: Run workflow
+        uses: ./.github/composite/build-image
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          TAG_PREFIX: test-
+          DOCKER_UPLOAD: false
 
-    validateDBSchema:
-        name: Validate DB Schema on Prod DB
-        runs-on: ubuntu-latest
-        needs: backendPreTest
+  validateDBSchema:
+    name: Validate DB Schema on Prod DB
+    runs-on: ubuntu-latest
+    needs: backendPreTest
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-            - name: Run workflow
-              uses: ./.github/composite/validate-db
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Run workflow
+        uses: ./.github/composite/validate-db
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-    buildImage:
-        name: Build Docker Image & Upload to Registry
-        runs-on: ubuntu-latest
-        needs: [validateDBSchema, backendTests, frontendTests]
+  buildImage:
+    name: Build Docker Image & Upload to Registry
+    runs-on: ubuntu-latest
+    needs: [validateDBSchema, backendTests, frontendTests]
 
-        if: github.ref_name == 'main'
+    if: github.ref_name == 'main'
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Run workflow
-              uses: ./.github/composite/build-image
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Run workflow
+        uses: ./.github/composite/build-image
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
+  redeploy:
+    name: Redeploy on DigitalOcean
+    runs-on: ubuntu-latest
+    needs: buildImage
+    environment: production
 
-    redeploy:
-        name: Redeploy on DigitalOcean
-        runs-on: ubuntu-latest
-        needs: buildImage
-        environment: production
+    if: github.ref_name == 'main'
 
-        if: github.ref_name == 'main'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-
-            - name: Run workflow
-              uses: ./.github/composite/redeploy
-              with:
-                GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-                GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Run workflow
+        uses: ./.github/composite/redeploy
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
