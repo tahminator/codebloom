@@ -14,6 +14,11 @@ type ParamsToStrings<T extends readonly string[]> = {
   [K in keyof T]: string;
 };
 
+type ResolveSegment<T extends string> = T extends `{${string}}` ? string : T;
+type ResolvePath<T extends readonly string[]> = {
+  [K in keyof T]: T[K] extends string ? ResolveSegment<T[K]> : T[K];
+};
+
 type CleanPath<T extends string> = T extends `/${infer Rest}` ? Rest : T;
 type CollectAllSegments<S extends string, Acc extends string = ""> =
   S extends `${infer Head}/${infer Tail}` ?
@@ -444,7 +449,9 @@ export class ApiURL<
       throw new Error(`Missing path params for: ${prefix}`);
     }
 
-    return [...resolved.split("/").filter((s) => s.length > 0)];
+    return resolved.split("/").filter((s) => s.length > 0) as readonly [
+      ...ResolvePath<PathSegments<CleanPath<TPrefix>>>,
+    ];
   }
 
   /**
