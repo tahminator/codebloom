@@ -17,6 +17,7 @@ export async function verifySchool(email: { email: string }) {
 
 export const useVerifySchoolMutation = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: verifySchool,
     onSuccess: async (data) => {

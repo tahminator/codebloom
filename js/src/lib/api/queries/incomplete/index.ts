@@ -2,20 +2,22 @@ import { ApiURL } from "@/lib/api/common/apiURL";
 import { useQuery } from "@tanstack/react-query";
 
 export const useIncompleteQuestionQuery = () => {
+  const apiURL = ApiURL.create("/api/admin/questions/incomplete", {
+    method: "GET",
+  });
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["incomplete"],
-    queryFn: fetchIncompleteQuestions,
+    queryKey,
+    queryFn: () => fetchIncompleteQuestions(apiURL),
   });
 };
 
-async function fetchIncompleteQuestions() {
-  const { url, method, res } = ApiURL.create(
-    "/api/admin/questions/incomplete",
-    {
-      method: "GET",
-    },
-  );
-
+async function fetchIncompleteQuestions({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/admin/questions/incomplete", "get">) {
   const response = await fetch(url, {
     method,
   });

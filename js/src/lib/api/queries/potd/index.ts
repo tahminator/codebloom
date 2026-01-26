@@ -2,16 +2,22 @@ import { ApiURL } from "@/lib/api/common/apiURL";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchPotdQuery = () => {
+  const apiURL = ApiURL.create("/api/leetcode/potd", {
+    method: "GET",
+  });
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["potd", new Date().getDay()],
-    queryFn: fetchPotd,
+    queryKey,
+    queryFn: () => fetchPotd(apiURL),
   });
 };
 
-async function fetchPotd() {
-  const { url, method, res } = ApiURL.create("/api/leetcode/potd", {
-    method: "GET",
-  });
+async function fetchPotd({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/leetcode/potd", "get">) {
   const response = await fetch(url, {
     method,
   });

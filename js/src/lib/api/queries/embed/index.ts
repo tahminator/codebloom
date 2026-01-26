@@ -2,16 +2,22 @@ import { ApiURL } from "@/lib/api/common/apiURL";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchPotdEmbedQuery = () => {
+  const apiURL = ApiURL.create("/api/leetcode/potd/embed", {
+    method: "GET",
+  });
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["potd", new Date().toDateString()],
-    queryFn: fetchPotdEmbed,
+    queryKey,
+    queryFn: async () => fetchPotdEmbed(apiURL),
   });
 };
 
-async function fetchPotdEmbed() {
-  const { url, method, res } = ApiURL.create("/api/leetcode/potd/embed", {
-    method: "GET",
-  });
+async function fetchPotdEmbed({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/leetcode/potd/embed", "get">) {
   const response = await fetch(url, {
     method,
   });
