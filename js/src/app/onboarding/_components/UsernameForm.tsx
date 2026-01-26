@@ -1,6 +1,6 @@
 import {
   useAuthKeyQuery,
-  useSetLeetcodeUsername,
+  useSetLeetcodeUsernameMutation,
 } from "@/lib/api/queries/auth/leetcode";
 import {
   Button,
@@ -22,7 +22,7 @@ export default function UsernameForm() {
   const navigate = useNavigate();
 
   const { data, status } = useAuthKeyQuery();
-  const { mutate, isPending } = useSetLeetcodeUsername();
+  const { mutate, isPending } = useSetLeetcodeUsernameMutation();
 
   const form = useForm({
     initialValues: {

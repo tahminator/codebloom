@@ -1,4 +1,3 @@
-import { UnknownApiResponse } from "@/lib/api/common/apiResponse";
 import { ApiURL } from "@/lib/api/common/apiURL";
 import { Page } from "@/lib/api/common/page";
 import { Api } from "@/lib/api/types";
@@ -12,13 +11,23 @@ export const useToggleAdminMutation = () => {
     mutationFn: toggleUserAdmin,
     onMutate: async (newData) => {
       const { userId, toggleTo, metadata } = newData;
+      // res is used to get response type out
+      const { res: _res, queryKey } = ApiURL.create("/api/user/all", {
+        method: "GET",
+        queries: {
+          page: metadata.page,
+          query: metadata.debouncedQuery,
+          pageSize: 5,
+        },
+      });
+      type AllUsersResponse = ReturnType<typeof _res>;
+
       queryClient.cancelQueries({
-        queryKey: ["user", "all", metadata.page, metadata.debouncedQuery],
+        queryKey,
       });
 
-      const previousApiResponse = queryClient.getQueryData<
-        UnknownApiResponse<Page<Api<"UserDto">[]>>
-      >(["user", "all", metadata.page, metadata.debouncedQuery]);
+      const previousApiResponse =
+        queryClient.getQueryData<AllUsersResponse>(queryKey);
 
       // Impossible, just handle it to make TS happy and narrow the type.
       if (!previousApiResponse || !previousApiResponse.success) {
@@ -52,25 +61,41 @@ export const useToggleAdminMutation = () => {
       };
 
       // Insert this new Page type, and keep the success and message from the previous API response.
-      queryClient.setQueryData<UnknownApiResponse<Page<Api<"UserDto">[]>>>(
-        ["user", "all", metadata.page, metadata.debouncedQuery],
-        { ...previousApiResponse, payload: newPage },
-      );
+      queryClient.setQueryData<AllUsersResponse>(queryKey, {
+        ...previousApiResponse,
+        payload: newPage,
+      });
 
       // This is context that is passed on, so we can hold onto it and possibly put it back if needed.
       return { previousApiResponse };
     },
     onError: (_, newData, ctx) => {
       const { metadata } = newData;
-      queryClient.setQueryData(
-        ["user", "all", metadata.page, metadata.debouncedQuery],
+      // res is used to get response type out
+      const { res: _res, queryKey } = ApiURL.create("/api/user/all", {
+        method: "GET",
+        queries: {
+          page: metadata.page,
+          query: metadata.debouncedQuery,
+          pageSize: 5,
+        },
+      });
+      type AllUsersResponse = ReturnType<typeof _res>;
+
+      // cant happen
+      if (!ctx?.previousApiResponse) {
+        return;
+      }
+
+      queryClient.setQueryData<AllUsersResponse>(
+        queryKey,
         // Shallow copy because sometimes there is a bug with the object passed in by reference.
         { ...ctx?.previousApiResponse },
       );
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ["user", "all"],
+        queryKey: ApiURL.prefix("/api/user/all"),
       });
     },
   });
@@ -143,7 +168,9 @@ export const useCreateLeaderboardMutation = () => {
     mutationFn: createLeaderboard,
     onSuccess: async (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+        queryClient.invalidateQueries({
+          queryKey: ApiURL.prefix("/api/leaderboard"),
+        });
       }
     },
   });
@@ -158,7 +185,9 @@ export const useCreateAnnouncementLeaderboardMutation = () => {
     mutationFn: createAnnouncement,
     onSuccess: async (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ["announcement"] });
+        queryClient.invalidateQueries({
+          queryKey: ApiURL.prefix("/api/announcement"),
+        });
       }
     },
   });
@@ -201,7 +230,7 @@ export const useDeleteAnnouncementMutation = () => {
     onSuccess: async (data) => {
       if (data.success) {
         queryClient.invalidateQueries({
-          queryKey: ["announcement"],
+          queryKey: ApiURL.prefix("/api/announcement"),
         });
       }
     },

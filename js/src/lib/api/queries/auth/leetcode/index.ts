@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 /**
  * This mutation will set the user's leetcode username, refetching on success
  */
-export const useSetLeetcodeUsername = () => {
+export const useSetLeetcodeUsernameMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -19,9 +19,14 @@ export const useSetLeetcodeUsername = () => {
  * Fetch the user's private key used for Leetcode authentication.
  */
 export const useAuthKeyQuery = () => {
+  const apiURL = ApiURL.create("/api/leetcode/key", {
+    method: "GET",
+  });
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["auth", "key"],
-    queryFn: getLeetcodeQueryKey,
+    queryKey,
+    queryFn: () => getLeetcodeQueryKey(apiURL),
   });
 };
 
@@ -43,10 +48,11 @@ async function updateLeetcodeUsername({
   return res(await response.json());
 }
 
-async function getLeetcodeQueryKey() {
-  const { url, method, res } = ApiURL.create("/api/leetcode/key", {
-    method: "GET",
-  });
+async function getLeetcodeQueryKey({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/leetcode/key", "get">) {
   const response = await fetch(url, {
     method,
   });

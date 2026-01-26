@@ -8,7 +8,7 @@ export const useStartDuelMutation = () => {
   return useMutation({
     mutationFn: startDuel,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["party"] });
+      queryClient.invalidateQueries({ queryKey: ApiURL.prefix("/api/duel") });
     },
   });
 };
@@ -32,7 +32,7 @@ export const useLeavePartyMutation = () => {
   return useMutation({
     mutationFn: leaveParty,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["party"] });
+      queryClient.invalidateQueries({ queryKey: ApiURL.prefix("/api/duel") });
     },
   });
 };
@@ -54,7 +54,7 @@ export const useJoinPartyMutation = () => {
   return useMutation({
     mutationFn: joinParty,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["party"] });
+      queryClient.invalidateQueries({ queryKey: ApiURL.prefix("/api/duel") });
     },
   });
 };
@@ -77,7 +77,7 @@ export const useCreatePartyMutation = () => {
   return useMutation({
     mutationFn: createParty,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["party"] });
+      queryClient.invalidateQueries({ queryKey: ApiURL.prefix("/api/duel") });
     },
   });
 };
@@ -99,7 +99,9 @@ export const useEndPartyMutation = () => {
   return useMutation({
     mutationFn: endParty,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["party"] });
+      queryClient.invalidateQueries({
+        queryKey: ApiURL.prefix("/api/duel"),
+      });
     },
   });
 };
@@ -116,16 +118,23 @@ async function endParty() {
 
 // Current
 export const useGetCurrentDuelOrPartyQuery = () => {
+  const apiURL = ApiURL.create("/api/duel/current", {
+    method: "GET",
+  });
+
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["party"],
-    queryFn: getCurrentDuelOrParty,
+    queryKey,
+    queryFn: () => getCurrentDuelOrParty(apiURL),
   });
 };
 
-async function getCurrentDuelOrParty() {
-  const { url, method, res } = ApiURL.create("/api/duel/current", {
-    method: "GET",
-  });
+async function getCurrentDuelOrParty({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/duel/current", "get">) {
   const response = await fetch(url, {
     method,
   });

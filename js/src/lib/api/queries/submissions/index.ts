@@ -9,26 +9,26 @@ export const useSubmissionDetailsQuery = ({
 }: {
   submissionId: string;
 }) => {
+  const apiURL = ApiURL.create("/api/leetcode/submission/{submissionId}", {
+    method: "GET",
+    params: {
+      submissionId,
+    },
+  });
+
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["submission", submissionId],
-    queryFn: () => fetchSubmissionDetails({ submissionId }),
+    queryKey,
+    queryFn: () => fetchSubmissionDetails(apiURL),
   });
 };
 
 async function fetchSubmissionDetails({
-  submissionId,
-}: {
-  submissionId: string;
-}) {
-  const { url, method, res } = ApiURL.create(
-    "/api/leetcode/submission/{submissionId}",
-    {
-      method: "GET",
-      params: {
-        submissionId,
-      },
-    },
-  );
+  url,
+  method,
+  res,
+}: ApiURL<"/api/leetcode/submission/{submissionId}", "get">) {
   const response = await fetch(url, {
     method,
   });

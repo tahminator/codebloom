@@ -2,19 +2,25 @@ import { ApiURL } from "@/lib/api/common/apiURL";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useClubQuery = ({ clubSlug }: { clubSlug: string }) => {
-  return useQuery({
-    queryKey: ["club", clubSlug],
-    queryFn: () => fetchClubDto({ clubSlug }),
-  });
-};
-
-async function fetchClubDto({ clubSlug }: { clubSlug: string }) {
-  const { url, method, res } = ApiURL.create("/api/club/{clubSlug}", {
+  const apiURL = ApiURL.create("/api/club/{clubSlug}", {
     method: "GET",
     params: {
       clubSlug,
     },
   });
+  const { queryKey } = apiURL;
+
+  return useQuery({
+    queryKey,
+    queryFn: () => fetchClubDto(apiURL),
+  });
+};
+
+async function fetchClubDto({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/club/{clubSlug}", "get">) {
   const response = await fetch(url, {
     method,
   });
@@ -27,8 +33,10 @@ export const useVerifyPasswordMutation = (clubSlug: string) => {
   return useMutation({
     mutationFn: verifyPassword,
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
-      queryClient.invalidateQueries({ queryKey: ["club", clubSlug] });
+      queryClient.invalidateQueries({ queryKey: ApiURL.prefix("/api/auth") });
+      queryClient.invalidateQueries({
+        queryKey: ApiURL.prefix("/api/club/{clubSlug}", clubSlug),
+      });
     },
   });
 };

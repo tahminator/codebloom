@@ -5,16 +5,22 @@ import { useQuery } from "@tanstack/react-query";
  * Fetch the user's authentication state from the server.
  */
 export const useAuthQuery = () => {
+  const apiURL = ApiURL.create("/api/auth/validate", {
+    method: "GET",
+  });
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["auth"],
-    queryFn: validateAuthentication,
+    queryKey,
+    queryFn: () => validateAuthentication(apiURL),
   });
 };
 
-async function validateAuthentication() {
-  const { url, method, res } = ApiURL.create("/api/auth/validate", {
-    method: "GET",
-  });
+async function validateAuthentication({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/auth/validate", "get">) {
   const response = await fetch(url, {
     method,
   });

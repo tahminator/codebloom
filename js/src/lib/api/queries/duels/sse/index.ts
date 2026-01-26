@@ -15,8 +15,18 @@ export const useMyDuelOrPartyData = () => {
 
 export const useDuelOrPartyData = (lobbyCode: string) => {
   const queryClient = useQueryClient();
+  const { url, method, res, queryKey } = ApiURL.create(
+    "/api/duel/{lobbyCode}/sse",
+    {
+      method: "POST",
+      params: {
+        lobbyCode,
+      },
+    },
+  );
+
   const query = useQuery<UnknownApiResponse<Api<"DuelData">>>({
-    queryKey: ["duel", lobbyCode],
+    queryKey,
   });
 
   useEffect(() => {
@@ -25,13 +35,6 @@ export const useDuelOrPartyData = (lobbyCode: string) => {
     }
 
     const controller = new AbortController();
-
-    const { url, method, res } = ApiURL.create("/api/duel/{lobbyCode}/sse", {
-      method: "POST",
-      params: {
-        lobbyCode,
-      },
-    });
 
     fetchEventSource(url, {
       method,

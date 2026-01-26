@@ -12,9 +12,17 @@ import { useCallback, useEffect, useMemo } from "react";
  * Fetch the metadata of the given user, such as Leetcode username, Discord name, and more.
  */
 export const useUserProfileQuery = ({ userId }: { userId: string }) => {
+  const apiURL = ApiURL.create("/api/user/{userId}/profile", {
+    method: "GET",
+    params: {
+      userId,
+    },
+  });
+  const { queryKey } = apiURL;
+
   return useQuery({
-    queryKey: ["user", "profile", userId],
-    queryFn: () => fetchUserProfile({ userId }),
+    queryKey,
+    queryFn: () => fetchUserProfile(apiURL),
     placeholderData: keepPreviousData,
   });
 };
@@ -91,30 +99,47 @@ export const useUserSubmissionsQuery = ({
     goTo(1);
   }, [goTo, _setTopics]);
 
-  const query = useQuery({
-    queryKey: [
-      "submission",
-      "user",
+  // if seconds are not included, use start of day and end of day
+  const processedStartDate = useMemo(
+    () =>
+      debouncedStartDate ?
+        debouncedStartDate.includes(":") ?
+          d.utc(debouncedStartDate).toISOString()
+        : d(debouncedStartDate).startOf("day").utc().toISOString()
+      : undefined,
+    [debouncedStartDate],
+  );
+  const processedEndDate = useMemo(
+    () =>
+      debouncedEndDate ?
+        debouncedEndDate.includes(":") ?
+          d.utc(debouncedEndDate).toISOString()
+        : d(debouncedEndDate).endOf("day").utc().toISOString()
+      : undefined,
+    [debouncedEndDate],
+  );
+
+  const apiURL = ApiURL.create("/api/user/{userId}/submissions", {
+    method: "GET",
+    params: {
       userId,
+    },
+    queries: {
       page,
-      debouncedQuery,
+      query: debouncedQuery,
       pageSize,
       pointFilter,
       topics,
-      debouncedStartDate,
-      debouncedEndDate,
-    ],
-    queryFn: () =>
-      fetchUserSubmissions({
-        page,
-        userId,
-        query: debouncedQuery,
-        pageSize,
-        pointFilter,
-        topics,
-        startDate: debouncedStartDate,
-        endDate: debouncedEndDate,
-      }),
+      startDate: processedStartDate,
+      endDate: processedEndDate,
+    },
+  });
+
+  const { queryKey } = apiURL;
+
+  const query = useQuery({
+    queryKey,
+    queryFn: () => fetchUserSubmissions(apiURL),
     placeholderData: keepPreviousData,
   });
 
@@ -149,8 +174,6 @@ export const useUserSubmissionsQuery = ({
   };
 };
 
-export const useMiniSubmissionsQuery = {};
-
 export const useGetAllUsersQuery = (
   {
     tieToUrl = false,
@@ -180,14 +203,19 @@ export const useGetAllUsersQuery = (
     goTo(1);
   }, [searchQuery, goTo]);
 
+  const apiURL = ApiURL.create("/api/user/all", {
+    method: "GET",
+    queries: {
+      page,
+      query: debouncedQuery,
+      pageSize,
+    },
+  });
+  const { queryKey } = apiURL;
+
   const query = useQuery({
-    queryKey: ["user", "all", page, debouncedQuery],
-    queryFn: () =>
-      fetchAllUsers({
-        page,
-        pageSize,
-        query: debouncedQuery,
-      }),
+    queryKey,
+    queryFn: () => fetchAllUsers(apiURL),
     placeholderData: keepPreviousData,
   });
 
@@ -204,13 +232,11 @@ export const useGetAllUsersQuery = (
   };
 };
 
-async function fetchUserProfile({ userId }: { userId: string }) {
-  const { url, method, res } = ApiURL.create("/api/user/{userId}/profile", {
-    method: "GET",
-    params: {
-      userId,
-    },
-  });
+async function fetchUserProfile({
+  url,
+  method,
+  res,
+}: ApiURL<"/api/user/{userId}/profile", "get">) {
   const response = await fetch(url, {
     method,
   });
@@ -221,54 +247,10 @@ async function fetchUserProfile({ userId }: { userId: string }) {
 }
 
 async function fetchUserSubmissions({
-  page,
-  userId,
-  query,
-  pageSize,
-  pointFilter,
-  topics,
-  startDate,
-  endDate,
-}: {
-  page: number;
-  userId: string;
-  query?: string;
-  pageSize: number;
-  pointFilter: boolean;
-  topics?: string[];
-  startDate?: string;
-  endDate?: string;
-}) {
-  // if seconds are not included, use start of day and end of day
-  const processedStartDate =
-    startDate ?
-      startDate.includes(":") ?
-        d.utc(startDate).toISOString()
-      : d(startDate).startOf("day").utc().toISOString()
-    : undefined;
-  const processedEndDate =
-    endDate ?
-      endDate.includes(":") ?
-        d.utc(endDate).toISOString()
-      : d(endDate).endOf("day").utc().toISOString()
-    : undefined;
-
-  const { url, method, res } = ApiURL.create("/api/user/{userId}/submissions", {
-    method: "GET",
-    params: {
-      userId,
-    },
-    queries: {
-      page,
-      query,
-      pageSize,
-      pointFilter,
-      topics,
-      startDate: processedStartDate,
-      endDate: processedEndDate,
-    },
-  });
-
+  url,
+  method,
+  res,
+}: ApiURL<"/api/user/{userId}/submissions", "get">) {
   const response = await fetch(url, {
     method,
   });
@@ -278,22 +260,10 @@ async function fetchUserSubmissions({
 }
 
 async function fetchAllUsers({
-  page,
-  query,
-  pageSize,
-}: {
-  page: number;
-  query?: string;
-  pageSize: number;
-}) {
-  const { url, method, res } = ApiURL.create("/api/user/all", {
-    method: "GET",
-    queries: {
-      page,
-      query,
-      pageSize,
-    },
-  });
+  url,
+  method,
+  res,
+}: ApiURL<"/api/user/all", "get">) {
   const response = await fetch(url, {
     method,
   });
