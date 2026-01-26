@@ -10,7 +10,7 @@ export const useSetLeetcodeUsernameMutation = () => {
   return useMutation({
     mutationFn: updateLeetcodeUsername,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      queryClient.invalidateQueries({ queryKey: ApiURL.prefix("/api/auth") });
     },
   });
 };

@@ -16,10 +16,12 @@ import { Link } from "react-router-dom";
 
 export default function RefreshSubmissions({
   schoolRegistered,
+  userId,
 }: {
   schoolRegistered: boolean;
+  userId?: string;
 }) {
-  const { mutate, isPending } = useUsersTotalPoints();
+  const { mutate, isPending } = useUsersTotalPoints(userId);
   const [countdown, resetCountdown] = useCountdown(0);
 
   const isDisabled = countdown > 0;

@@ -1,3 +1,4 @@
+import { ApiURL } from "@/lib/api/common/apiURL";
 import {
   useAuthKeyQuery,
   useSetLeetcodeUsernameMutation,
@@ -41,7 +42,7 @@ export default function UsernameForm() {
           });
           if (success) {
             queryClient.invalidateQueries({
-              queryKey: ["auth"],
+              queryKey: ApiURL.prefix("/api/auth/validate"),
             });
             navigate("/dashboard");
           }
