@@ -346,8 +346,10 @@ export const useLeaderboardMetadataByIdQuery = (leaderboardId: string) => {
 /**
  * Query the backend to fetch points. If it returns a successful search,
  * we invalidate all the queries to see if anything has changed.
+ *
+ * @param userId optional; can be used to optimize query invalidation
  */
-export const useUsersTotalPoints = () => {
+export const useUsersTotalPoints = (userId?: string | undefined) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -358,6 +360,12 @@ export const useUsersTotalPoints = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ApiURL.prefix("/api/leaderboard"),
+      });
+      queryClient.invalidateQueries({
+        queryKey:
+          userId ?
+            ApiURL.prefix("/api/user/{userId}/submissions", userId)
+          : ApiURL.prefix("/api/user"),
       });
       queryClient.invalidateQueries({
         queryKey: ApiURL.prefix("/api/leetcode/potd"),

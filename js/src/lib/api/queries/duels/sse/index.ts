@@ -46,7 +46,7 @@ export const useDuelOrPartyData = (lobbyCode: string) => {
       onmessage(ev) {
         try {
           const data = res(JSON.parse(ev.data));
-          queryClient.setQueryData(["duel", lobbyCode], data);
+          queryClient.setQueryData(queryKey, data);
         } catch (e) {
           console.error("Failed to parse SSE message", e);
         }
