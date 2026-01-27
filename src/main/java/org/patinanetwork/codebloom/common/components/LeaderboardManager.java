@@ -130,7 +130,8 @@ public class LeaderboardManager {
                         || options.isCcny()
                         || options.isColumbia()
                         || options.isCornell()
-                        || options.isBmcc())) {
+                        || options.isBmcc()
+                        || options.isMhcplusplus())) {
             leaderboardData =
                     leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(currentLeaderboardId, options);
         } else {

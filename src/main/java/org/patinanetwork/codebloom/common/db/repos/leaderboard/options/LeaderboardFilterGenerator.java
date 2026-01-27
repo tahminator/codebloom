@@ -22,6 +22,7 @@ public class LeaderboardFilterGenerator {
         list.add(Pair.of(withOnlyTrue(opt -> opt.columbia(true)), Tag.Columbia));
         list.add(Pair.of(withOnlyTrue(opt -> opt.cornell(true)), Tag.Cornell));
         list.add(Pair.of(withOnlyTrue(opt -> opt.bmcc(true)), Tag.Bmcc));
+        list.add(Pair.of(withOnlyTrue(opt -> opt.bmcc(true)), Tag.MHCPlusPlus));
 
         return list;
     }
@@ -39,6 +40,7 @@ public class LeaderboardFilterGenerator {
             case Columbia -> LeaderboardFilterOptions.builder().columbia(true);
             case Cornell -> LeaderboardFilterOptions.builder().cornell(true);
             case Bmcc -> LeaderboardFilterOptions.builder().bmcc(true);
+            case MHCPlusPlus -> LeaderboardFilterOptions.builder().mhcplusplus(true);
         };
     }
 
