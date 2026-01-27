@@ -35,7 +35,14 @@ runs:
       with:
         distribution: "temurin"
         java-version: "25"
-        cache: "maven"
+
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.m2
+          ~/repository
+        key: ${{ github.job }}-${{ hashFiles('**/pom.xml') }}
 
     - name: Expose GitHub Runtime
       uses: crazy-max/ghaction-github-runtime@v3
