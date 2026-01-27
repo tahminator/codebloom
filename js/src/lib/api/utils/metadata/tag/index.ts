@@ -82,6 +82,13 @@ export const TAG_METADATA_LIST: Record<Tag, ApiTypeUtils.TagMetadata> = {
     icon: "/brands/BMCC_logo.png",
     alt: "BMCC Logo",
   },
+  MHCPlusPlus: {
+    shortName: "MHC++",
+    name: "The MHC++ Club | Macaulay Hunter College",
+    apiKey: "mhcplusplus",
+    icon: "/brands/Mhcpp_logo.png",
+    alt: "MHC++ Logo",
+  },
 } as const;
 
-export const UNUSED_TAGS: Tag[] = [Tag.Gwc];
+export const UNUSED_TAGS: Tag[] = [Tag.Gwc, Tag.MHCPlusPlus];
