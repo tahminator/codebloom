@@ -25,15 +25,10 @@ export async function main() {
     environment === "staging" ? "staging" : "production-ro",
   ]);
 
-  const onlyCheckPendingMigrationFlag =
-    environment === "staging" ?
-      "-Dflyway.ignoreMigrationPatterns=*:pending"
-    : "";
-
   await $.env({
     ...process.env,
     ...appEnv,
-  })`./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration ${onlyCheckPendingMigrationFlag}`;
+  })`bash -c "./mvnw flyway:validate -Dflyway.locations=filesystem:./db/migration -Dflyway.ignoreMigrationPatterns='*:pending'"`;
 }
 
 main()
