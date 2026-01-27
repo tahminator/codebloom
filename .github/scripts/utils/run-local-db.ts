@@ -14,7 +14,7 @@ async function start() {
         -e POSTGRES_PASSWORD=postgres \
         -e POSTGRES_DB=codebloom \
         -p 5440:5432 \
-        postgres:16`;
+        postgres:16-alpine`;
 
     console.log("Waiting for postgres to become ready.");
 
