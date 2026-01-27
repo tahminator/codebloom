@@ -19,7 +19,8 @@ public enum Tag {
     Ccny("City College of New York"),
     Columbia("Columbia University"),
     Cornell("Cornell University"),
-    Bmcc("Borough of Manhattan Community College");
+    Bmcc("Borough of Manhattan Community College"),
+    MHCPlusPlus("MHC++");
 
     /** Only applies to school tags. */
     // CHECKSTYLE:OFF

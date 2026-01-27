@@ -128,6 +128,8 @@ public class LeaderboardController {
                     final boolean cornell,
             @Parameter(description = "Filter for BMCC users") @RequestParam(required = false, defaultValue = "false")
                     final boolean bmcc,
+            @Parameter(description = "Filter for MHC++ users") @RequestParam(required = false, defaultValue = "false")
+                    final boolean mhcplusplus,
             @Parameter(description = "Enable global leaderboard index")
                     @RequestParam(required = false, defaultValue = "false")
                     final boolean globalIndex,
@@ -151,6 +153,7 @@ public class LeaderboardController {
                 .columbia(columbia)
                 .cornell(cornell)
                 .bmcc(bmcc)
+                .mhcplusplus(mhcplusplus)
                 .build();
 
         Page<Indexed<UserWithScoreDto>> createdPage =
@@ -226,6 +229,8 @@ public class LeaderboardController {
                     final boolean cornell,
             @Parameter(description = "Filter for BMCC users") @RequestParam(required = false, defaultValue = "false")
                     final boolean bmcc,
+            @Parameter(description = "Filter for MHC++ users") @RequestParam(required = false, defaultValue = "false")
+                    final boolean mhcplusplus,
             @Parameter(description = "Enable global leaderboard index")
                     @RequestParam(required = false, defaultValue = "false")
                     final boolean globalIndex) {
@@ -248,6 +253,7 @@ public class LeaderboardController {
                 .columbia(columbia)
                 .cornell(cornell)
                 .bmcc(bmcc)
+                .mhcplusplus(mhcplusplus)
                 .build();
 
         String currentLeaderboardId =

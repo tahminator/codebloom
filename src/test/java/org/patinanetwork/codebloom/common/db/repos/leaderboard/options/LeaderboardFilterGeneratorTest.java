@@ -21,7 +21,8 @@ public class LeaderboardFilterGeneratorTest {
             Tag.Cornell,
             Tag.Hunter,
             Tag.Nyu,
-            Tag.Rpi);
+            Tag.Rpi,
+            Tag.MHCPlusPlus);
 
     public static final Set<Tag> ALL_LEADERBOARD_TAGS = Set.of(
             Tag.Patina,
@@ -34,7 +35,8 @@ public class LeaderboardFilterGeneratorTest {
             Tag.Cornell,
             Tag.Hunter,
             Tag.Nyu,
-            Tag.Rpi);
+            Tag.Rpi,
+            Tag.MHCPlusPlus);
 
     @Test
     void expectLeaderboardFilterGeneratorToReturnAllValidTags() {
@@ -73,6 +75,7 @@ public class LeaderboardFilterGeneratorTest {
                 case Hunter -> assertTrue(options.isHunter());
                 case Nyu -> assertTrue(options.isNyu());
                 case Rpi -> assertTrue(options.isRpi());
+                case MHCPlusPlus -> assertTrue(options.isMhcplusplus());
             }
         }
     }
@@ -115,6 +118,10 @@ public class LeaderboardFilterGeneratorTest {
                 trueCount++;
             }
             if (options.isRpi()) {
+                trueCount++;
+            }
+
+            if (options.isMhcplusplus()) {
                 trueCount++;
             }
 

@@ -55,6 +55,9 @@ public class LeaderboardFilterOptions {
     @Builder.Default
     private final boolean bmcc = false;
 
+    @Builder.Default
+    private final boolean mhcplusplus = false;
+
     public static final LeaderboardFilterOptions DEFAULT =
             LeaderboardFilterOptions.builder().build();
 }
