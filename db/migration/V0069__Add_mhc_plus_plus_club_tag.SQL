@@ -1,0 +1,1 @@
+ALTER TYPE "Tag" ADD VALUE 'MHCPlusPlus';
