@@ -1,5 +1,5 @@
 name: Deploying to staging
-run-name: Deploying to staging
+run-name: Deploying to staging triggered by ${{ github.actor }}
 
 concurrency:
   group: deploy-staging-pr-${{ github.event.client_payload.slash_command.args.named.prId }}
