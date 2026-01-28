@@ -6,4 +6,5 @@
 .env.production-ro filter=git-crypt-l2 diff=git-crypt-l2
 
 .env.production filter=git-crypt-l3 diff=git-crypt-l3
+.env.migrator filter=git-crypt-l3 diff=git-crypt-l3
 infra/.env.production filter=git-crypt-l3 diff=git-crypt-l3
