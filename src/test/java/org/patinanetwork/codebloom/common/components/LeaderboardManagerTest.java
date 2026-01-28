@@ -445,6 +445,71 @@ public class LeaderboardManagerTest {
     }
 
     @Test
+    void testUsersWithZeroPointsAreExcludedFromAchievements() {
+        var latestLeaderboard = Leaderboard.builder()
+                .id(UUID.randomUUID().toString())
+                .name("Test Leaderboard")
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
+
+        var users = Indexed.ofDefaultList(List.of(
+                randomPartialUserWithScore().totalScore(150_000).build(),
+                randomPartialUserWithScore().totalScore(0).build(),
+                randomPartialUserWithScore().totalScore(0).build()));
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
+                .thenReturn(users);
+
+        leaderboardManager.generateAchievementsForAllWinners();
+
+        ArgumentCaptor<Achievement> captor = ArgumentCaptor.forClass(Achievement.class);
+        verify(achievementRepository, times(1)).createAchievement(captor.capture());
+
+        var achievements = captor.getAllValues();
+        var userOneAchievement = achievements.get(0);
+        assertAchievement(
+                userOneAchievement,
+                null,
+                AchievementPlaceEnum.ONE,
+                users.get(0).getItem().getId());
+    }
+
+    @Test
+    void testUsersWithZeroPointsAreExcludedFromTagAchievements() {
+        var latestLeaderboard = Leaderboard.builder()
+                .id(UUID.randomUUID().toString())
+                .name("Test Leaderboard")
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
+
+        var users = Indexed.ofDefaultList(List.of(
+                randomPartialUserWithScore().totalScore(0).build(),
+                randomPartialUserWithScore().totalScore(0).build()));
+
+        users.forEach(winner -> {
+            var user = winner.getItem();
+            user.setTags(List.of(UserTag.builder()
+                    .id(UUID.randomUUID().toString())
+                    .tag(Tag.Sbu)
+                    .userId(user.getId())
+                    .build()));
+        });
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
+                .thenReturn(users);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isSbu())))
+                .thenReturn(users);
+
+        leaderboardManager.generateAchievementsForAllWinners();
+
+        verify(achievementRepository, times(0)).createAchievement(any());
+    }
+
+    @Test
     void testGetLeaderboardMetadata() {
         String testId = UUID.randomUUID().toString();
         Leaderboard leaderboard = Leaderboard.builder()
