@@ -74,49 +74,49 @@ async function main() {
       --username="$DATABASE_USER" \
       --dbname="$STAGING_DATABASE_NAME" \
       --command="
-      DELETE FROM "ApiKey";
-      DELETE FROM "Auth";
-      DELETE FROM "Club";
-      DELETE FROM "Session";
+      DELETE FROM \"ApiKey\";
+      DELETE FROM \"Auth\";
+      DELETE FROM \"Club\";
+      DELETE FROM \"Session\";
 
       -- Scramble non-admin user data
-      UPDATE "User" 
+      UPDATE \"User\" 
       SET 
-        "nickname" = CASE 
-          WHEN "nickname" IS NOT NULL THEN 'user_' || encode(gen_random_bytes(8), 'hex')
+        \"nickname\" = CASE 
+          WHEN \"nickname\" IS NOT NULL THEN 'user_' || encode(gen_random_bytes(8), 'hex')
           ELSE NULL 
         END,
-        "verifyKey" = encode(gen_random_bytes(16), 'hex'),
-        "schoolEmail" = CASE 
-          WHEN "schoolEmail" IS NOT NULL THEN 'test_' || encode(gen_random_bytes(4), 'hex') || '@example.com'
+        \"verifyKey\" = encode(gen_random_bytes(16), 'hex'),
+        \"schoolEmail\" = CASE 
+          WHEN \"schoolEmail\" IS NOT NULL THEN 'test_' || encode(gen_random_bytes(4), 'hex') || '@example.com'
           ELSE NULL 
         END,
-        "profileUrl" = 'https://via.placeholder.com/150'
-      WHERE "admin" IS NOT TRUE;
+        \"profileUrl\" = 'https://via.placeholder.com/150'
+      WHERE \"admin\" IS NOT TRUE;
 
       -- Scramble admin user data
-      UPDATE "User" 
+      UPDATE \"User\" 
       SET 
-        "leetcodeUsername" = NULL
-      WHERE "admin" IS TRUE;
+        \"leetcodeUsername\" = NULL
+      WHERE \"admin\" IS TRUE;
 
       -- Update DiscordClubMetadata for 'Patina Network'
-      UPDATE "DiscordClubMetadata" m
+      UPDATE \"DiscordClubMetadata\" m
       SET 
-        "guildId" = '1389762654452580373',
-        "leaderboardChannelId" = '1401739528057655436'
-      FROM "DiscordClub" c
-      WHERE c."id" = m."discordClubId"
-        AND c."name" = 'Patina Network';
+        \"guildId\" = '1389762654452580373',
+        \"leaderboardChannelId\" = '1401739528057655436'
+      FROM \"DiscordClub\" c
+      WHERE c.\"id\" = m.\"discordClubId\"
+        AND c.\"name\" = 'Patina Network';
 
       -- Update DiscordClubMetadata for 'MHC++'
-      UPDATE "DiscordClubMetadata" m
+      UPDATE \"DiscordClubMetadata\" m
       SET 
-        "guildId" = '1389762654452580373',
-        "leaderboardChannelId" = '1401739528057655436'
-      FROM "DiscordClub" c
-      WHERE c."id" = m."discordClubId"
-        AND c."name" = 'MHC++';
+        \"guildId\" = '1389762654452580373',
+        \"leaderboardChannelId\" = '1401739528057655436'
+      FROM \"DiscordClub\" c
+      WHERE c.\"id\" = m.\"discordClubId\"
+        AND c.\"name\" = 'MHC++';
     "`;
 
     await sendMessage(prId, `Database copy command completed successfully!`);
