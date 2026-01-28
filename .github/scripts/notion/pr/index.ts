@@ -48,5 +48,6 @@ export async function checkNotionPrAndGetTask(
     task,
     taskContent: blocks.join("\n"),
     taskId: ticketNum,
+    taskPublicUrl: task.public_url,
   };
 }

@@ -4,4 +4,5 @@ export type NotionTaskObject = {
   task: PageObjectResponse;
   taskContent: string;
   taskId: number;
+  taskPublicUrl: string | null;
 };
