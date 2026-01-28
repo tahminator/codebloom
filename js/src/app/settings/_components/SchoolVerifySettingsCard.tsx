@@ -36,7 +36,7 @@ export default function SchoolVerifySettingsCard({
             <Text pt={"md"} pl={"md"}>
               Supported schools:
               <List>
-                {ApiUtils.getAllSupportedTagEnumMetadata().map((school) => (
+                {ApiUtils.getAllSchoolTagEnumMetadata().map((school) => (
                   <List.Item key={school.name}>
                     <Flex gap={"sm"} direction={"row"}>
                       <Image src={school.icon} alt={school.alt} h={20} w={20} />
