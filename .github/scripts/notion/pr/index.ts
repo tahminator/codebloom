@@ -8,14 +8,10 @@ import { sendMessage } from "utils/send-message";
 import { _getNotionTaskById } from "../task";
 
 export async function checkNotionPrAndGetTask(
-  notionPat: string,
+  client: Client,
   prId: number,
   notionDbId: string,
 ): Promise<NotionTaskObject> {
-  const client = new Client({
-    auth: notionPat,
-  });
-
   const title = await (async () => {
     const res = await $`gh pr view ${prId} --json title`.text();
     const json = JSON.parse(res) as { title?: string } | undefined;
