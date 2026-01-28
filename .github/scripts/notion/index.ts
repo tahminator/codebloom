@@ -1,6 +1,8 @@
 import { getEnvVariables } from "load-secrets/env/load";
 import { _checkCommits } from "notion/commits";
 import { checkNotionPrAndGetTask } from "notion/pr";
+import { getNotionClient } from "notion/sdk";
+import { _updateNotionTaskWithPrLink } from "notion/task";
 import { updatePrDescriptionWithTicket } from "utils/update-pr-description";
 
 export * from "./pr";
@@ -24,26 +26,25 @@ async function main() {
   const { notionDbId, notionSecret } = parseCiEnv(
     await getEnvVariables(["ci"]),
   );
+  const client = getNotionClient(notionSecret);
 
-  const { taskId, taskContent, taskPublicUrl } = await checkNotionPrAndGetTask(
-    notionSecret,
-    prId,
-    notionDbId,
-  );
+  const { taskId, taskContent, task, taskPublicUrl } =
+    await checkNotionPrAndGetTask(client, prId, notionDbId);
 
   console.log(taskContent);
+
+  await _checkCommits(taskId, prId);
+
+  await _updateNotionTaskWithPrLink(client, task, taskId, prId);
+  if (taskPublicUrl) {
+    await updatePrDescriptionWithTicket(taskPublicUrl, taskId, prId);
+  }
 
   if (getGhaOutput && githubOutputFile) {
     const w = Bun.file(githubOutputFile).writer();
     await w.write(`context<<EOF\n${taskContent}\nEOF\n`);
     await w.flush();
     await w.end();
-  }
-
-  await _checkCommits(taskId, prId);
-
-  if (taskPublicUrl) {
-    await updatePrDescriptionWithTicket(taskPublicUrl, taskId, prId);
   }
 }
 
