@@ -23,6 +23,8 @@ const getGhaOutput = process.env.GET_GHA_OUTPUT === "true";
 const githubOutputFile = process.env.GITHUB_OUTPUT;
 
 async function main() {
+  console.log(`GET_GHA_OUTPUT=${process.env.GET_GHA_OUTPUT}`);
+
   const { notionDbId, notionSecret } = parseCiEnv(
     await getEnvVariables(["ci"]),
   );
@@ -41,6 +43,7 @@ async function main() {
   }
 
   if (getGhaOutput && githubOutputFile) {
+    console.log("Outputting Notion context...");
     const w = Bun.file(githubOutputFile).writer();
     await w.write(`context<<EOF\n${taskContent}\nEOF\n`);
     await w.flush();
