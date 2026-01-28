@@ -1,6 +1,7 @@
 import { getEnvVariables } from "load-secrets/env/load";
 import { _checkCommits } from "notion/commits";
 import { checkNotionPrAndGetTask } from "notion/pr";
+import { updatePrDescriptionWithTicket } from "utils/update-pr-description";
 
 export * from "./pr";
 
@@ -24,7 +25,7 @@ async function main() {
     await getEnvVariables(["ci"]),
   );
 
-  const { taskId, taskContent } = await checkNotionPrAndGetTask(
+  const { taskId, taskContent, taskPublicUrl } = await checkNotionPrAndGetTask(
     notionSecret,
     prId,
     notionDbId,
@@ -40,6 +41,10 @@ async function main() {
   }
 
   await _checkCommits(taskId, prId);
+
+  if (taskPublicUrl) {
+    await updatePrDescriptionWithTicket(taskPublicUrl, taskId, prId);
+  }
 }
 
 function parseCiEnv(ciEnv: Record<string, string>) {
