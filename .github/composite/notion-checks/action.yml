@@ -12,9 +12,9 @@ inputs:
     description: "GPG Passphrase"
     required: true
   GET_GHA_OUTPUT:
-    description: "If true, will output an object with data that can be interfaced in GitHub Actions."
+    description: "If set to `true`, will output an object with data that can be interfaced in GitHub Actions."
     required: false
-    default: false
+    default: "false"
 
 outputs:
   context:
