@@ -12,6 +12,7 @@ export class ApiUtils {
   private static readonly _TAG_METADATA_LIST = TAG_METADATA_LIST;
 
   static _UNUSED_TAGS = UNUSED_TAGS;
+  static NON_SCHOOL_TAGS = [...UNUSED_TAGS, Tag.Patina];
 
   private static readonly _TOPIC_METADATA_LIST = TOPIC_METADATA_LIST;
 
@@ -90,6 +91,28 @@ export class ApiUtils {
   static getAllSupportedTagEnumMetadata(): ApiTypeUtils.TagMetadata[] {
     return Object.typedEntries(ApiUtils._TAG_METADATA_LIST)
       .filter(([tagEnum, _]) => this._isSupportedTagEnum(tagEnum))
+      .map(([_, metadata]) => metadata);
+  }
+
+  /**
+   * Returns a list of all metadata objects for school tags only (excludes non-school tags).
+   *
+   * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
+   */
+  static getAllSchoolTagEnumMetadata(): ApiTypeUtils.TagMetadata[] {
+    return Object.typedEntries(ApiUtils._TAG_METADATA_LIST)
+      .filter(([tagEnum, _]) => !ApiUtils.NON_SCHOOL_TAGS.includes(tagEnum))
+      .map(([_, metadata]) => metadata);
+  }
+
+  /**
+   * Returns a list of all metadata objects for non-school tags only.
+   *
+   * @note - This list is always consistently ordered, as guaranteed by {@link Object.entries}
+   */
+  static getAllNonSchoolTagEnumMetadata(): ApiTypeUtils.TagMetadata[] {
+    return Object.typedEntries(ApiUtils._TAG_METADATA_LIST)
+      .filter(([tagEnum, _]) => ApiUtils.NON_SCHOOL_TAGS.includes(tagEnum))
       .map(([_, metadata]) => metadata);
   }
 

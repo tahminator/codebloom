@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
-const schools = ApiUtils.getAllSupportedTagEnumMetadata();
+const schools = ApiUtils.getAllSchoolTagEnumMetadata();
 const steps = [
   "Sign up for CodeBloom with your Discord account",
   "Follow the onboarding instructions to link your LeetCode account with CodeBloom",
