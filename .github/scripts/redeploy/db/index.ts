@@ -1,14 +1,13 @@
 import type { Environment } from "types";
 
 import { $ } from "bun";
+import { getEnvVariables } from "load-secrets/env/load";
 
 export async function _migrateDb({
   environment,
-  env,
   sha,
 }: {
   environment: Environment;
-  env: Record<string, string>;
   sha?: string;
 }): Promise<void> {
   if (environment === "staging") {
@@ -23,7 +22,12 @@ export async function _migrateDb({
     }
   }
 
-  await $.env(
-    env,
-  )`./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration`;
+  const migratorEnv = await getEnvVariables(["migrator"]);
+  const DATABASE_NAME =
+    environment === "production" ? "codebloom-prod" : "codebloom-stg";
+
+  await $.env({
+    ...migratorEnv,
+    DATABASE_NAME,
+  })`./mvnw flyway:migrate -Dflyway.locations=filesystem:./db/migration`;
 }

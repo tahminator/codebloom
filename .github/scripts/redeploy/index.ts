@@ -37,7 +37,6 @@ async function main() {
   const appEnv = await getEnvVariables([environment]);
 
   await _migrateDb({
-    env: appEnv,
     environment,
     sha,
   });
