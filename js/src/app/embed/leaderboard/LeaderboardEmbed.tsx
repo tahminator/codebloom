@@ -5,9 +5,7 @@ export default function LeaderboardEmbed() {
   return (
     <>
       <Box className="grow">
-        <Box pl={"lg"} pr={"lg"}>
-          <OrgEmbedView />
-        </Box>
+        <OrgEmbedView />
       </Box>
     </>
   );
