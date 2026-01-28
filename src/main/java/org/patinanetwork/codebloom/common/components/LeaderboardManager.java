@@ -61,7 +61,10 @@ public class LeaderboardManager {
             log.info("on leaderboard for {}", pair.getRight().getResolvedName());
             List<Indexed<UserWithScore>> users = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
                     currentLeaderboard.getId(), pair.getLeft());
-            List<Indexed<UserWithScore>> winners = users.subList(0, maxWinners(users.size()));
+            List<Indexed<UserWithScore>> usersWithPoints = users.stream()
+                    .filter(indexed -> indexed.getItem().getTotalScore() > 0)
+                    .toList();
+            List<Indexed<UserWithScore>> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
             for (int i = 0; i < winners.size(); i++) {
                 int place = i + 1;
@@ -83,7 +86,10 @@ public class LeaderboardManager {
         // handle global leaderboard
         List<Indexed<UserWithScore>> users = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
                 currentLeaderboard.getId(), LeaderboardFilterOptions.DEFAULT);
-        List<Indexed<UserWithScore>> winners = users.subList(0, maxWinners(users.size()));
+        List<Indexed<UserWithScore>> usersWithPoints = users.stream()
+                .filter(indexed -> indexed.getItem().getTotalScore() > 0)
+                .toList();
+        List<Indexed<UserWithScore>> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
         for (int i = 0; i < winners.size(); i++) {
             int place = i + 1;
