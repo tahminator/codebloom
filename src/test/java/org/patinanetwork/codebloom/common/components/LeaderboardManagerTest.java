@@ -9,7 +9,14 @@ import static org.mockito.Mockito.*;
 import com.github.javafaker.Faker;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.patinanetwork.codebloom.common.db.models.achievements.Achievement;
 import org.patinanetwork.codebloom.common.db.models.achievements.AchievementPlaceEnum;
@@ -19,6 +26,7 @@ import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 import org.patinanetwork.codebloom.common.db.models.usertag.UserTag;
 import org.patinanetwork.codebloom.common.db.repos.achievements.AchievementRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
+import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterGenerator;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterGeneratorTest;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import org.patinanetwork.codebloom.common.page.Indexed;
@@ -37,6 +45,35 @@ public class LeaderboardManagerTest {
     public LeaderboardManagerTest() {
         this.leaderboardManager = new LeaderboardManager(leaderboardRepository, achievementRepository);
         this.faker = Faker.instance();
+    }
+
+    private String randomSnowflake() {
+        return String.valueOf(faker.number().randomNumber(18, true));
+    }
+
+    private UserWithScore.UserWithScoreBuilder<?, ?> randomPartialUserWithScore() {
+        return UserWithScore.builder()
+                .id(UUID.randomUUID().toString())
+                .discordId(randomSnowflake())
+                .discordName(faker.name().username())
+                .leetcodeUsername(faker.name().username())
+                .admin(faker.bool().bool())
+                .verifyKey(faker.crypto().md5());
+    }
+
+    private void assertAchievement(
+            final Achievement achievement,
+            final Tag leaderboard,
+            final AchievementPlaceEnum placeEnum,
+            final String userId) {
+        assertEquals(leaderboard, achievement.getLeaderboard());
+        assertEquals(placeEnum, achievement.getPlace());
+        assertEquals(userId, achievement.getUserId());
+    }
+
+    private static Stream<Arguments> tagGenerator() {
+        return LeaderboardFilterGenerator.generateAllSupportedTagToggles().stream()
+                .map(tag -> Arguments.of(tag.getLeft()));
     }
 
     @Test
@@ -65,30 +102,6 @@ public class LeaderboardManagerTest {
         verify(leaderboardRepository, times(1)).getLeaderboardUserCountById(leaderboardId, options);
         verify(leaderboardRepository, times(1)).getRankedIndexedLeaderboardUsersById(leaderboardId, options);
         verify(leaderboardRepository, times(0)).getGlobalRankedIndexedLeaderboardUsersById(any(), any());
-    }
-
-    private String randomSnowflake() {
-        return String.valueOf(faker.number().randomNumber(18, true));
-    }
-
-    private UserWithScore.UserWithScoreBuilder<?, ?> randomPartialUserWithScore() {
-        return UserWithScore.builder()
-                .id(UUID.randomUUID().toString())
-                .discordId(randomSnowflake())
-                .discordName(faker.name().username())
-                .leetcodeUsername(faker.name().username())
-                .admin(faker.bool().bool())
-                .verifyKey(faker.crypto().md5());
-    }
-
-    private void assertAchievement(
-            final Achievement achievement,
-            final Tag leaderboard,
-            final AchievementPlaceEnum placeEnum,
-            final String userId) {
-        assertEquals(leaderboard, achievement.getLeaderboard());
-        assertEquals(placeEnum, achievement.getPlace());
-        assertEquals(userId, achievement.getUserId());
     }
 
     @Test
@@ -450,5 +463,68 @@ public class LeaderboardManagerTest {
         assertEquals(leaderboard.getCreatedAt(), leaderboardData.getCreatedAt());
 
         verify(leaderboardRepository, times(1)).getLeaderboardMetadataById(testId);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 21})
+    void testGetLeaderboardUsersCorrectPageCalculationLogic(int usersSize) {
+        String leaderboardId = Strings.EMPTY;
+        int pageSize = 20;
+        List<UserWithScore> users = IntStream.of(usersSize)
+                .mapToObj((_) -> (UserWithScore)
+                        randomPartialUserWithScore().totalScore(0).build())
+                .toList();
+        var opts = LeaderboardFilterOptions.builder().pageSize(pageSize).build();
+
+        when(leaderboardRepository.getLeaderboardUserCountById(eq(leaderboardId), eq(opts)))
+                .thenReturn(usersSize);
+
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(leaderboardId), eq(opts)))
+                .thenReturn(Indexed.ofDefaultList(users));
+
+        var page = leaderboardManager.getLeaderboardUsers(leaderboardId, opts, true);
+
+        assertNotNull(page);
+        assertTrue(page.getPageSize() == 20);
+        assertTrue(page.getPages() == (usersSize == 1 ? 1 : 2));
+        if (usersSize == 21) {
+            assertTrue(page.isHasNextPage());
+        }
+    }
+
+    @ParameterizedTest()
+    @MethodSource("tagGenerator")
+    void testGetLeaderboardUsersWhereGlobalIndexIsTrueAndOneTagIsEnabled(LeaderboardFilterOptions opts) {
+        String leaderboardId = Strings.EMPTY;
+        var user = randomPartialUserWithScore().totalScore(0).build();
+
+        when(leaderboardRepository.getLeaderboardUserCountById(eq(leaderboardId), eq(opts)))
+                .thenReturn(1);
+
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(leaderboardId), eq(opts)))
+                .thenReturn(List.of(Indexed.of(user, 1)));
+
+        leaderboardManager.getLeaderboardUsers(leaderboardId, opts, true);
+
+        verify(leaderboardRepository, times(1)).getGlobalRankedIndexedLeaderboardUsersById(eq(leaderboardId), eq(opts));
+        verify(leaderboardRepository, never()).getRankedIndexedLeaderboardUsersById(eq(leaderboardId), eq(opts));
+    }
+
+    @ParameterizedTest()
+    @MethodSource("tagGenerator")
+    void testGetLeaderboardUsersOneTagIsEnabled(LeaderboardFilterOptions opts) {
+        String leaderboardId = Strings.EMPTY;
+        var user = randomPartialUserWithScore().totalScore(0).build();
+
+        when(leaderboardRepository.getLeaderboardUserCountById(eq(leaderboardId), eq(opts)))
+                .thenReturn(1);
+
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(leaderboardId), eq(opts)))
+                .thenReturn(List.of(Indexed.of(user, 1)));
+
+        leaderboardManager.getLeaderboardUsers(leaderboardId, opts, false);
+
+        verify(leaderboardRepository, never()).getGlobalRankedIndexedLeaderboardUsersById(eq(leaderboardId), eq(opts));
+        verify(leaderboardRepository, times(1)).getRankedIndexedLeaderboardUsersById(eq(leaderboardId), eq(opts));
     }
 }
