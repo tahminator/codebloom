@@ -290,7 +290,7 @@ public class AuthController {
         boolean isSuccessful = userRepository.updateUser(user);
 
         if (!isSuccessful) {
-            throw new RuntimeException("User repository failed to update user and add school email.");
+            return new RedirectView("/settings?success=false&message=Failed to update email");
         }
 
         String emailDomain = magicLink
@@ -323,7 +323,11 @@ public class AuthController {
                                     schoolEnum.getInternalTag().name()))
                             .build());
         } else {
-            userTagRepository.createTag(schoolTag);
+            try {
+                userTagRepository.createTag(schoolTag);
+            } catch (Exception e) {
+                return new RedirectView("/settings?success=false&message=Failed to create school tag");
+            }
         }
 
         return new RedirectView("/settings?success=true&message=The email has been verified!");
