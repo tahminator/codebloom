@@ -50,6 +50,12 @@ jobs:
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
 
+      - name: Setup CI
+        uses: ./.github/composite/setup-ci
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
       - name: Load secrets
         uses: ./.github/composite/load-secrets
         with:
@@ -61,7 +67,7 @@ jobs:
         uses: ./.github/composite/notion-checks
         id: notion_check
         with:
-          PR_ID: ${{ github.event.number }}
+          PR_ID: ${{ github.event.number || github.event.issue.number  }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GET_GHA_OUTPUT: "true"
