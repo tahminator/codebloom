@@ -231,7 +231,7 @@ public class AuthController {
 
         simpleRedis.put(userId, System.currentTimeMillis());
 
-        MagicLink magicLink = new MagicLink(email, userId);
+        MagicLink magicLink = new MagicLink(email, userId, serverUrlUtils.getUrl());
         try {
             String token = jwtClient.encode(magicLink, Duration.ofHours(1));
             String verificationLink = serverUrlUtils.getUrl() + "/api/auth/school/verify?state=" + token;
@@ -276,6 +276,10 @@ public class AuthController {
         MagicLink magicLink;
         try {
             magicLink = jwtClient.decode(token, MagicLink.class);
+            String expectedIssuer = serverUrlUtils.getUrl();
+            if (!expectedIssuer.equals(magicLink.getIssuer())) {
+                return new RedirectView("/settings?success=false&message=You issued for different environment");
+            }
         } catch (Exception e) {
             return new RedirectView("/settings?success=false&message=Invalid or expired token");
         }
@@ -290,7 +294,7 @@ public class AuthController {
         boolean isSuccessful = userRepository.updateUser(user);
 
         if (!isSuccessful) {
-            return new RedirectView("/settings?success=false&message=Failed to update email");
+            throw new RuntimeException("User repository failed to update user and add school email.");
         }
 
         String emailDomain = magicLink
@@ -323,11 +327,7 @@ public class AuthController {
                                     schoolEnum.getInternalTag().name()))
                             .build());
         } else {
-            try {
-                userTagRepository.createTag(schoolTag);
-            } catch (Exception e) {
-                return new RedirectView("/settings?success=false&message=Failed to create school tag");
-            }
+            userTagRepository.createTag(schoolTag);
         }
 
         return new RedirectView("/settings?success=true&message=The email has been verified!");

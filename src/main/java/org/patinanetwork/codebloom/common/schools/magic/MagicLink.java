@@ -4,12 +4,19 @@ public class MagicLink {
 
     private String email;
     private String userId;
+    private String issuer;
 
     public MagicLink() {}
 
     public MagicLink(final String email, final String userId) {
         this.email = email;
         this.userId = userId;
+    }
+
+    public MagicLink(final String email, final String userId, final String issuer) {
+        this.email = email;
+        this.userId = userId;
+        this.issuer = issuer;
     }
 
     public String getEmail() {
@@ -26,5 +33,13 @@ public class MagicLink {
 
     public void setUserId(final String userId) {
         this.userId = userId;
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(final String issuer) {
+        this.issuer = issuer;
     }
 }
