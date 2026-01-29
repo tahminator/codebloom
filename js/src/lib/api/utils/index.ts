@@ -1,7 +1,7 @@
 import type { Api } from "@/lib/api/types";
 
 import { LeetcodeTopicEnum, Tag } from "@/lib/api/types/schema";
-import { TAG_METADATA_LIST, UNUSED_TAGS } from "@/lib/api/utils/metadata/tag";
+import { TAG_METADATA_LIST, UNUSED_TAGS, NON_SCHOOL_TAGS } from "@/lib/api/utils/metadata/tag";
 import { TOPIC_METADATA_LIST } from "@/lib/api/utils/metadata/topic";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
@@ -12,7 +12,7 @@ export class ApiUtils {
   private static readonly _TAG_METADATA_LIST = TAG_METADATA_LIST;
 
   static _UNUSED_TAGS = UNUSED_TAGS;
-  static NON_SCHOOL_TAGS = [...UNUSED_TAGS, Tag.Patina];
+  static _NON_SCHOOL_TAGS = NON_SCHOOL_TAGS;
 
   private static readonly _TOPIC_METADATA_LIST = TOPIC_METADATA_LIST;
 
@@ -101,7 +101,7 @@ export class ApiUtils {
    */
   static getAllSchoolTagEnumMetadata(): ApiTypeUtils.TagMetadata[] {
     return Object.typedEntries(ApiUtils._TAG_METADATA_LIST)
-      .filter(([tagEnum, _]) => !ApiUtils.NON_SCHOOL_TAGS.includes(tagEnum))
+      .filter(([tagEnum, _]) => !ApiUtils._NON_SCHOOL_TAGS.includes(tagEnum))
       .map(([_, metadata]) => metadata);
   }
 
@@ -112,7 +112,7 @@ export class ApiUtils {
    */
   static getAllNonSchoolTagEnumMetadata(): ApiTypeUtils.TagMetadata[] {
     return Object.typedEntries(ApiUtils._TAG_METADATA_LIST)
-      .filter(([tagEnum, _]) => ApiUtils.NON_SCHOOL_TAGS.includes(tagEnum))
+      .filter(([tagEnum, _]) => ApiUtils._NON_SCHOOL_TAGS.includes(tagEnum))
       .map(([_, metadata]) => metadata);
   }
 
