@@ -113,6 +113,8 @@ public class DiscordClubManager {
 
                 The new leaderboard just started, so best of luck to everyone!
 
+                View the full leaderboard for %s users at https://codebloom.patinanetwork.org/leaderboard?%s=true
+
                 Happy LeetCoding,
                 Codebloom
                 <%s>
@@ -133,6 +135,8 @@ public class DiscordClubManager {
                             .map(UserWithScore::getTotalScore)
                             .map(String::valueOf)
                             .orElse("N/A"),
+                    club.getName(),
+                    club.getTag().name().toLowerCase(),
                     serverUrlUtils.getUrl());
 
             var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
@@ -202,6 +206,8 @@ public class DiscordClubManager {
 
                 Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
 
+                View the full leaderboard for %s users at https://codebloom.patinanetwork.org/leaderboard?%s=true
+
 
                 See you next week!
 
@@ -228,6 +234,8 @@ public class DiscordClubManager {
                     daysLeft,
                     hoursLeft,
                     minutesLeft,
+                    club.getName(),
+                    club.getTag().name().toLowerCase(),
                     serverUrlUtils.getUrl());
 
             var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
