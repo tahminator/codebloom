@@ -68,34 +68,6 @@ export const successfulLeaderboardHandlers = [
       message: "Leaderboard metadata loaded!",
     } satisfies ReturnType<typeof currentMetadata.res>);
   }),
-  http.get(currentMetadata.url.toString(), () => {
-    return HttpResponse.json({
-      payload: {
-        id: uuid(),
-        createdAt: d().toISOString(),
-        shouldExpireBy: d().add(10, "days").toISOString(),
-        syntaxHighlightingLanguage: "cpp",
-        name: 'std::string november = "hello world"',
-        deletedAt: null,
-      },
-      success: true,
-      message: "Leaderboard metadata loaded!",
-    } satisfies ReturnType<typeof currentMetadata.res>);
-  }),
-  http.get(metadataById.url.toString(), () => {
-    return HttpResponse.json({
-      payload: {
-        id: uuid(),
-        createdAt: d().toISOString(),
-        shouldExpireBy: d().add(10, "days").toISOString(),
-        syntaxHighlightingLanguage: "cpp",
-        name: 'std::string november = "hello world"',
-        deletedAt: null,
-      },
-      success: true,
-      message: "Leaderboard metadata loaded!",
-    } satisfies ReturnType<typeof metadataById.res>);
-  }),
   http.get(metadataById.url.toString(), () => {
     return HttpResponse.json({
       payload: {
