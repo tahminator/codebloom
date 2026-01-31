@@ -28,7 +28,7 @@ public class ScheduledTaskExceptionHandler {
      */
     @Bean
     public TaskScheduler taskScheduler() {
-        ConcurrentTaskScheduler scheduler = new ConcurrentTaskScheduler(Executors.newSingleThreadScheduledExecutor());
+        ConcurrentTaskScheduler scheduler = new ConcurrentTaskScheduler(Executors.newScheduledThreadPool(5));
 
         scheduler.setErrorHandler(throwable -> {
             errorReporter.error(
