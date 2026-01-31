@@ -10,7 +10,7 @@ export namespace TestUtilTypes {
   export type RenderWithAllProvidersFn = (
     ui: ReactElement,
   ) => RenderResult<
-    typeof import("/Users/tahminator/personal/github/codebloom/js/node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/types/queries"),
+    typeof import("@testing-library/dom/types/queries"),
     HTMLElement,
     HTMLElement
   >;

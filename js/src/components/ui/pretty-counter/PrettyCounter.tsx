@@ -12,5 +12,9 @@ const formatCountdown = (seconds: number): string => {
 type CounterProps = TextProps & { time: number };
 
 export default function PrettyCounter({ time, ...props }: CounterProps) {
-  return <Text {...props}>{formatCountdown(time)}</Text>;
+  return (
+    <Text {...props} data-testid="PrettyCounter">
+      {formatCountdown(time)}
+    </Text>
+  );
 }
