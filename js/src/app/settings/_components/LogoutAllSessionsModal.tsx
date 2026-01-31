@@ -11,26 +11,26 @@ import { Link } from "react-router-dom";
 
 type LogoutAllSessionsModalProps = {
   enabled: boolean;
-  toggle: () => void;
+  close: () => void;
 };
 
 export default function LogoutAllSessionsModal({
   enabled,
-  toggle,
+  close,
 }: LogoutAllSessionsModalProps) {
   return (
-    <Modal opened={enabled} onClose={toggle} withCloseButton={false}>
+    <Modal opened={enabled} onClose={close} withCloseButton={false}>
       <Flex justify="space-between" align="center" mb="md">
         <Title order={4}>Log Out All Sessions</Title>
-        <CloseButton onClick={toggle} />
+        <CloseButton onClick={close} />
       </Flex>
       <Box p={"lg"}>
-        <Text p="md">
+        <Text>
           Are you sure you want to log out of all sessions? This will sign you
           out on all devices and browsers.
         </Text>
-        <Flex gap="sm" justify="flex-end" p="md">
-          <Button variant="default" onClick={toggle}>
+        <Flex gap="sm" justify="flex-end" mt="md">
+          <Button variant="default" onClick={close}>
             Cancel
           </Button>
           <Button
