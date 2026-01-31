@@ -10,7 +10,6 @@ import { theme } from "@/lib/theme";
 import {
   Box,
   Button,
-  Card,
   Center,
   Flex,
   Overlay,
@@ -79,14 +78,14 @@ export default function OrgLeaderboardEmbed() {
   const [first, second, third] = pageData.items;
 
   return (
-    <Card
-      withBorder
-      radius="md"
-      p="md"
+    <Box
       w="100%"
-      display="flex"
+      p="md"
       style={{
+        display: "flex",
         flexDirection: "column",
+        border: "1px solid var(--mantine-color-dark-5)",
+        borderRadius: "var(--mantine-radius-md)",
       }}
     >
       <OrgHeader orgTag={activeFilter} />
@@ -273,6 +272,6 @@ export default function OrgLeaderboardEmbed() {
           </Button>
         </Flex>
       </Center>
-    </Card>
+    </Box>
   );
 }
