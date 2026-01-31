@@ -60,6 +60,11 @@ public class UserController {
         this.questionTopicService = questionTopicService;
     }
 
+    public void testingFunction() {
+        this.userRepository.getAllUsers();
+        this.questionRepository.getAllIncompleteQuestions();
+    }
+
     @Operation(
             summary = "Public route that returns the given user's profile",
             description = """

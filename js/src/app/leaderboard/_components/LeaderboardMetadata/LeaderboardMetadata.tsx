@@ -58,13 +58,17 @@ function LeaderboardMetadata({
       <>
         <Center>
           <Title order={3} mb={"sm"} ta={"center"}>
-            <Skeleton visible>Really long tNameV</Skeleton>
+            <Skeleton visible data-testid="leaderboard-skeleton-name">
+              Really long tNameV
+            </Skeleton>
           </Title>
         </Center>
         <Center>
           {showClock && (
             <Title order={6} mb={"sm"} ta={"center"}>
-              <Skeleton visible>Long Time value</Skeleton>
+              <Skeleton visible data-testid="leaderboard-skeleton-timer">
+                Long Time value
+              </Skeleton>
             </Title>
           )}
         </Center>
@@ -112,7 +116,12 @@ function LeaderboardMetadata({
       <DocumentDescription
         description={`CodeBloom - View your rank in the leaderboard`}
       />
-      <Title order={4} ta={"center"} mb={"xs"}>
+      <Title
+        order={4}
+        ta={"center"}
+        mb={"xs"}
+        data-testid="LeaderboardMetadata-title"
+      >
         {leaderboardData.syntaxHighlightingLanguage ?
           <SyntaxStrip
             size={syntaxStripSize}
@@ -128,7 +137,11 @@ function LeaderboardMetadata({
       </Title>
       {showAllLeaderboardButton && (
         <Box ta={"center"} my="md">
-          <Button component={Link} to="/leaderboard/all">
+          <Button
+            component={Link}
+            to="/leaderboard/all"
+            data-testid="ShowAllLeaderboardsButton"
+          >
             View All Leaderboards
           </Button>
         </Box>
