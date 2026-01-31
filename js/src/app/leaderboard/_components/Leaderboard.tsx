@@ -123,9 +123,8 @@ function LeaderboardIndex({
   } = query;
 
   const activeFilter = useMemo(() => {
-    const active = Object.typedEntries(filters).filter(
-      ([, enabled]) => enabled,
-    );
+    const entries = filters ? Object.typedEntries(filters) : [];
+    const active = entries.filter(([, enabled]) => enabled);
     return active.length === 1 ? active[0][0] : undefined;
   }, [filters]);
 
