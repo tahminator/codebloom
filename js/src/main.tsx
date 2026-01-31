@@ -21,7 +21,7 @@ dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 if (import.meta.env.VITE_MOCK === "true") {
-  launchMockServer();
+  await launchMockServer();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
