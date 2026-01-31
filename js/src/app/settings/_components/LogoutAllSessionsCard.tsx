@@ -1,10 +1,10 @@
 import LogoutAllSessionsModal from "@/app/settings/_components/LogoutAllSessionsModal";
 import { Box, Button, Card, Title, Text } from "@mantine/core";
-import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 
 export default function LogoutAllSessionsCard() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const toggleModal = () => setModalOpen((prev) => !prev);
+  const [modalOpen, { open: openModal, close: closeModal }] =
+    useDisclosure(false);
 
   return (
     <Box>
@@ -18,11 +18,11 @@ export default function LogoutAllSessionsCard() {
             will need to log in again on each device.
           </Text>
           <Box pt={"sm"} pl={"md"}>
-            <Button mt="sm" color="red" onClick={toggleModal}>
+            <Button mt="sm" color="red" onClick={openModal}>
               Log Out All Sessions
             </Button>
           </Box>
-          <LogoutAllSessionsModal enabled={modalOpen} toggle={toggleModal} />
+          <LogoutAllSessionsModal enabled={modalOpen} close={closeModal} />
         </Box>
       </Card>
     </Box>
