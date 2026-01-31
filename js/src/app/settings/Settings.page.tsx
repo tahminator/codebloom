@@ -1,4 +1,5 @@
 import ChangeImageSettingsCard from "@/app/settings/_components/ChangeImageSettingsCard";
+import LogoutAllSessionsCard from "@/app/settings/_components/LogoutAllSessionsCard";
 import SchoolVerifySettingsCard from "@/app/settings/_components/SchoolVerifySettingsCard";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
@@ -59,6 +60,7 @@ export default function SettingsPage() {
           <Stack gap="xl">
             <SchoolVerifySettingsCard schoolExists={schoolExists} />
             <ChangeImageSettingsCard />
+            <LogoutAllSessionsCard />
           </Stack>
         </Box>
       </Box>
