@@ -1,4 +1,4 @@
-import OrgEmbedView from "@/app/embed/leaderboard/_components/OrgEmbedView";
+import { CurrentLeaderboard } from "@/app/leaderboard/_components/Leaderboard";
 import { Box } from "@mantine/core";
 
 export default function LeaderboardEmbed() {
@@ -6,7 +6,7 @@ export default function LeaderboardEmbed() {
     <>
       <Box className="grow">
         <Box pl={"lg"} pr={"lg"}>
-          <OrgEmbedView />
+          <CurrentLeaderboard embedded />
         </Box>
       </Box>
     </>

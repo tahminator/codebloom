@@ -1,3 +1,4 @@
+import OrgHeader from "@/app/embed/leaderboard/_components/OrgHeader";
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
@@ -34,12 +35,25 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
+import { useEffect, useMemo } from "react";
 import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-export function CurrentLeaderboard() {
-  const query = useCurrentLeaderboardUsersQuery();
+type LeaderboardOptions = {
+  embedded?: boolean;
+};
+
+function getPageSizeFromParams(): number | undefined {
+  const searchParams = new URLSearchParams(window.location.search);
+  const pageSizeParam = searchParams.get("pageSize");
+  return pageSizeParam ? Number(pageSizeParam) : undefined;
+}
+
+export function CurrentLeaderboard(props: LeaderboardOptions = {}) {
+  const query = useCurrentLeaderboardUsersQuery(
+    props.embedded ? { pageSize: getPageSizeFromParams() } : {},
+  );
   const metadataQuery = useCurrentLeaderboardMetadataQuery();
 
   const dateRange =
@@ -52,11 +66,15 @@ export function CurrentLeaderboard() {
       query={query}
       startDate={dateRange?.startDate}
       endDate={dateRange?.endDate}
+      {...props}
     />
   );
 }
 
-export function LeaderboardById({ leaderboardId }: { leaderboardId: string }) {
+export function LeaderboardById({
+  leaderboardId,
+  ...props
+}: LeaderboardOptions & { leaderboardId: string }) {
   const query = useLeaderboardUsersByIdQuery({ leaderboardId });
   const metadataQuery = useLeaderboardMetadataByIdQuery(leaderboardId);
 
@@ -70,6 +88,7 @@ export function LeaderboardById({ leaderboardId }: { leaderboardId: string }) {
       query={query}
       startDate={dateRange?.startDate}
       endDate={dateRange?.endDate}
+      {...props}
     />
   );
 }
@@ -78,7 +97,8 @@ function LeaderboardIndex({
   query,
   startDate,
   endDate,
-}: {
+  embedded = false,
+}: LeaderboardOptions & {
   query: ReturnType<typeof useCurrentLeaderboardUsersQuery>;
   startDate?: string;
   endDate?: string;
@@ -102,6 +122,24 @@ function LeaderboardIndex({
     onFilterReset,
   } = query;
 
+  const activeFilter = useMemo(() => {
+    const active = Object.typedEntries(filters).filter(
+      ([, enabled]) => enabled,
+    );
+    return active.length === 1 ? active[0][0] : undefined;
+  }, [filters]);
+
+  useEffect(() => {
+    if (embedded) {
+      const activeCount = Object.typedEntries(filters).filter(
+        ([, enabled]) => enabled,
+      ).length;
+      if (activeCount > 1) {
+        onFilterReset();
+      }
+    }
+  }, [embedded, filters, onFilterReset]);
+
   if (status === "pending") {
     return <LeaderboardSkeleton />;
   }
@@ -116,8 +154,9 @@ function LeaderboardIndex({
 
   const pageData = data.payload;
   const [first, second, third] = pageData.items;
+  const shouldShowTopThree = page === 1 && !debouncedQuery;
   const cardItems = pageData.items.filter((_, index) => {
-    if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index)) {
+    if (shouldShowTopThree && [0, 1, 2].includes(index)) {
       return false;
     }
     return true;
@@ -127,6 +166,19 @@ function LeaderboardIndex({
 
   return (
     <>
+      {embedded && <OrgHeader orgTag={activeFilter} />}
+      {embedded && (
+        <Center mb="xs">
+          <Button
+            component={Link}
+            to="/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit CodeBloom
+          </Button>
+        </Center>
+      )}
       <Flex
         direction={{ base: "column", xs: "row" }}
         align={{ base: "center", xs: "flex-end" }}
@@ -134,7 +186,7 @@ function LeaderboardIndex({
         gap="md"
         mb="xl"
       >
-        {page === 1 && second && !debouncedQuery && (
+        {shouldShowTopThree && second && (
           <LeaderboardCard
             placeString={getOrdinal(second.index)}
             sizeOrder={2}
@@ -142,7 +194,7 @@ function LeaderboardIndex({
             leetcodeUsername={second.leetcodeUsername}
             totalScore={second.totalScore}
             nickname={second.nickname}
-            width={"300px"}
+            width="300px"
             userId={second.id}
             tags={second.tags}
             isLoading={isPlaceholderData}
@@ -150,7 +202,7 @@ function LeaderboardIndex({
             endDate={endDate}
           />
         )}
-        {page === 1 && first && !debouncedQuery && (
+        {shouldShowTopThree && first && (
           <LeaderboardCard
             placeString={getOrdinal(first.index)}
             sizeOrder={1}
@@ -158,7 +210,7 @@ function LeaderboardIndex({
             leetcodeUsername={first.leetcodeUsername}
             totalScore={first.totalScore}
             nickname={first.nickname}
-            width={"300px"}
+            width="300px"
             userId={first.id}
             tags={first.tags}
             isLoading={isPlaceholderData}
@@ -166,7 +218,7 @@ function LeaderboardIndex({
             endDate={endDate}
           />
         )}
-        {page === 1 && third && !debouncedQuery && (
+        {shouldShowTopThree && third && (
           <LeaderboardCard
             placeString={getOrdinal(third.index)}
             sizeOrder={3}
@@ -174,7 +226,7 @@ function LeaderboardIndex({
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
             nickname={third.nickname}
-            width={"300px"}
+            width="300px"
             userId={third.id}
             tags={third.tags}
             isLoading={isPlaceholderData}
@@ -183,61 +235,62 @@ function LeaderboardIndex({
           />
         )}
       </Flex>
-      <Flex
-        justify="space-between"
-        align="center"
-        mb="md"
-        direction={{ base: "column", sm: "row" }}
-        gap="md"
-      >
-        <FilterDropdown
-          style={{ marginLeft: "auto", display: "block" }}
-          buttonName="Filters"
+      {!embedded && (
+        <Flex
+          justify="space-between"
+          align="center"
+          mb="md"
+          direction={{ base: "column", sm: "row" }}
+          gap="md"
         >
-          {schoolFF &&
-            ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
-              <FilterDropdownItem
-                key={tagEnum}
-                name={() => {
-                  const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
-
-                  return (
-                    <Flex gap={"xs"} align={"center"}>
-                      {metadata.shortName}
-                      <Image
-                        src={metadata.icon}
-                        alt={metadata.alt}
-                        style={{ height: "2em", width: "auto" }}
-                      />
-                    </Flex>
-                  );
-                }}
-                value={filters[tagEnum]}
-                toggle={() => toggleFilter(tagEnum)}
-              />
-            ))}
-          <FilterDropdownItem
-            value={globalIndex}
-            toggle={toggleGlobalIndex}
-            disabled={!isAnyFilterEnabled}
-            switchMode
-            name={
-              <Flex gap="xs" align="center">
-                Toggle Global Rank
-              </Flex>
-            }
-          />
-          <Button
-            variant="subtle"
-            color="red"
-            onClick={onFilterReset}
-            fullWidth
-            disabled={!isAnyFilterEnabled && !globalIndex}
+          <FilterDropdown
+            style={{ marginLeft: "auto", display: "block" }}
+            buttonName="Filters"
           >
-            Clear Filters
-          </Button>
-        </FilterDropdown>
-      </Flex>
+            {schoolFF &&
+              ApiUtils.getAllSupportedTagEnums().map((tagEnum) => (
+                <FilterDropdownItem
+                  key={tagEnum}
+                  name={() => {
+                    const metadata = ApiUtils.getMetadataByTagEnum(tagEnum);
+                    return (
+                      <Flex gap={"xs"} align={"center"}>
+                        {metadata.shortName}
+                        <Image
+                          src={metadata.icon}
+                          alt={metadata.alt}
+                          style={{ height: "2em", width: "auto" }}
+                        />
+                      </Flex>
+                    );
+                  }}
+                  value={filters[tagEnum]}
+                  toggle={() => toggleFilter(tagEnum)}
+                />
+              ))}
+            <FilterDropdownItem
+              value={globalIndex}
+              toggle={toggleGlobalIndex}
+              disabled={!isAnyFilterEnabled}
+              switchMode
+              name={
+                <Flex gap="xs" align="center">
+                  Toggle Global Rank
+                </Flex>
+              }
+            />
+            <Button
+              variant="subtle"
+              color="red"
+              onClick={onFilterReset}
+              fullWidth
+              disabled={!isAnyFilterEnabled && !globalIndex}
+            >
+              Clear Filters
+            </Button>
+          </FilterDropdown>
+        </Flex>
+      )}
       <SearchBox
         query={searchQuery}
         onChange={(event) => {
