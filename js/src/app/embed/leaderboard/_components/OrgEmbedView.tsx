@@ -77,7 +77,16 @@ export default function OrgLeaderboardEmbed() {
   const [first, second, third] = pageData.items;
 
   return (
-    <>
+    <Box
+      w="100%"
+      p="md"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        border: "1px solid var(--mantine-color-dark-5)",
+        borderRadius: "var(--mantine-radius-md)",
+      }}
+    >
       <OrgHeader orgTag={activeFilter} />
       <Center mb="xs">
         <Button
@@ -241,6 +250,6 @@ export default function OrgLeaderboardEmbed() {
           </Button>
         </Flex>
       </Center>
-    </>
+    </Box>
   );
 }
