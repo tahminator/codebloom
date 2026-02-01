@@ -1,6 +1,5 @@
 package org.patinanetwork.codebloom.utilities.exception;
 
-import java.util.concurrent.Executors;
 import org.patinanetwork.codebloom.common.env.Env;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.reporter.report.Report;
@@ -8,7 +7,7 @@ import org.patinanetwork.codebloom.common.reporter.report.location.Location;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 
 /** Add {@link Reporter} to Spring Boot `@Scheduled` methods. */
 @Configuration
@@ -28,7 +27,8 @@ public class ScheduledTaskExceptionHandler {
      */
     @Bean
     public TaskScheduler taskScheduler() {
-        ConcurrentTaskScheduler scheduler = new ConcurrentTaskScheduler(Executors.newScheduledThreadPool(5));
+        SimpleAsyncTaskScheduler scheduler = new SimpleAsyncTaskScheduler();
+        scheduler.setVirtualThreads(true);
 
         scheduler.setErrorHandler(throwable -> {
             errorReporter.error(
