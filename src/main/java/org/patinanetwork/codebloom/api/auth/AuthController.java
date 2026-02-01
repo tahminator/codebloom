@@ -231,7 +231,7 @@ public class AuthController {
 
         simpleRedis.put(userId, System.currentTimeMillis());
 
-        MagicLink magicLink = new MagicLink(email, userId, serverUrlUtils.getUrl());
+        MagicLink magicLink = new MagicLink(email, userId);
         try {
             String token = jwtClient.encode(magicLink, Duration.ofHours(1));
             String verificationLink = serverUrlUtils.getUrl() + "/api/auth/school/verify?state=" + token;
@@ -258,6 +258,13 @@ public class AuthController {
             })
     @GetMapping("/school/verify")
     public RedirectView verifySchoolEmail(final HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        String allowedOrigin = serverUrlUtils.getUrl();
+
+        if (referer != null && !referer.startsWith(allowedOrigin)) {
+            return new RedirectView("/settings?success=false&message=Invalid request origin");
+        }
+
         AuthenticationObject authenticationObject;
         Session session;
         User user;
@@ -276,10 +283,6 @@ public class AuthController {
         MagicLink magicLink;
         try {
             magicLink = jwtClient.decode(token, MagicLink.class);
-            String expectedIssuer = serverUrlUtils.getUrl();
-            if (!expectedIssuer.equals(magicLink.getIssuer())) {
-                return new RedirectView("/settings?success=false&message=You issued for different environment");
-            }
         } catch (Exception e) {
             return new RedirectView("/settings?success=false&message=Invalid or expired token");
         }
