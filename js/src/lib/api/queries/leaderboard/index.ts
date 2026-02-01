@@ -49,7 +49,7 @@ export const useCurrentLeaderboardUsersQuery = (
     "",
     {
       enabled: tieToUrl,
-      debounce: 100,
+      debounce: 500,
     },
   );
   const [globalIndex, setGlobalIndex] = useURLState("globalIndex", false, {
