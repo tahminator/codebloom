@@ -72,9 +72,6 @@ export function prodSpec(envs: App_variable_definition[]): App_spec {
         type: "PRIMARY",
       },
     ],
-    maintenance: {
-      archive: true,
-    },
   };
 }
 
