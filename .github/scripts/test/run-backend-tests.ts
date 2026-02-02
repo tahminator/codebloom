@@ -29,8 +29,7 @@ async function main() {
 
     await $`./mvnw -B install -D skipTests --no-transfer-progress`;
 
-    await $`./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"`;
-    await $`./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install firefox"`;
+    await $`./mvnw -B exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"`;
 
     await $`corepack enable pnpm`;
     await $`cd email && pnpm i --frozen-lockfile && ./email.sh && cd ..`;
