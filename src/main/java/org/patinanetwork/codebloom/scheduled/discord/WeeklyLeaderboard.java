@@ -34,7 +34,11 @@ public class WeeklyLeaderboard {
         }
 
         log.info("WeeklyLeaderboard triggered.");
-        discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
+        try {
+            discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
+        } catch (Exception e) {
+            log.error("WeeklyLeaderboard failed", e);
+        }
         weeklyMessageRepository.createLatestWeeklyMessage();
     }
 }
