@@ -52,7 +52,11 @@ const DIGITALOCEAN_BASE_SPEC: App_spec = {
   },
 };
 
-export function prodSpec(envs: App_variable_definition[]): App_spec {
+export function prodSpec(
+  envs: App_variable_definition[],
+  openSearchUsername: string,
+  openSearchPassword: string,
+): App_spec {
   return {
     ...DIGITALOCEAN_BASE_SPEC,
     name: "codebloom-prod",
@@ -64,6 +68,19 @@ export function prodSpec(envs: App_variable_definition[]): App_spec {
           tag: "latest",
         },
         envs,
+        logDestinations: [
+          {
+            name: "prod-logs",
+            openSearch: {
+              endpoint: "https://opensearch.tahmid.io:443",
+              basicAuth: {
+                user: openSearchUsername,
+                password: openSearchPassword,
+              },
+              indexName: "codebloom.patinanetwork.org",
+            },
+          },
+        ],
       },
     ],
     domains: [
@@ -75,7 +92,11 @@ export function prodSpec(envs: App_variable_definition[]): App_spec {
   };
 }
 
-export function stgSpec(envs: App_variable_definition[]): App_spec {
+export function stgSpec(
+  envs: App_variable_definition[],
+  openSearchUsername: string,
+  openSearchPassword: string,
+): App_spec {
   return {
     ...DIGITALOCEAN_BASE_SPEC,
     name: "codebloom-staging",
@@ -87,6 +108,19 @@ export function stgSpec(envs: App_variable_definition[]): App_spec {
           tag: "staging-latest",
         },
         envs,
+        logDestinations: [
+          {
+            name: "staging-logs",
+            openSearch: {
+              endpoint: "https://opensearch.tahmid.io:443",
+              basicAuth: {
+                user: openSearchUsername,
+                password: openSearchPassword,
+              },
+              indexName: "stg.codebloom.patinanetwork.org",
+            },
+          },
+        ],
       },
     ],
     domains: [

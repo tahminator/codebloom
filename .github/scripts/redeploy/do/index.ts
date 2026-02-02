@@ -7,10 +7,31 @@ import {
   type App_variable_definition,
   type App_response,
 } from "@digitalocean/dots";
+import { getEnvVariables } from "load-secrets/env/load";
 import { _createAppAndgetAppId } from "redeploy/do/apps/create";
 import { _getAppId } from "redeploy/do/apps/get";
 
 import { prodSpec, stgSpec } from "../../../../.do/specs";
+
+function parseCiEnv(ciEnv: Record<string, string>) {
+  const user = (() => {
+    const v = ciEnv["OPENSEARCH_USER"];
+    if (!v) {
+      throw new Error("Missing OPENSEARCH_USER from .env.ci");
+    }
+    return v;
+  })();
+
+  const pass = (() => {
+    const v = ciEnv["OPENSEARCH_PASSWORD"];
+    if (!v) {
+      throw new Error("Missing OPENSEARCH_PASSWORD from .env.ci");
+    }
+    return v;
+  })();
+
+  return { user, pass };
+}
 
 export async function _migrateDo({
   token,
@@ -38,7 +59,13 @@ export async function _migrateDo({
       return env;
     },
   );
-  const spec = environment === "staging" ? stgSpec(envs) : prodSpec(envs);
+
+  const { user, pass } = parseCiEnv(await getEnvVariables(["ci"]));
+
+  const spec =
+    environment === "staging" ?
+      stgSpec(envs, user, pass)
+    : prodSpec(envs, user, pass);
 
   const appId = await (async () => {
     const v = await _getAppId(client, projectId, spec);
