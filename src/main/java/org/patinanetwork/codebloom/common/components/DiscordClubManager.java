@@ -259,8 +259,7 @@ public class DiscordClubManager {
                     .fileNames(screenshots.stream().map(Pair::getLeft).toList())
                     .build());
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            log.error("Error in DiscordClubManager when sending weekly leaderboard", e);
         }
     }
 
