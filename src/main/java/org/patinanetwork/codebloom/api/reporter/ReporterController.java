@@ -3,8 +3,12 @@ package org.patinanetwork.codebloom.api.reporter;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
+import org.patinanetwork.codebloom.api.reporter.body.FeedbackBody;
 import org.patinanetwork.codebloom.api.reporter.body.IngestErrorsBody;
 import org.patinanetwork.codebloom.api.reporter.body.IngestLogBody;
+import org.patinanetwork.codebloom.common.db.models.feedback.Feedback;
+import org.patinanetwork.codebloom.common.db.repos.feedback.FeedbackRepository;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.Empty;
 import org.patinanetwork.codebloom.common.env.Env;
@@ -28,11 +32,17 @@ public class ReporterController {
     private final Reporter reporter;
     private final Env env;
     private final ServerUrlUtils serverUrlUtils;
+    private final FeedbackRepository feedbackRepository;
 
-    public ReporterController(final Reporter reporter, final Env env, final ServerUrlUtils serverUrlUtils) {
+    public ReporterController(
+            final Reporter reporter,
+            final Env env,
+            final ServerUrlUtils serverUrlUtils,
+            final FeedbackRepository feedbackRepository) {
         this.reporter = reporter;
         this.env = env;
         this.serverUrlUtils = serverUrlUtils;
+        this.feedbackRepository = feedbackRepository;
     }
 
     private boolean validateOrigin(final HttpServletRequest request) {
@@ -87,6 +97,24 @@ public class ReporterController {
                         .environments(env.getActiveProfiles())
                         .location(Location.FRONTEND)
                         .build());
+        return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<ApiResponder<Empty>> submitReport(
+            final @RequestBody FeedbackBody feedbackBody, final HttpServletRequest request) {
+        if (!validateOrigin(request)) {
+            // don't let the bad actor know it failed.
+            return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
+        }
+
+        Feedback feedback = Feedback.builder()
+                .title(feedbackBody.getTitle())
+                .description(feedbackBody.getDescription())
+                .email(Optional.ofNullable(feedbackBody.getEmail()))
+                .build();
+
+        feedbackRepository.createFeedback(feedback);
         return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
     }
 }
