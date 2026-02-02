@@ -16,6 +16,7 @@ import {
   Stack,
   Text,
   Tooltip,
+  Card,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { useEffect, useMemo } from "react";
