@@ -188,6 +188,11 @@ public class LeetcodeAuthStealer {
                         log.info("in ci, stored in redis as well");
                         jedisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS); // 4 hours.
                     }
+                    this.authRepository.createAuth(Auth.builder()
+                            .csrf(a.getCsrf())
+                            .token(a.getToken())
+                            .createdAt(StandardizedOffsetDateTime.now())
+                            .build());
                     return cookie;
                 }
             } finally {
