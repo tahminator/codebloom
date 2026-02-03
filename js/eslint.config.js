@@ -16,7 +16,7 @@ export default tseslint.config(
       "perfectionist/sort-imports": "error",
     },
   },
-  { ignores: ["dist"] },
+  { ignores: ["dist", "coverage"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

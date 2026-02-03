@@ -26,7 +26,8 @@ export default defineConfig({
     environment: "jsdom",
     coverage: {
       enabled: true,
-      provider: "v8",
+      provider: "istanbul",
+      reporter: ["lcov"],
     },
     setupFiles: ["src/lib/test/defaults.tsx"],
   },

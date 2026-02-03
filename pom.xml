@@ -33,6 +33,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <commit.sha>unknown</commit.sha>
+        <sonar.organization>tahminator</sonar.organization>
     </properties>
     <dependencyManagement>
         <dependencies>

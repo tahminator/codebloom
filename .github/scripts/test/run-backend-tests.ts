@@ -9,8 +9,6 @@ const shouldUploadCoverage = process.env.UPLOAD_TEST_COV === "true";
 
 async function main() {
   try {
-    const ciEnv = await getEnvVariables(["ci"]);
-    const { codecovToken } = parseCiEnv(ciEnv);
     const ciAppEnv = await getEnvVariables(["ci-app"]);
     const localDbEnv = await db.start();
 
@@ -39,7 +37,15 @@ async function main() {
     await $$`./mvnw clean verify -Dspring.profiles.active=ci`;
 
     if (shouldUploadCoverage) {
-      await uploadBackendTests(codecovToken);
+      const ciEnv = await getEnvVariables(["ci"]);
+      const { codecovToken, sonarToken } = parseCiEnv(ciEnv);
+      if (!codecovToken && !sonarToken) {
+        throw new Error(
+          "CODECOV_TOKEN and/or SONAR_TOKEN is missing from .env.ci",
+        );
+      }
+
+      await uploadBackendTests(codecovToken, sonarToken);
     }
   } finally {
     await db.end();
@@ -57,7 +63,15 @@ function parseCiEnv(ciEnv: Record<string, string>) {
     return v;
   })();
 
-  return { codecovToken };
+  const sonarToken = (() => {
+    const v = ciEnv["SONAR_TOKEN"];
+    if (!v) {
+      throw new Error("Missing SONAR_TOKEN from .env.ci");
+    }
+    return v;
+  })();
+
+  return { codecovToken, sonarToken };
 }
 
 main()
