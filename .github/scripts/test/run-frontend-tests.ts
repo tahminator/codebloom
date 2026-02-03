@@ -2,6 +2,9 @@ import { $ } from "bun";
 import { getEnvVariables } from "load-secrets/env/load";
 import { backend } from "utils/run-backend-instance";
 import { db } from "utils/run-local-db";
+import { uploadFrontendTests } from "utils/upload";
+
+const shouldUploadCoverage = process.env.UPLOAD_TEST_COV === "true";
 
 async function main() {
   try {
@@ -19,10 +22,32 @@ async function main() {
     await $`pnpm --dir js i --frozen-lockfile`;
     await $$`pnpm --dir js run generate`;
     await $$`pnpm --dir js run test`;
+
+    if (shouldUploadCoverage) {
+      const ciEnv = await getEnvVariables(["ci"]);
+      const { codecovToken } = parseCiEnv(ciEnv);
+      if (!codecovToken) {
+        throw new Error("CODECOV_TOKEN is missing from .env.ci");
+      }
+
+      await uploadFrontendTests(codecovToken);
+    }
   } finally {
     await backend.end();
     await db.end();
   }
+}
+
+function parseCiEnv(ciEnv: Record<string, string>) {
+  const codecovToken = (() => {
+    const v = ciEnv["CODECOV_TOKEN"];
+    if (!v) {
+      throw new Error("Missing CODECOV_TOKEN from .env.ci");
+    }
+    return v;
+  })();
+
+  return { codecovToken };
 }
 
 main()

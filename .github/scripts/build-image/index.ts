@@ -74,6 +74,7 @@ async function main() {
     const tagArgs = tags.flatMap((tag) => ["--tag", tag]);
 
     await $`docker buildx build ${buildMode} \
+              --platform linux/amd64 \
               --file infra/Dockerfile \
               --build-arg SERVER_PROFILES=${serverProfiles} \
               --build-arg COMMIT_SHA=${gitSha} \

@@ -6,10 +6,17 @@ export async function uploadBackendTests(token: string) {
   const dir = path.join(process.cwd(), "target/site/jacoco/");
 
   await uploadArtifact(dir, "backend-jacoco-report");
-  await uploadToCodecov(token, dir);
+  await uploadToCodecov(token, dir, "backend");
 }
 
-async function uploadToCodecov(token: string, dir: string) {
+export async function uploadFrontendTests(token: string) {
+  const dir = path.join(process.cwd(), "js/coverage/");
+
+  await uploadArtifact(dir, "frontend-coverage-report");
+  await uploadToCodecov(token, dir, "frontend");
+}
+
+async function uploadToCodecov(token: string, dir: string, flag: string) {
   try {
     const { exitCode } = Bun.spawnSync(["./codecov", "--help"]);
     if (exitCode != 0) {
@@ -37,8 +44,17 @@ async function uploadToCodecov(token: string, dir: string) {
   }
 
   try {
-    console.log(`Uploading reports from ${dir} to Codecov...`);
-    const p2 = Bun.spawnSync(["./codecov", "do-upload", "--dir", dir]);
+    console.log(
+      `Uploading reports from ${dir} to Codecov with flag: ${flag}...`,
+    );
+    const p2 = Bun.spawnSync([
+      "./codecov",
+      "do-upload",
+      "--dir",
+      dir,
+      "--flag",
+      flag,
+    ]);
     if (p2.exitCode != 0) {
       throw new Error(`Failed to load Codecov process\n\n${p2.stderr}`);
     }
