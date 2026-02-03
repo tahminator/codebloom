@@ -10,45 +10,21 @@ const getDir = (loc: Location) => {
     : path.join(process.cwd(), "target/site/jacoco/");
 };
 
-export async function uploadBackendTests(
-  codecovToken: string | null,
-  sonarToken: string | null,
-) {
-  await uploadArtifact("backend", "backend-jacoco-report");
+export async function uploadBackendTests(sonarToken: string) {
+  await uploadArtifact("backend-jacoco-report", "backend");
 
-  if (codecovToken) {
-    await uploadToCodecov(codecovToken, "backend");
-  }
-
-  if (sonarToken) {
-    await uploadToSonar(sonarToken, "backend");
-  }
-
-  if (!codecovToken && !sonarToken) {
-    throw new Error("Missing atleast one upload token");
-  }
+  await uploadToSonar(sonarToken, "backend");
+  // await uploadToCodecov(codecovToken, "backend");
 }
 
-export async function uploadFrontendTests(
-  codecovToken?: string,
-  sonarToken?: string,
-) {
-  await uploadArtifact("frontend", "frontend-coverage-report");
+export async function uploadFrontendTests(sonarToken: string) {
+  await uploadArtifact("frontend-coverage-report", "frontend");
 
-  if (codecovToken) {
-    await uploadToCodecov(codecovToken, "frontend");
-  }
-
-  if (sonarToken) {
-    await uploadToSonar(sonarToken, "frontend");
-  }
-
-  if (!codecovToken && !sonarToken) {
-    throw new Error("Missing atleast one upload token");
-  }
+  await uploadToSonar(sonarToken, "frontend");
+  // await uploadToCodecov(codecovToken, "frontend");
 }
 
-async function uploadToCodecov(token: string, loc: Location) {
+async function _uploadToCodecov(token: string, loc: Location) {
   const dir = getDir(loc);
 
   try {
@@ -147,7 +123,7 @@ async function uploadToSonar(token: string, loc: Location) {
 /*
  * can only run in github actions.
  */
-async function uploadArtifact(loc: Location, artifactName: string) {
+async function uploadArtifact(artifactName: string, loc: Location) {
   const dir = getDir(loc);
   const client = new DefaultArtifactClient();
 

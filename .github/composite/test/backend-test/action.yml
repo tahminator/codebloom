@@ -9,7 +9,7 @@ inputs:
     description: "GPG Passphrase"
     required: true
   UPLOAD_TEST_COV:
-    description: "Boolean indicating whether tests should be uploaded to Codecov or not."
+    description: "Boolean indicating whether tests should be uploaded to our code coverage provider or not."
     required: false
     default: true
 
