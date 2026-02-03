@@ -25,12 +25,14 @@ async function main() {
 
     if (shouldUploadCoverage) {
       const ciEnv = await getEnvVariables(["ci"]);
-      const { codecovToken } = parseCiEnv(ciEnv);
-      if (!codecovToken) {
-        throw new Error("CODECOV_TOKEN is missing from .env.ci");
+      const { codecovToken, sonarToken } = parseCiEnv(ciEnv);
+      if (!codecovToken && !sonarToken) {
+        throw new Error(
+          "CODECOV_TOKEN and/or SONAR_TOKEN is missing from .env.ci",
+        );
       }
 
-      await uploadFrontendTests(codecovToken);
+      await uploadFrontendTests(codecovToken, sonarToken);
     }
   } finally {
     await backend.end();
@@ -47,7 +49,15 @@ function parseCiEnv(ciEnv: Record<string, string>) {
     return v;
   })();
 
-  return { codecovToken };
+  const sonarToken = (() => {
+    const v = ciEnv["SONAR_TOKEN"];
+    if (!v) {
+      throw new Error("Missing SONAR_TOKEN from .env.ci");
+    }
+    return v;
+  })();
+
+  return { codecovToken, sonarToken };
 }
 
 main()

@@ -1,22 +1,56 @@
+import type { Location } from "types";
+
 import { DefaultArtifactClient } from "@actions/artifact";
 import { $ } from "bun";
 import path from "node:path";
 
-export async function uploadBackendTests(token: string) {
-  const dir = path.join(process.cwd(), "target/site/jacoco/");
+const getDir = (loc: Location) => {
+  return loc === "frontend" ?
+      path.join(process.cwd(), "js/coverage/")
+    : path.join(process.cwd(), "target/site/jacoco/");
+};
 
-  await uploadArtifact(dir, "backend-jacoco-report");
-  await uploadToCodecov(token, dir, "backend");
+export async function uploadBackendTests(
+  codecovToken: string | null,
+  sonarToken: string | null,
+) {
+  await uploadArtifact("backend", "backend-jacoco-report");
+
+  if (codecovToken) {
+    await uploadToCodecov(codecovToken, "backend");
+  }
+
+  if (sonarToken) {
+    await uploadToSonar(sonarToken, "backend");
+  }
+
+  if (!codecovToken && !sonarToken) {
+    throw new Error("Missing atleast one upload token");
+  }
 }
 
-export async function uploadFrontendTests(token: string) {
-  const dir = path.join(process.cwd(), "js/coverage/");
+export async function uploadFrontendTests(
+  codecovToken?: string,
+  sonarToken?: string,
+) {
+  await uploadArtifact("frontend", "frontend-coverage-report");
 
-  await uploadArtifact(dir, "frontend-coverage-report");
-  await uploadToCodecov(token, dir, "frontend");
+  if (codecovToken) {
+    await uploadToCodecov(codecovToken, "frontend");
+  }
+
+  if (sonarToken) {
+    await uploadToSonar(sonarToken, "frontend");
+  }
+
+  if (!codecovToken && !sonarToken) {
+    throw new Error("Missing atleast one upload token");
+  }
 }
 
-async function uploadToCodecov(token: string, dir: string, flag: string) {
+async function uploadToCodecov(token: string, loc: Location) {
+  const dir = getDir(loc);
+
   try {
     const { exitCode } = Bun.spawnSync(["./codecov", "--help"]);
     if (exitCode != 0) {
@@ -45,7 +79,7 @@ async function uploadToCodecov(token: string, dir: string, flag: string) {
 
   try {
     console.log(
-      `Uploading reports from ${dir} to Codecov with flag: ${flag}...`,
+      `Uploading reports from ${dir} to Codecov with flag: ${loc}...`,
     );
     const p2 = Bun.spawnSync([
       "./codecov",
@@ -53,7 +87,7 @@ async function uploadToCodecov(token: string, dir: string, flag: string) {
       "--dir",
       dir,
       "--flag",
-      flag,
+      loc,
     ]);
     if (p2.exitCode != 0) {
       throw new Error(`Failed to load Codecov process\n\n${p2.stderr}`);
@@ -65,10 +99,55 @@ async function uploadToCodecov(token: string, dir: string, flag: string) {
   }
 }
 
+async function uploadToSonar(token: string, loc: Location) {
+  const dir = getDir(loc);
+
+  console.log("Setting up Sonar in CI...");
+  await $`pnpm i -g @sonar/scan`;
+
+  const env = {
+    ...process.env,
+    SONAR_TOKEN: token,
+  };
+
+  const args = [
+    "sonar",
+    "-Dsonar.host.url=https://sonarcloud.io",
+    `-Dsonar.token=${token}`,
+    `-Dsonar.projectKey=codebloom_${loc}`,
+    "-Dsonar.organization=tahminator",
+    `-Dsonar.sources=${loc === "frontend" ? "./js/src" : "src/main/java"}`,
+  ];
+
+  if (loc === "frontend") {
+    args.push(`-Dsonar.javascript.lcov.reportPaths=${dir}/lcov.info`);
+  }
+
+  if (loc === "backend") {
+    args.push("-Dsonar.java.binaries=target/classes");
+    args.push(
+      "-Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml",
+    );
+  }
+
+  const p = Bun.spawnSync(args, {
+    env,
+  });
+
+  if (p.exitCode != 0) {
+    const stderrText = p.stderr.toString();
+    const stdoutText = p.stdout.toString();
+    console.log(stdoutText);
+    console.error(stderrText);
+    throw new Error(`Failed to load Sonar process\n\n${stderrText}`);
+  }
+}
+
 /*
  * can only run in github actions.
  */
-async function uploadArtifact(dir: string, artifactName: string) {
+async function uploadArtifact(loc: Location, artifactName: string) {
+  const dir = getDir(loc);
   const client = new DefaultArtifactClient();
 
   const { id, size } = await client.uploadArtifact(

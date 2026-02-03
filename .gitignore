@@ -64,3 +64,5 @@ scripts/**/index.js
 /node_modules
 
 js/coverage/
+
+./*.log
