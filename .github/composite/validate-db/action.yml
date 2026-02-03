@@ -12,6 +12,9 @@ inputs:
     description: '"staging" or "production"'
     required: false
     default: production
+  SHA:
+    description: "(Staging only). Current commit SHA"
+    required: false
 
 runs:
   using: "composite"
@@ -34,3 +37,4 @@ runs:
       run: bun .github/scripts/validate-db
       env:
         ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+        SHA: ${{ inputs.SHA }}
