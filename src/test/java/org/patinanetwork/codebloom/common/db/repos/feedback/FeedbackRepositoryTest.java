@@ -31,7 +31,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
     }
 
     @BeforeAll
-    void createTestReport() {
+    void createTestFeedback() {
         testFeedback = Feedback.builder()
                 .title("Test Feedback Title")
                 .description("This is a test feedback description")
@@ -50,7 +50,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
     }
 
     @AfterAll
-    void deleteTestReport() {
+    void deleteTestFeedback() {
         boolean isSuccessful = feedbackRepository.deleteFeedbackById(testFeedback.getId());
 
         if (!isSuccessful) {
@@ -60,7 +60,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(1)
-    void testCreateReport() {
+    void testCreateFeedback() {
         assertNotNull(testFeedback.getId(), "Feedback id should not be null");
         assertNotNull(testFeedback.getTitle(), "Feedback title should not be null");
         assertNotNull(testFeedback.getDescription(), "Feedback description should not be null");
@@ -77,7 +77,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(2)
-    void testGetReportById() {
+    void testGetFeedbackById() {
         Optional<Feedback> retrievedFeedback = feedbackRepository.findFeedbackById(testFeedback.getId());
 
         assertTrue(retrievedFeedback.isPresent(), "Retrieved feedback should be present");
@@ -93,7 +93,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(3)
-    void testDeleteReportById() {
+    void testDeleteFeedbackById() {
         Feedback feedbackToDelete = Feedback.builder()
                 .title("Feedback to Delete")
                 .description("This feedback will be deleted")
@@ -119,7 +119,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(4)
-    void testUpdateReport() {
+    void testUpdateFeedback() {
         testFeedback.setTitle("Updated Feedback Title");
         testFeedback.setDescription("This is an updated description");
         testFeedback.setEmail(Optional.of("updated@example.com"));
@@ -144,7 +144,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(5)
-    void testGetReportByIdWithInvalidUUID() {
+    void testGetFeedbackByIdWithInvalidUUID() {
         String invalidUUID = "invalid-uuid-format";
         assertThrows(
                 RuntimeException.class,
@@ -157,7 +157,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(6)
-    void testDeleteReportByIdWithInvalidUUID() {
+    void testDeleteFeedbackByIdWithInvalidUUID() {
         String invalidUUID = "invalid-uuid-format";
         assertThrows(
                 RuntimeException.class,
@@ -170,10 +170,10 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(7)
-    void testUpdateReportWithInvalidUUID() {
+    void testUpdateFeedbackWithInvalidUUID() {
         Feedback invalidFeedback = Feedback.builder()
                 .id("invalid-uuid-format")
-                .title("Invalid Report")
+                .title("Invalid Feedback")
                 .description("This feedback has invalid UUID")
                 .email(Optional.of("invalid@example.com"))
                 .build();
@@ -188,7 +188,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(8)
-    void testUpdateReportWithNullEmail() {
+    void testUpdateFeedbackWithNullEmail() {
         Feedback feedbackToUpdate = Feedback.builder()
                 .title("Feedback For Email Update Test")
                 .description("Testing email update to null")
@@ -207,7 +207,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(9)
-    void testCreateReportWithSpecialCharacters() {
+    void testCreateFeedbackWithSpecialCharacters() {
         Feedback feedbackWithSpecialChars = Feedback.builder()
                 .title("Special !@#$%^&*() Title")
                 .description("Description with émojis 🎉 and spécial çharacters: <>&\"'")
@@ -235,7 +235,7 @@ public class FeedbackRepositoryTest extends BaseRepositoryTest {
 
     @Test
     @Order(10)
-    void testCreateReportWithNullEmail() {
+    void testCreateFeedbackWithNullEmail() {
         Feedback feedbackWithNullEmail = Feedback.builder()
                 .title("Feedback Without Email")
                 .description("This feedback has no email")

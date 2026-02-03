@@ -100,8 +100,8 @@ public class ReporterController {
         return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
     }
 
-    @PostMapping("/report")
-    public ResponseEntity<ApiResponder<Empty>> submitReport(
+    @PostMapping("/feedback")
+    public ResponseEntity<ApiResponder<Empty>> submitFeedback(
             final @RequestBody FeedbackBody feedbackBody, final HttpServletRequest request) {
         feedbackBody.validate();
 
@@ -109,6 +109,8 @@ public class ReporterController {
             // don't let the bad actor know it failed.
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));
         }
+
+        feedbackBody.validate();
 
         Feedback feedback = Feedback.builder()
                 .title(feedbackBody.getTitle())
