@@ -4,4 +4,4 @@ CREATE TABLE IF NOT EXISTS "Report" (
     description TEXT NOT NULL,
     email VARCHAR(255),
     "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-)
+);

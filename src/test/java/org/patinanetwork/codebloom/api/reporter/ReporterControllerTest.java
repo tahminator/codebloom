@@ -55,7 +55,7 @@ public class ReporterControllerTest {
 
         HttpServletRequest request = createMockRequest(validOrigin);
 
-        var response = reporterController.submitReport(feedbackBody, request);
+        var response = reporterController.submitFeedback(feedbackBody, request);
 
         var body = response.getBody();
         assertEquals(200, response.getStatusCode().value());
@@ -81,7 +81,7 @@ public class ReporterControllerTest {
 
         HttpServletRequest request = createMockRequest(validOrigin);
 
-        var response = reporterController.submitReport(feedbackBody, request);
+        var response = reporterController.submitFeedback(feedbackBody, request);
 
         var body = response.getBody();
         assertEquals(200, response.getStatusCode().value());
