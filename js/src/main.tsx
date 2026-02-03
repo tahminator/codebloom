@@ -1,6 +1,5 @@
 // THIS MUST BE FIRST. NEVER MOVE THIS.
 import "@/patches";
-import { launchMockServer } from "@/__mock__";
 import "@mantine/core/styles.css";
 import ReactQueryProvider from "@/lib/queryProvider";
 import { router } from "@/lib/router";
@@ -22,6 +21,7 @@ dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 if (import.meta.env.VITE_MOCK === "true") {
+  const { launchMockServer } = await import("@/__mock__");
   await launchMockServer();
 }
 
