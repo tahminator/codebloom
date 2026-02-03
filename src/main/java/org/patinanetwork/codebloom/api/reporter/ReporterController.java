@@ -103,6 +103,8 @@ public class ReporterController {
     @PostMapping("/report")
     public ResponseEntity<ApiResponder<Empty>> submitReport(
             final @RequestBody FeedbackBody feedbackBody, final HttpServletRequest request) {
+        feedbackBody.validate();
+
         if (!validateOrigin(request)) {
             // don't let the bad actor know it failed.
             return ResponseEntity.ok(ApiResponder.success("ok", Empty.of()));

@@ -2,6 +2,7 @@ package org.patinanetwork.codebloom.api.reporter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -18,6 +19,7 @@ import org.patinanetwork.codebloom.common.db.repos.feedback.FeedbackRepository;
 import org.patinanetwork.codebloom.common.env.Env;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
+import org.patinanetwork.codebloom.utilities.exception.ValidationException;
 
 public class ReporterControllerTest {
 
@@ -87,5 +89,31 @@ public class ReporterControllerTest {
         assertTrue(body.isSuccess());
         assertEquals("ok", body.getMessage());
         verify(feedbackRepository).createFeedback(any(Feedback.class));
+    }
+
+    @Test
+    @DisplayName("Validate feedback - description too short")
+    void testValidateFeedbackDescriptionTooShort() {
+        FeedbackBody feedbackBody = FeedbackBody.builder()
+                .title("Short")
+                .description("Too short")
+                .email("test@example.com")
+                .build();
+
+        var ex = assertThrows(ValidationException.class, () -> feedbackBody.validate());
+        assertEquals("Description must be at least 10 characters.", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Validate feedback - description too long")
+    void testValidateFeedbackDescriptionTooLong() {
+        FeedbackBody feedbackBody = FeedbackBody.builder()
+                .title("Long")
+                .description("x".repeat(10001))
+                .email("test@example.com")
+                .build();
+
+        var ex = assertThrows(ValidationException.class, () -> feedbackBody.validate());
+        assertEquals("Description must not exceed 10000 characters.", ex.getMessage());
     }
 }
