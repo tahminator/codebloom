@@ -59,6 +59,7 @@ export function prodSpec(envs: App_variable_definition[]): App_spec {
     services: [
       {
         ...DIGITALOCEAN_BASE_SERVICE,
+        instanceSizeSlug: "apps-s-1vcpu-2gb",
         image: {
           ...DIGITALOCEAN_BASE_IMAGE,
           tag: "latest",
