@@ -134,10 +134,11 @@ async function uploadToSonar(token: string, loc: Location) {
     env,
   });
 
+  const stdoutText = p.stdout.toString();
+  console.log(stdoutText);
+
   if (p.exitCode != 0) {
     const stderrText = p.stderr.toString();
-    const stdoutText = p.stdout.toString();
-    console.log(stdoutText);
     console.error(stderrText);
     throw new Error(`Failed to load Sonar process\n\n${stderrText}`);
   }
