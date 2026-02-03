@@ -1,6 +1,7 @@
+// THIS MUST BE FIRST. NEVER MOVE THIS.
+import "@/patches";
 import { launchMockServer } from "@/__mock__";
 import "@mantine/core/styles.css";
-import "@/patches";
 import ReactQueryProvider from "@/lib/queryProvider";
 import { router } from "@/lib/router";
 import "@mantine/notifications/styles.css";
