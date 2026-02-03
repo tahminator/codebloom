@@ -18,8 +18,30 @@ const environment: Environment = (() => {
   return v;
 })();
 
+const sha = (() => {
+  const v = process.env.SHA;
+  if (environment === "staging" && !v) {
+    throw new Error(
+      "SHA must be available in ENV if script is being run in staging environment.",
+    );
+  }
+  return v;
+})();
+
 export async function main() {
   // make sure you checkout the repo first.
+
+  if (environment === "staging") {
+    await $`git fetch origin main:main`;
+    const diffOutput = await $`git diff --name-only main...${sha}`.text();
+    const files = diffOutput.split("\n");
+
+    const hasDbChanges = files.some((file) => file.startsWith("db/"));
+    if (!hasDbChanges) {
+      console.log("in staging, skipping db migration.");
+      return;
+    }
+  }
 
   const appEnv = await getEnvVariables([
     environment === "staging" ? "staging" : "production-ro",
