@@ -1,13 +1,14 @@
-import ReactQueryProvider from "@/lib/queryProvider";
+import { launchMockServer } from "@/__mock__";
 import "@mantine/core/styles.css";
 import "@/patches";
+import ReactQueryProvider from "@/lib/queryProvider";
 import { router } from "@/lib/router";
-import { themeOverride } from "@/lib/theme";
 import "@mantine/notifications/styles.css";
+import { themeOverride } from "@/lib/theme";
 import { MantineProvider } from "@mantine/core";
-import { Notifications } from "@mantine/notifications";
 import "@/index.css";
 import "@mantine/dates/styles.css";
+import { Notifications } from "@mantine/notifications";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -18,6 +19,10 @@ import { RouterProvider } from "react-router";
 
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
+
+if (import.meta.env.VITE_MOCK === "true") {
+  await launchMockServer();
+}
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
