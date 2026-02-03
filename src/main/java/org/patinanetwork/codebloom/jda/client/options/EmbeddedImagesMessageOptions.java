@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class EmbeddedImagesMessageOptions {
-
     private String title;
     private String description;
     private String footerText;
@@ -16,6 +15,10 @@ public class EmbeddedImagesMessageOptions {
     private Color color;
     private long guildId;
     private long channelId;
-    private List<byte[]> filesBytes;
-    private List<String> fileNames;
+
+    @Builder.Default
+    private List<byte[]> filesBytes = List.of();
+
+    @Builder.Default
+    private List<String> fileNames = List.of();
 }
