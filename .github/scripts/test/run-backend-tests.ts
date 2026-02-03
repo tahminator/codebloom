@@ -5,6 +5,8 @@ import { frontend } from "utils/run-frontend-instance";
 import { db } from "utils/run-local-db";
 import { uploadBackendTests } from "utils/upload";
 
+const shouldUploadCoverage = process.env.UPLOAD_TEST_COV === "true";
+
 async function main() {
   try {
     const ciEnv = await getEnvVariables(["ci"]);
@@ -36,7 +38,9 @@ async function main() {
 
     await $$`./mvnw clean verify -Dspring.profiles.active=ci`;
 
-    await uploadBackendTests(codecovToken);
+    if (shouldUploadCoverage) {
+      await uploadBackendTests(codecovToken);
+    }
   } finally {
     await db.end();
     await frontend.end();
