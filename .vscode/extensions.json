@@ -12,7 +12,7 @@
         "vmware.vscode-boot-dev-pack",
         "bradlc.vscode-tailwindcss",
         "redhat.vscode-xml",
-        "emeraldwalk.runonsave"
+        "emeraldwalk.runonsave",
+        "vitest.explorer"
     ]
 }
-
