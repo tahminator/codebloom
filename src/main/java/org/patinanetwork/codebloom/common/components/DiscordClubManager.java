@@ -3,7 +3,6 @@ package org.patinanetwork.codebloom.common.components;
 import java.awt.Color;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.Leaderboa
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import org.patinanetwork.codebloom.common.time.StandardizedLocalDateTime;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
-import org.patinanetwork.codebloom.common.utils.pair.Pair;
 import org.patinanetwork.codebloom.jda.client.JDAClient;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
 import org.patinanetwork.codebloom.playwright.PlaywrightClient;
@@ -32,7 +30,6 @@ public class DiscordClubManager {
     private final JDAClient jdaClient;
     private final LeaderboardRepository leaderboardRepository;
     private final DiscordClubRepository discordClubRepository;
-    private final PlaywrightClient playwrightClient;
     private final ServerUrlUtils serverUrlUtils;
 
     public DiscordClubManager(
@@ -45,7 +42,6 @@ public class DiscordClubManager {
         this.jdaClient = jdaClient;
         this.leaderboardRepository = leaderboardRepository;
         this.discordClubRepository = discordClubRepository;
-        this.playwrightClient = playwrightClient;
     }
 
     private Optional<UserWithScore> getUser(final List<UserWithScore> users, final int index) {
@@ -54,23 +50,6 @@ public class DiscordClubManager {
         }
 
         return Optional.ofNullable(users.get(index));
-    }
-
-    private List<Pair<String, byte[]>> getScreenshotsForRecentLeaderboard(
-            final Leaderboard leaderboard, final DiscordClub club) {
-        List<Pair<String, byte[]>> screenshots = new ArrayList<>();
-
-        var totalUsers = leaderboardRepository.getLeaderboardUserCountById(
-                leaderboard.getId(),
-                LeaderboardFilterGenerator.builderWithTag(club.getTag()).build());
-        int totalPages = (int) Math.ceil((double) totalUsers / FRONTEND_PAGE_SIZE);
-
-        for (int p = 1; p <= totalPages; p++) {
-            byte[] screenshot = playwrightClient.getCodebloomLeaderboardScreenshot(p, club.getTag());
-            screenshots.add(Pair.of("leaderboard_page_%s.png".formatted(p), screenshot));
-        }
-
-        return screenshots;
     }
 
     /**
@@ -87,7 +66,6 @@ public class DiscordClubManager {
         jdaClient.connect();
         try {
             var latestLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-            var screenshots = getScreenshotsForRecentLeaderboard(latestLeaderboard, club);
 
             LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                     .page(1)
@@ -156,8 +134,6 @@ public class DiscordClubManager {
                     .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
                     .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
                     .color(new Color(69, 129, 103))
-                    .filesBytes(screenshots.stream().map(Pair::getRight).toList())
-                    .fileNames(screenshots.stream().map(Pair::getLeft).toList())
                     .build());
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,7 +146,6 @@ public class DiscordClubManager {
         jdaClient.connect();
         try {
             var latestLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-            var screenshots = getScreenshotsForRecentLeaderboard(latestLeaderboard, club);
 
             LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                     .page(1)
@@ -255,8 +230,6 @@ public class DiscordClubManager {
                     .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
                     .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
                     .color(new Color(69, 129, 103))
-                    .filesBytes(screenshots.stream().map(Pair::getRight).toList())
-                    .fileNames(screenshots.stream().map(Pair::getLeft).toList())
                     .build());
         } catch (Exception e) {
             log.error("Error in DiscordClubManager when sending weekly leaderboard", e);

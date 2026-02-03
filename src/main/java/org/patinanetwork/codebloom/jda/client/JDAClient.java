@@ -20,6 +20,7 @@ import org.patinanetwork.codebloom.jda.properties.reporting.JDAErrorReportingPro
 import org.patinanetwork.codebloom.jda.properties.reporting.JDALogReportingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 /** Use this client to interface with any required Discord bot logic. */
 @Component
@@ -159,38 +160,43 @@ public class JDAClient {
 
         List<byte[]> filesBytes = options.getFilesBytes();
         List<String> fileNames = options.getFileNames();
-        if (filesBytes == null || filesBytes.isEmpty()) {
-            log.error("Files must be provided and non-empty.");
-            return;
-        }
-        if (fileNames == null || fileNames.isEmpty()) {
-            log.error("File names must be provided and non-empty.");
-            return;
-        }
-
         List<FileUpload> uploads = new ArrayList<>();
-        for (int i = 0; i < filesBytes.size(); i++) {
-            String name = (fileNames != null && i < fileNames.size()) ? fileNames.get(i) : "image" + i + ".png";
-            uploads.add(FileUpload.fromData(filesBytes.get(i), name));
-        }
-
         List<MessageEmbed> embeds = new ArrayList<>();
-        EmbedBuilder firstEmbed = new EmbedBuilder()
+
+        EmbedBuilder baseEmbed = new EmbedBuilder()
                 .setColor(options.getColor())
                 .setTitle(options.getTitle())
                 .setUrl("https://codebloom.patinanetwork.org")
                 .setDescription(options.getDescription())
-                .setFooter(options.getFooterText(), options.getFooterIcon())
-                .setImage("attachment://" + fileNames.get(0));
+                .setFooter(options.getFooterText(), options.getFooterIcon());
 
-        embeds.add(firstEmbed.build());
-        for (int i = 1; i < fileNames.size(); i++) {
-            EmbedBuilder additionalEmbed = new EmbedBuilder()
-                    .setUrl("https://codebloom.patinanetwork.org")
-                    .setImage("attachment://" + fileNames.get(i));
-            embeds.add(additionalEmbed.build());
+        embeds.add(baseEmbed.build());
+
+        if (!CollectionUtils.isEmpty(fileNames) && !CollectionUtils.isEmpty(filesBytes)) {
+            for (int i = 0; i < filesBytes.size(); i++) {
+                String name = (fileNames != null && i < fileNames.size()) ? fileNames.get(i) : "image" + i + ".png";
+                uploads.add(FileUpload.fromData(filesBytes.get(i), name));
+            }
+
+            for (int i = 0; i < fileNames.size(); i++) {
+                if (i == 0) {
+                    baseEmbed.setImage("attachment://" + fileNames.get(0));
+                } else {
+
+                    EmbedBuilder additionalEmbed = new EmbedBuilder()
+                            .setUrl("https://codebloom.patinanetwork.org")
+                            .setImage("attachment://" + fileNames.get(i));
+                    embeds.add(additionalEmbed.build());
+                }
+            }
         }
 
-        channel.sendMessageEmbeds(embeds).setFiles(uploads).queue();
+        var messageCreationAction = channel.sendMessageEmbeds(embeds);
+
+        if (!uploads.isEmpty()) {
+            messageCreationAction.setFiles(uploads);
+        }
+
+        messageCreationAction.queue();
     }
 }
