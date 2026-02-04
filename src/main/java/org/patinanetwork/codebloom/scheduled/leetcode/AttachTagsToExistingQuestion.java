@@ -49,7 +49,7 @@ public class AttachTagsToExistingQuestion {
             try {
                 leetcodeQuestion = leetcodeClient.findQuestionBySlug(question.getQuestionSlug());
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("LeetcodeClient threw an exception", e);
                 continue;
             }
 

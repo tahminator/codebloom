@@ -136,7 +136,7 @@ public class DiscordClubManager {
                     .color(new Color(69, 129, 103))
                     .build());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception thrown in DiscordClubManager", e);
             throw e;
         }
     }

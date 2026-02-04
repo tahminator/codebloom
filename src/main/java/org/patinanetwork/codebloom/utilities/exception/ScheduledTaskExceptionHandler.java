@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.utilities.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.env.Env;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.reporter.report.Report;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 
 /** Add {@link Reporter} to Spring Boot `@Scheduled` methods. */
 @Configuration
+@Slf4j
 public class ScheduledTaskExceptionHandler {
 
     private final Reporter errorReporter;
@@ -39,7 +41,7 @@ public class ScheduledTaskExceptionHandler {
                             .data(Reporter.throwableToString(throwable))
                             .build());
 
-            throwable.printStackTrace();
+            log.error(throwable.getMessage(), throwable);
         });
 
         return scheduler;

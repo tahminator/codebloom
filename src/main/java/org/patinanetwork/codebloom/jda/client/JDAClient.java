@@ -63,7 +63,7 @@ public class JDAClient {
         try {
             jda.awaitReady();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("Something went wrong when awaiting JDA", e);
             throw new RuntimeException("Something went wrong when awaiting JDA", e);
         }
     }
