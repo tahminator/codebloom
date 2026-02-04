@@ -111,7 +111,7 @@ public class DiscordClubManager {
 
                 The new leaderboard just started, so best of luck to everyone!
 
-                View the full leaderboard for %s users at https://codebloom.patinanetwork.org/leaderboard?%s=true
+                View the full leaderboard for %s users at %s/leaderboard/%s?%s=true
 
                 Happy LeetCoding,
                 Codebloom
@@ -121,6 +121,8 @@ public class DiscordClubManager {
                     headerText,
                     topUsersSection,
                     club.getName(),
+                    serverUrlUtils.getUrl(),
+                    currentLeaderboard.getId(),
                     club.getTag().name().toLowerCase(),
                     serverUrlUtils.getUrl());
 
@@ -188,7 +190,7 @@ public class DiscordClubManager {
 
                 Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
 
-                View the full leaderboard for %s users at https://codebloom.patinanetwork.org/leaderboard?%s=true
+                View the full leaderboard for %s users at %s/leaderboard?%s=true
 
 
                 See you next week!
@@ -204,6 +206,7 @@ public class DiscordClubManager {
                     hoursLeft,
                     minutesLeft,
                     club.getName(),
+                    serverUrlUtils.getUrl(),
                     club.getTag().name().toLowerCase(),
                     serverUrlUtils.getUrl());
 
