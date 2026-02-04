@@ -1,6 +1,5 @@
 package org.patinanetwork.codebloom.common.email.template;
 
-import io.micrometer.core.annotation.Timed;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.jsoup.Jsoup;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 @Component
-@Timed(value = "emailclient.execution")
 public class ReactEmailClientImpl implements ReactEmailClient {
 
     private String getHtmlAsString(final String path) throws IOException {

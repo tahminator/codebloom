@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.common.email.client.github;
 
+import io.micrometer.core.annotation.Timed;
 import jakarta.mail.Folder;
 import jakarta.mail.Session;
 import jakarta.mail.Store;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 /** Provides read-only access to the Github email account in order to access the OAuth code. */
 @Component
 @EnableConfigurationProperties(GithubOAuthEmailProperties.class)
+@Timed(value = "emailclient.execution")
 public class GithubOAuthEmail extends Email {
 
     private final GithubOAuthEmailProperties emailProperties;

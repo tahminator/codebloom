@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.common.email.client.codebloom;
 
+import io.micrometer.core.annotation.Timed;
 import jakarta.mail.Authenticator;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
+@Timed(value = "emailclient.execution")
 public class OfficialCodebloomEmail extends Email {
 
     private final OfficialCodebloomEmailProperties emailProperties;
