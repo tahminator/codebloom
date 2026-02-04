@@ -116,7 +116,7 @@ async function main() {
       UPDATE \"DiscordClubMetadata\" m
       SET 
         \"guildId\" = '1389762654452580373',
-        \"leaderboardChannelId\" = '1401739528057655436'
+        \"leaderboardChannelId\" = '1417161536014778388'
       FROM \"DiscordClub\" c
       WHERE c.\"id\" = m.\"discordClubId\"
         AND c.\"name\" = 'Patina Network';
@@ -125,16 +125,16 @@ async function main() {
       UPDATE \"DiscordClubMetadata\" m
       SET
         \"guildId\" = '1389762654452580373',
-        \"leaderboardChannelId\" = '1401739528057655436'
+        \"leaderboardChannelId\" = '1417161536014778388'
       FROM \"DiscordClub\" c
       WHERE c.\"id\" = m.\"discordClubId\"
         AND c.\"name\" = 'MHC++';
 
       -- Update DiscordClubMetadata for 'GWC - Hunter College'
       UPDATE \"DiscordClubMetadata\" m
-      SET
+      SET 
         \"guildId\" = '1389762654452580373',
-        \"leaderboardChannelId\" = '1401739528057655436'
+        \"leaderboardChannelId\" = '1417161536014778388'
       FROM \"DiscordClub\" c
       WHERE c.\"id\" = m.\"discordClubId\"
         AND c.\"name\" = 'GWC - Hunter College';
