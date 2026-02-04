@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.utilities.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.env.Env;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
+@Slf4j
 public class ControllerExceptionHandler {
 
     private final Reporter errorReporter;
@@ -42,7 +44,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiResponder<?>> handleThrowable(final Throwable rx) {
-        rx.printStackTrace();
+        log.error(rx.getMessage(), rx);
 
         if (ExcludedExceptions.isValid(rx)) {
             errorReporter.error(

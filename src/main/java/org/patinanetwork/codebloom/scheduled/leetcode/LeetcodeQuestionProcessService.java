@@ -105,8 +105,8 @@ public class LeetcodeQuestionProcessService {
                         log.error(
                                 "Failed to process job with id: {} for questionId: {}",
                                 job.getId(),
-                                job.getQuestionId());
-                        e.printStackTrace();
+                                job.getQuestionId(),
+                                e);
                     }
                 }
             }
@@ -210,8 +210,7 @@ public class LeetcodeQuestionProcessService {
             job.setProcessedAt(null);
             jobRepository.updateJob(job);
 
-            log.error("Failed to process job {} for questionId: {}", job.getId(), job.getQuestionId());
-            e.printStackTrace();
+            log.error("Failed to process job {} for questionId: {}", job.getId(), job.getQuestionId(), e);
             throw new RuntimeException("Job processing failed", e);
         }
     }
