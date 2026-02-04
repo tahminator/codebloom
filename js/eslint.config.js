@@ -40,6 +40,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      "react-hooks/exhaustive-deps": "error",
       "no-relative-import-paths/no-relative-import-paths": [
         "error",
         { allowSameFolder: false, rootDir: "src", prefix: "@" },

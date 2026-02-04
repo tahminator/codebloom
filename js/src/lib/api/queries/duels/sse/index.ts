@@ -4,7 +4,7 @@ import { fetchEventSource } from "@/lib/api/common/fetchEventSource";
 import { useGetCurrentDuelOrPartyQuery } from "@/lib/api/queries/duels";
 import { Api } from "@/lib/api/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 export const useMyDuelOrPartyData = () => {
   const { data } = useGetCurrentDuelOrPartyQuery();
@@ -15,14 +15,15 @@ export const useMyDuelOrPartyData = () => {
 
 export const useDuelOrPartyData = (lobbyCode: string) => {
   const queryClient = useQueryClient();
-  const { url, method, res, queryKey } = ApiURL.create(
-    "/api/duel/{lobbyCode}/sse",
-    {
-      method: "POST",
-      params: {
-        lobbyCode,
-      },
-    },
+  const { url, method, res, queryKey } = useMemo(
+    () =>
+      ApiURL.create("/api/duel/{lobbyCode}/sse", {
+        method: "POST",
+        params: {
+          lobbyCode,
+        },
+      }),
+    [lobbyCode],
   );
 
   const query = useQuery<UnknownApiResponse<Api<"DuelData">>>({
@@ -60,7 +61,7 @@ export const useDuelOrPartyData = (lobbyCode: string) => {
     return () => {
       controller.abort();
     };
-  }, [lobbyCode, queryClient]);
+  }, [lobbyCode, queryClient, url, method, res, queryKey]);
 
   return query;
 };
