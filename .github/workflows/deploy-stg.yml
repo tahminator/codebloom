@@ -62,13 +62,6 @@ jobs:
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const commitHash = '${{ needs.getPRHead.outputs.sha }}';
 
-            await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: parseInt(prId, 10),
-                body: `The command to deploy to staging for the commit ${commitHash} has been triggered. [View action run](${runUrl})`
-            });
-
             await github.rest.repos.createCommitStatus({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -304,11 +297,4 @@ jobs:
               target_url: runUrl,
               context: "Deploy to staging",
               description: status ? "Staging deployment succeeded" : "Staging deployment failed",
-            });
-
-            await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: parseInt(prId, 10),
-                body: `${statusMessage}\n\n[View run](${runUrl})`
             });
