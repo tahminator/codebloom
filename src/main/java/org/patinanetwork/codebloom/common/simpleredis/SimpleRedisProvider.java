@@ -1,9 +1,11 @@
 package org.patinanetwork.codebloom.common.simpleredis;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +15,11 @@ import org.springframework.stereotype.Service;
  * the same features that you may normally use inside of any {@code Map} class, such as putting and getting.
  */
 @Service
+@RequiredArgsConstructor
 public class SimpleRedisProvider {
 
     private final Map<Integer, SimpleRedis<?>> store = new ConcurrentHashMap<>();
+    private final MeterRegistry meterRegistry;
 
     /** Initialize the Redis store with indices of all the databases we support. */
     @PostConstruct
@@ -24,7 +28,8 @@ public class SimpleRedisProvider {
     }
 
     private <T> void register(final SimpleRedisSlot<T> slot) {
-        store.put(slot.getIndex(), new SimpleRedis<T>());
+        SimpleRedis<T> redis = new SimpleRedis<T>(true, meterRegistry, slot.getIndex());
+        store.put(slot.getIndex(), redis);
     }
 
     /**
