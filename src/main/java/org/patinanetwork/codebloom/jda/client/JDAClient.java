@@ -63,6 +63,7 @@ public class JDAClient {
         try {
             jda.awaitReady();
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             log.error("Something went wrong when awaiting JDA", e);
             throw new RuntimeException("Something went wrong when awaiting JDA", e);
         }
