@@ -25,7 +25,7 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconMaximize } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 type DuelData = Api<"DuelData">;
 type User = Api<"UserDto">;
@@ -84,48 +84,46 @@ export default function DuelActiveBody({
   // TODO: Replace with actual time calculation from duelData.lobby.expiresAt
   const mockTimeLeft = "29:45"; // Format: MM:SS
 
-  const createSections = (hideTitle = false, compact = false) => [
-    {
-      key: "player1" as const,
-      title: getPlayerDisplayName(playerOne),
-      content: (
-        <PlayerSolvedSection
-          player={playerOne}
-          solved={playerOneSolved}
-          showControls={isCurrentPlayerOne}
-          compact={compact}
-          hideTitle={hideTitle}
-        />
-      ),
-    },
-    {
-      key: "available" as const,
-      title: "Available",
-      content: (
-        <QuestionsSection
-          questions={questions}
-          compact={compact}
-          hideTitle={hideTitle}
-        />
-      ),
-    },
-    {
-      key: "player2" as const,
-      title: getPlayerDisplayName(playerTwo),
-      content: (
-        <PlayerSolvedSection
-          player={playerTwo}
-          solved={playerTwoSolved}
-          showControls={isCurrentPlayerTwo}
-          compact={compact}
-          hideTitle={hideTitle}
-        />
-      ),
-    },
-  ];
-
-  const mobileSections = useMemo(
-    () => createSections(true, false),
+  const createSections = useCallback(
+    (hideTitle = false, compact = false) => [
+      {
+        key: "player1" as const,
+        title: getPlayerDisplayName(playerOne),
+        content: (
+          <PlayerSolvedSection
+            player={playerOne}
+            solved={playerOneSolved}
+            showControls={isCurrentPlayerOne}
+            compact={compact}
+            hideTitle={hideTitle}
+          />
+        ),
+      },
+      {
+        key: "available" as const,
+        title: "Available",
+        content: (
+          <QuestionsSection
+            questions={questions}
+            compact={compact}
+            hideTitle={hideTitle}
+          />
+        ),
+      },
+      {
+        key: "player2" as const,
+        title: getPlayerDisplayName(playerTwo),
+        content: (
+          <PlayerSolvedSection
+            player={playerTwo}
+            solved={playerTwoSolved}
+            showControls={isCurrentPlayerTwo}
+            compact={compact}
+            hideTitle={hideTitle}
+          />
+        ),
+      },
+    ],
     [
       playerOne,
       playerTwo,
@@ -135,6 +133,11 @@ export default function DuelActiveBody({
       isCurrentPlayerOne,
       isCurrentPlayerTwo,
     ],
+  );
+
+  const mobileSections = useMemo(
+    () => createSections(true, false),
+    [createSections],
   );
 
   const copyJoinCodeButton = () => (
