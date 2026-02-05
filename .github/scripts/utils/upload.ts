@@ -4,6 +4,8 @@ import { DefaultArtifactClient } from "@actions/artifact";
 import { $ } from "bun";
 import path from "node:path";
 
+import { backendExclusions, frontendExclusions } from "../../../exclusions";
+
 const getDir = (loc: Location) => {
   return loc === "frontend" ?
       path.join(process.cwd(), "js/coverage/")
@@ -97,6 +99,9 @@ async function uploadToSonar(token: string, loc: Location) {
 
   if (loc === "frontend") {
     args.push(`-Dsonar.javascript.lcov.reportPaths=${dir}/lcov.info`);
+    if (frontendExclusions.length) {
+      args.push(`-Dsonar.coverage.exclusions=${frontendExclusions}`);
+    }
   }
 
   if (loc === "backend") {
@@ -104,6 +109,9 @@ async function uploadToSonar(token: string, loc: Location) {
     args.push(
       "-Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml",
     );
+    if (backendExclusions.length) {
+      args.push(`-Dsonar.coverage.exclusions=${backendExclusions}`);
+    }
   }
 
   const p = Bun.spawnSync(args, {
