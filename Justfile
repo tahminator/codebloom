@@ -51,14 +51,6 @@ backend-test *args:
 backend-testd *args:
   just backend-spotless && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
 
-# Run backend tests and launch Jacoco test coverage viewer if tests pass
-backend-coverage *args:
-  just backend-test {{args}} && open target/site/jacoco/index.html
-
-# Run backend tests with a debugger and launch Jacoco test coverage viewer if tests pass
-backend-coveraged *args:
-  just backend-testd {{args}} && open target/site/jacoco/index.html
-
 # Run the frontend 
 frontend-dev *args:
   cd js && pnpm i && pnpm run dev {{args}}
