@@ -115,3 +115,6 @@ server:
 app:
   commit:
     sha: "@commit.sha@"
+
+jedis:
+  url: ${REDIS_URL}
