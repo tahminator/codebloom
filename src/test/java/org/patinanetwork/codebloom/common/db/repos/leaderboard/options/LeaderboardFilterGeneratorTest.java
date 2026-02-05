@@ -22,7 +22,8 @@ public class LeaderboardFilterGeneratorTest {
             Tag.Hunter,
             Tag.Nyu,
             Tag.Rpi,
-            Tag.MHCPlusPlus);
+            Tag.MHCPlusPlus,
+            Tag.Gwc);
 
     public static final Set<Tag> ALL_LEADERBOARD_TAGS = Set.of(
             Tag.Patina,

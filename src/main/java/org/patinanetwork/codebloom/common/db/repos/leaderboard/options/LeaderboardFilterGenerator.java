@@ -22,7 +22,8 @@ public class LeaderboardFilterGenerator {
         list.add(Pair.of(withOnlyTrue(opt -> opt.columbia(true)), Tag.Columbia));
         list.add(Pair.of(withOnlyTrue(opt -> opt.cornell(true)), Tag.Cornell));
         list.add(Pair.of(withOnlyTrue(opt -> opt.bmcc(true)), Tag.Bmcc));
-        list.add(Pair.of(withOnlyTrue(opt -> opt.bmcc(true)), Tag.MHCPlusPlus));
+        list.add(Pair.of(withOnlyTrue(opt -> opt.mhcplusplus(true)), Tag.MHCPlusPlus));
+        list.add(Pair.of(withOnlyTrue(opt -> opt.gwc(true)), Tag.Gwc));
 
         return list;
     }
