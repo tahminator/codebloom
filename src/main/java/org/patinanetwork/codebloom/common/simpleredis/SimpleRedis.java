@@ -1,8 +1,6 @@
 package org.patinanetwork.codebloom.common.simpleredis;
 
-import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tags;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -24,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleRedis<T> extends ConcurrentHashMap<String, T> {
     private boolean shouldEvict;
-    private Counter counter;
 
     public SimpleRedis() {
         this(true);
@@ -48,31 +45,8 @@ public class SimpleRedis<T> extends ConcurrentHashMap<String, T> {
      */
     public SimpleRedis(final boolean shouldEvict, MeterRegistry registry, int index) {
         this(shouldEvict);
-        setMetrics(registry, index);
-    }
-
-    void setMetrics(MeterRegistry registry, int index) {
-        registry.gauge("simpleredis.index.size", Tags.of("index", String.valueOf(index)), this, m -> (double) m.size());
-        this.counter = registry.counter("simpleredis.index.entries", Tags.of("index", String.valueOf(index)));
-    }
-
-    @Override
-    public T put(String key, T value) {
-        T result = super.put(key, value);
-        if (counter != null && result == null) {
-            counter.increment();
-        }
-        return result;
-    }
-
-    @Override
-    public T remove(Object key) {
-        return super.remove(key);
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
+        registry.gaugeMapSize(
+                "simpleredis.index.size", io.micrometer.core.instrument.Tags.of("index", String.valueOf(index)), this);
     }
 
     /**

@@ -96,11 +96,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: prometheus, metrics
+        include: prometheus
   endpoint:
     prometheus:
-      enabled: true
-    metrics:
       enabled: true
 
 security:
