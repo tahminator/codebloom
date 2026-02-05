@@ -1,4 +1,4 @@
-package org.patinanetwork.codebloom.common.jedis;
+package org.patinanetwork.codebloom.common.redis;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,2 +1,0 @@
-jedis:
-  url: ${REDIS_URL}
