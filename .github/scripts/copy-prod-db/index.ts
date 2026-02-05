@@ -1,21 +1,9 @@
 import { $ } from "bun";
-import { sendMessage } from "utils/send-message";
+import { updateCommitStatus } from "utils/update-commit-status";
 
 import { getEnvVariables } from "../load-secrets/env/load";
 
 const AUTHORIZED_USER = "tahminator";
-
-const prId = (() => {
-  const v = process.env.PR_ID;
-  if (!v) {
-    throw new Error("PR_ID is required");
-  }
-  const n = Number(v);
-  if (Number.isNaN(n)) {
-    throw new Error("PR_ID must be a number");
-  }
-  return n;
-})();
 
 const username = (() => {
   const v = process.env.GITHUB_ACTOR;
@@ -25,8 +13,32 @@ const username = (() => {
   return v;
 })();
 
+const sha = (() => {
+  const v = process.env.SHA;
+  if (!v) {
+    throw new Error("SHA is required");
+  }
+  return v;
+})();
+
+const runUrl = (() => {
+  const v = process.env.RUN_URL;
+  if (!v) {
+    throw new Error("RUN_URL is required");
+  }
+  return v;
+})();
+
 async function main() {
   try {
+    await updateCommitStatus({
+      sha,
+      state: "pending",
+      description: "Database copy in progress...",
+      targetUrl: runUrl,
+      context: "Copy Production DB to Staging",
+    });
+
     if (username !== AUTHORIZED_USER) {
       throw new Error("You are not authorized!");
     }
@@ -128,9 +140,21 @@ async function main() {
         AND c.\"name\" = 'GWC - Hunter College';
     "`;
 
-    await sendMessage(prId, `Database copy command completed successfully!`);
+    await updateCommitStatus({
+      sha,
+      state: "success",
+      description: "Database copy completed successfully",
+      targetUrl: runUrl,
+      context: "Copy Production DB to Staging",
+    });
   } catch (e) {
-    await sendMessage(prId, `Database copy command failed!`);
+    await updateCommitStatus({
+      sha,
+      state: "failure",
+      description: "Database copy failed",
+      targetUrl: runUrl,
+      context: "Copy Production DB to Staging",
+    });
     throw e;
   }
 }
