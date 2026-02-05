@@ -20,9 +20,11 @@ permissions:
   statuses: write
 
 jobs:
-  copy:
-    name: Copy Production Database to Staging
+  getPRHead:
+    name: Get PR head SHA
     runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.pr-head.outputs.result }}
     steps:
       - name: Get PR head SHA
         id: pr-head
@@ -41,10 +43,15 @@ jobs:
 
             return pr.head.sha;
 
+  copy:
+    name: Copy Production Database to Staging
+    runs-on: ubuntu-latest
+    needs: getPRHead
+    steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.pr-head.outputs.result }}
+          ref: ${{ needs.getPRHead.outputs.sha }}
 
       - name: Setup CI
         uses: ./.github/composite/setup-ci
@@ -64,3 +71,5 @@ jobs:
         env:
           PR_ID: ${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
           GITHUB_ACTOR: ${{ github.event.client_payload.github.actor || github.actor }}
+          SHA: ${{ needs.getPRHead.outputs.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
