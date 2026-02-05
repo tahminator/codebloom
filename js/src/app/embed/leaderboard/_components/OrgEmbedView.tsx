@@ -4,7 +4,11 @@ import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import Toast from "@/components/ui/toast/Toast";
-import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
+import {
+  useCurrentLeaderboardMetadataQuery,
+  useCurrentLeaderboardUsersQuery,
+} from "@/lib/api/queries/leaderboard";
+import { formatLeaderboardDateRange } from "@/lib/helper/leaderboardDateRange";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -44,6 +48,13 @@ export default function OrgLeaderboardEmbed() {
     filters,
     onFilterReset,
   } = useCurrentLeaderboardUsersQuery({ pageSize });
+
+  const metadataQuery = useCurrentLeaderboardMetadataQuery();
+
+  const dateRange =
+    metadataQuery.data?.success ?
+      formatLeaderboardDateRange(metadataQuery.data.payload)
+    : undefined;
 
   const activeFilter = useMemo(() => {
     const active = Object.typedEntries(filters).filter(
@@ -106,22 +117,28 @@ export default function OrgLeaderboardEmbed() {
         mb="md"
       >
         {page === 1 && second && !debouncedQuery && (
-          <LeaderboardCard
-            placeString={getOrdinal(second.index)}
-            sizeOrder={2}
-            discordName={second.discordName}
-            leetcodeUsername={second.leetcodeUsername}
-            totalScore={second.totalScore}
-            nickname={second.nickname}
-            width={"200px"}
-            userId={second.id as string}
-            isLoading={isPlaceholderData}
-            embedded
-          />
+          <Box>
+            <LeaderboardCard
+              placeString={getOrdinal(second.index)}
+              sizeOrder={2}
+              discordName={second.discordName}
+              startDate={dateRange?.startDate}
+              endDate={dateRange?.endDate}
+              leetcodeUsername={second.leetcodeUsername}
+              totalScore={second.totalScore}
+              nickname={second.nickname}
+              width={"200px"}
+              userId={second.id as string}
+              isLoading={isPlaceholderData}
+              embedded
+            />
+          </Box>
         )}
         {page === 1 && first && !debouncedQuery && (
           <LeaderboardCard
             placeString={getOrdinal(first.index)}
+            startDate={dateRange?.startDate}
+            endDate={dateRange?.endDate}
             sizeOrder={1}
             discordName={first.discordName}
             leetcodeUsername={first.leetcodeUsername}
@@ -141,6 +158,8 @@ export default function OrgLeaderboardEmbed() {
             leetcodeUsername={third.leetcodeUsername}
             totalScore={third.totalScore}
             nickname={third.nickname}
+            startDate={dateRange?.startDate}
+            endDate={dateRange?.endDate}
             width={"200px"}
             userId={third.id as string}
             isLoading={isPlaceholderData}
