@@ -1,4 +1,4 @@
-package org.patinanetwork.codebloom;
+package org.patinanetwork.codebloom.api;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
