@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.models.auth.Auth;
 import org.patinanetwork.codebloom.common.db.repos.auth.AuthRepository;
 import org.patinanetwork.codebloom.common.env.Env;
-import org.patinanetwork.codebloom.common.jedis.JedisClient;
+import org.patinanetwork.codebloom.common.redis.RedisClient;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.reporter.report.Report;
 import org.patinanetwork.codebloom.common.reporter.report.location.Location;
@@ -47,7 +47,7 @@ public class LeetcodeAuthStealer {
     @Value("${github.password}")
     private String githubPassword;
 
-    private final JedisClient jedisClient;
+    private final RedisClient redisClient;
     private final AuthRepository authRepository;
     private final Reporter reporter;
     private final Env env;
@@ -55,13 +55,13 @@ public class LeetcodeAuthStealer {
     private final PlaywrightClient playwrightClient;
 
     public LeetcodeAuthStealer(
-            final JedisClient jedisClient,
+            final RedisClient redisClient,
             final AuthRepository authRepository,
             final Reporter reporter,
             final Env env,
             MeterRegistry meterRegistry,
             PlaywrightClient playwrightClient) {
-        this.jedisClient = jedisClient;
+        this.redisClient = redisClient;
         this.authRepository = authRepository;
         this.reporter = reporter;
         this.env = env;
@@ -102,14 +102,14 @@ public class LeetcodeAuthStealer {
                     csrf = mostRecentAuth.getCsrf();
                     if (env.isCi()) {
                         log.info("in ci, stealing token and putting it in cache for 1 day");
-                        jedisClient.setAuth(cookie, 4, ChronoUnit.HOURS); // 4 hours.
+                        redisClient.setAuth(cookie, 4, ChronoUnit.HOURS); // 4 hours.
                     }
                     return;
                 }
 
                 if (env.isCi()) {
                     log.info("in ci env, checking redis client...");
-                    Optional<String> authToken = jedisClient.getAuth();
+                    Optional<String> authToken = redisClient.getAuth();
 
                     log.info("auth token in redis = {}", authToken.isPresent());
 
@@ -186,7 +186,7 @@ public class LeetcodeAuthStealer {
                     this.cookie = a.getToken();
                     if (env.isCi()) {
                         log.info("in ci, stored in redis as well");
-                        jedisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS); // 4 hours.
+                        redisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS); // 4 hours.
                     }
                     this.authRepository.createAuth(Auth.builder()
                             .csrf(a.getCsrf())
