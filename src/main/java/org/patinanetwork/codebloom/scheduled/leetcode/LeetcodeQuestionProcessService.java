@@ -32,7 +32,7 @@ public class LeetcodeQuestionProcessService {
 
     private static final int MAX_JOBS_PER_RUN = 10;
     private static final long REQUESTS_OVER_TIME = 1L;
-    private static final long MILLISECONDS_TO_WAIT = 100L;
+    private static final long MILLISECONDS_TO_WAIT = 750L;
     private static final int MAX_ATTEMPTS = 3;
 
     private final JobRepository jobRepository;
