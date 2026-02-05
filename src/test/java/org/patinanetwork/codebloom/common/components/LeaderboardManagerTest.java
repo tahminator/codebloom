@@ -365,11 +365,8 @@ public class LeaderboardManagerTest {
 
         leaderboardManager.generateAchievementsForAllWinners();
 
-        verify(achievementRepository, times(0))
-                .createAchievement(argThat(achievement -> achievement.getLeaderboard() == Tag.Gwc));
-
         ArgumentCaptor<Achievement> captor = ArgumentCaptor.forClass(Achievement.class);
-        verify(achievementRepository, times(winners.size() * 2)).createAchievement(captor.capture());
+        verify(achievementRepository, times(winners.size() * 3)).createAchievement(captor.capture());
 
         verify(leaderboardRepository, times(validLeaderboardTags)).getRankedIndexedLeaderboardUsersById(any(), any());
         verify(leaderboardRepository, times(1)).getGlobalRankedIndexedLeaderboardUsersById(any(), any());
@@ -388,6 +385,82 @@ public class LeaderboardManagerTest {
                 Tag.Sbu,
                 AchievementPlaceEnum.TWO,
                 winners.get(1).getItem().getId());
+        var userOneGwcAchievement = achievements.get(2);
+        var userTwoGwcAchievement = achievements.get(3);
+        assertAchievement(
+                userOneGwcAchievement,
+                Tag.Gwc,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoGwcAchievement,
+                Tag.Gwc,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
+        var userOneGlobalAchievement = achievements.get(4);
+        var userTwoGlobalAchievement = achievements.get(5);
+        assertAchievement(
+                userOneGlobalAchievement,
+                null,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoGlobalAchievement,
+                null,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
+    }
+
+    @Test
+    void testWithAvailableLeaderboardAndTwoWinnersWithOnlyGwcTag() {
+        var latestLeaderboard = Leaderboard.builder()
+                .id(UUID.randomUUID().toString())
+                .name("Test Leaderboard")
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
+
+        var winners = Indexed.ofDefaultList(List.of(
+                randomPartialUserWithScore().totalScore(150_000).build(),
+                randomPartialUserWithScore().totalScore(70_000).build()));
+
+        winners.forEach(winner -> {
+            var user = winner.getItem();
+            user.setTags(List.of(UserTag.builder()
+                    .id(UUID.randomUUID().toString())
+                    .tag(Tag.Gwc)
+                    .userId(user.getId())
+                    .build()));
+        });
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
+                .thenReturn(winners);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isGwc())))
+                .thenReturn(winners);
+
+        leaderboardManager.generateAchievementsForAllWinners();
+
+        ArgumentCaptor<Achievement> captor = ArgumentCaptor.forClass(Achievement.class);
+        verify(achievementRepository, times(winners.size() * 2)).createAchievement(captor.capture());
+
+        verify(leaderboardRepository, times(validLeaderboardTags)).getRankedIndexedLeaderboardUsersById(any(), any());
+        verify(leaderboardRepository, times(1)).getGlobalRankedIndexedLeaderboardUsersById(any(), any());
+
+        var achievements = captor.getAllValues();
+        var userOneGwcAchievement = achievements.get(0);
+        var userTwoGwcAchievement = achievements.get(1);
+        assertAchievement(
+                userOneGwcAchievement,
+                Tag.Gwc,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoGwcAchievement,
+                Tag.Gwc,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
         var userOneGlobalAchievement = achievements.get(2);
         var userTwoGlobalAchievement = achievements.get(3);
         assertAchievement(
@@ -400,6 +473,127 @@ public class LeaderboardManagerTest {
                 null,
                 AchievementPlaceEnum.TWO,
                 winners.get(1).getItem().getId());
+    }
+
+    @Test
+    void testWithAvailableLeaderboardAndTwoWinnersWithGwcAndMhcPlusPlusTags() {
+        var latestLeaderboard = Leaderboard.builder()
+                .id(UUID.randomUUID().toString())
+                .name("Test Leaderboard")
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
+
+        var winners = Indexed.ofDefaultList(List.of(
+                randomPartialUserWithScore().totalScore(150_000).build(),
+                randomPartialUserWithScore().totalScore(70_000).build()));
+
+        winners.forEach(winner -> {
+            var user = winner.getItem();
+            user.setTags(List.of(
+                    UserTag.builder()
+                            .id(UUID.randomUUID().toString())
+                            .tag(Tag.Gwc)
+                            .userId(user.getId())
+                            .build(),
+                    UserTag.builder()
+                            .id(UUID.randomUUID().toString())
+                            .tag(Tag.MHCPlusPlus)
+                            .userId(user.getId())
+                            .build()));
+        });
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
+                .thenReturn(winners);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isGwc())))
+                .thenReturn(winners);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isMhcplusplus())))
+                .thenReturn(winners);
+
+        leaderboardManager.generateAchievementsForAllWinners();
+
+        ArgumentCaptor<Achievement> captor = ArgumentCaptor.forClass(Achievement.class);
+        verify(achievementRepository, times(winners.size() * 3)).createAchievement(captor.capture());
+
+        verify(leaderboardRepository, times(validLeaderboardTags)).getRankedIndexedLeaderboardUsersById(any(), any());
+        verify(leaderboardRepository, times(1)).getGlobalRankedIndexedLeaderboardUsersById(any(), any());
+
+        /** keep in mind the order of how we check filters is ordered. check LeaderboardFilterGenerator for order. */
+        var achievements = captor.getAllValues();
+        var userOneMhcPlusPlusAchievement = achievements.get(0);
+        var userTwoMhcPlusPlusAchievement = achievements.get(1);
+        assertAchievement(
+                userOneMhcPlusPlusAchievement,
+                Tag.MHCPlusPlus,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoMhcPlusPlusAchievement,
+                Tag.MHCPlusPlus,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
+        var userOneGwcAchievement = achievements.get(2);
+        var userTwoGwcAchievement = achievements.get(3);
+        assertAchievement(
+                userOneGwcAchievement,
+                Tag.Gwc,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoGwcAchievement,
+                Tag.Gwc,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
+        var userOneGlobalAchievement = achievements.get(4);
+        var userTwoGlobalAchievement = achievements.get(5);
+        assertAchievement(
+                userOneGlobalAchievement,
+                null,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoGlobalAchievement,
+                null,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
+    }
+
+    @Test
+    void testGwcUsersWithZeroPointsAreExcludedFromTagAchievements() {
+        var latestLeaderboard = Leaderboard.builder()
+                .id(UUID.randomUUID().toString())
+                .name("Test Leaderboard")
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
+
+        var users = Indexed.ofDefaultList(List.of(
+                randomPartialUserWithScore().totalScore(0).build(),
+                randomPartialUserWithScore().totalScore(0).build()));
+
+        users.forEach(winner -> {
+            var user = winner.getItem();
+            user.setTags(List.of(UserTag.builder()
+                    .id(UUID.randomUUID().toString())
+                    .tag(Tag.Gwc)
+                    .userId(user.getId())
+                    .build()));
+        });
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
+                .thenReturn(users);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isGwc())))
+                .thenReturn(users);
+
+        leaderboardManager.generateAchievementsForAllWinners();
+
+        verify(achievementRepository, times(0)).createAchievement(any());
     }
 
     @Test
