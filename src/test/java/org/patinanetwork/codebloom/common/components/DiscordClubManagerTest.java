@@ -1,13 +1,19 @@
 package org.patinanetwork.codebloom.common.components;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
@@ -22,25 +28,33 @@ import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.jda.client.JDAClient;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
 import org.patinanetwork.codebloom.playwright.PlaywrightClient;
+import org.slf4j.LoggerFactory;
 
 public class DiscordClubManagerTest {
 
     private JDAClient jdaClient = mock(JDAClient.class);
-
     private LeaderboardRepository leaderboardRepository = mock(LeaderboardRepository.class);
-
     private DiscordClubRepository discordClubRepository = mock(DiscordClubRepository.class);
-
     private PlaywrightClient playwrightClient = mock(PlaywrightClient.class);
-
     private ServerUrlUtils serverUrlUtils = mock(ServerUrlUtils.class);
 
     private DiscordClubManager discordClubManager;
+
+    private ListAppender<ILoggingEvent> logWatcher;
 
     @BeforeEach
     void setUp() {
         discordClubManager = new DiscordClubManager(
                 serverUrlUtils, jdaClient, leaderboardRepository, discordClubRepository, playwrightClient);
+
+        logWatcher = new ListAppender<>();
+        logWatcher.start();
+        ((Logger) LoggerFactory.getLogger(discordClubManager.getClass())).addAppender(logWatcher);
+    }
+
+    @AfterEach
+    void teardown() {
+        ((Logger) LoggerFactory.getLogger(discordClubManager.getClass())).detachAndStopAllAppenders();
     }
 
     @Test
@@ -146,6 +160,20 @@ public class DiscordClubManagerTest {
         verify(discordClubRepository).getAllActiveDiscordClubs();
         verify(jdaClient).connect();
         verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
+    }
+
+    @Test
+    void testSendLeaderboardCompletedDiscordMessageLogsException() {
+        DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+
+        when(jdaClient.connect()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenThrow(new RuntimeException("Expected!"));
+
+        discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
+        assertTrue(logWatcher.list.stream()
+                .anyMatch(log -> log.getLevel().equals(Level.ERROR)
+                        && log.getFormattedMessage().contains("Exception thrown in DiscordClubManager")));
     }
 
     private DiscordClub createMockDiscordClub(final String name, final Tag tag) {

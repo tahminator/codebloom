@@ -137,7 +137,6 @@ public class DiscordClubManager {
                     .build());
         } catch (Exception e) {
             log.error("Exception thrown in DiscordClubManager", e);
-            throw e;
         }
     }
 
