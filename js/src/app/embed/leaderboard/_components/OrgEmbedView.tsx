@@ -106,7 +106,6 @@ export default function OrgLeaderboardEmbed() {
         mb="md"
       >
         {page === 1 && second && !debouncedQuery && (
-          <Box>
             <LeaderboardCard
               placeString={getOrdinal(second.index)}
               sizeOrder={2}
@@ -119,7 +118,6 @@ export default function OrgLeaderboardEmbed() {
               isLoading={isPlaceholderData}
               embedded
             />
-          </Box>
         )}
         {page === 1 && first && !debouncedQuery && (
           <LeaderboardCard
