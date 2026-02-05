@@ -19,8 +19,8 @@ import org.junit.jupiter.api.Timeout;
 import org.patinanetwork.codebloom.common.db.models.auth.Auth;
 import org.patinanetwork.codebloom.common.db.repos.auth.AuthRepository;
 import org.patinanetwork.codebloom.common.env.Env;
-import org.patinanetwork.codebloom.common.jedis.JedisClient;
 import org.patinanetwork.codebloom.common.lag.FakeLag;
+import org.patinanetwork.codebloom.common.redis.RedisClient;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
 import org.patinanetwork.codebloom.playwright.PlaywrightClient;
@@ -28,7 +28,7 @@ import org.patinanetwork.codebloom.playwright.PlaywrightClient;
 public class LeetcodeAuthStealerTest {
     private LeetcodeAuthStealer leetcodeAuthStealer;
 
-    private JedisClient jedisClient;
+    private RedisClient redisClient;
     private AuthRepository authRepository;
     private Reporter reporter;
     private Env env;
@@ -36,7 +36,7 @@ public class LeetcodeAuthStealerTest {
     private PlaywrightClient playwrightClient;
 
     public LeetcodeAuthStealerTest() {
-        jedisClient = mock(JedisClient.class);
+        redisClient = mock(RedisClient.class);
         authRepository = mock(AuthRepository.class);
         reporter = mock(Reporter.class);
         env = mock(Env.class);
@@ -44,7 +44,7 @@ public class LeetcodeAuthStealerTest {
         playwrightClient = mock(PlaywrightClient.class);
 
         leetcodeAuthStealer = spy(
-                new LeetcodeAuthStealer(jedisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
+                new LeetcodeAuthStealer(redisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
     }
 
     @BeforeEach
