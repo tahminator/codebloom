@@ -67,10 +67,16 @@ public class LeaderboardManager {
             List<UserWithScore> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
             for (int i = 0; i < winners.size(); i++) {
+                UserWithScore user = winners.get(i);
+                boolean hasTag = user.getTags() != null
+                        && user.getTags().stream()
+                                .anyMatch(userTag -> pair.getRight().equals(userTag.getTag()));
+                if (!hasTag) {
+                    continue;
+                }
                 int place = i + 1;
                 log.info("on leaderboard for {} for winner #{}", pair.getRight().getResolvedName(), place);
                 String placeString = calculatePlaceString(place);
-                UserWithScore user = winners.get(i);
                 Achievement achievement = Achievement.builder()
                         .userId(user.getId())
                         .place(AchievementPlaceEnum.fromInteger(place))
