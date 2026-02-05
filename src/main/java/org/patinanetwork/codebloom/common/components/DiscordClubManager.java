@@ -16,6 +16,7 @@ import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.Leaderboa
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import org.patinanetwork.codebloom.common.time.StandardizedLocalDateTime;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
+import org.patinanetwork.codebloom.common.utils.leaderboard.LeaderboardUtils;
 import org.patinanetwork.codebloom.jda.client.JDAClient;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
 import org.patinanetwork.codebloom.playwright.PlaywrightClient;
@@ -72,8 +73,8 @@ public class DiscordClubManager {
                     .pageSize(5)
                     .build();
 
-            List<UserWithScore> users =
-                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options);
+            List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
+                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options));
 
             Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
@@ -151,8 +152,8 @@ public class DiscordClubManager {
                     .pageSize(5)
                     .build();
 
-            List<UserWithScore> users =
-                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options);
+            List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
+                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options));
 
             Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 

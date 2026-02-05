@@ -14,6 +14,7 @@ import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.Leaderboa
 import org.patinanetwork.codebloom.common.dto.user.UserWithScoreDto;
 import org.patinanetwork.codebloom.common.page.Indexed;
 import org.patinanetwork.codebloom.common.page.Page;
+import org.patinanetwork.codebloom.common.utils.leaderboard.LeaderboardUtils;
 import org.patinanetwork.codebloom.common.utils.pair.Pair;
 import org.springframework.stereotype.Component;
 
@@ -61,9 +62,7 @@ public class LeaderboardManager {
             log.info("on leaderboard for {}", pair.getRight().getResolvedName());
             List<Indexed<UserWithScore>> users = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
                     currentLeaderboard.getId(), pair.getLeft());
-            List<Indexed<UserWithScore>> usersWithPoints = users.stream()
-                    .filter(indexed -> indexed.getItem().getTotalScore() > 0)
-                    .toList();
+            List<Indexed<UserWithScore>> usersWithPoints = LeaderboardUtils.filterIndexedUsersWithPoints(users);
             List<Indexed<UserWithScore>> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
             for (int i = 0; i < winners.size(); i++) {
@@ -86,9 +85,7 @@ public class LeaderboardManager {
         // handle global leaderboard
         List<Indexed<UserWithScore>> users = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
                 currentLeaderboard.getId(), LeaderboardFilterOptions.DEFAULT);
-        List<Indexed<UserWithScore>> usersWithPoints = users.stream()
-                .filter(indexed -> indexed.getItem().getTotalScore() > 0)
-                .toList();
+        List<Indexed<UserWithScore>> usersWithPoints = LeaderboardUtils.filterIndexedUsersWithPoints(users);
         List<Indexed<UserWithScore>> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
         for (int i = 0; i < winners.size(); i++) {

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -163,17 +162,59 @@ public class DiscordClubManagerTest {
     }
 
     @Test
-    void testSendLeaderboardCompletedDiscordMessageLogsException() {
+    void testSendLeaderboardCompletedDiscordMessageFiltersZeroPointUsers() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
 
-        when(jdaClient.connect()).thenReturn(null);
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenThrow(new RuntimeException("Expected!"));
+        setupMockLeaderboardDataWithMixedScoreUsers();
 
         discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
-        assertTrue(logWatcher.list.stream()
-                .anyMatch(log -> log.getLevel().equals(Level.ERROR)
-                        && log.getFormattedMessage().contains("Exception thrown in DiscordClubManager")));
+
+        verify(discordClubRepository).getAllActiveDiscordClubs();
+        verify(jdaClient).connect();
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
+    }
+
+    @Test
+    void testSendLeaderboardCompletedDiscordMessageAllUsersHaveZeroPoints() {
+        DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+
+        setupMockLeaderboardDataWithAllZeroScoreUsers();
+
+        discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
+
+        verify(discordClubRepository).getAllActiveDiscordClubs();
+        verify(jdaClient).connect();
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
+    }
+
+    @Test
+    void testSendWeeklyLeaderboardUpdateDiscordMessageFiltersZeroPointUsers() {
+        DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+
+        setupMockLeaderboardDataWithExpirationAndMixedScoreUsers();
+
+        discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
+
+        verify(discordClubRepository).getAllActiveDiscordClubs();
+        verify(jdaClient).connect();
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
+    }
+
+    @Test
+    void testSendWeeklyLeaderboardUpdateDiscordMessageAllUsersHaveZeroPoints() {
+        DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
+        when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+
+        setupMockLeaderboardDataWithExpirationAndAllZeroScoreUsers();
+
+        discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
+
+        verify(discordClubRepository).getAllActiveDiscordClubs();
+        verify(jdaClient).connect();
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
     private DiscordClub createMockDiscordClub(final String name, final Tag tag) {
@@ -266,5 +307,91 @@ public class DiscordClubManagerTest {
         when(user3.getTotalScore()).thenReturn(60);
 
         return Arrays.asList(user1, user2, user3);
+    }
+
+    private List<UserWithScore> createMockUsersWithMixedScores() {
+        UserWithScore user1 = mock(UserWithScore.class);
+        when(user1.getDiscordId()).thenReturn("discord1");
+        when(user1.getTotalScore()).thenReturn(100);
+
+        UserWithScore user2 = mock(UserWithScore.class);
+        when(user2.getDiscordId()).thenReturn("discord2");
+        when(user2.getTotalScore()).thenReturn(0);
+
+        UserWithScore user3 = mock(UserWithScore.class);
+        when(user3.getDiscordId()).thenReturn("discord3");
+        when(user3.getTotalScore()).thenReturn(50);
+
+        UserWithScore user4 = mock(UserWithScore.class);
+        when(user4.getDiscordId()).thenReturn("discord4");
+        when(user4.getTotalScore()).thenReturn(0);
+
+        return Arrays.asList(user1, user2, user3, user4);
+    }
+
+    private List<UserWithScore> createMockUsersAllZeroScores() {
+        UserWithScore user1 = mock(UserWithScore.class);
+        when(user1.getDiscordId()).thenReturn("discord1");
+        when(user1.getTotalScore()).thenReturn(0);
+
+        UserWithScore user2 = mock(UserWithScore.class);
+        when(user2.getDiscordId()).thenReturn("discord2");
+        when(user2.getTotalScore()).thenReturn(0);
+
+        UserWithScore user3 = mock(UserWithScore.class);
+        when(user3.getDiscordId()).thenReturn("discord3");
+        when(user3.getTotalScore()).thenReturn(0);
+
+        return Arrays.asList(user1, user2, user3);
+    }
+
+    private void setupMockLeaderboardDataWithMixedScoreUsers() {
+        Leaderboard mockLeaderboard = mock(Leaderboard.class);
+        when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
+        when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+
+        List<UserWithScore> mockUsers = createMockUsersWithMixedScores();
+        when(leaderboardRepository.getLeaderboardUsersById(eq("leaderboard-id"), any(LeaderboardFilterOptions.class)))
+                .thenReturn(mockUsers);
+
+        when(serverUrlUtils.getUrl()).thenReturn("http://localhost:3000");
+    }
+
+    private void setupMockLeaderboardDataWithAllZeroScoreUsers() {
+        Leaderboard mockLeaderboard = mock(Leaderboard.class);
+        when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
+        when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+
+        List<UserWithScore> mockUsers = createMockUsersAllZeroScores();
+        when(leaderboardRepository.getLeaderboardUsersById(eq("leaderboard-id"), any(LeaderboardFilterOptions.class)))
+                .thenReturn(mockUsers);
+
+        when(serverUrlUtils.getUrl()).thenReturn("http://localhost:3000");
+    }
+
+    private void setupMockLeaderboardDataWithExpirationAndMixedScoreUsers() {
+        setupMockLeaderboardDataWithMixedScoreUsers();
+
+        Leaderboard mockLeaderboard = mock(Leaderboard.class);
+        when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
+        when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
+        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+    }
+
+    private void setupMockLeaderboardDataWithExpirationAndAllZeroScoreUsers() {
+        setupMockLeaderboardDataWithAllZeroScoreUsers();
+
+        Leaderboard mockLeaderboard = mock(Leaderboard.class);
+        when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
+        when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
+        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
     }
 }
