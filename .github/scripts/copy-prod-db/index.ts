@@ -118,14 +118,14 @@ async function main() {
       WHERE c.\"id\" = m.\"discordClubId\"
         AND c.\"name\" = 'MHC++';
 
-      -- Update DiscordClubMetadata for 'GWC-Hunter'
+      -- Update DiscordClubMetadata for 'GWC - Hunter College'
       UPDATE \"DiscordClubMetadata\" m
       SET
         \"guildId\" = '1389762654452580373',
         \"leaderboardChannelId\" = '1463703700697518113'
       FROM \"DiscordClub\" c
       WHERE c.\"id\" = m.\"discordClubId\"
-        AND c.\"name\" = 'GWC-Hunter';
+        AND c.\"name\" = 'GWC - Hunter College';
     "`;
 
     await sendMessage(prId, `Database copy command completed successfully!`);

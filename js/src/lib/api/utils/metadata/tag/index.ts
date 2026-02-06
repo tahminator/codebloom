@@ -41,8 +41,8 @@ export const TAG_METADATA_LIST: Record<Tag, ApiTypeUtils.TagMetadata> = {
     alt: "Patina Logo",
   },
   Gwc: {
-    shortName: "GWC @ Hunter",
-    name: "Hunter College - GWC",
+    shortName: "GWC - Hunter College",
+    name: "GWC - Hunter College",
     apiKey: "gwc",
     icon: "/brands/Gwc_Logo.png",
     alt: "GWC Logo",
