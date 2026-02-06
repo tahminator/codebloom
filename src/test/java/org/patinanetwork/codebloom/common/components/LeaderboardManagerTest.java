@@ -719,10 +719,6 @@ public class LeaderboardManagerTest {
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
-        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
-                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isSbu())))
-                .thenReturn(winners);
-
         leaderboardManager.generateAchievementsForAllWinners();
 
         ArgumentCaptor<Achievement> captor = ArgumentCaptor.forClass(Achievement.class);
@@ -757,10 +753,6 @@ public class LeaderboardManagerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
-                .thenReturn(winners);
-
-        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
-                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isSbu())))
                 .thenReturn(winners);
 
         when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(

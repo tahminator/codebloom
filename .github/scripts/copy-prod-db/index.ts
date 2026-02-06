@@ -122,7 +122,7 @@ async function main() {
       UPDATE \"DiscordClubMetadata\" m
       SET
         \"guildId\" = '1389762654452580373',
-        \"leaderboardChannelId\" = '1463703700697518113'
+        \"leaderboardChannelId\" = '1401739528057655436'
       FROM \"DiscordClub\" c
       WHERE c.\"id\" = m.\"discordClubId\"
         AND c.\"name\" = 'GWC - Hunter College';
