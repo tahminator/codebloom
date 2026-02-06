@@ -3,6 +3,10 @@ package org.patinanetwork.codebloom.scheduled.auth;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Optional;
@@ -12,6 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +30,7 @@ import org.patinanetwork.codebloom.common.redis.RedisClient;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
 import org.patinanetwork.codebloom.playwright.PlaywrightClient;
+import org.slf4j.LoggerFactory;
 
 public class LeetcodeAuthStealerTest {
     private LeetcodeAuthStealer leetcodeAuthStealer;
@@ -35,6 +42,8 @@ public class LeetcodeAuthStealerTest {
     private MeterRegistry meterRegistry;
     private PlaywrightClient playwrightClient;
 
+    private ListAppender<ILoggingEvent> logWatcher;
+
     public LeetcodeAuthStealerTest() {
         redisClient = mock(RedisClient.class);
         authRepository = mock(AuthRepository.class);
@@ -42,15 +51,24 @@ public class LeetcodeAuthStealerTest {
         env = mock(Env.class);
         meterRegistry = new SimpleMeterRegistry();
         playwrightClient = mock(PlaywrightClient.class);
-
-        leetcodeAuthStealer = spy(
-                new LeetcodeAuthStealer(redisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
     }
 
     @BeforeEach
     void setup() {
+        leetcodeAuthStealer = spy(
+                new LeetcodeAuthStealer(redisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
+
+        logWatcher = new ListAppender<>();
+        logWatcher.start();
+        ((Logger) LoggerFactory.getLogger(leetcodeAuthStealer.getClass())).addAppender(logWatcher);
+
         when(env.isCi()).thenReturn(false);
         playwrightClientResolvesSlowly(Auth.builder().build());
+    }
+
+    @AfterEach
+    void teardown() {
+        ((Logger) LoggerFactory.getLogger(leetcodeAuthStealer.getClass())).detachAndStopAllAppenders();
     }
 
     private void playwrightClientResolvesSlowly(Auth authToReturn) {
@@ -590,5 +608,68 @@ public class LeetcodeAuthStealerTest {
         assertTrue(
                 readBlockedByWrite.get(),
                 "Read operations from different thread pool should wait for write lock to be released");
+    }
+
+    @Test
+    @Timeout(10)
+    @DisplayName("reloadCookie - If one thread is stealing cookie, other thread will bounce")
+    void testReloadCookieIfOneThreadIsStealingCookieOtherThreadWillBounce() throws InterruptedException {
+        ExecutorService writePool = Executors.newFixedThreadPool(2);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        writePool.execute(() -> {
+            leetcodeAuthStealer.reloadCookie();
+        });
+
+        AtomicReference<Optional<String>> ref = new AtomicReference<>();
+        writePool.execute(() -> {
+            try {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                ref.set(leetcodeAuthStealer.reloadCookie().join());
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        latch.await(2, TimeUnit.SECONDS);
+
+        assertTrue(ref.get().isEmpty());
+    }
+
+    @Test
+    @Timeout(10)
+    @DisplayName("stealAuthCookie - If one thread is stealing cookie, other thread will bounce")
+    void testStealAuthCookieIfOneThreadIsStealingCookieOtherThreadWillBounce() throws InterruptedException {
+        ExecutorService writePool = Executors.newFixedThreadPool(2);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        writePool.execute(() -> {
+            leetcodeAuthStealer.stealAuthCookie();
+        });
+
+        writePool.execute(() -> {
+            try {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                leetcodeAuthStealer.stealAuthCookie();
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        latch.await(2, TimeUnit.SECONDS);
+
+        assertTrue(logWatcher.list.stream()
+                .anyMatch(log -> log.getLevel().equals(Level.INFO)
+                        && log.getFormattedMessage().contains("Lock failed to be acquired, bouncing...")));
     }
 }

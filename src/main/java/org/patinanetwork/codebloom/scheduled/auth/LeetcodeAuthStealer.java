@@ -83,16 +83,21 @@ public class LeetcodeAuthStealer {
     /**
      * <b>DO NOT RETURN THE TOKEN IN ANY API ENDPOINT.</b> <div /> This function utilizes Playwright in order to get an
      * authentication key from Leetcode. That code is stored in the database and can then be used to run authenticated
-     * queries such as used to retrieve code from our user submissions.
+     * queries such as being used to retrieve code from our user submissions.
      */
     @Scheduled(initialDelay = 0, fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     public void stealAuthCookie() {
         timer().record(() -> {
-            LOCK.writeLock().lock();
+            boolean acquired = LOCK.writeLock().tryLock();
+            if (!acquired) {
+                log.info("Lock failed to be acquired, bouncing...");
+                return;
+            }
+
             try {
                 Auth mostRecentAuth = authRepository.getMostRecentAuth();
 
-                // The auth token should be refreshed every day.
+                // The auth token should be refreshed every 4 hours.
                 if (mostRecentAuth != null
                         && mostRecentAuth
                                 .getCreatedAt()
@@ -100,28 +105,22 @@ public class LeetcodeAuthStealer {
                     log.info("Auth token already exists, using token from database.");
                     cookie = mostRecentAuth.getToken();
                     csrf = mostRecentAuth.getCsrf();
-                    if (env.isCi()) {
-                        log.info("in ci, stealing token and putting it in cache for 1 day");
-                        redisClient.setAuth(cookie, 4, ChronoUnit.HOURS); // 4 hours.
-                    }
                     return;
                 }
 
-                if (env.isCi()) {
-                    log.info("in ci env, checking redis client...");
-                    Optional<String> authToken = redisClient.getAuth();
+                log.info("falling back to checking redis client...");
+                Optional<String> authToken = redisClient.getAuth();
 
-                    log.info("auth token in redis = {}", authToken.isPresent());
+                log.info("auth token in redis = {}", authToken.isPresent());
 
-                    if (authToken.isPresent()) {
-                        log.info("auth token found in redis client");
-                        cookie = authToken.get();
-                        csrf = null; // don't care in ci.
-                        return;
-                    }
-
-                    log.info("auth token not found in redis client");
+                if (authToken.isPresent()) {
+                    log.info("auth token found in redis client");
+                    cookie = authToken.get();
+                    csrf = null; // don't care in ci.
+                    return;
                 }
+
+                log.info("auth token not found in redis client");
                 log.info("Auth token is missing/expired. Attempting to receive token...");
 
                 stealCookieImpl();
@@ -139,7 +138,19 @@ public class LeetcodeAuthStealer {
      */
     @Async
     public CompletableFuture<Optional<String>> reloadCookie() {
-        return timer().record(() -> CompletableFuture.completedFuture(Optional.ofNullable(stealCookieImpl())));
+        return timer().record(() -> {
+            boolean acquired = LOCK.writeLock().tryLock();
+            if (!acquired) {
+                log.info("Lock failed to be acquired, bouncing...");
+                return CompletableFuture.completedFuture(Optional.empty());
+            }
+
+            try {
+                return CompletableFuture.completedFuture(Optional.ofNullable(stealCookieImpl()));
+            } finally {
+                LOCK.writeLock().unlock();
+            }
+        });
     }
 
     public String getCookie() {
@@ -177,26 +188,19 @@ public class LeetcodeAuthStealer {
 
     String stealCookieImpl() {
         return timer().record(() -> {
-            LOCK.writeLock().lock();
-            try {
-                Optional<Auth> auth = playwrightClient.getLeetcodeCookie(githubUsername, githubPassword);
-                if (auth.isPresent()) {
-                    var a = auth.get();
-                    this.csrf = a.getCsrf();
-                    this.cookie = a.getToken();
-                    if (env.isCi()) {
-                        log.info("in ci, stored in redis as well");
-                        redisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS); // 4 hours.
-                    }
-                    this.authRepository.createAuth(Auth.builder()
-                            .csrf(a.getCsrf())
-                            .token(a.getToken())
-                            .createdAt(StandardizedOffsetDateTime.now())
-                            .build());
-                    return cookie;
-                }
-            } finally {
-                LOCK.writeLock().unlock();
+            Optional<Auth> auth = playwrightClient.getLeetcodeCookie(githubUsername, githubPassword);
+            if (auth.isPresent()) {
+                var a = auth.get();
+                this.csrf = a.getCsrf();
+                this.cookie = a.getToken();
+                redisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS);
+                log.info("auth token stored in redis");
+                this.authRepository.createAuth(Auth.builder()
+                        .csrf(a.getCsrf())
+                        .token(a.getToken())
+                        .createdAt(StandardizedOffsetDateTime.now())
+                        .build());
+                return cookie;
             }
             return null;
         });
