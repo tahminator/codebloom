@@ -14,7 +14,7 @@ public enum Tag {
     Nyu("New York University"),
     Baruch("Baruch College"),
     Rpi("Rensselaer Polytechnic Institute"),
-    Gwc("GWC-Hunter"),
+    Gwc("GWC - Hunter College"),
     Sbu("Stony Brook University"),
     Ccny("City College of New York"),
     Columbia("Columbia University"),

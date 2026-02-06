@@ -1,7 +1,7 @@
 INSERT INTO "DiscordClub"
     (id, name, description, tag)
 VALUES
-    (gen_random_uuid(), 'GWC-Hunter', NULL, 'Gwc');
+    (gen_random_uuid(), 'GWC - Hunter College', NULL, 'Gwc');
 
 
 DO $$
@@ -14,7 +14,7 @@ BEGIN
                 FROM
                     "DiscordClub"
                 WHERE
-                    name = 'GWC-Hunter'
+                    name = 'GWC - Hunter College'
             )
             INSERT INTO "DiscordClubMetadata"
                 (id, "guildId", "leaderboardChannelId", "discordClubId")
@@ -32,7 +32,7 @@ BEGIN
                 FROM
                     "DiscordClub"
                 WHERE
-                    name = 'GWC-Hunter'
+                    name = 'GWC - Hunter College'
             )
             INSERT INTO "DiscordClubMetadata"
                 (id, "guildId", "leaderboardChannelId", "discordClubId")
