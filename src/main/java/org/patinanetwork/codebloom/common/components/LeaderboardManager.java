@@ -68,12 +68,6 @@ public class LeaderboardManager {
 
             for (int i = 0; i < winners.size(); i++) {
                 UserWithScore user = winners.get(i);
-                boolean hasTag = user.getTags() != null
-                        && user.getTags().stream()
-                                .anyMatch(userTag -> pair.getRight().equals(userTag.getTag()));
-                if (!hasTag) {
-                    continue;
-                }
                 int place = i + 1;
                 log.info("on leaderboard for {} for winner #{}", pair.getRight().getResolvedName(), place);
                 String placeString = calculatePlaceString(place);
