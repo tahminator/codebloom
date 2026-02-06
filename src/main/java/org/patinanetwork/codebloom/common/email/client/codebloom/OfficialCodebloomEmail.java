@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
-@Timed(value = "emailclient.execution")
+@Timed(value = "email.client.execution")
 public class OfficialCodebloomEmail extends Email {
 
     private final OfficialCodebloomEmailProperties emailProperties;

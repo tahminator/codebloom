@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 /** Provides read-only access to the Github email account in order to access the OAuth code. */
 @Component
 @EnableConfigurationProperties(GithubOAuthEmailProperties.class)
-@Timed(value = "emailclient.execution")
+@Timed(value = "email.client.execution")
 public class GithubOAuthEmail extends Email {
 
     private final GithubOAuthEmailProperties emailProperties;
