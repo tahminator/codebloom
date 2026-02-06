@@ -62,14 +62,15 @@ public class LeaderboardManager {
             log.info("on leaderboard for {}", pair.getRight().getResolvedName());
             List<Indexed<UserWithScore>> users = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
                     currentLeaderboard.getId(), pair.getLeft());
-            List<Indexed<UserWithScore>> usersWithPoints = LeaderboardUtils.filterIndexedUsersWithPoints(users);
-            List<Indexed<UserWithScore>> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
+            List<UserWithScore> usersWithPoints = LeaderboardUtils.filterUsersWithPoints(
+                    users.stream().map(Indexed::getItem).toList());
+            List<UserWithScore> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
             for (int i = 0; i < winners.size(); i++) {
                 int place = i + 1;
                 log.info("on leaderboard for {} for winner #{}", pair.getRight().getResolvedName(), place);
                 String placeString = calculatePlaceString(place);
-                UserWithScore user = winners.get(i).getItem();
+                UserWithScore user = winners.get(i);
                 Achievement achievement = Achievement.builder()
                         .userId(user.getId())
                         .place(AchievementPlaceEnum.fromInteger(place))
@@ -85,14 +86,15 @@ public class LeaderboardManager {
         // handle global leaderboard
         List<Indexed<UserWithScore>> users = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
                 currentLeaderboard.getId(), LeaderboardFilterOptions.DEFAULT);
-        List<Indexed<UserWithScore>> usersWithPoints = LeaderboardUtils.filterIndexedUsersWithPoints(users);
-        List<Indexed<UserWithScore>> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
+        List<UserWithScore> usersWithPoints = LeaderboardUtils.filterUsersWithPoints(
+                users.stream().map(Indexed::getItem).toList());
+        List<UserWithScore> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
         for (int i = 0; i < winners.size(); i++) {
             int place = i + 1;
             log.info("on leaderboard for {} for global winner #{}", currentLeaderboard.getName(), place);
             String placeString = calculatePlaceString(place);
-            UserWithScore user = winners.get(i).getItem();
+            UserWithScore user = winners.get(i);
             Achievement achievement = Achievement.builder()
                     .userId(user.getId())
                     .place(AchievementPlaceEnum.fromInteger(place))

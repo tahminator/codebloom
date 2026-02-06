@@ -51,39 +51,34 @@ class LeaderboardUtilsTest {
 
     @Test
     void filterIndexedUsersWithPointsEmpty() {
-        var result = LeaderboardUtils.filterIndexedUsersWithPoints(List.of());
+        var result = LeaderboardUtils.filterUsersWithPoints(List.of());
         assertTrue(result.isEmpty());
     }
 
     @Test
     void filterIndexedUsersWithPointsAllPositive() {
         var users = Indexed.ofDefaultList(List.of(userWithScore(100), userWithScore(50)));
-        var result = LeaderboardUtils.filterIndexedUsersWithPoints(users);
+        var result = LeaderboardUtils.filterUsersWithPoints(
+                users.stream().map(Indexed::getItem).toList());
         assertEquals(2, result.size());
     }
 
     @Test
     void filterIndexedUsersWithPointsAllZero() {
         var users = Indexed.ofDefaultList(List.of(userWithScore(0), userWithScore(0)));
-        var result = LeaderboardUtils.filterIndexedUsersWithPoints(users);
+        var result = LeaderboardUtils.filterUsersWithPoints(
+                users.stream().map(Indexed::getItem).toList());
         assertTrue(result.isEmpty());
     }
 
     @Test
     void filterIndexedUsersWithPointsMixed() {
         var users = Indexed.ofDefaultList(List.of(userWithScore(100), userWithScore(0), userWithScore(50)));
-        var result = LeaderboardUtils.filterIndexedUsersWithPoints(users);
+        var result = LeaderboardUtils.filterUsersWithPoints(
+                users.stream().map(Indexed::getItem).toList());
         assertEquals(2, result.size());
-        assertEquals(100, result.get(0).getItem().getTotalScore());
-        assertEquals(50, result.get(1).getItem().getTotalScore());
-    }
-
-    @Test
-    void filterIndexedUsersPreservesIndex() {
-        var users = Indexed.ofDefaultList(List.of(userWithScore(100), userWithScore(0), userWithScore(50)));
-        var result = LeaderboardUtils.filterIndexedUsersWithPoints(users);
-        assertEquals(0, result.get(0).getIndex());
-        assertEquals(2, result.get(1).getIndex());
+        assertEquals(100, result.get(0).getTotalScore());
+        assertEquals(50, result.get(1).getTotalScore());
     }
 
     @Test
@@ -96,7 +91,8 @@ class LeaderboardUtilsTest {
     @Test
     void filterIndexedUsersWithPointsSingleZero() {
         var users = Indexed.ofDefaultList(List.of(userWithScore(0)));
-        var result = LeaderboardUtils.filterIndexedUsersWithPoints(users);
+        var result = LeaderboardUtils.filterUsersWithPoints(
+                users.stream().map(Indexed::getItem).toList());
         assertTrue(result.isEmpty());
     }
 }
