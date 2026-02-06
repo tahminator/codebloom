@@ -704,6 +704,102 @@ public class LeaderboardManagerTest {
     }
 
     @Test
+    void testWinnersWithNullTagsAreSkippedInTagLeaderboards() {
+        var latestLeaderboard = Leaderboard.builder()
+                .id(UUID.randomUUID().toString())
+                .name("Test Leaderboard")
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
+
+        var winners = Indexed.ofDefaultList(List.of(
+                randomPartialUserWithScore().totalScore(150_000).build(),
+                randomPartialUserWithScore().totalScore(70_000).build()));
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
+                .thenReturn(winners);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isSbu())))
+                .thenReturn(winners);
+
+        leaderboardManager.generateAchievementsForAllWinners();
+
+        ArgumentCaptor<Achievement> captor = ArgumentCaptor.forClass(Achievement.class);
+        verify(achievementRepository, times(winners.size())).createAchievement(captor.capture());
+
+        var achievements = captor.getAllValues();
+        for (var achievement : achievements) {
+            assertNull(achievement.getLeaderboard());
+        }
+    }
+
+    @Test
+    void testWinnersWithNonMatchingTagsAreSkippedInTagLeaderboards() {
+        var latestLeaderboard = Leaderboard.builder()
+                .id(UUID.randomUUID().toString())
+                .name("Test Leaderboard")
+                .createdAt(StandardizedLocalDateTime.now())
+                .build();
+
+        var winners = Indexed.ofDefaultList(List.of(
+                randomPartialUserWithScore().totalScore(150_000).build(),
+                randomPartialUserWithScore().totalScore(70_000).build()));
+
+        winners.forEach(winner -> {
+            var user = winner.getItem();
+            user.setTags(List.of(UserTag.builder()
+                    .id(UUID.randomUUID().toString())
+                    .tag(Tag.Patina)
+                    .userId(user.getId())
+                    .build()));
+        });
+
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
+                .thenReturn(winners);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isSbu())))
+                .thenReturn(winners);
+
+        when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(
+                        eq(latestLeaderboard.getId()), argThat(opt -> opt.isPatina())))
+                .thenReturn(winners);
+
+        leaderboardManager.generateAchievementsForAllWinners();
+
+        ArgumentCaptor<Achievement> captor = ArgumentCaptor.forClass(Achievement.class);
+        verify(achievementRepository, times(winners.size() * 2)).createAchievement(captor.capture());
+
+        var achievements = captor.getAllValues();
+        var userOnePatinaAchievement = achievements.get(0);
+        var userTwoPatinaAchievement = achievements.get(1);
+        assertAchievement(
+                userOnePatinaAchievement,
+                Tag.Patina,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoPatinaAchievement,
+                Tag.Patina,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
+        var userOneGlobalAchievement = achievements.get(2);
+        var userTwoGlobalAchievement = achievements.get(3);
+        assertAchievement(
+                userOneGlobalAchievement,
+                null,
+                AchievementPlaceEnum.ONE,
+                winners.get(0).getItem().getId());
+        assertAchievement(
+                userTwoGlobalAchievement,
+                null,
+                AchievementPlaceEnum.TWO,
+                winners.get(1).getItem().getId());
+    }
+
+    @Test
     void testGetLeaderboardMetadata() {
         String testId = UUID.randomUUID().toString();
         Leaderboard leaderboard = Leaderboard.builder()

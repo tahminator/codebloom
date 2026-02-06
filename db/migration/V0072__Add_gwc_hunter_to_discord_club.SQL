@@ -39,7 +39,7 @@ BEGIN
             SELECT
                 gen_random_uuid(),
                 '1389762654452580373',
-                '1463703700697518113',
+                '1417161536014778388',
                 CLUB.id
             FROM CLUB;
     END CASE;
