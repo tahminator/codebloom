@@ -174,4 +174,34 @@ public class DiscordClubSqlRepository implements DiscordClubRepository {
         }
         return result;
     }
+
+    @Override
+    public Optional<DiscordClub> getDiscordClubByGuildId(String guildId) {
+        String sql = """
+            SELECT
+                dc.*
+            FROM
+                "DiscordClub" dc
+            INNER JOIN
+                "DiscordClubMetadata" dcm
+            ON
+                dc.id = dcm."discordClubId"
+            WHERE
+                dcm."guildId" = :guildId
+            AND
+                dc."deletedAt" IS NULL
+            """;
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("guildId", guildId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.ofNullable(parseResultSetTDiscordClub(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get DiscordClub by guildId", e);
+        }
+        return Optional.empty();
+    }
 }
