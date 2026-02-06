@@ -27,10 +27,10 @@ import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.session.SessionRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.db.repos.usertag.UserTagRepository;
-import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
+import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmailClient;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
-import org.patinanetwork.codebloom.common.email.template.ReactEmailClient;
+import org.patinanetwork.codebloom.common.email.template.ReactEmail;
 import org.patinanetwork.codebloom.common.jwt.JWTClient;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.schools.magic.MagicLink;
@@ -50,11 +50,11 @@ public class AuthControllerTest {
     private final Protector protector = mock(Protector.class);
     private final JWTClient jwtClient = mock(JWTClient.class);
     private final UserRepository userRepository = mock(UserRepository.class);
-    private final OfficialCodebloomEmail emailClient = mock(OfficialCodebloomEmail.class);
+    private final OfficialCodebloomEmailClient emailClient = mock(OfficialCodebloomEmailClient.class);
     private final ServerUrlUtils serverUrlUtils = mock(ServerUrlUtils.class);
     private final UserTagRepository userTagRepository = mock(UserTagRepository.class);
     private final Reporter reporter = mock(Reporter.class);
-    private final ReactEmailClient reactEmailClient = mock(ReactEmailClient.class);
+    private final ReactEmail reactEmailClient = mock(ReactEmail.class);
     private final SimpleRedis<Long> simpleRedis = mock(SimpleRedis.class);
     private final SimpleRedisProvider simpleRedisProvider = mock(SimpleRedisProvider.class);
 

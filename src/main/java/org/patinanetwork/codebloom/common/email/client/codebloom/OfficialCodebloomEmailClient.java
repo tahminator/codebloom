@@ -22,14 +22,14 @@ import org.springframework.stereotype.Component;
  * <p>For example, we use this client to send emails to users who are trying to verify their school status.
  */
 @Component
-@EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
+@EnableConfigurationProperties(OfficialCodebloomEmailClientProperties.class)
 @Timed(value = "email.client.execution")
-public class OfficialCodebloomEmail extends Email {
+public class OfficialCodebloomEmailClient extends Email {
 
-    private final OfficialCodebloomEmailProperties emailProperties;
+    private final OfficialCodebloomEmailClientProperties emailProperties;
     private Session session;
 
-    public OfficialCodebloomEmail(final OfficialCodebloomEmailProperties emailProperties) {
+    public OfficialCodebloomEmailClient(final OfficialCodebloomEmailClientProperties emailProperties) {
         this.emailProperties = emailProperties;
         final Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailProperties.getHost());

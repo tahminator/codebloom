@@ -9,11 +9,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 
-class ReactEmailClientTest {
+class ReactEmailTest {
 
     @Test
     void exampleTemplateTest() throws IOException {
-        ReactEmailClient client = new ReactEmailClientImpl();
+        ReactEmail client = new ReactEmailImpl();
 
         String recipientName = "Example";
         String verifyUrl = "https://example.com";
@@ -46,7 +46,7 @@ class ReactEmailClientTest {
 
     @Test
     void emailTest() throws IOException {
-        ReactEmailClient client = new ReactEmailClientImpl();
+        ReactEmail client = new ReactEmailImpl();
         String verifyUrl = "https://example.com/example/href";
 
         String renderedHtml = client.schoolEmailTemplate(verifyUrl);

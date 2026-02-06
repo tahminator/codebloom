@@ -18,7 +18,7 @@ import org.patinanetwork.codebloom.common.db.models.auth.Auth;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 import org.patinanetwork.codebloom.common.email.Email;
 import org.patinanetwork.codebloom.common.email.Message;
-import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmail;
+import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmailClient;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.scheduled.auth.CodeExtractor;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class PlaywrightClient {
     private final ServerUrlUtils serverUrlUtils;
     private final Email email;
 
-    public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmail githubOAuthEmail) {
+    public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmailClient githubOAuthEmail) {
         this.serverUrlUtils = serverUrlUtils;
         this.email = githubOAuthEmail;
     }
