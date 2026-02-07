@@ -75,7 +75,7 @@ export default function UsernameForm() {
             </Group>
           </Center>
           <Text size={"sm"} ta={"center"}>
-            You must set the following key inside of your "Summary" section on
+            You must set the following key inside of the "ReadMe" section on
             Leetcode:
           </Text>
           <Text ta={"center"} pt={"xs"} size={"lg"}>
