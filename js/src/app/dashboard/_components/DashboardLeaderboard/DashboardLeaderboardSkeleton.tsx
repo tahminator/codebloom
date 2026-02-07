@@ -4,7 +4,7 @@ export default function DashboardLeaderboardSkeleton() {
   return (
     <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
       <Flex direction={"row"} justify={"space-between"} w={"100%"} mb="md">
-        <Skeleton w={"8rem"} h={"1.75rem"} />
+        <Skeleton w={"16rem"} h={"2.25rem"} />
         <Skeleton w={"5.55rem"} h={"2.25rem"} />
       </Flex>
       <Flex justify="center" mb="xl" gap="xxs">
@@ -22,6 +22,7 @@ export default function DashboardLeaderboardSkeleton() {
                 h={"4.5rem"}
                 bg="rgba(255, 255, 255, 0.02)"
                 radius={8}
+                mb={index === 0 ? 12 : undefined}
               />
             );
           })}
