@@ -31,21 +31,6 @@ export default function UserTags({ userId }: { userId: string }) {
   }
 
   const { tags, achievements } = data.payload;
-  // const { tags } = data.payload;
-  // const achievements = [
-  //   {
-  //     id: "141sfdshyk0-563",
-  //     active: true,
-  //     createdAt: "2026-02-07T00:00:00",
-  //     deletedAt: null,
-  //     description: null,
-  //     leaderboard: null,
-  //     place: "ONE",
-  //     title: "title",
-  //     userId: userId,
-  //   },
-  // ]
-
 
   return (
     <Stack gap="md" w="100%">

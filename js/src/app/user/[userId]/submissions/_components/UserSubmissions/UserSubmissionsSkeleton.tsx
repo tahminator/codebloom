@@ -7,10 +7,9 @@ import {
   Flex,
   Box,
 } from "@mantine/core";
-import {useMediaQuery} from "@mantine/hooks";
+import { useMediaQuery } from "@mantine/hooks";
 
 export default function UserSubmissionsSkeleton() {
-
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
@@ -26,23 +25,25 @@ export default function UserSubmissionsSkeleton() {
         {!isMobile && (
           <div>
             <Skeleton
-            visible
-            width="80px"
-            height="36px"
-            ml="auto"
-            display="block"
+              visible
+              width="80px"
+              height="36px"
+              ml="auto"
+              display="block"
             />
-          <Center mb="md">
-            <Skeleton visible w="100%" h={38} mt={8} />
-          </Center>
-          </div>)}
+            <Center mb="md">
+              <Skeleton visible w="100%" h={38} mt={8} />
+            </Center>
+          </div>
+        )}
         {isMobile && (
           <Group justify="space-between" align="flex-end" gap="xs" mb="sm">
             <Box flex={1} miw={0}>
-              <Skeleton visible w="100%" h="38px"/>
+              <Skeleton visible w="100%" h="38px" />
             </Box>
-            <Skeleton visible w="80px" h="38px"/>
-        </Group>)}
+            <Skeleton visible w="80px" h="38px" />
+          </Group>
+        )}
         <Stack gap="md" my="sm">
           {Array(2)
             .fill(0)

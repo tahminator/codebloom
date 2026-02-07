@@ -46,13 +46,8 @@ function LeaderboardMetadata({
   const [countdown, reset] = useCountdown(-10);
 
   useEffect(() => {
-    // if (status === "success" && data.success && data.payload.shouldExpireBy) {
-    //   const shouldExpireByDate = new Date(data.payload.shouldExpireBy);
-    //   const expireSeconds = (shouldExpireByDate.getTime() - Date.now()) / 1000;
-    //   reset(expireSeconds);
-    // }
-    if (status === "success" && data.success) {
-      const shouldExpireByDate = new Date("2026-03-01T00:00:00");
+    if (status === "success" && data.success && data.payload.shouldExpireBy) {
+      const shouldExpireByDate = new Date(data.payload.shouldExpireBy);
       const expireSeconds = (shouldExpireByDate.getTime() - Date.now()) / 1000;
       reset(expireSeconds);
     }
@@ -87,7 +82,7 @@ function LeaderboardMetadata({
           )}
         </Center>
       </>
-    )
+    );
   }
 
   if (status === "error") {
@@ -145,8 +140,7 @@ function LeaderboardMetadata({
         : leaderboardData.name}
       </Title>
       <Title order={6} ta={"center"} mb={0}>
-        {/*{showClock && leaderboardData.shouldExpireBy && countdown > 0 && (*/}
-        {showClock && countdown > 0 && (
+        {showClock && leaderboardData.shouldExpireBy && countdown > 0 && (
           <PrettyCounter size={"lg"} time={countdown} />
         )}
       </Title>
