@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClubMetadata;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
@@ -19,14 +22,11 @@ import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.common.utils.leaderboard.LeaderboardUtils;
 import org.patinanetwork.codebloom.jda.client.JDAClient;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
-import org.patinanetwork.codebloom.playwright.PlaywrightClient;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class DiscordClubManager {
-
-    private static final int FRONTEND_PAGE_SIZE = 20;
 
     private final JDAClient jdaClient;
     private final LeaderboardRepository leaderboardRepository;
@@ -37,8 +37,7 @@ public class DiscordClubManager {
             final ServerUrlUtils serverUrlUtils,
             final JDAClient jdaClient,
             final LeaderboardRepository leaderboardRepository,
-            final DiscordClubRepository discordClubRepository,
-            final PlaywrightClient playwrightClient) {
+            final DiscordClubRepository discordClubRepository) {
         this.serverUrlUtils = serverUrlUtils;
         this.jdaClient = jdaClient;
         this.leaderboardRepository = leaderboardRepository;
@@ -79,10 +78,8 @@ public class DiscordClubManager {
      * https://codebloom.notion.site/Refactor-create-new-leaderboard-to-load-new-leaderboard-first-then-take-screenshots-of-the-old-page-2a87c85563aa809a9ca6dc23a31b0ab2?pvs=74
      */
     private void sendLeaderboardCompletedDiscordMessage(final DiscordClub club) {
-        log.info("Connecting to JDA client...");
-        jdaClient.connect();
         try {
-            var latestLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
             LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                     .page(1)
@@ -90,9 +87,7 @@ public class DiscordClubManager {
                     .build();
 
             List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
-                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options));
-
-            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+                    leaderboardRepository.getLeaderboardUsersById(currentLeaderboard.getId(), options));
 
             String topUsersSection = buildTopUsersSection(users, true);
             String headerText = users.isEmpty()
@@ -150,10 +145,8 @@ public class DiscordClubManager {
     }
 
     private void sendWeeklyLeaderboardUpdateDiscordMessage(final DiscordClub club) {
-        log.info("Connecting to JDA client...");
-        jdaClient.connect();
         try {
-            var latestLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
             LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                     .page(1)
@@ -161,9 +154,7 @@ public class DiscordClubManager {
                     .build();
 
             List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
-                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options));
-
-            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+                    leaderboardRepository.getLeaderboardUsersById(currentLeaderboard.getId(), options));
 
             LocalDateTime shouldExpireByTime = Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
                     // this orElse will only trigger if leaderboard doesn't have expiration time.
@@ -243,32 +234,32 @@ public class DiscordClubManager {
         discordClubs.forEach(this::sendWeeklyLeaderboardUpdateDiscordMessage);
     }
 
-    public void sendWeeklyLeaderboardUpdateDiscordMessageForClub(String guildId) {
-        System.out.println("working");
-        DiscordClub club = discordClubRepository.getDiscordClubByGuildId(guildId).get();
-        var latestLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+    public MessageCreateData buildWeeklyLeaderboardMessageForClub(String guildId) {
+        DiscordClub club =
+                discordClubRepository.getDiscordClubByGuildId(guildId).orElseThrow();
 
-            LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
-                    .page(1)
-                    .pageSize(5)
-                    .build();
+        Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
-            List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
-                    leaderboardRepository.getLeaderboardUsersById(latestLeaderboard.getId(), options));
+        LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
+                .page(1)
+                .pageSize(5)
+                .build();
 
-            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+        List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
+                leaderboardRepository.getLeaderboardUsersById(currentLeaderboard.getId(), options));
 
-            LocalDateTime shouldExpireByTime = Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
+        LocalDateTime shouldExpireBy =
+                Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
                         .orElse(StandardizedLocalDateTime.now());
 
-            Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireByTime);
+        Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireBy);
 
-            long daysLeft = remaining.toDays();
-            long hoursLeft = remaining.toHours() % 24;
-            long minutesLeft = remaining.toMinutes() % 60;
+        long daysLeft = remaining.toDays();
+        long hoursLeft = remaining.toHours() % 24;
+        long minutesLeft = remaining.toMinutes() % 60;
 
-            String description = String.format(
-                    """
+        String description = String.format(
+                """
                 Dear %s users,
 
                 Here is a weekly update on the LeetCode leaderboard for our very own members!
@@ -281,8 +272,7 @@ public class DiscordClubManager {
 
                 Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
 
-                View the full leaderboard for %s users at https://codebloom.patinanetwork.org/leaderboard?%s=true
-
+                View the full leaderboard for %s users at %s/leaderboard?%s=true
 
                 See you next week!
 
@@ -290,45 +280,31 @@ public class DiscordClubManager {
                 Codebloom
                 <%s>
                 """,
-                    club.getName(),
-                    getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 0)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
-                    getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 1)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
-                    getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 2)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
-                    daysLeft,
-                    hoursLeft,
-                    minutesLeft,
-                    club.getName(),
-                    club.getTag().name().toLowerCase(),
-                    serverUrlUtils.getUrl());
+                club.getName(),
+                getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
+                getUser(users, 0).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
+                getUser(users, 1).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
+                getUser(users, 2).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                daysLeft,
+                hoursLeft,
+                minutesLeft,
+                club.getName(),
+                serverUrlUtils.getUrl(),
+                club.getTag().name().toLowerCase(),
+                serverUrlUtils.getUrl());
 
-            var channelId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
+        MessageEmbed embed = new EmbedBuilder()
+                .setTitle(
+                        "%s - Weekly Leaderboard Update for %s".formatted(currentLeaderboard.getName(), club.getName()))
+                .setDescription(description)
+                .setFooter(
+                        "Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()),
+                        "%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
+                .setColor(new Color(69, 129, 103))
+                .build();
 
-            if (guildId.isEmpty() || channelId.isEmpty()) {
-                log.error("club {} is skipped because of missing metadata", club.getName());
-                return;
-            }
-
-            jdaClient.sendEmbedWithImages(EmbeddedImagesMessageOptions.builder()
-                    .guildId(Long.valueOf(guildId))
-                    .channelId(Long.valueOf(channelId.get()))
-                    .description(description)
-                    .title("%s - Weekly Leaderboard Update for %s"
-                            .formatted(currentLeaderboard.getName(), club.getName()))
-                    .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
-                    .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
-                    .color(new Color(69, 129, 103))
-                    .build());
+        return MessageCreateData.fromEmbeds(embed);
     }
 }

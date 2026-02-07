@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 
-
 public interface DiscordClubRepository {
     /**
      * Creates a new DiscordClub in the database.

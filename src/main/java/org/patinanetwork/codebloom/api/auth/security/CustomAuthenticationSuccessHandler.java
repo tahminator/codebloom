@@ -70,7 +70,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         this.sessionRepository = sessionRepository;
         this.leaderboardRepository = leaderboardRepository;
         this.discordClubRepository = discordClubRepository;
-        this.jdaClient = jdaClient.connect();
+        this.jdaClient = jdaClient;
         this.userTagRepository = userTagRepository;
         this.leetcodeClient = throttledLeetcodeClient;
     }
