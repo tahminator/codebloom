@@ -155,7 +155,7 @@ export default function SubmissionDetailsContent({
           <Center>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Title fw={700} order={4}>
-                Aceptance Rate:
+                Acceptance Rate:
               </Title>
               <Badge ta={"center"} color={badgeAcceptedColor}>
                 {Math.round(acceptanceRate * 100)}%
