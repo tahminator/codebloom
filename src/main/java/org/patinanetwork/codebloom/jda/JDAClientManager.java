@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.patinanetwork.codebloom.jda.properties.JDAProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,25 +16,23 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @EnableConfigurationProperties(JDAProperties.class)
-public class JDAInitializer {
+public class JDAClientManager {
 
-    @Getter
     private final JDAProperties jdaProperties;
 
-    private final JDAEventListener jdaEventListener;
+    @Getter
+    private final JDA client;
 
-    public JDAInitializer(final JDAProperties jdaProperties, final JDAEventListener jdaEventListener) {
+    public JDAClientManager(final JDAProperties jdaProperties) throws InterruptedException {
         this.jdaProperties = jdaProperties;
-        this.jdaEventListener = jdaEventListener;
+        this.client = initializeJda();
     }
 
-    @Bean
     public JDA initializeJda() throws InterruptedException {
         final JDA jda = JDABuilder.createDefault(jdaProperties.getToken())
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .addEventListeners(jdaEventListener)
                 .build();
 
         jda.awaitReady();

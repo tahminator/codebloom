@@ -44,8 +44,8 @@ public class DiscordClubManagerTest {
 
     @BeforeEach
     void setUp() {
-        discordClubManager = new DiscordClubManager(
-                serverUrlUtils, jdaClient, leaderboardRepository, discordClubRepository, playwrightClient);
+        discordClubManager =
+                new DiscordClubManager(serverUrlUtils, jdaClient, leaderboardRepository, discordClubRepository);
 
         logWatcher = new ListAppender<>();
         logWatcher.start();
@@ -67,7 +67,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient).connect();
         verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
@@ -78,7 +77,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient, never()).connect();
         verify(jdaClient, never()).sendEmbedWithImages(any());
     }
 
@@ -93,7 +91,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient, times(2)).connect();
         verify(jdaClient, times(2)).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
@@ -106,7 +103,6 @@ public class DiscordClubManagerTest {
 
         discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
 
-        verify(jdaClient).connect();
         verify(jdaClient, never()).sendEmbedWithImages(any());
     }
 
@@ -120,7 +116,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient).connect();
         verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
@@ -131,7 +126,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient, never()).connect();
         verify(jdaClient, never()).sendEmbedWithImages(any());
     }
 
@@ -144,7 +138,6 @@ public class DiscordClubManagerTest {
 
         discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
 
-        verify(jdaClient).connect();
         verify(jdaClient, never()).sendEmbedWithImages(any());
     }
 
@@ -158,7 +151,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient).connect();
         verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
@@ -172,7 +164,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient).connect();
         verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 
@@ -207,7 +198,6 @@ public class DiscordClubManagerTest {
         discordClubManager.sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs();
 
         verify(discordClubRepository).getAllActiveDiscordClubs();
-        verify(jdaClient).connect();
         verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
     }
 

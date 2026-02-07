@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.utils.FileUpload;
-import org.patinanetwork.codebloom.jda.JDAInitializer;
+import org.patinanetwork.codebloom.jda.JDAClientManager;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedMessageOptions;
 import org.patinanetwork.codebloom.jda.properties.patina.JDAPatinaProperties;
@@ -32,8 +32,7 @@ import org.springframework.util.CollectionUtils;
 })
 public class JDAClient {
 
-    private final JDAInitializer jdaInitializer;
-    private JDA jda;
+    private final JDA jda;
 
     @Getter
     private final JDAPatinaProperties jdaPatinaProperties;
@@ -45,48 +44,22 @@ public class JDAClient {
     private final JDALogReportingProperties jdaLogReportingProperties;
 
     JDAClient(
-            final JDAInitializer jdaInitializer,
+            final JDAClientManager jdaClientManager,
             final JDAPatinaProperties jdaPatinaProperties,
             final JDAErrorReportingProperties jdaReportingProperties,
             final JDALogReportingProperties jdaLogReportingProperties) {
-        this.jdaInitializer = jdaInitializer;
+        this.jda = jdaClientManager.getClient();
         this.jdaPatinaProperties = jdaPatinaProperties;
         this.jdaErrorReportingProperties = jdaReportingProperties;
         this.jdaLogReportingProperties = jdaLogReportingProperties;
     }
 
-    private void isJdaReadyOrThrow() {
-        if (jda == null) {
-            throw new RuntimeException("You must call connect() first.");
-        }
-
-        try {
-            jda.awaitReady();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Something went wrong when awaiting JDA", e);
-            throw new RuntimeException("Something went wrong when awaiting JDA", e);
-        }
-    }
-
-    /** Initializes the JDAClient. Returns the client object on completion. */
-    public JDAClient connect() {
-        try {
-            jda = jdaInitializer.initializeJda();
-            return this;
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Failed to initialize JDA client", e);
-        }
-    }
-
     public List<Guild> getGuilds() {
-        isJdaReadyOrThrow();
         return jda.getGuilds();
     }
 
     public Guild getGuildById(final long guildId) {
         String guildIdString = String.valueOf(guildId);
-        isJdaReadyOrThrow();
         return jda.getGuilds().stream()
                 .filter(g -> g.getId().equals(guildIdString))
                 .findFirst()
@@ -94,7 +67,6 @@ public class JDAClient {
     }
 
     public List<Member> getMemberListByGuildId(final String guildId) {
-        isJdaReadyOrThrow();
         List<Guild> guilds = jda.getGuilds();
 
         Optional<Guild> optionalGuild =
@@ -113,7 +85,6 @@ public class JDAClient {
      * <p>Check EmbeddedMessageOptions for details on what is supported.
      */
     public void sendEmbedWithImage(final EmbeddedMessageOptions options) {
-        isJdaReadyOrThrow();
         Guild guild = getGuildById(options.getGuildId());
         if (guild == null) {
             log.error("Guild does not exist.");
@@ -147,7 +118,6 @@ public class JDAClient {
     }
 
     public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options) {
-        isJdaReadyOrThrow();
         Guild guild = getGuildById(options.getGuildId());
         if (guild == null) {
             log.error("Guild does not exist.");
