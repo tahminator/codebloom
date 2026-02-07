@@ -16,6 +16,7 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import { FiExternalLink } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function UsernameForm() {
@@ -89,9 +90,14 @@ export default function UsernameForm() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Text ta={"center"} pt={"sm"} className={"hover:underline"}>
-              Click here to go to your profile.
-            </Text>
+            <Button
+              fullWidth
+              variant={"light"}
+              mt={"lg"}
+              rightSection={<FiExternalLink size={18} />}
+            >
+              Take me to my profile
+            </Button>
           </Link>
           <TextInput
             label="Username"
