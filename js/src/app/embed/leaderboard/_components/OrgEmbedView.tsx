@@ -106,18 +106,18 @@ export default function OrgLeaderboardEmbed() {
         mb="md"
       >
         {page === 1 && second && !debouncedQuery && (
-            <LeaderboardCard
-              placeString={getOrdinal(second.index)}
-              sizeOrder={2}
-              discordName={second.discordName}
-              leetcodeUsername={second.leetcodeUsername}
-              totalScore={second.totalScore}
-              nickname={second.nickname}
-              width={"200px"}
-              userId={second.id as string}
-              isLoading={isPlaceholderData}
-              embedded
-            />
+          <LeaderboardCard
+            placeString={getOrdinal(second.index)}
+            sizeOrder={2}
+            discordName={second.discordName}
+            leetcodeUsername={second.leetcodeUsername}
+            totalScore={second.totalScore}
+            nickname={second.nickname}
+            width={"200px"}
+            userId={second.id as string}
+            isLoading={isPlaceholderData}
+            embedded
+          />
         )}
         {page === 1 && first && !debouncedQuery && (
           <LeaderboardCard
