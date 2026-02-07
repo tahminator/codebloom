@@ -28,7 +28,12 @@ export default function LeaderboardSkeleton() {
           })}
       </Flex>
       <Flex justify="flex-end" mb="md" pt="2rem">
-        <Skeleton visible width={"100px"} height={"36px"} />
+        <Skeleton
+          visible
+          width={"100px"}
+          height={"36px"}
+          data-testid="leaderboard-skeleton-name"
+        />
       </Flex>
       <Center mb="md">
         <Skeleton visible width="100%" height="36px" />
