@@ -1,5 +1,17 @@
 vim.o.autoread = true
 
+vim.g.rustaceanvim = {
+    server = {
+        settings = {
+            ["rust-analyzer"] = {
+                rustfmt = {
+                    extraArgs = { "+nightly" },
+                },
+            },
+        },
+    },
+}
+
 local running = false
 vim.api.nvim_create_autocmd("BufWritePost", {
     pattern = "*.java",
