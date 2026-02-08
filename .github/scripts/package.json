@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "description": "CodeBloom CI Scripts",
     "scripts": {
-        "typecheck": "tsc --noEmit",
+        "coolify-lib-hack": "find node_modules/coolify -type f -name '*.ts' -exec sh -c 'echo \"// @ts-nocheck\" > /tmp/file.tmp && cat \"$1\" >> /tmp/file.tmp && mv /tmp/file.tmp \"$1\"' _ {} \\;",
+        "typecheck": "bun run coolify-lib-hack && tsc --noEmit",
         "test": "bun run typecheck && bun run prettier && bun run lint",
         "fix": "bun run eslint:fix && bun run prettier:fix",
         "lint": "bun run eslint",
@@ -21,6 +22,7 @@
         "@notionhq/client": "^5.7.0",
         "@octokit/rest": "^22.0.1",
         "bun": "^1.3.6",
+        "coolify": "https://github.com/tahminator/Coolify-TypeScript-SDK#8e19e18635ea2b095a9c39c574d22eefd938441f",
         "octokit": "^5.0.5"
     },
     "devDependencies": {
