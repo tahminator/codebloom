@@ -258,6 +258,14 @@ public class AuthController {
             })
     @GetMapping("/school/verify")
     public RedirectView verifySchoolEmail(final HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        String allowedDomain = serverUrlUtils.getUrl();
+        boolean validOrigin = (referer == null || referer.startsWith(allowedDomain));
+
+        if (!validOrigin) {
+            return new RedirectView("/settings?success=false&message=Invalid request origin");
+        }
+
         AuthenticationObject authenticationObject;
         Session session;
         User user;
