@@ -45,12 +45,28 @@ public class DiscordClubManager {
         this.discordClubRepository = discordClubRepository;
     }
 
-    private Optional<UserWithScore> getUser(final List<UserWithScore> users, final int index) {
-        if (index < 0 || index >= users.size()) {
-            return Optional.empty();
+    private static final String[] MEDAL_EMOJIS = {"🥇", "🥈", "🥉"};
+
+    private String buildTopUsersSection(final List<UserWithScore> users, final boolean isFinal) {
+        if (users.isEmpty()) {
+            if (isFinal) {
+                return "Keep solving problems and climb your way to the top of the next one!";
+            }
+            return "There are no scores yet, but the leaderboard is still open. Get in there and start solving!";
         }
 
-        return Optional.ofNullable(users.get(index));
+        var sb = new StringBuilder();
+        for (int i = 0; i < Math.min(users.size(), 3); i++) {
+            if (i > 0) {
+                sb.append("\n");
+            }
+            sb.append("%s- <@%s> - %s pts"
+                    .formatted(
+                            MEDAL_EMOJIS[i],
+                            users.get(i).getDiscordId(),
+                            users.get(i).getTotalScore()));
+        }
+        return sb.toString();
     }
 
     /**
@@ -78,15 +94,18 @@ public class DiscordClubManager {
 
             Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
+            String topUsersSection = buildTopUsersSection(users, true);
+            String headerText = users.isEmpty()
+                    ? "No one claimed a spot on this leaderboard. "
+                    : "CONGRATS ON THE WINNERS FROM THIS LEADERBOARD!";
+
             String description = String.format(
                     """
                 Dear %s users,
 
-                CONGRATS ON THE WINNERS FROM THIS LEADERBOARD!
+                %s
 
-                🥇- <@%s> - %s pts
-                🥈- <@%s> - %s pts
-                🥉- <@%s> - %s pts
+                %s
 
                 To view the rest of the members, visit the website or check out the image embedded in this message!
 
@@ -99,21 +118,8 @@ public class DiscordClubManager {
                 <%s>
                 """,
                     club.getName(),
-                    getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 0)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
-                    getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 1)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
-                    getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 2)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
+                    headerText,
+                    topUsersSection,
                     club.getName(),
                     club.getTag().name().toLowerCase(),
                     serverUrlUtils.getUrl());
@@ -167,15 +173,16 @@ public class DiscordClubManager {
             long hoursLeft = remaining.toHours() % 24;
             long minutesLeft = remaining.toMinutes() % 60;
 
+            String topUsersSection = buildTopUsersSection(users, false);
+            String headerText = "Here is a weekly update on the LeetCode leaderboard for our very own members!";
+
             String description = String.format(
                     """
                 Dear %s users,
 
-                Here is a weekly update on the LeetCode leaderboard for our very own members!
+                %s
 
-                🥇- <@%s> - %s pts
-                🥈- <@%s> - %s pts
-                🥉- <@%s> - %s pts
+                %s
 
                 To view the rest of the members, visit the website or check out the image embedded in this message!
 
@@ -191,21 +198,8 @@ public class DiscordClubManager {
                 <%s>
                 """,
                     club.getName(),
-                    getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 0)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
-                    getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 1)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
-                    getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
-                    getUser(users, 2)
-                            .map(UserWithScore::getTotalScore)
-                            .map(String::valueOf)
-                            .orElse("N/A"),
+                    headerText,
+                    topUsersSection,
                     daysLeft,
                     hoursLeft,
                     minutesLeft,
