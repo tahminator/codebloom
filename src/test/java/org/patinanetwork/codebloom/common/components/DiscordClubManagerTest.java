@@ -191,7 +191,7 @@ public class DiscordClubManagerTest {
 
         String description = captor.getValue().getDescription();
         assertTrue(description.contains("No one claimed a spot on this leaderboard"));
-        assertFalse(description.contains("CONGRATS ON THE WINNERS"));
+        assertFalse(description.contains("CONGRATS TO THE WINNERS"));
         assertFalse(description.contains("🥇"));
         assertFalse(description.contains("🥈"));
         assertFalse(description.contains("🥉"));

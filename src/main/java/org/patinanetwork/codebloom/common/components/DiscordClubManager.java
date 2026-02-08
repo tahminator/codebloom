@@ -97,7 +97,7 @@ public class DiscordClubManager {
             String topUsersSection = buildTopUsersSection(users, true);
             String headerText = users.isEmpty()
                     ? "No one claimed a spot on this leaderboard. "
-                    : "CONGRATS ON THE WINNERS FROM THIS LEADERBOARD!";
+                    : "CONGRATS TO THE WINNERS FROM THIS LEADERBOARD!";
 
             String description = String.format(
                     """
