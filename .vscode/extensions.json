@@ -13,6 +13,7 @@
         "bradlc.vscode-tailwindcss",
         "redhat.vscode-xml",
         "emeraldwalk.runonsave",
-        "vitest.explorer"
+        "vitest.explorer",
+        "rust-lang.rust-analyzer"
     ]
 }
