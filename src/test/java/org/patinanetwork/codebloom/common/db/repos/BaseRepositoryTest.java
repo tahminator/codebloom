@@ -16,8 +16,8 @@ public class BaseRepositoryTest {
     private JDAInitializer jdaInitializer;
 
     @MockitoBean
-    private OfficialCodebloomEmailClient codebloomEmail;
+    private OfficialCodebloomEmailClient codebloomEmailClient;
 
     @MockitoBean
-    private GithubOAuthEmailClient githubOAuthEmail;
+    private GithubOAuthEmailClient githubOAuthEmailClient;
 }

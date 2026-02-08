@@ -11,19 +11,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class TestEmailClients extends NoJdaRequired {
 
-    private final GithubOAuthEmailClient githubOAuthEmail;
-    private final OfficialCodebloomEmailClient officialCodebloomEmail;
+    private final GithubOAuthEmailClient githubOAuthEmailClient;
+    private final OfficialCodebloomEmailClient officialCodebloomEmailClient;
 
     @Autowired
     public TestEmailClients(
-            final GithubOAuthEmailClient githubOAuthEmail, final OfficialCodebloomEmailClient officialCodebloomEmail) {
-        this.githubOAuthEmail = githubOAuthEmail;
-        this.officialCodebloomEmail = officialCodebloomEmail;
+            final GithubOAuthEmailClient githubOAuthEmailClient,
+            final OfficialCodebloomEmailClient officialCodebloomEmailClient) {
+        this.githubOAuthEmailClient = githubOAuthEmailClient;
+        this.officialCodebloomEmailClient = officialCodebloomEmailClient;
     }
 
     @Test
     void testConnections() throws EmailException {
-        githubOAuthEmail.testConnection();
-        officialCodebloomEmail.testConnection();
+        githubOAuthEmailClient.testConnection();
+        officialCodebloomEmailClient.testConnection();
     }
 }

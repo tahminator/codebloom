@@ -2,7 +2,7 @@ package org.patinanetwork.codebloom.common.email.template;
 
 import java.io.IOException;
 
-public interface ReactEmail {
+public interface ReactEmailTemplater {
     /**
      * Load the generated HTML from ClassPathResources as a String then injects variables using Jsoup and renders HTML
      * as a string.

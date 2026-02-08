@@ -27,7 +27,7 @@ import org.patinanetwork.codebloom.common.dto.security.AuthenticationObjectDto;
 import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmailClient;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
-import org.patinanetwork.codebloom.common.email.template.ReactEmail;
+import org.patinanetwork.codebloom.common.email.template.ReactEmailTemplater;
 import org.patinanetwork.codebloom.common.jwt.JWTClient;
 import org.patinanetwork.codebloom.common.lag.FakeLag;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
@@ -69,7 +69,7 @@ public class AuthController {
     private final ServerUrlUtils serverUrlUtils;
     private final UserTagRepository userTagRepository;
     private final Reporter reporter;
-    private final ReactEmail reactEmailClient;
+    private final ReactEmailTemplater reactEmailTemplater;
     private final SimpleRedis<Long> simpleRedis;
 
     public AuthController(
@@ -81,7 +81,7 @@ public class AuthController {
             final ServerUrlUtils serverUrlUtils,
             final UserTagRepository userTagRepository,
             final Reporter reporter,
-            final ReactEmail reactEmailClient,
+            final ReactEmailTemplater reactEmailTemplater,
             final SimpleRedisProvider simpleRedisProvider) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
@@ -91,7 +91,7 @@ public class AuthController {
         this.serverUrlUtils = serverUrlUtils;
         this.userTagRepository = userTagRepository;
         this.reporter = reporter;
-        this.reactEmailClient = reactEmailClient;
+        this.reactEmailTemplater = reactEmailTemplater;
         this.simpleRedis = simpleRedisProvider.select(SimpleRedisSlot.VERIFICATION_EMAIL_SENDING);
     }
 
@@ -238,7 +238,7 @@ public class AuthController {
             emailClient.sendMessage(SendEmailOptions.builder()
                     .recipientEmail(email)
                     .subject("Hello from Codebloom!")
-                    .body(reactEmailClient.schoolEmailTemplate(verificationLink))
+                    .body(reactEmailTemplater.schoolEmailTemplate(verificationLink))
                     .build());
             return ResponseEntity.ok()
                     .body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", Empty.of()));

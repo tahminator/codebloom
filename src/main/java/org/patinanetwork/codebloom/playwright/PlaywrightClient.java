@@ -33,9 +33,9 @@ public class PlaywrightClient {
     private final ServerUrlUtils serverUrlUtils;
     private final Email email;
 
-    public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmailClient githubOAuthEmail) {
+    public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmailClient githubOAuthEmailClient) {
         this.serverUrlUtils = serverUrlUtils;
-        this.email = githubOAuthEmail;
+        this.email = githubOAuthEmailClient;
     }
 
     private <T> T withPage(final Function<Page, T> consumer) {
