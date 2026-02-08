@@ -9,7 +9,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Properties;
-import org.patinanetwork.codebloom.common.email.Email;
+import org.patinanetwork.codebloom.common.email.EmailClient;
 import org.patinanetwork.codebloom.common.email.Message;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableConfigurationProperties(OfficialCodebloomEmailClientProperties.class)
 @Timed(value = "email.client.execution")
-public class OfficialCodebloomEmailClient extends Email {
+public class OfficialCodebloomEmailClient extends EmailClient {
 
     private final OfficialCodebloomEmailClientProperties emailProperties;
     private Session session;

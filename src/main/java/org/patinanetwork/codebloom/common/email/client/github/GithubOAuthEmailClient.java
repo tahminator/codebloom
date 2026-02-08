@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.patinanetwork.codebloom.common.email.Email;
+import org.patinanetwork.codebloom.common.email.EmailClient;
 import org.patinanetwork.codebloom.common.email.Message;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableConfigurationProperties(GithubOAuthEmailClientProperties.class)
 @Timed(value = "email.client.execution")
-public class GithubOAuthEmailClient extends Email {
+public class GithubOAuthEmailClient extends EmailClient {
 
     private final GithubOAuthEmailClientProperties emailProperties;
     private static Session session;

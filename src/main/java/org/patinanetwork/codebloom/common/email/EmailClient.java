@@ -10,7 +10,7 @@ import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
  * <p>NOTE: Inherited classes may NOT have every method implemented. You should check the implementation of each Email
  * type and ensure that it has the features you require.
  */
-public abstract class Email {
+public abstract class EmailClient {
 
     public abstract List<Message> getPastMessages() throws EmailException;
 
