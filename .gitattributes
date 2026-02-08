@@ -8,3 +8,6 @@
 .env.production filter=git-crypt-l3 diff=git-crypt-l3
 .env.migrator filter=git-crypt-l3 diff=git-crypt-l3
 infra/.env.production filter=git-crypt-l3 diff=git-crypt-l3
+
+internal/.env.ci filter=git-crypt-l2 diff=git-crypt-l2
+internal/standup-bot/.env.production filter=git-crypt-l3 diff=git-crypt-l3
