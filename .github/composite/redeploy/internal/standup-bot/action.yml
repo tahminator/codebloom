@@ -1,0 +1,32 @@
+name: "Re-Deploy codebloom-standup-bot to Coolify"
+description: "Trigger a deployment of the standup bot to Coolify."
+
+inputs:
+  GPG_PRIVATE_KEY:
+    description: "GPG Private Key"
+    required: true
+  GPG_PASSPHRASE:
+    description: "GPG Passphrase"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup CI
+      uses: ./.github/composite/setup-ci
+      with:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Expose GitHub Runtime
+      uses: crazy-max/ghaction-github-runtime@v3
+
+    - name: Run script
+      shell: bash
+      run: bun .github/scripts/redeploy/internal/standup-bot
+      env:
+        DOCKER_UPLOAD: ${{ inputs.DOCKER_UPLOAD }}
+        TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
+        SERVER_PROFILES: ${{ inputs.SERVER_PROFILES }}
+        ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+        SHA: ${{ inputs.SHA }}
