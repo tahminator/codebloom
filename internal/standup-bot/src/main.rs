@@ -2,7 +2,7 @@ use chrono::Utc;
 use dotenvy::dotenv;
 use tokio::time::interval;
 
-use crate::utils::is_time_to_send_standup_message;
+use crate::utils::standup::is_time_to_send_standup_message;
 
 mod discord;
 mod redis;
@@ -36,6 +36,7 @@ async fn main() {
             match redis::client::get_last_standup().await {
                 Ok(last_standup) => {
                     if !is_time_to_send_standup_message(last_standup) {
+                        println!("hi");
                         return;
                     }
                     if let Err(e) =
