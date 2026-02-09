@@ -27,18 +27,18 @@ pub async fn init(creds: &RedisCredentials) -> Result<(), RedisClientError> {
     Ok(())
 }
 
-async fn get_conn() -> ConnectionManager {
+fn get_conn() -> ConnectionManager {
     CONN.get().expect("Redis not initialized").clone()
 }
 
 pub async fn set_last_standup(time: DateTime<Utc>) -> Result<(), RedisClientError> {
-    let mut conn = get_conn().await;
+    let mut conn = get_conn();
 
     Ok(conn.set("standup", time.to_string()).await?)
 }
 
 pub async fn get_last_standup() -> Result<Option<DateTime<Utc>>, RedisClientError> {
-    let mut conn = get_conn().await;
+    let mut conn = get_conn();
 
     let value: Option<String> = conn.get("standup").await?;
 
