@@ -14,10 +14,6 @@ const [owner, repo] = (() => {
   return v.split("/") as [string, string];
 })();
 
-const client = new Octokit({
-  auth: githubToken,
-});
-
 type CommitState = "error" | "failure" | "pending" | "success";
 
 interface Options {
@@ -29,7 +25,14 @@ interface Options {
 }
 export async function updateCommitStatus(options: Options) {
   const { sha, state, description, targetUrl, context } = options;
+
   try {
+    if (!githubToken) {
+      throw new Error("Some token should be set");
+    }
+    const client = new Octokit({
+      auth: githubToken,
+    });
     try {
       await client.rest.repos.createCommitStatus({
         owner,
