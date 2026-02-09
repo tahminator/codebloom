@@ -146,82 +146,50 @@ public class DiscordClubManager {
 
     private void sendWeeklyLeaderboardUpdateDiscordMessage(final DiscordClub club) {
         try {
-            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+            var guildIdOpt = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
+            var channelIdOpt = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
 
-            LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
-                    .page(1)
-                    .pageSize(5)
-                    .build();
-
-            List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
-                    leaderboardRepository.getLeaderboardUsersById(currentLeaderboard.getId(), options));
-
-            LocalDateTime shouldExpireByTime = Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
-                    // this orElse will only trigger if leaderboard doesn't have expiration time.
-                    .orElse(StandardizedLocalDateTime.now());
-
-            Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireByTime);
-
-            long daysLeft = remaining.toDays();
-            long hoursLeft = remaining.toHours() % 24;
-            long minutesLeft = remaining.toMinutes() % 60;
-
-            String topUsersSection = buildTopUsersSection(users, false);
-            String headerText = "Here is a weekly update on the LeetCode leaderboard for our very own members!";
-
-            String description = String.format(
-                    """
-                Dear %s users,
-
-                %s
-
-                %s
-
-                To view the rest of the members, visit the website or check out the image embedded in this message!
-
-                Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
-
-                View the full leaderboard for %s users at %s/leaderboard?%s=true
-
-
-                See you next week!
-
-                Beep boop,
-                Codebloom
-                <%s>
-                """,
-                    club.getName(),
-                    headerText,
-                    topUsersSection,
-                    daysLeft,
-                    hoursLeft,
-                    minutesLeft,
-                    club.getName(),
-                    serverUrlUtils.getUrl(),
-                    club.getTag().name().toLowerCase(),
-                    serverUrlUtils.getUrl());
-
-            var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
-            var channelId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
-
-            if (guildId.isEmpty() || channelId.isEmpty()) {
+            if (guildIdOpt.isEmpty() || channelIdOpt.isEmpty()) {
                 log.error("club {} is skipped because of missing metadata", club.getName());
                 return;
             }
 
+            String guildId = guildIdOpt.get();
+            String channelId = channelIdOpt.get();
+
+            MessageCreateData messageData = buildWeeklyLeaderboardMessageForClub(guildId);
+
+            if (messageData == null
+                    || messageData.getEmbeds() == null
+                    || messageData.getEmbeds().isEmpty()) {
+                log.error("No embed returned from buildWeeklyLeaderboardMessageForClub for guildId={}", guildId);
+                return;
+            }
+
+            MessageEmbed embed = messageData.getEmbeds().get(0);
+
             jdaClient.sendEmbedWithImages(EmbeddedImagesMessageOptions.builder()
-                    .guildId(Long.valueOf(guildId.get()))
-                    .channelId(Long.valueOf(channelId.get()))
-                    .description(description)
-                    .title("%s - Weekly Leaderboard Update for %s"
-                            .formatted(currentLeaderboard.getName(), club.getName()))
-                    .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
-                    .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
-                    .color(new Color(69, 129, 103))
+                    .guildId(Long.valueOf(guildId))
+                    .channelId(Long.valueOf(channelId))
+                    .description(defaultIfNull(embed.getDescription()))
+                    .title(defaultIfNull(embed.getTitle()))
+                    .footerText(
+                            embed.getFooter() == null
+                                    ? null
+                                    : defaultIfNull(embed.getFooter().getText()))
+                    .footerIcon(
+                            embed.getFooter() == null
+                                    ? null
+                                    : defaultIfNull(embed.getFooter().getIconUrl()))
+                    .color(embed.getColor() == null ? new Color(69, 129, 103) : embed.getColor())
                     .build());
         } catch (Exception e) {
             log.error("Error in DiscordClubManager when sending weekly leaderboard", e);
         }
+    }
+
+    private static String defaultIfNull(final String s) {
+        return s == null ? "" : s;
     }
 
     public void sendLeaderboardCompletedDiscordMessageToAllClubs() {
@@ -248,45 +216,42 @@ public class DiscordClubManager {
         List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
                 leaderboardRepository.getLeaderboardUsersById(currentLeaderboard.getId(), options));
 
-        LocalDateTime shouldExpireBy =
-                Optional.ofNullable(currentLeaderboard.getShouldExpireBy())
-                        .orElse(StandardizedLocalDateTime.now());
+        LocalDateTime shouldExpireByTime =
+                Optional.ofNullable(currentLeaderboard.getShouldExpireBy()).orElse(StandardizedLocalDateTime.now());
 
-        Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireBy);
+        Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireByTime);
 
         long daysLeft = remaining.toDays();
         long hoursLeft = remaining.toHours() % 24;
         long minutesLeft = remaining.toMinutes() % 60;
 
+        String topUsersSection = buildTopUsersSection(users, false);
+        String headerText = "Here is a weekly update on the LeetCode leaderboard for our very own members!";
+
         String description = String.format(
                 """
-                Dear %s users,
+            Dear %s users,
 
-                Here is a weekly update on the LeetCode leaderboard for our very own members!
+            %s
 
-                🥇- <@%s> - %s pts
-                🥈- <@%s> - %s pts
-                🥉- <@%s> - %s pts
+            %s
 
-                To view the rest of the members, visit the website or check out the image embedded in this message!
+            To view the rest of the members, visit the website or check out the image embedded in this message!
 
-                Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
+            Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
 
-                View the full leaderboard for %s users at %s/leaderboard?%s=true
+            View the full leaderboard for %s users at %s/leaderboard?%s=true
 
-                See you next week!
 
-                Beep boop,
-                Codebloom
-                <%s>
-                """,
+            See you next week!
+
+            Beep boop,
+            Codebloom
+            <%s>
+            """,
                 club.getName(),
-                getUser(users, 0).map(UserWithScore::getDiscordId).orElse("N/A"),
-                getUser(users, 0).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
-                getUser(users, 1).map(UserWithScore::getDiscordId).orElse("N/A"),
-                getUser(users, 1).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
-                getUser(users, 2).map(UserWithScore::getDiscordId).orElse("N/A"),
-                getUser(users, 2).map(UserWithScore::getTotalScore).map(String::valueOf).orElse("N/A"),
+                headerText,
+                topUsersSection,
                 daysLeft,
                 hoursLeft,
                 minutesLeft,
