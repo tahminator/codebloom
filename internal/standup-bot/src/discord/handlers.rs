@@ -12,12 +12,20 @@ use serenity::{
     async_trait,
 };
 
-use crate::discord::{
-    commands,
-    credentials,
+use crate::{
+    discord::{
+        commands,
+        credentials,
+    },
+    utils::latch::base::{
+        CountdownLatch,
+        Latch as _,
+    },
 };
 
-pub struct Handler;
+pub struct Handler {
+    pub latch: CountdownLatch,
+}
 
 #[async_trait]
 impl EventHandler for Handler {
@@ -47,6 +55,8 @@ impl EventHandler for Handler {
 
         let commands = get_commands(creds.guild_id, ctx).await;
         println!("I now have the following guild slash commands: {commands:#?}");
+
+        self.latch.count_down();
     }
 }
 
