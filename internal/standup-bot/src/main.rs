@@ -36,7 +36,6 @@ async fn main() {
             match redis::client::get_last_standup().await {
                 Ok(last_standup) => {
                     if !is_time_to_send_standup_message(last_standup) {
-                        println!("hi");
                         return;
                     }
                     if let Err(e) =

@@ -18,17 +18,26 @@ use serenity::{
     http::Http,
 };
 
-use crate::discord::{
-    credentials::DiscordCredentials,
-    handlers::Handler,
+use crate::{
+    discord::{
+        credentials::DiscordCredentials,
+        handlers::Handler,
+    },
+    utils::latch::base::{
+        CountdownLatch,
+        Latch,
+    },
 };
 
 const INTENTS: GatewayIntents = GatewayIntents::GUILD_MEMBERS;
 static HTTP: OnceLock<Arc<Http>> = OnceLock::new();
 
 pub async fn init_in_bg(discord_creds: &DiscordCredentials) -> Result<(), Error> {
+    let latch = CountdownLatch::new(1);
     let mut client = Client::builder(&discord_creds.token, INTENTS)
-        .event_handler(Handler)
+        .event_handler(Handler {
+            latch: latch.clone(),
+        })
         .await?;
 
     let http = client.http.clone();
@@ -41,6 +50,8 @@ pub async fn init_in_bg(discord_creds: &DiscordCredentials) -> Result<(), Error>
             println!("Client error: {e:?}");
         }
     });
+
+    let _ = latch.wait_until(10_000).await;
 
     Ok(())
 }
