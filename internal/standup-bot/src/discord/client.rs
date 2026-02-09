@@ -55,7 +55,7 @@ pub async fn send_standup_message(discord_creds: &DiscordCredentials) -> Result<
     let embed = CreateEmbed::new()
         .title("Codebloom Standup")
         .description(
-            "Standup time! Please leave an update about your latest progress inside of the thread.",
+            "<@&1391944565409316944> Standup time! Please leave an update about your latest progress inside of the thread.",
         )
         .footer(
             CreateEmbedFooter::new("Codebloom - Internal")
