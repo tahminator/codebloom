@@ -4,7 +4,7 @@ use chrono::{
 };
 use redis::{
     AsyncCommands,
-    aio::MultiplexedConnection,
+    aio::ConnectionManager,
 };
 use std::sync::OnceLock;
 
@@ -13,13 +13,13 @@ use crate::redis::{
     error::RedisClientError,
 };
 
-static CONN: OnceLock<MultiplexedConnection> = OnceLock::new();
+static CONN: OnceLock<ConnectionManager> = OnceLock::new();
 
 pub async fn init(creds: &RedisCredentials) -> Result<(), RedisClientError> {
     let client = redis::Client::open(creds.redis_uri.clone())?;
-    let con = client.get_multiplexed_async_connection().await?;
+    let man = client.get_connection_manager().await?;
 
-    match CONN.set(con) {
+    match CONN.set(man) {
         Ok(_) => (),
         Err(_) => println!("Attempted to save Redis CONN more than once"),
     }
@@ -27,7 +27,7 @@ pub async fn init(creds: &RedisCredentials) -> Result<(), RedisClientError> {
     Ok(())
 }
 
-async fn get_conn() -> MultiplexedConnection {
+async fn get_conn() -> ConnectionManager {
     CONN.get().expect("Redis not initialized").clone()
 }
 
