@@ -324,6 +324,53 @@ public class DiscordClubManagerTest {
         assertTrue(description.contains("Here is a weekly update"));
     }
 
+    @Test
+    void testSendTestEmbedMessageToClubNoGuildOrClub() {
+        DiscordClub mockClub = mock(DiscordClub.class);
+
+        when(mockClub.getId()).thenReturn("club-id-1");
+        when(mockClub.getDiscordClubMetadata()).thenReturn(Optional.empty());
+
+        boolean result = discordClubManager.sendTestEmbedMessageToClub(mockClub);
+
+        assertFalse(result);
+        verify(jdaClient, never()).sendEmbedWithImages(any());
+
+        assertTrue(logWatcher.list.stream()
+                .anyMatch(e -> e.getFormattedMessage().contains("Missing guildId or leaderboardChannelId")));
+    }
+
+    @Test
+    void testSendTestEmbedMessageToClubFailure() {
+        DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
+
+        doThrow(new RuntimeException()).when(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
+
+        boolean result = discordClubManager.sendTestEmbedMessageToClub(mockClub);
+
+        assertFalse(result);
+
+        verify(jdaClient).sendEmbedWithImages(any(EmbeddedImagesMessageOptions.class));
+
+        assertTrue(logWatcher.list.stream().anyMatch(e -> e.getFormattedMessage()
+                .contains("Error in DiscordClubManager when sending test message")));
+    }
+
+    @Test
+    void testSendTestEmbedMessageToClubSuccess() {
+        DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
+
+        boolean result = discordClubManager.sendTestEmbedMessageToClub(mockClub);
+        assertTrue(result);
+
+        ArgumentCaptor<EmbeddedImagesMessageOptions> captor =
+                ArgumentCaptor.forClass(EmbeddedImagesMessageOptions.class);
+        verify(jdaClient).sendEmbedWithImages(captor.capture());
+
+        String description = captor.getValue().getDescription();
+        assertTrue(description.contains("test message"));
+    }
+
     private DiscordClub createMockDiscordClub(final String name, final Tag tag) {
         DiscordClubMetadata metadata = mock(DiscordClubMetadata.class);
         when(metadata.getGuildId()).thenReturn(Optional.of("123456789"));
