@@ -6,21 +6,32 @@ import static org.mockito.Mockito.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.patinanetwork.codebloom.api.admin.body.DeleteAnnouncementBody;
 import org.patinanetwork.codebloom.api.admin.body.NewLeaderboardBody;
+import org.patinanetwork.codebloom.api.admin.body.jda.DeleteMessageBody;
 import org.patinanetwork.codebloom.common.components.DiscordClubManager;
 import org.patinanetwork.codebloom.common.components.LeaderboardManager;
+import org.patinanetwork.codebloom.common.db.models.announcement.Announcement;
+import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
+import org.patinanetwork.codebloom.common.db.models.question.QuestionWithUser;
 import org.patinanetwork.codebloom.common.db.repos.announcement.AnnouncementRepository;
+import org.patinanetwork.codebloom.common.db.repos.discord.club.DiscordClubRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.Empty;
+import org.patinanetwork.codebloom.common.dto.question.QuestionWithUserDto;
 import org.patinanetwork.codebloom.common.security.Protector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 public class AdminControllerTest {
 
@@ -31,6 +42,7 @@ public class AdminControllerTest {
     private final Protector protector = mock(Protector.class);
     private final DiscordClubManager discordClubManager = mock(DiscordClubManager.class);
     private final LeaderboardManager leaderboardManager = mock(LeaderboardManager.class);
+    private final DiscordClubRepository discordClubRepository = mock(DiscordClubRepository.class);
     private final HttpServletRequest request = mock(HttpServletRequest.class);
 
     private final AdminController adminController;
@@ -43,7 +55,8 @@ public class AdminControllerTest {
                 announcementRepository,
                 questionRepository,
                 discordClubManager,
-                leaderboardManager));
+                leaderboardManager,
+                discordClubRepository));
     }
 
     @BeforeEach
@@ -342,5 +355,165 @@ public class AdminControllerTest {
                 .addNewLeaderboard(argThat(leaderboard -> leaderboard.getShouldExpireBy() == null
                         && leaderboard.getSyntaxHighlightingLanguage() == null));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
+    }
+
+    @Test
+    void testDeleteAnnouncementNull() {
+        DeleteAnnouncementBody body = DeleteAnnouncementBody.builder()
+                .id("4f6bbb9a-0baa-11f1-9607-77d42f1cf060")
+                .build();
+        when(announcementRepository.getAnnouncementById(anyString())).thenReturn(null);
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> adminController.deleteAnnouncement(body, request));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Announcement does not exist", exception.getReason());
+    }
+
+    @Test
+    void testDeleteAnnouncementFailure() {
+        DeleteAnnouncementBody body = DeleteAnnouncementBody.builder()
+                .id("4f6bbb9a-0baa-11f1-9607-77d42f1cf060")
+                .build();
+        Announcement mockAnnouncement = mock(Announcement.class);
+        when(announcementRepository.getAnnouncementById(anyString())).thenReturn(mockAnnouncement);
+        when(announcementRepository.updateAnnouncement(mockAnnouncement)).thenReturn(false);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteAnnouncement(body, request);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testDeleteAnnouncementSuccess() {
+        DeleteAnnouncementBody body = DeleteAnnouncementBody.builder()
+                .id("4f6bbb9a-0baa-11f1-9607-77d42f1cf060")
+                .build();
+        Announcement mockAnnouncement = mock(Announcement.class);
+        when(announcementRepository.getAnnouncementById(anyString())).thenReturn(mockAnnouncement);
+        when(announcementRepository.updateAnnouncement(mockAnnouncement)).thenReturn(true);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteAnnouncement(body, request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Announcement successfully disabled!", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testGetIncompleteQuestionNoQuestions() {
+        when(questionRepository.getAllIncompleteQuestionsWithUser()).thenReturn(new ArrayList<QuestionWithUser>());
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> adminController.getIncompleteQuestions(request));
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertEquals("No Incomplete Questions", exception.getReason());
+    }
+
+    @Test
+    void testGetIncompleteQuestionSuccess() {
+        QuestionWithUser qwu = QuestionWithUser.builder().build();
+
+        when(questionRepository.getAllIncompleteQuestionsWithUser()).thenReturn(new ArrayList<>(List.of(qwu)));
+
+        ResponseEntity<ApiResponder<List<QuestionWithUserDto>>> response =
+                adminController.getIncompleteQuestions(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals(1, response.getBody().getPayload().size());
+        assertEquals("Retrieved 1 incomplete questions.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testSendDiscordMessageInvalidClub() {
+        DiscordClub club = mock(DiscordClub.class);
+        when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(false);
+
+        String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Club not found.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testSendDiscordMessageFailure() {
+        String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
+        DiscordClub club = mock(DiscordClub.class);
+
+        when(discordClubRepository.getDiscordClubById(clubId)).thenReturn(Optional.of(club));
+
+        when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(false);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testSendDiscordMessageSuccess() {
+        String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
+        DiscordClub club = mock(DiscordClub.class);
+
+        when(discordClubRepository.getDiscordClubById(clubId)).thenReturn(Optional.of(club));
+
+        when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(true);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Message successfully sent!", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testDeleteDiscordMessageFailure() {
+        when(discordClubManager.deleteMessageById(anyLong(), anyLong())).thenReturn(false);
+        DeleteMessageBody body =
+                DeleteMessageBody.builder().channelId(999L).messageId(123L).build();
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteDiscordMessage(body, request);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testDeleteDiscordMessageSuccess() {
+        when(discordClubManager.deleteMessageById(anyLong(), anyLong())).thenReturn(true);
+        DeleteMessageBody body =
+                DeleteMessageBody.builder().channelId(999L).messageId(123L).build();
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteDiscordMessage(body, request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Discord Message successfully deleted", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
     }
 }
