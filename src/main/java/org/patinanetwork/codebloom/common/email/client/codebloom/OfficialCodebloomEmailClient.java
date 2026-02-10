@@ -9,7 +9,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Properties;
-import org.patinanetwork.codebloom.common.email.Email;
+import org.patinanetwork.codebloom.common.email.EmailClient;
 import org.patinanetwork.codebloom.common.email.Message;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
@@ -22,18 +22,18 @@ import org.springframework.stereotype.Component;
  * <p>For example, we use this client to send emails to users who are trying to verify their school status.
  */
 @Component
-@EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
+@EnableConfigurationProperties(OfficialCodebloomEmailClientProperties.class)
 @Timed(value = "email.client.execution")
-public class OfficialCodebloomEmail extends Email {
+public class OfficialCodebloomEmailClient extends EmailClient {
 
-    private final OfficialCodebloomEmailProperties emailProperties;
+    private final OfficialCodebloomEmailClientProperties emailClientProperties;
     private Session session;
 
-    public OfficialCodebloomEmail(final OfficialCodebloomEmailProperties emailProperties) {
-        this.emailProperties = emailProperties;
+    public OfficialCodebloomEmailClient(final OfficialCodebloomEmailClientProperties emailClientProperties) {
+        this.emailClientProperties = emailClientProperties;
         final Properties properties = new Properties();
-        properties.setProperty("mail.smtp.host", emailProperties.getHost());
-        properties.setProperty("mail.smtp.port", emailProperties.getPort());
+        properties.setProperty("mail.smtp.host", emailClientProperties.getHost());
+        properties.setProperty("mail.smtp.port", emailClientProperties.getPort());
         properties.setProperty("mail.smtp.starttls.enable", "true");
         properties.setProperty("mail.smtp.starttls.required", "true");
         properties.setProperty("mail.smtp.auth", "true");
@@ -41,7 +41,8 @@ public class OfficialCodebloomEmail extends Email {
         session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(emailProperties.getUsername(), emailProperties.getPassword());
+                return new PasswordAuthentication(
+                        emailClientProperties.getUsername(), emailClientProperties.getPassword());
             }
         });
     }
@@ -57,7 +58,7 @@ public class OfficialCodebloomEmail extends Email {
     public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
         try {
             jakarta.mail.Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(emailProperties.getUsername()));
+            message.setFrom(new InternetAddress(emailClientProperties.getUsername()));
             message.setRecipient(
                     jakarta.mail.Message.RecipientType.TO, new InternetAddress(sendEmailOptions.getRecipientEmail()));
             message.setSubject(sendEmailOptions.getSubject());

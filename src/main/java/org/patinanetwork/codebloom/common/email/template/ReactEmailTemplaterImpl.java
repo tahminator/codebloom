@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 @Component
-public class ReactEmailClientImpl implements ReactEmailClient {
+public class ReactEmailTemplaterImpl implements ReactEmailTemplater {
 
     private String getHtmlAsString(final String path) throws IOException {
         ClassPathResource resource = new ClassPathResource(path);

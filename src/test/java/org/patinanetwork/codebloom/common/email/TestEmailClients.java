@@ -1,8 +1,8 @@
 package org.patinanetwork.codebloom.common.email;
 
 import org.junit.jupiter.api.Test;
-import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
-import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmail;
+import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmailClient;
+import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmailClient;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.config.NoJdaRequired;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,19 +11,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class TestEmailClients extends NoJdaRequired {
 
-    private final GithubOAuthEmail githubOAuthEmail;
-    private final OfficialCodebloomEmail officialCodebloomEmail;
+    private final GithubOAuthEmailClient githubOAuthEmailClient;
+    private final OfficialCodebloomEmailClient officialCodebloomEmailClient;
 
     @Autowired
     public TestEmailClients(
-            final GithubOAuthEmail githubOAuthEmail, final OfficialCodebloomEmail officialCodebloomEmail) {
-        this.githubOAuthEmail = githubOAuthEmail;
-        this.officialCodebloomEmail = officialCodebloomEmail;
+            final GithubOAuthEmailClient githubOAuthEmailClient,
+            final OfficialCodebloomEmailClient officialCodebloomEmailClient) {
+        this.githubOAuthEmailClient = githubOAuthEmailClient;
+        this.officialCodebloomEmailClient = officialCodebloomEmailClient;
     }
 
     @Test
     void testConnections() throws EmailException {
-        githubOAuthEmail.testConnection();
-        officialCodebloomEmail.testConnection();
+        githubOAuthEmailClient.testConnection();
+        officialCodebloomEmailClient.testConnection();
     }
 }

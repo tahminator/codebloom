@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.patinanetwork.codebloom.common.email.Email;
+import org.patinanetwork.codebloom.common.email.EmailClient;
 import org.patinanetwork.codebloom.common.email.Message;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
@@ -19,18 +19,18 @@ import org.springframework.stereotype.Component;
 
 /** Provides read-only access to the Github email account in order to access the OAuth code. */
 @Component
-@EnableConfigurationProperties(GithubOAuthEmailProperties.class)
+@EnableConfigurationProperties(GithubOAuthEmailClientProperties.class)
 @Timed(value = "email.client.execution")
-public class GithubOAuthEmail extends Email {
+public class GithubOAuthEmailClient extends EmailClient {
 
-    private final GithubOAuthEmailProperties emailProperties;
+    private final GithubOAuthEmailClientProperties emailClientProperties;
     private static Session session;
 
-    public GithubOAuthEmail(final GithubOAuthEmailProperties emailProperties) {
-        this.emailProperties = emailProperties;
+    public GithubOAuthEmailClient(final GithubOAuthEmailClientProperties emailClientProperties) {
+        this.emailClientProperties = emailClientProperties;
         final Properties properties = new Properties();
-        properties.setProperty("mail.imap.host", emailProperties.getHost());
-        properties.setProperty("mail.imap.port", emailProperties.getPort());
+        properties.setProperty("mail.imap.host", emailClientProperties.getHost());
+        properties.setProperty("mail.imap.port", emailClientProperties.getPort());
         properties.setProperty("mail.imap.ssl.enable", "true");
         properties.setProperty("mail.imap.auth", "true");
         properties.setProperty("mail.store.protocol", "imap");
@@ -42,7 +42,10 @@ public class GithubOAuthEmail extends Email {
         try {
             final Store store = session.getStore("imap");
 
-            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
+            store.connect(
+                    emailClientProperties.getHost(),
+                    emailClientProperties.getUsername(),
+                    emailClientProperties.getPassword());
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);
@@ -89,7 +92,10 @@ public class GithubOAuthEmail extends Email {
         try {
             final Store store = session.getStore("imap");
 
-            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
+            store.connect(
+                    emailClientProperties.getHost(),
+                    emailClientProperties.getUsername(),
+                    emailClientProperties.getPassword());
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);
