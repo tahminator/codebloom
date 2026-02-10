@@ -1,7 +1,7 @@
 import { MOCK_USER_ID } from "@/__mock__/user/index.ts";
-import { screen, cleanup } from "@testing-library/react";
+import UserSubmissions from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissions.tsx";
 import { TestUtils, TestUtilTypes } from "@/lib/test";
-import UserSubmissions from "./UserSubmissions.tsx";
+import { screen, cleanup } from "@testing-library/react";
 
 describe("UserSubmissions succeeded", () => {
   afterEach(() => {
