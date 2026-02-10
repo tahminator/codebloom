@@ -6,13 +6,16 @@ import static org.mockito.Mockito.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.patinanetwork.codebloom.api.admin.body.NewLeaderboardBody;
 import org.patinanetwork.codebloom.common.components.DiscordClubManager;
 import org.patinanetwork.codebloom.common.components.LeaderboardManager;
+import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
 import org.patinanetwork.codebloom.common.db.repos.announcement.AnnouncementRepository;
+import org.patinanetwork.codebloom.common.db.repos.discord.club.DiscordClubRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
@@ -31,6 +34,7 @@ public class AdminControllerTest {
     private final Protector protector = mock(Protector.class);
     private final DiscordClubManager discordClubManager = mock(DiscordClubManager.class);
     private final LeaderboardManager leaderboardManager = mock(LeaderboardManager.class);
+    private final DiscordClubRepository discordClubRepository = mock(DiscordClubRepository.class);
     private final HttpServletRequest request = mock(HttpServletRequest.class);
 
     private final AdminController adminController;
@@ -43,7 +47,8 @@ public class AdminControllerTest {
                 announcementRepository,
                 questionRepository,
                 discordClubManager,
-                leaderboardManager));
+                leaderboardManager,
+                discordClubRepository));
     }
 
     @BeforeEach
@@ -347,7 +352,11 @@ public class AdminControllerTest {
     @Test
     void testSendDiscordMessageSuccess() {
         String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
-        when(discordClubManager.sendTestEmbedMessageToClub(clubId)).thenReturn(true);
+        DiscordClub club = mock(DiscordClub.class);
+
+        when(discordClubRepository.getDiscordClubById(clubId)).thenReturn(Optional.of(club));
+
+        when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(true);
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
 
@@ -359,15 +368,16 @@ public class AdminControllerTest {
     }
 
     @Test
-    void testSendDiscordMessageFailure() {
-        String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
-        when(discordClubManager.sendTestEmbedMessageToClub(clubId)).thenReturn(false);
+    void testSendDiscordMessageInvalid() {
+        DiscordClub club = mock(DiscordClub.class);
+        when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(false);
 
+        String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
         ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
+        assertEquals("Club not found.", response.getBody().getMessage());
 
         verify(protector).validateAdminSession(request);
     }

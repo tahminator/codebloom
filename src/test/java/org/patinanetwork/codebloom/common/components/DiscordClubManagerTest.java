@@ -309,13 +309,12 @@ public class DiscordClubManagerTest {
     }
 
     @Test
-    void testSendTestEmbedMessageToClubSuccess() {
-        String mockClubId = "9fc269d2-0622-11f1-9900-9b88519a41c8";
+    void testSendTestEmbedMessageToClub() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
 
         doNothing().when(jdaClient).sendEmbedWithImages(any(), anyInt(), any());
 
-        boolean result = discordClubManager.sendTestEmbedMessageToClub(mockClubId);
+        boolean result = discordClubManager.sendTestEmbedMessageToClub(mockClub);
         assertTrue(result);
         verify(jdaClient).connect();
 
@@ -325,17 +324,6 @@ public class DiscordClubManagerTest {
 
         String description = captor.getValue().getDescription();
         assertTrue(description.contains("test message"));
-    }
-
-    @Test
-    void testSendTestEmbedMessageToClubInvalidId() {
-        String mockClubId = "9fc269d2-0622-11f1-9900-9b88519a41c8";
-        when(discordClubRepository.getDiscordClubById(mockClubId)).thenReturn(Optional.empty());
-
-        boolean result = discordClubManager.sendTestEmbedMessageToClub(mockClubId);
-
-        assertFalse(result, "Expected false if no club exists for the given id");
-        verify(jdaClient).connect();
     }
 
     private DiscordClub createMockDiscordClub(final String name, final Tag tag) {

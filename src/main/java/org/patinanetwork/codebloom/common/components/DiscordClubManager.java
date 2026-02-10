@@ -244,17 +244,11 @@ public class DiscordClubManager {
         discordClubs.forEach(this::sendWeeklyLeaderboardUpdateDiscordMessage);
     }
 
-    public boolean sendTestEmbedMessageToClub(String clubId) {
+    public boolean sendTestEmbedMessageToClub(DiscordClub club) {
         log.info("Connecting to JDA client...");
         jdaClient.connect();
 
         try {
-            Optional<DiscordClub> clubOpt = discordClubRepository.getDiscordClubById(clubId);
-            if (clubOpt.isEmpty()) {
-                log.warn("No DiscordClub found for clubId={}", clubId);
-                return false;
-            }
-            DiscordClub club = clubOpt.get();
             String description = String.format("""
                     This is a test message ensuring that the integration is working as expected. Please ignore.
                 """, club.getName());
