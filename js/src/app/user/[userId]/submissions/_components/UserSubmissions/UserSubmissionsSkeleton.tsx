@@ -30,6 +30,7 @@ export default function UserSubmissionsSkeleton() {
               height="36px"
               ml="auto"
               display="block"
+              data-testid="user-profile-skeleton-submissions-filter-button-desktop"
             />
             <Center mb="md">
               <Skeleton visible w="100%" h={38} mt={8} />
@@ -41,10 +42,15 @@ export default function UserSubmissionsSkeleton() {
             <Box flex={1} miw={0}>
               <Skeleton visible w="100%" h="38px" />
             </Box>
-            <Skeleton visible w="80px" h="38px" />
+            <Skeleton
+              visible
+              w="80px"
+              h="38px"
+              data-testid="user-profile-skeleton-submissions-filter-button-mobile"
+            />
           </Group>
         )}
-        <Stack gap="md" my="sm">
+        <Stack gap="md" my="sm" data-testid="user-profile-skeleton-submissions-stack">
           {Array(2)
             .fill(0)
             .map((_, index) => (
@@ -54,7 +60,7 @@ export default function UserSubmissionsSkeleton() {
                 radius={8}
                 p="md"
               >
-                <Group justify="space-between" align="flex-start" mb="sm">
+                <Group justify="space-between" align="flex-start" mb="sm" >
                   <Skeleton visible width="20%" height="20px" />
                   <Skeleton visible width="40px" height="10px" />
                 </Group>
