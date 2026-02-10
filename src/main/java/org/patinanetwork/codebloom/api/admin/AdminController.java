@@ -257,4 +257,29 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponder.success(
                 "Retrieved " + incompleteQuestionsDto.size() + " incomplete questions.", incompleteQuestionsDto));
     }
+
+    @Operation(
+            summary = "Send a message to a club's discord",
+            description = """
+        Sends an embedded message to the leaderboard channel of the guild associated with their club, provided its clubId. Only accessible to admins.
+        """,
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Message was sent successfully"),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Something went wrong",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            })
+    @PostMapping("/discord/message/test")
+    public ResponseEntity<ApiResponder<Empty>> sendDiscordMessage(
+            @RequestBody final String clubId, final HttpServletRequest request) {
+        protector.validateAdminSession(request);
+        boolean sentMessage = discordClubManager.sendTestEmbedMessageToClub(clubId);
+
+        if (!sentMessage) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponder.failure("Hmm, something went wrong."));
+        }
+        return ResponseEntity.ok(ApiResponder.success("Message successfully sent!", Empty.of()));
+    }
 }
