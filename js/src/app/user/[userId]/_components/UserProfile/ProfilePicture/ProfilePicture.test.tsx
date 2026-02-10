@@ -1,7 +1,7 @@
 import { MOCK_USER_ID } from "@/__mock__/user/index.ts";
-import { screen, cleanup } from "@testing-library/react";
+import ProfilePicture from "@/app/user/[userId]/_components/UserProfile/ProfilePicture/ProfilePicture.tsx";
 import { TestUtils, TestUtilTypes } from "@/lib/test";
-import ProfilePicture from "./ProfilePicture.tsx";
+import { screen, cleanup } from "@testing-library/react";
 
 describe("ProfilePicture succeeded", () => {
   afterEach(() => {
