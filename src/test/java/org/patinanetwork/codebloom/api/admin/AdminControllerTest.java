@@ -343,4 +343,32 @@ public class AdminControllerTest {
                         && leaderboard.getSyntaxHighlightingLanguage() == null));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
     }
+
+    @Test
+    void testSendDiscordMessageSuccess() {
+        String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
+        when(discordClubManager.sendTestEmbedMessageToClub(clubId)).thenReturn(true);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Message successfully sent!", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
+
+    @Test
+    void testSendDiscordMessageFailure() {
+        String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
+        when(discordClubManager.sendTestEmbedMessageToClub(clubId)).thenReturn(false);
+
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
+
+        verify(protector).validateAdminSession(request);
+    }
 }
