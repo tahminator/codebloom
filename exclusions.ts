@@ -11,4 +11,7 @@ export const backendExclusions = [
   `${backendBaseDir}/playwright/**`,
   `${backendBaseDir}/CodebloomApplication.java`,
 ];
-export const frontendExclusions = [];
+export const frontendExclusions = [
+  `${frontendBaseDir}/**/*.test.ts`,
+  `${frontendBaseDir}/**/*.test.tsx`,
+];
