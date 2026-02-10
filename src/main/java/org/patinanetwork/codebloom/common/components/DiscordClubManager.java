@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -271,14 +270,8 @@ public class DiscordClubManager {
         return MessageCreateData.fromEmbeds(embed);
     }
 
-    public boolean sendTestEmbedMessageToClub(String clubId) {
+    public boolean sendTestEmbedMessageToClub(DiscordClub club) {
         try {
-            Optional<DiscordClub> clubOpt = discordClubRepository.getDiscordClubById(clubId);
-            if (clubOpt.isEmpty()) {
-                log.warn("No DiscordClub found for clubId={}", clubId);
-                return false;
-            }
-            DiscordClub club = clubOpt.get();
             String description = String.format("""
                     This is a test message ensuring that the integration is working as expected. Please ignore.
                 """, club.getName());
@@ -286,18 +279,15 @@ public class DiscordClubManager {
             var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
             var channelId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
 
-            jdaClient.sendEmbedWithImages(
-                    EmbeddedImagesMessageOptions.builder()
-                            .guildId(Long.valueOf(guildId.get()))
-                            .channelId(Long.valueOf(channelId.get()))
-                            .description(description)
-                            .title("Message for %s".formatted(club.getName()))
-                            .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
-                            .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
-                            .color(new Color(69, 129, 103))
-                            .build(),
-                    10,
-                    TimeUnit.SECONDS);
+            jdaClient.sendEmbedWithImages(EmbeddedImagesMessageOptions.builder()
+                    .guildId(Long.valueOf(guildId.get()))
+                    .channelId(Long.valueOf(channelId.get()))
+                    .description(description)
+                    .title("Message for %s".formatted(club.getName()))
+                    .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
+                    .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
+                    .color(new Color(69, 129, 103))
+                    .build());
             return true;
         } catch (Exception e) {
             log.error("Error in DiscordClubManager when sending test message", e);
