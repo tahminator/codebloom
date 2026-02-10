@@ -50,7 +50,11 @@ export default function UserSubmissionsSkeleton() {
             />
           </Group>
         )}
-        <Stack gap="md" my="sm" data-testid="user-profile-skeleton-submissions-stack">
+        <Stack
+          gap="md"
+          my="sm"
+          data-testid="user-profile-skeleton-submissions-stack"
+        >
           {Array(2)
             .fill(0)
             .map((_, index) => (
@@ -60,7 +64,7 @@ export default function UserSubmissionsSkeleton() {
                 radius={8}
                 p="md"
               >
-                <Group justify="space-between" align="flex-start" mb="sm" >
+                <Group justify="space-between" align="flex-start" mb="sm">
                   <Skeleton visible width="20%" height="20px" />
                   <Skeleton visible width="40px" height="10px" />
                 </Group>
