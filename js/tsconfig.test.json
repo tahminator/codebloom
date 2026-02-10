@@ -32,6 +32,7 @@
         "src/**/*.test.ts",
         "src/**/*.test.tsx",
         "src/lib/test",
-        "src/vite-env.d.ts"
+        "src/vite-env.d.ts",
+        "src/main.tsx"
     ]
 }
