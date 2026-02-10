@@ -18,11 +18,11 @@ public class SystemMetricsConfig {
     public MeterBinder systemMemoryMetrics(SystemInfo systemInfo) {
         return registry -> {
             GlobalMemory memory = systemInfo.getHardware().getMemory();
-            registry.gauge("systemInfo.memory.total", memory, GlobalMemory::getTotal);
-            registry.gauge("systemInfo.memory.available", memory, GlobalMemory::getAvailable);
-            registry.gauge("systemInfo.memory.used", memory, m -> m.getTotal() - m.getAvailable());
+            registry.gauge("system.info.memory.total", memory, GlobalMemory::getTotal);
+            registry.gauge("system.info.memory.available", memory, GlobalMemory::getAvailable);
+            registry.gauge("system.info.memory.used", memory, m -> m.getTotal() - m.getAvailable());
             registry.gauge(
-                    "systemInfo.memory.usage",
+                    "system.info.memory.usage",
                     memory,
                     m -> (double) (m.getTotal() - m.getAvailable()) / m.getTotal() * 100);
         };
