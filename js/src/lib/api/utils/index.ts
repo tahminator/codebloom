@@ -1,5 +1,6 @@
 import type { Api } from "@/lib/api/types";
 
+import { PARENT_TAGS_TO_CHILD_TAGS } from "@/lib/api/types/complex";
 import { LeetcodeTopicEnum, Tag } from "@/lib/api/types/schema";
 import {
   TAG_METADATA_LIST,
@@ -15,10 +16,12 @@ import { ApiTypeUtils } from "@/lib/api/utils/types";
 export class ApiUtils {
   private static readonly _TAG_METADATA_LIST = TAG_METADATA_LIST;
 
-  static _UNUSED_TAGS = UNUSED_TAGS;
-  static _NON_SCHOOL_TAGS = NON_SCHOOL_TAGS;
+  private static _UNUSED_TAGS = UNUSED_TAGS;
+  private static _NON_SCHOOL_TAGS = NON_SCHOOL_TAGS;
 
   private static readonly _TOPIC_METADATA_LIST = TOPIC_METADATA_LIST;
+
+  private static _PARENT_TAGS_TO_CHILD_TAGS = PARENT_TAGS_TO_CHILD_TAGS;
 
   private static _isSupportedTag(
     tag: Api<"UserTag">,
@@ -181,6 +184,15 @@ export class ApiUtils {
     return allMatches.some(
       (term) => term.includes(lowerQuery) || lowerQuery.includes(term),
     );
+  }
+
+  /**
+   * Returns a `Record` where each key is a parent `Tag` and each value is
+   * a list of `Tag` values that are children to the parent `Tag`.
+   * `Tag` keys that have `Tag[].length === 0` have no child tags.
+   */
+  static getAllParentTags(): Record<Tag, Tag[]> {
+    return ApiUtils._PARENT_TAGS_TO_CHILD_TAGS;
   }
 }
 
