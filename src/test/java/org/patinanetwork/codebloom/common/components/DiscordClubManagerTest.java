@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,6 +112,7 @@ public class DiscordClubManagerTest {
     void testSendWeeklyLeaderboardUpdateDiscordMessageToAllClubsSuccess() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+        when(discordClubRepository.getDiscordClubByGuildId(anyString())).thenReturn(Optional.of(mockClub));
 
         setupMockLeaderboardDataWithExpiration();
 
@@ -145,6 +148,7 @@ public class DiscordClubManagerTest {
     void testSendWeeklyLeaderboardUpdateWithoutExpiration() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+        when(discordClubRepository.getDiscordClubByGuildId(anyString())).thenReturn(Optional.of(mockClub));
 
         setupMockLeaderboardDataWithoutExpiration();
 
@@ -192,6 +196,7 @@ public class DiscordClubManagerTest {
     void testSendWeeklyLeaderboardUpdateDiscordMessageFiltersZeroPointUsers() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+        when(discordClubRepository.getDiscordClubByGuildId(anyString())).thenReturn(Optional.of(mockClub));
 
         setupMockLeaderboardDataWithExpirationAndMixedScoreUsers();
 
@@ -205,6 +210,7 @@ public class DiscordClubManagerTest {
     void testSendWeeklyLeaderboardUpdateDiscordMessageAllUsersHaveZeroPoints() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+        when(discordClubRepository.getDiscordClubByGuildId(anyString())).thenReturn(Optional.of(mockClub));
 
         setupMockLeaderboardDataWithExpirationAndAllZeroScoreUsers();
 
@@ -263,6 +269,7 @@ public class DiscordClubManagerTest {
     void testSendWeeklyLeaderboardUpdateDiscordMessageOnlyOneUserWithPoints() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+        when(discordClubRepository.getDiscordClubByGuildId(anyString())).thenReturn(Optional.of(mockClub));
 
         setupMockLeaderboardDataWithExpirationAndOneUser();
 
@@ -282,6 +289,7 @@ public class DiscordClubManagerTest {
     void testSendWeeklyLeaderboardUpdateDiscordMessageOnlyTwoUsersWithPoints() {
         DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(Arrays.asList(mockClub));
+        when(discordClubRepository.getDiscordClubByGuildId(anyString())).thenReturn(Optional.of(mockClub));
 
         setupMockLeaderboardDataWithExpirationAndTwoUsers();
 
@@ -297,12 +305,32 @@ public class DiscordClubManagerTest {
         assertFalse(description.contains("🥉"));
     }
 
+    @Test
+    void testBuildWeeklyLeaderboardMessageForClub() {
+        DiscordClub club = createMockDiscordClub("Mock Club", Tag.Rpi);
+
+        when(discordClubRepository.getDiscordClubByGuildId(anyString())).thenReturn(Optional.of(club));
+
+        setupMockLeaderboardData();
+
+        MessageCreateData message = discordClubManager.buildWeeklyLeaderboardMessageForClub(club.getId());
+
+        List<MessageEmbed> embeds = message.getEmbeds();
+        assertEquals(1, embeds.size());
+
+        String description = embeds.get(0).getDescription();
+        assertNotNull(description);
+
+        assertTrue(description.contains("Here is a weekly update"));
+    }
+
     private DiscordClub createMockDiscordClub(final String name, final Tag tag) {
         DiscordClubMetadata metadata = mock(DiscordClubMetadata.class);
         when(metadata.getGuildId()).thenReturn(Optional.of("123456789"));
         when(metadata.getLeaderboardChannelId()).thenReturn(Optional.of("987654321"));
 
         DiscordClub club = mock(DiscordClub.class);
+        when(club.getId()).thenReturn("707b035a-078a-11f1-b78e-03f62df4519f");
         when(club.getName()).thenReturn(name);
         when(club.getTag()).thenReturn(tag);
         when(club.getDiscordClubMetadata()).thenReturn(Optional.of(metadata));
