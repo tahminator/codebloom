@@ -117,6 +117,11 @@ export async function _migrateDo({
 
     console.log("Deployment phase:", phase);
 
+    if (phase === "SUPERSEDED") {
+      console.error("Deployment was superseded by another deployment.");
+      process.exit(1);
+    }
+
     if (phase === "ACTIVE") {
       console.log("Deployment has completed!");
       ready = true;
