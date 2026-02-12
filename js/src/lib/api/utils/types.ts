@@ -1,6 +1,7 @@
 import type { Api } from "@/lib/api/types";
 
 import { Tag } from "@/lib/api/types/schema";
+import { UNUSED_TAGS } from "@/lib/api/utils/metadata/tag";
 
 /**
  * A collection of helpful types to help transform & use data returned from the API.
@@ -56,7 +57,10 @@ export namespace ApiTypeUtils {
    * @see {@link Tag}
    * @see {@link FilteredUserTag}
    */
-  export type FilteredTag = Exclude<Tag, Tag.Gwc>;
+  export type FilteredTag = Exclude<
+    Tag,
+    (typeof UNUSED_TAGS)[keyof typeof UNUSED_TAGS]
+  >;
 
   /**
    * Type override of the `UserTag` object, but stripped of all unsupported `tag` enums.

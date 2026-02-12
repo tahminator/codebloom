@@ -16,8 +16,8 @@ import { ApiTypeUtils } from "@/lib/api/utils/types";
 export class ApiUtils {
   private static readonly _TAG_METADATA_LIST = TAG_METADATA_LIST;
 
-  private static _UNUSED_TAGS = UNUSED_TAGS;
-  private static _NON_SCHOOL_TAGS = NON_SCHOOL_TAGS;
+  private static _UNUSED_TAGS: readonly Tag[] = UNUSED_TAGS;
+  private static _NON_SCHOOL_TAGS: readonly Tag[] = NON_SCHOOL_TAGS;
 
   private static readonly _TOPIC_METADATA_LIST = TOPIC_METADATA_LIST;
 

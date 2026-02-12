@@ -1,9 +1,9 @@
+import { Tag } from "@/lib/api/types/schema";
 import { ApiUtils } from "@/lib/api/utils";
-import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { Box, Center, Image, Text } from "@mantine/core";
 
 type OrgHeaderProps = {
-  orgTag?: ApiTypeUtils.FilteredTag;
+  orgTag?: Tag;
 };
 
 export default function OrgHeader({ orgTag }: OrgHeaderProps) {
