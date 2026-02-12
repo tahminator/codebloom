@@ -34,8 +34,7 @@ pub async fn init(creds: &RedisCredentials) -> Result<(), RedisClientError> {
     let info = creds
         .redis_uri
         .clone()
-        .into_connection_info()
-        .expect("Invalid URI")
+        .into_connection_info()?
         .set_tcp_settings(tcp_settings);
 
     let client = redis::Client::open(info)?;
