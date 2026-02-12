@@ -17,20 +17,43 @@ import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import io.micrometer.core.annotation.Timed;
+
 /** Provides read-only access to the Github email account in order to access the OAuth code. */
 @Component
-@EnableConfigurationProperties(GithubOAuthEmailProperties.class)
+<<<<<<< Updated upstream:src/main/java/org/patinanetwork/codebloom/common/email/client/github/GithubOAuthEmailClient.java
+<<<<<<< Updated upstream:src/main/java/org/patinanetwork/codebloom/common/email/client/github/GithubOAuthEmailClient.java
+@EnableConfigurationProperties(GithubOAuthEmailClientProperties.class)
 @Timed(value = "email.client.execution")
-public class GithubOAuthEmail extends Email {
+public class GithubOAuthEmailClient extends Email {
 
-    private final GithubOAuthEmailProperties emailProperties;
+    private final GithubOAuthEmailClientProperties emailClientProperties;
     private static Session session;
 
-    public GithubOAuthEmail(final GithubOAuthEmailProperties emailProperties) {
+    public GithubOAuthEmailClient(final GithubOAuthEmailClientProperties emailClientProperties) {
+        this.emailClientProperties = emailClientProperties;
+=======
+=======
+>>>>>>> Stashed changes:src/main/java/org/patinanetwork/codebloom/common/email/client/github/GithubOAuthEmail.java
+<<<<<<< Updated upstream:src/main/java/org/patinanetwork/codebloom/common/email/client/github/GithubOAuthEmail.java
+@EnableConfigurationProperties(GithubOAuthEmailProperties.class)
+@Timed(value = "emailclient.execution")
+public class GithubOAuthEmail extends Email {
+=======
+@EnableConfigurationProperties(GithubOAuthEmailClientProperties.class)
+@Timed(value = "emailclient.execution")
+public class GithubOAuthEmailClient extends Email {
+>>>>>>> Stashed changes:src/main/java/org/patinanetwork/codebloom/common/email/client/github/GithubOAuthEmailClient.java
+
+    private final GithubOAuthEmailClientProperties emailProperties;
+    private static Session session;
+
+    public GithubOAuthEmailClient(final GithubOAuthEmailClientProperties emailProperties) {
         this.emailProperties = emailProperties;
+>>>>>>> Stashed changes:src/main/java/org/patinanetwork/codebloom/common/email/client/github/GithubOAuthEmail.java
         final Properties properties = new Properties();
-        properties.setProperty("mail.imap.host", emailProperties.getHost());
-        properties.setProperty("mail.imap.port", emailProperties.getPort());
+        properties.setProperty("mail.imap.host", emailClientProperties.getHost());
+        properties.setProperty("mail.imap.port", emailClientProperties.getPort());
         properties.setProperty("mail.imap.ssl.enable", "true");
         properties.setProperty("mail.imap.auth", "true");
         properties.setProperty("mail.store.protocol", "imap");
@@ -42,7 +65,10 @@ public class GithubOAuthEmail extends Email {
         try {
             final Store store = session.getStore("imap");
 
-            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
+            store.connect(
+                    emailClientProperties.getHost(),
+                    emailClientProperties.getUsername(),
+                    emailClientProperties.getPassword());
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);
@@ -81,7 +107,7 @@ public class GithubOAuthEmail extends Email {
     @Override
     @Deprecated
     public void sendMessage(final SendEmailOptions sendEmailOptions) throws EmailException {
-        throw new UnsupportedOperationException("GithubOAuthEmail does not support sending messages.");
+        throw new UnsupportedOperationException("GithubOAuthEmailClient does not support sending messages.");
     }
 
     @Override
@@ -89,7 +115,10 @@ public class GithubOAuthEmail extends Email {
         try {
             final Store store = session.getStore("imap");
 
-            store.connect(emailProperties.getHost(), emailProperties.getUsername(), emailProperties.getPassword());
+            store.connect(
+                    emailClientProperties.getHost(),
+                    emailClientProperties.getUsername(),
+                    emailClientProperties.getPassword());
 
             final Folder emailFolder = store.getFolder("Inbox");
             emailFolder.open(Folder.READ_ONLY);

@@ -1,7 +1,7 @@
 package org.patinanetwork.codebloom.common.db.repos;
 
-import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
-import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmail;
+import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmailClient;
+import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmailClient;
 import org.patinanetwork.codebloom.jda.JDAInitializer;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -16,8 +16,16 @@ public class BaseRepositoryTest {
     private JDAInitializer jdaInitializer;
 
     @MockitoBean
-    private OfficialCodebloomEmail codebloomEmail;
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    private OfficialCodebloomEmailClient codebloomEmailClient;
+=======
+    private OfficialCodebloomEmailClient codebloomEmail;
+>>>>>>> Stashed changes
+=======
+    private OfficialCodebloomEmailClient codebloomEmail;
+>>>>>>> Stashed changes
 
     @MockitoBean
-    private GithubOAuthEmail githubOAuthEmail;
+    private GithubOAuthEmailClient githubOAuthEmailClient;
 }

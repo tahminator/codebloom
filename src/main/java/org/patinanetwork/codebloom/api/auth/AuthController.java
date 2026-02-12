@@ -24,10 +24,12 @@ import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.Empty;
 import org.patinanetwork.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import org.patinanetwork.codebloom.common.dto.security.AuthenticationObjectDto;
-import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
+import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmailClient;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
-import org.patinanetwork.codebloom.common.email.template.ReactEmailClient;
+import org.patinanetwork.codebloom.common.email.template.ReactEmailTemplater;
+import org.patinanetwork.codebloom.common.email.template.ReactEmail;
+import org.patinanetwork.codebloom.common.email.template.ReactEmail;
 import org.patinanetwork.codebloom.common.jwt.JWTClient;
 import org.patinanetwork.codebloom.common.lag.FakeLag;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
@@ -65,11 +67,19 @@ public class AuthController {
     private final Protector protector;
     private final JWTClient jwtClient;
     private final UserRepository userRepository;
-    private final OfficialCodebloomEmail emailClient;
+    private final OfficialCodebloomEmailClient emailClient;
     private final ServerUrlUtils serverUrlUtils;
     private final UserTagRepository userTagRepository;
     private final Reporter reporter;
-    private final ReactEmailClient reactEmailClient;
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    private final ReactEmailTemplater reactEmailTemplater;
+=======
+    private final ReactEmail reactEmail;
+>>>>>>> Stashed changes
+=======
+    private final ReactEmail reactEmail;
+>>>>>>> Stashed changes
     private final SimpleRedis<Long> simpleRedis;
 
     public AuthController(
@@ -77,11 +87,19 @@ public class AuthController {
             final Protector protector,
             final JWTClient jwtClient,
             final UserRepository userRepository,
-            final OfficialCodebloomEmail emailClient,
+            final OfficialCodebloomEmailClient emailClient,
             final ServerUrlUtils serverUrlUtils,
             final UserTagRepository userTagRepository,
             final Reporter reporter,
-            final ReactEmailClient reactEmailClient,
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+            final ReactEmailTemplater reactEmailTemplater,
+=======
+            final ReactEmail reactEmail,
+>>>>>>> Stashed changes
+=======
+            final ReactEmail reactEmail,
+>>>>>>> Stashed changes
             final SimpleRedisProvider simpleRedisProvider) {
         this.sessionRepository = sessionRepository;
         this.protector = protector;
@@ -91,7 +109,14 @@ public class AuthController {
         this.serverUrlUtils = serverUrlUtils;
         this.userTagRepository = userTagRepository;
         this.reporter = reporter;
-        this.reactEmailClient = reactEmailClient;
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+        this.reactEmailTemplater = reactEmailTemplater;
+=======
+        this.reactEmail = reactEmail;
+=======
+        this.reactEmail = reactEmail;
+>>>>>>> Stashed changes
         this.simpleRedis = simpleRedisProvider.select(SimpleRedisSlot.VERIFICATION_EMAIL_SENDING);
     }
 
@@ -238,7 +263,15 @@ public class AuthController {
             emailClient.sendMessage(SendEmailOptions.builder()
                     .recipientEmail(email)
                     .subject("Hello from Codebloom!")
-                    .body(reactEmailClient.schoolEmailTemplate(verificationLink))
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+                    .body(reactEmailTemplater.schoolEmailTemplate(verificationLink))
+=======
+                    .body(reactEmail.schoolEmailTemplate(verificationLink))
+>>>>>>> Stashed changes
+=======
+                    .body(reactEmail.schoolEmailTemplate(verificationLink))
+>>>>>>> Stashed changes
                     .build());
             return ResponseEntity.ok()
                     .body(ApiResponder.success("Magic link sent! Check your school inbox to continue.", Empty.of()));

@@ -22,14 +22,31 @@ import org.springframework.stereotype.Component;
  * <p>For example, we use this client to send emails to users who are trying to verify their school status.
  */
 @Component
-@EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+@EnableConfigurationProperties(OfficialCodebloomEmailClientProperties.class)
 @Timed(value = "email.client.execution")
+public class OfficialCodebloomEmailClient extends Email {
+=======
+=======
+>>>>>>> Stashed changes
+<<<<<<< Updated upstream:src/main/java/org/patinanetwork/codebloom/common/email/client/codebloom/OfficialCodebloomEmail.java
+@EnableConfigurationProperties(OfficialCodebloomEmailProperties.class)
+@Timed(value = "emailclient.execution")
 public class OfficialCodebloomEmail extends Email {
+=======
+@EnableConfigurationProperties(OfficialCodebloomEmailClientProperties.class)
+public class OfficialCodebloomEmailClient extends Email {
+>>>>>>> Stashed changes:src/main/java/org/patinanetwork/codebloom/common/email/client/codebloom/OfficialCodebloomEmailClient.java
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
-    private final OfficialCodebloomEmailProperties emailProperties;
+    private final OfficialCodebloomEmailClientProperties emailProperties;
     private Session session;
 
-    public OfficialCodebloomEmail(final OfficialCodebloomEmailProperties emailProperties) {
+    public OfficialCodebloomEmailClient(final OfficialCodebloomEmailClientProperties emailProperties) {
         this.emailProperties = emailProperties;
         final Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", emailProperties.getHost());

@@ -3,7 +3,7 @@ package org.patinanetwork.codebloom.common.email.client.codebloom;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "codebloom.email")
-public class OfficialCodebloomEmailProperties {
+public class OfficialCodebloomEmailClientProperties {
 
     private String host;
     private String port;

@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 @Component
-public class ReactEmailClientImpl implements ReactEmailClient {
+<<<<<<<< Updated upstream:src/main/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTemplaterImpl.java
+public class ReactEmailTemplaterImpl implements ReactEmailTemplater {
+========
+public class ReactEmailImpl implements ReactEmail {
+>>>>>>>> Stashed changes:src/main/java/org/patinanetwork/codebloom/common/email/template/ReactEmailImpl.java
 
     private String getHtmlAsString(final String path) throws IOException {
         ClassPathResource resource = new ClassPathResource(path);

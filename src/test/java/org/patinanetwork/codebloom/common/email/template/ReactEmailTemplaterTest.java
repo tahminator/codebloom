@@ -9,17 +9,33 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 
-class ReactEmailClientTest {
+<<<<<<<< Updated upstream:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTemplaterTest.java
+<<<<<<<< Updated upstream:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTemplaterTest.java
+class ReactEmailTemplaterTest {
 
     @Test
     void exampleTemplateTest() throws IOException {
-        ReactEmailClient client = new ReactEmailClientImpl();
+        ReactEmailTemplater templater = new ReactEmailTemplaterImpl();
+========
+class ReactEmailTest {
+
+    @Test
+    void exampleTemplateTest() throws IOException {
+        ReactEmail client = new ReactEmailImpl();
+>>>>>>>> Stashed changes:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTest.java
+========
+class ReactEmailTest {
+
+    @Test
+    void exampleTemplateTest() throws IOException {
+        ReactEmail client = new ReactEmailImpl();
+>>>>>>>> Stashed changes:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTest.java
 
         String recipientName = "Example";
         String verifyUrl = "https://example.com";
         String supportEmail = "codebloom@patinanetwork.org";
 
-        String renderedHtml = client.createExampleTemplate(recipientName, verifyUrl, supportEmail);
+        String renderedHtml = templater.createExampleTemplate(recipientName, verifyUrl, supportEmail);
 
         Document doc = Jsoup.parse(renderedHtml);
 
@@ -46,10 +62,18 @@ class ReactEmailClientTest {
 
     @Test
     void emailTest() throws IOException {
-        ReactEmailClient client = new ReactEmailClientImpl();
+<<<<<<<< Updated upstream:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTemplaterTest.java
+<<<<<<<< Updated upstream:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTemplaterTest.java
+        ReactEmailTemplater templater = new ReactEmailTemplaterImpl();
+========
+        ReactEmail client = new ReactEmailImpl();
+>>>>>>>> Stashed changes:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTest.java
+========
+        ReactEmail client = new ReactEmailImpl();
+>>>>>>>> Stashed changes:src/test/java/org/patinanetwork/codebloom/common/email/template/ReactEmailTest.java
         String verifyUrl = "https://example.com/example/href";
 
-        String renderedHtml = client.schoolEmailTemplate(verifyUrl);
+        String renderedHtml = templater.schoolEmailTemplate(verifyUrl);
 
         Document doc = Jsoup.parse(renderedHtml);
 
