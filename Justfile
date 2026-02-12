@@ -22,7 +22,7 @@ copy-stg *args:
 
 # Run the backend Spring server
 backend-dev *args:
-  dotenvx run -- ./mvnw -Dspring-boot.run.profiles=dev spring-boot:run {{args}}
+  dotenvx run -f .env.shared -f .env -- ./mvnw -Dspring-boot.run.profiles=dev spring-boot:run {{args}}
 
 # Run the backend Spring server with an exposed debugger at :5005
 backend-dev-debug *args:
