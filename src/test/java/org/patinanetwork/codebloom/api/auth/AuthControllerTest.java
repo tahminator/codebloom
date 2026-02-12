@@ -27,10 +27,10 @@ import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.session.SessionRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.db.repos.usertag.UserTagRepository;
-import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
+import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmailClient;
 import org.patinanetwork.codebloom.common.email.error.EmailException;
 import org.patinanetwork.codebloom.common.email.options.SendEmailOptions;
-import org.patinanetwork.codebloom.common.email.template.ReactEmailClient;
+import org.patinanetwork.codebloom.common.email.template.ReactEmailTemplater;
 import org.patinanetwork.codebloom.common.jwt.JWTClient;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.common.schools.magic.MagicLink;
@@ -50,11 +50,11 @@ public class AuthControllerTest {
     private final Protector protector = mock(Protector.class);
     private final JWTClient jwtClient = mock(JWTClient.class);
     private final UserRepository userRepository = mock(UserRepository.class);
-    private final OfficialCodebloomEmail emailClient = mock(OfficialCodebloomEmail.class);
+    private final OfficialCodebloomEmailClient emailClient = mock(OfficialCodebloomEmailClient.class);
     private final ServerUrlUtils serverUrlUtils = mock(ServerUrlUtils.class);
     private final UserTagRepository userTagRepository = mock(UserTagRepository.class);
     private final Reporter reporter = mock(Reporter.class);
-    private final ReactEmailClient reactEmailClient = mock(ReactEmailClient.class);
+    private final ReactEmailTemplater reactEmailTemplater = mock(ReactEmailTemplater.class);
     private final SimpleRedis<Long> simpleRedis = mock(SimpleRedis.class);
     private final SimpleRedisProvider simpleRedisProvider = mock(SimpleRedisProvider.class);
 
@@ -74,7 +74,7 @@ public class AuthControllerTest {
                 serverUrlUtils,
                 userTagRepository,
                 reporter,
-                reactEmailClient,
+                reactEmailTemplater,
                 simpleRedisProvider);
         this.faker = Faker.instance();
     }
@@ -284,7 +284,7 @@ public class AuthControllerTest {
         when(protector.validateSession(request)).thenReturn(authObj);
         when(jwtClient.encode(any(MagicLink.class), any(Duration.class))).thenReturn("mock-token");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
-        when(reactEmailClient.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
+        when(reactEmailTemplater.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
         doThrow(new EmailException("Failed to send email")).when(emailClient).sendMessage(any(SendEmailOptions.class));
 
         ResponseStatusException exception =
@@ -311,7 +311,7 @@ public class AuthControllerTest {
         when(simpleRedis.containsKey(user.getId())).thenReturn(false);
         when(jwtClient.encode(any(MagicLink.class), any(Duration.class))).thenReturn("mock-token");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
-        when(reactEmailClient.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
+        when(reactEmailTemplater.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
 
         var response = authController.enrollSchool(emailBody, request);
 
