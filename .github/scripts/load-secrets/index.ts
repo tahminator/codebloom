@@ -1,7 +1,6 @@
 import { getEnvVariables } from "load-secrets/env/load";
-
-// UNLOAD_ENVIRONMENTS="prod,staging,dev"
-const unloadEnvironments = process.env.UNLOAD_ENVIRONMENTS || "";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 const excludedVars = [
   "PATH",
@@ -19,7 +18,21 @@ const excludedVars = [
  * @deprecated this is no longer a supported flow.
  */
 async function main() {
-  const envs = unloadEnvironments
+  const argv = await yargs(hideBin(process.argv))
+    .option("envs", {
+      type: "string",
+      describe: "Env names (ex: prod,staging,dev)",
+      demandOption: true,
+    })
+    .option("github-env", {
+      type: "string",
+      describe: "Path to GITHUB_ENV",
+      default: process.env.GITHUB_ENV,
+    })
+    .strict()
+    .parse();
+
+  const envs = argv.envs
     .split(",")
     .map((e) => e.trim())
     .filter(Boolean);
@@ -28,7 +41,7 @@ async function main() {
     mask_PLZ_DO_NOT_TURN_OFF_UNLESS_YOU_KNOW_WHAT_UR_DOING: false,
   });
 
-  const githubEnv = process.env.GITHUB_ENV;
+  const githubEnv = argv["github-env"];
   if (!githubEnv) {
     console.log("Warning: GITHUB_ENV not set, skipping variable export");
     return;
