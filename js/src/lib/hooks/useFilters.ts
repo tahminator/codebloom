@@ -1,16 +1,12 @@
 import { Tag } from "@/lib/api/types/schema";
 import { ApiUtils } from "@/lib/api/utils";
-import { ApiTypeUtils } from "@/lib/api/utils/types";
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useImmer } from "use-immer";
 
-export type TagEnumToBooleanFilterObject = Record<
-  ApiTypeUtils.FilteredTag,
-  boolean
->;
+export type TagEnumToBooleanFilterObject = Record<Tag, boolean>;
 
-export type ToggleTagEnumFn = (tagEnum: ApiTypeUtils.FilteredTag) => void;
+export type ToggleTagEnumFn = (tagEnum: Tag) => void;
 
 function getUrlKey(tagEnum: Tag) {
   return ApiUtils.getMetadataByTagEnum(tagEnum).apiKey;
@@ -27,7 +23,7 @@ function getUrlKey(tagEnum: Tag) {
  * URL params and updates whenever filters are toggled.
  *
  * @param {Object} options - Configuration options for the hook.
- * @param {(tagEnum: ApiTypeUtils.FilteredTag) => void} options.onFilterChange - (Optional) When `toggleFilter` is called, `onFilterChange` will be triggered 
+ * @param {(tagEnum: Tag) => void} options.onFilterChange - (Optional) When `toggleFilter` is called, `onFilterChange` will be triggered 
  * to run any side-effects.
  *
  * @returns An object containing:
@@ -54,7 +50,7 @@ export function useFilters({
   onFilterChange,
 }:
   | {
-      onFilterChange?: (tagEnum: ApiTypeUtils.FilteredTag) => void;
+      onFilterChange?: (tagEnum: Tag) => void;
     }
   | undefined = {}) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -65,14 +61,14 @@ export function useFilters({
     const kvTuples = ApiUtils.getAllTagEnums().map((tagEnum) => [
       tagEnum,
       searchParams.get(getUrlKey(tagEnum)) === "true",
-    ]) as [ApiTypeUtils.FilteredTag, boolean][]; // slight type trickery because TS
+    ]) as [Tag, boolean][]; // slight type trickery because TS
     // doesn't know which type is a key and which is a value; we help it out here a little.
 
     return Object.typedFromEntries(kvTuples);
   });
 
   const toggleFilter: ToggleTagEnumFn = useCallback(
-    (tagEnum: ApiTypeUtils.FilteredTag) => {
+    (tagEnum: Tag) => {
       const key = getUrlKey(tagEnum);
       const prevValue = filters[tagEnum];
 

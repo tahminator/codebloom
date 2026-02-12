@@ -91,10 +91,10 @@ export const TAG_METADATA_LIST: Record<Tag, ApiTypeUtils.TagMetadata> = {
   },
 } as const;
 
-export const UNUSED_TAGS: Tag[] = [Tag.Gwc, Tag.MHCPlusPlus];
-export const NON_SCHOOL_TAGS: Tag[] = [
+export const UNUSED_TAGS = [Tag.Gwc, Tag.MHCPlusPlus] as const;
+export const NON_SCHOOL_TAGS = [
   ...UNUSED_TAGS,
   Tag.Patina,
   Tag.MHCPlusPlus,
   Tag.Gwc,
-];
+] as const;
