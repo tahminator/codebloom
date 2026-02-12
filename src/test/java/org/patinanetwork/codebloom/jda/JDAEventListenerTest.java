@@ -28,11 +28,11 @@ class JDAEventListenerTest {
     @Mock
     private JDAClientManager clientManager; // unused but required by constructor
 
-    private JDAEventListener listener;
+    private JDACommandRegisterHandler listener;
 
     @BeforeEach
     void setUp() {
-        listener = new JDAEventListener(discordClubManager, clientManager);
+        listener = new JDACommandRegisterHandler();
     }
 
     @Test

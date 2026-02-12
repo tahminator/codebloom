@@ -19,12 +19,15 @@ import org.springframework.stereotype.Component;
 public class JDAClientManager {
 
     private final JDAProperties jdaProperties;
+    private final JDACommandRegisterHandler jdaCommandRegisterHandler;
 
     @Getter
     private final JDA client;
 
-    public JDAClientManager(final JDAProperties jdaProperties) throws InterruptedException {
+    public JDAClientManager(final JDAProperties jdaProperties, JDACommandRegisterHandler jdaCommandRegisterHandler)
+            throws InterruptedException {
         this.jdaProperties = jdaProperties;
+        this.jdaCommandRegisterHandler = jdaCommandRegisterHandler;
         this.client = initializeJda();
     }
 
@@ -33,6 +36,7 @@ public class JDAClientManager {
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .addEventListeners(jdaCommandRegisterHandler)
                 .build();
 
         jda.awaitReady();

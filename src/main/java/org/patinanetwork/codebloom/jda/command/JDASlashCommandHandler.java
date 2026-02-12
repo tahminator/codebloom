@@ -1,41 +1,29 @@
-package org.patinanetwork.codebloom.jda;
+package org.patinanetwork.codebloom.jda.command;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.patinanetwork.codebloom.common.components.DiscordClubManager;
 import org.springframework.stereotype.Component;
 
-/** Do not remove this. JDA requires at least one listener in order to function. */
 @Component
-public class JDAEventListener extends ListenerAdapter {
+public class JDASlashCommandHandler extends ListenerAdapter {
 
     private final DiscordClubManager discordClubManager;
 
-    public JDAEventListener(final DiscordClubManager discordClubManager, final JDAClientManager clientManager) {
+    public JDASlashCommandHandler(DiscordClubManager discordClubManager) {
         this.discordClubManager = discordClubManager;
-    }
-
-    public void say(final SlashCommandInteractionEvent event, final String content) {
-        event.reply(content).queue(); // This requires no permissions!
-    }
-
-    @Override
-    public void onReady(final ReadyEvent event) {
-        for (Guild guild : event.getJDA().getGuilds()) {
-            guild.upsertCommand("leaderboard", "Shows the current weekly leaderboard")
-                    .queue();
-        }
     }
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (!event.getName().equals("leaderboard")) {
-            return;
+        switch (JDASlashCommand.fromCommand(event.getName())) {
+            case LEADERBOARD -> handleLeaderboardSlashCommand(event);
+            default -> throw new IllegalArgumentException("Unknown slash command: " + event.getName());
         }
+    }
 
+    private void handleLeaderboardSlashCommand(SlashCommandInteractionEvent event) {
         if (event.getGuild() == null) {
             event.reply("This command can only be used in a server.")
                     .setEphemeral(true)
