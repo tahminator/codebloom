@@ -78,7 +78,7 @@ export default function OrgLeaderboardEmbed() {
   }, [filters, onFilterReset]);
 
   if (status === "pending") {
-    return <LeaderboardSkeleton />;
+    return <LeaderboardSkeleton embedded />;
   }
 
   if (status === "error") {
@@ -120,22 +120,20 @@ export default function OrgLeaderboardEmbed() {
         mb="md"
       >
         {page === 1 && second && !debouncedQuery && (
-          <Box>
-            <LeaderboardCard
-              placeString={getOrdinal(second.index)}
-              sizeOrder={2}
-              discordName={second.discordName}
-              startDate={dateRange?.startDate}
-              endDate={dateRange?.endDate}
-              leetcodeUsername={second.leetcodeUsername}
-              totalScore={second.totalScore}
-              nickname={second.nickname}
-              width={"200px"}
-              userId={second.id as string}
-              isLoading={isPlaceholderData}
-              embedded
-            />
-          </Box>
+          <LeaderboardCard
+            placeString={getOrdinal(second.index)}
+            sizeOrder={2}
+            discordName={second.discordName}
+            startDate={dateRange?.startDate}
+            endDate={dateRange?.endDate}
+            leetcodeUsername={second.leetcodeUsername}
+            totalScore={second.totalScore}
+            nickname={second.nickname}
+            width={"200px"}
+            userId={second.id as string}
+            isLoading={isPlaceholderData}
+            embedded
+          />
         )}
         {page === 1 && first && !debouncedQuery && (
           <LeaderboardCard
