@@ -277,7 +277,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             (:ccny = TRUE AND ut.tag = 'Ccny') OR
                             (:columbia = TRUE AND ut.tag = 'Columbia') OR
                             (:cornell = TRUE AND ut.tag = 'Cornell') OR
-                            (:bmcc = TRUE AND ut.tag = 'Bmcc')
+                            (:bmcc = TRUE AND ut.tag = 'Bmcc') OR
+                            (:mhcplusplus = TRUE AND ut.tag = 'MHCPlusPlus')
                         )
                         AND (
                             -- Any tag is valid for current leaderboard
@@ -290,7 +291,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     )
                     OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE
                     AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
-                    AND :cornell = FALSE AND :bmcc = FALSE)
+                    AND :cornell = FALSE AND :bmcc = FALSE AND :mhcplusplus = FALSE)
                 )
             )
             SELECT
@@ -323,6 +324,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("columbia", options.isColumbia());
             stmt.setBoolean("cornell", options.isCornell());
             stmt.setBoolean("bmcc", options.isBmcc());
+            stmt.setBoolean("mhcplusplus", options.isMhcplusplus());
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     var userId = rs.getString("userId");
@@ -446,7 +448,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             (:ccny = TRUE AND ut.tag = 'Ccny') OR
                             (:columbia = TRUE AND ut.tag = 'Columbia') OR
                             (:cornell = TRUE AND ut.tag = 'Cornell') OR
-                            (:bmcc = TRUE AND ut.tag = 'Bmcc')
+                            (:bmcc = TRUE AND ut.tag = 'Bmcc') OR
+                            (:mhcplusplus = TRUE AND ut.tag = 'MHCPlusPlus')
                         )
                         AND (
                             -- Any tag is valid for current leaderboard
@@ -459,7 +462,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     )
                     OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE
                     AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
-                    AND :cornell = FALSE AND :bmcc = FALSE)
+                    AND :cornell = FALSE AND :bmcc = FALSE AND :mhcplusplus = FALSE)
                 )
             )
             SELECT
@@ -486,6 +489,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("columbia", options.isColumbia());
             stmt.setBoolean("cornell", options.isCornell());
             stmt.setBoolean("bmcc", options.isBmcc());
+            stmt.setBoolean("mhcplusplus", options.isMhcplusplus());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -547,7 +551,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                         (:ccny = TRUE AND ut.tag = 'Ccny') OR
                         (:columbia = TRUE AND ut.tag = 'Columbia') OR
                         (:cornell = TRUE AND ut.tag = 'Cornell') OR
-                        (:bmcc = TRUE AND ut.tag = 'Bmcc')
+                        (:bmcc = TRUE AND ut.tag = 'Bmcc') OR
+                        (:mhcplusplus = TRUE AND ut.tag = 'MHCPlusPlus')
                     )
                     AND (
                         -- Any tag is valid for current leaderboard
@@ -560,7 +565,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 )
                 OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE
                 AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
-                AND :bmcc = FALSE)
+                AND :cornell = FALSE AND :bmcc = FALSE AND :mhcplusplus = FALSE)
             )
             AND
                 (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery OR u."nickname" ILIKE :searchQuery)
@@ -594,6 +599,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("columbia", options.isColumbia());
             stmt.setBoolean("cornell", options.isCornell());
             stmt.setBoolean("bmcc", options.isBmcc());
+            stmt.setBoolean("mhcplusplus", options.isMhcplusplus());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             stmt.setInt("pageSize", options.getPageSize());
             stmt.setInt("pageNumber", (options.getPage() - 1) * options.getPageSize());
@@ -849,7 +855,8 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                             (:ccny = TRUE AND ut.tag = 'Ccny') OR
                             (:columbia = TRUE AND ut.tag = 'Columbia') OR
                             (:cornell = TRUE AND ut.tag = 'Cornell') OR
-                            (:bmcc = TRUE AND ut.tag = 'Bmcc')
+                            (:bmcc = TRUE AND ut.tag = 'Bmcc') OR
+                            (:mhcplusplus = TRUE AND ut.tag = 'MHCPlusPlus')
                         )
                         AND (
                             -- Any tag is valid for current leaderboard
@@ -862,7 +869,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                     )
                     OR (:patina = FALSE AND :hunter = FALSE AND :nyu = FALSE AND :baruch = FALSE
                     AND :rpi = FALSE AND :gwc = FALSE AND :sbu = FALSE AND :ccny = FALSE AND :columbia = FALSE
-                    AND :cornell = FALSE AND :bmcc = FALSE)
+                    AND :cornell = FALSE AND :bmcc = FALSE AND :mhcplusplus = FALSE)
                 )
                 AND
                     (u."discordName" ILIKE :searchQuery OR u."leetcodeUsername" ILIKE :searchQuery)
@@ -880,6 +887,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setBoolean("columbia", options.isColumbia());
             stmt.setBoolean("cornell", options.isCornell());
             stmt.setBoolean("bmcc", options.isBmcc());
+            stmt.setBoolean("mhcplusplus", options.isMhcplusplus());
             stmt.setString("searchQuery", "%" + options.getQuery() + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
