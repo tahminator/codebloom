@@ -1,6 +1,8 @@
 package org.patinanetwork.codebloom.jda;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @EnableConfigurationProperties(JDAProperties.class)
+@Slf4j
 public class JDAClientManager {
 
     private final JDAProperties jdaProperties;
@@ -24,14 +27,14 @@ public class JDAClientManager {
     @Getter
     private final JDA client;
 
-    public JDAClientManager(final JDAProperties jdaProperties, JDACommandRegisterHandler jdaCommandRegisterHandler)
-            throws InterruptedException {
+    public JDAClientManager(final JDAProperties jdaProperties, JDACommandRegisterHandler jdaCommandRegisterHandler) {
         this.jdaProperties = jdaProperties;
         this.jdaCommandRegisterHandler = jdaCommandRegisterHandler;
         this.client = initializeJda();
     }
 
-    public JDA initializeJda() throws InterruptedException {
+    public JDA initializeJda() {
+        IO.println("does token exist? " + String.valueOf(!Strings.isNullOrEmpty(jdaProperties.getToken())));
         final JDA jda = JDABuilder.createDefault(jdaProperties.getToken())
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setChunkingFilter(ChunkingFilter.ALL)
@@ -39,7 +42,12 @@ public class JDAClientManager {
                 .addEventListeners(jdaCommandRegisterHandler)
                 .build();
 
-        jda.awaitReady();
+        try {
+            jda.awaitReady();
+        } catch (InterruptedException e) {
+            log.error("JDA::awaitReady interrupted", e);
+            Thread.currentThread().interrupt();
+        }
 
         return jda;
     }

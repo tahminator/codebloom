@@ -1,6 +1,7 @@
 package org.patinanetwork.codebloom.config;
 
 import org.patinanetwork.codebloom.jda.JDAClientManager;
+import org.patinanetwork.codebloom.jda.command.JDASlashCommandInitializer;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
@@ -14,4 +15,7 @@ public class NoJdaRequired {
 
     @MockitoBean
     private JDAClientManager jdaInitializer;
+
+    @MockitoBean
+    private JDASlashCommandInitializer jdaSlashCommandInitializer;
 }

@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.db.repos;
 import org.patinanetwork.codebloom.common.email.client.codebloom.OfficialCodebloomEmail;
 import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmail;
 import org.patinanetwork.codebloom.jda.JDAClientManager;
+import org.patinanetwork.codebloom.jda.command.JDASlashCommandInitializer;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
@@ -13,7 +14,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 public class BaseRepositoryTest {
 
     @MockitoBean
-    private JDAClientManager jdaInitializer;
+    private JDAClientManager jdaClientManager;
+
+    @MockitoBean
+    private JDASlashCommandInitializer jdaSlashCommandInitializer;
 
     @MockitoBean
     private OfficialCodebloomEmail codebloomEmail;
