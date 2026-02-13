@@ -14,10 +14,20 @@ export default function LeaderboardSkeleton({
         {embedded && (
           <>
             <Center mb="xs">
-              <Skeleton visible w="2.2rem" h="2.2rem" />
+              <Skeleton
+                visible
+                w="2.2rem"
+                h="2.2rem"
+                data-testid="leaderboard-skeleton-org-header"
+              />
             </Center>
             <Center mb="xs">
-              <Skeleton visible w="9rem" h="2rem" />
+              <Skeleton
+                visible
+                w="9rem"
+                h="2rem"
+                data-testid="leaderboard-skeleton-visit-codebloom-button"
+              />
             </Center>
           </>
         )}
@@ -43,6 +53,7 @@ export default function LeaderboardSkeleton({
                   key={index}
                   width={embedded ? "200px" : "300px"}
                   height={height}
+                  data-testid="leaderboard-skeleton-podium"
                 />
               );
             })}
