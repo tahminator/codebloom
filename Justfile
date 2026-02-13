@@ -45,11 +45,11 @@ backend-spotless-fix *args:
 
 # Run backend linter, formatter, & tests
 backend-test *args:
-  just backend-spotless && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
+  just backend-spotless && dotenvx run -f .env.shared -f .env -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
 
 # Run backend tests with a debugger
 backend-testd *args:
-  just backend-spotless && dotenvx run -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
+  just backend-spotless && dotenvx run -f .env.shared -f .env -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
 
 # Run the frontend 
 frontend-dev *args:
