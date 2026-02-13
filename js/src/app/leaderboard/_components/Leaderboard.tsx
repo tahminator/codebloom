@@ -32,7 +32,9 @@ import {
   Stack,
   Text,
   Tooltip,
+  Menu,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { FaArrowLeft, FaArrowRight, FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
@@ -101,6 +103,7 @@ function LeaderboardIndex({
     isAnyFilterEnabled,
     onFilterReset,
   } = query;
+  const isMobile = useMediaQuery("(max-width: 48em)");
 
   if (status === "pending") {
     return <LeaderboardSkeleton />;
@@ -216,6 +219,51 @@ function LeaderboardIndex({
                 toggle={() => toggleFilter(tagEnum)}
               />
             ))}
+          <Divider my="sm" />
+          <Menu.Sub
+            offset={8}
+            closeDelay={200}
+            position={isMobile ? "bottom-start" : "right-start"}
+          >
+            <Menu.Sub.Target>
+              <Menu.Sub.Item closeMenuOnClick={false}>Clubs</Menu.Sub.Item>
+            </Menu.Sub.Target>
+            <Menu.Sub.Dropdown>
+              {Object.typedEntries(ApiUtils.getAllParentTags())
+                .filter(([, childTags]) => childTags.length > 0)
+                .map(([parentTag, childTags]) => (
+                  <Box key={parentTag}>
+                    <Menu.Label>
+                      {ApiUtils.getMetadataByTagEnum(parentTag).shortName}
+                    </Menu.Label>
+                    {childTags.map((childTag) => (
+                      <FilterDropdownItem
+                        key={childTag}
+                        name={() => {
+                          const metadata =
+                            ApiUtils.getMetadataByTagEnum(childTag);
+
+                          return (
+                            <Flex gap={"xs"} align={"center"}>
+                              {metadata.shortName}
+                              <Image
+                                src={metadata.icon}
+                                alt={metadata.alt}
+                                style={{ height: "2em", width: "auto" }}
+                              />
+                            </Flex>
+                          );
+                        }}
+                        value={filters[childTag as keyof typeof filters]}
+                        toggle={() =>
+                          toggleFilter(childTag as keyof typeof filters)
+                        }
+                      />
+                    ))}
+                  </Box>
+                ))}
+            </Menu.Sub.Dropdown>
+          </Menu.Sub>
           <FilterDropdownItem
             value={globalIndex}
             toggle={toggleGlobalIndex}
