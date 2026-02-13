@@ -31,7 +31,7 @@ describe("OrgEmbedView API Succeeded", () => {
   it("should render loading state initially", () => {
     renderProviderFn?.(<OrgEmbedView />);
 
-    const element = screen.getByTestId("leaderboard-skeleton-name");
+    const element = screen.getByTestId("leaderboard-skeleton-search-box");
     expect(element).toBeInTheDocument();
     expect(element).toBeVisible();
   });
@@ -54,7 +54,7 @@ describe("OrgEmbedView API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -107,7 +107,7 @@ describe("OrgEmbedView API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -161,7 +161,7 @@ describe("OrgEmbedView API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -177,7 +177,7 @@ describe("OrgEmbedView API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 

@@ -32,7 +32,7 @@ export default function LeaderboardSkeleton({
             .fill(0)
             .map((_, index) => {
               const height = (() => {
-                if (index === 1) return embedded ? "150px" : "225";
+                if (index === 1) return embedded ? "150px" : "225px";
                 if (index === 0) return embedded ? "140px" : "215px";
                 if (index === 2) return embedded ? "135px" : "210px";
               })();
@@ -58,7 +58,12 @@ export default function LeaderboardSkeleton({
           </Flex>
         )}
         <Center mb="md" pt="md">
-          <Skeleton visible width="100%" height="36px" />
+          <Skeleton
+            visible
+            width="100%"
+            height="36px"
+            data-testid="leaderboard-skeleton-search-box"
+          />
         </Center>
         {Array(17)
           .fill(0)
