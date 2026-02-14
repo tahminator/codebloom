@@ -254,10 +254,8 @@ function LeaderboardIndex({
                             </Flex>
                           );
                         }}
-                        value={filters[childTag as keyof typeof filters]}
-                        toggle={() =>
-                          toggleFilter(childTag as keyof typeof filters)
-                        }
+                        value={filters[childTag]}
+                        toggle={() => toggleFilter(childTag)}
                       />
                     ))}
                   </Box>
