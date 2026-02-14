@@ -313,7 +313,7 @@ public class DiscordClubManagerTest {
 
         setupMockLeaderboardData();
 
-        MessageCreateData message = discordClubManager.buildWeeklyLeaderboardMessageForClub(club.getId());
+        MessageCreateData message = discordClubManager.buildLeaderboardMessageForClub(club.getId(), true);
 
         List<MessageEmbed> embeds = message.getEmbeds();
         assertEquals(1, embeds.size());

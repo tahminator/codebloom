@@ -157,12 +157,12 @@ public class DiscordClubManager {
             String guildId = guildIdOpt.get();
             String channelId = channelIdOpt.get();
 
-            MessageCreateData messageData = buildWeeklyLeaderboardMessageForClub(guildId);
+            MessageCreateData messageData = buildLeaderboardMessageForClub(guildId, true);
 
             if (messageData == null
                     || messageData.getEmbeds() == null
                     || messageData.getEmbeds().isEmpty()) {
-                log.error("No embed returned from buildWeeklyLeaderboardMessageForClub for guildId={}", guildId);
+                log.error("No embed returned from buildLeaderboardMessageForClub for guildId={}", guildId);
                 return;
             }
 
@@ -202,7 +202,7 @@ public class DiscordClubManager {
         discordClubs.forEach(this::sendWeeklyLeaderboardUpdateDiscordMessage);
     }
 
-    public MessageCreateData buildWeeklyLeaderboardMessageForClub(String guildId) {
+    public MessageCreateData buildLeaderboardMessageForClub(String guildId, boolean isWeekly) {
         DiscordClub club =
                 discordClubRepository.getDiscordClubByGuildId(guildId).orElseThrow();
 
@@ -226,7 +226,8 @@ public class DiscordClubManager {
         long minutesLeft = remaining.toMinutes() % 60;
 
         String topUsersSection = buildTopUsersSection(users, false);
-        String headerText = "Here is a weekly update on the LeetCode leaderboard for our very own members!";
+        String headerText = "Here is %s on the LeetCode leaderboard for our very own members!"
+                .formatted(isWeekly ? "a weekly update" : "an update");
 
         String description = String.format(
                 """
@@ -242,8 +243,7 @@ public class DiscordClubManager {
 
             View the full leaderboard for %s users at %s/leaderboard?%s=true
 
-
-            See you next week!
+            %s
 
             Beep boop,
             Codebloom
@@ -258,11 +258,12 @@ public class DiscordClubManager {
                 club.getName(),
                 serverUrlUtils.getUrl(),
                 club.getTag().name().toLowerCase(),
+                isWeekly ? "See you next week!" : "",
                 serverUrlUtils.getUrl());
 
         MessageEmbed embed = new EmbedBuilder()
-                .setTitle(
-                        "%s - Weekly Leaderboard Update for %s".formatted(currentLeaderboard.getName(), club.getName()))
+                .setTitle("%s - %s Leaderboard Update for %s"
+                        .formatted(currentLeaderboard.getName(), isWeekly ? "Weekly" : "", club.getName()))
                 .setDescription(description)
                 .setFooter(
                         "Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()),
