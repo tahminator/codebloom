@@ -1,4 +1,4 @@
-import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton.tsx";
+import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
 import { TestUtils, TestUtilTypes } from "@/lib/test";
 import { screen } from "@testing-library/react";
 
