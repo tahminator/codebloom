@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.patinanetwork.codebloom.api.admin.body.CreateAnnouncementBody;
 import org.patinanetwork.codebloom.api.admin.body.DeleteAnnouncementBody;
 import org.patinanetwork.codebloom.api.admin.body.NewLeaderboardBody;
@@ -18,10 +19,12 @@ import org.patinanetwork.codebloom.api.admin.body.UpdateAdminBody;
 import org.patinanetwork.codebloom.common.components.DiscordClubManager;
 import org.patinanetwork.codebloom.common.components.LeaderboardManager;
 import org.patinanetwork.codebloom.common.db.models.announcement.Announcement;
+import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionWithUser;
 import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.announcement.AnnouncementRepository;
+import org.patinanetwork.codebloom.common.db.repos.discord.club.DiscordClubRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
@@ -54,6 +57,7 @@ public class AdminController {
     private final Protector protector;
     private final DiscordClubManager discordClubManager;
     private final LeaderboardManager leaderboardManager;
+    private final DiscordClubRepository discordClubRepository;
 
     public AdminController(
             final LeaderboardRepository leaderboardRepository,
@@ -62,7 +66,8 @@ public class AdminController {
             final AnnouncementRepository announcementRepository,
             final QuestionRepository questionRepository,
             final DiscordClubManager discordClubManager,
-            final LeaderboardManager leaderboardManager) {
+            final LeaderboardManager leaderboardManager,
+            final DiscordClubRepository discordClubRepository) {
         this.leaderboardRepository = leaderboardRepository;
         this.protector = protector;
         this.userRepository = userRepository;
@@ -70,6 +75,7 @@ public class AdminController {
         this.questionRepository = questionRepository;
         this.discordClubManager = discordClubManager;
         this.leaderboardManager = leaderboardManager;
+        this.discordClubRepository = discordClubRepository;
     }
 
     @Operation(summary = "Drops current leaderboard and add new one", description = """
@@ -256,5 +262,37 @@ public class AdminController {
 
         return ResponseEntity.ok(ApiResponder.success(
                 "Retrieved " + incompleteQuestionsDto.size() + " incomplete questions.", incompleteQuestionsDto));
+    }
+
+    @Operation(
+            summary = "Send a message to a club's discord",
+            description = """
+        Sends an embedded message to the leaderboard channel of the guild associated with their club, provided its clubId. Only accessible to admins.
+        """,
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Message was sent successfully"),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Something went wrong",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            })
+    @PostMapping("/discord/message/test")
+    public ResponseEntity<ApiResponder<Empty>> sendDiscordMessage(
+            @RequestBody final String clubId, final HttpServletRequest request) {
+        protector.validateAdminSession(request);
+
+        Optional<DiscordClub> clubOpt = discordClubRepository.getDiscordClubById(clubId);
+        if (clubOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponder.failure("Club not found."));
+        }
+        DiscordClub club = clubOpt.get();
+
+        boolean sentMessage = discordClubManager.sendTestEmbedMessageToClub(club);
+
+        if (!sentMessage) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponder.failure("Hmm, something went wrong."));
+        }
+        return ResponseEntity.ok(ApiResponder.success("Message successfully sent!", Empty.of()));
     }
 }

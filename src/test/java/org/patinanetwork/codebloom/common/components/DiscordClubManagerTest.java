@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -305,6 +306,24 @@ public class DiscordClubManagerTest {
         assertTrue(description.contains("🥇"));
         assertTrue(description.contains("🥈"));
         assertFalse(description.contains("🥉"));
+    }
+
+    @Test
+    void testSendTestEmbedMessageToClub() {
+        DiscordClub mockClub = createMockDiscordClub("Test Club", Tag.Rpi);
+
+        doNothing().when(jdaClient).sendEmbedWithImages(any(), anyInt(), any());
+
+        boolean result = discordClubManager.sendTestEmbedMessageToClub(mockClub);
+        assertTrue(result);
+        verify(jdaClient).connect();
+
+        ArgumentCaptor<EmbeddedImagesMessageOptions> captor =
+                ArgumentCaptor.forClass(EmbeddedImagesMessageOptions.class);
+        verify(jdaClient).sendEmbedWithImages(captor.capture(), eq(10), eq(TimeUnit.SECONDS));
+
+        String description = captor.getValue().getDescription();
+        assertTrue(description.contains("test message"));
     }
 
     private DiscordClub createMockDiscordClub(final String name, final Tag tag) {

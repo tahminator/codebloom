@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClubMetadata;
@@ -241,5 +242,36 @@ public class DiscordClubManager {
     public void sendWeeklyLeaderboardUpdateDiscordMessageToAllClubs() {
         var discordClubs = discordClubRepository.getAllActiveDiscordClubs();
         discordClubs.forEach(this::sendWeeklyLeaderboardUpdateDiscordMessage);
+    }
+
+    public boolean sendTestEmbedMessageToClub(DiscordClub club) {
+        log.info("Connecting to JDA client...");
+        jdaClient.connect();
+
+        try {
+            String description = String.format("""
+                    This is a test message ensuring that the integration is working as expected. Please ignore.
+                """, club.getName());
+
+            var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
+            var channelId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
+
+            jdaClient.sendEmbedWithImages(
+                    EmbeddedImagesMessageOptions.builder()
+                            .guildId(Long.valueOf(guildId.get()))
+                            .channelId(Long.valueOf(channelId.get()))
+                            .description(description)
+                            .title("Message for %s".formatted(club.getName()))
+                            .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
+                            .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
+                            .color(new Color(69, 129, 103))
+                            .build(),
+                    10,
+                    TimeUnit.SECONDS);
+            return true;
+        } catch (Exception e) {
+            log.error("Error in DiscordClubManager when sending test message", e);
+            return false;
+        }
     }
 }

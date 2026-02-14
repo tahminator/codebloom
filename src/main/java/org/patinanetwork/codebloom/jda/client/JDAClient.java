@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.jda.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -146,13 +147,15 @@ public class JDAClient {
         log.info("Message has been queued");
     }
 
-    public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options) {
+    public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options, int deletionTime, TimeUnit timeUnit) {
         isJdaReadyOrThrow();
+
         Guild guild = getGuildById(options.getGuildId());
         if (guild == null) {
             log.error("Guild does not exist.");
             return;
         }
+
         TextChannel channel = guild.getTextChannelById(options.getChannelId());
         if (channel == null) {
             log.error("Channel does not exist on the given guild.");
@@ -183,7 +186,6 @@ public class JDAClient {
                 if (i == 0) {
                     baseEmbed.setImage("attachment://" + fileNames.get(0));
                 } else {
-
                     EmbedBuilder additionalEmbed = new EmbedBuilder()
                             .setUrl("https://codebloom.patinanetwork.org")
                             .setImage("attachment://" + fileNames.get(i));
@@ -192,12 +194,20 @@ public class JDAClient {
             }
         }
 
-        var messageCreationAction = channel.sendMessageEmbeds(embeds);
+        var action = channel.sendMessageEmbeds(embeds);
 
         if (!uploads.isEmpty()) {
-            messageCreationAction.setFiles(uploads);
+            action.setFiles(uploads);
         }
 
-        messageCreationAction.queue();
+        action.queue(message -> {
+            if (deletionTime > 0) {
+                message.delete().queueAfter(deletionTime, timeUnit);
+            }
+        });
+    }
+
+    public void sendEmbedWithImages(final EmbeddedImagesMessageOptions options) {
+        sendEmbedWithImages(options, 0, TimeUnit.SECONDS);
     }
 }
