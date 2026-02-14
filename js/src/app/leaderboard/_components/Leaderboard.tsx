@@ -234,7 +234,7 @@ function LeaderboardIndex({
                 .map(([parentTag, childTags]) => (
                   <Box key={parentTag}>
                     <Menu.Label>
-                      {ApiUtils.getMetadataByTagEnum(parentTag).shortName}
+                      {ApiUtils.getMetadataByTagEnum(parentTag).name}
                     </Menu.Label>
                     {childTags.map((childTag) => (
                       <FilterDropdownItem
@@ -254,8 +254,10 @@ function LeaderboardIndex({
                             </Flex>
                           );
                         }}
-                        value={filters[childTag]}
-                        toggle={() => toggleFilter(childTag)}
+                        value={filters[childTag as keyof typeof filters]}
+                        toggle={() =>
+                          toggleFilter(childTag as keyof typeof filters)
+                        }
                       />
                     ))}
                   </Box>
