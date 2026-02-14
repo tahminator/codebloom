@@ -13,7 +13,7 @@ View [STYLEGUIDE.md](../STYLEGUIDE.md) to view best practices.
 
 ## Requirements
 
-> [!WARN]
+> [!WARNING]
 > It is HIGHLY recommended that you follow the setup instructions at [docs/local/README.md](../docs/local/README.md) to get up and running.
 
 - [`openjdk@25`](https://openjdk.org/projects/jdk/25/) (though you may feel free to use any other distribution if you would like)
@@ -21,7 +21,7 @@ View [STYLEGUIDE.md](../STYLEGUIDE.md) to view best practices.
 
 ## Run
 
-> [!WARN]
+> [!WARNING]
 > It is HIGHLY recommended that you follow the setup instructions at [docs/local/README.md](../docs/local/README.md) to get up and running.
 
 ## Structure
