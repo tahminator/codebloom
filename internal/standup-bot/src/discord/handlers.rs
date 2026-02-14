@@ -35,7 +35,10 @@ impl EventHandler for Handler {
 
             let content = match command.data.name.as_str() {
                 "hello" => Some(commands::hello::run(&command.data.options())),
-                _ => Some("not implemented :(".to_string()),
+                cmd => {
+                    eprintln!("Command {cmd} not supported");
+                    None
+                }
             };
 
             if let Some(content) = content {
