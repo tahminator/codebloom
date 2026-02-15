@@ -28,7 +28,7 @@ describe("Leaderboard API Succeeded", () => {
   it("should render loading state initially", () => {
     renderProviderFn?.(<CurrentLeaderboard />);
 
-    const element = screen.getByTestId("leaderboard-skeleton-name");
+    const element = screen.getByTestId("leaderboard-skeleton-search-box");
     expect(element).toBeInTheDocument();
     expect(element).toBeVisible();
   });
@@ -38,7 +38,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -81,7 +81,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -117,7 +117,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -132,7 +132,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -160,7 +160,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -181,7 +181,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -223,7 +223,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -255,7 +255,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
@@ -277,7 +277,7 @@ describe("Leaderboard API Succeeded", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId("leaderboard-skeleton-name"),
+        screen.queryByTestId("leaderboard-skeleton-search-box"),
       ).not.toBeInTheDocument();
     });
 
