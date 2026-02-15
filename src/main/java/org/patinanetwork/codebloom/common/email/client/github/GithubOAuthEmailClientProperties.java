@@ -3,7 +3,7 @@ package org.patinanetwork.codebloom.common.email.client.github;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "github.email")
-public class GithubOAuthEmailProperties {
+public class GithubOAuthEmailClientProperties {
 
     private String host;
     private String port;
