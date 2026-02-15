@@ -13,6 +13,7 @@ import {
   formatLeaderboardDateRange,
   getUserSubmissionsUrl,
 } from "@/lib/helper/leaderboardDateRange";
+import { numToWord } from "@/lib/helper/num";
 import { theme } from "@/lib/theme";
 import {
   Button,
@@ -237,7 +238,7 @@ export default function LeaderboardForDashboard({
                       marginRight: "4px",
                     }}
                   />
-                  {user.discordName}
+                  {numToWord(idx + 1)}
                 </Text>
                 {user.leetcodeUsername && (
                   <Text ta="center">
@@ -248,7 +249,7 @@ export default function LeaderboardForDashboard({
                         marginRight: "4px",
                       }}
                     />
-                    {user.leetcodeUsername}
+                    {numToWord(idx + 1)}
                   </Text>
                 )}
               </Flex>

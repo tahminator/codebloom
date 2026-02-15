@@ -5,6 +5,7 @@ import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { Tag } from "@/lib/api/types/schema";
 import { tagFF } from "@/lib/ff";
+import { numToWord } from "@/lib/helper/num";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -78,8 +79,8 @@ export default function MiniLeaderboardDesktop() {
             <LeaderboardCard
               placeString={getOrdinal(second.index)}
               sizeOrder={2}
-              discordName={second.discordName}
-              leetcodeUsername={second.leetcodeUsername}
+              discordName={numToWord(2)}
+              leetcodeUsername={numToWord(2)}
               totalScore={second.totalScore}
               nickname={second.nickname}
               width={"200px"}
@@ -91,8 +92,8 @@ export default function MiniLeaderboardDesktop() {
             <LeaderboardCard
               placeString={getOrdinal(first.index)}
               sizeOrder={1}
-              discordName={first.discordName}
-              leetcodeUsername={first.leetcodeUsername}
+              discordName={numToWord(1)}
+              leetcodeUsername={numToWord(1)}
               totalScore={first.totalScore}
               nickname={first.nickname}
               width={"200px"}
@@ -104,8 +105,8 @@ export default function MiniLeaderboardDesktop() {
             <LeaderboardCard
               placeString={getOrdinal(third.index)}
               sizeOrder={3}
-              discordName={third.discordName}
-              leetcodeUsername={third.leetcodeUsername}
+              discordName={numToWord(3)}
+              leetcodeUsername={numToWord(3)}
               totalScore={third.totalScore}
               nickname={third.nickname}
               width={"200px"}
@@ -163,13 +164,13 @@ export default function MiniLeaderboardDesktop() {
                             <Flex align="center" gap={6}>
                               <FaDiscord size={16} />
                               <Text size="md" fw={600}>
-                                {entry.discordName}
+                                {numToWord(index + 1)}
                               </Text>
                             </Flex>
                             <Flex align="center" gap={6}>
                               <SiLeetcode size={16} />
                               <Text size="md" fw={600}>
-                                {entry.leetcodeUsername}
+                                {numToWord(index + 1)}
                               </Text>
                             </Flex>
                           </Flex>
