@@ -95,6 +95,7 @@ export async function _triggerStandupBotDeployment({
 }) {
   const body = await client.deployments.deployByTagOrUuid({
     uuid: appUuid,
+    force: true,
   });
 
   if (!body.deployments) {
