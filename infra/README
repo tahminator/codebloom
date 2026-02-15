@@ -1,1 +1,0 @@
-Our staging to production migration script has been moved [here](https://github.com/tahminator/codebloom/tree/main/.github/scripts/copy-prod-db/index.ts#L28).
