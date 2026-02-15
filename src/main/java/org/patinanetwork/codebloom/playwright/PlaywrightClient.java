@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.models.auth.Auth;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
-import org.patinanetwork.codebloom.common.email.Email;
+import org.patinanetwork.codebloom.common.email.EmailClient;
 import org.patinanetwork.codebloom.common.email.Message;
-import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmail;
+import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmailClient;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.scheduled.auth.CodeExtractor;
 import org.springframework.stereotype.Component;
@@ -31,11 +31,11 @@ public class PlaywrightClient {
             "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
 
     private final ServerUrlUtils serverUrlUtils;
-    private final Email email;
+    private final EmailClient emailClient;
 
-    public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmail githubOAuthEmail) {
+    public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmailClient githubOAuthEmailClient) {
         this.serverUrlUtils = serverUrlUtils;
-        this.email = githubOAuthEmail;
+        this.emailClient = githubOAuthEmailClient;
     }
 
     private <T> T withPage(final Function<Page, T> consumer) {
@@ -86,7 +86,7 @@ public class PlaywrightClient {
                 p.waitForTimeout(10000);
 
                 try {
-                    messages = email.getPastMessages();
+                    messages = emailClient.getPastMessages();
                 } catch (Exception e) {
                     log.info("Failed to retrieve past messages");
                     throw new RuntimeException("Failed to retrieve past messages", e);
