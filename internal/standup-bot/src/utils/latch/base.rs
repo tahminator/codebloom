@@ -8,8 +8,8 @@ use tokio::{
 
 use crate::utils::latch::error::CountdownLatchError;
 
-/// [CountdownLatch] is the Rust equivalent to
-/// [Java's CountdownLatch](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html),
+/// [CountdownLatch] is the Rust equivalent of
+/// [Java's CountDownLatch](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html),
 /// which can be used to synchronize thread operations.
 ///
 /// # Example
@@ -52,7 +52,7 @@ impl Latch for CountdownLatch {
         }
     }
 
-    // Count down by a factor of `1`.
+    /// Count down by a factor of `1`.
     fn count_down(&self) -> () {
         self.sem.add_permits(1);
     }
