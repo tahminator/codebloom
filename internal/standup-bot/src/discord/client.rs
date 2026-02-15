@@ -30,6 +30,8 @@ use crate::{
 };
 
 const INTENTS: GatewayIntents = GatewayIntents::GUILD_MEMBERS;
+const ROLE_ID: u64 = 1391944565409316944;
+
 static HTTP: OnceLock<Arc<Http>> = OnceLock::new();
 
 pub async fn init_in_bg(discord_creds: &DiscordCredentials) -> Result<(), Error> {
@@ -66,14 +68,16 @@ pub async fn send_standup_message(discord_creds: &DiscordCredentials) -> Result<
     let embed = CreateEmbed::new()
         .title("Codebloom Standup")
         .description(
-            "<@&1391944565409316944> Standup time! Please leave an update about your latest progress inside of the thread.",
+            "Standup time! Please leave an update about your latest progress inside of the thread.",
         )
         .footer(
             CreateEmbedFooter::new("Codebloom - Internal")
                 .icon_url("https://codebloom.patinanetwork.org/favicon.ico"),
         )
         .colour(Colour::from_rgb(69, 129, 103));
-    let create_msg = CreateMessage::new().embed(embed);
+    let create_msg = CreateMessage::new()
+        .content(format!("<@&{ROLE_ID}>"))
+        .embed(embed);
     let channel = ChannelId::new(discord_creds.channel_id);
 
     let msg = channel
