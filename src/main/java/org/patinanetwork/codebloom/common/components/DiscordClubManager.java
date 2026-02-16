@@ -272,16 +272,18 @@ public class DiscordClubManager {
 
     public boolean sendTestEmbedMessageToClub(DiscordClub club) {
         try {
-            String description = String.format("""
+            String description = """
                     This is a test message ensuring that the integration is working as expected. Please ignore.
-                """, club.getName());
-
-            var guildId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
-            var channelId = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
-
+                """;
+            var guildIdOpt = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getGuildId);
+            var channelIdOpt = club.getDiscordClubMetadata().flatMap(DiscordClubMetadata::getLeaderboardChannelId);
+            if (guildIdOpt.isEmpty() || channelIdOpt.isEmpty()) {
+                log.warn("Missing guildId or leaderboardChannelId for club {}", club.getId());
+                return false;
+            }
             jdaClient.sendEmbedWithImages(EmbeddedImagesMessageOptions.builder()
-                    .guildId(Long.valueOf(guildId.get()))
-                    .channelId(Long.valueOf(channelId.get()))
+                    .guildId(Long.valueOf(guildIdOpt.get()))
+                    .channelId(Long.valueOf(channelIdOpt.get()))
                     .description(description)
                     .title("Message for %s".formatted(club.getName()))
                     .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
@@ -293,5 +295,9 @@ public class DiscordClubManager {
             log.error("Error in DiscordClubManager when sending test message", e);
             return false;
         }
+    }
+
+    public boolean deleteMessageById(Long channelId, Long messageId) {
+        return jdaClient.deleteMessageById(channelId, messageId);
     }
 }
