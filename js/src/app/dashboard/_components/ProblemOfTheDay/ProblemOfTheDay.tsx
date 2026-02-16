@@ -1,32 +1,13 @@
+import ProblemOfTheDaySkeleton from "@/app/dashboard/_components/ProblemOfTheDay/ProblemOfTheDaySkeleton";
 import { useFetchPotdQuery } from "@/lib/api/queries/potd";
-import {
-  Badge,
-  Button,
-  Card,
-  Center,
-  Flex,
-  Loader,
-  Title,
-} from "@mantine/core";
+import { Badge, Button, Card, Center, Flex, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function ProblemOfTheDay() {
   const { data, status } = useFetchPotdQuery();
 
   if (status === "pending") {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Loader />
-        </Flex>
-      </Card>
-    );
+    return <ProblemOfTheDaySkeleton />;
   }
 
   if (status === "error") {

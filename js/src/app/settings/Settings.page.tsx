@@ -1,13 +1,14 @@
 import ChangeImageSettingsCard from "@/app/settings/_components/ChangeImageSettingsCard";
 import LogoutAllSessionsCard from "@/app/settings/_components/LogoutAllSessionsCard";
 import SchoolVerifySettingsCard from "@/app/settings/_components/SchoolVerifySettingsCard";
+import SettingsSkeleton from "@/app/settings/_components/SettingsSkeleton";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import { useBackendCallbackParams } from "@/lib/hooks/useBackendCallbackParams";
-import { Box, Center, Loader, Stack, Title } from "@mantine/core";
+import { Box, Center, Stack, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 
@@ -25,11 +26,7 @@ export default function SettingsPage() {
   }, [message, success]);
 
   if (status === "pending") {
-    return (
-      <div className="flex flex-col items-center justify-center w-screen h-screen">
-        <Loader />
-      </div>
-    );
+    return <SettingsSkeleton />;
   }
 
   if (status === "error") {
