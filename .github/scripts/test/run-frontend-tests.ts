@@ -3,8 +3,16 @@ import { getEnvVariables } from "load-secrets/env/load";
 import { backend } from "utils/run-backend-instance";
 import { db } from "utils/run-local-db";
 import { uploadFrontendTests } from "utils/upload";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
-const shouldUploadCoverage = process.env.UPLOAD_TEST_COV === "true";
+const { shouldUploadCoverage } = await yargs(hideBin(process.argv))
+  .option("shouldUploadCoverage", {
+    type: "boolean",
+    default: Boolean(process.env.UPLOAD_TEST_COV) || false,
+  })
+  .strict()
+  .parse();
 
 async function main() {
   try {

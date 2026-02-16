@@ -1,9 +1,17 @@
 import { $ } from "bun";
 import { getEnvVariables } from "load-secrets/env/load";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 process.env.TZ = "America/New_York";
 
-const shouldDockerUpload = Boolean(process.env.DOCKER_UPLOAD) || false;
+const { shouldDockerUpload } = await yargs(hideBin(process.argv))
+  .option("dockerUpload", {
+    type: "boolean",
+    default: Boolean(process.env.DOCKER_UPLOAD) || false,
+  })
+  .strict()
+  .parse();
 
 async function main() {
   const ciEnv = await getEnvVariables(["ci"]);
