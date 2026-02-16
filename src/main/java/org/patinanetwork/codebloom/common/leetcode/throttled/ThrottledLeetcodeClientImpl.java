@@ -14,7 +14,6 @@ import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import org.patinanetwork.codebloom.common.leetcode.models.POTD;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
-import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.scheduled.auth.LeetcodeAuthStealer;
 import org.springframework.stereotype.Component;
 
@@ -43,8 +42,8 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
     }
 
     public ThrottledLeetcodeClientImpl(
-            final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer, final Reporter reporter) {
-        super(meterRegistry, leetcodeAuthStealer, reporter);
+            final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer) {
+        super(meterRegistry, leetcodeAuthStealer);
         this.rateLimiter = initializeBucket();
     }
 

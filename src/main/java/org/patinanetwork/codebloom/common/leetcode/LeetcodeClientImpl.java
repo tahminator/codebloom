@@ -35,8 +35,6 @@ import org.patinanetwork.codebloom.common.leetcode.queries.GetTopics;
 import org.patinanetwork.codebloom.common.leetcode.queries.GetUserProfile;
 import org.patinanetwork.codebloom.common.leetcode.queries.SelectAcceptedSubmisisonsQuery;
 import org.patinanetwork.codebloom.common.leetcode.queries.SelectProblemQuery;
-import org.patinanetwork.codebloom.common.reporter.Reporter;
-import org.patinanetwork.codebloom.common.reporter.report.Report;
 import org.patinanetwork.codebloom.scheduled.auth.LeetcodeAuthStealer;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -58,16 +56,13 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     HttpClient client;
 
     private final LeetcodeAuthStealer leetcodeAuthStealer;
-    private final Reporter reporter;
 
-    public LeetcodeClientImpl(
-            final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer, final Reporter reporter) {
+    public LeetcodeClientImpl(final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer) {
         this.meterRegistry = meterRegistry;
         this.client = HttpClient.newHttpClient();
         this.mapper = new ObjectMapper();
 
         this.leetcodeAuthStealer = leetcodeAuthStealer;
-        this.reporter = reporter;
     }
 
     private Timer timer() {
@@ -166,24 +161,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     if (isThrottled(statusCode)) {
                         leetcodeAuthStealer.reloadCookie();
                     }
-                    reporter.log(
-                            "findQuestionBySlug",
-                            Report.builder()
-                                    .data(String.format(
-                                            """
-                                                        Leetcode client failed to find question by slug due to status code of %d
-
-                                                        Slug: %s
-
-                                                        Body: %s
-
-                                                        Header(s): %s
-                                                    """,
-                                            statusCode,
-                                            slug,
-                                            body,
-                                            response.headers().toString()))
-                                    .build());
                     throw new RuntimeException("API Returned status " + statusCode + ": " + body);
                 }
 
@@ -265,24 +242,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     if (isThrottled(statusCode)) {
                         leetcodeAuthStealer.reloadCookie();
                     }
-                    reporter.log(
-                            "findSubmissionsByUsername",
-                            Report.builder()
-                                    .data(String.format(
-                                            """
-                                                        Leetcode client failed to find submission by username due to status code of %d
-
-                                                        Username: %s
-
-                                                        Body: %s
-
-                                                        Header(s): %s
-                                                    """,
-                                            statusCode,
-                                            username,
-                                            body,
-                                            response.headers().toString()))
-                                    .build());
                     throw new RuntimeException("API Returned status " + statusCode + ": " + body);
                 }
 
@@ -339,24 +298,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     if (isThrottled(statusCode)) {
                         leetcodeAuthStealer.reloadCookie();
                     }
-                    reporter.log(
-                            "findSubmissionDetailBySubmissionId",
-                            Report.builder()
-                                    .data(String.format(
-                                            """
-                                                        Leetcode client failed to find submission detail by submission ID due to status code of %d
-
-                                                        Submission ID: %s
-
-                                                        Body: %s
-
-                                                        Header(s): %s
-                                                    """,
-                                            statusCode,
-                                            submissionId,
-                                            body,
-                                            response.headers().toString()))
-                                    .build());
                     throw new RuntimeException("API Returned status " + statusCode + ": " + body);
                 }
 
@@ -424,19 +365,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     if (isThrottled(statusCode)) {
                         leetcodeAuthStealer.reloadCookie();
                     }
-                    reporter.log(
-                            "getPotd",
-                            Report.builder()
-                                    .data(String.format(
-                                            """
-                                                        Leetcode client failed to get POTD due to status code of %d
-
-                                                        Body: %s
-
-                                                        Header(s): %s
-                                                    """,
-                                            statusCode, body, response.headers().toString()))
-                                    .build());
                     throw new RuntimeException("API Returned status " + statusCode + ": " + body);
                 }
 
@@ -481,24 +409,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     if (isThrottled(statusCode)) {
                         leetcodeAuthStealer.reloadCookie();
                     }
-                    reporter.log(
-                            "getUserProfile",
-                            Report.builder()
-                                    .data(String.format(
-                                            """
-                                                        Leetcode client failed to get user profile by username due to status code of %d
-
-                                                        Username: %s
-
-                                                        Body: %s
-
-                                                        Header(s): %s
-                                                    """,
-                                            statusCode,
-                                            username,
-                                            body,
-                                            response.headers().toString()))
-                                    .build());
                     throw new RuntimeException("API Returned status " + statusCode + ": " + body);
                 }
 
@@ -535,19 +445,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     if (isThrottled(statusCode)) {
                         leetcodeAuthStealer.reloadCookie();
                     }
-                    reporter.log(
-                            "getAllTopicTags",
-                            Report.builder()
-                                    .data(String.format(
-                                            """
-                                                        Leetcode client failed to get all topic tags due to status code of %d
-
-                                                        Body: %s
-
-                                                        Header(s): %s
-                                                    """,
-                                            statusCode, body, response.headers().toString()))
-                                    .build());
                     throw new RuntimeException(
                             "Non-successful response getting topics from Leetcode API. Status code: " + statusCode);
                 }
@@ -590,19 +487,6 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     if (isThrottled(statusCode)) {
                         leetcodeAuthStealer.reloadCookie();
                     }
-                    reporter.log(
-                            "getAllProblems",
-                            Report.builder()
-                                    .data(String.format(
-                                            """
-                                                        Leetcode client failed to get all leetcode questions due to status code of %d
-
-                                                        Body: %s
-
-                                                        Header(s): %s
-                                                    """,
-                                            statusCode, body, response.headers().toString()))
-                                    .build());
                     throw new RuntimeException(
                             "Non-successful response getting all questions from Leetcode API. Status code: "
                                     + statusCode);

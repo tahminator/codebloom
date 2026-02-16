@@ -24,21 +24,19 @@ import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import org.patinanetwork.codebloom.common.leetcode.models.POTD;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
-import org.patinanetwork.codebloom.common.reporter.Reporter;
 import org.patinanetwork.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 public class LeetcodeClientTest {
 
     private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
     private final LeetcodeAuthStealer leetcodeAuthStealer = mock(LeetcodeAuthStealer.class);
-    private final Reporter reporter = mock(Reporter.class);
     private final HttpClient httpClient = mock(HttpClient.class);
     private final HttpResponse<String> httpResponse = mock(HttpResponse.class);
 
     private final LeetcodeClientImpl leetcodeClient;
 
     public LeetcodeClientTest() throws Exception {
-        leetcodeClient = new LeetcodeClientImpl(meterRegistry, leetcodeAuthStealer, reporter);
+        leetcodeClient = new LeetcodeClientImpl(meterRegistry, leetcodeAuthStealer);
         setupMockHttpClient(leetcodeClient, httpClient);
     }
 
