@@ -9,7 +9,7 @@ import { hideBin } from "yargs/helpers";
 const { shouldUploadCoverage } = await yargs(hideBin(process.argv))
   .option("shouldUploadCoverage", {
     type: "boolean",
-    default: Boolean(process.env.UPLOAD_TEST_COV) || false,
+    default: false,
   })
   .strict()
   .parse();
