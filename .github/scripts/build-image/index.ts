@@ -12,15 +12,15 @@ const { tagPrefix, shouldDockerUpload, serverProfiles } = await yargs(
 )
   .option("tagPrefix", {
     type: "string",
-    default: process.env.TAG_PREFIX || "",
+    default: "",
   })
   .option("dockerUpload", {
     type: "boolean",
-    default: Boolean(process.env.DOCKER_UPLOAD) || false,
+    default: false,
   })
   .option("serverProfiles", {
     type: "string",
-    default: process.env.SERVER_PROFILES || "prod",
+    default: "prod",
   })
   .strict()
   .parse();

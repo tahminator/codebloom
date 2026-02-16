@@ -8,7 +8,7 @@ process.env.TZ = "America/New_York";
 const { shouldDockerUpload } = await yargs(hideBin(process.argv))
   .option("dockerUpload", {
     type: "boolean",
-    default: Boolean(process.env.DOCKER_UPLOAD) || false,
+    default: false,
   })
   .strict()
   .parse();
