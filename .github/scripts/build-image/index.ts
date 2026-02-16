@@ -7,7 +7,9 @@ import { hideBin } from "yargs/helpers";
 
 process.env.TZ = "America/New_York";
 
-const argv = await yargs(hideBin(process.argv))
+const { tagPrefix, shouldDockerUpload, serverProfiles } = await yargs(
+  hideBin(process.argv),
+)
   .option("tagPrefix", {
     type: "string",
     default: process.env.TAG_PREFIX || "",
@@ -22,10 +24,6 @@ const argv = await yargs(hideBin(process.argv))
   })
   .strict()
   .parse();
-
-const tagPrefix = argv["tagPrefix"];
-const shouldDockerUpload = argv["dockerUpload"];
-const serverProfiles = argv["serverProfiles"];
 
 async function main() {
   try {
