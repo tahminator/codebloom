@@ -46,10 +46,18 @@ async fn main() {
                     }
 
                     if let Err(e) = redis::client::set_last_standup(Utc::now()).await {
-                        eprintln!("Failed to save standup to Redis: {e:#?}");
+                        eprintln!("Failed to save standup to Redis");
+                        eprintln!("Error: {}", e);
+                        eprintln!("Debug: {:#?}", e);
                     }
                 }
-                Err(e) => eprintln!("Failed to get last standup from Redis: {e:#?}"),
+                Err(e) => {
+                    eprintln!("===============================================");
+                    eprintln!("Failed to get last standup from Redis");
+                    eprintln!("Error: {}", e);
+                    eprintln!("Debug: {:#?}", e);
+                    eprintln!("===============================================");
+                }
             }
         });
     }
