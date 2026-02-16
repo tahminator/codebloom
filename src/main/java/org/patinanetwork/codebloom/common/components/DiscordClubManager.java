@@ -102,8 +102,6 @@ public class DiscordClubManager {
 
                 %s
 
-                To view the rest of the members, visit the website or check out the image embedded in this message!
-
                 The new leaderboard just started, so best of luck to everyone!
 
                 View the full leaderboard for %s users at %s/leaderboard/%s?%s=true
@@ -236,8 +234,6 @@ public class DiscordClubManager {
             %s
 
             %s
-
-            To view the rest of the members, visit the website or check out the image embedded in this message!
 
             Just as a reminder, there's %d day(s), %d hour(s), and %d minute(s) left until the leaderboard closes, so keep grinding!
 
