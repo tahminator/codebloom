@@ -1,4 +1,5 @@
 import classes from "@/app/submission/[submissionId]/_components/SubmissionDetailsContent.module.css";
+import SubmissionDetailsContentSkeleton from "@/app/submission/[submissionId]/_components/SubmissionDetailsContentSkeleton";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
@@ -12,7 +13,6 @@ import {
   Card,
   Center,
   Flex,
-  Loader,
   Text,
   Title,
 } from "@mantine/core";
@@ -32,11 +32,7 @@ export default function SubmissionDetailsContent({
   const { data, status } = useSubmissionDetailsQuery({ submissionId });
 
   if (status === "pending") {
-    return (
-      <div className="flex flex-col items-center justify-center w-screen h-screen">
-        <Loader />
-      </div>
-    );
+    return <SubmissionDetailsContentSkeleton />;
   }
 
   if (status === "error") {
