@@ -2,12 +2,30 @@ import { $ } from "bun";
 import { getEnvVariables } from "load-secrets/env/load";
 import { backend } from "utils/run-backend-instance";
 import { db } from "utils/run-local-db";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 process.env.TZ = "America/New_York";
 
-const tagPrefix = process.env.TAG_PREFIX || "";
-const shouldDockerUpload = Boolean(process.env.DOCKER_UPLOAD) || false;
-const serverProfiles = process.env.SERVER_PROFILES || "prod";
+const argv = await yargs(hideBin(process.argv))
+  .option("tagPrefix", {
+    type: "string",
+    default: process.env.TAG_PREFIX || "",
+  })
+  .option("dockerUpload", {
+    type: "boolean",
+    default: Boolean(process.env.DOCKER_UPLOAD) || false,
+  })
+  .option("serverProfiles", {
+    type: "string",
+    default: process.env.SERVER_PROFILES || "prod",
+  })
+  .strict()
+  .parse();
+
+const tagPrefix = argv["tagPrefix"];
+const shouldDockerUpload = argv["dockerUpload"];
+const serverProfiles = argv["serverProfiles"];
 
 async function main() {
   try {
