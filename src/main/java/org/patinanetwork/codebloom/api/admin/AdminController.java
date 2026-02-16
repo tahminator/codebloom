@@ -16,6 +16,7 @@ import org.patinanetwork.codebloom.api.admin.body.CreateAnnouncementBody;
 import org.patinanetwork.codebloom.api.admin.body.DeleteAnnouncementBody;
 import org.patinanetwork.codebloom.api.admin.body.NewLeaderboardBody;
 import org.patinanetwork.codebloom.api.admin.body.UpdateAdminBody;
+import org.patinanetwork.codebloom.api.admin.body.jda.DeleteMessageBody;
 import org.patinanetwork.codebloom.common.components.DiscordClubManager;
 import org.patinanetwork.codebloom.common.components.LeaderboardManager;
 import org.patinanetwork.codebloom.common.db.models.announcement.Announcement;
@@ -37,6 +38,7 @@ import org.patinanetwork.codebloom.common.security.Protector;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -294,5 +296,21 @@ public class AdminController {
                     .body(ApiResponder.failure("Hmm, something went wrong."));
         }
         return ResponseEntity.ok(ApiResponder.success("Message successfully sent!", Empty.of()));
+    }
+
+    @DeleteMapping("/discord/message")
+    public ResponseEntity<ApiResponder<Empty>> deleteDiscordMessage(
+            @Valid @RequestBody final DeleteMessageBody deleteMessageBody, final HttpServletRequest request) {
+        protector.validateAdminSession(request);
+
+        boolean isDeleted = discordClubManager.deleteMessageById(
+                deleteMessageBody.getChannelId(), deleteMessageBody.getMessageId());
+
+        if (!isDeleted) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponder.failure("Hmm, something went wrong."));
+        }
+
+        return ResponseEntity.ok(ApiResponder.success("Discord Message successfully deleted", Empty.of()));
     }
 }

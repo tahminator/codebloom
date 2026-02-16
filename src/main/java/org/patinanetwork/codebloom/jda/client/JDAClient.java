@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.patinanetwork.codebloom.jda.JDAClientManager;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
@@ -169,5 +170,21 @@ public class JDAClient {
         }
 
         messageCreationAction.queue();
+    }
+
+    public boolean deleteMessageById(long channelId, long messageId) {
+        TextChannel channel = jda.getTextChannelById(channelId);
+
+        if (channel == null) {
+            return false;
+        }
+
+        try {
+            channel.deleteMessageById(messageId).complete();
+            return true;
+        } catch (ErrorResponseException e) {
+            log.error("Failed to delete message.", e);
+            return false;
+        }
     }
 }
