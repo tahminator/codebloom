@@ -1,16 +1,15 @@
 import { sendMessage } from "utils/send-message";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
-const prId = (() => {
-  const v = process.env.PR_ID;
-  if (!v) {
-    throw new Error("PR_ID is required");
-  }
-  const n = Number(v);
-  if (Number.isNaN(n)) {
-    throw new Error("PR_ID must be a number");
-  }
-  return n;
-})();
+const { prId } = await yargs(hideBin(process.argv))
+  .options("prId", {
+    type: "number",
+    describe: "Pull request number",
+    default: 1,
+  })
+  .strict()
+  .parse();
 
 export async function main() {
   await sendMessage(

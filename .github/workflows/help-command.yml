@@ -25,6 +25,4 @@ jobs:
 
       - name: Run script
         shell: bash
-        run: bun .github/scripts/help-message
-        env:
-          PR_ID: ${{ github.event.pull_request.number }}
+        run: bun run .github/scripts/help-message --pr-id=${{ github.event.pull_request.number }}

@@ -67,9 +67,6 @@ jobs:
           cache: "maven"
 
       - name: Copy Production Database to Staging
-        run: bun .github/scripts/copy-prod-db/index.ts
+        run: bun run .github/scripts/copy-prod-db/index.ts --run-url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} --github-actor=${{ github.event.client_payload.github.actor || github.actor }} --sha=${{ needs.getPRHead.outputs.sha }}
         env:
           PR_ID: ${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
-          GITHUB_ACTOR: ${{ github.event.client_payload.github.actor || github.actor }}
-          SHA: ${{ needs.getPRHead.outputs.sha }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
