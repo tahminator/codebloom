@@ -56,8 +56,4 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/build-image
-      env:
-        DOCKER_UPLOAD: ${{ inputs.DOCKER_UPLOAD }}
-        TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
-        SERVER_PROFILES: ${{ inputs.SERVER_PROFILES }}
+      run: bun run .github/scripts/redeploy --tag-prefix=${{ inputs.TAG_PREFIX }} --docker-upload=${{ inputs.DOCKER_UPLOAD }} --server-profiles=${{ inputs.SERVER_PROFILES }}

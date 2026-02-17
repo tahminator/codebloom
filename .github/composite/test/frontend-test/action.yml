@@ -49,6 +49,4 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/test/run-frontend-tests
-      env:
-        UPLOAD_TEST_COV: ${{ inputs.UPLOAD_TEST_COV }}
+      run: bun run .github/scripts/test/run-frontend-tests --should-upload-coverage=${{ inputs.UPLOAD_TEST_COV }}
