@@ -33,6 +33,4 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/build-image/internal/standup-bot
-      env:
-        DOCKER_UPLOAD: ${{ inputs.DOCKER_UPLOAD }}
+      run: bun run .github/scripts/build-image/internal/standup-bot --docker-upload=${{ inputs.DOCKER_UPLOAD }}
