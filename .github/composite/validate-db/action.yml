@@ -41,4 +41,4 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun run .github/scripts/validate-db --enviroment=${{ inputs.ENVIRONMENT }} --sha=${{ inputs.SHA }}
+      run: bun run .github/scripts/validate-db --environment=${{ inputs.ENVIRONMENT }} --sha=${{ inputs.SHA }}
