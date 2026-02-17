@@ -50,3 +50,12 @@ runs:
     - name: Run script
       shell: bash
       run: bun run .github/scripts/test/run-backend-tests --should-upload-coverage=${{ inputs.UPLOAD_TEST_COV }}
+
+    - name: Publish Junit Report
+      uses: mikepenz/action-junit-report@v6
+      if: ${{ always() }}
+      with:
+        report_paths: "target/surefire-reports/TEST-*.xml"
+        detailed_summary: true
+        include_time_in_summary: true
+        fail_on_failure: false
