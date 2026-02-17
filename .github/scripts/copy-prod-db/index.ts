@@ -1,33 +1,30 @@
 import { $ } from "bun";
 import { updateCommitStatus } from "utils/update-commit-status";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 import { getEnvVariables } from "../load-secrets/env/load";
 
 const AUTHORIZED_USER = "tahminator";
 
-const username = (() => {
-  const v = process.env.GITHUB_ACTOR;
-  if (!v) {
-    throw new Error("GITHUB_ACTOR is required");
-  }
-  return v;
-})();
-
-const sha = (() => {
-  const v = process.env.SHA;
-  if (!v) {
-    throw new Error("SHA is required");
-  }
-  return v;
-})();
-
-const runUrl = (() => {
-  const v = process.env.RUN_URL;
-  if (!v) {
-    throw new Error("RUN_URL is required");
-  }
-  return v;
-})();
+const { runUrl, username, sha } = await yargs(hideBin(process.argv))
+  .options("runUrl", {
+    type: "string",
+    describe: "Run url for action",
+    default: "",
+  })
+  .options("username", {
+    type: "string",
+    describe: "Username of person who triggered action",
+    default: "",
+  })
+  .options("sha", {
+    type: "string",
+    describe: "Commit SHA",
+    default: "",
+  })
+  .strict()
+  .parse();
 
 async function main() {
   try {

@@ -30,6 +30,4 @@ jobs:
 
       - name: Run script
         shell: bash
-        run: bun .github/scripts/auto-approval
-        env:
-          PR_ID: ${{ github.event.pull_request.number }}
+        run: bun run .github/scripts/auto-approval --prId ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --githubToken ${{ secrets.GH_TOKEN }}

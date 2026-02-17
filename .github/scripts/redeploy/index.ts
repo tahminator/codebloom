@@ -3,9 +3,25 @@ import type { Environment } from "types";
 import { getEnvVariables } from "load-secrets/env/load";
 import { _migrateDb } from "redeploy/db";
 import { _migrateDo } from "redeploy/do";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
+const { environment: rawEnvironment, sha } = await yargs(hideBin(process.argv))
+  .option("environment", {
+    type: "string",
+    describe: "Deployment environment (staging or production)",
+    default: "staging",
+  })
+  .option("sha", {
+    type: "string",
+    describe: "Commit SHA (required for staging)",
+    default: "",
+  })
+  .strict()
+  .parse();
 
 const environment: Environment = (() => {
-  const v = process.env.ENVIRONMENT;
+  const v = rawEnvironment;
   if (!v) {
     throw new Error("Environment is required");
   }
@@ -16,16 +32,6 @@ const environment: Environment = (() => {
     );
   }
 
-  return v;
-})();
-
-const sha = (() => {
-  const v = process.env.SHA;
-  if (environment === "staging" && !v) {
-    throw new Error(
-      "SHA must be available in ENV if script is being run in staging environment.",
-    );
-  }
   return v;
 })();
 

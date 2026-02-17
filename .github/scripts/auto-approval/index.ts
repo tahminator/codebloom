@@ -1,35 +1,40 @@
 import type { RestEndpointMethodTypes } from "@octokit/rest";
 
 import { Octokit, RequestError } from "octokit";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 const AUTHORIZED_USER = "tahminator";
 
-const githubToken = (() => {
-  const v = process.env.GH_TOKEN;
-  if (!v) {
-    throw new Error("GH_TOKEN is required");
-  }
-  return v;
-})();
+const {
+  githubToken,
+  repo: rawRepo,
+  prId,
+} = await yargs(hideBin(process.argv))
+  .option("githubToken", {
+    type: "string",
+    describe: "GitHub token",
+    default: "",
+  })
+  .option("repo", {
+    type: "string",
+    describe: "Repository in owner/repo form",
+    default: "",
+  })
+  .option("prId", {
+    type: "number",
+    describe: "Pull request number",
+    default: 1,
+  })
+  .strict()
+  .parse();
 
 const [owner, repo] = (() => {
-  const v = process.env.GITHUB_REPOSITORY;
+  const v = rawRepo;
   if (!v) {
     throw new Error("GITHUB_REPOSITORY is required");
   }
   return v.split("/") as [string, string];
-})();
-
-const prId = (() => {
-  const v = process.env.PR_ID;
-  if (!v) {
-    throw new Error("PR_ID is required");
-  }
-  const n = Number(v);
-  if (Number.isNaN(n)) {
-    throw new Error("PR_ID must be a number");
-  }
-  return n;
 })();
 
 async function main() {

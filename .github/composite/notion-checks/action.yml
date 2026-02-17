@@ -33,7 +33,4 @@ runs:
     - name: Run script
       id: run_script
       shell: bash
-      run: bun .github/scripts/notion
-      env:
-        PR_ID: ${{ inputs.PR_ID }}
-        GET_GHA_OUTPUT: ${{ inputs.GET_GHA_OUTPUT }}
+      run: bun .github/scripts/notion --prId=${{ inputs.PR_ID }} --getGhaOutput=${{ inputs.GET_GHA_OUTPUT }} --githubOutput=${{ inputs.GITHUB_OUTPUT }}

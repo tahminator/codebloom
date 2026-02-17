@@ -4,26 +4,36 @@ import { checkNotionPrAndGetTask } from "notion/pr";
 import { getNotionClient } from "notion/sdk";
 import { _updateNotionTaskWithPrLink } from "notion/task";
 import { updatePrDescriptionWithTicket } from "utils/update-pr-description";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 export * from "./pr";
 
-const prId = (() => {
-  const v = process.env.PR_ID;
-  if (!v) {
-    throw new Error("PR_ID is required");
-  }
-  const n = Number(v);
-  if (isNaN(n)) {
-    throw new Error("PR_ID is not a number");
-  }
-  return n;
-})();
-
-const getGhaOutput = process.env.GET_GHA_OUTPUT === "true";
-const githubOutputFile = process.env.GITHUB_OUTPUT;
+const {
+  prId,
+  getGhaOutput,
+  githubOutput: githubOutputFile,
+} = await yargs(hideBin(process.argv))
+  .option("prId", {
+    type: "number",
+    describe: "Pull request number",
+    default: 1,
+  })
+  .option("getGhaOutput", {
+    type: "boolean",
+    describe: "Enable GitHub Actions output",
+    default: false,
+  })
+  .option("githubOutput", {
+    type: "string",
+    describe: "Path to GITHUB_OUTPUT",
+    default: "",
+  })
+  .strict()
+  .parse();
 
 async function main() {
-  console.log(`GET_GHA_OUTPUT=${process.env.GET_GHA_OUTPUT}`);
+  console.log(`GET_GHA_OUTPUT=${getGhaOutput}`);
 
   const { notionDbId, notionSecret } = parseCiEnv(
     await getEnvVariables(["ci"]),
