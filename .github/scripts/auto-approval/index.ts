@@ -14,7 +14,7 @@ const {
   .option("githubToken", {
     type: "string",
     describe: "GitHub token",
-    default: process.env.GITHUB_TOKEN,
+    default: process.env.GH_TOKEN,
     demandOption: true,
   })
   .option("repo", {
