@@ -9,6 +9,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.ScreenshotType;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -21,6 +22,7 @@ import org.patinanetwork.codebloom.common.email.Message;
 import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmailClient;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.scheduled.auth.CodeExtractor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,9 +35,17 @@ public class PlaywrightClient {
     private final ServerUrlUtils serverUrlUtils;
     private final EmailClient emailClient;
 
+    @Value("${playwright.headless:true}")
+    private boolean headless;
+
     public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmailClient githubOAuthEmailClient) {
         this.serverUrlUtils = serverUrlUtils;
         this.emailClient = githubOAuthEmailClient;
+    }
+
+    @PostConstruct
+    public void logInfo() {
+        log.info("Headless: " + (headless ? "true" : "false"));
     }
 
     private <T> T withPage(final Function<Page, T> consumer) {
@@ -43,7 +53,7 @@ public class PlaywrightClient {
                 Browser browser = playwright
                         .firefox()
                         .launch(new BrowserType.LaunchOptions()
-                                .setHeadless(true)
+                                .setHeadless(headless)
                                 .setTimeout(40000));
                 BrowserContext context = browser.newContext(
                         new NewContextOptions().setUserAgent(USER_AGENT).setStorageState(null));
