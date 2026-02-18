@@ -1,18 +1,24 @@
 name: AI Command Handler
-run-name: Triggering AI review commands on PR #${{ github.event.client_payload.slash_command.args.named.prId }}
+run-name: Triggering AI review commands on PR #${{ inputs.prId }}
 
 concurrency:
-  group: ai-command-${{ github.event.client_payload.slash_command.args.named.prId || github.event.inputs.prId }}
+  group: ai-command-${{ github.event.inputs.prId }}
   cancel-in-progress: true
 
 on:
-  repository_dispatch:
-    types: [ai-command]
-  # this should only be used for testing purposes.
   workflow_dispatch:
     inputs:
       prId:
         description: "PR to deploy"
+        required: true
+      repository:
+        description: "The repository from which the slash command was dispatched"
+        required: true
+      comment-id:
+        description: "The comment-id of the slash command"
+        required: true
+      author:
+        description: "The author that triggered this actions"
         required: true
 
 permissions:
@@ -32,10 +38,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const prId = ${{ 
-              (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
-              || github.event.inputs.prId 
-            }};
+            const prId = ${{ inputs.prId }};
             const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -71,29 +74,20 @@ jobs:
       - name: Post /review command
         uses: ./.github/composite/send-message
         with:
-          prId: ${{
-            (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId)
-            || github.event.inputs.prId
-            }}
+          prId: ${{ inputs.prId }}
           message: "/review"
           token: ${{ env.GH_PAT }}
 
       - name: Post /describe command
         uses: ./.github/composite/send-message
         with:
-          prId: ${{
-            (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId)
-            || github.event.inputs.prId
-            }}
+          prId: ${{ inputs.prId }}
           message: "/describe"
           token: ${{ env.GH_PAT }}
 
       - name: Post /improve command
         uses: ./.github/composite/send-message
         with:
-          prId: ${{
-            (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId)
-            || github.event.inputs.prId
-            }}
+          prId: ${{ inputs.prId }}
           message: "/improve"
           token: ${{ env.GH_PAT }}

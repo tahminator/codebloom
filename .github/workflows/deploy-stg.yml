@@ -1,18 +1,24 @@
 name: Deploying to staging
-run-name: Deploying to staging triggered by ${{ github.event.client_payload.github.payload.comment.user.login || github.actor }}
+run-name: Deploying to staging triggered by ${{ inputs.author }}
 
 concurrency:
-  group: deploy-staging-pr-${{ github.event.client_payload.slash_command.args.named.prId }}
+  group: deploy-staging-pr-${{ inputs.prId }}
   cancel-in-progress: true
 
 on:
-  repository_dispatch:
-    types: [deploy-command]
-  # this should only be used for testing purposes.
   workflow_dispatch:
     inputs:
       prId:
         description: "PR to deploy"
+        required: true
+      repository:
+        description: "The repository from which the slash command was dispatched"
+        required: true
+      comment-id:
+        description: "The comment-id of the slash command"
+        required: true
+      author:
+        description: "The author that triggered this actions"
         required: true
 
 permissions:
@@ -34,10 +40,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const prId = ${{ 
-              (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
-              || github.event.inputs.prId 
-            }};
+            const prId = ${{ inputs.prId }};
             const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -55,10 +58,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const prId = ${{ 
-              (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
-              || github.event.inputs.prId 
-            }};
+            const prId = ${{ inputs.prId }};
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const commitHash = '${{ needs.getPRHead.outputs.sha }}';
 
@@ -259,10 +259,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const prId = ${{ 
-              (github.event_name == 'repository_dispatch' && github.event.client_payload.slash_command.args.named.prId) 
-              || github.event.inputs.prId 
-            }};
+            const prId = ${{ inputs.prId }};
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const commitHash = '${{ needs.getPRHead.outputs.sha }}';
 
