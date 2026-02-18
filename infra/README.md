@@ -1,7 +1,9 @@
 # `infra/`
 
 > [!NOTE]
-> Our staging to production migration script has been moved [here](https://github.com/tahminator/codebloom/tree/main/.github/scripts/copy-prod-db/index.ts#L28).
+> Our staging to production migration script is located [here](https://github.com/tahminator/codebloom/tree/main/.github/scripts/copy-prod-db/index.ts#L28).
+
+[`clean-stg-db.SQL`](./clean-stg-db.SQL) is a SQL script used to clean and scramble staging data after copying the production database.
 
 This directory contains the Dockerfile used to build the main Codebloom image, which is then uploaded to [hub.docker.com/r/tahminator/codebloom](https://hub.docker.com/r/tahminator/codebloom).
 
