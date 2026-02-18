@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use chrono::Utc;
 use dotenvy::dotenv;
 use tokio::time::interval;
@@ -11,21 +13,17 @@ mod utils;
 const FIFTEEN_MINUTES_AS_SECONDS: u64 = 15 * 60;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn Error>> {
     match dotenv() {
         Ok(_) => (),
         Err(e) => eprintln!("Failed to load .env but continuing anyways...: {e:#?}\n\n"),
     }
 
     let redis_creds = redis::credentials::get_redis_credentials();
-    redis::client::init(&redis_creds)
-        .await
-        .expect("Failed to initialize Redis client");
+    redis::client::init(&redis_creds).await?;
 
     let discord_creds = discord::credentials::get_discord_credentials();
-    discord::client::init_in_bg(&discord_creds)
-        .await
-        .expect("Failed to initialize Discord client");
+    discord::client::init_in_bg(&discord_creds).await?;
 
     let mut interval = interval(tokio::time::Duration::from_secs(FIFTEEN_MINUTES_AS_SECONDS));
 
@@ -46,17 +44,11 @@ async fn main() {
                     }
 
                     if let Err(e) = redis::client::set_last_standup(Utc::now()).await {
-                        eprintln!("Failed to save standup to Redis");
-                        eprintln!("Error: {}", e);
-                        eprintln!("Debug: {:#?}", e);
+                        eprintln!("Failed to save standup to Redis: {e:#?}");
                     }
                 }
                 Err(e) => {
-                    eprintln!("===============================================");
-                    eprintln!("Failed to get last standup from Redis");
-                    eprintln!("Error: {}", e);
-                    eprintln!("Debug: {:#?}", e);
-                    eprintln!("===============================================");
+                    eprintln!("Failed to get last standup from Redis: {e:#?}");
                 }
             }
         });
