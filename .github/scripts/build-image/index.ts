@@ -7,20 +7,22 @@ import { hideBin } from "yargs/helpers";
 
 process.env.TZ = "America/New_York";
 
-const { tagPrefix, shouldDockerUpload, serverProfiles } = await yargs(
+const { tagPrefix, dockerUpload, serverProfiles } = await yargs(
   hideBin(process.argv),
 )
   .option("tagPrefix", {
     type: "string",
-    default: "",
+    demandOption: true,
   })
   .option("dockerUpload", {
     type: "boolean",
     default: false,
+    demandOption: true,
   })
   .option("serverProfiles", {
     type: "string",
     default: "prod",
+    demandOption: true,
   })
   .strict()
   .parse();
@@ -82,7 +84,7 @@ async function main() {
       await $`docker buildx use codebloom-builder`;
     }
 
-    const buildMode = shouldDockerUpload ? "--push" : "--load";
+    const buildMode = dockerUpload ? "--push" : "--load";
 
     const viteStagingArg =
       serverProfiles === "stg" ? ["--build-arg", "VITE_STAGING=true"] : [];
