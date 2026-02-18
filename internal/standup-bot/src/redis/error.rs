@@ -1,53 +1,57 @@
+use bb8_redis::{
+    bb8::RunError,
+    redis::RedisError,
+};
 use chrono::ParseError;
-use redis::RedisError;
 use std::fmt;
+
+#[derive(Debug, Clone)]
+pub struct RedisSingletonEmptyError;
 
 #[derive(Debug)]
 #[allow(dead_code)]
 pub enum RedisClientError {
-    Redis(RedisError),
-    DateTimeParse(ParseError),
+    PooledRedisError(RunError<RedisError>),
+    RedisError(RedisError),
+    DateTimeParseError(ParseError),
+    EmptyError(RedisSingletonEmptyError),
 }
 
 impl fmt::Display for RedisClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            RedisClientError::Redis(e) => {
-                write!(f, "RedisError: {:?}", e)?;
-                write!(f, "\n  Category: {:?}", e.category())?;
-                write!(f, "\n  Kind: {:?}", e.kind())?;
-                write!(
-                    f,
-                    "\n  is_connection_dropped: {}",
-                    e.is_connection_dropped()
-                )?;
-                write!(f, "\n  is_timeout: {}", e.is_timeout())?;
-                write!(
-                    f,
-                    "\n  is_connection_refusal: {}",
-                    e.is_connection_refusal()
-                )?;
-                write!(f, "\n  is_io_error: {}", e.is_io_error())?;
-                if let Some(detail) = e.detail() {
-                    write!(f, "\n  Detail: {}", detail)?;
-                }
-                Ok(())
+            RedisClientError::PooledRedisError(e) => write!(f, "PooledRedisError: {:?}", e),
+            RedisClientError::RedisError(e) => write!(f, "RedisError: {:?}", e),
+            RedisClientError::DateTimeParseError(e) => write!(f, "DateTimeParse: {:?}", e),
+            RedisClientError::EmptyError(_) => {
+                write!(f, "Redis Singleton is empty")
             }
-            RedisClientError::DateTimeParse(e) => write!(f, "DateTimeParse: {:?}", e),
         }
     }
 }
 
 impl std::error::Error for RedisClientError {}
 
+impl From<RunError<RedisError>> for RedisClientError {
+    fn from(value: RunError<RedisError>) -> Self {
+        RedisClientError::PooledRedisError(value)
+    }
+}
+
 impl From<RedisError> for RedisClientError {
     fn from(value: RedisError) -> Self {
-        RedisClientError::Redis(value)
+        RedisClientError::RedisError(value)
     }
 }
 
 impl From<ParseError> for RedisClientError {
     fn from(value: ParseError) -> Self {
-        RedisClientError::DateTimeParse(value)
+        RedisClientError::DateTimeParseError(value)
+    }
+}
+
+impl From<RedisSingletonEmptyError> for RedisClientError {
+    fn from(value: RedisSingletonEmptyError) -> Self {
+        RedisClientError::EmptyError(value)
     }
 }

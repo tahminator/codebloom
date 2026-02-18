@@ -1,65 +1,55 @@
+use bb8_redis::{
+    RedisConnectionManager,
+    bb8::{
+        self,
+        Pool,
+        PooledConnection,
+    },
+    redis::AsyncCommands,
+};
 use chrono::{
     DateTime,
     Utc,
 };
-use redis::{
-    AsyncCommands,
-    IntoConnectionInfo,
-    aio::ConnectionManager,
-    io::tcp::{
-        TcpSettings,
-        socket2,
-    },
-};
-use std::{
-    sync::OnceLock,
-    time::Duration,
-};
+use std::sync::OnceLock;
 
 use crate::redis::{
     credentials::RedisCredentials,
-    error::RedisClientError,
+    error::{
+        RedisClientError,
+        RedisSingletonEmptyError,
+    },
 };
 
-static CONN: OnceLock<ConnectionManager> = OnceLock::new();
+static INSTANCE: OnceLock<Pool<RedisConnectionManager>> = OnceLock::new();
 
 pub async fn init(creds: &RedisCredentials) -> Result<(), RedisClientError> {
-    let keepalive = socket2::TcpKeepalive::new()
-        .with_time(Duration::from_secs(60))
-        .with_interval(Duration::from_secs(10));
-    let tcp_settings = TcpSettings::default()
-        .set_nodelay(true)
-        .set_keepalive(keepalive);
+    let manager = RedisConnectionManager::new(creds.redis_uri.as_str())?;
+    let pool = bb8::Pool::builder().build(manager).await?;
 
-    let info = creds
-        .redis_uri
-        .clone()
-        .into_connection_info()?
-        .set_tcp_settings(tcp_settings);
-
-    let client = redis::Client::open(info)?;
-    let man = client.get_connection_manager().await?;
-
-    match CONN.set(man) {
+    match INSTANCE.set(pool) {
         Ok(_) => (),
-        Err(_) => println!("Attempted to save Redis CONN more than once"),
+        Err(_) => println!("Attempted to save Redis INSTANCE more than once"),
     }
 
     Ok(())
 }
 
-fn get_conn() -> ConnectionManager {
-    CONN.get().expect("Redis not initialized").clone()
+async fn get_pool() -> Result<PooledConnection<'static, RedisConnectionManager>, RedisClientError> {
+    match INSTANCE.get() {
+        Some(pool) => pool.get().await.map_err(RedisClientError::from),
+        None => Err(RedisSingletonEmptyError.into()),
+    }
 }
 
 pub async fn set_last_standup(time: DateTime<Utc>) -> Result<(), RedisClientError> {
-    let mut conn = get_conn();
+    let mut conn = get_pool().await?;
 
     Ok(conn.set("standup", time.to_string()).await?)
 }
 
 pub async fn get_last_standup() -> Result<Option<DateTime<Utc>>, RedisClientError> {
-    let mut conn = get_conn();
+    let mut conn = get_pool().await?;
 
     let value: Option<String> = conn.get("standup").await?;
 
