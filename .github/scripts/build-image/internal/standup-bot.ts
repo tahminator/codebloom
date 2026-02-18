@@ -5,7 +5,7 @@ import { hideBin } from "yargs/helpers";
 
 process.env.TZ = "America/New_York";
 
-const { shouldDockerUpload } = await yargs(hideBin(process.argv))
+const { dockerUpload } = await yargs(hideBin(process.argv))
   .option("dockerUpload", {
     type: "boolean",
     default: false,
@@ -56,7 +56,7 @@ async function main() {
     await $`docker buildx use codebloom-standup-bot-builder`;
   }
 
-  const buildMode = shouldDockerUpload ? "--push" : "--load";
+  const buildMode = dockerUpload ? "--push" : "--load";
 
   const tagArgs = tags.flatMap((tag) => ["--tag", tag]);
 
