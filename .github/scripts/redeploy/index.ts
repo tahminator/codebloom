@@ -8,7 +8,7 @@ import { hideBin } from "yargs/helpers";
 
 const { environment, sha } = await yargs(hideBin(process.argv))
   .option("environment", {
-    enum: ["staging", "production"] satisfies Environment[],
+    choices: ["staging", "production"] satisfies Environment[],
     describe: "Deployment environment (staging or production)",
     default: "staging" satisfies Environment as Environment,
   })
