@@ -5,34 +5,28 @@ import { getEnvVariables } from "load-secrets/env/load";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-const { environment: rawEnvironment, sha } = await yargs(hideBin(process.argv))
+const { environment, sha } = await yargs(hideBin(process.argv))
   .option("environment", {
-    type: "string",
+    enum: ["staging", "production"] satisfies Environment[],
     describe: "Deployment environment (staging or production)",
-    default: "Staging",
+    default: "staging" satisfies Environment as Environment,
   })
   .option("sha", {
     type: "string",
     describe: "Commit SHA (required for staging)",
     default: "",
   })
+  .check(({ sha, environment }) => {
+    if (environment === "staging" && !sha) {
+      throw new Error(
+        "SHA must be available in ENV if script is being run in staging environment.",
+      );
+    } else {
+      return true;
+    }
+  })
   .strict()
   .parse();
-
-const environment: Environment = (() => {
-  const v = rawEnvironment;
-  if (!v) {
-    throw new Error("Environment is required");
-  }
-
-  if (v !== "staging" && v !== "production") {
-    throw new Error(
-      'Environment must be the string literal "staging" or "production"',
-    );
-  }
-
-  return v;
-})();
 
 export async function main() {
   // make sure you checkout the repo first.

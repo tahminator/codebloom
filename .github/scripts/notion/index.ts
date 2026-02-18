@@ -17,7 +17,7 @@ const {
   .option("prId", {
     type: "number",
     describe: "Pull request number",
-    default: 1,
+    demandOption: true,
   })
   .option("getGhaOutput", {
     type: "boolean",
@@ -27,7 +27,7 @@ const {
   .option("githubOutput", {
     type: "string",
     describe: "Path to GITHUB_OUTPUT",
-    default: "",
+    default: process.env.GITHUB_OUTPUT,
   })
   .strict()
   .parse();
