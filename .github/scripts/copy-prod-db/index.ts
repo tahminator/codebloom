@@ -11,17 +11,17 @@ const { runUrl, username, sha } = await yargs(hideBin(process.argv))
   .options("runUrl", {
     type: "string",
     describe: "Run url for action",
-    default: "",
+    demandOption: true,
   })
   .options("username", {
     type: "string",
     describe: "Username of person who triggered action",
-    default: "",
+    demandOption: true,
   })
   .options("sha", {
     type: "string",
     describe: "Commit SHA",
-    default: "",
+    demandOption: true,
   })
   .strict()
   .parse();

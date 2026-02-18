@@ -6,7 +6,7 @@ const { prId } = await yargs(hideBin(process.argv))
   .options("prId", {
     type: "number",
     describe: "Pull request number",
-    default: 1,
+    demandOption: true,
   })
   .strict()
   .parse();
