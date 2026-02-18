@@ -53,7 +53,3 @@ runs:
     - name: Run script
       shell: bash
       run: bun run .github/scripts/redeploy --environment=${{ inputs.ENVIRONMENT }} --sha=${{ inputs.SHA }}
-      env:
-        DOCKER_UPLOAD: ${{ inputs.DOCKER_UPLOAD }}
-        TAG_PREFIX: ${{ inputs.TAG_PREFIX }}
-        SERVER_PROFILES: ${{ inputs.SERVER_PROFILES }}
