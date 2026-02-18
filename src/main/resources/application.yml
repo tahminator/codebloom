@@ -120,4 +120,4 @@ jedis:
   url: ${REDIS_URL}
 
 playwright:
-  headless: ${PLAYWRIGHT_HEADLESS}
+  headless: ${PLAYWRIGHT_HEADLESS:true}
