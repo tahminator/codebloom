@@ -38,6 +38,4 @@ runs:
 
     - name: Run script
       shell: bash
-      run: bun .github/scripts/load-secrets
-      env:
-        UNLOAD_ENVIRONMENTS: ${{ inputs.UNLOAD_ENVIRONMENTS }}
+      run: bun run .github/scripts/load-secrets --envs=${{ inputs.UNLOAD_ENVIRONMENTS }}
