@@ -40,6 +40,10 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
+      - name: Run script
+        run: bun run .github/scripts/load-slash-commands --get-gha-output=tru
+        id: cmds
+
       - name: Load secrets
         uses: ./.github/composite/load-secrets
         with:
@@ -50,10 +54,12 @@ jobs:
       - name: Slash Command Dispatch
         uses: peter-evans/slash-command-dispatch@v4
         with:
+          dispatch-type: workflow
           token: ${{ env.GH_PAT }}
           commands: |
-            deploy
-            ai
-            copy
+            ${{ steps.cmds.outputs.commands }}
           static-args: |
-            prId=${{ github.event.issue.number || -1 }}
+            repository=${{ github.repository }}
+            comment-id=${{ github.event.comment.id }}
+            prId=${{ github.event.issue.number }}
+            author=${{ github.actor }}
