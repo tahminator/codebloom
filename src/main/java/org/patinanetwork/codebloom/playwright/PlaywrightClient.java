@@ -35,8 +35,8 @@ public class PlaywrightClient {
     private final ServerUrlUtils serverUrlUtils;
     private final EmailClient emailClient;
 
-    @Value("${playwright.headless:true}")
-    private boolean headless;
+    @Value("${playwright.headless}")
+    private String headless;
 
     public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmailClient githubOAuthEmailClient) {
         this.serverUrlUtils = serverUrlUtils;
@@ -44,8 +44,12 @@ public class PlaywrightClient {
     }
 
     @PostConstruct
-    public void logInfo() {
-        log.info("Headless: " + (headless ? "true" : "false"));
+    private void logInfo() {
+        log.info("Headless: " + headless + " parsed as: " + parseHeadless());
+    }
+
+    private boolean parseHeadless() {
+        return !headless.equals("false");
     }
 
     private <T> T withPage(final Function<Page, T> consumer) {
@@ -53,7 +57,7 @@ public class PlaywrightClient {
                 Browser browser = playwright
                         .firefox()
                         .launch(new BrowserType.LaunchOptions()
-                                .setHeadless(headless)
+                                .setHeadless(parseHeadless())
                                 .setTimeout(40000));
                 BrowserContext context = browser.newContext(
                         new NewContextOptions().setUserAgent(USER_AGENT).setStorageState(null));
