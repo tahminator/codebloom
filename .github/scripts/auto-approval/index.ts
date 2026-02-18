@@ -14,17 +14,19 @@ const {
   .option("githubToken", {
     type: "string",
     describe: "GitHub token",
-    default: "",
+    default: process.env.GITHUB_TOKEN,
+    demandOption: true,
   })
   .option("repo", {
     type: "string",
     describe: "Repository in owner/repo form",
-    default: "",
+    default: process.env.GITHUB_REPOSITORY,
+    demandOption: true,
   })
   .option("prId", {
     type: "number",
     describe: "Pull request number",
-    default: 1,
+    demandOption: true,
   })
   .strict()
   .parse();
