@@ -64,3 +64,4 @@ jobs:
             comment-id=${{ github.event.comment.id }}
             prId=${{ github.event.issue.number }}
             author=${{ github.actor }}
+            ref=${{ steps.pr-head.outputs.result }}
