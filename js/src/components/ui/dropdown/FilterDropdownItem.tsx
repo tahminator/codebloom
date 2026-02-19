@@ -40,7 +40,7 @@ export default function FilterDropdownItem({
             disabled={disabled}
             withThumbIndicator={false}
           />
-        : <Checkbox checked={value} disabled={disabled} />
+        : <Checkbox checked={value} disabled={disabled} readOnly />
       }
     >
       <div
