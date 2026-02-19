@@ -11,7 +11,6 @@ const { runUrl, username, sha } = await yargs(hideBin(process.argv))
   .options("runUrl", {
     type: "string",
     describe: "Run url for action",
-    demandOption: true,
   })
   .options("username", {
     type: "string",
