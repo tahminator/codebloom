@@ -20,24 +20,20 @@ export default function AvatarDropdown({
     <Menu shadow="md" width={"xl"}>
       <Menu.Target>
         {showInitial ?
-          <Avatar component="button" color="green">
+          <Avatar component="button" color="green" size={"2.75rem"}>
             {initial}
           </Avatar>
-        : <Avatar component="button" src={src} />}
+        : <Avatar component="button" src={src} size={"2.75rem"} />}
       </Menu.Target>
       <Menu.Dropdown>
         {schoolFF && (
           <>
             {userId && (
-              <Menu.Item
-                component={Link}
-                to={`/user/${userId}`}
-                className="w-full"
-              >
+              <Menu.Item component={Link} to={`/user/${userId}`}>
                 My Profile
               </Menu.Item>
             )}
-            <Menu.Item component={Link} to={"/settings"} w-full>
+            <Menu.Item component={Link} to={"/settings"}>
               Settings
             </Menu.Item>
             <Menu.Divider />
@@ -47,7 +43,6 @@ export default function AvatarDropdown({
           component={Link}
           to={"/api/auth/logout"}
           reloadDocument
-          w-full
           color="red"
         >
           Logout
