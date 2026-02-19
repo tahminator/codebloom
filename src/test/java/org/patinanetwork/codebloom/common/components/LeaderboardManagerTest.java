@@ -30,7 +30,10 @@ import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardReposi
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterGenerator;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterGeneratorTest;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
+import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
+import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
 import org.patinanetwork.codebloom.common.page.Indexed;
+import org.patinanetwork.codebloom.common.submissions.SubmissionsHandler;
 import org.patinanetwork.codebloom.common.time.StandardizedLocalDateTime;
 
 public class LeaderboardManagerTest {
@@ -40,11 +43,15 @@ public class LeaderboardManagerTest {
 
     private LeaderboardRepository leaderboardRepository = mock(LeaderboardRepository.class);
     private AchievementRepository achievementRepository = mock(AchievementRepository.class);
+    private UserRepository userRepository = mock(UserRepository.class);
+    private LeetcodeClient leetcodeClient = mock(LeetcodeClient.class);
+    private SubmissionsHandler submissionsHandler = mock(SubmissionsHandler.class);
 
     private final int validLeaderboardTags = LeaderboardFilterGeneratorTest.VALID_LEADERBOARD_TAGS.size();
 
     public LeaderboardManagerTest() {
-        this.leaderboardManager = new LeaderboardManager(leaderboardRepository, achievementRepository);
+        this.leaderboardManager = new LeaderboardManager(
+                leaderboardRepository, achievementRepository, userRepository, leetcodeClient, submissionsHandler);
         this.faker = Faker.instance();
     }
 

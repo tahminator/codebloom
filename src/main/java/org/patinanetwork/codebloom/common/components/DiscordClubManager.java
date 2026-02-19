@@ -12,11 +12,16 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClubMetadata;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
+import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.models.user.UserWithScore;
 import org.patinanetwork.codebloom.common.db.repos.discord.club.DiscordClubRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterGenerator;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
+import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
+import org.patinanetwork.codebloom.common.db.repos.user.options.UserFilterOptions;
+import org.patinanetwork.codebloom.common.dto.refresh.RefreshResultDto;
+import org.patinanetwork.codebloom.common.page.Indexed;
 import org.patinanetwork.codebloom.common.time.StandardizedLocalDateTime;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.common.utils.leaderboard.LeaderboardUtils;
@@ -31,17 +36,23 @@ public class DiscordClubManager {
     private final JDAClient jdaClient;
     private final LeaderboardRepository leaderboardRepository;
     private final DiscordClubRepository discordClubRepository;
+    private final UserRepository userRepository;
     private final ServerUrlUtils serverUrlUtils;
+    private final LeaderboardManager leaderboardManager;
 
     public DiscordClubManager(
             final ServerUrlUtils serverUrlUtils,
             final JDAClient jdaClient,
             final LeaderboardRepository leaderboardRepository,
-            final DiscordClubRepository discordClubRepository) {
+            final DiscordClubRepository discordClubRepository,
+            final UserRepository userRepository,
+            final LeaderboardManager leaderboardManager) {
         this.serverUrlUtils = serverUrlUtils;
         this.jdaClient = jdaClient;
         this.leaderboardRepository = leaderboardRepository;
         this.discordClubRepository = discordClubRepository;
+        this.userRepository = userRepository;
+        this.leaderboardManager = leaderboardManager;
     }
 
     private static final String[] MEDAL_EMOJIS = {"🥇", "🥈", "🥉"};
@@ -282,6 +293,37 @@ public class DiscordClubManager {
                 .build();
 
         return MessageCreateData.fromEmbeds(embed);
+    }
+
+    public RefreshResultDto refreshSubmissions(String guildId, String discordId) throws LeaderboardException {
+        DiscordClub club = discordClubRepository
+                .getDiscordClubByGuildId(guildId)
+                .orElseThrow(() -> new LeaderboardException("Club does not exist", "This club does not exist!"));
+
+        User user = leaderboardManager.refreshUserSubmissions(discordId);
+        Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+
+        LeaderboardFilterOptions options =
+                LeaderboardFilterGenerator.builderWithTag(club.getTag()).build();
+
+        String userId = user.getId();
+
+        UserWithScore scoredUser = userRepository.getUserWithScoreByIdAndLeaderboardId(
+                userId, currentLeaderboard.getId(), UserFilterOptions.DEFAULT);
+
+        int score = scoredUser.getTotalScore();
+        Indexed<UserWithScore> globalIndex =
+                leaderboardRepository.getGlobalRankedUserById(currentLeaderboard.getId(), userId);
+        Indexed<UserWithScore> clubIndex =
+                leaderboardRepository.getFilteredRankedUserById(currentLeaderboard.getId(), userId, options);
+
+        return RefreshResultDto.builder()
+                .score(score)
+                .globalRank(globalIndex.getIndex())
+                .clubRank(clubIndex.getIndex())
+                .leaderboardName(currentLeaderboard.getName())
+                .clubName(club.getName())
+                .build();
     }
 
     public boolean sendTestEmbedMessageToClub(DiscordClub club) {

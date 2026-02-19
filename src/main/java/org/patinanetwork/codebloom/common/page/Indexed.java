@@ -24,7 +24,6 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @EqualsAndHashCode
 public class Indexed<T> {
-
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private final int index;
 
