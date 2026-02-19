@@ -39,14 +39,6 @@ export default function AboutUs() {
           direction={"column"}
           w={"50%"}
         >
-          <Badge
-            variant={"gradient"}
-            gradient={{ from: "green", to: "cyan", deg: 90 }}
-            size={"xl"}
-            m={"md"}
-          >
-            Celebrating CodeBloom's 1 Year Anniversary! 🎉
-          </Badge>
           <Title order={3} style={{ color: "#4cffb0", alignItems: "center" }}>
             Level Up Your Coding with
           </Title>
