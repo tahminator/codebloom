@@ -160,6 +160,7 @@ export default function TransitionalButtons({
             to={to}
             key={to}
             className={classes.navButton}
+            data-testid={`transitional-button-${label}`}
             onMouseEnter={(e) => handleMouseEnter(e, to)}
             ref={(el) => {
               if (el) {
