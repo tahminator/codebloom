@@ -1,12 +1,13 @@
 import {
   Card,
-  createTheme,
   CSSVariablesResolver,
   DEFAULT_THEME,
+  MantineThemeOverride,
   mergeMantineTheme,
   rem,
   Tooltip,
 } from "@mantine/core";
+import { MergeDeep } from "type-fest";
 
 /**
  * Custom mantine theme override
@@ -22,7 +23,7 @@ import {
  * {@link https://github.com/mantinedev/mantine/blob/master/packages/%40mantine/core/src/core/MantineProvider/default-theme.ts Default Theme}
  * {@link https://github.com/mantinedev/mantine/blob/master/packages/%40mantine/core/src/core/MantineProvider/default-colors.ts Default Colors}
  */
-export const themeOverride = createTheme({
+export const themeOverride = {
   components: {
     Tooltip: Tooltip.extend({
       defaultProps: {
@@ -117,6 +118,7 @@ export const themeOverride = createTheme({
     xl: "88em", // 1408px - Anything not fullscreen
   },
   other: {
+    codebloomGray: "#303030",
     patinaGreenDark: "#03664D",
     patinaGreenLight: "#4DFFB0",
     patinaBlueDark: "#1550C4",
@@ -125,9 +127,13 @@ export const themeOverride = createTheme({
     patinaRedLight: "#FF3D3D",
     contentContainerWidth: 1200,
   },
-});
+} as const satisfies MantineThemeOverride;
 
-export const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
+// mantine types suck :(
+export const theme = mergeMantineTheme(
+  DEFAULT_THEME,
+  themeOverride,
+) as unknown as MergeDeep<typeof DEFAULT_THEME, typeof themeOverride>;
 
 /**
  * Add custom CSS variables to keep consistency across the codebase.
