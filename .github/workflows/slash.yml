@@ -41,7 +41,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Run script
-        run: bun run .github/scripts/load-slash-commands --get-gha-output=tru
+        run: bun run .github/scripts/load-slash-commands --get-gha-output=true
         id: cmds
 
       - name: Load secrets
