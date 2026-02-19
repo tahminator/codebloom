@@ -55,7 +55,6 @@ jobs:
         uses: peter-evans/slash-command-dispatch@v4
         with:
           dispatch-type: workflow
-          ref: ${{ steps.pr-head.outputs.result }}
           token: ${{ env.GH_PAT }}
           commands: |
             ${{ steps.cmds.outputs.commands }}
