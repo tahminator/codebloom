@@ -1,0 +1,20 @@
+.navGroup {
+    position: relative;
+}
+
+.hoverIndicator,
+.activeIndicator {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    border-radius: var(--mantine-radius-md);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+}
+
+.navButton {
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
