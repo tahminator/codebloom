@@ -1,6 +1,6 @@
 import type { RestEndpointMethodTypes } from "@octokit/rest";
 
-import { Octokit, RequestError } from "octokit";
+import { Octokit } from "octokit";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
@@ -52,12 +52,7 @@ async function main() {
       pull_number: prId,
     });
   } catch (e) {
-    let s: string;
-    if (e instanceof RequestError) {
-      s = JSON.stringify(e.response?.data);
-    } else {
-      s = String(e);
-    }
+    const s = JSON.stringify(e);
     throw new Error(`GitHub API Error\n\n${s}`);
   }
 
@@ -76,12 +71,7 @@ async function main() {
       event: "APPROVE",
     });
   } catch (e) {
-    let s: string;
-    if (e instanceof RequestError) {
-      s = JSON.stringify(e.response?.data);
-    } else {
-      s = String(e);
-    }
+    const s = JSON.stringify(e);
     throw new Error(`GitHub API Error\n\n${s}`);
   }
 }
