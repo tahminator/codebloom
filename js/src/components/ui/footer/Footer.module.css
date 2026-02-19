@@ -1,18 +1,24 @@
+.footerWrapper {
+    position: relative;
+    min-height: 120px;
+    overflow: hidden;
+}
+
 .footer {
     display: flex;
-    min-height: 56px;
+    min-height: 120px;
     height: auto;
     width: 100%;
     justify-content: center;
+    align-items: center;
     background-color: var(--mantine-color-dark-6);
-    margin-top: auto;
 }
 
 .footerContents {
     max-width: 1200px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     width: 100%;
     background-color: var(--mantine-color-dark-6);
     align-items: center;
@@ -20,6 +26,12 @@
     @mixin smaller-than $mantine-breakpoint-md {
         padding: var(--mantine-spacing-xs) var(--mantine-spacing-xl);
     }
+}
+
+.footerLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .logo {
@@ -31,6 +43,7 @@
 .footerLinks {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
+    align-items: center;
     gap: 16px;
 }
