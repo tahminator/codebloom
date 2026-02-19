@@ -1,9 +1,9 @@
-header {
+.header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: solid 1px grey;
-    padding: 10px;
+    border-radius: var(--mantine-radius-lg);
+    gap: 1rem;
 }
 
 header > :nth-child(2) {

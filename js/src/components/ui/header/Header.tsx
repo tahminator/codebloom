@@ -1,6 +1,8 @@
 import AvatarButton from "@/components/ui/auth/AvatarButton";
 import SkeletonButton from "@/components/ui/auth/SkeletonButton";
-import classes from "@/components/ui/header/Header.module.css";
+import TransitionalButtons from "@/components/ui/button/transitonal/TransitionalButtons";
+import HeaderContainer from "@/components/ui/header/container/HeaderContainer";
+import { MM } from "@/components/wrapper";
 import { useAuthQuery } from "@/lib/api/queries/auth";
 import {
   Box,
@@ -13,7 +15,14 @@ import {
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { motion } from "motion/react";
 import { Link } from "react-router-dom";
+
+const navButtons = [
+  { to: "/", label: "Home" },
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/leaderboard", label: "Leaderboard" },
+];
 
 export default function Header() {
   const { data, status } = useAuthQuery();
@@ -29,7 +38,7 @@ export default function Header() {
       return <Text c="red">Sorry, something went wrong.</Text>;
     }
 
-    if (data?.user && data?.session) {
+    if (data && data.user && data.session) {
       const profileUrl = data.user.profileUrl;
       const initial =
         data.user.nickname ? data.user.nickname.charAt(0).toUpperCase() : "?";
@@ -50,45 +59,52 @@ export default function Header() {
   };
 
   return (
-    <Box
-      style={{
-        background: "#303030",
-      }}
-    >
-      <header className={classes.header}>
-        <Link to="/">
-          <Group>
-            <img src={"/logo.png"} width={45} height={45} alt="Logo" />
-            <Title>
-              <Text
-                gradient={{ from: "rgb(75,233,167)", to: "white" }}
-                variant="gradient"
-                size="lg"
-              >
-                CodeBloom
-              </Text>
-            </Title>
-          </Group>
-        </Link>
-        <Group visibleFrom="sm">
-          <Link to="/">
-            <Button variant="transparent">Home</Button>
-          </Link>
-          <Link to="/dashboard">
-            <Button variant="transparent">Dashboard</Button>
-          </Link>
-          <Link to="/leaderboard">
-            <Button variant="transparent">Leaderboard</Button>
-          </Link>
-        </Group>
-        <Group visibleFrom="sm">{renderButton()}</Group>
-        <Burger
-          opened={drawerOpened}
-          onClick={toggleDrawer}
-          hiddenFrom="sm"
-          aria-label={"Menu button"}
-        />
-      </header>
+    <>
+      <HeaderContainer>
+        {({ logoSize, textOpacity, textWidth, fontSize }) => (
+          <>
+            <Link to="/">
+              <Group>
+                <motion.img
+                  src={"/logo.png"}
+                  style={{ width: logoSize, height: logoSize }}
+                  alt="Logo"
+                />
+                <motion.div
+                  style={{
+                    opacity: textOpacity,
+                    maxWidth: textWidth,
+                    overflow: "hidden",
+                  }}
+                >
+                  <Title>
+                    <MM.Text
+                      gradient={{ from: "patina.4", to: "patina.8" }}
+                      variant="gradient"
+                      size="lg"
+                      style={{
+                        fontSize,
+                      }}
+                    >
+                      CodeBloom
+                    </MM.Text>
+                  </Title>
+                </motion.div>
+              </Group>
+            </Link>
+            <Box visibleFrom="sm">
+              <TransitionalButtons buttons={navButtons} />
+            </Box>
+            <Group visibleFrom="sm">{renderButton()}</Group>
+            <Burger
+              opened={drawerOpened}
+              onClick={toggleDrawer}
+              hiddenFrom="sm"
+              aria-label={"Menu button"}
+            />
+          </>
+        )}
+      </HeaderContainer>
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}
@@ -96,19 +112,23 @@ export default function Header() {
         size="50%"
         title="Navigation"
       >
-        <Flex direction="column" align="center" gap="md" mt="sm">
-          <Link to="/" className="w-full">
-            Home
-          </Link>
-          <Link to="/dashboard" className="w-full">
-            Dashboard
-          </Link>
-          <Link to="/leaderboard" className="w-full">
-            Leaderboard
-          </Link>
+        <Flex direction="column" align="center" gap="xs">
+          {navButtons.map(({ to, label }) => (
+            <Button
+              component={Link}
+              to={to}
+              size={"compact-md"}
+              variant="transparent"
+              fullWidth
+              key={to}
+              onClick={closeDrawer}
+            >
+              {label}
+            </Button>
+          ))}
           {renderButton("w-full")}
         </Flex>
       </Drawer>
-    </Box>
+    </>
   );
 }
