@@ -102,7 +102,7 @@ public class SubmissionController {
             summary = "Returns the currently authenticated user's verification key.",
             description = """
                 Protected endpoint that returns the currently authenticated user's verification key. In order to set their Leetcode username,
-                users must change their About Me in order to pass validation.
+                users must add the verification key to their About Me in order to pass validation.
         """,
             responses = {
                 @ApiResponse(
@@ -162,10 +162,11 @@ public class SubmissionController {
 
         UserProfile leetcodeUserProfile = leetcodeClient.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
         String aboutMe = leetcodeUserProfile.getAboutMe();
-        if (aboutMe == null || !aboutMe.equals(user.getVerifyKey())) {
+
+        if (aboutMe == null || !aboutMe.contains(user.getVerifyKey())) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "The verification key did not match the user's about me or the about me did not exist.");
+                    "The verification key is not present in the user's about me or the about me did not exist.");
         }
 
         if (userRepository.userExistsByLeetcodeUsername(leetcodeUsernameObject.getLeetcodeUsername())) {
