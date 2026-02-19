@@ -51,11 +51,34 @@ export async function _updateNotionTaskWithPrLink(
       return;
     }
 
+    // if there already is a url in there, add \n
+    if (prField.rich_text.length) {
+      prField.rich_text.push({
+        type: "text",
+        text: {
+          content: "\n",
+          link: null,
+        },
+        plain_text: "\n",
+        href: null,
+        annotations: {
+          bold: false,
+          italic: false,
+          strikethrough: false,
+          underline: false,
+          code: false,
+          color: "default",
+        },
+      });
+    }
+
     prField.rich_text.push({
       type: "text",
       text: {
         content: prLink,
-        link: null,
+        link: {
+          url: prLink,
+        },
       },
       plain_text: prLink,
       href: null,
