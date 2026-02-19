@@ -1,5 +1,4 @@
 import { Octokit } from "@octokit/rest";
-import { RequestError } from "octokit";
 
 const githubToken = (() => {
   const v = process.env.GH_TOKEN;
@@ -36,12 +35,7 @@ export async function sendMessage(
         body: message,
       });
     } catch (e) {
-      let s: string;
-      if (e instanceof RequestError) {
-        s = JSON.stringify(e.response?.data);
-      } else {
-        s = String(e);
-      }
+      const s = JSON.stringify(e);
       throw new Error(`GitHub API Error\n\n${s}`);
     }
   } catch (e) {
