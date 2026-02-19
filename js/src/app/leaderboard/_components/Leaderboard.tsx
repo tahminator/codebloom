@@ -297,9 +297,17 @@ function LeaderboardIndex({
                 align="center"
                 gap="md"
               >
-                <Flex align="center" gap="md">
-                  <Text size="xl" fw={700} c={theme.colors.patina[4]} miw={50}>
-                    #{entry.index}
+                <Flex align="center" gap="xs">
+                  <Text
+                    size="xl"
+                    fw={700}
+                    c={theme.colors.patina[4]}
+                    miw={{
+                      sm: 0,
+                      md: 50,
+                    }}
+                  >
+                    {entry.index}
                   </Text>
                   <Flex direction="column" gap="xs">
                     <Stack gap="xs">
