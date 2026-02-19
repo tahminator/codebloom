@@ -7,6 +7,7 @@ import PartyEntryPage from "@/app/duel/PartyEntry.page";
 import LeaderboardEmbed from "@/app/embed/leaderboard/LeaderboardEmbed";
 import PotdEmbed from "@/app/embed/potd/PotdEmbed";
 import ErrorPage from "@/app/error/Error.page";
+import ReportIssue from "@/app/issue/report/ReportIssue.page";
 import LeaderboardWithIdPage from "@/app/leaderboard/[leaderboardId]/LeaderboardWithId.page";
 import AllLeaderboardsPage from "@/app/leaderboard/all/AllLeaderboards.page";
 import LeaderboardPage from "@/app/leaderboard/Leaderboard.page";
@@ -217,6 +218,15 @@ export const router = createBrowserRouter([
             "Sorry, this is not available right now. Please try again later."
           }
         />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/issue/report",
+    element: (
+      <PageShell>
+        <ReportIssue />
+      </PageShell>
+    ),
     errorElement: <ErrorPage />,
   },
 ]);
