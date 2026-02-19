@@ -44,7 +44,7 @@ export default function HeaderContainer({ children }: HeaderContainerProps) {
           paddingBottom: headerPadding,
           paddingLeft: "2rem",
           paddingRight: "2rem",
-          marginTop: "1rem",
+          marginTop: "0.5rem",
           marginBottom: "0.5rem",
           marginLeft: headerMarginHorizontal,
           marginRight: headerMarginHorizontal,
