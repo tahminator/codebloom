@@ -6,15 +6,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.models.achievements.Achievement;
 import org.patinanetwork.codebloom.common.db.models.achievements.AchievementPlaceEnum;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
+import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.models.user.UserWithScore;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 import org.patinanetwork.codebloom.common.db.repos.achievements.AchievementRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterGenerator;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
+import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.dto.user.UserWithScoreDto;
+import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
+import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.page.Indexed;
 import org.patinanetwork.codebloom.common.page.Page;
+import org.patinanetwork.codebloom.common.submissions.SubmissionsHandler;
 import org.patinanetwork.codebloom.common.utils.leaderboard.LeaderboardUtils;
 import org.patinanetwork.codebloom.common.utils.pair.Pair;
 import org.springframework.stereotype.Component;
@@ -25,11 +30,21 @@ public class LeaderboardManager {
 
     private final LeaderboardRepository leaderboardRepository;
     private final AchievementRepository achievementRepository;
+    private final UserRepository userRepository;
+    private final LeetcodeClient leetcodeClient;
+    private final SubmissionsHandler submissionsHandler;
 
     public LeaderboardManager(
-            final LeaderboardRepository leaderboardRepository, final AchievementRepository achievementRepository) {
+            final LeaderboardRepository leaderboardRepository,
+            final AchievementRepository achievementRepository,
+            final UserRepository userRepository,
+            final LeetcodeClient leetcodeClient,
+            final SubmissionsHandler submissionsHandler) {
         this.leaderboardRepository = leaderboardRepository;
         this.achievementRepository = achievementRepository;
+        this.userRepository = userRepository;
+        this.leetcodeClient = leetcodeClient;
+        this.submissionsHandler = submissionsHandler;
     }
 
     public static final int MIN_POSSIBLE_WINNERS = 0;
@@ -157,5 +172,34 @@ public class LeaderboardManager {
         Page<Indexed<UserWithScoreDto>> createdPage =
                 new Page<>(hasNextPage, indexedUserWithScoreDtos, totalPages, parsedPageSize);
         return createdPage;
+    }
+
+    public User refreshUserSubmissions(final String discordId) throws LeaderboardException {
+        User user = userRepository.getUserByDiscordId(discordId);
+
+        if (user == null) {
+            throw new LeaderboardException(
+                    "Cannot refresh submissions",
+                    "Please link your account by [logging in to Codebloom](https://codebloom.patinanetwork.org/login) and completing onboarding.");
+        }
+
+        if (user.getLeetcodeUsername() == null) {
+            throw new LeaderboardException(
+                    "Cannot refresh submissions", "Your Discord Account is not linked to a LeetCode username.");
+        }
+        try {
+            log.info("Fetching recent LeetCode submissions for user: {}", user.getLeetcodeUsername());
+            List<LeetcodeSubmission> leetcodeSubmissions =
+                    leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername(), 20);
+
+            submissionsHandler.handleSubmissions(leetcodeSubmissions, user, true);
+        } catch (Exception e) {
+            log.error("Failed to fetch or process submissions for user {}", user.getLeetcodeUsername(), e);
+            throw new LeaderboardException(
+                    "Cannot refresh submissions",
+                    "Failed to fetch or process submissions from LeetCode. Please try again later.");
+        }
+
+        return user;
     }
 }

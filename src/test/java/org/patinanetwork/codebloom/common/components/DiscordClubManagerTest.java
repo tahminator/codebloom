@@ -21,11 +21,16 @@ import org.mockito.ArgumentCaptor;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClub;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClubMetadata;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
+import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.models.user.UserWithScore;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 import org.patinanetwork.codebloom.common.db.repos.discord.club.DiscordClubRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
+import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
+import org.patinanetwork.codebloom.common.db.repos.user.options.UserFilterOptions;
+import org.patinanetwork.codebloom.common.dto.refresh.RefreshResultDto;
+import org.patinanetwork.codebloom.common.page.Indexed;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.jda.client.JDAClient;
 import org.patinanetwork.codebloom.jda.client.options.EmbeddedImagesMessageOptions;
@@ -39,6 +44,8 @@ public class DiscordClubManagerTest {
     private DiscordClubRepository discordClubRepository = mock(DiscordClubRepository.class);
     private PlaywrightClient playwrightClient = mock(PlaywrightClient.class);
     private ServerUrlUtils serverUrlUtils = mock(ServerUrlUtils.class);
+    private UserRepository userRepository = mock(UserRepository.class);
+    private LeaderboardManager leaderboardManager = mock(LeaderboardManager.class);
 
     private DiscordClubManager discordClubManager;
 
@@ -46,8 +53,13 @@ public class DiscordClubManagerTest {
 
     @BeforeEach
     void setUp() {
-        discordClubManager =
-                new DiscordClubManager(serverUrlUtils, jdaClient, leaderboardRepository, discordClubRepository);
+        discordClubManager = new DiscordClubManager(
+                serverUrlUtils,
+                jdaClient,
+                leaderboardRepository,
+                discordClubRepository,
+                userRepository,
+                leaderboardManager);
 
         logWatcher = new ListAppender<>();
         logWatcher.start();
@@ -369,6 +381,152 @@ public class DiscordClubManagerTest {
 
         String description = captor.getValue().getDescription();
         assertTrue(description.contains("test message"));
+    }
+
+    @Test
+    void testRefreshSubmissionsSuccess() throws LeaderboardException {
+        DiscordClub club = createMockDiscordClub("Test Club", Tag.Rpi);
+        when(discordClubRepository.getDiscordClubByGuildId("guild-123")).thenReturn(Optional.of(club));
+
+        User mockUser = mock(User.class);
+        when(mockUser.getId()).thenReturn("user-id-1");
+        when(leaderboardManager.refreshUserSubmissions("discord-456")).thenReturn(mockUser);
+
+        Leaderboard mockLeaderboard = mock(Leaderboard.class);
+        when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
+        when(mockLeaderboard.getName()).thenReturn("Week 10");
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+
+        UserWithScore scoredUser = mock(UserWithScore.class);
+        when(scoredUser.getTotalScore()).thenReturn(42);
+        when(userRepository.getUserWithScoreByIdAndLeaderboardId(
+                        eq("user-id-1"), eq("leaderboard-id"), eq(UserFilterOptions.DEFAULT)))
+                .thenReturn(scoredUser);
+
+        Indexed<UserWithScore> globalIndex = Indexed.of(scoredUser, 5);
+        Indexed<UserWithScore> clubIndex = Indexed.of(scoredUser, 2);
+        when(leaderboardRepository.getGlobalRankedUserById("leaderboard-id", "user-id-1"))
+                .thenReturn(globalIndex);
+        when(leaderboardRepository.getFilteredRankedUserById(
+                        eq("leaderboard-id"), eq("user-id-1"), any(LeaderboardFilterOptions.class)))
+                .thenReturn(clubIndex);
+
+        RefreshResultDto result = discordClubManager.refreshSubmissions("guild-123", "discord-456");
+
+        assertEquals(42, result.getScore());
+        assertEquals(5, result.getGlobalRank());
+        assertEquals(2, result.getClubRank());
+        assertEquals("Week 10", result.getLeaderboardName());
+        assertEquals("Test Club", result.getClubName());
+
+        verify(leaderboardManager).refreshUserSubmissions("discord-456");
+        verify(discordClubRepository).getDiscordClubByGuildId("guild-123");
+    }
+
+    @Test
+    void testRefreshSubmissionsClubNotFound() {
+        when(discordClubRepository.getDiscordClubByGuildId("unknown-guild")).thenReturn(Optional.empty());
+
+        LeaderboardException exception = assertThrows(
+                LeaderboardException.class,
+                () -> discordClubManager.refreshSubmissions("unknown-guild", "discord-456"));
+
+        assertEquals("Club does not exist", exception.getTitle());
+        assertEquals("This club does not exist!", exception.getDescription());
+
+        verifyNoInteractions(leaderboardManager);
+        verifyNoInteractions(userRepository);
+    }
+
+    @Test
+    void testRefreshSubmissionsUserRefreshThrowsLeaderboardException() throws LeaderboardException {
+        DiscordClub club = createMockDiscordClub("Test Club", Tag.Rpi);
+        when(discordClubRepository.getDiscordClubByGuildId("guild-123")).thenReturn(Optional.of(club));
+
+        when(leaderboardManager.refreshUserSubmissions("discord-456"))
+                .thenThrow(new LeaderboardException(
+                        "Cannot refresh submissions", "Your Discord Account is not linked to a LeetCode username."));
+
+        LeaderboardException exception = assertThrows(
+                LeaderboardException.class, () -> discordClubManager.refreshSubmissions("guild-123", "discord-456"));
+
+        assertEquals("Cannot refresh submissions", exception.getTitle());
+        assertEquals("Your Discord Account is not linked to a LeetCode username.", exception.getDescription());
+
+        verify(leaderboardManager).refreshUserSubmissions("discord-456");
+        verifyNoInteractions(userRepository);
+    }
+
+    @Test
+    void testRefreshSubmissionsReturnsCorrectClubRankWithDifferentTags() throws LeaderboardException {
+        DiscordClub club = createMockDiscordClub("Baruch Club", Tag.Baruch);
+        when(discordClubRepository.getDiscordClubByGuildId("guild-789")).thenReturn(Optional.of(club));
+
+        User mockUser = mock(User.class);
+        when(mockUser.getId()).thenReturn("user-id-2");
+        when(leaderboardManager.refreshUserSubmissions("discord-111")).thenReturn(mockUser);
+
+        Leaderboard mockLeaderboard = mock(Leaderboard.class);
+        when(mockLeaderboard.getId()).thenReturn("lb-id");
+        when(mockLeaderboard.getName()).thenReturn("Week 5");
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+
+        UserWithScore scoredUser = mock(UserWithScore.class);
+        when(scoredUser.getTotalScore()).thenReturn(100);
+        when(userRepository.getUserWithScoreByIdAndLeaderboardId(
+                        eq("user-id-2"), eq("lb-id"), eq(UserFilterOptions.DEFAULT)))
+                .thenReturn(scoredUser);
+
+        Indexed<UserWithScore> globalIndex = Indexed.of(scoredUser, 10);
+        Indexed<UserWithScore> clubIndex = Indexed.of(scoredUser, 1);
+        when(leaderboardRepository.getGlobalRankedUserById("lb-id", "user-id-2"))
+                .thenReturn(globalIndex);
+        when(leaderboardRepository.getFilteredRankedUserById(
+                        eq("lb-id"), eq("user-id-2"), any(LeaderboardFilterOptions.class)))
+                .thenReturn(clubIndex);
+
+        RefreshResultDto result = discordClubManager.refreshSubmissions("guild-789", "discord-111");
+
+        assertEquals(100, result.getScore());
+        assertEquals(10, result.getGlobalRank());
+        assertEquals(1, result.getClubRank());
+        assertEquals("Week 5", result.getLeaderboardName());
+        assertEquals("Baruch Club", result.getClubName());
+    }
+
+    @Test
+    void testRefreshSubmissionsWithZeroScore() throws LeaderboardException {
+        DiscordClub club = createMockDiscordClub("Test Club", Tag.Rpi);
+        when(discordClubRepository.getDiscordClubByGuildId("guild-123")).thenReturn(Optional.of(club));
+
+        User mockUser = mock(User.class);
+        when(mockUser.getId()).thenReturn("user-id-1");
+        when(leaderboardManager.refreshUserSubmissions("discord-456")).thenReturn(mockUser);
+
+        Leaderboard mockLeaderboard = mock(Leaderboard.class);
+        when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
+        when(mockLeaderboard.getName()).thenReturn("Week 1");
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+
+        UserWithScore scoredUser = mock(UserWithScore.class);
+        when(scoredUser.getTotalScore()).thenReturn(0);
+        when(userRepository.getUserWithScoreByIdAndLeaderboardId(
+                        eq("user-id-1"), eq("leaderboard-id"), eq(UserFilterOptions.DEFAULT)))
+                .thenReturn(scoredUser);
+
+        Indexed<UserWithScore> globalIndex = Indexed.of(scoredUser, 50);
+        Indexed<UserWithScore> clubIndex = Indexed.of(scoredUser, 20);
+        when(leaderboardRepository.getGlobalRankedUserById("leaderboard-id", "user-id-1"))
+                .thenReturn(globalIndex);
+        when(leaderboardRepository.getFilteredRankedUserById(
+                        eq("leaderboard-id"), eq("user-id-1"), any(LeaderboardFilterOptions.class)))
+                .thenReturn(clubIndex);
+
+        RefreshResultDto result = discordClubManager.refreshSubmissions("guild-123", "discord-456");
+
+        assertEquals(0, result.getScore());
+        assertEquals(50, result.getGlobalRank());
+        assertEquals(20, result.getClubRank());
     }
 
     private DiscordClub createMockDiscordClub(final String name, final Tag tag) {

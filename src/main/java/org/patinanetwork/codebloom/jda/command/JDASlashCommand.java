@@ -10,7 +10,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public enum JDASlashCommand {
-    LEADERBOARD("leaderboard", "Shows the current weekly leaderboard");
+    LEADERBOARD("leaderboard", "Shows the current weekly leaderboard"),
+    REFRESH("refresh", "Refresh submissions manually");
 
     private final String command;
     private final String description;
