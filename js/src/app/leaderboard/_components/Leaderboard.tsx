@@ -16,7 +16,7 @@ import { ApiUtils } from "@/lib/api/utils";
 import { schoolFF, tagFF } from "@/lib/ff";
 import {
   formatLeaderboardDateRange,
-  getUserSubmissionsUrl,
+  getUserProfileUrl,
 } from "@/lib/helper/leaderboardDateRange";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -249,15 +249,14 @@ function LeaderboardIndex({
               </Flex>
             }
           />
-          <Button
-            variant="subtle"
-            color="red"
+          <Menu.Item
+            closeMenuOnClick={false}
             onClick={onFilterReset}
-            fullWidth
             disabled={!isAnyFilterEnabled && !globalIndex}
+            color="red"
           >
             Clear Filters
-          </Button>
+          </Menu.Item>
         </FilterDropdown>
       </Flex>
       <SearchBox
@@ -276,7 +275,7 @@ function LeaderboardIndex({
             <Card
               key={entry.id}
               component={Link}
-              to={getUserSubmissionsUrl(entry.id, dateRange)}
+              to={getUserProfileUrl(entry.id, dateRange)}
               shadow="sm"
               padding="lg"
               radius="md"

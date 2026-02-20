@@ -3,19 +3,45 @@ import UserProfileHeader from "@/app/user/[userId]/_components/UserProfile/UserP
 import UserTags from "@/app/user/[userId]/_components/UserProfile/UserTags/UserTags";
 import MiniUserSubmissions from "@/app/user/[userId]/submissions/_components/UserSubmissions/MiniUserSubmissions";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { getUserSubmissionsUrl } from "@/lib/helper/leaderboardDateRange";
 import { Center, Button, Flex, Box, Text } from "@mantine/core";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 
 export default function UserProfilePage() {
   const { userId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const startDate = searchParams.get("startDate") ?? undefined;
+  const endDate = searchParams.get("endDate") ?? undefined;
+  const hasDateRange = !!startDate;
 
   if (!userId) {
     return <ToastWithRedirect to={-1} message={"This user ID is not valid."} />;
   }
 
+  const dateRange = startDate ? { startDate, endDate } : undefined;
+  const viewAllUrl = getUserSubmissionsUrl(userId, dateRange);
+
   return (
     <>
-      <Center mt={"xs"} pt={20}></Center>
+      {hasDateRange && (
+        <Flex justify="flex-end" maw="1440px" w="100%" mx="auto" px="5%" pt="md">
+          <Button
+            variant="filled"
+            color="red"
+            size="compact-sm"
+            onClick={() => {
+              const newParams = new URLSearchParams(searchParams);
+              newParams.delete("startDate");
+              newParams.delete("endDate");
+              setSearchParams(newParams);
+            }}
+          >
+            Clear Date Range
+          </Button>
+        </Flex>
+      )}
+      <Center mt={hasDateRange ? "xs" : "xs"} pt={hasDateRange ? 0 : 20}></Center>
       <Center>
         <Flex
           direction={{ base: "column", sm: "row" }}
@@ -68,7 +94,7 @@ export default function UserProfilePage() {
               <Button
                 variant="light"
                 component={Link}
-                to={`/user/${userId}/submissions`}
+                to={viewAllUrl}
               >
                 View All
               </Button>

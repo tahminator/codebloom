@@ -10,7 +10,7 @@ import {
 } from "@/lib/api/queries/leaderboard";
 import {
   formatLeaderboardDateRange,
-  getUserSubmissionsUrl,
+  getUserProfileUrl,
 } from "@/lib/helper/leaderboardDateRange";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
@@ -188,7 +188,7 @@ export default function OrgLeaderboardEmbed() {
               <Card
                 key={entry.id}
                 component={Link}
-                to={getUserSubmissionsUrl(entry.id, dateRange)}
+                to={getUserProfileUrl(entry.id, dateRange)}
                 target="_blank"
                 rel="noopener noreferrer"
                 shadow="sm"

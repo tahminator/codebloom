@@ -1,5 +1,5 @@
 import { useMyRecentLeaderboardData } from "@/lib/api/queries/leaderboard";
-import { getUserSubmissionsUrl } from "@/lib/helper/leaderboardDateRange";
+import { getUserProfileUrl } from "@/lib/helper/leaderboardDateRange";
 import { theme } from "@/lib/theme";
 import { Flex, Skeleton, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
@@ -82,7 +82,7 @@ export default function MyCurrentPoints({
       direction={"column"}
       gap={"md"}
       m={"xs"}
-      to={getUserSubmissionsUrl(userId, dateRange)}
+      to={getUserProfileUrl(userId, dateRange)}
       className="group transition-all"
     >
       <Flex

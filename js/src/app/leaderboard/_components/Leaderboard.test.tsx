@@ -102,7 +102,7 @@ describe("Leaderboard API Succeeded", () => {
       const aphroditeLink = aphroditeEntries[0].closest("a");
       expect(aphroditeLink).toHaveAttribute(
         "href",
-        expect.stringContaining("/user/user-1/submissions?startDate="),
+        expect.stringContaining("/user/user-1?startDate="),
       );
       expect(aphroditeLink).toHaveAttribute(
         "href",

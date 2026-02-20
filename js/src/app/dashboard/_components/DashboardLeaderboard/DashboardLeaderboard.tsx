@@ -11,7 +11,7 @@ import { Api } from "@/lib/api/types";
 import { ApiUtils } from "@/lib/api/utils";
 import {
   formatLeaderboardDateRange,
-  getUserSubmissionsUrl,
+  getUserProfileUrl,
 } from "@/lib/helper/leaderboardDateRange";
 import { theme } from "@/lib/theme";
 import {
@@ -190,7 +190,7 @@ export default function LeaderboardForDashboard({
           return (
             <Flex
               component={Link}
-              to={getUserSubmissionsUrl(user.id, dateRange)}
+              to={getUserProfileUrl(user.id, dateRange)}
               key={idx}
               direction={"row"}
               justify={"space-between"}
