@@ -4,7 +4,11 @@ import { usePagination } from "@/lib/hooks/usePagination";
 import useURLDateRange from "@/lib/hooks/useURLDateRange";
 import { useURLState } from "@/lib/hooks/useUrlState";
 import { notifications } from "@mantine/notifications";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import d from "dayjs";
 import { useCallback, useEffect, useMemo } from "react";
 
@@ -228,6 +232,65 @@ export const useGetAllUsersQuery = (
     searchQuery,
     setSearchQuery,
     debouncedQuery,
+    pageSize,
+  };
+};
+
+/**
+ * Fetch all users with infinite scroll support.
+ * Uses useInfiniteQuery for pagination that loads more data as user scrolls.
+ */
+export const useGetAllUsersInfiniteQuery = ({
+  tieToUrl = false,
+  pageSize = 10,
+}: {
+  tieToUrl?: boolean;
+  pageSize?: number;
+} = {}) => {
+  const [searchQuery, setSearchQuery, debouncedQuery] = useURLState(
+    "query",
+    "",
+    {
+      enabled: tieToUrl,
+      debounce: 500,
+    },
+  );
+
+  const query = useInfiniteQuery({
+    queryKey: ["users", "all", "infinite", debouncedQuery, pageSize],
+    queryFn: async ({ pageParam = 1 }) => {
+      const apiURL = ApiURL.create("/api/user/all", {
+        method: "GET",
+        queries: {
+          page: pageParam,
+          query: debouncedQuery,
+          pageSize,
+        },
+      });
+      return fetchAllUsers(apiURL);
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage.success) return undefined;
+      if (!lastPage.payload.hasNextPage) return undefined;
+      return allPages.length + 1;
+    },
+    enabled: debouncedQuery.length > 0,
+  });
+
+  const allUsers = useMemo(() => {
+    if (!query.data) return [];
+    return query.data.pages.flatMap((page) =>
+      page.success ? page.payload.items : [],
+    );
+  }, [query.data]);
+
+  return {
+    ...query,
+    searchQuery,
+    setSearchQuery,
+    debouncedQuery,
+    allUsers,
     pageSize,
   };
 };
