@@ -73,7 +73,7 @@ export default function RefreshSubmissions({
         centered
       >
         <Text fw={700} ta="center">
-          Are you sure you want to hide this button permanenly?
+          Are you sure you want to hide this button permanently?
         </Text>
         <Text size="sm" c="dimmed" ta="center" mt="xs">
           You can always register your university email by clicking on the
