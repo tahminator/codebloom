@@ -1,7 +1,7 @@
 import TagList from "@/components/ui/tags/TagList";
 import { Api } from "@/lib/api/types";
 import { tagFF } from "@/lib/ff";
-import { getUserSubmissionsUrl } from "@/lib/helper/leaderboardDateRange";
+import { getUserProfileUrl } from "@/lib/helper/leaderboardDateRange";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -93,7 +93,7 @@ export default function LeaderboardCard({
         boxShadow,
       }}
       component={Link}
-      to={getUserSubmissionsUrl(userId, dateRange)}
+      to={getUserProfileUrl(userId, dateRange)}
       reloadDocument={embedded}
       target={embedded ? "_blank" : undefined}
       rel={embedded ? "noopener noreferrer" : undefined}

@@ -20,6 +20,26 @@ export function formatLeaderboardDateRange(metadata: LeaderboardMetadata) {
 }
 
 /**
+ * Builds a URL to a user's profile page with optional date range parameters.
+ * @param userId The user's ID
+ * @param dateRange Optional date range with startDate and optional endDate
+ * @returns The URL string for the user's profile page
+ */
+export function getUserProfileUrl(
+  userId: string,
+  dateRange?: { startDate: string; endDate?: string },
+) {
+  if (dateRange?.startDate) {
+    const params = new URLSearchParams({ startDate: dateRange.startDate });
+    if (dateRange.endDate) {
+      params.set("endDate", dateRange.endDate);
+    }
+    return `/user/${userId}?${params.toString()}`;
+  }
+  return `/user/${userId}`;
+}
+
+/**
  * Builds a URL to a user's submissions page with optional date range parameters.
  * @param userId The user's ID
  * @param dateRange Optional date range with startDate and optional endDate

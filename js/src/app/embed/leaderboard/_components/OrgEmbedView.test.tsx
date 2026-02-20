@@ -132,7 +132,7 @@ describe("OrgEmbedView API Succeeded", () => {
       const aphroditeLink = aphroditeEntries[0].closest("a");
       expect(aphroditeLink).toHaveAttribute(
         "href",
-        expect.stringContaining("/user/user-1/submissions?startDate="),
+        expect.stringContaining("/user/user-1?startDate="),
       );
       expect(aphroditeLink).toHaveAttribute(
         "href",
@@ -151,7 +151,7 @@ describe("OrgEmbedView API Succeeded", () => {
       expect(aphroditeEntries.length).toBeGreaterThan(0);
 
       const aphroditeLink = aphroditeEntries[0].closest("a");
-      expect(aphroditeLink).toHaveAttribute("href", "/user/user-1/submissions");
+      expect(aphroditeLink).toHaveAttribute("href", "/user/user-1");
     });
   });
 
