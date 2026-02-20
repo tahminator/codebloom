@@ -19,6 +19,7 @@ import SettingsPage from "@/app/settings/Settings.page";
 import SubmissionDetailsPage from "@/app/submission/[submissionId]/SubmissionDetails.page";
 import UserSubmissionsPage from "@/app/user/[userId]/submissions/UserSubmissions.page";
 import UserProfilePage from "@/app/user/[userId]/UserProfile.page";
+import UserSearchPage from "@/app/user/all/UserSearch.page";
 import PageShell from "@/components/ui/page/PageShell";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { duelFF, schoolFF } from "@/lib/ff";
@@ -93,6 +94,15 @@ export const router = createBrowserRouter([
     element: (
       <PageShell>
         <SubmissionDetailsPage />
+      </PageShell>
+    ),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/user/all",
+    element: (
+      <PageShell>
+        <UserSearchPage />
       </PageShell>
     ),
     errorElement: <ErrorPage />,
