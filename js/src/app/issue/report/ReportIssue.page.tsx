@@ -29,10 +29,11 @@ export default function ReportIssue() {
         !value ? "Description is required"
         : value.length < 10 ? "Description must be at least 10 characters"
         : null,
-      email: (value: string) =>
-        !value ? "Email is required"
-        : /^\S+@\S+$/.test(value) ? null
-        : "Invalid email",
+      email: (value: string) => {
+        if (!value) return "Email is required";
+        if (value.length > 254) return "Invalid email";
+        return /^[^\s@]+@[^\s@]+$/.test(value) ? null : "Invalid email";
+      },
     },
   });
 
@@ -56,10 +57,9 @@ export default function ReportIssue() {
   };
 
   return (
-    <Flex justify={"center"} align={"center"} h={"100vh"} gap={"lg"}>
+    <Flex justify={"center"} align={"center"} h={"90vh"}>
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Card
-          radius="md"
           style={{
             width: "380px",
           }}
@@ -69,8 +69,7 @@ export default function ReportIssue() {
               <Text
                 gradient={{ from: "rgb(75,233,167)", to: "white" }}
                 variant="gradient"
-                style={{ display: "flex" }}
-                fw={500}
+                fw={400}
                 size="lg"
               >
                 Report an Issue
