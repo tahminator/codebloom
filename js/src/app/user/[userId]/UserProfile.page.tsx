@@ -25,7 +25,14 @@ export default function UserProfilePage() {
   return (
     <>
       {hasDateRange && (
-        <Flex justify="flex-end" maw="1440px" w="100%" mx="auto" px="5%" pt="md">
+        <Flex
+          justify="flex-end"
+          maw="1440px"
+          w="100%"
+          mx="auto"
+          px="5%"
+          pt="md"
+        >
           <Button
             variant="filled"
             color="red"
@@ -41,7 +48,7 @@ export default function UserProfilePage() {
           </Button>
         </Flex>
       )}
-      <Center mt={hasDateRange ? "xs" : "xs"} pt={hasDateRange ? 0 : 20}></Center>
+      <Center mt="xs" pt={hasDateRange ? 0 : 20}></Center>
       <Center>
         <Flex
           direction={{ base: "column", sm: "row" }}
@@ -91,11 +98,7 @@ export default function UserProfilePage() {
               <Text size="clamp(1.2rem, 2vw, 2em)" fw={700} c="white">
                 Recent Submissions
               </Text>
-              <Button
-                variant="light"
-                component={Link}
-                to={viewAllUrl}
-              >
+              <Button variant="light" component={Link} to={viewAllUrl}>
                 View All
               </Button>
             </Flex>

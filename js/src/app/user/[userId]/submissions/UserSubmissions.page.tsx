@@ -1,5 +1,6 @@
 import UserSubmissions from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissions";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
+import { getUserProfileUrl } from "@/lib/helper/leaderboardDateRange";
 import { Button, Flex } from "@mantine/core";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -15,10 +16,8 @@ export default function UserSubmissionsPage() {
     return <ToastWithRedirect to={-1} message={"This User ID is not valid."} />;
   }
 
-  const profileUrl =
-    startDate ?
-      `/user/${userId}?startDate=${startDate}${endDate ? `&endDate=${endDate}` : ""}`
-    : `/user/${userId}`;
+  const dateRange = startDate ? { startDate, endDate } : undefined;
+  const profileUrl = getUserProfileUrl(userId, dateRange);
 
   return (
     <>
