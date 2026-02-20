@@ -137,54 +137,28 @@ function LeaderboardIndex({
         gap="md"
         mb="xl"
       >
-        {page === 1 && second && !debouncedQuery && (
-          <LeaderboardCard
-            placeString={getOrdinal(second.index)}
-            sizeOrder={2}
-            discordName={second.discordName}
-            leetcodeUsername={second.leetcodeUsername}
-            totalScore={second.totalScore}
-            nickname={second.nickname}
-            width={"300px"}
-            userId={second.id}
-            tags={second.tags}
-            isLoading={isPlaceholderData}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        )}
-        {page === 1 && first && !debouncedQuery && (
-          <LeaderboardCard
-            placeString={getOrdinal(first.index)}
-            sizeOrder={1}
-            discordName={first.discordName}
-            leetcodeUsername={first.leetcodeUsername}
-            totalScore={first.totalScore}
-            nickname={first.nickname}
-            width={"300px"}
-            userId={first.id}
-            tags={first.tags}
-            isLoading={isPlaceholderData}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        )}
-        {page === 1 && third && !debouncedQuery && (
-          <LeaderboardCard
-            placeString={getOrdinal(third.index)}
-            sizeOrder={3}
-            discordName={third.discordName}
-            leetcodeUsername={third.leetcodeUsername}
-            totalScore={third.totalScore}
-            nickname={third.nickname}
-            width={"300px"}
-            userId={third.id}
-            tags={third.tags}
-            isLoading={isPlaceholderData}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        )}
+        {page === 1 &&
+          !debouncedQuery &&
+          (isMobile ? [first, second, third] : [second, first, third]).map(
+            (entry) =>
+              entry && (
+                <LeaderboardCard
+                  key={entry.id}
+                  placeString={getOrdinal(entry.index)}
+                  sizeOrder={entry.index as 1 | 2 | 3}
+                  discordName={entry.discordName}
+                  leetcodeUsername={entry.leetcodeUsername}
+                  totalScore={entry.totalScore}
+                  nickname={entry.nickname}
+                  width={"300px"}
+                  userId={entry.id}
+                  tags={entry.tags}
+                  isLoading={isPlaceholderData}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+              ),
+          )}
       </Flex>
       <Flex
         justify="space-between"
