@@ -1,4 +1,5 @@
 import { useSubmitFeedbackMutation } from "@/lib/api/queries/reporter";
+import { reportIssueSchema } from "@/lib/api/schema/reporter";
 import {
   Button,
   Card,
@@ -11,7 +12,9 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 
 export default function ReportIssue() {
   const navigate = useNavigate();
@@ -23,25 +26,10 @@ export default function ReportIssue() {
       description: "",
       email: "",
     },
-    validate: {
-      title: (value: string) => (!value ? "Title is required" : null),
-      description: (value: string) =>
-        !value ? "Description is required"
-        : value.length < 10 ? "Description must be at least 10 characters"
-        : null,
-      email: (value: string) => {
-        if (!value) return "Email is required";
-        if (value.length > 254) return "Invalid email";
-        return /^[^\s@]+@[^\s@]+$/.test(value) ? null : "Invalid email";
-      },
-    },
+    validate: zodResolver(reportIssueSchema),
   });
 
-  const onSubmit = (data: {
-    title: string;
-    description: string;
-    email: string;
-  }) => {
+  const onSubmit = (data: z.infer<typeof reportIssueSchema>) => {
     mutate(data, {
       onSuccess: ({ success, message }) => {
         notifications.show({
