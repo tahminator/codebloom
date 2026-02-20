@@ -103,7 +103,10 @@ export default function UserProfilePage() {
               </Button>
             </Flex>
             <Box>
-              <MiniUserSubmissions userId={userId} />
+              <MiniUserSubmissions
+                userId={userId}
+                key={`${startDate ?? ""}-${endDate ?? ""}`}
+              />
             </Box>
           </Box>
         </Flex>
