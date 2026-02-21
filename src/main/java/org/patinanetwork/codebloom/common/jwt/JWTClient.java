@@ -14,4 +14,11 @@ public interface JWTClient {
 
     /** Parse the JWT token back into a valid Object. Will throw if expired or unable to verify JWT. */
     <T> T decode(String token, Class<T> clazz) throws JsonProcessingException, JWTVerificationException;
+
+    /** Create the JWT token with an audience claim, binding it to a specific server. */
+    <T> String encode(T obj, Duration expiresIn, String audience) throws JsonProcessingException;
+
+    /** Parse the JWT token, enforcing audience match. Will throw if expired, invalid, or audience mismatch. */
+    <T> T decode(String token, Class<T> clazz, String expectedAudience)
+            throws JsonProcessingException, JWTVerificationException;
 }

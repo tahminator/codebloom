@@ -77,8 +77,53 @@ public class JWTTest extends NoJdaRequired {
             jwtClient.decode(jwt, JWTTestObject.class);
             fail("Expected TokenExpiredException was not thrown");
         } catch (JWTVerificationException e) {
-            // Expected exception.
             return;
+        } catch (Exception e) {
+            fail("Unexpected exception thrown: " + e.getClass().getName());
+        }
+    }
+
+    @Test
+    void testValidCaseWithAudience() {
+        JWTTestObject userTag = createTestableObject();
+        String audience = "https://codebloom.patinanetwork.org";
+        String jwt = null;
+        try {
+            jwt = jwtClient.encode(userTag, Duration.ofMinutes(15), audience);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            fail("Failed to create JWT with audience");
+        }
+        assertNotNull(jwt, "JWT is null when it should not be.");
+
+        JWTTestObject reParsedJsonTag = null;
+        try {
+            reParsedJsonTag = jwtClient.decode(jwt, JWTTestObject.class, audience);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            fail("Failed to parse JWT with audience");
+        }
+
+        assertEquals(userTag, reParsedJsonTag);
+    }
+
+    @Test
+    void testAudienceMismatchThrows() {
+        JWTTestObject userTag = createTestableObject();
+        String jwt = null;
+        try {
+            jwt = jwtClient.encode(userTag, Duration.ofMinutes(15), "https://stg.codebloom.patinanetwork.org");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            fail("Failed to create JWT");
+        }
+
+        final String finalJwt = jwt;
+        try {
+            jwtClient.decode(finalJwt, JWTTestObject.class, "http://localhost:8080");
+            fail("Expected JWTVerificationException was not thrown");
+        } catch (JWTVerificationException e) {
+            // Expected — audience mismatch
         } catch (Exception e) {
             fail("Unexpected exception thrown: " + e.getClass().getName());
         }

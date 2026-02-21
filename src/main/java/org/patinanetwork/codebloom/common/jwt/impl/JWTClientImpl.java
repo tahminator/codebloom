@@ -67,4 +67,27 @@ public class JWTClientImpl implements JWTClient {
 
         return objectMapper.readValue(payloadString, clazz);
     }
+
+    /** Create the JWT token with an audience claim, binding it to a specific server. */
+    public <T> String encode(final T obj, final Duration expiresIn, final String audience)
+            throws JsonProcessingException {
+        String payload = objectMapper.writeValueAsString(obj);
+        return JWT.create()
+                .withClaim("payload", payload)
+                .withAudience(audience)
+                .withExpiresAt(Instant.now().plus(expiresIn))
+                .sign(algorithm);
+    }
+
+    /** Parse the JWT token, enforcing audience match. Will throw if expired, invalid, or audience mismatch. */
+    public <T> T decode(final String token, final Class<T> clazz, final String expectedAudience)
+            throws JsonProcessingException, JWTVerificationException {
+        DecodedJWT decodedJWT =
+                JWT.require(algorithm).withAudience(expectedAudience).build().verify(token);
+        String payloadString = decodedJWT.getClaim("payload").asString();
+        if (payloadString == null) {
+            return null;
+        }
+        return objectMapper.readValue(payloadString, clazz);
+    }
 }

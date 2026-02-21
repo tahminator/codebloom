@@ -282,7 +282,8 @@ public class AuthControllerTest {
         EmailBody emailBody = new EmailBody("test@myhunter.cuny.edu");
 
         when(protector.validateSession(request)).thenReturn(authObj);
-        when(jwtClient.encode(any(MagicLink.class), any(Duration.class))).thenReturn("mock-token");
+        when(jwtClient.encode(any(MagicLink.class), any(Duration.class), any(String.class)))
+                .thenReturn("mock-token");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(reactEmailTemplater.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
         doThrow(new EmailException("Failed to send email")).when(emailClient).sendMessage(any(SendEmailOptions.class));
@@ -309,7 +310,8 @@ public class AuthControllerTest {
 
         when(protector.validateSession(request)).thenReturn(authObj);
         when(simpleRedis.containsKey(user.getId())).thenReturn(false);
-        when(jwtClient.encode(any(MagicLink.class), any(Duration.class))).thenReturn("mock-token");
+        when(jwtClient.encode(any(MagicLink.class), any(Duration.class), any(String.class)))
+                .thenReturn("mock-token");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(reactEmailTemplater.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
 
@@ -332,7 +334,6 @@ public class AuthControllerTest {
     void verifySchoolEmailNotAuthenticated() {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getHeader("Referer")).thenReturn("http://localhost:8080/settings");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(protector.validateSession(request)).thenThrow(new RuntimeException("Not authenticated"));
 
@@ -353,11 +354,11 @@ public class AuthControllerTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getHeader("Referer")).thenReturn("http://localhost:8080/settings");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(protector.validateSession(request)).thenReturn(authObj);
         when(request.getParameter("state")).thenReturn("invalid-token");
-        when(jwtClient.decode("invalid-token", MagicLink.class)).thenThrow(new RuntimeException("Invalid token"));
+        when(jwtClient.decode("invalid-token", MagicLink.class, "http://localhost:8080"))
+                .thenThrow(new RuntimeException("Invalid token"));
 
         RedirectView redirectView = authController.verifySchoolEmail(request);
 
@@ -365,7 +366,7 @@ public class AuthControllerTest {
         assertEquals("/settings?success=false&message=Invalid or expired token", redirectView.getUrl());
 
         verify(protector, times(1)).validateSession(request);
-        verify(jwtClient, times(1)).decode("invalid-token", MagicLink.class);
+        verify(jwtClient, times(1)).decode("invalid-token", MagicLink.class, "http://localhost:8080");
     }
 
     @Test
@@ -378,11 +379,11 @@ public class AuthControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         MagicLink magicLink = new MagicLink("test@myhunter.cuny.edu", "different-user-id");
 
-        when(request.getHeader("Referer")).thenReturn("http://localhost:8080/settings");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(protector.validateSession(request)).thenReturn(authObj);
         when(request.getParameter("state")).thenReturn("valid-token");
-        when(jwtClient.decode("valid-token", MagicLink.class)).thenReturn(magicLink);
+        when(jwtClient.decode("valid-token", MagicLink.class, "http://localhost:8080"))
+                .thenReturn(magicLink);
 
         RedirectView redirectView = authController.verifySchoolEmail(request);
 
@@ -390,7 +391,7 @@ public class AuthControllerTest {
         assertEquals("/settings?success=false&message=ID does not match current user", redirectView.getUrl());
 
         verify(protector, times(1)).validateSession(request);
-        verify(jwtClient, times(1)).decode("valid-token", MagicLink.class);
+        verify(jwtClient, times(1)).decode("valid-token", MagicLink.class, "http://localhost:8080");
     }
 
     @Test
@@ -403,11 +404,11 @@ public class AuthControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         MagicLink magicLink = new MagicLink("test@myhunter.cuny.edu", user.getId());
 
+        when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(protector.validateSession(request)).thenReturn(authObj);
         when(request.getParameter("state")).thenReturn("valid-token");
-        when(request.getHeader("Referer")).thenReturn("http://localhost:8080/settings");
-        when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
-        when(jwtClient.decode("valid-token", MagicLink.class)).thenReturn(magicLink);
+        when(jwtClient.decode("valid-token", MagicLink.class, "http://localhost:8080"))
+                .thenReturn(magicLink);
         when(userRepository.updateUser(any(User.class))).thenReturn(true);
 
         RedirectView redirectView = authController.verifySchoolEmail(request);
@@ -416,29 +417,8 @@ public class AuthControllerTest {
         assertEquals("/settings?success=true&message=The email has been verified!", redirectView.getUrl());
 
         verify(protector, times(1)).validateSession(request);
-        verify(jwtClient, times(1)).decode("valid-token", MagicLink.class);
+        verify(jwtClient, times(1)).decode("valid-token", MagicLink.class, "http://localhost:8080");
         verify(userRepository, times(1)).updateUser(any(User.class));
         verify(userTagRepository, times(1)).createTag(any());
-    }
-
-    @Test
-    @DisplayName("Verify school email - invalid origin")
-    void verifySchoolEmailInvalidOrigin() {
-        User user = createRandomUser();
-        Session session = createRandomSession(user.getId());
-        AuthenticationObject authObj = createAuthenticationObject(user, session);
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        when(protector.validateSession(request)).thenReturn(authObj);
-        when(request.getHeader("Referer")).thenReturn("http://wrong-host.com/settings");
-        when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
-
-        RedirectView redirectView = authController.verifySchoolEmail(request);
-
-        assertNotNull(redirectView);
-        assertEquals("/settings?success=false&message=Invalid request origin", redirectView.getUrl());
-
-        verify(protector, times(0)).validateSession(request);
     }
 }

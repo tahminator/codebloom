@@ -233,7 +233,7 @@ public class AuthController {
 
         MagicLink magicLink = new MagicLink(email, userId);
         try {
-            String token = jwtClient.encode(magicLink, Duration.ofHours(1));
+            String token = jwtClient.encode(magicLink, Duration.ofHours(1), serverUrlUtils.getUrl());
             String verificationLink = serverUrlUtils.getUrl() + "/api/auth/school/verify?state=" + token;
             emailClient.sendMessage(SendEmailOptions.builder()
                     .recipientEmail(email)
@@ -258,14 +258,6 @@ public class AuthController {
             })
     @GetMapping("/school/verify")
     public RedirectView verifySchoolEmail(final HttpServletRequest request) {
-        String referer = request.getHeader("Referer");
-        String allowedDomain = serverUrlUtils.getUrl();
-        boolean validOrigin = (referer == null || referer.startsWith(allowedDomain));
-
-        if (!validOrigin) {
-            return new RedirectView("/settings?success=false&message=Invalid request origin");
-        }
-
         AuthenticationObject authenticationObject;
         Session session;
         User user;
@@ -283,7 +275,7 @@ public class AuthController {
         String token = request.getParameter("state");
         MagicLink magicLink;
         try {
-            magicLink = jwtClient.decode(token, MagicLink.class);
+            magicLink = jwtClient.decode(token, MagicLink.class, serverUrlUtils.getUrl());
         } catch (Exception e) {
             return new RedirectView("/settings?success=false&message=Invalid or expired token");
         }
