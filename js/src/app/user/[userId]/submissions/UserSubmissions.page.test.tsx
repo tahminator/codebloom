@@ -1,6 +1,7 @@
 import UserSubmissionsPage from "@/app/user/[userId]/submissions/UserSubmissions.page";
 import { TestUtils, TestUtilTypes } from "@/lib/test";
 import { screen } from "@testing-library/react";
+import { Route, Routes } from "react-router";
 
 // Mock ResizeObserver for Mantine ScrollArea
 class ResizeObserverMock {
@@ -10,20 +11,21 @@ class ResizeObserverMock {
 }
 window.ResizeObserver = ResizeObserverMock;
 
+const routes = (
+  <Routes>
+    <Route path="/user/:userId/submissions" element={<UserSubmissionsPage />} />
+  </Routes>
+);
+
 describe("UserSubmissionsPage", () => {
   describe("without date range", () => {
-    const routeConfig: TestUtilTypes.RouteConfig = {
-      initialPath: "/user/user-1/submissions",
-      routePattern: "/user/:userId/submissions",
-    };
-
     let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
     beforeEach(() => {
-      renderProviderFn = TestUtils.getRenderWithRouteProvidersFn(routeConfig);
+      renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
     });
 
     it("should render Go to profile button", () => {
-      renderProviderFn?.(<UserSubmissionsPage />);
+      renderProviderFn?.(routes, "/user/user-1/submissions");
 
       expect(
         screen.getByRole("button", { name: "← Go to profile" }),
@@ -31,7 +33,7 @@ describe("UserSubmissionsPage", () => {
     });
 
     it("should render skeleton stack of submissions initially", () => {
-      renderProviderFn?.(<UserSubmissionsPage />);
+      renderProviderFn?.(routes, "/user/user-1/submissions");
 
       const element = screen.getByTestId(
         "user-profile-skeleton-submissions-stack",
@@ -42,19 +44,16 @@ describe("UserSubmissionsPage", () => {
   });
 
   describe("with date range", () => {
-    const routeConfig: TestUtilTypes.RouteConfig = {
-      initialPath:
-        "/user/user-1/submissions?startDate=2025-01-01T00:00:00.000Z&endDate=2025-02-01T00:00:00.000Z",
-      routePattern: "/user/:userId/submissions",
-    };
-
     let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
     beforeEach(() => {
-      renderProviderFn = TestUtils.getRenderWithRouteProvidersFn(routeConfig);
+      renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
     });
 
     it("should render Go to profile button with date range", () => {
-      renderProviderFn?.(<UserSubmissionsPage />);
+      renderProviderFn?.(
+        routes,
+        "/user/user-1/submissions?startDate=2025-01-01T00:00:00.000Z&endDate=2025-02-01T00:00:00.000Z",
+      );
 
       expect(
         screen.getByRole("button", { name: "← Go to profile" }),
@@ -63,19 +62,16 @@ describe("UserSubmissionsPage", () => {
   });
 
   describe("with only startDate", () => {
-    const routeConfig: TestUtilTypes.RouteConfig = {
-      initialPath:
-        "/user/user-1/submissions?startDate=2025-01-01T00:00:00.000Z",
-      routePattern: "/user/:userId/submissions",
-    };
-
     let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
     beforeEach(() => {
-      renderProviderFn = TestUtils.getRenderWithRouteProvidersFn(routeConfig);
+      renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
     });
 
     it("should render Go to profile button with startDate only", () => {
-      renderProviderFn?.(<UserSubmissionsPage />);
+      renderProviderFn?.(
+        routes,
+        "/user/user-1/submissions?startDate=2025-01-01T00:00:00.000Z",
+      );
 
       expect(
         screen.getByRole("button", { name: "← Go to profile" }),
