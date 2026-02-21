@@ -4,21 +4,17 @@ import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderResult } from "@testing-library/react";
 import { ReactElement } from "react";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { MemoryRouter } from "react-router";
 
 export namespace TestUtilTypes {
   export type RenderWithAllProvidersFn = (
     ui: ReactElement,
+    initialPath?: string,
   ) => RenderResult<
     typeof import("@testing-library/dom/types/queries"),
     HTMLElement,
     HTMLElement
   >;
-
-  export interface RouteConfig {
-    initialPath: string;
-    routePattern: string;
-  }
 }
 
 export class TestUtils {
@@ -31,42 +27,14 @@ export class TestUtils {
       },
     });
 
-    return (ui: ReactElement) => {
+    return (ui: ReactElement, initialPath?: string) => {
       return render(
         <QueryClientProvider client={queryClient}>
           <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
-            <MemoryRouter>{ui}</MemoryRouter>
-            <Notifications />
-          </MantineProvider>
-        </QueryClientProvider>,
-      );
-    };
-  }
-
-  /**
-   * Returns a render function that wraps the component with all providers and route support.
-   * Use this when testing components that use useParams() or other route hooks.
-   * @param routeConfig Configuration for the route (initialPath and routePattern)
-   */
-  static getRenderWithRouteProvidersFn(
-    routeConfig: TestUtilTypes.RouteConfig,
-  ): TestUtilTypes.RenderWithAllProvidersFn {
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    });
-
-    return (ui: ReactElement) => {
-      return render(
-        <QueryClientProvider client={queryClient}>
-          <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
-            <MemoryRouter initialEntries={[routeConfig.initialPath]}>
-              <Routes>
-                <Route path={routeConfig.routePattern} element={ui} />
-              </Routes>
+            <MemoryRouter
+              initialEntries={initialPath ? [initialPath] : undefined}
+            >
+              {ui}
             </MemoryRouter>
             <Notifications />
           </MantineProvider>
