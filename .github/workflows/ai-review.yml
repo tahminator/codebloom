@@ -72,6 +72,13 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GET_GHA_OUTPUT: "true"
 
+      - name: Load STYLEGUIDE.md
+        id: styleguide
+        run: |
+          echo "context<<EOF" >> $GITHUB_OUTPUT
+          cat ./STYLEGUIDE.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Qodo PR-Agent
         uses: qodo-ai/pr-agent@main
         env:
@@ -95,6 +102,10 @@ jobs:
             - Verify that environment variables and secrets are handled securely
             - Check for potential performance bottlenecks or N+1 query issues
             - Ensure proper test coverage for critical paths
+            
+            The repository follows strict style guidelines, so please use the listed items below to 
+            ensure code quality & correctness.
+            ${{ steps.styleguide.outputs.context }}
           pr_reviewer.persistent_comment: "false"
           pr_reviewer.enable_review_labels_security: "false"
           pr_reviewer.enable_review_labels_effort: "false"
@@ -103,6 +114,10 @@ jobs:
           pr_description.extra_instructions: |
             Below is some additional context for the PR from the connected Notion task:
             ${{ steps.notion_check.outputs.context }}
+            
+            The repository follows strict style guidelines, so please use the listed items below to 
+            ensure code quality & correctness.
+            ${{ steps.styleguide.outputs.context }}
           pr_description.publish_description_as_comment_persistent: "false"
           pr_description.publish_labels: "false"
           pr_description.add_original_user_description: "false"
@@ -129,6 +144,10 @@ jobs:
             - Verify that environment variables and secrets are handled securely
             - Check for potential performance bottlenecks or N+1 query issues
             - Ensure proper test coverage for critical paths
+            
+            The repository follows strict style guidelines, so please use the listed items below to 
+            ensure code quality & correctness.
+            ${{ steps.styleguide.outputs.context }}
           pr_code_suggestions.apply_suggestions_checkbox: "true"
           pr_code_suggestions.suggestions_score_threshold: "0"
           pr_code_suggestions.new_score_mechanism: "true"
