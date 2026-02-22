@@ -3,14 +3,6 @@ import { TestUtils, TestUtilTypes } from "@/lib/test";
 import { screen } from "@testing-library/react";
 import { Route, Routes } from "react-router";
 
-// Mock ResizeObserver for Mantine ScrollArea
-class ResizeObserverMock {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-window.ResizeObserver = ResizeObserverMock;
-
 const routes = (
   <Routes>
     <Route path="/user/:userId/submissions" element={<UserSubmissionsPage />} />

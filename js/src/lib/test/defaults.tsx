@@ -1,6 +1,14 @@
 import "@testing-library/jest-dom";
 import "@/patches";
 
+// Mock ResizeObserver for Mantine ScrollArea
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+window.ResizeObserver = ResizeObserverMock;
+
 // https://stackoverflow.com/a/42685938
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {

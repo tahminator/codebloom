@@ -44,11 +44,11 @@ describe("UserProfilePage", () => {
       expect(viewAllLink).toHaveAttribute("href", "/user/user-1/submissions");
     });
 
-    it("should not render Clear Date Range button without date params", () => {
+    it("should not render Clear button without date params", () => {
       renderProviderFn?.(routes, "/user/user-1");
 
       expect(
-        screen.queryByRole("button", { name: "Clear Date Range" }),
+        screen.queryByRole("button", { name: "Clear" }),
       ).not.toBeInTheDocument();
     });
   });
@@ -59,15 +59,13 @@ describe("UserProfilePage", () => {
       renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
     });
 
-    it("should render Clear Date Range button with date params", () => {
+    it("should render Clear button with date params", () => {
       renderProviderFn?.(
         routes,
         "/user/user-1?startDate=2025-01-01T00:00:00.000Z&endDate=2025-02-01T00:00:00.000Z",
       );
 
-      expect(
-        screen.getByRole("button", { name: "Clear Date Range" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Clear" })).toBeInTheDocument();
     });
 
     it("should have View All link with date params", () => {
@@ -87,7 +85,7 @@ describe("UserProfilePage", () => {
       );
     });
 
-    it("should remove date params when Clear Date Range is clicked", async () => {
+    it("should remove date params when Clear is clicked", async () => {
       const user = userEvent.setup();
       renderProviderFn?.(
         routes,
@@ -95,13 +93,13 @@ describe("UserProfilePage", () => {
       );
 
       const clearButton = screen.getByRole("button", {
-        name: "Clear Date Range",
+        name: "Clear",
       });
       await user.click(clearButton);
 
       await waitFor(() => {
         expect(
-          screen.queryByRole("button", { name: "Clear Date Range" }),
+          screen.queryByRole("button", { name: "Clear" }),
         ).not.toBeInTheDocument();
       });
     });
@@ -113,15 +111,13 @@ describe("UserProfilePage", () => {
       renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
     });
 
-    it("should render Clear Date Range button with only startDate", () => {
+    it("should render Clear button with only startDate", () => {
       renderProviderFn?.(
         routes,
         "/user/user-1?startDate=2025-01-01T00:00:00.000Z",
       );
 
-      expect(
-        screen.getByRole("button", { name: "Clear Date Range" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Clear" })).toBeInTheDocument();
     });
 
     it("should have View All link with startDate only", () => {

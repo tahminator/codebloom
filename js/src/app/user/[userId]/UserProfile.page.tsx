@@ -22,40 +22,30 @@ export default function UserProfilePage() {
   const dateRange = startDate ? { startDate, endDate } : undefined;
   const viewAllUrl = getUserSubmissionsUrl(userId, dateRange);
 
+  const clearDateRange = () => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("startDate");
+    newParams.delete("endDate");
+    setSearchParams(newParams);
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   return (
     <>
-      {hasDateRange && (
-        <Flex
-          justify="flex-end"
-          maw="1440px"
-          w="100%"
-          mx="auto"
-          px="5%"
-          pt="md"
-        >
-          <Button
-            variant="filled"
-            color="red"
-            size="compact-sm"
-            onClick={() => {
-              const newParams = new URLSearchParams(searchParams);
-              newParams.delete("startDate");
-              newParams.delete("endDate");
-              setSearchParams(newParams);
-            }}
-          >
-            Clear Date Range
-          </Button>
-        </Flex>
-      )}
-      <Center mt="xs" pt={hasDateRange ? 0 : 20}></Center>
       <Center>
         <Flex
           direction={{ base: "column", sm: "row" }}
           w="100%"
           gap="md"
           maw="1440px"
-          p="5%"
+          p={{ base: "md", sm: "5%" }}
           pt="md"
           wrap="wrap"
         >
@@ -83,17 +73,17 @@ export default function UserProfilePage() {
             bdrs="md"
             style={{
               flex: "3 1 360px",
-              minWidth: "75%",
+              minWidth: 0,
               boxShadow: "0 4px 10px rgba(0,0,0,.5)",
             }}
           >
             <Flex
               direction={{ base: "column", md: "row" }}
-              justify="space-between"
+              justify={{ base: "center", md: "space-between" }}
               w="100%"
               align="center"
-              px="20px"
-              gap="10px"
+              px="md"
+              gap="xs"
             >
               <Text size="clamp(1.2rem, 2vw, 2em)" fw={700} c="white">
                 Recent Submissions
@@ -102,6 +92,30 @@ export default function UserProfilePage() {
                 View All
               </Button>
             </Flex>
+            {hasDateRange && startDate && (
+              <Flex
+                align="center"
+                justify="flex-start"
+                gap="sm"
+                px="md"
+                mt="xs"
+              >
+                <Text size="sm" c="dimmed" style={{ wordBreak: "break-word" }}>
+                  {endDate ?
+                    `Viewing submissions from ${formatDate(startDate)} to ${formatDate(endDate)}`
+                  : `Viewing submissions from ${formatDate(startDate)}`}
+                </Text>
+                <Button
+                  variant="outline"
+                  color="red"
+                  size="compact-xs"
+                  onClick={clearDateRange}
+                  style={{ flexShrink: 0 }}
+                >
+                  Clear
+                </Button>
+              </Flex>
+            )}
             <Box>
               <MiniUserSubmissions
                 userId={userId}
