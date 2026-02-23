@@ -98,12 +98,13 @@ public class AdminController {
         // BE VERY CAREFUL WITH THIS ROUTE. IT WILL DEACTIVATE THE PREVIOUS LEADERBOARD
         // (however, it should be in a recoverable state, as it just gets toggled to be
         // deactivated, not deleted).
-        Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-        if (currentLeaderboard != null) {
+        Optional<Leaderboard> currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+
+        currentLeaderboard.ifPresent(lb -> {
             discordClubManager.sendLeaderboardCompletedDiscordMessageToAllClubs();
             leaderboardManager.generateAchievementsForAllWinners();
-            leaderboardRepository.disableLeaderboardById(currentLeaderboard.getId());
-        }
+            leaderboardRepository.disableLeaderboardById(lb.getId());
+        });
 
         OffsetDateTime shouldExpireBy = StandardizedOffsetDateTime.normalize(newLeaderboardBody.getShouldExpireBy());
 
@@ -117,8 +118,8 @@ public class AdminController {
 
         Leaderboard newLeaderboard = Leaderboard.builder()
                 .name(name)
-                .shouldExpireBy(shouldExpireBy != null ? shouldExpireBy.toLocalDateTime() : null)
-                .syntaxHighlightingLanguage(newLeaderboardBody.getSyntaxHighlightingLanguage())
+                .shouldExpireBy(Optional.ofNullable(shouldExpireBy).map(d -> d.toLocalDateTime()))
+                .syntaxHighlightingLanguage(Optional.ofNullable(newLeaderboardBody.getSyntaxHighlightingLanguage()))
                 .build();
 
         leaderboardRepository.addNewLeaderboard(newLeaderboard);

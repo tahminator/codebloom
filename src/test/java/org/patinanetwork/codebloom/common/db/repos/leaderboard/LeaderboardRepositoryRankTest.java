@@ -32,7 +32,8 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
     @Autowired
     public LeaderboardRepositoryRankTest(final LeaderboardRepository leaderboardRepository) {
         this.leaderboardRepository = leaderboardRepository;
-        this.currentLeaderboard = this.leaderboardRepository.getRecentLeaderboardMetadata();
+        this.currentLeaderboard =
+                this.leaderboardRepository.getRecentLeaderboardMetadata().get();
     }
 
     @Test
@@ -46,9 +47,9 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
         users.forEach(i -> {
             var indexed = leaderboardRepository.getFilteredRankedUserById(
                     currentLeaderboard.getId(), i.getItem().getId(), opts);
-            var user = indexed.getItem();
+            var user = indexed.get().getItem();
             assertEquals(
-                    indexed.getIndex(),
+                    indexed.get().getIndex(),
                     users.stream()
                             .filter(u -> {
                                 var possibleUser = u.getItem();
@@ -70,9 +71,9 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
         users.forEach(i -> {
             var indexed = leaderboardRepository.getGlobalRankedUserById(
                     currentLeaderboard.getId(), i.getItem().getId());
-            var user = indexed.getItem();
+            var user = indexed.get().getItem();
             assertEquals(
-                    indexed.getIndex(),
+                    indexed.get().getIndex(),
                     users.stream()
                             .filter(u -> {
                                 var possibleUser = u.getItem();
@@ -90,9 +91,8 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
         String gwcUserId = "a1a1a1a1-a2d2-e3e3-f4f4-a5a5a5a5a5a5";
         var opts = LeaderboardFilterOptions.builder().patina(true).build();
 
-        Indexed<UserWithScore> i =
-                leaderboardRepository.getFilteredRankedUserById(currentLeaderboard.getId(), gwcUserId, opts);
-        assertNull(i);
+        var result = leaderboardRepository.getFilteredRankedUserById(currentLeaderboard.getId(), gwcUserId, opts);
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -156,7 +156,10 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
 
         assertNotNull(patinaResult, "User with Patina tag should appear in Patina filter");
         assertNotNull(baruchResult, "User with Baruch tag should appear in Baruch filter");
-        assertEquals(patinaResult.getItem(), baruchResult.getItem(), "Same user should be returned in both filters");
+        assertEquals(
+                patinaResult.get().getItem(),
+                baruchResult.get().getItem(),
+                "Same user should be returned in both filters");
     }
 
     @Test
@@ -173,8 +176,8 @@ public class LeaderboardRepositoryRankTest extends BaseRepositoryTest {
         var newTagResult =
                 leaderboardRepository.getFilteredRankedUserById(EXPIRED_LEADERBOARD_ID, userWithNewTag, hunterOpts);
 
-        assertNotNull(oldTagResult, "User with tag created before leaderboard deletion should be included");
-        assertNull(newTagResult, "User with tag created after leaderboard deletion should be excluded");
+        assertTrue(oldTagResult.isPresent(), "User with tag created before leaderboard deletion should be included");
+        assertTrue(newTagResult.isEmpty(), "User with tag created after leaderboard deletion should be excluded");
     }
 
     @Test

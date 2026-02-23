@@ -411,8 +411,10 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
+        when(mockLeaderboard.getShouldExpireBy())
+                .thenReturn(Optional.of(LocalDateTime.now().plusDays(7)));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
         when(leaderboardRepository.getLeaderboardUserCountById(eq("leaderboard-id"), any()))
                 .thenReturn(25);
 
@@ -432,9 +434,10 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
-        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
+        when(mockLeaderboard.getShouldExpireBy())
+                .thenReturn(Optional.of(LocalDateTime.now().plusDays(7)));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
     }
 
     private void setupMockLeaderboardDataWithoutExpiration() {
@@ -443,9 +446,9 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
-        when(mockLeaderboard.getShouldExpireBy()).thenReturn(null);
+        when(mockLeaderboard.getShouldExpireBy()).thenReturn(Optional.empty());
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
     }
 
     private List<UserWithScore> createMockUsers() {
@@ -505,7 +508,7 @@ public class DiscordClubManagerTest {
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
 
         List<UserWithScore> mockUsers = createMockUsersWithMixedScores();
         when(leaderboardRepository.getLeaderboardUsersById(eq("leaderboard-id"), any(LeaderboardFilterOptions.class)))
@@ -519,7 +522,7 @@ public class DiscordClubManagerTest {
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
 
         List<UserWithScore> mockUsers = createMockUsersAllZeroScores();
         when(leaderboardRepository.getLeaderboardUsersById(eq("leaderboard-id"), any(LeaderboardFilterOptions.class)))
@@ -534,9 +537,10 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
-        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
+        when(mockLeaderboard.getShouldExpireBy())
+                .thenReturn(Optional.of(LocalDateTime.now().plusDays(7)));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
     }
 
     private void setupMockLeaderboardDataWithExpirationAndAllZeroScoreUsers() {
@@ -545,9 +549,10 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
-        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
+        when(mockLeaderboard.getShouldExpireBy())
+                .thenReturn(Optional.of(LocalDateTime.now().plusDays(7)));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
     }
 
     private List<UserWithScore> createMockUsersOneUser() {
@@ -575,7 +580,7 @@ public class DiscordClubManagerTest {
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
 
         List<UserWithScore> mockUsers = createMockUsersOneUser();
         when(leaderboardRepository.getLeaderboardUsersById(eq("leaderboard-id"), any(LeaderboardFilterOptions.class)))
@@ -589,7 +594,7 @@ public class DiscordClubManagerTest {
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
 
         List<UserWithScore> mockUsers = createMockUsersTwoUsers();
         when(leaderboardRepository.getLeaderboardUsersById(eq("leaderboard-id"), any(LeaderboardFilterOptions.class)))
@@ -604,9 +609,10 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
-        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
+        when(mockLeaderboard.getShouldExpireBy())
+                .thenReturn(Optional.of(LocalDateTime.now().plusDays(7)));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
     }
 
     private void setupMockLeaderboardDataWithExpirationAndTwoUsers() {
@@ -615,8 +621,9 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Test Leaderboard");
-        when(mockLeaderboard.getShouldExpireBy()).thenReturn(LocalDateTime.now().plusDays(7));
+        when(mockLeaderboard.getShouldExpireBy())
+                .thenReturn(Optional.of(LocalDateTime.now().plusDays(7)));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
     }
 }

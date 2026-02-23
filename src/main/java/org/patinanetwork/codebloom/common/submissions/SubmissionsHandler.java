@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -130,15 +131,15 @@ public class SubmissionsHandler {
             LeetcodeQuestion leetcodeQuestion = questionMap.get(leetcodeSubmission.getTitleSlug());
 
             // If the submission is before the leaderboard started, points awarded = 0
-            Leaderboard recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+            Optional<Leaderboard> recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
             // This should never be happening as there should always be an existing
             // leaderboard to fall on. Howerver, race conditions could trigger this problem.
-            if (recentLeaderboard == null) {
+            if (recentLeaderboard.isEmpty()) {
                 throw new RuntimeException("No recent leaderboard found.");
             }
 
-            boolean isTooLate = recentLeaderboard.getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
+            boolean isTooLate = recentLeaderboard.get().getCreatedAt().isAfter(leetcodeSubmission.getTimestamp());
 
             // int basePoints = switch (leetcodeQuestion.getDifficulty().toUpperCase()) {
             // case "EASY" -> 100;
@@ -210,10 +211,10 @@ public class SubmissionsHandler {
                     new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), createdQuestion.getId(), points));
 
             UserWithScore recentUserMetadata = userRepository.getUserWithScoreByIdAndLeaderboardId(
-                    user.getId(), recentLeaderboard.getId(), UserFilterOptions.DEFAULT);
+                    user.getId(), recentLeaderboard.get().getId(), UserFilterOptions.DEFAULT);
 
             leaderboardRepository.updateUserPointsFromLeaderboard(
-                    recentLeaderboard.getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
+                    recentLeaderboard.get().getId(), user.getId(), recentUserMetadata.getTotalScore() + points);
         }
 
         return acceptedSubmissions;

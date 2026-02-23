@@ -77,7 +77,7 @@ public class AdminControllerTest {
         NewLeaderboardBody body =
                 NewLeaderboardBody.builder().name("Spring 2024 Challenge").build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -104,7 +104,7 @@ public class AdminControllerTest {
         Leaderboard existingLeaderboard =
                 Leaderboard.builder().id("existing-id").name("Old Leaderboard").build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(existingLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(existingLeaderboard));
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -183,7 +183,7 @@ public class AdminControllerTest {
         String maxName = "a".repeat(512);
         NewLeaderboardBody body = NewLeaderboardBody.builder().name(maxName).build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -203,7 +203,7 @@ public class AdminControllerTest {
         NewLeaderboardBody body =
                 NewLeaderboardBody.builder().name("  Challenge 2024  ").build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -228,7 +228,7 @@ public class AdminControllerTest {
                 .shouldExpireBy(futureDate)
                 .build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -239,7 +239,8 @@ public class AdminControllerTest {
 
         verify(protector).validateAdminSession(request);
         verify(leaderboardRepository)
-                .addNewLeaderboard(argThat(leaderboard -> leaderboard.getShouldExpireBy() != null));
+                .addNewLeaderboard(
+                        argThat(leaderboard -> leaderboard.getShouldExpireBy().isPresent()));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
     }
 
@@ -292,7 +293,7 @@ public class AdminControllerTest {
                 .syntaxHighlightingLanguage("python")
                 .build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -302,8 +303,10 @@ public class AdminControllerTest {
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
 
         verify(protector).validateAdminSession(request);
-        verify(leaderboardRepository).addNewLeaderboard(argThat(leaderboard -> "python"
-                .equals(leaderboard.getSyntaxHighlightingLanguage())));
+        verify(leaderboardRepository).addNewLeaderboard(argThat(leaderboard -> leaderboard
+                .getSyntaxHighlightingLanguage()
+                .filter("python"::equals)
+                .isPresent()));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
     }
 
@@ -317,7 +320,7 @@ public class AdminControllerTest {
                 .syntaxHighlightingLanguage("python")
                 .build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -328,8 +331,12 @@ public class AdminControllerTest {
 
         verify(protector).validateAdminSession(request);
         verify(leaderboardRepository)
-                .addNewLeaderboard(argThat(leaderboard -> leaderboard.getShouldExpireBy() != null
-                        && "python".equals(leaderboard.getSyntaxHighlightingLanguage())));
+                .addNewLeaderboard(
+                        argThat(leaderboard -> leaderboard.getShouldExpireBy().isPresent()
+                                && leaderboard
+                                        .getSyntaxHighlightingLanguage()
+                                        .filter("python"::equals)
+                                        .isPresent()));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
     }
 
@@ -341,7 +348,7 @@ public class AdminControllerTest {
                 .syntaxHighlightingLanguage(null)
                 .build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
 
@@ -352,8 +359,9 @@ public class AdminControllerTest {
 
         verify(protector).validateAdminSession(request);
         verify(leaderboardRepository)
-                .addNewLeaderboard(argThat(leaderboard -> leaderboard.getShouldExpireBy() == null
-                        && leaderboard.getSyntaxHighlightingLanguage() == null));
+                .addNewLeaderboard(
+                        argThat(leaderboard -> leaderboard.getShouldExpireBy().isEmpty()
+                                && leaderboard.getSyntaxHighlightingLanguage().isEmpty()));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
     }
 
