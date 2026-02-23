@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.components.LeaderboardManager;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
 import org.patinanetwork.codebloom.common.db.models.user.UserWithScore;
@@ -72,15 +73,15 @@ public class LeaderboardController {
             final @PathVariable String leaderboardId, final HttpServletRequest request) {
         FakeLag.sleep(650);
 
-        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata(leaderboardId);
+        Optional<Leaderboard> leaderboardData = leaderboardManager.getLeaderboardMetadata(leaderboardId);
 
-        if (leaderboardData == null) {
+        if (leaderboardData.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Leaderboard cannot be found or does not exist.");
         }
 
         return ResponseEntity.ok()
                 .body(ApiResponder.success(
-                        "Leaderboard metadata found!", LeaderboardDto.fromLeaderboard(leaderboardData)));
+                        "Leaderboard metadata found!", LeaderboardDto.fromLeaderboard(leaderboardData.get())));
     }
 
     @GetMapping("/{leaderboardId}/user/all")
@@ -177,11 +178,19 @@ public class LeaderboardController {
             final HttpServletRequest request) {
         FakeLag.sleep(650);
 
-        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata(
-                leaderboardRepository.getRecentLeaderboardMetadata().getId());
+        var current = leaderboardRepository
+                .getRecentLeaderboardMetadata()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active leaderboard found."));
+
+        Optional<Leaderboard> leaderboardData = leaderboardManager.getLeaderboardMetadata(current.getId());
+
+        if (leaderboardData.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Leaderboard cannot be found or does not exist.");
+        }
 
         return ResponseEntity.ok()
-                .body(ApiResponder.success("All leaderboards found!", LeaderboardDto.fromLeaderboard(leaderboardData)));
+                .body(ApiResponder.success(
+                        "All leaderboards found!", LeaderboardDto.fromLeaderboard(leaderboardData.get())));
     }
 
     @GetMapping("/current/user/all")
@@ -256,8 +265,10 @@ public class LeaderboardController {
                 .mhcplusplus(mhcplusplus)
                 .build();
 
-        String currentLeaderboardId =
-                leaderboardRepository.getRecentLeaderboardMetadata().getId();
+        String currentLeaderboardId = leaderboardRepository
+                .getRecentLeaderboardMetadata()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active leaderboard found."))
+                .getId();
         Page<Indexed<UserWithScoreDto>> createdPage =
                 leaderboardManager.getLeaderboardUsers(currentLeaderboardId, options, globalIndex);
 
@@ -278,11 +289,17 @@ public class LeaderboardController {
             final HttpServletRequest request, @PathVariable final String userId) {
         FakeLag.sleep(650);
 
-        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
+        Optional<Leaderboard> leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
+
+        if (leaderboardData.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Active leaderboard could not be found.");
+        }
 
         // we do not support point of time in this endpoint currently
         UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
-                userId, leaderboardData.getId(), UserFilterOptions.builder().build());
+                userId,
+                leaderboardData.get().getId(),
+                UserFilterOptions.builder().build());
 
         // if (user == null) {
         // return
@@ -336,9 +353,9 @@ public class LeaderboardController {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         String userId = authenticationObject.getUser().getId();
 
-        Leaderboard leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
+        Optional<Leaderboard> leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();
 
-        if (leaderboardData == null) {
+        if (leaderboardData.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active leaderboard found.");
         }
 
@@ -346,7 +363,10 @@ public class LeaderboardController {
 
         if (!patina && !hunter && !nyu && !baruch && !rpi && !gwc && !sbu && !ccny && !columbia && !cornell && !bmcc) {
             // Use global ranking when no filters are applied
-            userWithRank = leaderboardRepository.getGlobalRankedUserById(leaderboardData.getId(), userId);
+            userWithRank = leaderboardRepository
+                    .getGlobalRankedUserById(leaderboardData.get().getId(), userId)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "User not found on the current leaderboard."));
         } else {
             // Use filtered ranking when filters are applied
             LeaderboardFilterOptions options = LeaderboardFilterOptions.builder()
@@ -362,13 +382,11 @@ public class LeaderboardController {
                     .cornell(cornell)
                     .bmcc(bmcc)
                     .build();
-            userWithRank = leaderboardRepository.getFilteredRankedUserById(leaderboardData.getId(), userId, options);
-        }
-
-        if (userWithRank == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found on the current leaderboard or does not match the specified filters.");
+            userWithRank = leaderboardRepository
+                    .getFilteredRankedUserById(leaderboardData.get().getId(), userId, options)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "User not found on the current leaderboard or does not match the specified filters."));
         }
 
         Indexed<UserWithScoreDto> indexedUserWithScoreDto =

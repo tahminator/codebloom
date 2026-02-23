@@ -39,9 +39,10 @@ public class LeaderboardDto {
                 .id(leaderboard.getId())
                 .name(leaderboard.getName())
                 .createdAt(leaderboard.getCreatedAt())
-                .deletedAt(leaderboard.getDeletedAt())
-                .shouldExpireBy(leaderboard.getShouldExpireBy())
-                .syntaxHighlightingLanguage(leaderboard.getSyntaxHighlightingLanguage())
+                .deletedAt(leaderboard.getDeletedAt().orElse(null))
+                .shouldExpireBy(leaderboard.getShouldExpireBy().orElse(null))
+                .syntaxHighlightingLanguage(
+                        leaderboard.getSyntaxHighlightingLanguage().orElse(null))
                 .build();
     }
 }

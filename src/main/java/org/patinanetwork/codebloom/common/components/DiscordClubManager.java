@@ -79,15 +79,20 @@ public class DiscordClubManager {
      */
     private void sendLeaderboardCompletedDiscordMessage(final DiscordClub club) {
         try {
-            Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+            Optional<Leaderboard> currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+
+            if (currentLeaderboard.isEmpty()) {
+                return;
+            }
 
             LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                     .page(1)
                     .pageSize(5)
                     .build();
 
-            List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
-                    leaderboardRepository.getLeaderboardUsersById(currentLeaderboard.getId(), options));
+            List<UserWithScore> users =
+                    LeaderboardUtils.filterUsersWithPoints(leaderboardRepository.getLeaderboardUsersById(
+                            currentLeaderboard.get().getId(), options));
 
             String topUsersSection = buildTopUsersSection(users, true);
             String headerText = users.isEmpty()
@@ -115,7 +120,7 @@ public class DiscordClubManager {
                     topUsersSection,
                     club.getName(),
                     serverUrlUtils.getUrl(),
-                    currentLeaderboard.getId(),
+                    currentLeaderboard.get().getId(),
                     club.getTag().name().toLowerCase(),
                     serverUrlUtils.getUrl());
 
@@ -132,7 +137,7 @@ public class DiscordClubManager {
                     .channelId(Long.valueOf(channelId.get()))
                     .description(description)
                     .title("🏆🏆🏆 %s - Final Leaderboard Score for %s"
-                            .formatted(currentLeaderboard.getName(), club.getName()))
+                            .formatted(currentLeaderboard.get().getName(), club.getName()))
                     .footerText("Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()))
                     .footerIcon("%s/favicon.ico".formatted(serverUrlUtils.getUrl()))
                     .color(new Color(69, 129, 103))
@@ -204,24 +209,33 @@ public class DiscordClubManager {
         DiscordClub club =
                 discordClubRepository.getDiscordClubByGuildId(guildId).orElseThrow();
 
-        Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+        Optional<Leaderboard> currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+
+        if (currentLeaderboard.isEmpty()) {
+            throw new RuntimeException("No recent leaderboard found.");
+        }
 
         LeaderboardFilterOptions options = LeaderboardFilterGenerator.builderWithTag(club.getTag())
                 .page(1)
                 .pageSize(5)
                 .build();
 
-        List<UserWithScore> users = LeaderboardUtils.filterUsersWithPoints(
-                leaderboardRepository.getLeaderboardUsersById(currentLeaderboard.getId(), options));
+        List<UserWithScore> users =
+                LeaderboardUtils.filterUsersWithPoints(leaderboardRepository.getLeaderboardUsersById(
+                        currentLeaderboard.get().getId(), options));
 
-        LocalDateTime shouldExpireByTime =
-                Optional.ofNullable(currentLeaderboard.getShouldExpireBy()).orElse(StandardizedLocalDateTime.now());
+        Optional<LocalDateTime> shouldExpireByTime = currentLeaderboard.get().getShouldExpireBy();
 
-        Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireByTime);
+        long daysLeft = 0;
+        long hoursLeft = 0;
+        long minutesLeft = 0;
 
-        long daysLeft = remaining.toDays();
-        long hoursLeft = remaining.toHours() % 24;
-        long minutesLeft = remaining.toMinutes() % 60;
+        if (shouldExpireByTime.isPresent()) {
+            Duration remaining = Duration.between(StandardizedLocalDateTime.now(), shouldExpireByTime.get());
+            daysLeft = remaining.toDays();
+            hoursLeft = remaining.toHours() % 24;
+            minutesLeft = remaining.toMinutes() % 60;
+        }
 
         String topUsersSection = buildTopUsersSection(users, false);
         String headerText = "Here is %s on the LeetCode leaderboard for our very own members!"
@@ -259,7 +273,7 @@ public class DiscordClubManager {
 
         MessageEmbed embed = new EmbedBuilder()
                 .setTitle("%s - %s Leaderboard Update for %s"
-                        .formatted(currentLeaderboard.getName(), isWeekly ? "Weekly" : "", club.getName()))
+                        .formatted(currentLeaderboard.get().getName(), isWeekly ? "Weekly" : "", club.getName()))
                 .setDescription(description)
                 .setFooter(
                         "Codebloom - LeetCode Leaderboard for %s".formatted(club.getName()),

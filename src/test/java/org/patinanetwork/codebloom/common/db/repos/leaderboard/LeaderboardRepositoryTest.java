@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +52,14 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
     @BeforeAll
     void createMockLeaderboard() {
         // will bring this back after
-        previousLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-        mockLeaderboard = Leaderboard.builder().name("Mock Leaderboard").build();
+        previousLeaderboard =
+                leaderboardRepository.getRecentLeaderboardMetadata().get();
+        mockLeaderboard = Leaderboard.builder()
+                .name("Mock Leaderboard")
+                .deletedAt(Optional.empty())
+                .shouldExpireBy(Optional.empty())
+                .syntaxHighlightingLanguage(Optional.empty())
+                .build();
         leaderboardRepository.addNewLeaderboard(mockLeaderboard);
     }
 
@@ -80,7 +87,8 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
     @Order(1)
     @Test
     void testIfMostRecentLeaderboardMetadataValid() {
-        Leaderboard possiblyMockLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+        Leaderboard possiblyMockLeaderboard =
+                leaderboardRepository.getRecentLeaderboardMetadata().get();
 
         if (possiblyMockLeaderboard == null || !mockLeaderboard.equals(possiblyMockLeaderboard)) {
             log.info("[DEBUG] - mockLeaderboard: {}", mockLeaderboard.toString());
@@ -94,7 +102,9 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
     @Order(2)
     @Test
     void testGetLeaderboardMetadataById() {
-        Leaderboard possiblyMockLeaderboard = leaderboardRepository.getLeaderboardMetadataById(mockLeaderboard.getId());
+        Leaderboard possiblyMockLeaderboard = leaderboardRepository
+                .getLeaderboardMetadataById(mockLeaderboard.getId())
+                .get();
 
         if (possiblyMockLeaderboard == null || !mockLeaderboard.equals(possiblyMockLeaderboard)) {
             log.info("[DEBUG] - mockLeaderboard: {}", mockLeaderboard.toString());
@@ -113,7 +123,9 @@ public class LeaderboardRepositoryTest extends BaseRepositoryTest {
 
         // ensure that they are still equal
 
-        Leaderboard possiblyMockLeaderboard = leaderboardRepository.getLeaderboardMetadataById(mockLeaderboard.getId());
+        Leaderboard possiblyMockLeaderboard = leaderboardRepository
+                .getLeaderboardMetadataById(mockLeaderboard.getId())
+                .get();
 
         if (possiblyMockLeaderboard == null || !mockLeaderboard.equals(possiblyMockLeaderboard)) {
             log.info("[DEBUG] - mockLeaderboard: {}", mockLeaderboard.toString());

@@ -1,15 +1,16 @@
 package org.patinanetwork.codebloom.common.db.repos.leaderboard;
 
 import java.util.List;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
 import org.patinanetwork.codebloom.common.db.models.user.UserWithScore;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.options.LeaderboardFilterOptions;
 import org.patinanetwork.codebloom.common.page.Indexed;
 
 public interface LeaderboardRepository {
-    Leaderboard getRecentLeaderboardMetadata();
+    Optional<Leaderboard> getRecentLeaderboardMetadata();
 
-    Leaderboard getLeaderboardMetadataById(String id);
+    Optional<Leaderboard> getLeaderboardMetadataById(String id);
 
     /** @deprecated This method is no longer recommended. Use {@link #getLeaderboardUsersById} instead. */
     @Deprecated
@@ -47,9 +48,9 @@ public interface LeaderboardRepository {
      *
      * @param leaderboardId The ID of the leaderboard
      * @param userId The ID of the user to fetch
-     * @return The user with their global rank, or null if user not found
+     * @return The user with their global rank, or empty if user not found
      */
-    Indexed<UserWithScore> getGlobalRankedUserById(String leaderboardId, String userId);
+    Optional<Indexed<UserWithScore>> getGlobalRankedUserById(String leaderboardId, String userId);
 
     /**
      * Returns a specific user's filtered rank on the leaderboard wrapped in {@code Indexed}. The rank is calculated
@@ -58,9 +59,9 @@ public interface LeaderboardRepository {
      * @param leaderboardId The ID of the leaderboard
      * @param userId The ID of the user to fetch
      * @param options The filter options to apply when calculating rank
-     * @return The user with their filtered rank, or null if user not found
+     * @return The user with their filtered rank, or empty if user not found
      */
-    Indexed<UserWithScore> getFilteredRankedUserById(
+    Optional<Indexed<UserWithScore>> getFilteredRankedUserById(
             String leaderboardId, String userId, LeaderboardFilterOptions options);
 
     boolean disableLeaderboardById(String leaderboardId);

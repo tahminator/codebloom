@@ -39,14 +39,12 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
         return Leaderboard.builder()
                 .id(resultSet.getString("id"))
                 .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
-                .deletedAt(Optional.ofNullable(resultSet.getTimestamp("deletedAt"))
-                        .map(Timestamp::toLocalDateTime)
-                        .orElse(null))
+                .deletedAt(
+                        Optional.ofNullable(resultSet.getTimestamp("deletedAt")).map(Timestamp::toLocalDateTime))
                 .name(resultSet.getString("name"))
                 .shouldExpireBy(Optional.ofNullable(resultSet.getTimestamp("shouldExpireBy"))
-                        .map(Timestamp::toLocalDateTime)
-                        .orElse(null))
-                .syntaxHighlightingLanguage(resultSet.getString("syntaxHighlightingLanguage"))
+                        .map(Timestamp::toLocalDateTime))
+                .syntaxHighlightingLanguage(Optional.ofNullable(resultSet.getString("syntaxHighlightingLanguage")))
                 .build();
     }
 
@@ -88,8 +86,10 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
             stmt.setString("name", leaderboard.getName());
-            stmt.setObject("shouldExpireBy", leaderboard.getShouldExpireBy());
-            stmt.setString("syntaxHighlightingLanguage", leaderboard.getSyntaxHighlightingLanguage());
+            stmt.setObject("shouldExpireBy", leaderboard.getShouldExpireBy().orElse(null));
+            stmt.setString(
+                    "syntaxHighlightingLanguage",
+                    leaderboard.getSyntaxHighlightingLanguage().orElse(null));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
@@ -102,7 +102,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public Leaderboard getRecentLeaderboardMetadata() {
+    public Optional<Leaderboard> getRecentLeaderboardMetadata() {
         String sql = """
             SELECT
                 id,
@@ -122,18 +122,18 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLeaderboard(rs);
+                    return Optional.of(parseResultSetToLeaderboard(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch recent leaderboard metadata", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public Leaderboard getLeaderboardMetadataById(final String id) {
+    public Optional<Leaderboard> getLeaderboardMetadataById(final String id) {
         String sql = """
             SELECT
                 id,
@@ -152,14 +152,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToLeaderboard(rs);
+                    return Optional.of(parseResultSetToLeaderboard(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch recent leaderboard metadata", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -340,11 +340,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
     }
 
     @Override
-    public Indexed<UserWithScore> getGlobalRankedUserById(final String leaderboardId, final String userId) {
+    public Optional<Indexed<UserWithScore>> getGlobalRankedUserById(final String leaderboardId, final String userId) {
         UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
                 userId, leaderboardId, UserFilterOptions.builder().build());
         if (user == null) {
-            return null;
+            return Optional.empty();
         }
 
         String sql = """
@@ -387,23 +387,23 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     int rank = rs.getInt("rank");
-                    return Indexed.of(user, rank);
+                    return Optional.of(Indexed.of(user, rank));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get global rank for user", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public Indexed<UserWithScore> getFilteredRankedUserById(
+    public Optional<Indexed<UserWithScore>> getFilteredRankedUserById(
             final String leaderboardId, final String userId, final LeaderboardFilterOptions options) {
         UserWithScore user = userRepository.getUserWithScoreByIdAndLeaderboardId(
                 userId, leaderboardId, UserFilterOptions.builder().build());
         if (user == null) {
-            return null;
+            return Optional.empty();
         }
 
         String sql = """
@@ -494,14 +494,14 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     int rank = rs.getInt("rank");
-                    return Indexed.of(user, rank);
+                    return Optional.of(Indexed.of(user, rank));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get filtered rank for user", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /** @deprecated This method is no longer recommended. Use {@link #getLeaderboardUsersById} instead. */
@@ -754,9 +754,11 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setString("name", leaderboard.getName());
             stmt.setObject("createdAt", leaderboard.getCreatedAt());
-            stmt.setObject("deletedAt", leaderboard.getDeletedAt());
+            stmt.setObject("deletedAt", leaderboard.getDeletedAt().orElse(null));
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
-            stmt.setString("syntaxHighlightingLanguage", leaderboard.getSyntaxHighlightingLanguage());
+            stmt.setString(
+                    "syntaxHighlightingLanguage",
+                    leaderboard.getSyntaxHighlightingLanguage().orElse(null));
 
             int rowsAffected = stmt.executeUpdate();
 

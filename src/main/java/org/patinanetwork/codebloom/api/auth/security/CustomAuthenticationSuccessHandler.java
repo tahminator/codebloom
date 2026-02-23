@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import org.patinanetwork.codebloom.common.db.models.Session;
 import org.patinanetwork.codebloom.common.db.models.discord.DiscordClubMetadata;
-import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
 import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.models.usertag.UserTag;
 import org.patinanetwork.codebloom.common.db.repos.discord.club.DiscordClubRepository;
@@ -111,8 +110,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                         .discordName(discordName)
                         .build();
                 userRepository.createUser(newUser);
-                Leaderboard leaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
-                leaderboardRepository.addUserToLeaderboard(newUser.getId(), leaderboard.getId());
+                leaderboardRepository
+                        .getRecentLeaderboardMetadata()
+                        .ifPresent(lb -> leaderboardRepository.addUserToLeaderboard(newUser.getId(), lb.getId()));
                 existingUser = newUser;
             }
 

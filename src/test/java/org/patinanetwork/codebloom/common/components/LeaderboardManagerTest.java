@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 
 import com.github.javafaker.Faker;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -106,7 +107,7 @@ public class LeaderboardManagerTest {
 
     @Test
     void testWithNoAvailableLeaderboard() {
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(null);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         leaderboardManager.generateAchievementsForAllWinners();
 
@@ -123,7 +124,7 @@ public class LeaderboardManagerTest {
                 .createdAt(StandardizedLocalDateTime.now())
                 .build();
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(List.of());
 
@@ -146,7 +147,7 @@ public class LeaderboardManagerTest {
                 randomPartialUserWithScore().totalScore(150_000).build(),
                 randomPartialUserWithScore().totalScore(70_000).build()));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -194,7 +195,7 @@ public class LeaderboardManagerTest {
                     .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -264,7 +265,7 @@ public class LeaderboardManagerTest {
                             .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -351,7 +352,7 @@ public class LeaderboardManagerTest {
                             .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -432,7 +433,7 @@ public class LeaderboardManagerTest {
                     .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -502,7 +503,7 @@ public class LeaderboardManagerTest {
                             .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -583,7 +584,7 @@ public class LeaderboardManagerTest {
                     .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(users);
 
@@ -610,7 +611,7 @@ public class LeaderboardManagerTest {
                 randomPartialUserWithScore().totalScore(30_000).build(),
                 randomPartialUserWithScore().totalScore(29_999).build()));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -651,7 +652,7 @@ public class LeaderboardManagerTest {
                 randomPartialUserWithScore().totalScore(0).build(),
                 randomPartialUserWithScore().totalScore(0).build()));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(users);
 
@@ -690,7 +691,7 @@ public class LeaderboardManagerTest {
                     .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(users);
 
@@ -715,7 +716,7 @@ public class LeaderboardManagerTest {
                 randomPartialUserWithScore().totalScore(150_000).build(),
                 randomPartialUserWithScore().totalScore(70_000).build()));
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -751,7 +752,7 @@ public class LeaderboardManagerTest {
                     .build()));
         });
 
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(latestLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(latestLeaderboard));
         when(leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(eq(latestLeaderboard.getId()), any()))
                 .thenReturn(winners);
 
@@ -800,9 +801,10 @@ public class LeaderboardManagerTest {
                 .createdAt(StandardizedLocalDateTime.now())
                 .build();
 
-        when(leaderboardRepository.getLeaderboardMetadataById(testId)).thenReturn(leaderboard);
+        when(leaderboardRepository.getLeaderboardMetadataById(testId)).thenReturn(Optional.of(leaderboard));
 
-        Leaderboard leaderboardData = leaderboardManager.getLeaderboardMetadata(testId);
+        Leaderboard leaderboardData =
+                leaderboardManager.getLeaderboardMetadata(testId).get();
 
         assertNotNull(leaderboardData);
         assertEquals(leaderboard.getId(), leaderboardData.getId());

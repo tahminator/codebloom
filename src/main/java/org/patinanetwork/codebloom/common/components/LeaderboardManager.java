@@ -1,6 +1,7 @@
 package org.patinanetwork.codebloom.common.components;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.models.achievements.Achievement;
 import org.patinanetwork.codebloom.common.db.models.achievements.AchievementPlaceEnum;
@@ -49,9 +50,9 @@ public class LeaderboardManager {
 
     public void generateAchievementsForAllWinners() {
         log.info("generating achievements for all winners...");
-        Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+        Optional<Leaderboard> currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
 
-        if (currentLeaderboard == null) {
+        if (currentLeaderboard.isEmpty()) {
             return;
         }
 
@@ -61,7 +62,7 @@ public class LeaderboardManager {
         for (var pair : filterOptsAndTags) {
             log.info("on leaderboard for {}", pair.getRight().getResolvedName());
             List<Indexed<UserWithScore>> users = leaderboardRepository.getRankedIndexedLeaderboardUsersById(
-                    currentLeaderboard.getId(), pair.getLeft());
+                    currentLeaderboard.get().getId(), pair.getLeft());
             List<UserWithScore> usersWithPoints = LeaderboardUtils.filterUsersWithPoints(
                     users.stream().map(Indexed::getItem).toList());
             List<UserWithScore> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
@@ -77,7 +78,9 @@ public class LeaderboardManager {
                         .leaderboard(pair.getRight())
                         .title(String.format(
                                 "%s - %s - %s Place",
-                                currentLeaderboard.getName(), pair.getRight().getResolvedName(), placeString))
+                                currentLeaderboard.get().getName(),
+                                pair.getRight().getResolvedName(),
+                                placeString))
                         .build();
                 achievementRepository.createAchievement(achievement);
             }
@@ -85,27 +88,31 @@ public class LeaderboardManager {
 
         // handle global leaderboard
         List<Indexed<UserWithScore>> users = leaderboardRepository.getGlobalRankedIndexedLeaderboardUsersById(
-                currentLeaderboard.getId(), LeaderboardFilterOptions.DEFAULT);
+                currentLeaderboard.get().getId(), LeaderboardFilterOptions.DEFAULT);
         List<UserWithScore> usersWithPoints = LeaderboardUtils.filterUsersWithPoints(
                 users.stream().map(Indexed::getItem).toList());
         List<UserWithScore> winners = usersWithPoints.subList(0, maxWinners(usersWithPoints.size()));
 
         for (int i = 0; i < winners.size(); i++) {
             int place = i + 1;
-            log.info("on leaderboard for {} for global winner #{}", currentLeaderboard.getName(), place);
+            log.info(
+                    "on leaderboard for {} for global winner #{}",
+                    currentLeaderboard.get().getName(),
+                    place);
             String placeString = calculatePlaceString(place);
             UserWithScore user = winners.get(i);
             Achievement achievement = Achievement.builder()
                     .userId(user.getId())
                     .place(AchievementPlaceEnum.fromInteger(place))
                     .leaderboard(null)
-                    .title(String.format("%s - %s Place", currentLeaderboard.getName(), placeString))
+                    .title(String.format(
+                            "%s - %s Place", currentLeaderboard.get().getName(), placeString))
                     .build();
             achievementRepository.createAchievement(achievement);
         }
     }
 
-    public Leaderboard getLeaderboardMetadata(final String id) {
+    public Optional<Leaderboard> getLeaderboardMetadata(final String id) {
         return leaderboardRepository.getLeaderboardMetadataById(id);
     }
 
