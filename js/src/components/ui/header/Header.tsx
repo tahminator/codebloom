@@ -22,7 +22,7 @@ const navButtons = [
   { to: "/", label: "Home" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/leaderboard", label: "Leaderboard" },
-  { to: "/user/all", label: "Users" },
+  { to: "/user/all", label: "Search" },
 ];
 
 export default function Header() {

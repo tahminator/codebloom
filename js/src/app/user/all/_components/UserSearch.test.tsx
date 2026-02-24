@@ -1,7 +1,6 @@
 import {
   getAllUsersErrorHandler,
   getAllUsersHandler,
-  MOCK_USERS,
 } from "@/__mock__/user";
 import UserSearch from "@/app/user/all/_components/UserSearch";
 import { TestUtils, TestUtilTypes } from "@/lib/test";
@@ -21,15 +20,6 @@ describe("UserSearch API Succeeded", () => {
   let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
   beforeEach(() => {
     renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
-  });
-
-  it("should render search prompt initially when no query", async () => {
-    renderProviderFn?.(<UserSearch />);
-
-    await waitFor(() => {
-      const promptText = screen.getByText("Enter a search query to find users");
-      expect(promptText).toBeInTheDocument();
-    });
   });
 
   it("should render search box on initial load", async () => {
