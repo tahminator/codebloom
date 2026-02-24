@@ -1,8 +1,10 @@
 import MiniLeaderboardMobileSkeleton from "@/app/_component/skeletons/MiniLeaderboardMobileSkeleton";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
+import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
 import { useCurrentLeaderboardUsersQuery } from "@/lib/api/queries/leaderboard";
 import { Tag } from "@/lib/api/types/schema";
+import { tagFF } from "@/lib/ff/tag";
 import getOrdinal from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
 import {
@@ -83,6 +85,7 @@ export default function MiniLeaderboardMobile() {
               width={"300px"}
               userId={first.id}
               isLoading={isPlaceholderData}
+              tags={first.tags}
             />
           )}
           {second && (
@@ -96,6 +99,7 @@ export default function MiniLeaderboardMobile() {
               width={"300px"}
               userId={second.id}
               isLoading={isPlaceholderData}
+              tags={second.tags}
             />
           )}
           {third && (
@@ -109,6 +113,7 @@ export default function MiniLeaderboardMobile() {
               width={"300px"}
               userId={third.id}
               isLoading={isPlaceholderData}
+              tags={third.tags}
             />
           )}
         </Flex>
@@ -166,6 +171,9 @@ export default function MiniLeaderboardMobile() {
                                 </Text>
                               </Flex>
                             </Tooltip>
+                            {tagFF && entry.tags?.length > 0 && (
+                              <TagList tags={entry.tags} size={14} gap="xs" />
+                            )}
                           </Flex>
                         )}
                         <Flex gap="sm" wrap="wrap">

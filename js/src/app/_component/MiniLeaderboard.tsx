@@ -85,6 +85,7 @@ export default function MiniLeaderboardDesktop() {
               width={"200px"}
               userId={second.id}
               isLoading={isPlaceholderData}
+              tags={second.tags}
             />
           )}
           {first && (
@@ -98,6 +99,7 @@ export default function MiniLeaderboardDesktop() {
               width={"200px"}
               userId={first.id}
               isLoading={isPlaceholderData}
+              tags={first.tags}
             />
           )}
           {third && (
@@ -111,6 +113,7 @@ export default function MiniLeaderboardDesktop() {
               width={"200px"}
               userId={third.id}
               isLoading={isPlaceholderData}
+              tags={third.tags}
             />
           )}
         </Flex>
