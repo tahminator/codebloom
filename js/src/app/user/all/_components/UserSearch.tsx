@@ -1,6 +1,7 @@
 import UserSearchSkeleton from "@/app/user/all/_components/UserSearchSkeleton";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
+import { MM } from "@/components/wrapper";
 import { useGetAllUsersInfiniteQuery } from "@/lib/api/queries/user";
 import { tagFF } from "@/lib/ff";
 import { theme } from "@/lib/theme";
@@ -18,8 +19,7 @@ import {
 } from "@mantine/core";
 import { useIntersection } from "@mantine/hooks";
 import { IconCircleCheckFilled, IconSearch } from "@tabler/icons-react";
-import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -36,11 +36,15 @@ export default function UserSearch() {
     isFetchingNextPage,
   } = useGetAllUsersInfiniteQuery({ tieToUrl: true });
 
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const [scrollRoot, setScrollRoot] = useState<HTMLDivElement | null>(null);
+  const viewportRef = useCallback((node: HTMLDivElement | null) => {
+    setScrollRoot(node);
+  }, []);
   const [isFocused, setIsFocused] = useState(false);
+  const [hoveredUserId, setHoveredUserId] = useState<string | null>(null);
 
   const { ref, entry } = useIntersection({
-    root: viewportRef.current,
+    root: scrollRoot,
     threshold: 0.5,
   });
 
@@ -58,14 +62,8 @@ export default function UserSearch() {
   const isActive = isFocused || searchQuery.length > 0;
 
   return (
-    <Flex
-      direction="column"
-      align="center"
-      p="md"
-      mih="70vh"
-      style={{ position: "relative" }}
-    >
-      <motion.div
+    <Flex direction="column" align="center" p="md" mih="70vh" pos="relative">
+      <MM.Box
         initial={false}
         animate={{
           y: isActive ? 0 : "calc(35vh - 56px)",
@@ -75,13 +73,11 @@ export default function UserSearch() {
           stiffness: 500,
           damping: 35,
         }}
-        style={{
-          position: isActive ? "sticky" : "relative",
-          top: isActive ? 90 : undefined,
-          width: "100%",
-          maxWidth: 900,
-          zIndex: 99,
-        }}
+        pos={isActive ? "sticky" : "relative"}
+        top={isActive ? 90 : undefined}
+        w="100%"
+        maw={900}
+        style={{ zIndex: 99 }}
       >
         <TextInput
           value={searchQuery}
@@ -115,12 +111,9 @@ export default function UserSearch() {
             left={0}
             right={0}
             bg={theme.colors.dark[6]}
-            radius="0 0 8px 8px"
-            style={{
-              border: `1px solid ${theme.colors.dark[4]}`,
-              borderTop: "none",
-              overflow: "hidden",
-            }}
+            radius={`0 0 ${theme.radius.md} ${theme.radius.md}`}
+            bd={`1px solid ${theme.colors.dark[4]}`}
+            style={{ overflow: "hidden", borderTop: "none" }}
           >
             {status === "pending" && <UserSearchSkeleton />}
             {status === "success" && (
@@ -138,23 +131,22 @@ export default function UserSearch() {
                     component={Link}
                     to={`/user/${user.id}`}
                     p="md"
+                    td="none"
+                    c="inherit"
+                    display="block"
+                    bg={
+                      hoveredUserId === user.id ?
+                        theme.colors.dark[5]
+                      : "transparent"
+                    }
+                    onMouseEnter={() => setHoveredUserId(user.id)}
+                    onMouseLeave={() => setHoveredUserId(null)}
                     style={{
-                      cursor: "pointer",
-                      textDecoration: "none",
-                      color: "inherit",
-                      display: "block",
                       borderTop:
                         index > 0 ?
                           `1px solid ${theme.colors.dark[5]}`
                         : undefined,
                       transition: "background-color 0.15s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        theme.colors.dark[5];
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
                     }}
                   >
                     <Flex direction="column" gap={6}>
@@ -220,7 +212,7 @@ export default function UserSearch() {
             )}
           </Paper>
         )}
-      </motion.div>
+      </MM.Box>
     </Flex>
   );
 }

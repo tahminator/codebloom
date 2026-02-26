@@ -47,12 +47,13 @@ export const getAllUsersHandler = http.get(
     const url = new URL(request.url);
     const query = url.searchParams.get("query") || "";
 
+    const q = query.toLowerCase();
     const filteredUsers =
       query ?
         MOCK_USERS.filter(
           (user) =>
-            user.discordName.toLowerCase().includes(query.toLowerCase()) ||
-            user.leetcodeUsername?.toLowerCase().includes(query.toLowerCase()),
+            user.discordName.toLowerCase().includes(q) ||
+            (user.leetcodeUsername ?? "").toLowerCase().includes(q),
         )
       : MOCK_USERS;
 

@@ -1,7 +1,4 @@
-import {
-  getAllUsersErrorHandler,
-  getAllUsersHandler,
-} from "@/__mock__/user";
+import { getAllUsersErrorHandler, getAllUsersHandler } from "@/__mock__/user";
 import UserSearch from "@/app/user/all/_components/UserSearch";
 import { TestUtils, TestUtilTypes } from "@/lib/test";
 import { screen, waitFor } from "@testing-library/react";
