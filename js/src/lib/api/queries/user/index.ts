@@ -256,8 +256,16 @@ export const useGetAllUsersInfiniteQuery = ({
     },
   );
 
+  const baseApiURL = ApiURL.create("/api/user/all", {
+    method: "GET",
+    queries: {
+      query: debouncedQuery,
+      pageSize,
+    },
+  });
+
   const query = useInfiniteQuery({
-    queryKey: ["users", "all", "infinite", debouncedQuery, pageSize],
+    queryKey: baseApiURL.queryKey,
     queryFn: async ({ pageParam = 1 }) => {
       const apiURL = ApiURL.create("/api/user/all", {
         method: "GET",

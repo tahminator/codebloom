@@ -71,7 +71,7 @@ export default function Header() {
                   style={{ width: logoSize, height: logoSize }}
                   alt="Logo"
                 />
-                <motion.div
+                <MM.Box
                   style={{
                     opacity: textOpacity,
                     maxWidth: textWidth,
@@ -90,7 +90,7 @@ export default function Header() {
                       CodeBloom
                     </MM.Text>
                   </Title>
-                </motion.div>
+                </MM.Box>
               </Group>
             </Link>
             <Box visibleFrom="sm">
