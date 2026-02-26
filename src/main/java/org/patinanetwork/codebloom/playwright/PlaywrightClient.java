@@ -1,15 +1,9 @@
 package org.patinanetwork.codebloom.playwright;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Browser.NewContextOptions;
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.ScreenshotType;
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -22,44 +16,27 @@ import org.patinanetwork.codebloom.common.email.Message;
 import org.patinanetwork.codebloom.common.email.client.github.GithubOAuthEmailClient;
 import org.patinanetwork.codebloom.common.url.ServerUrlUtils;
 import org.patinanetwork.codebloom.scheduled.auth.CodeExtractor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class PlaywrightClient {
 
-    private static final String USER_AGENT =
-            "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
-
     private final ServerUrlUtils serverUrlUtils;
     private final EmailClient emailClient;
+    private final PlaywrightProvider playwrightProvider;
 
-    @Value("${playwright.headless}")
-    private boolean headless;
-
-    public PlaywrightClient(final ServerUrlUtils serverUrlUtils, GithubOAuthEmailClient githubOAuthEmailClient) {
+    public PlaywrightClient(
+            final ServerUrlUtils serverUrlUtils,
+            final GithubOAuthEmailClient githubOAuthEmailClient,
+            final PlaywrightProvider playwrightProvider) {
         this.serverUrlUtils = serverUrlUtils;
         this.emailClient = githubOAuthEmailClient;
-    }
-
-    @PostConstruct
-    private void logInfo() {
-        log.info("Headless: " + headless);
+        this.playwrightProvider = playwrightProvider;
     }
 
     private <T> T withPage(final Function<Page, T> consumer) {
-        try (Playwright playwright = Playwright.create();
-                Browser browser = playwright
-                        .firefox()
-                        .launch(new BrowserType.LaunchOptions()
-                                .setHeadless(headless)
-                                .setTimeout(40000));
-                BrowserContext context = browser.newContext(
-                        new NewContextOptions().setUserAgent(USER_AGENT).setStorageState(null));
-                Page page = context.newPage(); ) {
-            return consumer.apply(page);
-        }
+        return consumer.apply(playwrightProvider.newPage());
     }
 
     public byte[] getCodebloomLeaderboardScreenshot(final int page, final Tag tag) {
