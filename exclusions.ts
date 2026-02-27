@@ -8,7 +8,7 @@ const frontendBaseDir = "js/src";
 
 export const backendExclusions = [
   `${backendBaseDir}/common/dto/**`,
-  `${backendBaseDir}/playwright/**`,
+  `${backendBaseDir}/playwright/PlaywrightProvider.java`,
   `${backendBaseDir}/CodebloomApplication.java`,
 ];
 export const frontendExclusions = [
