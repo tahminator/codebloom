@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements ThrottledLeetcodeClient {
 
     private static final long REQUESTS_OVER_TIME = 1L;
-    private static final long MILLISECONDS_TO_WAIT = 100L;
+    private static final long MILLISECONDS_TO_WAIT = 750L;
     private final BlockingBucket rateLimiter;
 
     private BlockingBucket initializeBucket() {
