@@ -36,7 +36,7 @@ public class PlaywrightClient {
     }
 
     private <T> T withPage(final Function<Page, T> consumer) {
-        return consumer.apply(playwrightProvider.newPage());
+        return playwrightProvider.withPage(consumer);
     }
 
     public byte[] getCodebloomLeaderboardScreenshot(final int page, final Tag tag) {

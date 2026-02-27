@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Page.ScreenshotOptions;
+import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
@@ -26,7 +27,10 @@ public class PlaywrightClientTest {
     public void setup() {
         playwrightClient = new PlaywrightClient(serverUrlUtils, emailClient, playwrightProvider);
 
-        when(playwrightProvider.newPage()).thenReturn(page);
+        when(playwrightProvider.withPage(any())).thenAnswer(p -> {
+            Function<Page, Object> fn = p.getArgument(0);
+            return fn.apply(page);
+        });
 
         byte[] screenshot = new byte[] {1, 2, 3};
         when(page.screenshot(any(ScreenshotOptions.class))).thenReturn(screenshot);

@@ -42,13 +42,4 @@ public class PlaywrightProvider {
             return consumer.apply(page);
         }
     }
-
-    public Page newPage() {
-        Playwright playwright = Playwright.create();
-        Browser browser = playwright
-                .firefox()
-                .launch(new BrowserType.LaunchOptions().setHeadless(headless).setTimeout(40000));
-        BrowserContext context = browser.newContext(new NewContextOptions().setUserAgent(USER_AGENT));
-        return context.newPage();
-    }
 }
