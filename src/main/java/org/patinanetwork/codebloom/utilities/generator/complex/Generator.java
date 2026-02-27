@@ -13,4 +13,6 @@ public class Generator {
     private final String name;
     private final Object data;
     private final DataShape dataShape;
+    /** Optional name for the generated TypeScript value type (used by some DataShapes). */
+    private final String typeName;
 }

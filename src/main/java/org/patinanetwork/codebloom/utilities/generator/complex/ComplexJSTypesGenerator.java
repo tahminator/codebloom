@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.shared.tag.ParentTags;
+import org.patinanetwork.codebloom.shared.tag.TagMetadataList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -47,11 +48,19 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
                 .data(ParentTags.ENUM_TO_ENUM_LIST)
                 .dataShape(DataShape.ENUM_TO_ENUM_LIST)
                 .build());
+        generate(Generator.builder()
+                .name("TAG_METADATA_LIST")
+                .typeName("TagMetadataObject")
+                .data(TagMetadataList.ENUM_TO_STRING_VALUE_MAP)
+                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
+                .build());
     }
 
     private void generate(Generator generator) throws IOException {
         if (generator.getDataShape() == DataShape.ENUM_TO_ENUM_LIST) {
             generateEnumToListOfEnums(generator);
+        } else if (generator.getDataShape() == DataShape.ENUM_TO_STRING_VALUE_MAP) {
+            generateEnumToStringValueMap(generator);
         }
     }
 
@@ -105,6 +114,74 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
 
             tsContent.append(children);
             tsContent.append("],\n");
+        }
+
+        tsContent.append("} as const;\n\n");
+
+        log.info("Generated constant: {}", generator.getName());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void generateEnumToStringValueMap(Generator generator) {
+        Map<?, Map<String, ?>> data = (Map<?, Map<String, ?>>) generator.getData();
+
+        if (data.isEmpty()) {
+            log.warn("Empty map provided for string value map generation");
+            return;
+        }
+
+        Object firstKey = data.keySet().iterator().next();
+        if (!(firstKey instanceof Enum)) {
+            throw new IllegalArgumentException("Expected Enum key, got: " + firstKey.getClass());
+        }
+
+        Enum<?> enumKey = (Enum<?>) firstKey;
+        String enumClassName = enumKey.getDeclaringClass().getSimpleName();
+        imports.add(enumClassName);
+
+        Set<String> fieldNames = data.values().iterator().next().keySet();
+        String typeName = generator.getTypeName();
+
+        if (typeName != null && !typeName.isEmpty()) {
+            tsContent.append("export type ").append(typeName).append(" = {\n");
+            for (String fieldName : fieldNames) {
+                tsContent.append("  ").append(fieldName).append(": string;\n");
+            }
+            tsContent.append("};\n\n");
+        }
+
+        String valueType = (typeName != null && !typeName.isEmpty()) ? typeName : "{ [key: string]: string }";
+
+        tsContent
+                .append("export const ")
+                .append(generator.getName())
+                .append(": Record<")
+                .append(enumClassName)
+                .append(", ")
+                .append(valueType)
+                .append("> = {\n");
+
+        for (Map.Entry<?, Map<String, ?>> entry : data.entrySet()) {
+            Enum<?> key = (Enum<?>) entry.getKey();
+            Map<String, ?> values = entry.getValue();
+
+            tsContent
+                    .append("  [")
+                    .append(enumClassName)
+                    .append(".")
+                    .append(key.name())
+                    .append("]: {\n");
+
+            for (Map.Entry<String, ?> field : values.entrySet()) {
+                tsContent
+                        .append("    ")
+                        .append(field.getKey())
+                        .append(": \"")
+                        .append(field.getValue())
+                        .append("\",\n");
+            }
+
+            tsContent.append("  },\n");
         }
 
         tsContent.append("} as const;\n\n");
