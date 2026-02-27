@@ -16,15 +16,30 @@
 
 .footerContents {
     max-width: 1200px;
+    min-height: 150px;
     margin: 0 auto;
+    padding: var(--mantine-spacing-xs) var(--mantine-spacing-xl);
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
     background-color: var(--mantine-color-dark-6);
     align-items: center;
 
-    @mixin smaller-than $mantine-breakpoint-md {
-        padding: var(--mantine-spacing-xs) var(--mantine-spacing-xl);
+    @mixin smaller-than $mantine-breakpoint-sm {
+        display: flex;
+        flex-direction: column;
+        padding: var(--mantine-spacing-lg);
+    }
+}
+
+.footerRight {
+    display: flex;
+    justify-content: flex-end;
+    gap: calc(var(--spacing) * 20);
+
+    @mixin smaller-than $mantine-breakpoint-sm {
+        flex-direction: column;
+        gap: calc(var(--spacing) * 2);
     }
 }
 
@@ -32,6 +47,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 80px;
 }
 
 .logo {
@@ -46,4 +62,12 @@
     justify-content: flex-end;
     align-items: center;
     gap: 16px;
+}
+
+.link {
+    color: var(--mantine-color-gray-6);
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
