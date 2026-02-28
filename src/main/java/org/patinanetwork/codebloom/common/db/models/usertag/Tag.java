@@ -27,8 +27,8 @@ public enum Tag {
             "BMCC Logo"),
     MHCPlusPlus("MHC++", "MHC++", "The MHC++ Club | Macaulay Hunter College", "mhcplusplus", "MHC++ Logo");
 
-    // CHECKSTYLE:OFF
     /** Only applies to school tags. */
+    // CHECKSTYLE:OFF
     private final String resolvedName;
 
     private final String shortName;

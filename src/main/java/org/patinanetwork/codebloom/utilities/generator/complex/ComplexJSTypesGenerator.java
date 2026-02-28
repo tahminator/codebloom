@@ -141,8 +141,9 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
 
         Set<String> fieldNames = data.values().iterator().next().keySet();
         String typeName = generator.getTypeName();
+        boolean hasTypeName = typeName != null && !typeName.isEmpty();
 
-        if (typeName != null && !typeName.isEmpty()) {
+        if (hasTypeName) {
             tsContent.append("export type ").append(typeName).append(" = {\n");
             for (String fieldName : fieldNames) {
                 tsContent.append("  ").append(fieldName).append(": string;\n");
@@ -150,7 +151,7 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
             tsContent.append("};\n\n");
         }
 
-        String valueType = (typeName != null && !typeName.isEmpty()) ? typeName : "{ [key: string]: string }";
+        String valueType = hasTypeName ? typeName : "{ [key: string]: string }";
 
         tsContent
                 .append("export const ")
