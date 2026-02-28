@@ -1312,7 +1312,7 @@ public class DuelManagerTest {
         verify(lobbyQuestionRepository, never()).findLobbyQuestionsByLobbyId(any());
         verify(questionBankRepository, never()).getQuestionById(any());
         verify(throttledLeetcodeClient, never()).findSubmissionsByUsername(any(), anyInt());
-        verify(submissionsHandler, never()).handleSubmissions(any(), any());
+        verify(submissionsHandler, never()).handleSubmissions(any(), any(), eq(true));
         verify(lobbyPlayerQuestionRepository, never()).createLobbyPlayerQuestion(any());
         verify(lobbyPlayerRepository, never()).updateLobbyPlayer(any());
     }
@@ -1402,7 +1402,7 @@ public class DuelManagerTest {
         when(questionBankRepository.getQuestionById(eq(questionBank.getId()))).thenReturn(questionBank);
         when(throttledLeetcodeClient.findSubmissionsByUsername(eq(user.getLeetcodeUsername()), eq(5)))
                 .thenReturn(List.of(leetcodeSubmission));
-        when(submissionsHandler.handleSubmissions(any(), eq(user))).thenReturn(new ArrayList<>() {
+        when(submissionsHandler.handleSubmissions(any(), eq(user), eq(true))).thenReturn(new ArrayList<>() {
             {
                 add(acceptedSubmission);
             }
@@ -1421,7 +1421,7 @@ public class DuelManagerTest {
         verify(lobbyQuestionRepository, times(1)).findLobbyQuestionsByLobbyId(eq(activeLobby.getId()));
         verify(questionBankRepository, times(1)).getQuestionById(eq(questionBank.getId()));
         verify(throttledLeetcodeClient, times(1)).findSubmissionsByUsername(eq(user.getLeetcodeUsername()), eq(5));
-        verify(submissionsHandler, times(1)).handleSubmissions(any(), eq(user));
+        verify(submissionsHandler, times(1)).handleSubmissions(any(), eq(user), eq(true));
         verify(lobbyPlayerQuestionRepository, times(1)).createLobbyPlayerQuestion(any());
         verify(lobbyPlayerRepository, times(1)).updateLobbyPlayer(any());
     }
@@ -1471,7 +1471,7 @@ public class DuelManagerTest {
         verify(lobbyQuestionRepository, times(1)).findLobbyQuestionsByLobbyId(eq(activeLobby.getId()));
         verify(questionBankRepository, never()).getQuestionById(any());
         verify(throttledLeetcodeClient, never()).findSubmissionsByUsername(any(), anyInt());
-        verify(submissionsHandler, never()).handleSubmissions(any(), any());
+        verify(submissionsHandler, never()).handleSubmissions(any(), any(), eq(true));
         verify(lobbyPlayerQuestionRepository, never()).createLobbyPlayerQuestion(any());
         verify(lobbyPlayerRepository, never()).updateLobbyPlayer(any());
     }
@@ -1530,7 +1530,7 @@ public class DuelManagerTest {
         verify(lobbyQuestionRepository, times(1)).findLobbyQuestionsByLobbyId(eq(activeLobby.getId()));
         verify(questionBankRepository, times(1)).getQuestionById(any());
         verify(throttledLeetcodeClient, never()).findSubmissionsByUsername(any(), anyInt());
-        verify(submissionsHandler, never()).handleSubmissions(any(), any());
+        verify(submissionsHandler, never()).handleSubmissions(any(), any(), eq(true));
         verify(lobbyPlayerQuestionRepository, never()).createLobbyPlayerQuestion(any());
         verify(lobbyPlayerRepository, never()).updateLobbyPlayer(any());
     }
