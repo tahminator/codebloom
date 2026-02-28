@@ -114,7 +114,7 @@ public class SubmissionControllerTest {
 
         when(body.getLeetcodeUsername()).thenReturn("leetcodeUser");
 
-        when(leetcodeClient.getUserProfile("leetcodeUser")).thenReturn(profile);
+        when(leetcodeClient.getUserProfileFast("leetcodeUser")).thenReturn(profile);
         when(profile.getAboutMe()).thenReturn("verify-123");
         when(profile.getUserAvatar()).thenReturn("avatar-url");
 
@@ -168,9 +168,9 @@ public class SubmissionControllerTest {
 
         when(simpleRedis.containsKey("abcdefg123456")).thenReturn(false);
 
-        when(leetcodeClient.findSubmissionsByUsername("leetcodeUser", 20)).thenReturn(leetcodeSubs);
+        when(leetcodeClient.findSubmissionsByUsernameFast("leetcodeUser", 20)).thenReturn(leetcodeSubs);
 
-        when(submissionsHandler.handleSubmissions(leetcodeSubs, user)).thenReturn(acceptedSubs);
+        when(submissionsHandler.handleSubmissions(leetcodeSubs, user, true)).thenReturn(acceptedSubs);
 
         ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> response =
                 submissionController.checkLatestSubmissions(request);
@@ -183,8 +183,8 @@ public class SubmissionControllerTest {
                 "Successfully checked all recent submissions!",
                 response.getBody().getMessage());
 
-        verify(leetcodeClient).findSubmissionsByUsername("leetcodeUser", 20);
-        verify(submissionsHandler).handleSubmissions(leetcodeSubs, user);
+        verify(leetcodeClient).findSubmissionsByUsernameFast("leetcodeUser", 20);
+        verify(submissionsHandler).handleSubmissions(leetcodeSubs, user, true);
     }
 
     @Test
