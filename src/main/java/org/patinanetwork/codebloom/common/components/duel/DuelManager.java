@@ -290,7 +290,7 @@ public class DuelManager {
                     .toList();
 
             List<AcceptedSubmission> acceptedSubmissions =
-                    submissionsHandler.handleSubmissions(solvedLeetcodeSubmissions, user);
+                    submissionsHandler.handleSubmissions(solvedLeetcodeSubmissions, user, true);
 
             List<LobbyPlayerQuestion> lobbyPlayerQuestions = acceptedSubmissions.stream()
                     .map(s -> LobbyPlayerQuestion.builder()

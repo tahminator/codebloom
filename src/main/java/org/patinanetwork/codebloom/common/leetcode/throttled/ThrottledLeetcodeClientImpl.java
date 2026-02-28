@@ -3,10 +3,10 @@ package org.patinanetwork.codebloom.common.leetcode.throttled;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BlockingBucket;
 import io.github.bucket4j.Bucket;
-import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
 import org.patinanetwork.codebloom.common.leetcode.LeetcodeClientImpl;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeQuestion;
@@ -14,15 +14,16 @@ import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import org.patinanetwork.codebloom.common.leetcode.models.POTD;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
-import org.patinanetwork.codebloom.scheduled.auth.LeetcodeAuthStealer;
+import org.patinanetwork.codebloom.common.utils.lock.QueueLock;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements ThrottledLeetcodeClient {
+public class ThrottledLeetcodeClientImpl implements ThrottledLeetcodeClient {
+    private final LeetcodeClient leetcodeClient;
 
     private static final long REQUESTS_OVER_TIME = 1L;
     private static final long MILLISECONDS_TO_WAIT = 750L;
-    private final BlockingBucket rateLimiter;
+    private final QueueLock rateLimiter;
 
     private BlockingBucket initializeBucket() {
         var bandwidth = Bandwidth.builder()
@@ -33,59 +34,116 @@ public class ThrottledLeetcodeClientImpl extends LeetcodeClientImpl implements T
         return Bucket.builder().addLimit(bandwidth).build().asBlocking();
     }
 
-    private void waitForToken() {
+    private void waitForToken(boolean fast) {
         try {
-            rateLimiter.consume(1);
+            if (fast) {
+                rateLimiter.acquireFast();
+            } else {
+                rateLimiter.acquire();
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Failed to consume rate limit bucket token in leetcode client", e);
         }
     }
 
-    public ThrottledLeetcodeClientImpl(
-            final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer) {
-        super(meterRegistry, leetcodeAuthStealer);
-        this.rateLimiter = initializeBucket();
+    public ThrottledLeetcodeClientImpl(final LeetcodeClientImpl leetcodeClientImpl) {
+        this.rateLimiter = new QueueLock(initializeBucket());
+        this.leetcodeClient = leetcodeClientImpl;
     }
 
     @Override
-    public LeetcodeQuestion findQuestionBySlug(final String slug) {
-        waitForToken();
-        return super.findQuestionBySlug(slug);
+    public LeetcodeQuestion findQuestionBySlugFast(final String slug) {
+        waitForToken(true);
+        return leetcodeClient.findQuestionBySlug(slug);
     }
 
     @Override
-    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username) {
-        waitForToken();
-        return super.findSubmissionsByUsername(username);
+    public List<LeetcodeSubmission> findSubmissionsByUsernameFast(final String username) {
+        waitForToken(true);
+        return leetcodeClient.findSubmissionsByUsername(username);
     }
 
     @Override
-    public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username, final int limit) {
-        waitForToken();
-        return super.findSubmissionsByUsername(username, limit);
+    public List<LeetcodeSubmission> findSubmissionsByUsernameFast(final String username, final int limit) {
+        waitForToken(true);
+        return leetcodeClient.findSubmissionsByUsername(username, limit);
     }
 
     @Override
-    public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(final int submissionId) {
-        waitForToken();
-        return super.findSubmissionDetailBySubmissionId(submissionId);
+    public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionIdFast(final int submissionId) {
+        waitForToken(true);
+        return leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
+    }
+
+    @Override
+    public POTD getPotdFast() {
+        waitForToken(true);
+        return leetcodeClient.getPotd();
+    }
+
+    @Override
+    public UserProfile getUserProfileFast(final String username) {
+        waitForToken(true);
+        return leetcodeClient.getUserProfile(username);
+    }
+
+    @Override
+    public Set<LeetcodeTopicTag> getAllTopicTagsFast() {
+        waitForToken(true);
+        return leetcodeClient.getAllTopicTags();
+    }
+
+    @Override
+    public List<LeetcodeQuestion> getAllProblemsFast() {
+        waitForToken(true);
+        return leetcodeClient.getAllProblems();
+    }
+
+    @Override
+    public LeetcodeQuestion findQuestionBySlug(String slug) {
+        waitForToken(false);
+        return leetcodeClient.findQuestionBySlug(slug);
+    }
+
+    @Override
+    public List<LeetcodeSubmission> findSubmissionsByUsername(String username) {
+        waitForToken(false);
+        return leetcodeClient.findSubmissionsByUsername(username);
+    }
+
+    @Override
+    public List<LeetcodeSubmission> findSubmissionsByUsername(String username, int limit) {
+        waitForToken(false);
+        return leetcodeClient.findSubmissionsByUsername(username, limit);
+    }
+
+    @Override
+    public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(int submissionId) {
+        waitForToken(false);
+        return leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
     }
 
     @Override
     public POTD getPotd() {
-        waitForToken();
-        return super.getPotd();
+        waitForToken(false);
+        return leetcodeClient.getPotd();
     }
 
     @Override
-    public UserProfile getUserProfile(final String username) {
-        waitForToken();
-        return super.getUserProfile(username);
+    public UserProfile getUserProfile(String username) {
+        waitForToken(false);
+        return leetcodeClient.getUserProfile(username);
     }
 
     @Override
     public Set<LeetcodeTopicTag> getAllTopicTags() {
-        waitForToken();
-        return super.getAllTopicTags();
+        waitForToken(false);
+        return leetcodeClient.getAllTopicTags();
+    }
+
+    @Override
+    public List<LeetcodeQuestion> getAllProblems() {
+        waitForToken(false);
+        return leetcodeClient.getAllProblems();
     }
 }

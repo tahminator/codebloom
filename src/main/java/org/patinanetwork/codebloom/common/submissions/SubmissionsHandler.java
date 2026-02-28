@@ -28,7 +28,6 @@ import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.options.UserFilterOptions;
-import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeQuestion;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.score.ScoreCalculator;
@@ -47,7 +46,7 @@ import org.springframework.stereotype.Component;
 public class SubmissionsHandler {
 
     private final QuestionRepository questionRepository;
-    private final LeetcodeClient leetcodeClient;
+    private final ThrottledLeetcodeClient leetcodeClient;
     private final LeaderboardRepository leaderboardRepository;
     private final POTDRepository potdRepository;
     private final UserRepository userRepository;
@@ -94,13 +93,17 @@ public class SubmissionsHandler {
     }
 
     public ArrayList<AcceptedSubmission> handleSubmissions(
-            final List<LeetcodeSubmission> leetcodeSubmissions, final User user) {
+            final List<LeetcodeSubmission> leetcodeSubmissions, final User user, boolean fast) {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
         POTD potd = potdRepository.getCurrentPOTD();
 
         var questionMap = leetcodeSubmissions.parallelStream()
                 .filter(distinctByKey(LeetcodeSubmission::getTitleSlug))
-                .map(s -> Pair.of(s.getTitleSlug(), leetcodeClient.findQuestionBySlug(s.getTitleSlug())))
+                .map(s -> Pair.of(
+                        s.getTitleSlug(),
+                        fast
+                                ? leetcodeClient.findQuestionBySlugFast(s.getTitleSlug())
+                                : leetcodeClient.findQuestionBySlug(s.getTitleSlug())))
                 .collect(Collectors.toMap(p -> p.getLeft(), p -> p.getRight()));
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
