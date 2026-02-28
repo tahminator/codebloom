@@ -62,7 +62,7 @@ export default function UserSearch() {
   const isActive = isFocused || searchQuery.length > 0;
 
   return (
-    <Flex direction="column" align="center" p="md" mih="70vh" pos="relative">
+    <Flex direction="column" align="center" p="md" mih="100vh" pos="relative">
       <MM.Box
         initial={false}
         animate={{
