@@ -28,7 +28,6 @@ import org.patinanetwork.codebloom.common.dto.autogen.UnsafeRateLimitResponse;
 import org.patinanetwork.codebloom.common.dto.potd.PotdDto;
 import org.patinanetwork.codebloom.common.dto.question.QuestionWithUserDto;
 import org.patinanetwork.codebloom.common.lag.FakeLag;
-import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
 import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
@@ -66,7 +65,7 @@ public class SubmissionController {
     private final UserRepository userRepository;
     private final Protector protector;
     private final SimpleRedis<Long> simpleRedis;
-    private final LeetcodeClient leetcodeClient;
+    private final ThrottledLeetcodeClient leetcodeClient;
     private final SubmissionsHandler submissionsHandler;
     private final QuestionRepository questionRepository;
     private final POTDRepository potdRepository;
@@ -160,7 +159,8 @@ public class SubmissionController {
                     "User has already set a username previously. You cannot change your name anymore. Please contact support if there are any issues.");
         }
 
-        UserProfile leetcodeUserProfile = leetcodeClient.getUserProfile(leetcodeUsernameObject.getLeetcodeUsername());
+        UserProfile leetcodeUserProfile =
+                leetcodeClient.getUserProfileFast(leetcodeUsernameObject.getLeetcodeUsername());
         String aboutMe = leetcodeUserProfile.getAboutMe();
 
         if (aboutMe == null || !aboutMe.contains(user.getVerifyKey())) {
@@ -235,12 +235,12 @@ public class SubmissionController {
         simpleRedis.put(user.getId(), System.currentTimeMillis());
 
         List<LeetcodeSubmission> leetcodeSubmissions =
-                leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername(), 20);
+                leetcodeClient.findSubmissionsByUsernameFast(user.getLeetcodeUsername(), 20);
 
         return ResponseEntity.ok()
                 .body(ApiResponder.success(
                         "Successfully checked all recent submissions!",
-                        submissionsHandler.handleSubmissions(leetcodeSubmissions, user)));
+                        submissionsHandler.handleSubmissions(leetcodeSubmissions, user, true)));
     }
 
     @Operation(

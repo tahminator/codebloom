@@ -2,6 +2,7 @@ package org.patinanetwork.codebloom.scheduled.submission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
@@ -34,7 +35,7 @@ public class SubmissionScheduler {
     }
 
     // Cron runs every 30 minutes
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(initialDelay = 0, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
     public void handleAllUserSubmissions() {
         LOGGER.info("Beginning the scheduled task to handle all user submissions now:");
         ArrayList<User> users = userRepository.getAllUsers();
@@ -48,7 +49,7 @@ public class SubmissionScheduler {
             List<LeetcodeSubmission> leetcodeSubmissions =
                     leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
-            submissionsHandler.handleSubmissions(leetcodeSubmissions, user);
+            submissionsHandler.handleSubmissions(leetcodeSubmissions, user, false);
             LOGGER.info("User with id of {} has been completed", user.getId());
         }
 
