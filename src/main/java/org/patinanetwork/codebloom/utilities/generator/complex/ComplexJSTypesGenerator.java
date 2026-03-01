@@ -43,6 +43,7 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
     }
 
     private void generateAll() throws IOException {
+        generateTypes();
         generate(Generator.builder()
                 .name("PARENT_TAGS_TO_CHILD_TAGS")
                 .data(ParentTags.ENUM_TO_ENUM_LIST)
@@ -50,10 +51,24 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
                 .build());
         generate(Generator.builder()
                 .name("TAG_METADATA_LIST")
-                .typeName("TagMetadataObject")
                 .data(TagMetadataList.ENUM_TO_STRING_VALUE_MAP)
-                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
+                .dataShape(DataShape.ENUM_TO_TAG_METADATA)
                 .build());
+    }
+
+    private void generateTypes() {
+        generateTagMetadataObjectType();
+    }
+
+    private void generateTagMetadataObjectType() {
+        String typeName = "TagMetadataObject";
+        tsContent.append("export type ").append(typeName).append(" = {\n");
+        tsContent.append("  shortName: string;\n");
+        tsContent.append("  name: string;\n");
+        tsContent.append("  apiKey: string;\n");
+        tsContent.append("  alt: string;\n");
+        tsContent.append("};\n\n");
+        log.info("Generated type: {}", typeName);
     }
 
     private void generate(Generator generator) throws IOException {
@@ -61,6 +76,8 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
             generateEnumToListOfEnums(generator);
         } else if (generator.getDataShape() == DataShape.ENUM_TO_STRING_VALUE_MAP) {
             generateEnumToStringValueMap(generator);
+        } else if (generator.getDataShape() == DataShape.ENUM_TO_TAG_METADATA) {
+            generateEnumToTagMetadata(generator);
         }
     }
 
@@ -160,6 +177,63 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
                 .append(enumClassName)
                 .append(", ")
                 .append(valueType)
+                .append("> = {\n");
+
+        for (Map.Entry<?, Map<String, ?>> entry : data.entrySet()) {
+            Enum<?> key = (Enum<?>) entry.getKey();
+            Map<String, ?> values = entry.getValue();
+
+            tsContent
+                    .append("  [")
+                    .append(enumClassName)
+                    .append(".")
+                    .append(key.name())
+                    .append("]: {\n");
+
+            for (Map.Entry<String, ?> field : values.entrySet()) {
+                tsContent
+                        .append("    ")
+                        .append(field.getKey())
+                        .append(": \"")
+                        .append(field.getValue())
+                        .append("\",\n");
+            }
+
+            tsContent.append("  },\n");
+        }
+
+        tsContent.append("} as const;\n\n");
+
+        log.info("Generated constant: {}", generator.getName());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void generateEnumToTagMetadata(Generator generator) {
+        Map<?, Map<String, ?>> data = (Map<?, Map<String, ?>>) generator.getData();
+
+        if (data.isEmpty()) {
+            log.warn("Empty map provided for tag metadata generation");
+            return;
+        }
+
+        Object firstKey = data.keySet().iterator().next();
+        if (!(firstKey instanceof Enum)) {
+            throw new IllegalArgumentException("Expected Enum key, got: " + firstKey.getClass());
+        }
+
+        Enum<?> enumKey = (Enum<?>) firstKey;
+        String enumClassName = enumKey.getDeclaringClass().getSimpleName();
+        imports.add(enumClassName);
+
+        String typeName = "TagMetadataObject";
+
+        tsContent
+                .append("export const ")
+                .append(generator.getName())
+                .append(": Record<")
+                .append(enumClassName)
+                .append(", ")
+                .append(typeName)
                 .append("> = {\n");
 
         for (Map.Entry<?, Map<String, ?>> entry : data.entrySet()) {
