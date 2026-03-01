@@ -16,12 +16,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class PlaywrightProvider {
 
-    private static final String USER_AGENT =
-            "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
-
     private final boolean headless;
 
-    public PlaywrightProvider(@Value("${playwright.headless}") boolean headless) {
+    public PlaywrightProvider(@Value("${playwright.headless}") final boolean headless) {
         this.headless = headless;
     }
 
@@ -30,16 +27,25 @@ public class PlaywrightProvider {
         log.info("Playwright headless={}", headless);
     }
 
-    public <T> T withPage(final Function<Page, T> consumer) {
+    public <T> T withPage(final String userAgent, final Function<Page, T> consumer) {
+        NewContextOptions options = new NewContextOptions();
+        if (userAgent != null) {
+            options.setUserAgent(userAgent);
+        }
+
         try (Playwright playwright = Playwright.create();
                 Browser browser = playwright
                         .firefox()
                         .launch(new BrowserType.LaunchOptions()
                                 .setHeadless(headless)
                                 .setTimeout(40000));
-                BrowserContext context = browser.newContext(new NewContextOptions().setUserAgent(USER_AGENT));
+                BrowserContext context = browser.newContext(options);
                 Page page = context.newPage()) {
             return consumer.apply(page);
         }
+    }
+
+    public <T> T withPage(final Function<Page, T> consumer) {
+        return withPage(null, consumer);
     }
 }

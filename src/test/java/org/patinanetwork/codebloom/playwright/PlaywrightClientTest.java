@@ -27,8 +27,8 @@ public class PlaywrightClientTest {
     public void setup() {
         playwrightClient = new PlaywrightClient(serverUrlUtils, emailClient, playwrightProvider);
 
-        when(playwrightProvider.withPage(any())).thenAnswer(p -> {
-            Function<Page, Object> fn = p.getArgument(0);
+        when(playwrightProvider.withPage(anyString(), any())).thenAnswer(p -> {
+            Function<Page, Object> fn = p.getArgument(1);
             return fn.apply(page);
         });
 
