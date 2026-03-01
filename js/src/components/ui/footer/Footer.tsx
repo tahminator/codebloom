@@ -21,7 +21,10 @@ export function Footer() {
     <div ref={containerRef} className={styles.footerWrapper}>
       <motion.div className={styles.footer} style={{ y }}>
         <div className={styles.footerContents}>
-          <div className={"mantine-visible-from-sm"}>
+          <div
+            data-testid={"footer-logo-mission-desktop"}
+            className={`mantine-visible-from-sm ${styles.footerLeft}`}
+          >
             <div className={"flex"}>
               <img src={Logo} width={45} alt={"Logo"} />
               <Text pt={8} pl={6} fw={550} size={"md"}>
@@ -36,7 +39,10 @@ export function Footer() {
             <GotoAdminPageButton />
           </div>
           <div className={styles.footerRight}>
-            <div className={"mantine-hidden-from-sm"}>
+            <div
+              data-testid={"footer-logo-mission-mobile"}
+              className={`mantine-hidden-from-sm`}
+            >
               <div className={"flex"}>
                 <img src={Logo} width={45} alt={"Logo"} />
                 <Text pt={8} pl={6} fw={550} size={"md"}>
@@ -50,7 +56,7 @@ export function Footer() {
               </div>
               <GotoAdminPageButton />
             </div>
-            <div>
+            <div data-testid={"footer-links-section"}>
               <Text fw={550} pb={4}>
                 About
               </Text>
@@ -106,7 +112,7 @@ export function Footer() {
                   <Text>Join our Discord</Text>
                 </Anchor>
                 <FooterIconLink
-                  href={"https://www.instagram.com/patinanetwork"}
+                  href={"https://discord.com/invite/jKaPfHtcaD"}
                   ariaLabel={"Patina Network Discord"}
                 >
                   <FaDiscord size={16} />
@@ -138,6 +144,7 @@ function FooterIconLink({
       variant="transparent"
       size="md"
       aria-label={ariaLabel}
+      rel="noopener noreferrer"
     >
       {children}
     </ActionIcon>
