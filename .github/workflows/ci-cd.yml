@@ -29,6 +29,26 @@ jobs:
       - name: Run workflow
         uses: ./.github/composite/test/backend-pre-test
 
+  e2ePreTest:
+    name: E2E Pre Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@master
+        with:
+          version: 10.24.0
+          cache: true
+          cache_dependency_path: js/pnpm-lock.yaml
+          package_json_file: js/package.json
+
+      - name: Run pre test
+        shell: bash
+        run: cd e2e && pnpm i && pnpm run test
+
   backendTests:
     name: Backend Tests
     runs-on: ubuntu-latest

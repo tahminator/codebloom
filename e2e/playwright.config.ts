@@ -74,9 +74,9 @@ export default defineConfig({
     {
       command:
         process.env.CI ?
-          "./mvnw spring-boot:run -Dspring.profiles.active=ci"
+          "cd .. && ./mvnw spring-boot:run -Dspring.profiles.active=ci"
         : "cd .. && just backend-dev",
-      url: "http://localhost:8080",
+      url: "http://localhost:8080/api",
       stdout: "pipe",
       stderr: "pipe",
       wait: {
@@ -85,7 +85,9 @@ export default defineConfig({
     },
     {
       command:
-        process.env.CI ? "cd js && pnpm run dev" : "cd .. && just frontend-dev",
+        process.env.CI ?
+          "cd ../js && pnpm i && pnpm run dev"
+        : "cd .. && just frontend-dev",
       url: "http://localhost:5173",
       stdout: "pipe",
       stderr: "pipe",
