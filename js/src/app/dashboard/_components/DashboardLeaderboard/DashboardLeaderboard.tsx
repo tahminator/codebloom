@@ -234,21 +234,32 @@ export default function LeaderboardForDashboard({
                         </Text>
                       </Tooltip>
                     )}
-                    {tagFF && user.tags && user.tags.length > 0 && (
-                      <TagList tags={user.tags} size={16} gap="xs" />
-                    )}
+                    {user.nickname &&
+                      tagFF &&
+                      user.tags &&
+                      user.tags.length > 0 && (
+                        <TagList tags={user.tags} size={16} gap="xs" />
+                      )}
                   </Flex>
                 )}
-                <Text ta="center">
-                  <FaDiscord
-                    style={{
-                      display: "inline",
-                      marginLeft: "4px",
-                      marginRight: "4px",
-                    }}
-                  />
-                  {user.discordName}
-                </Text>
+                <Flex align="center" justify="center" gap={5}>
+                  <Text ta="center">
+                    <FaDiscord
+                      style={{
+                        display: "inline",
+                        marginLeft: "4px",
+                        marginRight: "4px",
+                      }}
+                    />
+                    {user.discordName}
+                  </Text>
+                  {!user.nickname &&
+                    tagFF &&
+                    user.tags &&
+                    user.tags.length > 0 && (
+                      <TagList tags={user.tags} size={16} gap="xs" />
+                    )}
+                </Flex>
                 {user.leetcodeUsername && (
                   <Text ta="center">
                     <SiLeetcode

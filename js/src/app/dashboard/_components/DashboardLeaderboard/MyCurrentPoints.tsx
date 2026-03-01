@@ -121,21 +121,32 @@ export default function MyCurrentPoints({
                   </Text>
                 </Tooltip>
               )}
-              {tagFF && userData.tags && userData.tags.length > 0 && (
-                <TagList tags={userData.tags} size={16} gap="xs" />
-              )}
+              {userData.nickname &&
+                tagFF &&
+                userData.tags &&
+                userData.tags.length > 0 && (
+                  <TagList tags={userData.tags} size={16} gap="xs" />
+                )}
             </Flex>
           )}
-          <Text ta="center">
-            <FaDiscord
-              style={{
-                display: "inline",
-                marginLeft: "4px",
-                marginRight: "4px",
-              }}
-            />
-            {userData.discordName}
-          </Text>
+          <Flex align="center" justify="center" gap={5}>
+            <Text ta="center">
+              <FaDiscord
+                style={{
+                  display: "inline",
+                  marginLeft: "4px",
+                  marginRight: "4px",
+                }}
+              />
+              {userData.discordName}
+            </Text>
+            {!userData.nickname &&
+              tagFF &&
+              userData.tags &&
+              userData.tags.length > 0 && (
+                <TagList tags={userData.tags} size={16} gap="xs" />
+              )}
+          </Flex>
           {userData.leetcodeUsername && (
             <Text ta="center">
               <SiLeetcode
