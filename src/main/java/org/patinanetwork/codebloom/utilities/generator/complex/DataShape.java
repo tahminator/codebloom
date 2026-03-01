@@ -6,4 +6,7 @@ public enum DataShape {
 
     /** Expects {@code Map<T, Map<String, String>>} where T is an enum class. */
     ENUM_TO_STRING_VALUE_MAP,
+
+    /** Expects {@code Map<T, Map<String, String>>} where T is an enum class, specifically for TagMetadataObject. */
+    ENUM_TO_TAG_METADATA,
 }
