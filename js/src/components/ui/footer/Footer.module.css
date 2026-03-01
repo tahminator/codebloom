@@ -45,9 +45,7 @@
 
 .footerLeft {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 80px;
+    flex-direction: column;
 }
 
 .logo {
