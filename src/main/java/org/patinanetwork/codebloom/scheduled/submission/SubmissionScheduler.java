@@ -35,7 +35,8 @@ public class SubmissionScheduler {
     }
 
     // Cron runs every 30 minutes
-    @Scheduled(initialDelay = 0, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
+    // TODO: Put `initialDelay` back to 0 once the thread lock is fixed.
+    @Scheduled(initialDelay = 10, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
     public void handleAllUserSubmissions() {
         LOGGER.info("Beginning the scheduled task to handle all user submissions now:");
         ArrayList<User> users = userRepository.getAllUsers();
