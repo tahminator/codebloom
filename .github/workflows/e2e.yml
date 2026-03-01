@@ -1,5 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/github-workflow.json
 name: E2E tests
+run-name: Running E2E tests
+
+concurrency:
+  group: deploy-staging-pr-${{ inputs.prId }}
+  cancel-in-progress: true
+
 on:
+  schedule:
+    - cron: "18 17 * * *" # 12:17 PM ET daily
   workflow_dispatch:
 
 jobs:
@@ -8,5 +17,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Placeholder
-        run: echo "Workflow initialized on main."
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup CI
+        uses: ./.github/composite/setup-ci
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@master
+        with:
+          version: 10.24.0
+          cache: true
+          cache_dependency_path: js/pnpm-lock.yaml
+          package_json_file: js/package.json
+
+      - name: Set up OpenJDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.m2
+            ~/repository
+          key: ${{ github.job }}-${{ hashFiles('**/pom.xml') }}
+
+      - name: Run script
+        shell: bash
+        # set --skip-discord-message=true when you want to test this to avoid spamming the server
+        run: bun run .github/scripts/test/run-e2e-tests.ts --skip-discord-message=false --action-url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
