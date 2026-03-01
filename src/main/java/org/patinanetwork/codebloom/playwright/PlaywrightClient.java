@@ -22,6 +22,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class PlaywrightClient {
 
+    private static final String USER_AGENT =
+            "Mozilla/5.0 (Linux; U; Android 4.4.1; SAMSUNG SM-J210G Build/KTU84P) AppleWebKit/536.31 (KHTML, like Gecko) Chrome/48.0.2090.359 Mobile Safari/601.9";
+
     private final ServerUrlUtils serverUrlUtils;
     private final EmailClient emailClient;
     private final PlaywrightProvider playwrightProvider;
@@ -36,7 +39,7 @@ public class PlaywrightClient {
     }
 
     private <T> T withPage(final Function<Page, T> consumer) {
-        return playwrightProvider.withPage(consumer);
+        return playwrightProvider.withPage(USER_AGENT, consumer);
     }
 
     public byte[] getCodebloomLeaderboardScreenshot(final int page, final Tag tag) {
