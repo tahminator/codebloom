@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.utilities.generator.complex;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -138,8 +139,9 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
         log.info("Generated constant: {}", generator.getName());
     }
 
+    @VisibleForTesting
     @SuppressWarnings("unchecked")
-    private void generateEnumToStringValueMap(Generator generator) {
+    void generateEnumToStringValueMap(Generator generator) {
         Map<?, Map<String, ?>> data = (Map<?, Map<String, ?>>) generator.getData();
 
         if (data.isEmpty()) {
@@ -207,8 +209,9 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
         log.info("Generated constant: {}", generator.getName());
     }
 
+    @VisibleForTesting
     @SuppressWarnings("unchecked")
-    private void generateEnumToTagMetadata(Generator generator) {
+    void generateEnumToTagMetadata(Generator generator) {
         Map<?, Map<String, ?>> data = (Map<?, Map<String, ?>>) generator.getData();
 
         if (data.isEmpty()) {
