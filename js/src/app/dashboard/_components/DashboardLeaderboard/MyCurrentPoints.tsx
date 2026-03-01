@@ -1,4 +1,6 @@
+import TagList from "@/components/ui/tags/TagList";
 import { useMyRecentLeaderboardData } from "@/lib/api/queries/leaderboard";
+import { tagFF } from "@/lib/ff/tag";
 import { getUserProfileUrl } from "@/lib/helper/leaderboardDateRange";
 import { theme } from "@/lib/theme";
 import { Flex, Skeleton, Text, Tooltip } from "@mantine/core";
@@ -97,24 +99,32 @@ export default function MyCurrentPoints({
       >
         <Text>Me</Text>
         <Flex direction={"column"}>
-          {userData.nickname && (
-            <Tooltip
-              label={
-                "This user is a verified member of the Patina Discord server."
-              }
-            >
-              <Text ta="center">
-                <IconCircleCheckFilled
-                  style={{
-                    display: "inline",
-                  }}
-                  color={theme.colors.patina[4]}
-                  z={5000000}
-                  size={20}
-                />{" "}
-                {userData.nickname}
-              </Text>
-            </Tooltip>
+          {(userData.nickname ||
+            (tagFF && userData.tags && userData.tags.length > 0)) && (
+            <Flex align="center" justify="center" gap={5}>
+              {userData.nickname && (
+                <Tooltip
+                  label={
+                    "This user is a verified member of the Patina Discord server."
+                  }
+                >
+                  <Text ta="center">
+                    <IconCircleCheckFilled
+                      style={{
+                        display: "inline",
+                      }}
+                      color={theme.colors.patina[4]}
+                      z={5000000}
+                      size={20}
+                    />{" "}
+                    {userData.nickname}
+                  </Text>
+                </Tooltip>
+              )}
+              {tagFF && userData.tags && userData.tags.length > 0 && (
+                <TagList tags={userData.tags} size={16} gap="xs" />
+              )}
+            </Flex>
           )}
           <Text ta="center">
             <FaDiscord

@@ -2,6 +2,7 @@ import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardL
 import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import TagList from "@/components/ui/tags/TagList";
 import {
   useCurrentLeaderboardMetadataQuery,
   useCurrentLeaderboardUsersQuery,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/api/queries/leaderboard";
 import { Api } from "@/lib/api/types";
 import { ApiUtils } from "@/lib/api/utils";
+import { tagFF } from "@/lib/ff/tag";
 import {
   formatLeaderboardDateRange,
   getUserProfileUrl,
@@ -210,24 +212,32 @@ export default function LeaderboardForDashboard({
             >
               <Text>{idx + 1}.</Text>
               <Flex direction={"column"}>
-                {user.nickname && (
-                  <Tooltip
-                    label={
-                      "This user is a verified member of the Patina Discord server."
-                    }
-                  >
-                    <Text ta="center">
-                      <IconCircleCheckFilled
-                        style={{
-                          display: "inline",
-                        }}
-                        color={theme.colors.patina[4]}
-                        z={5000000}
-                        size={20}
-                      />{" "}
-                      {user.nickname}
-                    </Text>
-                  </Tooltip>
+                {(user.nickname ||
+                  (tagFF && user.tags && user.tags.length > 0)) && (
+                  <Flex align="center" justify="center" gap={5}>
+                    {user.nickname && (
+                      <Tooltip
+                        label={
+                          "This user is a verified member of the Patina Discord server."
+                        }
+                      >
+                        <Text ta="center">
+                          <IconCircleCheckFilled
+                            style={{
+                              display: "inline",
+                            }}
+                            color={theme.colors.patina[4]}
+                            z={5000000}
+                            size={20}
+                          />{" "}
+                          {user.nickname}
+                        </Text>
+                      </Tooltip>
+                    )}
+                    {tagFF && user.tags && user.tags.length > 0 && (
+                      <TagList tags={user.tags} size={16} gap="xs" />
+                    )}
+                  </Flex>
                 )}
                 <Text ta="center">
                   <FaDiscord
