@@ -128,6 +128,7 @@ export default function TransitionalButtons({
       ref={parentRef}
       className={classes.navGroup}
       onMouseLeave={handleParentMouseLeave}
+      wrap="nowrap"
     >
       <Box
         className={classes.hoverIndicator}
