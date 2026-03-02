@@ -1,4 +1,4 @@
-FROM node:20 AS frontend-build
+FROM mirror.gcr.io/library/node:20 AS frontend-build
 
 WORKDIR /js
 
@@ -16,7 +16,7 @@ ARG VITE_STAGING
 ENV VITE_STAGING=${VITE_STAGING}
 RUN pnpm run build
 
-FROM node:20 AS email-build
+FROM mirror.gcr.io/library/node:20 AS email-build
 
 WORKDIR /email
 
@@ -29,7 +29,7 @@ COPY email/ ./
 
 RUN pnpm email export --dir emails --outDir out
 
-FROM eclipse-temurin:25-jdk-jammy AS backend-build
+FROM mirror.gcr.io/library/eclipse-temurin:25-jdk-jammy AS backend-build
 
 WORKDIR /app
 
@@ -46,7 +46,7 @@ COPY --from=email-build /email/out/*.html src/main/resources/static/email/
 ARG COMMIT_SHA
 RUN ./mvnw package -DskipTests -Dcommit.sha="${COMMIT_SHA}"
 
-FROM eclipse-temurin:25-jre-jammy
+FROM mirror.gcr.io/library/eclipse-temurin:25-jre-jammy
 
 WORKDIR /app
 
