@@ -83,9 +83,9 @@ jobs:
         uses: qodo-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_KEY: ${{ env.OPENAI_API_KEY }}
-          config.model: "gpt-5-2025-08-07"
-          config.fallback_models: '["o4-mini"]'
+          config.model: "gemini/gemini-2.5-flash"
+          config.fallback_models: '["gemini/gemini-2.5-flash"]'
+          GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           config.verbosity_level: "2"
           pr_reviewer.extra_instructions: |
             Review this PR in the context of the following Notion task:
@@ -102,7 +102,7 @@ jobs:
             - Verify that environment variables and secrets are handled securely
             - Check for potential performance bottlenecks or N+1 query issues
             - Ensure proper test coverage for critical paths
-            
+
             The repository follows strict style guidelines, so please use the listed items below to 
             ensure code quality & correctness.
             ${{ steps.styleguide.outputs.context }}
@@ -114,7 +114,7 @@ jobs:
           pr_description.extra_instructions: |
             Below is some additional context for the PR from the connected Notion task:
             ${{ steps.notion_check.outputs.context }}
-            
+
             The repository follows strict style guidelines, so please use the listed items below to 
             ensure code quality & correctness.
             ${{ steps.styleguide.outputs.context }}
@@ -144,7 +144,7 @@ jobs:
             - Verify that environment variables and secrets are handled securely
             - Check for potential performance bottlenecks or N+1 query issues
             - Ensure proper test coverage for critical paths
-            
+
             The repository follows strict style guidelines, so please use the listed items below to 
             ensure code quality & correctness.
             ${{ steps.styleguide.outputs.context }}
