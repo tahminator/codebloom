@@ -1,95 +1,31 @@
+import { TAG_METADATA_LIST as GENERATED_TAG_METADATA_LIST } from "@/lib/api/types/complex";
 import { Tag } from "@/lib/api/types/schema";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
+
+const TAG_ICONS: Record<Tag, string> = {
+  [Tag.Patina]: "/brands/Patina_Logo.png",
+  [Tag.Hunter]: "/brands/Hunter_Logo.jpeg",
+  [Tag.Nyu]: "/brands/NYU_Logo.png",
+  [Tag.Baruch]: "/brands/Baruch_Logo.png",
+  [Tag.Rpi]: "/brands/Rpi_Logo.png",
+  [Tag.Gwc]: "/brands/Gwc_Logo.png",
+  [Tag.Sbu]: "/brands/SBU_shield.png",
+  [Tag.Columbia]: "/brands/Columbia_logo.png",
+  [Tag.Ccny]: "/brands/CCNY_logo.png",
+  [Tag.Cornell]: "/brands/Cornell_Logo.png",
+  [Tag.Bmcc]: "/brands/BMCC_logo.png",
+  [Tag.MHCPlusPlus]: "/brands/Mhcpp_logo.png",
+};
 
 /**
  * Metadata for all Tag enums.
  */
-export const TAG_METADATA_LIST: Record<Tag, ApiTypeUtils.TagMetadata> = {
-  Hunter: {
-    shortName: "Hunter",
-    name: "Hunter College",
-    apiKey: "hunter",
-    icon: "/brands/Hunter_Logo.jpeg",
-    alt: "Hunter College Logo",
-  },
-  Nyu: {
-    shortName: "NYU",
-    name: "New York University",
-    apiKey: "nyu",
-    icon: "/brands/NYU_Logo.png",
-    alt: "NYU Logo",
-  },
-  Baruch: {
-    shortName: "Baruch",
-    name: "Baruch College",
-    apiKey: "baruch",
-    icon: "/brands/Baruch_Logo.png",
-    alt: "Baruch College Logo",
-  },
-  Rpi: {
-    shortName: "RPI",
-    name: "Rensselaer Polytechnic Institute",
-    apiKey: "rpi",
-    icon: "/brands/Rpi_Logo.png",
-    alt: "RPI Logo",
-  },
-  Patina: {
-    shortName: "Patina",
-    name: "Patina Network",
-    apiKey: "patina",
-    icon: "/brands/Patina_Logo.png",
-    alt: "Patina Logo",
-  },
-  Gwc: {
-    shortName: "GWC - Hunter College",
-    name: "GWC - Hunter College",
-    apiKey: "gwc",
-    icon: "/brands/Gwc_Logo.png",
-    alt: "GWC Logo",
-  },
-  Sbu: {
-    shortName: "SBU",
-    name: "Stony Brook University",
-    apiKey: "sbu",
-    icon: "/brands/SBU_shield.png",
-    alt: "Stony Brook University Logo",
-  },
-  Columbia: {
-    shortName: "Columbia",
-    name: "Columbia University",
-    apiKey: "columbia",
-    icon: "/brands/Columbia_logo.png",
-    alt: "Columbia University Logo",
-  },
-  Ccny: {
-    shortName: "CCNY",
-    name: "City College of New York",
-    apiKey: "ccny",
-    icon: "/brands/CCNY_logo.png",
-    alt: "City College of New York Logo",
-  },
-  Cornell: {
-    shortName: "Cornell",
-    name: "Cornell University",
-    apiKey: "cornell",
-    icon: "/brands/Cornell_Logo.png",
-    alt: "Cornell University Logo",
-  },
-  Bmcc: {
-    shortName: "BMCC",
-    name: "Borough of Manhattan Community College",
-    apiKey: "bmcc",
-    icon: "/brands/BMCC_logo.png",
-    alt: "BMCC Logo",
-  },
-  MHCPlusPlus: {
-    shortName: "MHC++",
-    name: "The MHC++ Club | Macaulay Hunter College",
-    apiKey: "mhcplusplus",
-    icon: "/brands/Mhcpp_logo.png",
-    alt: "MHC++ Logo",
-  },
-} as const;
+export const TAG_METADATA_LIST = Object.fromEntries(
+  (Object.keys(GENERATED_TAG_METADATA_LIST) as Tag[]).map((tag) => [
+    tag,
+    { ...GENERATED_TAG_METADATA_LIST[tag], icon: TAG_ICONS[tag] },
+  ]),
+) as Record<Tag, ApiTypeUtils.TagMetadata>;
 
 export const UNUSED_TAGS = [Tag.Gwc, Tag.MHCPlusPlus] as const;
 export const NON_SCHOOL_TAGS = [
