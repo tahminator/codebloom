@@ -1,6 +1,6 @@
 import { GotoAdminPageButton } from "@/components/ui/admin-button/AdminButton";
 import styles from "@/components/ui/footer/Footer.module.css";
-import { ActionIcon, Text, Anchor } from "@mantine/core";
+import { ActionIcon, Text, Anchor, Flex, Box } from "@mantine/core";
 import { motion, useScroll, useTransform } from "motion/react";
 import { ReactNode, useRef } from "react";
 import { FaInstagram, FaDiscord, FaGithub } from "react-icons/fa";
@@ -25,17 +25,17 @@ export function Footer() {
             data-testid={"footer-logo-mission-desktop"}
             className={`mantine-visible-from-sm ${styles.footerLeft}`}
           >
-            <div className={"flex"}>
+            <Flex>
               <img src={Logo} width={45} alt={"Logo"} />
               <Text pt={8} pl={6} fw={550} size={"md"}>
                 Codebloom
               </Text>
-            </div>
-            <div className={"flex"}>
+            </Flex>
+            <Flex>
               <Text pl={8} c={"dimmed"} size={"sm"}>
                 {missionText}
               </Text>
-            </div>
+            </Flex>
             <GotoAdminPageButton />
           </div>
           <div className={styles.footerRight}>
@@ -43,29 +43,29 @@ export function Footer() {
               data-testid={"footer-logo-mission-mobile"}
               className={`mantine-hidden-from-sm`}
             >
-              <div className={"flex"}>
+              <Flex>
                 <img src={Logo} width={45} alt={"Logo"} />
                 <Text pt={8} pl={6} fw={550} size={"md"}>
                   Codebloom
                 </Text>
-              </div>
-              <div className={"flex"}>
+              </Flex>
+              <Flex>
                 <Text c={"dimmed"} size={"sm"}>
                   {missionText}
                 </Text>
-              </div>
+              </Flex>
               <GotoAdminPageButton />
             </div>
             <div data-testid={"footer-links-section"}>
               <Text fw={550} pb={4}>
                 About
               </Text>
-              <div className={"pb-1"}>
+              <Box pt={1} pb={3}>
                 <Anchor href="/privacy" c="dimmed" size="sm" variant="subtle">
                   Privacy Policy
                 </Anchor>
-              </div>
-              <div className={"flex items-center"}>
+              </Box>
+              <Flex align="center">
                 <Anchor
                   href={"https://github.com/tahminator/codebloom"}
                   c={"dimmed"}
@@ -80,13 +80,13 @@ export function Footer() {
                 >
                   <FaGithub size={16} />
                 </FooterIconLink>
-              </div>
+              </Flex>
             </div>
             <div>
               <Text fw={550} pb={4}>
                 Community
               </Text>
-              <div className={"flex items-center"}>
+              <Flex align={"center"}>
                 <Anchor
                   href={"https://www.instagram.com/patinanetwork"}
                   c={"dimmed"}
@@ -101,8 +101,8 @@ export function Footer() {
                 >
                   <FaInstagram size={16} />
                 </FooterIconLink>
-              </div>
-              <div className={"flex items-center"}>
+              </Flex>
+              <Flex align={"center"}>
                 <Anchor
                   href={"https://discord.com/invite/jKaPfHtcaD"}
                   c={"dimmed"}
@@ -117,7 +117,7 @@ export function Footer() {
                 >
                   <FaDiscord size={16} />
                 </FooterIconLink>
-              </div>
+              </Flex>
             </div>
           </div>
         </div>
