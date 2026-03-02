@@ -61,6 +61,12 @@ async function end() {
   if (be) {
     if (!be.killed) {
       be.kill();
+      // hack to wait until backend is truly dead.
+      await new Promise((res) => {
+        setTimeout(() => {
+          res(null);
+        }, 2000);
+      });
     }
     console.log(cyan("=== BACKEND LOGS ==="));
     const logs = await Bun.file("backend.log").text();
