@@ -1,5 +1,6 @@
 import type { Api } from "@/lib/api/types";
 
+import { TagMetadataObject } from "@/lib/api/types/complex";
 import { Tag } from "@/lib/api/types/schema";
 import { UNUSED_TAGS } from "@/lib/api/utils/metadata/tag";
 
@@ -7,45 +8,11 @@ import { UNUSED_TAGS } from "@/lib/api/utils/metadata/tag";
  * A collection of helpful types to help transform & use data returned from the API.
  */
 export namespace ApiTypeUtils {
-  export type TagMetadata = {
-    /**
-     * Pretty short name for the given tag.
-     */
-    shortName: string;
-
-    /**
-     * Pretty name for the given tag.
-     */
-    name: string;
-
+  export type TagMetadata = TagMetadataObject & {
     /**
      * Path to tag's icon.
      */
     icon: string;
-
-    /**
-     * How the backend expects to receive this tag when passed in as a URL param.
-     *
-     * @note This is currently implemented as an all lowercase version of the enum, but
-     * THIS CAN CHANGE. SO DO NOT DO THE LOGIC OF MAKING THE API KEY YOURSELF.
-     *
-     * Instead, do this:
-     *
-     * @example
-     * ```ts
-     * const metadata = ApiUtils.getMetadataByTagEnum(Tag.Gwc);
-     *
-     * const apiKey = metadata.apiKey; // use this.
-     *
-     * const fetch = (`api/blah/blah?${apiKey}=false`);
-     * ```
-     */
-    apiKey: Lowercase<Tag>;
-
-    /**
-     * Extra information about the given tag.
-     */
-    alt: string;
   };
 
   /**

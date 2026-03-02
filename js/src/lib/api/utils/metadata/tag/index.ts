@@ -2,7 +2,7 @@ import { TAG_METADATA_LIST as GENERATED_TAG_METADATA_LIST } from "@/lib/api/type
 import { Tag } from "@/lib/api/types/schema";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
-const TAG_ICONS: Record<Tag, string> = {
+const TAG_ICONS = {
   [Tag.Patina]: "/brands/Patina_Logo.png",
   [Tag.Hunter]: "/brands/Hunter_Logo.jpeg",
   [Tag.Nyu]: "/brands/NYU_Logo.png",
@@ -15,17 +15,18 @@ const TAG_ICONS: Record<Tag, string> = {
   [Tag.Cornell]: "/brands/Cornell_Logo.png",
   [Tag.Bmcc]: "/brands/BMCC_logo.png",
   [Tag.MHCPlusPlus]: "/brands/Mhcpp_logo.png",
-};
+} as const satisfies Record<Tag, string>;
 
 /**
  * Metadata for all Tag enums.
  */
-export const TAG_METADATA_LIST = Object.fromEntries(
-  (Object.keys(GENERATED_TAG_METADATA_LIST) as Tag[]).map((tag) => [
-    tag,
-    { ...GENERATED_TAG_METADATA_LIST[tag], icon: TAG_ICONS[tag] },
-  ]),
-) as Record<Tag, ApiTypeUtils.TagMetadata>;
+export const TAG_METADATA_LIST: Record<Tag, ApiTypeUtils.TagMetadata> =
+  Object.typedFromEntries(
+    Object.typedKeys(GENERATED_TAG_METADATA_LIST).map((tag) => [
+      tag,
+      { ...GENERATED_TAG_METADATA_LIST[tag], icon: TAG_ICONS[tag] },
+    ]),
+  );
 
 export const UNUSED_TAGS = [Tag.Gwc, Tag.MHCPlusPlus] as const;
 export const NON_SCHOOL_TAGS = [
