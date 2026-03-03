@@ -31,8 +31,10 @@ jobs:
   getPRHead:
     name: Get PR head SHA
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && (github.event.comment.body == '/review' || github.event.comment.body == '/describe' || github.event.comment.body == '/improve'))
     outputs:
       sha: ${{ steps.pr-head.outputs.result }}
+      prId: ${{ github.event.number || github.event.issue.number  }}
     steps:
       - name: Get PR head SHA
         id: pr-head
@@ -40,14 +42,13 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const prId = ${{ inputs.prId || github.event.pull_request.number }};
+            const prId = ${{ github.event.number ||  github.event.issue.number }};
             const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: parseInt(prId, 10)
             });
             return pr.head.sha;
-            `
   triggerAiReview:
     name: Trigger AI Review Commands
     runs-on: ubuntu-latest
