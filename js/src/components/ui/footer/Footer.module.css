@@ -61,11 +61,3 @@
     align-items: center;
     gap: 16px;
 }
-
-.link {
-    color: var(--mantine-color-gray-6);
-
-    &:hover {
-        text-decoration: underline;
-    }
-}
