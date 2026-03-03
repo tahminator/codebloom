@@ -2,7 +2,7 @@ import { Footer } from "@/components/ui/footer/Footer";
 import { TestUtils, TestUtilTypes } from "@/lib/test";
 import { screen } from "@testing-library/react";
 
-describe("LeaderboardSkeleton succeeded", () => {
+describe("Footer rendered successfully", () => {
   let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
   beforeEach(() => {
     renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
