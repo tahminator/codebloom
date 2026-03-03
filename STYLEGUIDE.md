@@ -384,6 +384,7 @@ export const router = createBrowserRouter([
 
 - Regular ts files can be named in camelCase (ex. `customTypes.ts`)
 - React files (.tsx) must be named in PascalCase (ex. `DashboardPage.tsx`)
+- Page files should end in `*.page.tsx` file and should be named as `XyzPage`
 - If a file doesn't need to be .tsx, then it should be a .ts file
 
 ### Function Naming
@@ -466,6 +467,8 @@ but you **MUST NOT** use `style` for a specific property if the component alread
 If the styling is very complicated, you may reach for CSS files, but only if you use `*.module.css` so that the styles don't bleed into the global scope. Module CSS files restrict the styling by renaming styles automatically at build time so that they do not bleed into the global namespace.
 
 Tailwind is inside this project due to the ease of prototyping during development, but you shouldn't have to use it in production. Thereby, it is HIGHLY discouraged but not banned.
+
+Avoid hard-coded / magic styles - reach for Mantine’s theme, which can be imported and used as an object as `{ theme }` from `@/src/lib/theme`.
 
 [Mantine docs](https://mantine.dev/core/package/)
 
