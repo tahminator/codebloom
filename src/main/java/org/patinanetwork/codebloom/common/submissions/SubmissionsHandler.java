@@ -18,6 +18,7 @@ import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
 import org.patinanetwork.codebloom.common.db.models.potd.POTD;
 import org.patinanetwork.codebloom.common.db.models.question.Question;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty;
+import org.patinanetwork.codebloom.common.db.models.question.bank.QuestionBank;
 import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import org.patinanetwork.codebloom.common.db.models.question.topic.QuestionTopic;
 import org.patinanetwork.codebloom.common.db.models.user.User;
@@ -26,6 +27,7 @@ import org.patinanetwork.codebloom.common.db.repos.job.JobRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.potd.POTDRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
+import org.patinanetwork.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.options.UserFilterOptions;
@@ -54,6 +56,7 @@ public class SubmissionsHandler {
     private final QuestionTopicRepository questionTopicRepository;
     private final JobRepository jobRepository;
     private final Reporter throttledReporter;
+    private final QuestionBankRepository questionBankRepository;
 
     private boolean isValid(final LocalDateTime createdAt) {
         // TODO - Replace EST locked functionality.
@@ -77,7 +80,8 @@ public class SubmissionsHandler {
             final UserRepository userRepository,
             final QuestionTopicRepository questionTopicRepository,
             final ThrottledReporter throttledReporter,
-            final JobRepository jobRepository) {
+            final JobRepository jobRepository,
+            final QuestionBankRepository questionBankRepository) {
         this.questionRepository = questionRepository;
         this.leetcodeClient = throttledLeetcodeClient;
         this.leaderboardRepository = leaderboardRepository;
@@ -86,6 +90,7 @@ public class SubmissionsHandler {
         this.questionTopicRepository = questionTopicRepository;
         this.jobRepository = jobRepository;
         this.throttledReporter = throttledReporter;
+        this.questionBankRepository = questionBankRepository;
     }
 
     public static <T> Predicate<T> distinctByKey(final Function<? super T, ?> keyExtractor) {
@@ -100,11 +105,29 @@ public class SubmissionsHandler {
 
         var questionMap = leetcodeSubmissions.parallelStream()
                 .filter(distinctByKey(LeetcodeSubmission::getTitleSlug))
-                .map(s -> Pair.of(
-                        s.getTitleSlug(),
-                        fast
-                                ? leetcodeClient.findQuestionBySlugFast(s.getTitleSlug())
-                                : leetcodeClient.findQuestionBySlug(s.getTitleSlug())))
+                .map(s -> {
+                    String slug = s.getTitleSlug();
+
+                    QuestionBank bankQuestion = questionBankRepository.getQuestionBySlug(slug);
+
+                    if (bankQuestion == null) {
+                        LeetcodeQuestion question = fast
+                                ? leetcodeClient.findQuestionBySlugFast(slug)
+                                : leetcodeClient.findQuestionBySlug(slug);
+
+                        bankQuestion = QuestionBank.builder()
+                                .questionSlug(question.getTitleSlug())
+                                .questionDifficulty(QuestionDifficulty.valueOf(question.getDifficulty()))
+                                .questionTitle(question.getQuestionTitle())
+                                .questionNumber(question.getQuestionId())
+                                .questionLink("https://leetcode.com/problems/" + question.getTitleSlug())
+                                .description(question.getQuestion())
+                                .acceptanceRate(question.getAcceptanceRate())
+                                .build();
+                    }
+
+                    return Pair.of(slug, bankQuestion);
+                })
                 .collect(Collectors.toMap(p -> p.getLeft(), p -> p.getRight()));
 
         for (LeetcodeSubmission leetcodeSubmission : leetcodeSubmissions) {
@@ -128,7 +151,7 @@ public class SubmissionsHandler {
                 multiplier = potd.getMultiplier();
             }
 
-            LeetcodeQuestion leetcodeQuestion = questionMap.get(leetcodeSubmission.getTitleSlug());
+            QuestionBank bankQuestion = questionMap.get(leetcodeSubmission.getTitleSlug());
 
             // If the submission is before the leaderboard started, points awarded = 0
             Optional<Leaderboard> recentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
@@ -153,9 +176,7 @@ public class SubmissionsHandler {
                 points = 0;
             } else {
                 points = ScoreCalculator.calculateScore(
-                        QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()),
-                        leetcodeQuestion.getAcceptanceRate(),
-                        multiplier);
+                        bankQuestion.getQuestionDifficulty(), bankQuestion.getAcceptanceRate(), multiplier);
             }
 
             // throttledReporter.log(Report.builder()
@@ -179,14 +200,14 @@ public class SubmissionsHandler {
 
             Question newQuestion = Question.builder()
                     .userId(user.getId())
-                    .questionSlug(leetcodeQuestion.getTitleSlug())
-                    .questionDifficulty(QuestionDifficulty.valueOf(leetcodeQuestion.getDifficulty()))
-                    .questionNumber(leetcodeQuestion.getQuestionId())
-                    .questionLink("https://leetcode.com/problems/" + leetcodeQuestion.getTitleSlug())
-                    .questionTitle(leetcodeQuestion.getQuestionTitle())
-                    .description(leetcodeQuestion.getQuestion())
+                    .questionSlug(bankQuestion.getQuestionSlug())
+                    .questionDifficulty(bankQuestion.getQuestionDifficulty())
+                    .questionNumber(bankQuestion.getQuestionNumber())
+                    .questionLink("https://leetcode.com/problems/" + bankQuestion.getQuestionSlug())
+                    .questionTitle(bankQuestion.getQuestionTitle())
+                    .description(bankQuestion.getDescription())
                     .pointsAwarded(points)
-                    .acceptanceRate(leetcodeQuestion.getAcceptanceRate())
+                    .acceptanceRate(bankQuestion.getAcceptanceRate())
                     .submittedAt(leetcodeSubmission.getTimestamp())
                     .submissionId(String.valueOf(leetcodeSubmission.getId()))
                     .build();
@@ -200,15 +221,15 @@ public class SubmissionsHandler {
 
             jobRepository.createJob(newJob);
 
-            leetcodeQuestion.getTopics().stream()
+            bankQuestion.getTopics().stream()
                     .forEach(topic -> questionTopicRepository.createQuestionTopic(QuestionTopic.builder()
                             .questionId(newQuestion.getId())
-                            .topicSlug(topic.getSlug())
-                            .topic(LeetcodeTopicEnum.fromValue(topic.getSlug()))
+                            .topicSlug(topic.getTopicSlug())
+                            .topic(LeetcodeTopicEnum.fromValue(topic.getTopicSlug()))
                             .build()));
 
             acceptedSubmissions.add(
-                    new AcceptedSubmission(leetcodeQuestion.getQuestionTitle(), createdQuestion.getId(), points));
+                    new AcceptedSubmission(bankQuestion.getQuestionTitle(), createdQuestion.getId(), points));
 
             UserWithScore recentUserMetadata = userRepository.getUserWithScoreByIdAndLeaderboardId(
                     user.getId(), recentLeaderboard.get().getId(), UserFilterOptions.DEFAULT);
