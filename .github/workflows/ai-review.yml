@@ -3,35 +3,33 @@ run-name: Running AI code review on ${{ github.actor }}'s branch
 
 on:
   pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
-  issue_comment:
-    types: [created]
+    types: [reopened, ready_for_review, synchronize]
 
 permissions:
-  contents: write
-  issues: write
+  contents: read
   pull-requests: write
 
 concurrency:
-  group: pr-ai-${{ github.event.number || github.event.issue.number }}-${{ github.event.comment.body || 'pr' }}
+  group: pr-ai-${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
   getPRHead:
     name: Get PR head SHA
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && (github.event.comment.body == '/review' || github.event.comment.body == '/describe' || github.event.comment.body == '/improve'))
     outputs:
       sha: ${{ steps.pr-head.outputs.result }}
-      prId: ${{ github.event.number || github.event.issue.number  }}
+      prId: ${{ github.event.number }}
     steps:
       - name: Get PR head SHA
         id: pr-head
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7`
+        env:
+          PR_ID: ${{ github.event.number }}
         with:
           result-encoding: string
           script: |
-            const prId = ${{ github.event.number ||  github.event.issue.number }};
+            const prId = process.env.PR_ID;
             const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -48,7 +46,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.getPRHead.outputs.sha }}
+          ref: ${{ github.event.pull_request.base.sha }}
 
       - name: Setup CI
         uses: ./.github/composite/setup-ci
@@ -62,6 +60,27 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           UNLOAD_ENVIRONMENTS: ci
+
+      - name: Post /review command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ needs.getPRHead.outputs.prId }}
+          message: "/review"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post /describe command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ needs.getPRHead.outputs.prId }}
+          message: "/describe"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post /improve command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ needs.getPRHead.outputs.prId }}
+          message: "/improve"
+          token: ${{ env.GH_PAT }}
 
       - name: Run composite workflow
         uses: ./.github/composite/notion-checks
