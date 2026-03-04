@@ -35,10 +35,12 @@ jobs:
       - name: Get PR head SHA
         id: pr-head
         uses: actions/github-script@v7
+        env:
+          PR_ID: ${{ inputs.prId }}
         with:
           result-encoding: string
           script: |
-            const prId = ${{ inputs.prId }};
+            const prId = process.env.PR_ID;
             const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
