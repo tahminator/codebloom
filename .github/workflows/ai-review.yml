@@ -4,6 +4,20 @@ run-name: Running AI code review on ${{ github.actor }}'s branch
 on:
   pull_request:
     types: [opened, reopened, ready_for_review, synchronize]
+    workflow_dispatch:
+    inputs:
+      prId:
+        description: "PR to deploy"
+        required: false
+      repository:
+        description: "The repository from which the slash command was dispatched"
+        required: false
+      comment-id:
+        description: "The comment-id of the slash command"
+        required: false
+      author:
+        description: "The author that triggered this actions"
+        required: false
   issue_comment:
     types: [created]
 
@@ -13,7 +27,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: pr-ai-${{ github.event.number || github.event.issue.number }}-${{ github.event.comment.body || 'pr' }}
+  group: ai-command-${{ github.event.number || github.event.issue.number }}
   cancel-in-progress: true
 
 jobs:
@@ -62,6 +76,27 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           UNLOAD_ENVIRONMENTS: ci
+
+      - name: Post /review command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.prId || github.event.pull_request.number }}
+          message: "/review"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post /describe command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.prId || github.event.pull_request.number }}
+          message: "/describe"
+          token: ${{ env.GH_PAT }}
+      
+      - name: Post /improve command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.prId || github.event.pull_request.number }}
+          message: "/improve"
+          token: ${{ env.GH_PAT }}
 
       - name: Run composite workflow
         uses: ./.github/composite/notion-checks
