@@ -22,10 +22,27 @@ import {
   Group,
   Card,
   Flex,
+  Tooltip,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { IconClock } from "@tabler/icons-react";
+import d from "dayjs";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+
+const clockIconStyle = {
+  position: "absolute" as const,
+  top: -8,
+  right: -8,
+  width: 22,
+  height: 22,
+  borderRadius: "50%",
+  backgroundColor: "var(--mantine-color-teal-7)",
+  border: "2px solid var(--mantine-color-dark-7)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
 
 export default function UserSubmissions({ userId }: { userId: string }) {
   const {
@@ -73,6 +90,10 @@ export default function UserSubmissions({ userId }: { userId: string }) {
 
   const pageData = data.payload;
 
+  const dateRangeLabel =
+    (startDate || endDate) &&
+    `Viewing submissions from ${startDate ? d(startDate).format("MMM D, YYYY") : "now"} to ${endDate ? d(endDate).format("MMM D, YYYY") : "now"}`;
+
   return (
     <Box
       mt={10}
@@ -84,30 +105,44 @@ export default function UserSubmissions({ userId }: { userId: string }) {
     >
       {!isMobile && (
         <Box display="block" style={{ textAlign: "right" }}>
-          <FilterDropdown buttonName="Filters">
-            <TopicFilterPopover
-              value={topics}
-              selectedTopicsSet={selectedTopicsSet}
-              onChange={setTopics}
-              onClear={clearTopics}
-            />
-            <FilterDropdownItem
-              value={pointFilter}
-              toggle={togglePointFilter}
-              switchMode
-              name={
-                <Flex gap="0.5rem" align="center">
-                  Points Received
-                </Flex>
-              }
-            />
-            <DateRangePopover
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-            />
-          </FilterDropdown>
+          <Box pos="relative" display="inline-block">
+            <FilterDropdown buttonName="Filters">
+              <TopicFilterPopover
+                value={topics}
+                selectedTopicsSet={selectedTopicsSet}
+                onChange={setTopics}
+                onClear={clearTopics}
+              />
+              <FilterDropdownItem
+                value={pointFilter}
+                toggle={togglePointFilter}
+                switchMode
+                name={
+                  <Flex gap="0.5rem" align="center">
+                    Points Received
+                  </Flex>
+                }
+              />
+              <DateRangePopover
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+              />
+            </FilterDropdown>
+            {dateRangeLabel && (
+              <Tooltip
+                label={dateRangeLabel}
+                withArrow
+                position="bottom"
+                withinPortal
+              >
+                <Box style={clockIconStyle} data-testid="date-range-clock-icon">
+                  <IconClock size={13} color="white" stroke={2.5} />
+                </Box>
+              </Tooltip>
+            )}
+          </Box>
         </Box>
       )}
       <Group
@@ -127,30 +162,37 @@ export default function UserSubmissions({ userId }: { userId: string }) {
           />
         </Box>
         {isMobile && (
-          <FilterDropdown buttonName="Filters">
-            <TopicFilterPopover
-              value={topics}
-              selectedTopicsSet={selectedTopicsSet}
-              onChange={setTopics}
-              onClear={clearTopics}
-            />
-            <FilterDropdownItem
-              value={pointFilter}
-              toggle={togglePointFilter}
-              switchMode
-              name={
-                <Flex gap="0.5rem" align="center">
-                  Points Received
-                </Flex>
-              }
-            />
-            <DateRangePopover
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-            />
-          </FilterDropdown>
+          <Box pos="relative" style={{ flexShrink: 0 }}>
+            <FilterDropdown buttonName="Filters">
+              <TopicFilterPopover
+                value={topics}
+                selectedTopicsSet={selectedTopicsSet}
+                onChange={setTopics}
+                onClear={clearTopics}
+              />
+              <FilterDropdownItem
+                value={pointFilter}
+                toggle={togglePointFilter}
+                switchMode
+                name={
+                  <Flex gap="0.5rem" align="center">
+                    Points Received
+                  </Flex>
+                }
+              />
+              <DateRangePopover
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+              />
+            </FilterDropdown>
+            {dateRangeLabel && (
+              <Box style={{ ...clockIconStyle, pointerEvents: "none" }}>
+                <IconClock size={13} color="white" stroke={2.5} />
+              </Box>
+            )}
+          </Box>
         )}
       </Group>
       <Box pos="relative">
