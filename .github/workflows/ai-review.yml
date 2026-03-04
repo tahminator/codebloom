@@ -28,10 +28,12 @@ jobs:
       - name: Get PR head SHA
         id: pr-head
         uses: actions/github-script@v7
+        env:
+          PR_ID: ${{ github.event.number || github.event.issue.number }}
         with:
           result-encoding: string
           script: |
-            const prId = ${{ github.event.number ||  github.event.issue.number }};
+            const prId = process.env.PR_ID;
             const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -63,7 +65,32 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           UNLOAD_ENVIRONMENTS: ci
 
+      - name: Post /review command
+        if: github.event_name == 'pull_request'
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ needs.getPRHead.outputs.prId }}
+          message: "/review"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post /describe command
+        if: github.event_name == 'pull_request'
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ needs.getPRHead.outputs.prId }}
+          message: "/describe"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post /improve command
+        if: github.event_name == 'pull_request'
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ needs.getPRHead.outputs.prId }}
+          message: "/improve"
+          token: ${{ env.GH_PAT }}
+
       - name: Run composite workflow
+        if: github.event_name == 'issue_comment'
         uses: ./.github/composite/notion-checks
         id: notion_check
         with:
@@ -73,6 +100,7 @@ jobs:
           GET_GHA_OUTPUT: "true"
 
       - name: Load STYLEGUIDE.md
+        if: github.event_name == 'issue_comment'
         id: styleguide
         run: |
           echo "context<<EOF" >> $GITHUB_OUTPUT
@@ -80,7 +108,8 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Qodo PR-Agent
-        uses: qodo-ai/pr-agent@main
+        if: github.event_name == 'issue_comment'
+        uses: qodo-ai/pr-agent@v0.32
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           config.model: "gemini/gemini-2.5-flash"
