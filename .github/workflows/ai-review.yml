@@ -3,7 +3,7 @@ run-name: Running AI code review on ${{ github.actor }}'s branch
 
 on:
   pull_request:
-    types: [reopened, ready_for_review, synchronize]
+    types: [open, reopened, ready_for_review, synchronize]
 
 permissions:
   contents: read
