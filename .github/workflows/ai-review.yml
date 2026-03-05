@@ -20,7 +20,7 @@ jobs:
   getPRHead:
     name: Get PR head SHA
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && (github.event.comment.body == '/review' || github.event.comment.body == '/describe' || github.event.comment.body == '/improve'))
+    if: (github.event_name == 'pull_request' && github.event.action != 'synchronize') || (github.event_name == 'issue_comment' && (github.event.comment.body == '/review' || github.event.comment.body == '/describe' || github.event.comment.body == '/improve'))
     outputs:
       sha: ${{ steps.pr-head.outputs.result }}
       prId: ${{ github.event.number || github.event.issue.number  }}
@@ -161,3 +161,45 @@ jobs:
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "true"
           github_action_config.auto_improve: "true"
+
+  triggerAIOnSync:
+    name: Trigger AI review on push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup CI
+        uses: ./.github/composite/setup-ci
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Load secrets
+        uses: ./.github/composite/load-secrets
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          UNLOAD_ENVIRONMENTS: ci
+
+      - name: Post /review command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.number }}
+          message: "/review"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post /describe command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.number }}
+          message: "/describe"
+          token: ${{ env.GH_PAT }}
+
+      - name: Post /improve command
+        uses: ./.github/composite/send-message
+        with:
+          prId: ${{ github.event.number }}
+          message: "/improve"
+          token: ${{ env.GH_PAT }}
