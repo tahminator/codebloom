@@ -106,7 +106,7 @@ jobs:
             The repository follows strict style guidelines, so please use the listed items below to 
             ensure code quality & correctness.
             ${{ steps.styleguide.outputs.context }}
-          pr_reviewer.persistent_comment: "false"
+          pr_reviewer.persistent_comment: "true"
           pr_reviewer.enable_review_labels_security: "false"
           pr_reviewer.enable_review_labels_effort: "false"
           pr_reviewer.final_update_message: "false"
@@ -118,7 +118,7 @@ jobs:
             The repository follows strict style guidelines, so please use the listed items below to 
             ensure code quality & correctness.
             ${{ steps.styleguide.outputs.context }}
-          pr_description.publish_description_as_comment_persistent: "false"
+          pr_description.publish_description_as_comment_persistent: "true"
           pr_description.publish_labels: "false"
           pr_description.add_original_user_description: "false"
           pr_code_suggestions.commitable_code_suggestions: "true"
@@ -126,7 +126,7 @@ jobs:
           pr_code_suggestions.focus_only_on_problems: "true"
           pr_code_suggestions.enable_help_text: "false"
           pr_code_suggestions.enable_chat_text: "false"
-          pr_code_suggestions.persistent_comment: "false"
+          pr_code_suggestions.persistent_comment: "true"
           pr_code_suggestions.max_history_len: "10"
           pr_code_suggestions.publish_output_no_suggestions: "true"
           pr_code_suggestions.extra_instructions: |
@@ -161,3 +161,4 @@ jobs:
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "true"
           github_action_config.auto_improve: "true"
+          github_action_config.pr_actions: '["opened","reopened","ready_for_review","synchronize"]'
