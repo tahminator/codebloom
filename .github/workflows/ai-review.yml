@@ -20,7 +20,7 @@ jobs:
   getPRHead:
     name: Get PR head SHA
     runs-on: ubuntu-latest
-    if: (github.event_name == 'pull_request' && github.event.action != 'synchronize') || (github.event_name == 'issue_comment' && (github.event.comment.body == '/review' || github.event.comment.body == '/describe' || github.event.comment.body == '/improve'))
+    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && (github.event.comment.body == '/review' || github.event.comment.body == '/describe' || github.event.comment.body == '/improve'))
     outputs:
       sha: ${{ steps.pr-head.outputs.result }}
       prId: ${{ github.event.number || github.event.issue.number  }}
@@ -106,7 +106,7 @@ jobs:
             The repository follows strict style guidelines, so please use the listed items below to 
             ensure code quality & correctness.
             ${{ steps.styleguide.outputs.context }}
-          pr_reviewer.persistent_comment: "false"
+          pr_reviewer.persistent_comment: "true"
           pr_reviewer.enable_review_labels_security: "false"
           pr_reviewer.enable_review_labels_effort: "false"
           pr_reviewer.final_update_message: "false"
@@ -118,7 +118,7 @@ jobs:
             The repository follows strict style guidelines, so please use the listed items below to 
             ensure code quality & correctness.
             ${{ steps.styleguide.outputs.context }}
-          pr_description.publish_description_as_comment_persistent: "false"
+          pr_description.publish_description_as_comment_persistent: "true"
           pr_description.publish_labels: "false"
           pr_description.add_original_user_description: "false"
           pr_code_suggestions.commitable_code_suggestions: "true"
@@ -126,7 +126,7 @@ jobs:
           pr_code_suggestions.focus_only_on_problems: "true"
           pr_code_suggestions.enable_help_text: "false"
           pr_code_suggestions.enable_chat_text: "false"
-          pr_code_suggestions.persistent_comment: "false"
+          pr_code_suggestions.persistent_comment: "true"
           pr_code_suggestions.max_history_len: "10"
           pr_code_suggestions.publish_output_no_suggestions: "true"
           pr_code_suggestions.extra_instructions: |
@@ -161,46 +161,3 @@ jobs:
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "true"
           github_action_config.auto_improve: "true"
-
-  triggerAIOnSync:
-    name: Trigger AI review on push
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup CI
-        uses: ./.github/composite/setup-ci
-        with:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Load secrets
-        uses: ./.github/composite/load-secrets
-        with:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          UNLOAD_ENVIRONMENTS: ci
-
-      - name: Post /review command
-        uses: ./.github/composite/send-message
-        with:
-          prId: ${{ github.event.number }}
-          message: "/review"
-          token: ${{ env.GH_PAT }}
-
-      - name: Post /describe command
-        uses: ./.github/composite/send-message
-        with:
-          prId: ${{ github.event.number }}
-          message: "/describe"
-          token: ${{ env.GH_PAT }}
-
-      - name: Post /improve command
-        uses: ./.github/composite/send-message
-        with:
-          prId: ${{ github.event.number }}
-          message: "/improve"
-          token: ${{ env.GH_PAT }}
-          
