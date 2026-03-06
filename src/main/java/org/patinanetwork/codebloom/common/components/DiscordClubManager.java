@@ -301,7 +301,10 @@ public class DiscordClubManager {
                 .orElseThrow(() -> new LeaderboardException("Club does not exist", "This club does not exist!"));
 
         User user = leaderboardManager.refreshUserSubmissions(discordId);
-        Leaderboard currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();
+        Leaderboard currentLeaderboard = leaderboardRepository
+                .getRecentLeaderboardMetadata()
+                .orElseThrow(() -> new LeaderboardException(
+                        "Could not find Recent Leaderboard", "Recent leaderboard does not exist"));
 
         LeaderboardFilterOptions options =
                 LeaderboardFilterGenerator.builderWithTag(club.getTag()).build();
@@ -312,10 +315,14 @@ public class DiscordClubManager {
                 userId, currentLeaderboard.getId(), UserFilterOptions.DEFAULT);
 
         int score = scoredUser.getTotalScore();
-        Indexed<UserWithScore> globalIndex =
-                leaderboardRepository.getGlobalRankedUserById(currentLeaderboard.getId(), userId);
-        Indexed<UserWithScore> clubIndex =
-                leaderboardRepository.getFilteredRankedUserById(currentLeaderboard.getId(), userId, options);
+        Indexed<UserWithScore> globalIndex = leaderboardRepository
+                .getGlobalRankedUserById(currentLeaderboard.getId(), userId)
+                .orElseThrow(() ->
+                        new LeaderboardException("Could not find global rank", "Error finding global rank by userId."));
+        Indexed<UserWithScore> clubIndex = leaderboardRepository
+                .getFilteredRankedUserById(currentLeaderboard.getId(), userId, options)
+                .orElseThrow(() -> new LeaderboardException(
+                        "Could not find filtered rank", "Error finding filtered rank by userId."));
 
         return RefreshResultDto.builder()
                 .score(score)

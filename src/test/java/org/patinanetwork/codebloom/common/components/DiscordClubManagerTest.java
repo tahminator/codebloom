@@ -395,7 +395,7 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Week 10");
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
 
         UserWithScore scoredUser = mock(UserWithScore.class);
         when(scoredUser.getTotalScore()).thenReturn(42);
@@ -406,10 +406,10 @@ public class DiscordClubManagerTest {
         Indexed<UserWithScore> globalIndex = Indexed.of(scoredUser, 5);
         Indexed<UserWithScore> clubIndex = Indexed.of(scoredUser, 2);
         when(leaderboardRepository.getGlobalRankedUserById("leaderboard-id", "user-id-1"))
-                .thenReturn(globalIndex);
+                .thenReturn(Optional.of(globalIndex));
         when(leaderboardRepository.getFilteredRankedUserById(
                         eq("leaderboard-id"), eq("user-id-1"), any(LeaderboardFilterOptions.class)))
-                .thenReturn(clubIndex);
+                .thenReturn(Optional.of(clubIndex));
 
         RefreshResultDto result = discordClubManager.refreshSubmissions("guild-123", "discord-456");
 
@@ -469,7 +469,7 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("lb-id");
         when(mockLeaderboard.getName()).thenReturn("Week 5");
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
 
         UserWithScore scoredUser = mock(UserWithScore.class);
         when(scoredUser.getTotalScore()).thenReturn(100);
@@ -480,10 +480,10 @@ public class DiscordClubManagerTest {
         Indexed<UserWithScore> globalIndex = Indexed.of(scoredUser, 10);
         Indexed<UserWithScore> clubIndex = Indexed.of(scoredUser, 1);
         when(leaderboardRepository.getGlobalRankedUserById("lb-id", "user-id-2"))
-                .thenReturn(globalIndex);
+                .thenReturn(Optional.of(globalIndex));
         when(leaderboardRepository.getFilteredRankedUserById(
                         eq("lb-id"), eq("user-id-2"), any(LeaderboardFilterOptions.class)))
-                .thenReturn(clubIndex);
+                .thenReturn(Optional.of(clubIndex));
 
         RefreshResultDto result = discordClubManager.refreshSubmissions("guild-789", "discord-111");
 
@@ -506,7 +506,7 @@ public class DiscordClubManagerTest {
         Leaderboard mockLeaderboard = mock(Leaderboard.class);
         when(mockLeaderboard.getId()).thenReturn("leaderboard-id");
         when(mockLeaderboard.getName()).thenReturn("Week 1");
-        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(mockLeaderboard);
+        when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(mockLeaderboard));
 
         UserWithScore scoredUser = mock(UserWithScore.class);
         when(scoredUser.getTotalScore()).thenReturn(0);
@@ -517,10 +517,10 @@ public class DiscordClubManagerTest {
         Indexed<UserWithScore> globalIndex = Indexed.of(scoredUser, 50);
         Indexed<UserWithScore> clubIndex = Indexed.of(scoredUser, 20);
         when(leaderboardRepository.getGlobalRankedUserById("leaderboard-id", "user-id-1"))
-                .thenReturn(globalIndex);
+                .thenReturn(Optional.of(globalIndex));
         when(leaderboardRepository.getFilteredRankedUserById(
                         eq("leaderboard-id"), eq("user-id-1"), any(LeaderboardFilterOptions.class)))
-                .thenReturn(clubIndex);
+                .thenReturn(Optional.of(clubIndex));
 
         RefreshResultDto result = discordClubManager.refreshSubmissions("guild-123", "discord-456");
 
