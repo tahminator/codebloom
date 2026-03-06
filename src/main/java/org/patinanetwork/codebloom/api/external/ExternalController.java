@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.patinanetwork.codebloom.common.components.LeaderboardException;
 import org.patinanetwork.codebloom.common.db.models.api.ApiKey;
 import org.patinanetwork.codebloom.common.db.models.api.ApiKeyAccessEnum;
 import org.patinanetwork.codebloom.common.db.models.api.access.ApiKeyAccess;
@@ -54,8 +53,8 @@ public class ExternalController {
     @ApiResponse(responseCode = "404", description = "Leaderboard not found")
     @GetMapping("/gwc/users")
     public ResponseEntity<ApiResponder<List<UserWithScore>>> getGwcUsers(
-            @RequestHeader("X-API-Key") final String apiKey, @RequestParam("leaderboardId") final String leaderboardId)
-            throws LeaderboardException {
+            @RequestHeader("X-API-Key") final String apiKey,
+            @RequestParam("leaderboardId") final String leaderboardId) {
         ApiKey validApiKey = apiKeyRepository.getApiKeyByHash(apiKey);
         if (validApiKey == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid API key");
@@ -70,7 +69,7 @@ public class ExternalController {
         }
 
         if (leaderboardRepository.getLeaderboardMetadataById(leaderboardId).isEmpty()) {
-            throw new LeaderboardException("404 Not Found", "Leaderboard not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Leaderboard not found");
         }
         LeaderboardFilterOptions options =
                 LeaderboardFilterOptions.builder().gwc(true).build();
