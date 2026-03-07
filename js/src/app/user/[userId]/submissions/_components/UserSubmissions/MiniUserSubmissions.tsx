@@ -1,4 +1,5 @@
 import MiniUserSubmissionsSkeleton from "@/app/user/[userId]/submissions/_components/UserSubmissions/MiniUserSubmissionsSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import {
   langNameKey,
   langNameToIcon,
@@ -7,7 +8,7 @@ import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
-import { Badge, Box, Overlay, Text, Group, Card, Stack } from "@mantine/core";
+import { Badge, Box, Overlay, Text, Group, Stack } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function MiniUserSubmissions({ userId }: { userId: string }) {
@@ -43,7 +44,7 @@ export default function MiniUserSubmissions({ userId }: { userId: string }) {
       <Stack gap="sm" my="sm">
         {pageData.items.length === 0 && (
           <>
-            <Card withBorder p="md" radius="md" mih={80} w="100%" flex={1}>
+            <CodebloomCard mih={80} w="100%" flex={1}>
               <Stack gap="sm" justify="center" align="center" h="100%">
                 <Text fw={500} ta="center" c="dimmed">
                   Nothing found.
@@ -52,7 +53,7 @@ export default function MiniUserSubmissions({ userId }: { userId: string }) {
                   No submissions has been entered yet.
                 </Text>
               </Stack>
-            </Card>
+            </CodebloomCard>
           </>
         )}
         {pageData.items.map((submission) => {
@@ -85,11 +86,8 @@ export default function MiniUserSubmissions({ userId }: { userId: string }) {
             langNameToIcon[submission.language as langNameKey] ||
             langNameToIcon["default"];
           return (
-            <Card
+            <CodebloomCard
               key={submission.id}
-              withBorder
-              p="md"
-              radius="md"
               w="100%"
               maw={950}
               component={Link}
@@ -142,7 +140,7 @@ export default function MiniUserSubmissions({ userId }: { userId: string }) {
                   </Group>
                 )}
               </Stack>
-            </Card>
+            </CodebloomCard>
           );
         })}
       </Stack>

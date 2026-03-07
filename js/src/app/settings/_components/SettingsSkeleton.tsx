@@ -1,4 +1,5 @@
-import { Box, Card, Center, Flex, Skeleton, Stack } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Box, Center, Flex, Skeleton, Stack } from "@mantine/core";
 
 export default function SettingsSkeleton() {
   return (
@@ -13,12 +14,7 @@ export default function SettingsSkeleton() {
           />
         </Center>
         <Stack gap="xl">
-          <Card
-            withBorder
-            padding="md"
-            radius="md"
-            data-testid="settings-skeleton-verify-school-card"
-          >
+          <CodebloomCard data-testid="settings-skeleton-verify-school-card">
             <Box m="md">
               <Skeleton
                 w="12rem"
@@ -61,13 +57,8 @@ export default function SettingsSkeleton() {
                 data-testid="settings-skeleton-verify-now-button"
               />
             </Box>
-          </Card>
-          <Card
-            withBorder
-            padding="md"
-            radius="md"
-            data-testid="settings-skeleton-change-profile-card"
-          >
+          </CodebloomCard>
+          <CodebloomCard data-testid="settings-skeleton-change-profile-card">
             <Box m="md">
               <Skeleton
                 w="22rem"
@@ -97,13 +88,8 @@ export default function SettingsSkeleton() {
                 data-testid="settings-skeleton-change-profile-description-3"
               />
             </Box>
-          </Card>
-          <Card
-            withBorder
-            padding="md"
-            radius="md"
-            data-testid="settings-skeleton-log-out-card"
-          >
+          </CodebloomCard>
+          <CodebloomCard data-testid="settings-skeleton-log-out-card">
             <Box m="md">
               <Skeleton
                 w="20rem"
@@ -127,7 +113,7 @@ export default function SettingsSkeleton() {
                 data-testid="settings-skeleton-log-out-all-sessions-button"
               />
             </Box>
-          </Card>
+          </CodebloomCard>
         </Stack>
       </Box>
     </Box>

@@ -1,5 +1,6 @@
 import LogoutAllSessionsModal from "@/app/settings/_components/LogoutAllSessionsModal";
-import { Box, Button, Card, Title, Text } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Box, Button, Title, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 export default function LogoutAllSessionsCard() {
@@ -8,7 +9,7 @@ export default function LogoutAllSessionsCard() {
 
   return (
     <Box>
-      <Card withBorder padding={"md"} radius={"md"}>
+      <CodebloomCard>
         <Box m={"md"}>
           <Title order={3} p={"md"}>
             Log Out All Sessions
@@ -24,7 +25,7 @@ export default function LogoutAllSessionsCard() {
           </Box>
           <LogoutAllSessionsModal enabled={modalOpen} close={closeModal} />
         </Box>
-      </Card>
+      </CodebloomCard>
     </Box>
   );
 }

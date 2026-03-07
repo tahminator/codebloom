@@ -1,11 +1,12 @@
 import { useAuthCallbackInfo } from "@/app/login/hooks";
 import LoginButton from "@/components/ui/auth/LoginButton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useAuthQuery } from "@/lib/api/queries/auth";
-import { Button, Card, Center, Loader, Space, Text } from "@mantine/core";
+import { Button, Center, Loader, Space, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -52,7 +53,7 @@ export default function LoginPage() {
       <DocumentTitle title={`CodeBloom - Login`} />
       <DocumentDescription description={`CodeBloom - Log into your account`} />
       <Center style={{ height: "100vh" }}>
-        <Card
+        <CodebloomCard
           style={{
             width: 500,
             textAlign: "center",
@@ -68,7 +69,7 @@ export default function LoginPage() {
               Go Back
             </Button>
           </Link>
-        </Card>
+        </CodebloomCard>
       </Center>
     </>
   );

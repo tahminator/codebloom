@@ -1,17 +1,11 @@
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import TagList from "@/components/ui/tags/TagList";
 import { Api } from "@/lib/api/types";
 import { tagFF } from "@/lib/ff";
 import { getUserProfileUrl } from "@/lib/helper/leaderboardDateRange";
 import { OrdinalString } from "@/lib/helper/ordinal";
 import { theme } from "@/lib/theme";
-import {
-  Card,
-  Text,
-  Tooltip,
-  Flex,
-  LoadingOverlay,
-  Stack,
-} from "@mantine/core";
+import { Text, Tooltip, Flex, LoadingOverlay, Stack } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { CSSProperties } from "react";
 import { FaDiscord } from "react-icons/fa";
@@ -81,10 +75,7 @@ export default function LeaderboardCard({
     startDate ? { startDate, endDate: endDate ?? undefined } : undefined;
 
   return (
-    <Card
-      withBorder
-      shadow="sm"
-      radius="md"
+    <CodebloomCard
       className={`${isTopThree ? `border-4 ${borderColor}` : "border-2"} flex flex-col items-center justify-between relative`}
       style={{
         height,
@@ -166,6 +157,6 @@ export default function LeaderboardCard({
       >
         {totalScore} Points
       </Text>
-    </Card>
+    </CodebloomCard>
   );
 }

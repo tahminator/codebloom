@@ -1,9 +1,9 @@
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import { useSubmitFeedbackMutation } from "@/lib/api/queries/reporter";
 import { reportIssueSchema } from "@/lib/api/schema/reporter";
 import { theme } from "@/lib/theme";
 import {
   Button,
-  Card,
   Center,
   Flex,
   Group,
@@ -48,7 +48,7 @@ export default function ReportIssueForm() {
   return (
     <Flex justify={"center"} align={"center"} h={"90vh"}>
       <form onSubmit={form.onSubmit(onSubmit)}>
-        <Card w={380}>
+        <CodebloomCard w={380}>
           <Center>
             <Group mt="md" mb="xs">
               <Text
@@ -99,7 +99,7 @@ export default function ReportIssueForm() {
           <Button variant={"subtle"} onClick={() => navigate(-1)}>
             Go back
           </Button>
-        </Card>
+        </CodebloomCard>
       </form>
     </Flex>
   );

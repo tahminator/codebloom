@@ -1,3 +1,4 @@
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import { ApiURL } from "@/lib/api/common/apiURL";
 import {
   useAuthKeyQuery,
@@ -5,7 +6,6 @@ import {
 } from "@/lib/api/queries/auth/leetcode";
 import {
   Button,
-  Card,
   Center,
   Flex,
   Group,
@@ -56,8 +56,7 @@ export default function UsernameForm() {
   return (
     <Flex justify={"center"} align={"center"} h={"100vh"} gap={"lg"}>
       <form onSubmit={form.onSubmit(onSubmit)}>
-        <Card
-          radius="md"
+        <CodebloomCard
           style={{
             width: "380px",
           }}
@@ -118,7 +117,7 @@ export default function UsernameForm() {
           <Button variant={"subtle"} component={Link} to={"/dashboard"}>
             Go back
           </Button>
-        </Card>
+        </CodebloomCard>
       </form>
     </Flex>
   );

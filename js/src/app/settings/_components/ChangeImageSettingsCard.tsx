@@ -1,9 +1,10 @@
-import { Box, Card, Title, Text, Anchor } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Box, Title, Text, Anchor } from "@mantine/core";
 
 export default function ChangeImageSettingsCard() {
   return (
     <Box>
-      <Card withBorder padding={"md"} radius={"md"}>
+      <CodebloomCard>
         <Box m={"md"}>
           <Title order={3} p={"md"}>
             Change Profile Picture
@@ -26,7 +27,7 @@ export default function ChangeImageSettingsCard() {
             .
           </Text>
         </Box>
-      </Card>
+      </CodebloomCard>
     </Box>
   );
 }

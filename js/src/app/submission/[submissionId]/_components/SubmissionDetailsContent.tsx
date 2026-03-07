@@ -1,21 +1,13 @@
 import classes from "@/app/submission/[submissionId]/_components/SubmissionDetailsContent.module.css";
 import SubmissionDetailsContentSkeleton from "@/app/submission/[submissionId]/_components/SubmissionDetailsContentSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import DocumentDescription from "@/components/ui/title/DocumentDescription";
 import DocumentTitle from "@/components/ui/title/DocumentTitle";
 import Toast from "@/components/ui/toast/Toast";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
 import { useSubmissionDetailsQuery } from "@/lib/api/queries/submissions";
 import { capitalize } from "@/lib/helper/capitalize";
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Center,
-  Flex,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Badge, Box, Button, Center, Flex, Text, Title } from "@mantine/core";
 import { FaDiscord } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -167,7 +159,7 @@ export default function SubmissionDetailsContent({
               ← Go to profile
             </Button>
           </Center>
-          <Card shadow="xs" padding="lg" radius="lg" mt="xl">
+          <CodebloomCard shadow="xs" padding="lg" radius="lg" mt="xl">
             <div
               dangerouslySetInnerHTML={{
                 __html: description ?? "No available description found.",
@@ -178,8 +170,8 @@ export default function SubmissionDetailsContent({
               }}
               className={classes.description}
             />
-          </Card>
-          <Card shadow="xs" padding="lg" radius="lg" mt="xl">
+          </CodebloomCard>
+          <CodebloomCard shadow="xs" padding="lg" radius="lg" mt="xl">
             {isProcessing ?
               <Flex
                 direction={"column"}
@@ -215,7 +207,7 @@ export default function SubmissionDetailsContent({
                 </ShikiHighlighter>
               </>
             }
-          </Card>
+          </CodebloomCard>
         </div>
       </Box>
     </>
