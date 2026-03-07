@@ -16,12 +16,16 @@ import org.patinanetwork.codebloom.common.db.models.leaderboard.Leaderboard;
 import org.patinanetwork.codebloom.common.db.models.potd.POTD;
 import org.patinanetwork.codebloom.common.db.models.question.Question;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty;
+import org.patinanetwork.codebloom.common.db.models.question.bank.QuestionBank;
+import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
+import org.patinanetwork.codebloom.common.db.models.question.topic.QuestionTopic;
 import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.models.user.UserWithScore;
 import org.patinanetwork.codebloom.common.db.repos.job.JobRepository;
 import org.patinanetwork.codebloom.common.db.repos.leaderboard.LeaderboardRepository;
 import org.patinanetwork.codebloom.common.db.repos.potd.POTDRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
+import org.patinanetwork.codebloom.common.db.repos.question.questionbank.QuestionBankRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeQuestion;
@@ -41,6 +45,7 @@ class SubmissionsHandlerTest {
     private final QuestionTopicRepository questionTopicRepository = mock(QuestionTopicRepository.class);
     private final ThrottledReporter throttledReporter = mock(ThrottledReporter.class);
     private final JobRepository jobRepository = mock(JobRepository.class);
+    private final QuestionBankRepository questionBankRepository = mock(QuestionBankRepository.class);
 
     private final SubmissionsHandler handler = new SubmissionsHandler(
             questionRepository,
@@ -50,10 +55,12 @@ class SubmissionsHandlerTest {
             userRepository,
             questionTopicRepository,
             throttledReporter,
-            jobRepository);
+            jobRepository,
+            questionBankRepository);
 
     private static final String USER_ID = "user-42";
     private static final String LEADERBOARD_ID = "lb-99";
+
     private final User user = User.builder()
             .id(USER_ID)
             .discordId("d123")
@@ -257,6 +264,57 @@ class SubmissionsHandlerTest {
         handler.handleSubmissions(List.of(sub), user, true);
 
         verify(leetcodeClient).findQuestionBySlugFast("two-sum");
+        verify(leetcodeClient, never()).findQuestionBySlug(anyString());
+    }
+
+    @Test
+    @DisplayName("uses findQuestionBySlug when fast=false")
+    void usesSlugSlowInNonFastMode() {
+        LeetcodeSubmission sub = acceptedSubmission(601, "hello-world", LocalDateTime.of(2025, 6, 1, 12, 0));
+        when(questionRepository.questionExistsBySubmissionId("601")).thenReturn(false);
+        when(questionRepository.getQuestionBySlugAndUserId("hello-world", USER_ID))
+                .thenReturn(null);
+        when(leetcodeClient.findQuestionBySlug("hello-world")).thenReturn(leetcodeQuestion("hello-world", "Easy", 50f));
+
+        ArrayList<AcceptedSubmission> result = handler.handleSubmissions(List.of(sub), user, false);
+
+        assertEquals(1, result.size());
+        verify(leetcodeClient).findQuestionBySlug("hello-world");
+        verify(leetcodeClient, never()).findQuestionBySlugFast(anyString());
+    }
+
+    @Test
+    @DisplayName("uses question bank entry and skips leetcode fetch when bank question exists")
+    void testNoBank() {
+        LeetcodeSubmission sub = acceptedSubmission(602, "hello-world", LocalDateTime.of(2025, 6, 1, 12, 0));
+        when(questionRepository.questionExistsBySubmissionId("602")).thenReturn(false);
+        when(questionRepository.getQuestionBySlugAndUserId("hello-world", USER_ID))
+                .thenReturn(null);
+
+        LeetcodeQuestion lcQuestion = leetcodeQuestion("hello-world", "Easy", 50f);
+
+        QuestionBank bankQuestion = QuestionBank.builder()
+                .questionSlug(lcQuestion.getTitleSlug())
+                .questionDifficulty(QuestionDifficulty.valueOf(lcQuestion.getDifficulty()))
+                .questionTitle(lcQuestion.getQuestionTitle())
+                .questionNumber(lcQuestion.getQuestionId())
+                .questionLink("https://leetcode.com/problems/" + lcQuestion.getTitleSlug())
+                .description(lcQuestion.getQuestion())
+                .acceptanceRate(lcQuestion.getAcceptanceRate())
+                .topics(lcQuestion.getTopics().stream()
+                        .map(t -> QuestionTopic.builder()
+                                .topicSlug(t.getSlug())
+                                .topic(LeetcodeTopicEnum.fromValue(t.getSlug()))
+                                .build())
+                        .toList())
+                .build();
+
+        when(questionBankRepository.getQuestionBySlug(anyString())).thenReturn(bankQuestion);
+
+        ArrayList<AcceptedSubmission> result = handler.handleSubmissions(List.of(sub), user, true);
+
+        assertEquals(1, result.size());
+        verify(leetcodeClient, never()).findQuestionBySlugFast(anyString());
         verify(leetcodeClient, never()).findQuestionBySlug(anyString());
     }
 
