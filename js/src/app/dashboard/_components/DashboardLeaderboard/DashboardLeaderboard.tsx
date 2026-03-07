@@ -2,6 +2,7 @@ import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardL
 import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import TagList from "@/components/ui/tags/TagList";
 import {
   useCurrentLeaderboardMetadataQuery,
@@ -18,7 +19,6 @@ import {
 import { theme } from "@/lib/theme";
 import {
   Button,
-  Card,
   Divider,
   Flex,
   Overlay,
@@ -67,7 +67,7 @@ export default function LeaderboardForDashboard({
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -79,13 +79,13 @@ export default function LeaderboardForDashboard({
             Sorry, something went wrong. Please try again later.
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
   if (!data.success) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -97,7 +97,7 @@ export default function LeaderboardForDashboard({
             {data.message}
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
@@ -105,7 +105,7 @@ export default function LeaderboardForDashboard({
 
   if (leaderboardData.items.length == 0) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -118,7 +118,7 @@ export default function LeaderboardForDashboard({
             space like a champ!
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
@@ -126,7 +126,7 @@ export default function LeaderboardForDashboard({
   const filteredTags = ApiUtils.filterUnusedTags(userTags);
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Flex
         direction={{ base: "column", md: "row" }}
         justify={"space-between"}
@@ -278,6 +278,6 @@ export default function LeaderboardForDashboard({
           );
         })}
       </Flex>
-    </Card>
+    </CodebloomCard>
   );
 }

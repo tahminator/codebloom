@@ -1,5 +1,6 @@
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import { Api } from "@/lib/api/types";
-import { Card, Stack, Avatar, Text } from "@mantine/core";
+import { Stack, Avatar, Text } from "@mantine/core";
 
 const DEFAULT_AVATAR_URL =
   "https://assets.leetcode.com/users/default_avatar.jpg";
@@ -56,7 +57,7 @@ export default function PlayerCard({
   })();
 
   return (
-    <Card radius="md" withBorder>
+    <CodebloomCard radius="md">
       <Stack align="center" gap={6}>
         <Avatar radius="xl" size={48} src={src}>
           {initial}
@@ -69,6 +70,6 @@ export default function PlayerCard({
           {displayName}
         </Text>
       </Stack>
-    </Card>
+    </CodebloomCard>
   );
 }

@@ -1,6 +1,7 @@
 import ProblemOfTheDaySkeleton from "@/app/dashboard/_components/ProblemOfTheDay/ProblemOfTheDaySkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import { useFetchPotdQuery } from "@/lib/api/queries/potd";
-import { Badge, Button, Card, Center, Flex, Title } from "@mantine/core";
+import { Badge, Button, Center, Flex, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function ProblemOfTheDay() {
@@ -12,7 +13,7 @@ export default function ProblemOfTheDay() {
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -24,13 +25,13 @@ export default function ProblemOfTheDay() {
             Sorry, something went wrong. Please try again later.
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
   if (!data.success) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -42,14 +43,14 @@ export default function ProblemOfTheDay() {
             {data.message}
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
   const json = data.payload;
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Center>
         <Title style={{ textAlign: "center" }} order={3}>
           Problem of the day
@@ -86,6 +87,6 @@ export default function ProblemOfTheDay() {
           Go to question
         </Button>
       </Flex>
-    </Card>
+    </CodebloomCard>
   );
 }

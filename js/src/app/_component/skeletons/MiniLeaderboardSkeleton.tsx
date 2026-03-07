@@ -1,4 +1,5 @@
-import { Box, Card, Flex, Paper, Skeleton } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Box, Flex, Paper, Skeleton } from "@mantine/core";
 
 export default function MiniLeaderboardSkeleton() {
   return (
@@ -25,10 +26,7 @@ export default function MiniLeaderboardSkeleton() {
 
             return (
               <Skeleton visible key={index}>
-                <Card
-                  withBorder
-                  shadow="sm"
-                  radius="md"
+                <CodebloomCard
                   className={`border-2 flex flex-col items-center justify-center`}
                   h={height}
                   w="200px"

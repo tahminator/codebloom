@@ -1,6 +1,7 @@
 import DateRangePopover from "@/app/user/[userId]/submissions/_components/DateRangePopover/DateRangePopover";
 import TopicFilterPopover from "@/app/user/[userId]/submissions/_components/TopicFilters/TopicFilterPopover";
 import UserSubmissionsSkeleton from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissionsSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import {
@@ -13,16 +14,7 @@ import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
-import {
-  Badge,
-  Box,
-  Overlay,
-  Text,
-  Stack,
-  Group,
-  Card,
-  Flex,
-} from "@mantine/core";
+import { Badge, Box, Overlay, Text, Stack, Group, Flex } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -159,7 +151,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
         )}
         <Stack gap="sm" my="sm" align={isMobile ? undefined : "center"}>
           {!pageData || pageData.items.length === 0 ?
-            <Card
+            <CodebloomCard
               withBorder
               p="md"
               radius="md"
@@ -175,7 +167,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                   No submissions has been entered yet.
                 </Text>
               </Stack>
-            </Card>
+            </CodebloomCard>
           : pageData.items.map((submission) => {
               const badgeDifficultyColor = (() => {
                 if (submission.questionDifficulty === "Easy") {
@@ -206,7 +198,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                 langNameToIcon[submission.language as langNameKey] ||
                 langNameToIcon["default"];
               return (
-                <Card
+                <CodebloomCard
                   key={submission.id}
                   withBorder
                   p={isMobile ? "sm" : "md"}
@@ -280,7 +272,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                         </Group>
                       )}
                   </Stack>
-                </Card>
+                </CodebloomCard>
               );
             })
           }

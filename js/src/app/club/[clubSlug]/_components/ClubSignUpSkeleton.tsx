@@ -1,17 +1,10 @@
-import { Card, Center, Skeleton, Stack } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Center, Skeleton, Stack } from "@mantine/core";
 
 export default function ClubSignUpSkeleton() {
   return (
     <Center style={{ minHeight: "70vh", padding: 16 }}>
-      <Card
-        shadow="sm"
-        radius="lg"
-        p="xl"
-        withBorder
-        miw={360}
-        maw={480}
-        w="100%"
-      >
+      <CodebloomCard radius="lg" p="xl" miw={360} maw={480} w="100%">
         <Stack gap="md">
           {/* Splash image placeholder */}
           <Skeleton height={120} width={160} mx="auto" radius="md" />
@@ -24,7 +17,7 @@ export default function ClubSignUpSkeleton() {
           {/* Button */}
           <Skeleton height={36} radius="md" />
         </Stack>
-      </Card>
+      </CodebloomCard>
     </Center>
   );
 }

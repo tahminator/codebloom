@@ -1,3 +1,4 @@
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
 import ToastWithRedirect from "@/components/ui/toast/ToastWithRedirect";
@@ -6,7 +7,6 @@ import { timeDiff } from "@/lib/timeDiff";
 import {
   Box,
   Button,
-  Card,
   Center,
   Flex,
   Loader,
@@ -34,7 +34,7 @@ export default function DashboardListView() {
   if (status === "pending") {
     return (
       <Box>
-        <Card withBorder padding={"md"} radius={"md"}>
+        <CodebloomCard>
           <Flex
             direction={"row"}
             justify={"center"}
@@ -44,7 +44,7 @@ export default function DashboardListView() {
           >
             <Loader />
           </Flex>
-        </Card>
+        </CodebloomCard>
       </Box>
     );
   }
@@ -66,7 +66,7 @@ export default function DashboardListView() {
 
   return (
     <Box>
-      <Card withBorder padding={"md"} radius={"md"}>
+      <CodebloomCard>
         <Center>
           <Title order={3}>All Leaderboards</Title>
         </Center>
@@ -169,7 +169,7 @@ export default function DashboardListView() {
             </Button>
           </Flex>
         </Center>
-      </Card>
+      </CodebloomCard>
     </Box>
   );
 }
