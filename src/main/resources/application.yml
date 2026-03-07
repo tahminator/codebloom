@@ -121,3 +121,6 @@ jedis:
 
 playwright:
   headless: ${PLAYWRIGHT_HEADLESS:true}
+
+ff:
+  duels: true

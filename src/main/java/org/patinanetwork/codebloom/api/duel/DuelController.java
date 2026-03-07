@@ -21,10 +21,10 @@ import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.Empty;
 import org.patinanetwork.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import org.patinanetwork.codebloom.common.dto.lobby.DuelData;
-import org.patinanetwork.codebloom.common.env.Env;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.security.annotation.Protected;
 import org.patinanetwork.codebloom.common.utils.sse.SseWrapper;
+import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.patinanetwork.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,23 +44,23 @@ import org.springframework.web.server.ResponseStatusException;
 @Timed(value = "controller.execution")
 public class DuelController {
 
-    private final Env env;
     private final DuelManager duelManager;
     private final PartyManager partyManager;
     private final LobbyRepository lobbyRepository;
     private final LobbyNotifyHandler lobbyNotifyHandler;
+    private final FeatureFlagConfiguration ff;
 
     public DuelController(
-            final Env env,
             final DuelManager duelManager,
             final PartyManager partyManager,
             final LobbyRepository lobbyRepository,
-            final LobbyNotifyHandler lobbyNotifyHandler) {
-        this.env = env;
+            final LobbyNotifyHandler lobbyNotifyHandler,
+            final FeatureFlagConfiguration ff) {
         this.duelManager = duelManager;
         this.partyManager = partyManager;
         this.lobbyRepository = lobbyRepository;
         this.lobbyNotifyHandler = lobbyNotifyHandler;
+        this.ff = ff;
     }
 
     @Operation(summary = "Join party", description = "Join a party by providing the lobby code.")
@@ -94,7 +94,7 @@ public class DuelController {
     public ResponseEntity<ApiResponder<Empty>> joinParty(
             @Protected final AuthenticationObject authenticationObject,
             @RequestBody final JoinLobbyBody joinPartyBody) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
@@ -137,7 +137,7 @@ public class DuelController {
             })
     @PostMapping("/start")
     public ResponseEntity<ApiResponder<Empty>> startDuel(@Protected final AuthenticationObject authenticationObject) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
@@ -173,7 +173,7 @@ public class DuelController {
             })
     @PostMapping("/party/leave")
     public ResponseEntity<ApiResponder<Empty>> leaveParty(@Protected final AuthenticationObject authenticationObject) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
@@ -217,7 +217,7 @@ public class DuelController {
             })
     @PostMapping("/end")
     public ResponseEntity<ApiResponder<Empty>> endDuel(@Protected final AuthenticationObject authenticationObject) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
@@ -263,7 +263,7 @@ public class DuelController {
     @PostMapping("/party/create")
     public ResponseEntity<ApiResponder<PartyCodeBody>> createParty(
             @Protected final AuthenticationObject authenticationObject) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
@@ -304,7 +304,7 @@ public class DuelController {
             })
     @PostMapping(value = "/{lobbyCode}/sse")
     public SseWrapper<ApiResponder<DuelData>> getDuelData(@PathVariable final String lobbyCode) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
@@ -349,7 +349,7 @@ public class DuelController {
     @GetMapping("/current")
     public ResponseEntity<ApiResponder<PartyCodeBody>> getPartyOrDuelCodeForUser(
             @Protected final AuthenticationObject authenticationObject) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
@@ -395,7 +395,7 @@ public class DuelController {
     @PostMapping("/process")
     public ResponseEntity<ApiResponder<Empty>> processSolvedProblemsInDuel(
             @Protected final AuthenticationObject authenticationObject) {
-        if (env.isProd()) {
+        if (!ff.isDuels()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
         }
 
