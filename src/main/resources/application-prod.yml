@@ -10,3 +10,6 @@ logging:
         max-length: 12288
         include-common-frames: true
         include-hashes: true
+
+ff:
+  duels: false
