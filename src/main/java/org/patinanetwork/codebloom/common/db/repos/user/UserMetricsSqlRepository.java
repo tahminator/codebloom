@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.db.repos.user;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.helper.NamedPreparedStatement;
 import org.patinanetwork.codebloom.common.db.models.user.UserMetrics;
+import org.patinanetwork.codebloom.common.db.repos.user.options.UserMetricsFilterOptions;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -98,7 +100,7 @@ public class UserMetricsSqlRepository implements UserMetricsRepository {
     }
 
     @Override
-    public List<UserMetrics> findUserMetricsByUserId(final String userId) {
+    public List<UserMetrics> findUserMetrics(final String userId, final UserMetricsFilterOptions options) {
         String sql = """
                 SELECT
                     id,
@@ -111,6 +113,10 @@ public class UserMetricsSqlRepository implements UserMetricsRepository {
                 WHERE
                     "userId" = :userId
                     AND "deletedAt" IS NULL
+                    AND (cast(:from AS timestamptz) IS NULL OR "createdAt" >= :from)
+                    AND (cast(:to AS timestamptz) IS NULL OR "createdAt" <= :to)
+                LIMIT CASE WHEN :pageSize > 0 THEN :pageSize END
+                OFFSET :offset
                 """;
 
         List<UserMetrics> results = new ArrayList<>();
@@ -118,6 +124,10 @@ public class UserMetricsSqlRepository implements UserMetricsRepository {
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("userId", UUID.fromString(userId));
+            stmt.setObject("from", options.getFrom(), Types.TIMESTAMP_WITH_TIMEZONE);
+            stmt.setObject("to", options.getTo(), Types.TIMESTAMP_WITH_TIMEZONE);
+            stmt.setInt("pageSize", options.getPageSize());
+            stmt.setInt("offset", options.getPageSize() > 0 ? (options.getPage() - 1) * options.getPageSize() : 0);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -125,11 +135,43 @@ public class UserMetricsSqlRepository implements UserMetricsRepository {
                 }
             }
         } catch (SQLException e) {
-            log.error("Exception thrown in UserMetricsSqlRepository.findUserMetricsByUserId", e);
-            throw new RuntimeException("Failed to fetch user metrics by userId", e);
+            log.error("Exception thrown in UserMetricsSqlRepository.findUserMetrics", e);
+            throw new RuntimeException("Failed to fetch user metrics", e);
         }
 
         return results;
+    }
+
+    @Override
+    public int countUserMetrics(final String userId, final UserMetricsFilterOptions options) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM
+                    "UserMetrics"
+                WHERE
+                    "userId" = :userId
+                    AND "deletedAt" IS NULL
+                    AND (cast(:from AS timestamptz) IS NULL OR "createdAt" >= :from)
+                    AND (cast(:to AS timestamptz) IS NULL OR "createdAt" <= :to)
+                """;
+
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("userId", UUID.fromString(userId));
+            stmt.setObject("from", options.getFrom(), Types.TIMESTAMP_WITH_TIMEZONE);
+            stmt.setObject("to", options.getTo(), Types.TIMESTAMP_WITH_TIMEZONE);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Exception thrown in UserMetricsSqlRepository.countUserMetrics", e);
+            throw new RuntimeException("Failed to count user metrics", e);
+        }
+
+        return 0;
     }
 
     @Override

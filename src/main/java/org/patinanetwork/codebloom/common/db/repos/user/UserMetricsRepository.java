@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.db.repos.user;
 import java.util.List;
 import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.user.UserMetrics;
+import org.patinanetwork.codebloom.common.db.repos.user.options.UserMetricsFilterOptions;
 
 public interface UserMetricsRepository {
 
@@ -27,12 +28,27 @@ public interface UserMetricsRepository {
     Optional<UserMetrics> findUserMetricsById(String id);
 
     /**
-     * Finds all user metrics records for a given user, excluding soft-deleted records.
+     * Finds user metrics records for a given user, excluding soft-deleted records.
+     *
+     * <p>Supports optional date range filtering and pagination via {@link UserMetricsFilterOptions}. When
+     * {@code pageSize} is 0, all matching records are returned without pagination.
      *
      * @param userId the user ID
+     * @param options filter and pagination options
      * @return a list of user metrics records for the user
      */
-    List<UserMetrics> findUserMetricsByUserId(String userId);
+    List<UserMetrics> findUserMetrics(String userId, UserMetricsFilterOptions options);
+
+    /**
+     * Counts user metrics records for a given user, excluding soft-deleted records.
+     *
+     * <p>Supports optional date range filtering via {@link UserMetricsFilterOptions}.
+     *
+     * @param userId the user ID
+     * @param options filter options (pagination fields are ignored)
+     * @return the total number of matching records
+     */
+    int countUserMetrics(String userId, UserMetricsFilterOptions options);
 
     /**
      * Soft-deletes a user metrics record by setting its deletedAt timestamp.

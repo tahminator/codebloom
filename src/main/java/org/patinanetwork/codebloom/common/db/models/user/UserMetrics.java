@@ -9,8 +9,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-import org.patinanetwork.codebloom.common.db.helper.annotations.NotNullColumn;
-import org.patinanetwork.codebloom.common.db.helper.annotations.NullColumn;
 
 @Getter
 @Setter
@@ -20,19 +18,14 @@ import org.patinanetwork.codebloom.common.db.helper.annotations.NullColumn;
 @EqualsAndHashCode
 public class UserMetrics {
 
-    @NotNullColumn
     private String id;
 
-    @NotNullColumn
     private String userId;
 
-    @NotNullColumn
     private int points;
 
-    @NotNullColumn
     private OffsetDateTime createdAt;
 
-    @NullColumn
     @Builder.Default
     private Optional<OffsetDateTime> deletedAt = Optional.empty();
 }
