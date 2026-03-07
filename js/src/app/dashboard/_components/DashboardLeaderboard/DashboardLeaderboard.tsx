@@ -2,6 +2,7 @@ import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardL
 import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import TagList from "@/components/ui/tags/TagList";
 import {
   useCurrentLeaderboardMetadataQuery,
@@ -18,7 +19,6 @@ import {
 import { theme } from "@/lib/theme";
 import {
   Button,
-  Card,
   Divider,
   Flex,
   Overlay,
@@ -61,64 +61,41 @@ export default function LeaderboardForDashboard({
     setSelectedFilterKey(value);
   };
 
+  const renderCenteredStatusCard = (message: string) => (
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
+      <Flex
+        direction={"row"}
+        justify={"center"}
+        align={"center"}
+        w={"100%"}
+        h={"100%"}
+      >
+        <Title order={6} ta={"center"}>
+          {message}
+        </Title>
+      </Flex>
+    </CodebloomCard>
+  );
+
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
   }
 
   if (status === "error") {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            Sorry, something went wrong. Please try again later.
-          </Title>
-        </Flex>
-      </Card>
+    return renderCenteredStatusCard(
+      "Sorry, something went wrong. Please try again later.",
     );
   }
 
   if (!data.success) {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            {data.message}
-          </Title>
-        </Flex>
-      </Card>
-    );
+    return renderCenteredStatusCard(data.message);
   }
 
   const leaderboardData = data.payload;
 
   if (leaderboardData.items.length == 0) {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            Oops! No users here yet. Crack your first problem and claim this
-            space like a champ!
-          </Title>
-        </Flex>
-      </Card>
+    return renderCenteredStatusCard(
+      "Oops! No users here yet. Crack your first problem and claim this space like a champ!",
     );
   }
 
@@ -126,7 +103,7 @@ export default function LeaderboardForDashboard({
   const filteredTags = ApiUtils.filterUnusedTags(userTags);
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Flex
         direction={{ base: "column", md: "row" }}
         justify={"space-between"}
@@ -171,113 +148,83 @@ export default function LeaderboardForDashboard({
           />
         )}
         {leaderboardData.items.map((user, idx) => {
+          const place = idx < 3 ? ((idx + 1) as 1 | 2 | 3) : undefined;
           const isMe = user.id === userId;
 
-          const borderColor = (() => {
-            if (isMe) {
-              return "#283c86";
-            }
-            if (idx == 0) {
-              return "yellow.8";
-            }
-            if (idx == 1) {
-              return "dark.2";
-            }
-            if (idx == 2) {
-              return "orange.9";
-            }
+          const bgColor = (() => {
+            if (isMe) return undefined;
+            if (place === 1) return "var(--mantine-color-yellow-8)";
+            if (place === 2) return "var(--mantine-color-dark-2)";
+            if (place === 3) return "var(--mantine-color-orange-9)";
             return undefined;
           })();
 
+          const bgImage =
+            isMe ? "linear-gradient(90deg, #283c86, #45a247)" : undefined;
+
           return (
-            <Flex
+            <CodebloomCard
+              key={user.id}
               component={Link}
               to={getUserProfileUrl(user.id, dateRange)}
-              key={idx}
-              direction={"row"}
-              justify={"space-between"}
-              bg={isMe ? undefined : borderColor}
+              padding="xs"
               style={{
-                borderRadius: "4px",
-                backgroundImage:
-                  isMe ?
-                    `linear-gradient(90deg, ${
-                      borderColor || "transparent"
-                    }, #45a247)`
-                  : undefined,
+                backgroundColor: bgColor,
+                backgroundImage: bgImage,
+                textDecoration: "none",
               }}
-              w={"100%"}
-              p={"xs"}
-              className="group transition-all hover:!bg-blue-500 hover:!bg-none"
             >
-              <Text>{idx + 1}.</Text>
-              <Flex direction={"column"}>
-                {(user.nickname ||
-                  (tagFF && user.tags && user.tags.length > 0)) && (
-                  <Flex align="center" justify="center" gap={5}>
-                    {user.nickname && (
-                      <Tooltip
-                        label={
-                          "This user is a verified member of the Patina Discord server."
-                        }
-                      >
-                        <Text ta="center">
-                          <IconCircleCheckFilled
-                            style={{
-                              display: "inline",
-                            }}
-                            color={theme.colors.patina[4]}
-                            z={5000000}
-                            size={20}
-                          />{" "}
+              <Flex direction="row" justify="space-between" align="center">
+                <Text fw={place != null ? 700 : 500} miw={32}>
+                  {idx + 1}.
+                </Text>
+                <Flex
+                  direction="column"
+                  align="center"
+                  gap={2}
+                  style={{ flex: 1 }}
+                >
+                  {user.nickname && (
+                    <Tooltip label="This user is a verified member of the Patina Discord server.">
+                      <Flex align="center" gap={4}>
+                        <IconCircleCheckFilled
+                          color={theme.colors.patina[4]}
+                          size={16}
+                        />
+                        <Text fw={600} size="sm">
                           {user.nickname}
                         </Text>
-                      </Tooltip>
-                    )}
-                    {user.nickname &&
+                        {tagFF && user.tags && user.tags.length > 0 && (
+                          <TagList tags={user.tags} size={14} gap="xs" />
+                        )}
+                      </Flex>
+                    </Tooltip>
+                  )}
+                  <Flex align="center" gap={4}>
+                    <FaDiscord />
+                    <Text size="sm">{user.discordName}</Text>
+                    {!user.nickname &&
                       tagFF &&
                       user.tags &&
                       user.tags.length > 0 && (
-                        <TagList tags={user.tags} size={16} gap="xs" />
+                        <TagList tags={user.tags} size={14} gap="xs" />
                       )}
                   </Flex>
-                )}
-                <Flex align="center" justify="center" gap={5}>
-                  <Text ta="center">
-                    <FaDiscord
-                      style={{
-                        display: "inline",
-                        marginLeft: "4px",
-                        marginRight: "4px",
-                      }}
-                    />
-                    {user.discordName}
-                  </Text>
-                  {!user.nickname &&
-                    tagFF &&
-                    user.tags &&
-                    user.tags.length > 0 && (
-                      <TagList tags={user.tags} size={16} gap="xs" />
-                    )}
+                  {user.leetcodeUsername && (
+                    <Flex align="center" gap={4}>
+                      <SiLeetcode />
+                      <Text size="sm">{user.leetcodeUsername}</Text>
+                    </Flex>
+                  )}
                 </Flex>
-                {user.leetcodeUsername && (
-                  <Text ta="center">
-                    <SiLeetcode
-                      style={{
-                        display: "inline",
-                        marginLeft: "4px",
-                        marginRight: "4px",
-                      }}
-                    />
-                    {user.leetcodeUsername}
-                  </Text>
-                )}
+                <Text fw={place != null ? 700 : 500} miw={60} ta="right">
+                  {user.totalScore}
+                </Text>
               </Flex>
-              <Text>{user.totalScore}</Text>
-            </Flex>
+            </CodebloomCard>
           );
         })}
       </Flex>
-    </Card>
+    </CodebloomCard>
   );
 }

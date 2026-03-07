@@ -1,8 +1,9 @@
-import { Card, Flex, Skeleton } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Flex, Skeleton } from "@mantine/core";
 
 export default function DashboardLeaderboardSkeleton() {
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Flex direction={"row"} justify={"space-between"} w={"100%"} mb="md">
         <Skeleton w={"16rem"} h={"2.25rem"} />
         <Skeleton w={"5.55rem"} h={"2.25rem"} />
@@ -27,6 +28,6 @@ export default function DashboardLeaderboardSkeleton() {
             );
           })}
       </Flex>
-    </Card>
+    </CodebloomCard>
   );
 }

@@ -1,4 +1,5 @@
-import { Card, Title, Text, Center } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Title, Text, Center } from "@mantine/core";
 
 export default function OurFeatures() {
   return (
@@ -16,15 +17,7 @@ export default function OurFeatures() {
           justifyContent: "center",
         }}
       >
-        <Card
-          shadow="sm"
-          padding="lg"
-          style={{
-            maxWidth: "300px",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-          }}
-        >
+        <CodebloomCard padding="lg" maw={"300px"}>
           <Center>
             <Title order={4}>Submission Points</Title>
           </Center>
@@ -33,16 +26,8 @@ export default function OurFeatures() {
             correctly. We use a formula to calculate your score that takes
             difficulty, acceptance rate, and more into consideration.
           </Text>
-        </Card>
-        <Card
-          shadow="sm"
-          padding="lg"
-          style={{
-            maxWidth: "300px",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-          }}
-        >
+        </CodebloomCard>
+        <CodebloomCard padding="lg" maw={"300px"}>
           <Center>
             <Title order={4}>Daily Challenge</Title>
           </Center>
@@ -50,16 +35,8 @@ export default function OurFeatures() {
             Answer the daily LeetCode challenge question that resets at 8:00 PM
             EDT to gain a varying bonus multiplier!
           </Text>
-        </Card>
-        <Card
-          shadow="sm"
-          padding="lg"
-          style={{
-            maxWidth: "300px",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-          }}
-        >
+        </CodebloomCard>
+        <CodebloomCard padding="lg" maw={"300px"}>
           <Center>
             <Title order={4}>Leaderboard System</Title>
           </Center>
@@ -68,7 +45,7 @@ export default function OurFeatures() {
             a leaderboard amongst fellow Patina Network members. The top five
             users are displayed above!
           </Text>
-        </Card>
+        </CodebloomCard>
       </div>
     </>
   );

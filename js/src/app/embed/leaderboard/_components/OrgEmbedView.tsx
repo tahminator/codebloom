@@ -1,5 +1,6 @@
 import OrgHeader from "@/app/embed/leaderboard/_components/OrgHeader";
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import CustomPagination from "@/components/ui/table/CustomPagination";
 import SearchBox from "@/components/ui/table/SearchBox";
@@ -23,7 +24,6 @@ import {
   Stack,
   Text,
   Tooltip,
-  Card,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { useEffect, useMemo } from "react";
@@ -185,16 +185,13 @@ export default function OrgLeaderboardEmbed() {
             if (page === 1 && !debouncedQuery && [0, 1, 2].includes(index))
               return null;
             return (
-              <Card
+              <CodebloomCard
                 key={entry.id}
                 component={Link}
                 to={getUserProfileUrl(entry.id, dateRange)}
                 target="_blank"
                 rel="noopener noreferrer"
-                shadow="sm"
                 padding="lg"
-                radius="md"
-                withBorder
                 bg={theme.colors.dark[7]}
                 styles={{
                   root: {
@@ -261,7 +258,7 @@ export default function OrgLeaderboardEmbed() {
                     {entry.totalScore} Pts
                   </Text>
                 </Flex>
-              </Card>
+              </CodebloomCard>
             );
           })}
         </Stack>

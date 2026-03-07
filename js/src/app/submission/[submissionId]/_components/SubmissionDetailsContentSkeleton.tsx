@@ -1,4 +1,5 @@
-import { Box, Card, Center, Flex, Skeleton } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Box, Center, Flex, Skeleton } from "@mantine/core";
 
 export default function SubmissionDetailsContentSkeleton() {
   return (
@@ -57,7 +58,7 @@ export default function SubmissionDetailsContentSkeleton() {
             data-testid="submission-skeleton-user-profile-button"
           />
         </Center>
-        <Card
+        <CodebloomCard
           shadow="xs"
           padding="lg"
           radius="lg"
@@ -73,8 +74,8 @@ export default function SubmissionDetailsContentSkeleton() {
           <Skeleton w="100%" h="4rem" mb="lg" />
           <Skeleton w="10%" h="1.5rem" mb="xs" />
           <Skeleton w="10%" h="1.5rem" />
-        </Card>
-        <Card
+        </CodebloomCard>
+        <CodebloomCard
           shadow="xs"
           padding="lg"
           radius="lg"
@@ -87,7 +88,7 @@ export default function SubmissionDetailsContentSkeleton() {
             <Skeleton w="6rem" h="1.5rem" />
           </Flex>
           <Skeleton w="100%" h="20rem" />
-        </Card>
+        </CodebloomCard>
       </Box>
     </Box>
   );

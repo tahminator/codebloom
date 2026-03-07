@@ -1,15 +1,7 @@
 import SchoolEmailModal from "@/app/settings/_components/SchoolEmailModal";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import { ApiUtils } from "@/lib/api/utils";
-import {
-  Box,
-  Button,
-  Card,
-  Title,
-  Text,
-  List,
-  Image,
-  Flex,
-} from "@mantine/core";
+import { Box, Button, Title, Text, List, Image, Flex } from "@mantine/core";
 import { useState } from "react";
 
 type SchoolVerifyProps = {
@@ -24,7 +16,7 @@ export default function SchoolVerifySettingsCard({
   return (
     <>
       <Box>
-        <Card withBorder padding={"md"} radius={"md"}>
+        <CodebloomCard>
           <Box m={"md"}>
             <Title order={3} p={"md"}>
               Verify School
@@ -53,7 +45,7 @@ export default function SchoolVerifySettingsCard({
             </Box>
             <SchoolEmailModal enabled={modalOpen} toggle={toggleModal} />
           </Box>
-        </Card>
+        </CodebloomCard>
       </Box>
     </>
   );

@@ -1,15 +1,7 @@
 import RecentSubmissionsSkeleton from "@/app/dashboard/_components/RecentSubmissions/RecentSubmissionsSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Center,
-  Flex,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Badge, Box, Button, Center, Flex, Text, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function RecentSubmissions({ userId }: { userId: string }) {
@@ -21,7 +13,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
 
   if (status === "error") {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -33,13 +25,13 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
             Sorry, something went wrong. Please try again.
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
   if (!data.success) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -51,7 +43,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
             {data.message}
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
@@ -60,7 +52,7 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
 
   if (!questions.length) {
     return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+      <CodebloomCard miw={"31vw"} mih={"63vh"}>
         <Flex
           direction={"row"}
           justify={"center"}
@@ -72,12 +64,12 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
             Oops! No problems solved yet—tackle one to start racking up points!
           </Title>
         </Flex>
-      </Card>
+      </CodebloomCard>
     );
   }
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Flex
         direction={{ base: "column", md: "row" }}
         justify={"space-between"}
@@ -148,6 +140,6 @@ export default function RecentSubmissions({ userId }: { userId: string }) {
           </Flex>
         );
       })}
-    </Card>
+    </CodebloomCard>
   );
 }

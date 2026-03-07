@@ -1,4 +1,5 @@
 import IncompleteQuestionListSkeleton from "@/app/admin/_components/incomplete/IncompleteQuestionListSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import {
   langNameToIcon,
   langNameKey,
@@ -9,7 +10,6 @@ import { timeDiff } from "@/lib/timeDiff";
 import {
   Badge,
   Box,
-  Card,
   Group,
   Overlay,
   ScrollArea,
@@ -58,7 +58,7 @@ export default function IncompleteQuestionList() {
         >
           <Stack gap="sm" align="center">
             {pageData.length === 0 && (
-              <Card withBorder p="md" radius="md" mih={80} w="100%">
+              <CodebloomCard mih={80} w="100%">
                 <Stack gap="xs" justify="center" align="center" h="100%">
                   <Text fw={500} ta="center" c="dimmed">
                     Nothing found.
@@ -67,7 +67,7 @@ export default function IncompleteQuestionList() {
                     No incomplete questions have been found.
                   </Text>
                 </Stack>
-              </Card>
+              </CodebloomCard>
             )}
             {pageData.map((submission) => {
               const badgeDifficultyColor = (() => {
@@ -90,11 +90,8 @@ export default function IncompleteQuestionList() {
                 langNameToIcon["default"];
 
               return (
-                <Card
+                <CodebloomCard
                   key={submission.id}
-                  withBorder
-                  p="md"
-                  radius="md"
                   w="100%"
                   component={Link}
                   to={`/submission/${submission.id}`}
@@ -144,7 +141,7 @@ export default function IncompleteQuestionList() {
                       </Group>
                     )}
                   </Stack>
-                </Card>
+                </CodebloomCard>
               );
             })}
           </Stack>
