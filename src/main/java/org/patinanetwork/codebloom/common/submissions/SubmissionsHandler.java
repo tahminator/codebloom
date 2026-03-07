@@ -33,6 +33,7 @@ import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.options.UserFilterOptions;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeQuestion;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
+import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import org.patinanetwork.codebloom.common.leetcode.score.ScoreCalculator;
 import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import org.patinanetwork.codebloom.common.reporter.Reporter;
@@ -93,6 +94,13 @@ public class SubmissionsHandler {
         this.questionBankRepository = questionBankRepository;
     }
 
+    private static QuestionTopic topicTagToQuestionTopic(final LeetcodeTopicTag topicTag) {
+        return QuestionTopic.builder()
+                .topicSlug(topicTag.getSlug())
+                .topic(LeetcodeTopicEnum.fromValue(topicTag.getSlug()))
+                .build();
+    }
+
     public static <T> Predicate<T> distinctByKey(final Function<? super T, ?> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
@@ -123,6 +131,9 @@ public class SubmissionsHandler {
                                 .questionLink("https://leetcode.com/problems/" + question.getTitleSlug())
                                 .description(question.getQuestion())
                                 .acceptanceRate(question.getAcceptanceRate())
+                                .topics(question.getTopics().stream()
+                                        .map(SubmissionsHandler::topicTagToQuestionTopic)
+                                        .toList())
                                 .build();
                     }
 
