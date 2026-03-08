@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.env.Env;
@@ -43,9 +42,10 @@ public class NotifyListener {
             final Reporter reporter,
             final Env env,
             final JobNotifyHandler jobNotifyHandler,
-            final LobbyNotifyHandler lobbyNotifyHandler) {
+            final LobbyNotifyHandler lobbyNotifyHandler,
+            final ExecutorService virtualPool) {
         this.channels = PgChannel.list();
-        this.vtpool = Executors.newVirtualThreadPerTaskExecutor();
+        this.vtpool = virtualPool;
         this.reporter = reporter;
         this.env = env;
         this.ds = ds;

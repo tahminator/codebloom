@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -16,6 +18,7 @@ import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,11 +45,18 @@ class JDASlashCommandHandlerTest {
     private SimpleRedisProvider simpleRedisProvider;
 
     private JDASlashCommandHandler handler;
+    private ExecutorService executor;
 
     @BeforeEach
     void setUp() {
+        executor = Executors.newVirtualThreadPerTaskExecutor();
         when(simpleRedisProvider.select(SimpleRedisSlot.JDA_COOLDOWN)).thenReturn(simpleRedis);
-        handler = new JDASlashCommandHandler(discordClubManager, simpleRedisProvider);
+        handler = new JDASlashCommandHandler(discordClubManager, simpleRedisProvider, executor);
+    }
+
+    @AfterEach
+    void tearDown() {
+        executor.shutdownNow();
     }
 
     @Test
