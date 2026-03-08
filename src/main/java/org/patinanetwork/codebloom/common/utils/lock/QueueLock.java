@@ -5,7 +5,6 @@ import io.github.bucket4j.BlockingBucket;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,11 +25,11 @@ public class QueueLock {
     private final BlockingBucket bucket;
     private final ExecutorService pool;
 
-    public QueueLock(BlockingBucket bucket) {
+    public QueueLock(BlockingBucket bucket, ExecutorService virtualPool) {
         this.bucket = bucket;
 
         this.queue = new LinkedBlockingDeque<>();
-        this.pool = Executors.newVirtualThreadPerTaskExecutor();
+        this.pool = virtualPool;
 
         this.pool.submit(this::ticker);
     }

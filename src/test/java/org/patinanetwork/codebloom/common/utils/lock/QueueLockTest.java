@@ -24,8 +24,8 @@ public class QueueLockTest {
 
     @BeforeEach
     void setUp() {
-        queueLock = new QueueLock(bucket);
         executor = Executors.newVirtualThreadPerTaskExecutor();
+        queueLock = new QueueLock(bucket, executor);
     }
 
     @AfterEach

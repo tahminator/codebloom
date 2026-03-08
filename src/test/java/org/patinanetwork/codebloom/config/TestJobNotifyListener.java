@@ -29,7 +29,7 @@ public class TestJobNotifyListener {
     @Primary
     public NotifyListener notifyListener() {
         // loop should never start, and as such will also never stop.
-        return new NotifyListener(ds, reporter, env, null, null) {
+        return new NotifyListener(ds, reporter, env, null, null, null) {
             @Override
             protected void init() {
                 return;

@@ -3,7 +3,6 @@ package org.patinanetwork.codebloom.jda.command;
 import java.awt.Color;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +28,12 @@ public class JDASlashCommandHandler extends ListenerAdapter {
     private final ExecutorService pool;
 
     public JDASlashCommandHandler(
-            DiscordClubManager discordClubManager, final SimpleRedisProvider simpleRedisProvider) {
+            DiscordClubManager discordClubManager,
+            final SimpleRedisProvider simpleRedisProvider,
+            final ExecutorService virtualPool) {
         this.discordClubManager = discordClubManager;
         this.simpleRedis = simpleRedisProvider.select(SimpleRedisSlot.JDA_COOLDOWN);
-        this.pool = Executors.newVirtualThreadPerTaskExecutor();
+        this.pool = virtualPool;
     }
 
     @Override

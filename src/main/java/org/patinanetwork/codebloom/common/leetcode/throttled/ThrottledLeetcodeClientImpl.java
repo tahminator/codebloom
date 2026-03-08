@@ -6,6 +6,7 @@ import io.github.bucket4j.Bucket;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
 import org.patinanetwork.codebloom.common.leetcode.LeetcodeClientImpl;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
@@ -46,8 +47,8 @@ public class ThrottledLeetcodeClientImpl implements ThrottledLeetcodeClient {
         }
     }
 
-    public ThrottledLeetcodeClientImpl(final LeetcodeClientImpl leetcodeClientImpl) {
-        this.rateLimiter = new QueueLock(initializeBucket());
+    public ThrottledLeetcodeClientImpl(final LeetcodeClientImpl leetcodeClientImpl, final ExecutorService virtualPool) {
+        this.rateLimiter = new QueueLock(initializeBucket(), virtualPool);
         this.leetcodeClient = leetcodeClientImpl;
     }
 

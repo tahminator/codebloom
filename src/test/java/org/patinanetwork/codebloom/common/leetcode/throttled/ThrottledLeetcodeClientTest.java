@@ -6,6 +6,9 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty;
@@ -19,14 +22,19 @@ import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
 
 public class ThrottledLeetcodeClientTest {
     private LeetcodeClientImpl leetcodeClientImpl;
-
     private ThrottledLeetcodeClient throttledLeetcodeClient;
+    private ExecutorService executor;
 
     @BeforeEach
     void init() {
         leetcodeClientImpl = mock(LeetcodeClientImpl.class);
+        executor = Executors.newVirtualThreadPerTaskExecutor();
+        throttledLeetcodeClient = new ThrottledLeetcodeClientImpl(leetcodeClientImpl, executor);
+    }
 
-        throttledLeetcodeClient = new ThrottledLeetcodeClientImpl(leetcodeClientImpl);
+    @AfterEach
+    void tearDown() {
+        executor.shutdownNow();
     }
 
     @Test
