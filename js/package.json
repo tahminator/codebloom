@@ -39,10 +39,10 @@
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-icons": "^5.4.0",
-        "react-router": "^6.28.1",
-        "react-router-dom": "^6.28.1",
+        "react-router": "^6.30.3",
+        "react-router-dom": "^6.30.3",
         "react-shiki": "^0.9.1",
-        "tar": ">=7.5.2",
+        "tar": ">=7.5.10",
         "type-fest": "github:tahminator/type-fest#main",
         "use-debounce": "^10.0.4",
         "use-immer": "^0.11.0",
@@ -71,7 +71,7 @@
         "globals": "^15.14.0",
         "jsdom": "^27.4.0",
         "msw": "^2.12.7",
-        "nodemon": "^3.1.10",
+        "nodemon": "^3.1.14",
         "openapi-typescript": "7.8.0",
         "postcss": "^8.4.49",
         "postcss-preset-mantine": "^1.17.0",
@@ -96,10 +96,18 @@
             "openapi-typescript@7.8.0": "patches/openapi-typescript@7.8.0.patch"
         },
         "overrides": {
-            "brace-expansion": "1.1.11",
+            "brace-expansion@<2": "1.1.12",
             "@eslint/plugin-kit": ">=0.3.4",
-            "tar": ">=7.5.2",
-            "vite": ">=6.4.1"
+            "tar": ">=7.5.10",
+            "vite": ">=6.4.1",
+            "rollup": ">=4.59.0",
+            "minimatch": ">=9.0.7",
+            "minimatch@<3.1.3": "3.1.3",
+            "immutable": ">=5.1.5",
+            "js-yaml": ">=4.1.1",
+            "@babel/helpers": ">=7.26.10",
+            "ajv@<6.14.0": "6.14.0",
+            "ajv@>=7.0.0-alpha.0,<8.18.0": "8.18.0"
         }
     }
 }
