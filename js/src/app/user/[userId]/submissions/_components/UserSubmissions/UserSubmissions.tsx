@@ -49,6 +49,26 @@ export default function UserSubmissions({ userId }: { userId: string }) {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  const getDifficultyBadgeColor = (difficulty: string) => {
+    if (difficulty === "Medium") {
+      return "yellow";
+    }
+    if (difficulty === "Hard") {
+      return "red";
+    }
+    return undefined;
+  };
+
+  const getAcceptedBadgeColor = (acceptanceRate: number) => {
+    if (acceptanceRate >= 75) {
+      return undefined;
+    }
+    if (acceptanceRate >= 50) {
+      return "yellow";
+    }
+    return "red";
+  };
+
   if (status === "pending") {
     return (
       <>
@@ -152,9 +172,6 @@ export default function UserSubmissions({ userId }: { userId: string }) {
         <Stack gap="sm" my="sm" align={isMobile ? undefined : "center"}>
           {!pageData || pageData.items.length === 0 ?
             <CodebloomCard
-              withBorder
-              p="md"
-              radius="md"
               mih={80}
               w="100%"
               flex={isMobile ? 1 : undefined}
@@ -168,41 +185,20 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                 </Text>
               </Stack>
             </CodebloomCard>
-          : pageData.items.map((submission) => {
-              const badgeDifficultyColor = (() => {
-                if (submission.questionDifficulty === "Easy") {
-                  return undefined;
-                }
-                if (submission.questionDifficulty === "Medium") {
-                  return "yellow";
-                }
-                if (submission.questionDifficulty === "Hard") {
-                  return "red";
-                }
-                return undefined;
-              })();
-              const badgeAcceptedColor = (() => {
-                const acceptanceRate = submission.acceptanceRate * 100;
-                if (acceptanceRate >= 75) {
-                  return undefined;
-                }
-                if (acceptanceRate >= 50) {
-                  return "yellow";
-                }
-                if (acceptanceRate >= 0) {
-                  return "red";
-                }
-                return undefined;
-              })();
+            : pageData.items.map((submission) => {
+              const badgeDifficultyColor = getDifficultyBadgeColor(
+                submission.questionDifficulty,
+              );
+              const badgeAcceptedColor = getAcceptedBadgeColor(
+                submission.acceptanceRate * 100,
+              );
               const LanguageIcon =
                 langNameToIcon[submission.language as langNameKey] ||
                 langNameToIcon["default"];
               return (
                 <CodebloomCard
                   key={submission.id}
-                  withBorder
                   p={isMobile ? "sm" : "md"}
-                  radius="md"
                   w="100%"
                   component={Link}
                   to={`/submission/${submission.id}`}

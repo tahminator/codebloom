@@ -58,7 +58,7 @@ export default function IncompleteQuestionList() {
         >
           <Stack gap="sm" align="center">
             {pageData.length === 0 && (
-              <CodebloomCard p="md" mih={80} w="100%">
+              <CodebloomCard mih={80} w="100%">
                 <Stack gap="xs" justify="center" align="center" h="100%">
                   <Text fw={500} ta="center" c="dimmed">
                     Nothing found.
@@ -92,7 +92,6 @@ export default function IncompleteQuestionList() {
               return (
                 <CodebloomCard
                   key={submission.id}
-                  p="md"
                   w="100%"
                   component={Link}
                   to={`/submission/${submission.id}`}

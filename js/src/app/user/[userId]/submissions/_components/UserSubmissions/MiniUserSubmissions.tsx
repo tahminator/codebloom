@@ -44,7 +44,7 @@ export default function MiniUserSubmissions({ userId }: { userId: string }) {
       <Stack gap="sm" my="sm">
         {pageData.items.length === 0 && (
           <>
-            <CodebloomCard p="md" mih={80} w="100%" flex={1}>
+            <CodebloomCard mih={80} w="100%" flex={1}>
               <Stack gap="sm" justify="center" align="center" h="100%">
                 <Text fw={500} ta="center" c="dimmed">
                   Nothing found.
@@ -88,7 +88,6 @@ export default function MiniUserSubmissions({ userId }: { userId: string }) {
           return (
             <CodebloomCard
               key={submission.id}
-              p="md"
               w="100%"
               maw={950}
               component={Link}

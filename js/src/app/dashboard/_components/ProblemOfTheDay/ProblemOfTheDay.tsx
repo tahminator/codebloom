@@ -7,44 +7,26 @@ import { Link } from "react-router-dom";
 export default function ProblemOfTheDay() {
   const { data, status } = useFetchPotdQuery();
 
+  const renderStatusCard = (message: string) => (
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
+      <Flex direction={"row"} justify={"center"} align={"center"} w={"100%"} h={"100%"}>
+        <Title order={6} ta={"center"}>
+          {message}
+        </Title>
+      </Flex>
+    </CodebloomCard>
+  );
+
   if (status === "pending") {
     return <ProblemOfTheDaySkeleton />;
   }
 
   if (status === "error") {
-    return (
-      <CodebloomCard miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            Sorry, something went wrong. Please try again later.
-          </Title>
-        </Flex>
-      </CodebloomCard>
-    );
+    return renderStatusCard("Sorry, something went wrong. Please try again later.");
   }
 
   if (!data.success) {
-    return (
-      <CodebloomCard miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            {data.message}
-          </Title>
-        </Flex>
-      </CodebloomCard>
-    );
+    return renderStatusCard(data.message);
   }
 
   const json = data.payload;

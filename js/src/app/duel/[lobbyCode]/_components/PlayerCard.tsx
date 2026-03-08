@@ -57,7 +57,7 @@ export default function PlayerCard({
   })();
 
   return (
-    <CodebloomCard radius="md">
+    <CodebloomCard>
       <Stack align="center" gap={6}>
         <Avatar radius="xl" size={48} src={src}>
           {initial}
