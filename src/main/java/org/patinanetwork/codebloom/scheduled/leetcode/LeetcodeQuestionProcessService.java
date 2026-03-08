@@ -5,6 +5,7 @@ import io.github.bucket4j.BlockingBucket;
 import io.github.bucket4j.Bucket;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -139,20 +140,20 @@ public class LeetcodeQuestionProcessService {
 
         try {
             log.info("Fetching question from backend with ID: {}", job.getQuestionId());
-            Question question = questionRepository.getQuestionById(job.getQuestionId());
-
-            if (question == null) {
-                throw new RuntimeException("No question found in backend with ID: " + job.getQuestionId());
-            }
+            Question question = questionRepository
+                    .getQuestionById(job.getQuestionId())
+                    .orElseThrow(
+                            () -> new RuntimeException("No question found in backend with ID: " + job.getQuestionId()));
 
             log.info("Found question: {} ({})", question.getQuestionTitle(), question.getQuestionSlug());
 
             boolean dataFound = false;
 
-            if (question.getSubmissionId() != null
-                    && !question.getSubmissionId().isEmpty()) {
+            if (question.getSubmissionId().isPresent()
+                    && !question.getSubmissionId().get().isEmpty()) {
                 try {
-                    int submissionId = Integer.parseInt(question.getSubmissionId());
+                    int submissionId =
+                            Integer.parseInt(question.getSubmissionId().get());
                     log.info("Fetching submission details from Leetcode for submission ID: {}", submissionId);
 
                     var detailedSubmission = leetcodeClient.findSubmissionDetailBySubmissionId(submissionId);
@@ -160,12 +161,13 @@ public class LeetcodeQuestionProcessService {
                     if (detailedSubmission != null) {
                         log.info("Successfully fetched submission details for submission ID: {}", submissionId);
 
-                        question.setRuntime(detailedSubmission.getRuntimeDisplay());
-                        question.setMemory(detailedSubmission.getMemoryDisplay());
-                        question.setCode(detailedSubmission.getCode());
+                        question.setRuntime(Optional.ofNullable(detailedSubmission.getRuntimeDisplay()));
+                        question.setMemory(Optional.ofNullable(detailedSubmission.getMemoryDisplay()));
+                        question.setCode(Optional.ofNullable(detailedSubmission.getCode()));
 
                         if (detailedSubmission.getLang() != null) {
-                            question.setLanguage(detailedSubmission.getLang().getName());
+                            question.setLanguage(
+                                    Optional.of(detailedSubmission.getLang().getName()));
                         }
 
                         questionRepository.updateQuestion(question);
@@ -177,7 +179,7 @@ public class LeetcodeQuestionProcessService {
                 } catch (NumberFormatException e) {
                     log.warn(
                             "Invalid submission ID format '{}' for question {}",
-                            question.getSubmissionId(),
+                            question.getSubmissionId().get(),
                             question.getId());
                 }
             }

@@ -1,11 +1,12 @@
 package org.patinanetwork.codebloom.common.db.models.question;
 
+import java.util.Optional;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.patinanetwork.codebloom.common.db.helper.annotations.NullColumn;
 
 @Getter
 @Setter
@@ -14,12 +15,12 @@ import org.patinanetwork.codebloom.common.db.helper.annotations.NullColumn;
 @ToString(callSuper = true)
 public class QuestionWithUser extends Question {
 
-    @NullColumn
-    private String discordName;
+    @Builder.Default
+    private Optional<String> discordName = Optional.empty();
 
-    @NullColumn
-    private String leetcodeUsername;
+    @Builder.Default
+    private Optional<String> leetcodeUsername = Optional.empty();
 
-    @NullColumn
-    private String nickname;
+    @Builder.Default
+    private Optional<String> nickname = Optional.empty();
 }

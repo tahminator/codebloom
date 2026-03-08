@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.sql.DataSource;
@@ -18,17 +19,14 @@ import org.patinanetwork.codebloom.common.db.models.question.Question;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionWithUser;
 import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
-import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.question.topic.QuestionTopicRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.topic.service.QuestionTopicService;
-import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class QuestionSqlRepository implements QuestionRepository {
 
     private DataSource ds;
-    private final UserRepository userRepository;
     private final QuestionTopicRepository questionTopicRepository;
     private final QuestionTopicService questionTopicService;
 
@@ -40,17 +38,11 @@ public class QuestionSqlRepository implements QuestionRepository {
         var questionNumber = rs.getInt("questionNumber");
         var questionLink = rs.getString("questionLink");
         int points = rs.getInt("pointsAwarded");
-        Integer pointsAwarded = rs.wasNull() ? null : points;
+        Optional<Integer> pointsAwarded = rs.wasNull() ? Optional.empty() : Optional.of(points);
         var questionTitle = rs.getString("questionTitle");
-        var description = rs.getString("description");
         var acceptanceRate = rs.getFloat("acceptanceRate");
         var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
         var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-        var runtime = rs.getString("runtime");
-        var memory = rs.getString("memory");
-        var code = rs.getString("code");
-        var language = rs.getString("language");
-        var submissionId = rs.getString("submissionId");
 
         return Question.builder()
                 .id(questionId)
@@ -61,15 +53,15 @@ public class QuestionSqlRepository implements QuestionRepository {
                 .questionLink(questionLink)
                 .pointsAwarded(pointsAwarded)
                 .questionTitle(questionTitle)
-                .description(description)
+                .description(Optional.ofNullable(rs.getString("description")))
                 .acceptanceRate(acceptanceRate)
                 .createdAt(createdAt)
                 .submittedAt(submittedAt)
-                .runtime(runtime)
-                .memory(memory)
-                .code(code)
-                .language(language)
-                .submissionId(submissionId)
+                .runtime(Optional.ofNullable(rs.getString("runtime")))
+                .memory(Optional.ofNullable(rs.getString("memory")))
+                .code(Optional.ofNullable(rs.getString("code")))
+                .language(Optional.ofNullable(rs.getString("language")))
+                .submissionId(Optional.ofNullable(rs.getString("submissionId")))
                 .topics(questionTopicRepository.findQuestionTopicsByQuestionId(questionId))
                 .build();
     }
@@ -82,20 +74,11 @@ public class QuestionSqlRepository implements QuestionRepository {
         var questionNumber = rs.getInt("questionNumber");
         var questionLink = rs.getString("questionLink");
         int points = rs.getInt("pointsAwarded");
-        Integer pointsAwarded = rs.wasNull() ? null : points;
+        Optional<Integer> pointsAwarded = rs.wasNull() ? Optional.empty() : Optional.of(points);
         var questionTitle = rs.getString("questionTitle");
-        var description = rs.getString("description");
         var acceptanceRate = rs.getFloat("acceptanceRate");
         var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
         var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-        var runtime = rs.getString("runtime");
-        var memory = rs.getString("memory");
-        var code = rs.getString("code");
-        var language = rs.getString("language");
-        var submissionId = rs.getString("submissionId");
-        var discordName = rs.getString("discordName");
-        var leetcodeUsername = rs.getString("leetcodeUsername");
-        var nickname = rs.getString("nickname");
 
         return QuestionWithUser.builder()
                 .id(questionId)
@@ -106,29 +89,27 @@ public class QuestionSqlRepository implements QuestionRepository {
                 .questionLink(questionLink)
                 .pointsAwarded(pointsAwarded)
                 .questionTitle(questionTitle)
-                .description(description)
+                .description(Optional.ofNullable(rs.getString("description")))
                 .acceptanceRate(acceptanceRate)
                 .createdAt(createdAt)
                 .submittedAt(submittedAt)
-                .runtime(runtime)
-                .memory(memory)
-                .code(code)
-                .language(language)
-                .submissionId(submissionId)
-                .discordName(discordName)
-                .leetcodeUsername(leetcodeUsername)
-                .nickname(nickname)
+                .runtime(Optional.ofNullable(rs.getString("runtime")))
+                .memory(Optional.ofNullable(rs.getString("memory")))
+                .code(Optional.ofNullable(rs.getString("code")))
+                .language(Optional.ofNullable(rs.getString("language")))
+                .submissionId(Optional.ofNullable(rs.getString("submissionId")))
+                .discordName(Optional.ofNullable(rs.getString("discordName")))
+                .leetcodeUsername(Optional.ofNullable(rs.getString("leetcodeUsername")))
+                .nickname(Optional.ofNullable(rs.getString("nickname")))
                 .topics(questionTopicRepository.findQuestionTopicsByQuestionId(questionId))
                 .build();
     }
 
     public QuestionSqlRepository(
             final DataSource ds,
-            final UserRepository userRepository,
             final QuestionTopicRepository questionTopicRepository,
             final QuestionTopicService questionTopicService) {
         this.ds = ds;
-        this.userRepository = userRepository;
         this.questionTopicRepository = questionTopicRepository;
         this.questionTopicService = questionTopicService;
     }
@@ -169,27 +150,28 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setInt(5, question.getQuestionNumber());
             stmt.setString(6, question.getQuestionLink());
 
-            if (question.getPointsAwarded() != null) {
-                stmt.setInt(7, question.getPointsAwarded());
+            if (question.getPointsAwarded().isPresent()) {
+                stmt.setInt(7, question.getPointsAwarded().get());
             } else {
                 stmt.setNull(7, java.sql.Types.INTEGER);
             }
 
             stmt.setString(8, question.getQuestionTitle());
-            stmt.setString(9, question.getDescription());
+            stmt.setString(9, question.getDescription().orElse(null));
 
             stmt.setFloat(10, question.getAcceptanceRate());
             stmt.setObject(11, question.getSubmittedAt());
-            stmt.setString(12, question.getRuntime());
-            stmt.setString(13, question.getMemory());
-            stmt.setString(14, question.getCode());
-            stmt.setString(15, question.getLanguage());
-            stmt.setString(16, question.getSubmissionId());
+            stmt.setString(12, question.getRuntime().orElse(null));
+            stmt.setString(13, question.getMemory().orElse(null));
+            stmt.setString(14, question.getCode().orElse(null));
+            stmt.setString(15, question.getLanguage().orElse(null));
+            stmt.setString(16, question.getSubmissionId().orElse(null));
 
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                return getQuestionById(question.getId());
+                return getQuestionById(question.getId())
+                        .orElseThrow(() -> new RuntimeException("Failed to retrieve created question."));
             } else {
                 throw new RuntimeException("Failed to create question.");
             }
@@ -199,8 +181,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public Question getQuestionById(final String id) {
-        Question question = null;
+    public Optional<Question> getQuestionById(final String id) {
         String sql = """
                 SELECT
                     id,
@@ -231,20 +212,18 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    question = mapResultSetToQuestion(rs);
-                    return question;
+                    return Optional.of(mapResultSetToQuestion(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve question", e);
         }
 
-        return question;
+        return Optional.empty();
     }
 
     @Override
-    public QuestionWithUser getQuestionWithUserById(final String id) {
-        QuestionWithUser question = null;
+    public Optional<QuestionWithUser> getQuestionWithUserById(final String id) {
         String sql = """
                 SELECT
                     q.id,
@@ -263,8 +242,12 @@ public class QuestionSqlRepository implements QuestionRepository {
                     q.memory,
                     q.code,
                     q.language,
-                    q."submissionId"
+                    q."submissionId",
+                    u."discordName",
+                    u."leetcodeUsername",
+                    u.nickname
                 FROM "Question" q
+                JOIN "User" u ON q."userId" = u.id
                 WHERE q.id = ?
             """;
 
@@ -273,63 +256,14 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var questionId = rs.getString("id");
-                    var userId = rs.getString("userId");
-                    var questionSlug = rs.getString("questionSlug");
-                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
-                    var questionNumber = rs.getInt("questionNumber");
-                    var questionLink = rs.getString("questionLink");
-                    int points = rs.getInt("pointsAwarded");
-                    Integer pointsAwarded;
-                    if (rs.wasNull()) {
-                        pointsAwarded = null;
-                    } else {
-                        pointsAwarded = points;
-                    }
-                    var questionTitle = rs.getString("questionTitle");
-                    var description = rs.getString("description");
-                    var acceptanceRate = rs.getFloat("acceptanceRate");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    var runtime = rs.getString("runtime");
-                    var memory = rs.getString("memory");
-                    var code = rs.getString("code");
-                    var language = rs.getString("language");
-                    var submissionId = rs.getString("submissionId");
-
-                    User user = userRepository.getUserById(userId);
-
-                    question = QuestionWithUser.builder()
-                            .id(questionId)
-                            .userId(userId)
-                            .questionSlug(questionSlug)
-                            .questionDifficulty(questionDifficulty)
-                            .questionNumber(questionNumber)
-                            .questionLink(questionLink)
-                            .pointsAwarded(pointsAwarded)
-                            .questionTitle(questionTitle)
-                            .description(description)
-                            .acceptanceRate(acceptanceRate)
-                            .createdAt(createdAt)
-                            .submittedAt(submittedAt)
-                            .runtime(runtime)
-                            .memory(memory)
-                            .code(code)
-                            .language(language)
-                            .submissionId(submissionId)
-                            .discordName(user.getDiscordName())
-                            .leetcodeUsername(user.getLeetcodeUsername())
-                            .nickname(user.getNickname())
-                            .build();
-
-                    return question;
+                    return Optional.of(mapResultSetToQuestionWithUser(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve question", e);
         }
 
-        return question;
+        return Optional.empty();
     }
 
     @Override
@@ -452,25 +386,26 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setInt(4, inputQuestion.getQuestionNumber());
             stmt.setString(5, inputQuestion.getQuestionLink());
 
-            if (inputQuestion.getPointsAwarded() != null) {
-                stmt.setInt(6, inputQuestion.getPointsAwarded());
+            if (inputQuestion.getPointsAwarded().isPresent()) {
+                stmt.setInt(6, inputQuestion.getPointsAwarded().get());
             } else {
                 stmt.setNull(6, java.sql.Types.INTEGER);
             }
             stmt.setString(7, inputQuestion.getQuestionTitle());
-            stmt.setString(8, inputQuestion.getDescription());
+            stmt.setString(8, inputQuestion.getDescription().orElse(null));
             stmt.setFloat(9, inputQuestion.getAcceptanceRate());
             stmt.setObject(10, inputQuestion.getSubmittedAt());
-            stmt.setString(11, inputQuestion.getRuntime());
-            stmt.setString(12, inputQuestion.getMemory());
-            stmt.setString(13, inputQuestion.getCode());
-            stmt.setString(14, inputQuestion.getLanguage());
-            stmt.setString(15, inputQuestion.getSubmissionId());
+            stmt.setString(11, inputQuestion.getRuntime().orElse(null));
+            stmt.setString(12, inputQuestion.getMemory().orElse(null));
+            stmt.setString(13, inputQuestion.getCode().orElse(null));
+            stmt.setString(14, inputQuestion.getLanguage().orElse(null));
+            stmt.setString(15, inputQuestion.getSubmissionId().orElse(null));
             stmt.setObject(16, UUID.fromString(inputQuestion.getId()));
 
             stmt.executeUpdate();
 
-            return getQuestionById(inputQuestion.getId());
+            return getQuestionById(inputQuestion.getId())
+                    .orElseThrow(() -> new RuntimeException("Failed to retrieve updated question."));
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update question", e);
         }
@@ -492,8 +427,7 @@ public class QuestionSqlRepository implements QuestionRepository {
     }
 
     @Override
-    public Question getQuestionBySlugAndUserId(final String slug, final String inputtedUserId) {
-        Question question = null;
+    public Optional<Question> getQuestionBySlugAndUserId(final String slug, final String inputtedUserId) {
         String sql = """
                 SELECT
                     id,
@@ -528,38 +462,14 @@ public class QuestionSqlRepository implements QuestionRepository {
             stmt.setObject(2, UUID.fromString(inputtedUserId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    var questionId = rs.getString("id");
-                    var userId = rs.getString("userId");
-                    var questionSlug = rs.getString("questionSlug");
-                    var questionDifficulty = QuestionDifficulty.valueOf(rs.getString("questionDifficulty"));
-                    var questionNumber = rs.getInt("questionNumber");
-                    var questionLink = rs.getString("questionLink");
-                    int points = rs.getInt("pointsAwarded");
-                    Integer pointsAwarded;
-                    if (rs.wasNull()) {
-                        pointsAwarded = null;
-                    } else {
-                        pointsAwarded = points;
-                    }
-                    var questionTitle = rs.getString("questionTitle");
-                    var description = rs.getString("description");
-                    var acceptanceRate = rs.getFloat("acceptanceRate");
-                    var createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
-                    var submittedAt = rs.getTimestamp("submittedAt").toLocalDateTime();
-                    var runtime = rs.getString("runtime");
-                    var memory = rs.getString("memory");
-                    var code = rs.getString("code");
-                    var language = rs.getString("language");
-                    var submissionId = rs.getString("submissionId");
-                    question = mapResultSetToQuestion(rs);
-                    return question;
+                    return Optional.of(mapResultSetToQuestion(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve question", e);
         }
 
-        return question;
+        return Optional.empty();
     }
 
     @Override

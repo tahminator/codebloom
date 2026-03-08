@@ -150,8 +150,9 @@ public class SubmissionsHandler {
                 continue;
             }
 
-            Question question =
-                    questionRepository.getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId());
+            boolean questionExists = questionRepository
+                    .getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId())
+                    .isPresent();
 
             float multiplier;
             if (potd == null
@@ -183,7 +184,7 @@ public class SubmissionsHandler {
             // };
 
             int points;
-            if (question != null || isTooLate) {
+            if (questionExists || isTooLate) {
                 points = 0;
             } else {
                 points = ScoreCalculator.calculateScore(
@@ -216,11 +217,15 @@ public class SubmissionsHandler {
                     .questionNumber(bankQuestion.getQuestionNumber())
                     .questionLink("https://leetcode.com/problems/" + bankQuestion.getQuestionSlug())
                     .questionTitle(bankQuestion.getQuestionTitle())
-                    .description(bankQuestion.getDescription())
-                    .pointsAwarded(points)
+                    .description(Optional.ofNullable(bankQuestion.getDescription()))
+                    .pointsAwarded(Optional.of(points))
                     .acceptanceRate(bankQuestion.getAcceptanceRate())
                     .submittedAt(leetcodeSubmission.getTimestamp())
-                    .submissionId(String.valueOf(leetcodeSubmission.getId()))
+                    .runtime(Optional.empty())
+                    .memory(Optional.empty())
+                    .code(Optional.empty())
+                    .language(Optional.empty())
+                    .submissionId(Optional.of(String.valueOf(leetcodeSubmission.getId())))
                     .build();
 
             var createdQuestion = questionRepository.createQuestion(newQuestion);

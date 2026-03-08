@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -55,9 +56,9 @@ public class RefetchIncompleteQuestionsServiceTest extends NoJdaRequired {
                 .questionDifficulty(QuestionDifficulty.Easy)
                 .questionNumber(100)
                 .questionLink("https://leetcode.com/problems/base-question/")
-                .description("Baseline question for testing")
-                .pointsAwarded(50)
-                .language(null)
+                .description(Optional.of("Baseline question for testing"))
+                .pointsAwarded(Optional.of(50))
+                .language(Optional.empty())
                 .acceptanceRate(0.9f)
                 .submittedAt(java.time.LocalDateTime.now())
                 .build();
@@ -93,8 +94,8 @@ public class RefetchIncompleteQuestionsServiceTest extends NoJdaRequired {
                 .questionDifficulty(QuestionDifficulty.Medium)
                 .questionNumber(200)
                 .questionLink("https://leetcode.com/problems/orphaned-test/")
-                .description("This question has no job and should be picked up.")
-                .pointsAwarded(100)
+                .description(Optional.of("This question has no job and should be picked up."))
+                .pointsAwarded(Optional.of(100))
                 .acceptanceRate(0.75f)
                 .submittedAt(java.time.LocalDateTime.now())
                 .build();
@@ -128,15 +129,16 @@ public class RefetchIncompleteQuestionsServiceTest extends NoJdaRequired {
                 .questionNumber(1)
                 .questionLink("https://leetcode.com/problems/two-sum/")
                 .description(
-                        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.")
-                .pointsAwarded(100)
+                        Optional.of(
+                                "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."))
+                .pointsAwarded(Optional.of(100))
                 .acceptanceRate(0.8f)
                 .submittedAt(java.time.LocalDateTime.now())
-                .runtime("3 ms")
-                .memory("14.2 MB")
-                .code("def twoSum(self, nums, target): # test code")
-                .language(null)
-                .submissionId("test-submission-1234")
+                .runtime(Optional.of("3 ms"))
+                .memory(Optional.of("14.2 MB"))
+                .code(Optional.of("def twoSum(self, nums, target): # test code"))
+                .language(Optional.empty())
+                .submissionId(Optional.of("test-submission-1234"))
                 .build();
 
         questionRepository.createQuestion(collisionQuestion);

@@ -9,6 +9,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,13 +52,13 @@ public class AttachTagsToExistingQuestionTest {
         Question mockQuestion = Question.builder()
                 .id(UUID.randomUUID().toString())
                 .acceptanceRate(37.2f)
-                .code("""
+                .code(Optional.of("""
         function hello() {
             return "hello world";
         }
-        """)
+        """))
                 .createdAt(StandardizedLocalDateTime.now())
-                .description("Hello")
+                .description(Optional.of("Hello"))
                 .questionSlug("123-hello")
                 .build();
 

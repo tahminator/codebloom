@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ public class UserControllerTest {
                 .questionTitle(faker.lorem().sentence())
                 .questionSlug(faker.lorem().word())
                 .questionDifficulty(org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty.Medium)
-                .pointsAwarded(10)
+                .pointsAwarded(Optional.of(10))
                 .topics(new ArrayList<>())
                 .build();
     }

@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,15 +49,16 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
                 .questionNumber(1)
                 .questionLink("https://leetcode.com/problems/two-sum/")
                 .description(
-                        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.")
-                .pointsAwarded(100)
+                        Optional.of(
+                                "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."))
+                .pointsAwarded(Optional.of(100))
                 .acceptanceRate(0.8f)
                 .submittedAt(java.time.LocalDateTime.now())
-                .runtime("3 ms")
-                .memory("14.2 MB")
-                .code("def twoSum(self, nums, target): # test code")
-                .language("python")
-                .submissionId("test-submission-123")
+                .runtime(Optional.of("3 ms"))
+                .memory(Optional.of("14.2 MB"))
+                .code(Optional.of("def twoSum(self, nums, target): # test code"))
+                .language(Optional.of("python"))
+                .submissionId(Optional.of("test-submission-123"))
                 .build();
 
         testQuestion = questionRepository.createQuestion(testQuestion);
@@ -79,9 +81,9 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testGetQuestionById() {
-        Question possibleTestQuestion = questionRepository.getQuestionById(testQuestion.getId());
+        Question possibleTestQuestion =
+                questionRepository.getQuestionById(testQuestion.getId()).orElseThrow();
 
-        assertNotNull(possibleTestQuestion, "Retrieved question should not be null");
         log.info("testQuestion: {}", testQuestion);
         log.info("possibleTestQuestion: {}", possibleTestQuestion);
         assertEquals(testQuestion.getId(), possibleTestQuestion.getId(), "Question IDs should match");
@@ -97,15 +99,15 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void testGetQuestionWithUserById() {
-        QuestionWithUser questionWithUser = questionRepository.getQuestionWithUserById(testQuestion.getId());
+        QuestionWithUser questionWithUser =
+                questionRepository.getQuestionWithUserById(testQuestion.getId()).orElseThrow();
 
-        assertNotNull(questionWithUser, "QuestionWithUser should not be null");
         assertEquals(testQuestion.getId(), questionWithUser.getId(), "Question IDs should match");
         assertEquals(testQuestion.getUserId(), questionWithUser.getUserId(), "User IDs should match");
 
-        assertNotNull(questionWithUser.getDiscordName(), "Discord name should be populated");
-        assertNotNull(questionWithUser.getLeetcodeUsername(), "Leetcode username should be populated");
-        assertNotNull(questionWithUser.getNickname(), "Nickname should be populated");
+        assertTrue(questionWithUser.getDiscordName().isPresent(), "Discord name should be populated");
+        assertTrue(questionWithUser.getLeetcodeUsername().isPresent(), "Leetcode username should be populated");
+        assertTrue(questionWithUser.getNickname().isPresent(), "Nickname should be populated");
 
         log.info("Successfully retrieved question with user data for ID: {}", questionWithUser.getId());
     }
@@ -128,24 +130,24 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(4)
     void testUpdateQuestion() {
-        String originalCode = testQuestion.getCode();
-        String originalRuntime = testQuestion.getRuntime();
+        Optional<String> originalCode = testQuestion.getCode();
+        Optional<String> originalRuntime = testQuestion.getRuntime();
 
-        testQuestion.setCode("def twoSum(self, nums, target): # updated test code");
-        testQuestion.setRuntime("2 ms");
+        testQuestion.setCode(Optional.of("def twoSum(self, nums, target): # updated test code"));
+        testQuestion.setRuntime(Optional.of("2 ms"));
 
         Question updatedResult = questionRepository.updateQuestion(testQuestion);
 
         assertNotNull(updatedResult, "Question should be successfully updated");
 
         String questionId = testQuestion.getId();
-        Question updatedQuestion = questionRepository.getQuestionById(questionId);
-        assertNotNull(updatedQuestion, "Updated question should not be null");
+        Question updatedQuestion =
+                questionRepository.getQuestionById(questionId).orElseThrow();
         assertEquals(
                 "def twoSum(self, nums, target): # updated test code",
-                updatedQuestion.getCode(),
+                updatedQuestion.getCode().orElseThrow(),
                 "Code should be updated");
-        assertEquals("2 ms", updatedQuestion.getRuntime(), "Runtime should be updated");
+        assertEquals("2 ms", updatedQuestion.getRuntime().orElseThrow(), "Runtime should be updated");
 
         log.info("Successfully updated question with ID: {}", testQuestion.getId());
 
@@ -156,10 +158,10 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(5)
     void testGetQuestionBySlugAndUserId() {
-        Question foundQuestion =
-                questionRepository.getQuestionBySlugAndUserId(testQuestion.getQuestionSlug(), testQuestion.getUserId());
+        Question foundQuestion = questionRepository
+                .getQuestionBySlugAndUserId(testQuestion.getQuestionSlug(), testQuestion.getUserId())
+                .orElseThrow();
 
-        assertNotNull(foundQuestion, "Question should be found by slug and user ID");
         assertEquals(testQuestion.getId(), foundQuestion.getId(), "Question IDs should match");
         assertEquals(testQuestion.getQuestionSlug(), foundQuestion.getQuestionSlug(), "Question slugs should match");
         assertEquals(testQuestion.getUserId(), foundQuestion.getUserId(), "User IDs should match");
@@ -184,7 +186,8 @@ public class QuestionRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(7)
     void testQuestionExistsBySubmissionId() {
-        boolean exists = questionRepository.questionExistsBySubmissionId(testQuestion.getSubmissionId());
+        boolean exists = questionRepository.questionExistsBySubmissionId(
+                testQuestion.getSubmissionId().orElseThrow());
 
         assertTrue(exists, "Question should exist with the given submission ID");
 

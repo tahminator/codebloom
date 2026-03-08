@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -217,7 +218,7 @@ public class SubmissionControllerTest {
         when(potd.getSlug()).thenReturn("two-sum");
 
         when(questionRepository.getQuestionBySlugAndUserId("two-sum", "abcdefg123456"))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         try (MockedStatic<FakeLag> fakeLag = mockStatic(FakeLag.class)) {
             fakeLag.when(() -> FakeLag.sleep(anyInt())).thenAnswer(inv -> null);
@@ -276,7 +277,7 @@ public class SubmissionControllerTest {
     void testGetSubmissionBySubmissionIdSuccess() {
         QuestionWithUser question = mock(QuestionWithUser.class);
 
-        when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(question);
+        when(questionRepository.getQuestionWithUserById("abc123")).thenReturn(Optional.of(question));
 
         try (MockedStatic<FakeLag> fakeLag = mockStatic(FakeLag.class)) {
             fakeLag.when(() -> FakeLag.sleep(anyInt())).thenAnswer(inv -> null);
@@ -296,7 +297,7 @@ public class SubmissionControllerTest {
 
     @Test
     void testGetSubmissionBySubmissionIdFailure() {
-        when(questionRepository.getQuestionWithUserById("missing")).thenReturn(null);
+        when(questionRepository.getQuestionWithUserById("missing")).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<QuestionWithUserDto>> response =
                 submissionController.getSubmissionBySubmissionId(request, "missing");

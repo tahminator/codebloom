@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -61,15 +62,16 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
                 .questionNumber(1)
                 .questionLink("https://leetcode.com/problems/two-sum/")
                 .description(
-                        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.")
-                .pointsAwarded(100)
+                        Optional.of(
+                                "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."))
+                .pointsAwarded(Optional.of(100))
                 .acceptanceRate(0.8f)
                 .submittedAt(java.time.LocalDateTime.now())
-                .runtime("3 ms")
-                .memory("14.2 MB")
-                .code("def twoSum(self, nums, target): # test code")
-                .language("python")
-                .submissionId(uniqueSubmissionId)
+                .runtime(Optional.of("3 ms"))
+                .memory(Optional.of("14.2 MB"))
+                .code(Optional.of("def twoSum(self, nums, target): # test code"))
+                .language(Optional.of("python"))
+                .submissionId(Optional.of(uniqueSubmissionId))
                 .build();
 
         testQuestion = questionRepository.createQuestion(testQuestion);
@@ -107,11 +109,11 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
                 .questionDifficulty(QuestionDifficulty.Medium)
                 .questionNumber(2)
                 .questionLink("https://leetcode.com/problems/find-incomplete-test/")
-                .description("Test question for incomplete jobs test")
-                .pointsAwarded(150)
+                .description(Optional.of("Test question for incomplete jobs test"))
+                .pointsAwarded(Optional.of(150))
                 .acceptanceRate(0.6f)
                 .submittedAt(java.time.LocalDateTime.now())
-                .submissionId("test-submission-" + System.currentTimeMillis() + "-456")
+                .submissionId(Optional.of("test-submission-" + System.currentTimeMillis() + "-456"))
                 .build();
 
         tempQuestion = questionRepository.createQuestion(tempQuestion);
@@ -142,11 +144,11 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
                 .questionDifficulty(QuestionDifficulty.Easy)
                 .questionNumber(20)
                 .questionLink("https://leetcode.com/problems/valid-parentheses/")
-                .description("Test question for job status transition")
-                .pointsAwarded(120)
+                .description(Optional.of("Test question for job status transition"))
+                .pointsAwarded(Optional.of(120))
                 .acceptanceRate(0.7f)
                 .submittedAt(java.time.LocalDateTime.now())
-                .submissionId("test-submission-" + System.currentTimeMillis() + "-789")
+                .submissionId(Optional.of("test-submission-" + System.currentTimeMillis() + "-789"))
                 .build();
 
         tempQuestion = questionRepository.createQuestion(tempQuestion);
@@ -190,11 +192,11 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
                 .questionDifficulty(QuestionDifficulty.Easy)
                 .questionNumber(99)
                 .questionLink("https://leetcode.com/problems/max-attempts-test/")
-                .description("Test for max attempts sentinel value")
-                .pointsAwarded(120)
+                .description(Optional.of("Test for max attempts sentinel value"))
+                .pointsAwarded(Optional.of(120))
                 .acceptanceRate(0.7f)
                 .submittedAt(java.time.LocalDateTime.now())
-                .submissionId("99999")
+                .submissionId(Optional.of("99999"))
                 .build();
 
         tempQuestion = questionRepository.createQuestion(tempQuestion);
@@ -214,9 +216,9 @@ public class LeetcodeQuestionProcessServiceTest extends NoJdaRequired {
         assertNotNull(updatedJob);
         assertEquals(JobStatus.COMPLETE, updatedJob.getStatus());
 
-        Question updatedQuestion = questionRepository.getQuestionById(tempQuestion.getId());
-        assertNotNull(updatedQuestion);
-        assertEquals("99999", updatedQuestion.getSubmissionId());
+        Question updatedQuestion =
+                questionRepository.getQuestionById(tempQuestion.getId()).orElseThrow();
+        assertEquals("99999", updatedQuestion.getSubmissionId().orElseThrow());
 
         jobRepository.deleteJobById(maxAttemptJob.getId());
         questionRepository.deleteQuestionById(tempQuestion.getId());
