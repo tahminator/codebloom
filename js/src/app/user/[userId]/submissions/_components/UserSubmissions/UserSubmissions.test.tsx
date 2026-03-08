@@ -99,33 +99,49 @@ const userSubmissionsSuccessHandler = http.get(
     }),
 );
 
-const userSubmissionsEmptyHandler = http.get(
-  userSubmissionsUrl.url.toString(),
-  () =>
-    HttpResponse.json({
-      success: true,
-      message: "Submissions loaded!",
-      payload: {
-        hasNextPage: false,
-        pages: 1,
-        items: [],
-      },
-    }),
-);
-
 const userSubmissionsErrorHandler = http.get(
   userSubmissionsUrl.url.toString(),
   () => HttpResponse.error(),
 );
 
+const mockUseUserSubmissionsQuery = vi.fn();
+
+vi.mock("@/lib/api/queries/user", () => ({
+  useUserSubmissionsQuery: (...args: unknown[]) =>
+    mockUseUserSubmissionsQuery(...args),
+}));
+
+const BASE_QUERY_RESULT = {
+  status: "pending",
+  page: 1,
+  goBack: vi.fn(),
+  goForward: vi.fn(),
+  isPlaceholderData: false,
+  goTo: vi.fn(),
+  searchQuery: "",
+  setSearchQuery: vi.fn(),
+  pointFilter: false,
+  togglePointFilter: vi.fn(),
+  topics: [],
+  setTopics: vi.fn(),
+  clearTopics: vi.fn(),
+  startDate: undefined,
+  endDate: undefined,
+  setStartDate: vi.fn(),
+  setEndDate: vi.fn(),
+  data: undefined,
+};
+
 describe("UserSubmissions succeeded", () => {
   afterEach(() => {
     cleanup();
+    vi.clearAllMocks();
   });
 
   let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
   beforeEach(() => {
     renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
+    mockUseUserSubmissionsQuery.mockReturnValue(BASE_QUERY_RESULT);
   });
 
   it("should render skeleton stack of submissions initially", () => {
@@ -137,6 +153,54 @@ describe("UserSubmissions succeeded", () => {
     expect(element).toBeInTheDocument();
     expect(element).toBeVisible();
   });
+
+  it("should not render DateRangeIndicator when no date range is set", () => {
+    mockUseUserSubmissionsQuery.mockReturnValue({
+      ...BASE_QUERY_RESULT,
+      startDate: undefined,
+      endDate: undefined,
+    });
+    renderProviderFn?.(<UserSubmissions userId={uuid()} />);
+    expect(
+      screen.queryByTestId("date-range-indicator"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should render DateRangeIndicator when startDate is set", () => {
+    mockUseUserSubmissionsQuery.mockReturnValue({
+      ...BASE_QUERY_RESULT,
+      status: "success",
+      data: { payload: { items: [], pages: 0, hasNextPage: false } },
+      startDate: "2026-01-01",
+      endDate: undefined,
+    });
+    renderProviderFn?.(<UserSubmissions userId={uuid()} />);
+    expect(screen.getByTestId("date-range-indicator")).toBeInTheDocument();
+  });
+
+  it("should render DateRangeIndicator when endDate is set", () => {
+    mockUseUserSubmissionsQuery.mockReturnValue({
+      ...BASE_QUERY_RESULT,
+      status: "success",
+      data: { payload: { items: [], pages: 0, hasNextPage: false } },
+      startDate: undefined,
+      endDate: "2026-03-01",
+    });
+    renderProviderFn?.(<UserSubmissions userId={uuid()} />);
+    expect(screen.getByTestId("date-range-indicator")).toBeInTheDocument();
+  });
+
+  it("should render DateRangeIndicator when both dates are set", () => {
+    mockUseUserSubmissionsQuery.mockReturnValue({
+      ...BASE_QUERY_RESULT,
+      status: "success",
+      data: { payload: { items: [], pages: 0, hasNextPage: false } },
+      startDate: "2026-01-01",
+      endDate: "2026-03-01",
+    });
+    renderProviderFn?.(<UserSubmissions userId={uuid()} />);
+    expect(screen.getByTestId("date-range-indicator")).toBeInTheDocument();
+  });
 });
 
 describe("UserSubmissions with successful API", () => {
@@ -146,12 +210,25 @@ describe("UserSubmissions with successful API", () => {
   afterEach(() => {
     server.resetHandlers();
     cleanup();
+    vi.clearAllMocks();
   });
   afterAll(() => server.close());
 
   let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
   beforeEach(() => {
     renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
+
+    mockUseUserSubmissionsQuery.mockReturnValue({
+      ...BASE_QUERY_RESULT,
+      status: "success",
+      data: {
+        payload: {
+          items: MOCK_SUBMISSIONS,
+          pages: 1,
+          hasNextPage: false,
+        },
+      },
+    });
   });
 
   it("should render submission titles after successful API call", async () => {
@@ -219,7 +296,11 @@ describe("UserSubmissions with successful API", () => {
   });
 
   it("should show Nothing found when empty", async () => {
-    server.use(userSubmissionsEmptyHandler);
+    mockUseUserSubmissionsQuery.mockReturnValue({
+      ...BASE_QUERY_RESULT,
+      status: "success",
+      data: { payload: { items: [], pages: 1, hasNextPage: false } },
+    });
     renderProviderFn?.(<UserSubmissions userId={FIXED_USER_ID} />);
 
     await waitFor(() => {
@@ -235,12 +316,18 @@ describe("UserSubmissions error state", () => {
   afterEach(() => {
     server.resetHandlers();
     cleanup();
+    vi.clearAllMocks();
   });
   afterAll(() => server.close());
 
   let renderProviderFn: TestUtilTypes.RenderWithAllProvidersFn | null = null;
   beforeEach(() => {
     renderProviderFn = TestUtils.getRenderWithAllProvidersFn();
+    mockUseUserSubmissionsQuery.mockReturnValue({
+      ...BASE_QUERY_RESULT,
+      status: "error",
+      data: undefined,
+    });
   });
 
   it("should show error toast when API errors", async () => {
