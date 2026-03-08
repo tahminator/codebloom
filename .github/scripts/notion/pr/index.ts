@@ -3,7 +3,6 @@ import type { NotionTaskObject } from "notion/pr/types";
 import { Client, isFullPage } from "@notionhq/client";
 import { $ } from "bun";
 import { _fetchBlocks } from "notion/pr/utils";
-import { _validateNotionTask } from "notion/pr/validate-ticket";
 import { sendMessage } from "utils/send-message";
 
 import { _getNotionTaskById } from "../task";
@@ -41,8 +40,6 @@ export async function checkNotionPrAndGetTask(
 
   const blocks = await _fetchBlocks(client, task.id);
   const taskContent = blocks.join("\n");
-
-  await _validateNotionTask(task, taskContent, prId);
 
   return {
     task,
