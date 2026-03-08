@@ -1,5 +1,6 @@
 import DateRangePopover from "@/app/user/[userId]/submissions/_components/DateRangePopover/DateRangePopover";
 import TopicFilterPopover from "@/app/user/[userId]/submissions/_components/TopicFilters/TopicFilterPopover";
+import DateRangeIndicator from "@/app/user/[userId]/submissions/_components/UserSubmissions/DateRangeIndicator";
 import UserSubmissionsSkeleton from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissionsSkeleton";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
@@ -73,6 +74,36 @@ export default function UserSubmissions({ userId }: { userId: string }) {
 
   const pageData = data.payload;
 
+  const filterDropdown = (
+    <Box pos="relative" display="inline-block">
+      <FilterDropdown buttonName="Filters">
+        <TopicFilterPopover
+          value={topics}
+          selectedTopicsSet={selectedTopicsSet}
+          onChange={setTopics}
+          onClear={clearTopics}
+        />
+        <FilterDropdownItem
+          value={pointFilter}
+          toggle={togglePointFilter}
+          switchMode
+          name={
+            <Flex gap="0.5rem" align="center">
+              Points Received
+            </Flex>
+          }
+        />
+        <DateRangePopover
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+        />
+      </FilterDropdown>
+      <DateRangeIndicator startDate={startDate} endDate={endDate} />
+    </Box>
+  );
+
   return (
     <Box
       mt={10}
@@ -84,30 +115,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
     >
       {!isMobile && (
         <Box display="block" style={{ textAlign: "right" }}>
-          <FilterDropdown buttonName="Filters">
-            <TopicFilterPopover
-              value={topics}
-              selectedTopicsSet={selectedTopicsSet}
-              onChange={setTopics}
-              onClear={clearTopics}
-            />
-            <FilterDropdownItem
-              value={pointFilter}
-              toggle={togglePointFilter}
-              switchMode
-              name={
-                <Flex gap="0.5rem" align="center">
-                  Points Received
-                </Flex>
-              }
-            />
-            <DateRangePopover
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-            />
-          </FilterDropdown>
+          {filterDropdown}
         </Box>
       )}
       <Group
@@ -126,32 +134,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
             w={isMobile ? "100%" : undefined}
           />
         </Box>
-        {isMobile && (
-          <FilterDropdown buttonName="Filters">
-            <TopicFilterPopover
-              value={topics}
-              selectedTopicsSet={selectedTopicsSet}
-              onChange={setTopics}
-              onClear={clearTopics}
-            />
-            <FilterDropdownItem
-              value={pointFilter}
-              toggle={togglePointFilter}
-              switchMode
-              name={
-                <Flex gap="0.5rem" align="center">
-                  Points Received
-                </Flex>
-              }
-            />
-            <DateRangePopover
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-            />
-          </FilterDropdown>
-        )}
+        {isMobile && filterDropdown}
       </Group>
       <Box pos="relative">
         {isPlaceholderData && (
