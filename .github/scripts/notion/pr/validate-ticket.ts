@@ -45,6 +45,10 @@ export async function _validateNotionTask(
   if (errors.length > 0) {
     const message = `## Ticket Validation Failed\n\nThe following issues were found with the attached ticket:\n\n${errors.map((e) => `- ${e}`).join("\n")}`;
     await sendMessage(prId, message);
+    const errorList = errors.map((e) => `  - ${e}`).join("\n");
+    console.error(
+      `Ticket validation failed with ${errors.length} error(s):\n${errorList}`,
+    );
     process.exit(1);
   }
 }

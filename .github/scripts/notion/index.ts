@@ -1,6 +1,7 @@
 import { getEnvVariables } from "load-secrets/env/load";
 import { _checkCommits } from "notion/commits";
 import { checkNotionPrAndGetTask } from "notion/pr";
+import { _validateNotionTask } from "notion/pr/validate-ticket";
 import { getNotionClient } from "notion/sdk";
 import { _updateNotionTaskWithPrLink } from "notion/task";
 import { updatePrDescriptionWithTicket } from "utils/update-pr-description";
@@ -13,6 +14,7 @@ const {
   prId,
   getGhaOutput,
   githubOutput: githubOutputFile,
+  validateTicket,
 } = await yargs(hideBin(process.argv))
   .option("prId", {
     type: "number",
@@ -29,6 +31,11 @@ const {
     describe: "Path to GITHUB_OUTPUT",
     default: process.env.GITHUB_OUTPUT,
   })
+  .option("validateTicket", {
+    type: "boolean",
+    describe: "Validate ticket fields",
+    default: true,
+  })
   .strict()
   .parse();
 
@@ -44,6 +51,10 @@ async function main() {
     await checkNotionPrAndGetTask(client, prId, notionDbId);
 
   console.log(taskContent);
+
+  if (validateTicket) {
+    await _validateNotionTask(task, taskContent, prId);
+  }
 
   await _checkCommits(taskId, prId);
 

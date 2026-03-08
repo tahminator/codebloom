@@ -15,6 +15,10 @@ inputs:
     description: "If set to `true`, will output an object with data that can be interfaced in GitHub Actions."
     required: false
     default: "false"
+  VALIDATE_TICKET:
+    description: "If set to `true`, will validate the ticket fields."
+    required: false
+    default: "true"
 
 outputs:
   context:
@@ -33,4 +37,4 @@ runs:
     - name: Run script
       id: run_script
       shell: bash
-      run: bun .github/scripts/notion --prId=${{ inputs.PR_ID }} --getGhaOutput=${{ inputs.GET_GHA_OUTPUT }} --githubOutput=${{ inputs.GITHUB_OUTPUT }}
+      run: bun .github/scripts/notion --prId=${{ inputs.PR_ID }} --getGhaOutput=${{ inputs.GET_GHA_OUTPUT }} --githubOutput=${{ inputs.GITHUB_OUTPUT }} --validateTicket=${{ inputs.VALIDATE_TICKET }}

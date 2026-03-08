@@ -71,6 +71,7 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GET_GHA_OUTPUT: "true"
+          VALIDATE_TICKET: "false"
 
       - name: Load STYLEGUIDE.md
         id: styleguide
