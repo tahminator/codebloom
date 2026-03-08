@@ -171,11 +171,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
         )}
         <Stack gap="sm" my="sm" align={isMobile ? undefined : "center"}>
           {!pageData || pageData.items.length === 0 ?
-            <CodebloomCard
-              mih={80}
-              w="100%"
-              flex={isMobile ? 1 : undefined}
-            >
+            <CodebloomCard mih={80} w="100%" flex={isMobile ? 1 : undefined}>
               <Stack gap="xs" justify="center" align="center" h="100%">
                 <Text fw={500} ta="center" c="dimmed">
                   Nothing found.
@@ -185,7 +181,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                 </Text>
               </Stack>
             </CodebloomCard>
-            : pageData.items.map((submission) => {
+          : pageData.items.map((submission) => {
               const badgeDifficultyColor = getDifficultyBadgeColor(
                 submission.questionDifficulty,
               );

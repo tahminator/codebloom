@@ -9,7 +9,13 @@ export default function ProblemOfTheDay() {
 
   const renderStatusCard = (message: string) => (
     <CodebloomCard miw={"31vw"} mih={"63vh"}>
-      <Flex direction={"row"} justify={"center"} align={"center"} w={"100%"} h={"100%"}>
+      <Flex
+        direction={"row"}
+        justify={"center"}
+        align={"center"}
+        w={"100%"}
+        h={"100%"}
+      >
         <Title order={6} ta={"center"}>
           {message}
         </Title>
@@ -22,7 +28,9 @@ export default function ProblemOfTheDay() {
   }
 
   if (status === "error") {
-    return renderStatusCard("Sorry, something went wrong. Please try again later.");
+    return renderStatusCard(
+      "Sorry, something went wrong. Please try again later.",
+    );
   }
 
   if (!data.success) {

@@ -52,7 +52,7 @@ export default function LeaderboardForDashboard({
   const dateRange =
     metadataQuery.data?.success ?
       formatLeaderboardDateRange(metadataQuery.data.payload)
-      : undefined;
+    : undefined;
   const [selectedFilterKey, setSelectedFilterKey] = useState<
     string | undefined
   >();
@@ -63,7 +63,13 @@ export default function LeaderboardForDashboard({
 
   const renderCenteredStatusCard = (message: string) => (
     <CodebloomCard miw={"31vw"} mih={"63vh"}>
-      <Flex direction={"row"} justify={"center"} align={"center"} w={"100%"} h={"100%"}>
+      <Flex
+        direction={"row"}
+        justify={"center"}
+        align={"center"}
+        w={"100%"}
+        h={"100%"}
+      >
         <Title order={6} ta={"center"}>
           {message}
         </Title>
@@ -110,7 +116,7 @@ export default function LeaderboardForDashboard({
           to={
             selectedFilterKey ?
               `/leaderboard?${selectedFilterKey}=true`
-              : "/leaderboard"
+            : "/leaderboard"
           }
         >
           View all
@@ -172,9 +178,10 @@ export default function LeaderboardForDashboard({
                 borderRadius: "4px",
                 backgroundImage:
                   isMe ?
-                    `linear-gradient(90deg, ${borderColor || "transparent"
+                    `linear-gradient(90deg, ${
+                      borderColor || "transparent"
                     }, #45a247)`
-                    : undefined,
+                  : undefined,
               }}
               w={"100%"}
               p={"xs"}
@@ -184,34 +191,34 @@ export default function LeaderboardForDashboard({
               <Flex direction={"column"}>
                 {(user.nickname ||
                   (tagFF && user.tags && user.tags.length > 0)) && (
-                    <Flex align="center" justify="center" gap={5}>
-                      {user.nickname && (
-                        <Tooltip
-                          label={
-                            "This user is a verified member of the Patina Discord server."
-                          }
-                        >
-                          <Text ta="center">
-                            <IconCircleCheckFilled
-                              style={{
-                                display: "inline",
-                              }}
-                              color={theme.colors.patina[4]}
-                              z={5000000}
-                              size={20}
-                            />{" "}
-                            {user.nickname}
-                          </Text>
-                        </Tooltip>
+                  <Flex align="center" justify="center" gap={5}>
+                    {user.nickname && (
+                      <Tooltip
+                        label={
+                          "This user is a verified member of the Patina Discord server."
+                        }
+                      >
+                        <Text ta="center">
+                          <IconCircleCheckFilled
+                            style={{
+                              display: "inline",
+                            }}
+                            color={theme.colors.patina[4]}
+                            z={5000000}
+                            size={20}
+                          />{" "}
+                          {user.nickname}
+                        </Text>
+                      </Tooltip>
+                    )}
+                    {user.nickname &&
+                      tagFF &&
+                      user.tags &&
+                      user.tags.length > 0 && (
+                        <TagList tags={user.tags} size={16} gap="xs" />
                       )}
-                      {user.nickname &&
-                        tagFF &&
-                        user.tags &&
-                        user.tags.length > 0 && (
-                          <TagList tags={user.tags} size={16} gap="xs" />
-                        )}
-                    </Flex>
-                  )}
+                  </Flex>
+                )}
                 <Flex align="center" justify="center" gap={5}>
                   <Text ta="center">
                     <FaDiscord
