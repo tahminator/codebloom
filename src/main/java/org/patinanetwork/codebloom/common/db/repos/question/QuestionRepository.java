@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.db.repos.question;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.patinanetwork.codebloom.common.db.models.question.Question;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionWithUser;
@@ -27,9 +28,9 @@ public interface QuestionRepository {
      */
     Question createQuestion(Question question);
 
-    Question getQuestionById(String id);
+    Optional<Question> getQuestionById(String id);
 
-    QuestionWithUser getQuestionWithUserById(String id);
+    Optional<QuestionWithUser> getQuestionWithUserById(String id);
 
     ArrayList<Question> getQuestionsByUserId(
             String userId,
@@ -90,7 +91,7 @@ public interface QuestionRepository {
 
     boolean deleteQuestionById(String id);
 
-    Question getQuestionBySlugAndUserId(String slug, String userId);
+    Optional<Question> getQuestionBySlugAndUserId(String slug, String userId);
 
     boolean questionExistsBySubmissionId(String submissionId);
 

@@ -95,6 +95,8 @@ public class DuelManager {
                     .filter(lpq -> lpq.getQuestionId().isPresent())
                     .map(lpq -> questionRepository.getQuestionById(
                             lpq.getQuestionId().get()))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .map(QuestionDto::fromQuestion)
                     .collect(Collectors.toList());
 

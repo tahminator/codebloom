@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.patinanetwork.codebloom.api.submission.body.LeetcodeUsernameObject;
 import org.patinanetwork.codebloom.common.db.models.potd.POTD;
-import org.patinanetwork.codebloom.common.db.models.question.Question;
-import org.patinanetwork.codebloom.common.db.models.question.QuestionWithUser;
 import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.potd.POTDRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
@@ -273,9 +271,11 @@ public class SubmissionController {
                     .body(ApiResponder.failure("Sorry, no problem of the day today!"));
         }
 
-        Question completedQuestion = questionRepository.getQuestionBySlugAndUserId(potd.getSlug(), user.getId());
+        boolean alreadyCompleted = questionRepository
+                .getQuestionBySlugAndUserId(potd.getSlug(), user.getId())
+                .isPresent();
 
-        if (completedQuestion != null) {
+        if (alreadyCompleted) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(
                             ApiResponder.failure(
@@ -337,15 +337,16 @@ public class SubmissionController {
             final HttpServletRequest request, @PathVariable final String submissionId) {
         FakeLag.sleep(750);
 
-        QuestionWithUser question = questionRepository.getQuestionWithUserById(submissionId);
+        var question = questionRepository.getQuestionWithUserById(submissionId);
 
-        if (question == null) {
+        if (question.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponder.failure("Sorry, submission could not be found."));
         }
 
         return ResponseEntity.ok()
                 .body(ApiResponder.success(
-                        "Problem of the day has been fetched!", QuestionWithUserDto.fromQuestionWithUser(question)));
+                        "Problem of the day has been fetched!",
+                        QuestionWithUserDto.fromQuestionWithUser(question.get())));
     }
 }

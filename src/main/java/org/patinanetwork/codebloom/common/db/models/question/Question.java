@@ -2,15 +2,15 @@ package org.patinanetwork.codebloom.common.db.models.question;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.patinanetwork.codebloom.common.db.helper.annotations.JoinColumn;
-import org.patinanetwork.codebloom.common.db.helper.annotations.NotNullColumn;
-import org.patinanetwork.codebloom.common.db.helper.annotations.NullColumn;
 import org.patinanetwork.codebloom.common.db.models.question.topic.QuestionTopic;
 
 @Getter
@@ -21,61 +21,51 @@ import org.patinanetwork.codebloom.common.db.models.question.topic.QuestionTopic
 @ToString
 public class Question {
 
-    @NotNullColumn
     private String id;
 
-    @NotNullColumn
     private String userId;
 
-    @NotNullColumn
     private String questionSlug;
 
-    @NotNullColumn
     private String questionTitle;
 
-    @NotNullColumn
     private QuestionDifficulty questionDifficulty;
 
-    @NotNullColumn
     private int questionNumber;
 
-    @NotNullColumn
     private String questionLink;
 
-    @NullColumn
-    private String description;
+    @Builder.Default
+    private Optional<String> description = Optional.empty();
 
     /**
      * Optional for the case of future proofing. We might end up using AI to award some points, so there might be a case
      * where we create the DB entry and then pass it to a message queue to use AI and calculate a score.
      */
-    @NullColumn
-    private Integer pointsAwarded;
+    @Builder.Default
+    private Optional<Integer> pointsAwarded = Optional.empty();
 
-    @NotNullColumn
     private float acceptanceRate;
 
-    @NotNullColumn
     private LocalDateTime createdAt;
 
-    @NotNullColumn
     private LocalDateTime submittedAt;
 
-    @NullColumn
-    private String runtime;
+    @Builder.Default
+    private Optional<String> runtime = Optional.empty();
 
-    @NullColumn
-    private String memory;
+    @Builder.Default
+    private Optional<String> memory = Optional.empty();
 
-    @NullColumn
-    private String code;
+    @Builder.Default
+    private Optional<String> code = Optional.empty();
 
-    @NullColumn
-    private String language;
+    @Builder.Default
+    private Optional<String> language = Optional.empty();
 
     // Not every submission will have this.
-    @NullColumn
-    private String submissionId;
+    @Builder.Default
+    private Optional<String> submissionId = Optional.empty();
 
     /** Join field, update/create with {@link QuestionTopicRepository} */
     @JoinColumn

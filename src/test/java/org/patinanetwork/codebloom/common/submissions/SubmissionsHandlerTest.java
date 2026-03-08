@@ -142,7 +142,7 @@ class SubmissionsHandlerTest {
     void createsQuestion() {
         LeetcodeSubmission submission = acceptedSubmission(200, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("200")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         handler.handleSubmissions(List.of(submission), user, false);
@@ -161,7 +161,7 @@ class SubmissionsHandlerTest {
     void createsJob() {
         LeetcodeSubmission submission = acceptedSubmission(200, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("200")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         handler.handleSubmissions(List.of(submission), user, false);
@@ -174,7 +174,7 @@ class SubmissionsHandlerTest {
     void createsTopics() {
         LeetcodeSubmission submission = acceptedSubmission(200, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("200")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         handler.handleSubmissions(List.of(submission), user, false);
@@ -187,7 +187,7 @@ class SubmissionsHandlerTest {
     void returnsAcceptedSubmission() {
         LeetcodeSubmission submission = acceptedSubmission(200, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("200")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         ArrayList<AcceptedSubmission> result = handler.handleSubmissions(List.of(submission), user, false);
@@ -202,7 +202,7 @@ class SubmissionsHandlerTest {
     void updatesLeaderboardScore() {
         LeetcodeSubmission submission = acceptedSubmission(200, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("200")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         handler.handleSubmissions(List.of(submission), user, false);
@@ -218,7 +218,7 @@ class SubmissionsHandlerTest {
 
         Question existingQ =
                 Question.builder().id("q-old").questionSlug("two-sum").build();
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(existingQ);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.of(existingQ));
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         ArrayList<AcceptedSubmission> result = handler.handleSubmissions(List.of(sub), user, false);
@@ -232,7 +232,7 @@ class SubmissionsHandlerTest {
     void zeroPtsForOldSubmission() {
         LeetcodeSubmission oldSub = acceptedSubmission(400, "two-sum", LocalDateTime.of(2024, 12, 31, 23, 59));
         when(questionRepository.questionExistsBySubmissionId("400")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         ArrayList<AcceptedSubmission> result = handler.handleSubmissions(List.of(oldSub), user, false);
@@ -258,7 +258,7 @@ class SubmissionsHandlerTest {
     void usesSlugFastInFastMode() {
         LeetcodeSubmission sub = acceptedSubmission(600, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("600")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlugFast("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         handler.handleSubmissions(List.of(sub), user, true);
@@ -273,7 +273,7 @@ class SubmissionsHandlerTest {
         LeetcodeSubmission sub = acceptedSubmission(601, "hello-world", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("601")).thenReturn(false);
         when(questionRepository.getQuestionBySlugAndUserId("hello-world", USER_ID))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("hello-world")).thenReturn(leetcodeQuestion("hello-world", "Easy", 50f));
 
         ArrayList<AcceptedSubmission> result = handler.handleSubmissions(List.of(sub), user, false);
@@ -289,7 +289,7 @@ class SubmissionsHandlerTest {
         LeetcodeSubmission sub = acceptedSubmission(602, "hello-world", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("602")).thenReturn(false);
         when(questionRepository.getQuestionBySlugAndUserId("hello-world", USER_ID))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         LeetcodeQuestion lcQuestion = leetcodeQuestion("hello-world", "Easy", 50f);
 
@@ -343,7 +343,7 @@ class SubmissionsHandlerTest {
 
         LeetcodeSubmission sub = acceptedSubmission(700, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("700")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
         when(potdRepository.getCurrentPOTD()).thenReturn(null);
@@ -352,7 +352,7 @@ class SubmissionsHandlerTest {
 
         reset(questionRepository);
         when(questionRepository.questionExistsBySubmissionId("700")).thenReturn(false);
-        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(null);
+        when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(questionRepository.createQuestion(any(Question.class))).thenAnswer(inv -> {
             Question q = inv.getArgument(0);
             q.setId("q-potd");
