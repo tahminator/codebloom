@@ -39,9 +39,11 @@ import org.patinanetwork.codebloom.common.utils.sse.SseWrapper;
 import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.patinanetwork.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import org.patinanetwork.codebloom.utilities.exception.ValidationException;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+@SpringBootTest
 public class DuelControllerTest {
 
     private final DuelController duelController;
@@ -80,7 +82,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("Join lobby - invalid code length")
     void joinPartyIncorrectLengthCode() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC12").build();
 
@@ -97,7 +99,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("Join lobby - empty code")
     void joinLobbyEmptyCode() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         var joinPartyBody = JoinLobbyBody.builder().partyCode("").build();
 
@@ -114,7 +116,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("Join lobby - null code")
     void joinLobbyNullCode() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         var joinPartyBody = JoinLobbyBody.builder().partyCode(null).build();
 
@@ -131,7 +133,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("Join lobby - fails in production environment")
     void joinLobbyFailsInProduction() {
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC123").build();
 
@@ -154,7 +156,7 @@ public class DuelControllerTest {
 
     @Test
     void testJoinPartyPartyManagerFailed() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC123").build();
 
@@ -183,7 +185,7 @@ public class DuelControllerTest {
 
     @Test
     void testJoinPartyHappyPath() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC123").build();
 
@@ -212,7 +214,7 @@ public class DuelControllerTest {
 
     @Test
     void testLeavePartyFailureInProductionEnvironment() {
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -232,7 +234,7 @@ public class DuelControllerTest {
 
     @Test
     void testLeavePartyPartyManagerFailed() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -259,7 +261,7 @@ public class DuelControllerTest {
 
     @Test
     void testLeavePartyHappyPath() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -286,7 +288,7 @@ public class DuelControllerTest {
 
     @Test
     void testCreatePartyFailsInProductionEnvironment() {
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -307,7 +309,7 @@ public class DuelControllerTest {
 
     @Test
     void testCreatePartyPartyManagerFailed() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -338,7 +340,7 @@ public class DuelControllerTest {
 
     @Test
     void testCreatePartyHappyPath() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -368,7 +370,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("SSE endpoint - fails in production environment")
     void getDuelDataFailsInProduction() {
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             duelController.getDuelData(null);
@@ -385,7 +387,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("SSE endpoint - lobby does not exist")
     void getDuelDataLobbyDoesNotExist() throws DuelException {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         when(lobbyRepository.findActiveLobbyByJoinCode(any())).thenReturn(Optional.empty());
         when(lobbyRepository.findAvailableLobbyByJoinCode(any())).thenReturn(Optional.empty());
@@ -406,7 +408,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("SSE endpoint - active lobby exists")
     void getDuelDataPlayerInActiveLobby() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         String lobbyId = randomUUID();
         Lobby activeLobby = Lobby.builder()
@@ -432,7 +434,7 @@ public class DuelControllerTest {
     @Test
     @DisplayName("SSE endpoint - available lobby exists")
     void getDuelDataAvailableLobbyExists() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         String lobbyId = randomUUID();
         Lobby availableLobby = Lobby.builder()
@@ -462,7 +464,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         ResponseStatusException exception =
                 assertThrows(ResponseStatusException.class, () -> duelController.startDuel(authObj));
@@ -482,7 +484,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         try {
             doThrow(new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "This is an example duel exception."))
@@ -509,7 +511,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         try {
             doNothing().when(duelManager).startDuel(eq(user.getId()), eq(user.isAdmin()));
@@ -529,7 +531,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         ResponseStatusException exception =
                 assertThrows(ResponseStatusException.class, () -> duelController.endDuel(authObj));
@@ -551,7 +553,7 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
         when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseStatusException exception =
@@ -582,7 +584,7 @@ public class DuelControllerTest {
                 .playerCount(3)
                 .build();
 
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
         when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
 
         try {
@@ -609,7 +611,7 @@ public class DuelControllerTest {
 
     @Test
     void testGetPartyOrDuelCodeForUserFailsInProduction() {
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -630,7 +632,7 @@ public class DuelControllerTest {
 
     @Test
     void testGetPartyOrDuelCodeForUserDuelManagerFailed() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -657,7 +659,7 @@ public class DuelControllerTest {
 
     @Test
     void testGetPartyOrDuelCodeForUserHappyPath() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -684,7 +686,7 @@ public class DuelControllerTest {
 
     @Test
     void testProcessSolvedProblemsInDuelFailsInProduction() {
-        when(!ff.isDuels()).thenReturn(true);
+        when(ff.isDuels()).thenReturn(false);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -705,7 +707,7 @@ public class DuelControllerTest {
 
     @Test
     void testProcessSolvedProblemsDuelManagerFailed() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
@@ -739,7 +741,7 @@ public class DuelControllerTest {
 
     @Test
     void testProcessSolvedProblemsHappyPath() {
-        when(!ff.isDuels()).thenReturn(false);
+        when(ff.isDuels()).thenReturn(true);
 
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
