@@ -24,6 +24,7 @@ import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import org.patinanetwork.codebloom.common.leetcode.models.POTD;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
+import org.patinanetwork.codebloom.common.leetcode.queries.SelectProblemQuery;
 import org.patinanetwork.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 public class LeetcodeClientTest {
@@ -32,6 +33,7 @@ public class LeetcodeClientTest {
     private final LeetcodeAuthStealer leetcodeAuthStealer = mock(LeetcodeAuthStealer.class);
     private final HttpClient httpClient = mock(HttpClient.class);
     private final HttpResponse<String> httpResponse = mock(HttpResponse.class);
+    private final SelectProblemQuery selectProblemQuery = mock(SelectProblemQuery.class);
 
     private final LeetcodeClientImpl leetcodeClient;
 
@@ -53,23 +55,23 @@ public class LeetcodeClientTest {
     @Test
     void testFindQuestionBySlug() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "question": {
-                      "questionId": "42",
-                      "title": "Trapping Rain Water",
-                      "titleSlug": "trapping-rain-water",
-                      "difficulty": "Hard",
-                      "content": "<p>Given n non-negative integers...</p>",
-                      "stats": "{\\"acRate\\":\\"49.4%\\"}",
-                      "topicTags": [
-                        {"name": "Array", "slug": "array"},
-                        {"name": "Two Pointers", "slug": "two-pointers"}
-                      ]
-                    }
-                  }
+            {
+              "data": {
+                "question": {
+                  "questionId": "42",
+                  "title": "Trapping Rain Water",
+                  "titleSlug": "trapping-rain-water",
+                  "difficulty": "Hard",
+                  "content": "<p>Given n non-negative integers...</p>",
+                  "stats": "{\\"acRate\\":\\"49.4%\\"}",
+                  "topicTags": [
+                    {"name": "Array", "slug": "array"},
+                    {"name": "Two Pointers", "slug": "two-pointers"}
+                  ]
                 }
-                """;
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -93,10 +95,10 @@ public class LeetcodeClientTest {
     @ValueSource(ints = {500, 302, 403})
     void testFindQuestionBySlugThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
         String responseJson = """
-                {
-                  "data": {}
-                }
-                """;
+            {
+              "data": {}
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(statusCode);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -116,27 +118,27 @@ public class LeetcodeClientTest {
     @Test
     void testFindSubmissionsByUsername() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "recentAcSubmissionList": [
-                      {
-                        "id": "1234567",
-                        "title": "Two Sum",
-                        "titleSlug": "two-sum",
-                        "timestamp": "1640995200",
-                        "statusDisplay": "Accepted"
-                      },
-                      {
-                        "id": "1234568",
-                        "title": "Add Two Numbers",
-                        "titleSlug": "add-two-numbers",
-                        "timestamp": "1640995300",
-                        "statusDisplay": "Accepted"
-                      }
-                    ]
+            {
+              "data": {
+                "recentAcSubmissionList": [
+                  {
+                    "id": "1234567",
+                    "title": "Two Sum",
+                    "titleSlug": "two-sum",
+                    "timestamp": "1640995200",
+                    "statusDisplay": "Accepted"
+                  },
+                  {
+                    "id": "1234568",
+                    "title": "Add Two Numbers",
+                    "titleSlug": "add-two-numbers",
+                    "timestamp": "1640995300",
+                    "statusDisplay": "Accepted"
                   }
-                }
-                """;
+                ]
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -155,10 +157,10 @@ public class LeetcodeClientTest {
     @ValueSource(ints = {500, 302, 403})
     void testFindSubmissionsByUsernameThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
         String responseJson = """
-                {
-                  "data": {}
-                }
-                """;
+            {
+              "data": {}
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(statusCode);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -178,20 +180,20 @@ public class LeetcodeClientTest {
     @Test
     void testFindSubmissionsByUsernameWithLimit() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "recentAcSubmissionList": [
-                      {
-                        "id": "1234567",
-                        "title": "Two Sum",
-                        "titleSlug": "two-sum",
-                        "timestamp": "1640995200",
-                        "statusDisplay": "Accepted"
-                      }
-                    ]
+            {
+              "data": {
+                "recentAcSubmissionList": [
+                  {
+                    "id": "1234567",
+                    "title": "Two Sum",
+                    "titleSlug": "two-sum",
+                    "timestamp": "1640995200",
+                    "statusDisplay": "Accepted"
                   }
-                }
-                """;
+                ]
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -207,24 +209,24 @@ public class LeetcodeClientTest {
     @Test
     void testFindSubmissionDetailBySubmissionId() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "submissionDetails": {
-                      "runtime": 45,
-                      "runtimeDisplay": "45 ms",
-                      "runtimePercentile": 85.5,
-                      "memory": 14000000,
-                      "memoryDisplay": "14 MB",
-                      "memoryPercentile": 72.3,
-                      "code": "class Solution {}",
-                      "lang": {
-                        "name": "java",
-                        "verboseName": "Java"
-                      }
-                    }
+            {
+              "data": {
+                "submissionDetails": {
+                  "runtime": 45,
+                  "runtimeDisplay": "45 ms",
+                  "runtimePercentile": 85.5,
+                  "memory": 14000000,
+                  "memoryDisplay": "14 MB",
+                  "memoryPercentile": 72.3,
+                  "code": "class Solution {}",
+                  "lang": {
+                    "name": "java",
+                    "verboseName": "Java"
                   }
                 }
-                """;
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -250,10 +252,10 @@ public class LeetcodeClientTest {
     @ValueSource(ints = {500, 302, 403})
     void testFindSubmissionDetailBySubmissionIdThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
         String responseJson = """
-                {
-                  "data": {}
-                }
-                """;
+            {
+              "data": {}
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(statusCode);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -273,18 +275,18 @@ public class LeetcodeClientTest {
     @Test
     void testGetPotd() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "activeDailyCodingChallengeQuestion": {
-                      "question": {
-                        "titleSlug": "two-sum",
-                        "title": "Two Sum",
-                        "difficulty": "Easy"
-                      }
-                    }
+            {
+              "data": {
+                "activeDailyCodingChallengeQuestion": {
+                  "question": {
+                    "titleSlug": "two-sum",
+                    "title": "Two Sum",
+                    "difficulty": "Easy"
                   }
                 }
-                """;
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -303,10 +305,10 @@ public class LeetcodeClientTest {
     @ValueSource(ints = {500, 302, 403})
     void testGetPotdThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
         String responseJson = """
-                {
-                  "data": {}
-                }
-                """;
+            {
+              "data": {}
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(statusCode);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -326,20 +328,20 @@ public class LeetcodeClientTest {
     @Test
     void testGetUserProfile() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "matchedUser": {
-                      "username": "testuser",
-                      "profile": {
-                        "ranking": "12345",
-                        "userAvatar": "https://example.com/avatar.jpg",
-                        "realName": "Test User",
-                        "aboutMe": "Passionate coder"
-                      }
-                    }
+            {
+              "data": {
+                "matchedUser": {
+                  "username": "testuser",
+                  "profile": {
+                    "ranking": "12345",
+                    "userAvatar": "https://example.com/avatar.jpg",
+                    "realName": "Test User",
+                    "aboutMe": "Passionate coder"
                   }
                 }
-                """;
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -360,10 +362,10 @@ public class LeetcodeClientTest {
     @ValueSource(ints = {500, 302, 403})
     void testGetUserProfileThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
         String responseJson = """
-                {
-                  "data": {}
-                }
-                """;
+            {
+              "data": {}
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(statusCode);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -383,27 +385,27 @@ public class LeetcodeClientTest {
     @Test
     void testGetAllTopicTags() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "questionTopicTags": {
-                      "edges": [
-                        {
-                          "node": {
-                            "name": "Array",
-                            "slug": "array"
-                          }
-                        },
-                        {
-                          "node": {
-                            "name": "Hash Table",
-                            "slug": "hash-table"
-                          }
-                        }
-                      ]
+            {
+              "data": {
+                "questionTopicTags": {
+                  "edges": [
+                    {
+                      "node": {
+                        "name": "Array",
+                        "slug": "array"
+                      }
+                    },
+                    {
+                      "node": {
+                        "name": "Hash Table",
+                        "slug": "hash-table"
+                      }
                     }
-                  }
+                  ]
                 }
-                """;
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -420,10 +422,10 @@ public class LeetcodeClientTest {
     @ValueSource(ints = {500, 302, 403})
     void testGetAllTopicTagsThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
         String responseJson = """
-                {
-                  "data": {}
-                }
-                """;
+            {
+              "data": {}
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(statusCode);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -443,36 +445,36 @@ public class LeetcodeClientTest {
     @Test
     void testGetAllProblems() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "problemsetQuestionListV2": {
-                      "questions": [
-                        {
-                          "questionFrontendId": 1,
-                          "title": "Two Sum",
-                          "titleSlug": "two-sum",
-                          "difficulty": "Easy",
-                          "acRate": 49.4,
-                          "topicTags": [
-                            {"name": "Array", "slug": "array"},
-                            {"name": "Hash Table", "slug": "hash-table"}
-                          ]
-                        },
-                        {
-                          "questionFrontendId": 2,
-                          "title": "Add Two Numbers",
-                          "titleSlug": "add-two-numbers",
-                          "difficulty": "Medium",
-                          "acRate": 42.1,
-                          "topicTags": [
-                            {"name": "Linked List", "slug": "linked-list"}
-                          ]
-                        }
+            {
+              "data": {
+                "problemsetQuestionListV2": {
+                  "questions": [
+                    {
+                      "questionFrontendId": 1,
+                      "title": "Two Sum",
+                      "titleSlug": "two-sum",
+                      "difficulty": "Easy",
+                      "acRate": 49.4,
+                      "topicTags": [
+                        {"name": "Array", "slug": "array"},
+                        {"name": "Hash Table", "slug": "hash-table"}
+                      ]
+                    },
+                    {
+                      "questionFrontendId": 2,
+                      "title": "Add Two Numbers",
+                      "titleSlug": "add-two-numbers",
+                      "difficulty": "Medium",
+                      "acRate": 42.1,
+                      "topicTags": [
+                        {"name": "Linked List", "slug": "linked-list"}
                       ]
                     }
-                  }
+                  ]
                 }
-                """;
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -490,23 +492,23 @@ public class LeetcodeClientTest {
     @Test
     void testGetAllProblemsQuestionsIsNotArray() throws Exception {
         String responseJson = """
-                {
-                  "data": {
-                    "problemsetQuestionListV2": {
-                      "questions": {
-                          "questionFrontendId": 2,
-                          "title": "Add Two Numbers",
-                          "titleSlug": "add-two-numbers",
-                          "difficulty": "Medium",
-                          "acRate": 42.1,
-                          "topicTags": [
-                            {"name": "Linked List", "slug": "linked-list"}
-                          ]
-                      }
-                    }
+            {
+              "data": {
+                "problemsetQuestionListV2": {
+                  "questions": {
+                      "questionFrontendId": 2,
+                      "title": "Add Two Numbers",
+                      "titleSlug": "add-two-numbers",
+                      "difficulty": "Medium",
+                      "acRate": 42.1,
+                      "topicTags": [
+                        {"name": "Linked List", "slug": "linked-list"}
+                      ]
                   }
                 }
-                """;
+              }
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(200);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -527,10 +529,10 @@ public class LeetcodeClientTest {
     @ValueSource(ints = {500, 302, 403})
     void testGetAllProblemsThrottledAndTriggersReloadCookie(int statusCode) throws Exception {
         String responseJson = """
-                {
-                  "data": {}
-                }
-                """;
+            {
+              "data": {}
+            }
+            """;
 
         when(httpResponse.statusCode()).thenReturn(statusCode);
         when(httpResponse.body()).thenReturn(responseJson);
@@ -544,6 +546,292 @@ public class LeetcodeClientTest {
         } catch (RuntimeException e) {
             assertTrue(e.getCause().getMessage().contains(String.valueOf(statusCode)));
             verify(leetcodeAuthStealer, times(1)).reloadCookie();
+        }
+    }
+
+    @Test
+    void testFindQuestionBySlugThrowsInterruptedException() throws Exception {
+        String responseJson = """
+            {
+              "data": {
+                "question": {
+                  "questionId": "42",
+                  "title": "Trapping Rain Water",
+                  "titleSlug": "trapping-rain-water",
+                  "difficulty": "Hard",
+                  "content": "<p>Given n non-negative integers...</p>",
+                  "stats": "{\\"acRate\\":\\"49.4%\\"}",
+                  "topicTags": [
+                    {"name": "Array", "slug": "array"},
+                    {"name": "Two Pointers", "slug": "two-pointers"}
+                  ]
+                }
+              }
+            }
+            """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(InterruptedException.class);
+        try {
+            leetcodeClient.findQuestionBySlug("trapping-rain-water");
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertNotNull(e);
+            assertNotNull(e.getCause());
+            assertTrue(e.getMessage().contains("Thread interrupted"));
+            assertInstanceOf(InterruptedException.class, e.getCause());
+            assertTrue(Thread.currentThread().isInterrupted());
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void testFindSubmissionsByUsernameThrowsInterruptedException() throws Exception {
+        String responseJson = """
+            {
+              "data": {
+                "recentAcSubmissionList": [
+                  {
+                    "id": "1234567",
+                    "title": "Two Sum",
+                    "titleSlug": "two-sum",
+                    "timestamp": "1640995200",
+                    "statusDisplay": "Accepted"
+                  },
+                  {
+                    "id": "1234568",
+                    "title": "Add Two Numbers",
+                    "titleSlug": "add-two-numbers",
+                    "timestamp": "1640995300",
+                    "statusDisplay": "Accepted"
+                  }
+                ]
+              }
+            }
+            """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(InterruptedException.class);
+
+        try {
+            leetcodeClient.findSubmissionsByUsername("testuser");
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertNotNull(e);
+            assertNotNull(e.getCause());
+            assertTrue(e.getMessage().contains("Thread interrupted"));
+            assertInstanceOf(InterruptedException.class, e.getCause());
+            assertTrue(Thread.currentThread().isInterrupted());
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void testFindSubmissionDetailBySubmissionIdThrowsInterruptedException() throws Exception {
+        String responseJson = """
+            {
+              "data": {
+                "submissionDetails": {
+                  "runtime": 45,
+                  "runtimeDisplay": "45 ms",
+                  "runtimePercentile": 85.5,
+                  "memory": 14000000,
+                  "memoryDisplay": "14 MB",
+                  "memoryPercentile": 72.3,
+                  "code": "class Solution {}",
+                  "lang": {
+                    "name": "java",
+                    "verboseName": "Java"
+                  }
+                }
+              }
+            }
+            """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(InterruptedException.class);
+
+        try {
+            leetcodeClient.findSubmissionDetailBySubmissionId(1234567);
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertNotNull(e);
+            assertNotNull(e.getCause());
+            assertTrue(e.getMessage().contains("Thread interrupted"));
+            assertInstanceOf(InterruptedException.class, e.getCause());
+            assertTrue(Thread.currentThread().isInterrupted());
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void testGetPotdThrowsInterruptedException() throws Exception {
+        String responseJson = """
+            {
+              "data": {
+                "activeDailyCodingChallengeQuestion": {
+                  "question": {
+                    "titleSlug": "two-sum",
+                    "title": "Two Sum",
+                    "difficulty": "Easy"
+                  }
+                }
+              }
+            }
+            """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(InterruptedException.class);
+
+        try {
+            leetcodeClient.getPotd();
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertNotNull(e);
+            assertNotNull(e.getCause());
+            assertTrue(e.getMessage().contains("Thread interrupted"));
+            assertInstanceOf(InterruptedException.class, e.getCause());
+            assertTrue(Thread.currentThread().isInterrupted());
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void testGetUserProfileThrowsInterruptedException() throws Exception {
+        String responseJson = """
+            {
+              "data": {
+                "matchedUser": {
+                  "username": "testuser",
+                  "profile": {
+                    "ranking": "12345",
+                    "userAvatar": "https://example.com/avatar.jpg",
+                    "realName": "Test User",
+                    "aboutMe": "Passionate coder"
+                  }
+                }
+              }
+            }
+            """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(InterruptedException.class);
+
+        try {
+            leetcodeClient.getUserProfile("testuser");
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertNotNull(e);
+            assertNotNull(e.getCause());
+            assertTrue(e.getMessage().contains("Thread interrupted"));
+            assertInstanceOf(InterruptedException.class, e.getCause());
+            assertTrue(Thread.currentThread().isInterrupted());
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void testGetTopicTagsThrowsInterruptedException() throws Exception {
+        String responseJson = """
+            {
+              "data": {
+                "questionTopicTags": {
+                  "edges": [
+                    {
+                      "node": {
+                        "name": "Array",
+                        "slug": "array"
+                      }
+                    },
+                    {
+                      "node": {
+                        "name": "Hash Table",
+                        "slug": "hash-table"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+            """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(InterruptedException.class);
+
+        try {
+            leetcodeClient.getAllTopicTags();
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertNotNull(e);
+            assertNotNull(e.getCause());
+            assertTrue(e.getMessage().contains("Thread interrupted"));
+            assertInstanceOf(InterruptedException.class, e.getCause());
+            assertTrue(Thread.currentThread().isInterrupted());
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void testGetAllProblemsThrowsInterruptedException() throws Exception {
+        String responseJson = """
+            {
+              "data": {
+                "problemsetQuestionListV2": {
+                  "questions": [
+                    {
+                      "questionFrontendId": 1,
+                      "title": "Two Sum",
+                      "titleSlug": "two-sum",
+                      "difficulty": "Easy",
+                      "acRate": 49.4,
+                      "topicTags": [
+                        {"name": "Array", "slug": "array"},
+                        {"name": "Hash Table", "slug": "hash-table"}
+                      ]
+                    },
+                    {
+                      "questionFrontendId": 2,
+                      "title": "Add Two Numbers",
+                      "titleSlug": "add-two-numbers",
+                      "difficulty": "Medium",
+                      "acRate": 42.1,
+                      "topicTags": [
+                        {"name": "Linked List", "slug": "linked-list"}
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+            """;
+
+        when(httpResponse.statusCode()).thenReturn(200);
+        when(httpResponse.body()).thenReturn(responseJson);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(InterruptedException.class);
+
+        try {
+            leetcodeClient.getAllProblems();
+            fail("Exception expected");
+        } catch (RuntimeException e) {
+            assertNotNull(e);
+            assertNotNull(e.getCause());
+            assertTrue(e.getMessage().contains("Thread interrupted"));
+            assertInstanceOf(InterruptedException.class, e.getCause());
+            assertTrue(Thread.currentThread().isInterrupted());
+            Thread.interrupted();
         }
     }
 }
