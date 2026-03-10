@@ -5,12 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.RetryRegistry;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import jakarta.annotation.PostConstruct;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -63,24 +61,12 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     private final LeetcodeAuthStealer leetcodeAuthStealer;
 
-    private final RetryRegistry retryRegistry;
-
-    public LeetcodeClientImpl(
-            final MeterRegistry meterRegistry,
-            final LeetcodeAuthStealer leetcodeAuthStealer) {
+    public LeetcodeClientImpl(final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer) {
         this.meterRegistry = meterRegistry;
         this.client = HttpClient.newHttpClient();
         this.mapper = new ObjectMapper();
 
         this.leetcodeAuthStealer = leetcodeAuthStealer;
-
-        this.retryRegistry = retryRegistry;
-    }
-
-    @PostConstruct
-    private void registerRetryLogging() {
-        retryRegistry.getAllRetries().forEach(retry -> retry.getEventPublisher()
-                .onRetry(event -> log.info("{}", event)));
     }
 
     private Timer timer() {
