@@ -4,9 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.RetryRegistry;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import jakarta.annotation.PostConstruct;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty;
 import org.patinanetwork.codebloom.common.leetcode.models.Lang;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeDetailedQuestion;
@@ -42,6 +47,7 @@ import org.springframework.stereotype.Component;
 /** TODO: Add an input to determine whether the request must be processed quickly or not. */
 @Component
 @Primary
+@Slf4j
 public class LeetcodeClientImpl implements LeetcodeClient {
 
     private static final String GRAPHQL_ENDPOINT = "https://leetcode.com/graphql";
@@ -57,12 +63,25 @@ public class LeetcodeClientImpl implements LeetcodeClient {
 
     private final LeetcodeAuthStealer leetcodeAuthStealer;
 
-    public LeetcodeClientImpl(final MeterRegistry meterRegistry, final LeetcodeAuthStealer leetcodeAuthStealer) {
+    private final RetryRegistry retryRegistry;
+
+    public LeetcodeClientImpl(
+            final MeterRegistry meterRegistry,
+            final LeetcodeAuthStealer leetcodeAuthStealer,
+            final RetryRegistry retryRegistry) {
         this.meterRegistry = meterRegistry;
         this.client = HttpClient.newHttpClient();
         this.mapper = new ObjectMapper();
 
         this.leetcodeAuthStealer = leetcodeAuthStealer;
+
+        this.retryRegistry = retryRegistry;
+    }
+
+    @PostConstruct
+    private void registerRetryLogging() {
+        retryRegistry.getAllRetries().forEach(retry -> retry.getEventPublisher()
+                .onRetry(event -> log.info("{}", event)));
     }
 
     private Timer timer() {
@@ -139,6 +158,8 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     }
 
     @Override
+    @Retry(name = "leetcodeClient")
+    @CircuitBreaker(name = "leetcodeClient")
     public LeetcodeQuestion findQuestionBySlug(final String slug) {
         return timer().record(() -> {
             String requestBody;
@@ -217,6 +238,8 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         return findSubmissionsByUsername(username, 20);
     }
 
+    @Retry(name = "leetcodeClient")
+    @CircuitBreaker(name = "leetcodeClient")
     @Override
     public ArrayList<LeetcodeSubmission> findSubmissionsByUsername(final String username, final int limit) {
         return timer().record(() -> {
@@ -276,6 +299,8 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     }
 
     @Override
+    @Retry(name = "leetcodeClient")
+    @CircuitBreaker(name = "leetcodeClient")
     public LeetcodeDetailedQuestion findSubmissionDetailBySubmissionId(final int submissionId) {
         return timer().record(() -> {
             String requestBody;
@@ -343,6 +368,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         });
     }
 
+    @Override
+    @Retry(name = "leetcodeClient")
+    @CircuitBreaker(name = "leetcodeClient")
     public POTD getPotd() {
         return timer().record(() -> {
             String requestBody;
@@ -387,6 +415,8 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     }
 
     @Override
+    @Retry(name = "leetcodeClient")
+    @CircuitBreaker(name = "leetcodeClient")
     public UserProfile getUserProfile(final String username) {
         return timer().record(() -> {
             String requestBody;
@@ -430,6 +460,8 @@ public class LeetcodeClientImpl implements LeetcodeClient {
     }
 
     @Override
+    @Retry(name = "leetcodeClient")
+    @CircuitBreaker(name = "leetcodeClient")
     public Set<LeetcodeTopicTag> getAllTopicTags() {
         return timer().record(() -> {
             try {
@@ -474,6 +506,9 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         });
     }
 
+    @Override
+    @Retry(name = "leetcodeClient")
+    @CircuitBreaker(name = "leetcodeClient")
     public List<LeetcodeQuestion> getAllProblems() {
         return timer().record(() -> {
             try {

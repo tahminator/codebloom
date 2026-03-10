@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import io.github.resilience4j.retry.RetryRegistry;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.net.http.HttpClient;
@@ -32,11 +33,12 @@ public class LeetcodeClientTest {
     private final LeetcodeAuthStealer leetcodeAuthStealer = mock(LeetcodeAuthStealer.class);
     private final HttpClient httpClient = mock(HttpClient.class);
     private final HttpResponse<String> httpResponse = mock(HttpResponse.class);
+    private final RetryRegistry retryRegistry = mock(RetryRegistry.class);
 
     private final LeetcodeClientImpl leetcodeClient;
 
     public LeetcodeClientTest() throws Exception {
-        leetcodeClient = new LeetcodeClientImpl(meterRegistry, leetcodeAuthStealer);
+        leetcodeClient = new LeetcodeClientImpl(meterRegistry, leetcodeAuthStealer, retryRegistry);
         setupMockHttpClient(leetcodeClient, httpClient);
     }
 
