@@ -124,3 +124,23 @@ playwright:
 
 ff:
   duels: true
+
+
+resilience4j:
+
+  retry:
+    instances:
+      leetcodeClient:
+        max-attempts: 3
+        wait-duration: 2s
+        enable-exponential-backoff: true
+
+  circuitbreaker:
+    instances:
+      leetcodeClient:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        register-health-indicator: true
+
