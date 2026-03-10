@@ -13,8 +13,8 @@
         "@eslint/js": "^9.39.1",
         "@types/node": "^24.10.0",
         "@types/react": "^19.2.2",
-        "eslint": "^9.39.1",
-        "eslint-plugin-perfectionist": "^4.15.1",
+        "eslint": "^10",
+        "eslint-plugin-perfectionist": "^5.6.0",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.0.1",
         "eslint-plugin-react-refresh": "^0.4.24",
@@ -35,12 +35,9 @@
     },
     "pnpm": {
         "overrides": {
-            "cross-spawn": ">=6.0.6",
-            "electron": ">=35.7.5",
-            "got": ">=11.8.5",
-            "js-yaml": ">=4.1.1",
             "minimatch": ">=9.0.7",
-            "ajv": ">=6.14.0"
+            "minimatch@<3.1.4": "3.1.4",
+            "ajv@<6.14.0": "6.14.0"
         }
     }
 }
