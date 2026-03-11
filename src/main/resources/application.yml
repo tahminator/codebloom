@@ -96,7 +96,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: prometheus
+        include: prometheus, health
   endpoint:
     prometheus:
       enabled: true
@@ -142,5 +142,4 @@ resilience4j:
         minimum-number-of-calls: 5
         wait-duration-in-open-state: 30s
         permitted-number-of-calls-in-half-open-state: 3
-        register-health-indicator: true
 
