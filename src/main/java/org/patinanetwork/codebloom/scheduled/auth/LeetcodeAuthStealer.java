@@ -1,8 +1,8 @@
 package org.patinanetwork.codebloom.scheduled.auth;
 
 import com.google.common.annotations.VisibleForTesting;
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -25,10 +25,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@Timed(value = "leetcode.client.execution")
 public class LeetcodeAuthStealer {
-
-    @VisibleForTesting
-    static final String METRIC_NAME = "leetcode.client.execution";
 
     @VisibleForTesting
     // CHECKSTYLE:OFF
@@ -51,7 +49,6 @@ public class LeetcodeAuthStealer {
     private final AuthRepository authRepository;
     private final Reporter reporter;
     private final Env env;
-    private final MeterRegistry meterRegistry;
     private final PlaywrightClient playwrightClient;
 
     public LeetcodeAuthStealer(
@@ -65,19 +62,7 @@ public class LeetcodeAuthStealer {
         this.authRepository = authRepository;
         this.reporter = reporter;
         this.env = env;
-        this.meterRegistry = meterRegistry;
         this.playwrightClient = playwrightClient;
-    }
-
-    private Timer timer() {
-        var stackFrame = StackWalker.getInstance()
-                .walk(frames -> frames.skip(1).findFirst())
-                .orElseThrow();
-
-        String methodName = stackFrame.getMethodName();
-        String className = stackFrame.getClassName();
-
-        return meterRegistry.timer(METRIC_NAME, "class", className, "method", methodName);
     }
 
     /**
@@ -87,47 +72,45 @@ public class LeetcodeAuthStealer {
      */
     @Scheduled(initialDelay = 0, fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     public void stealAuthCookie() {
-        timer().record(() -> {
-            boolean acquired = LOCK.writeLock().tryLock();
-            if (!acquired) {
-                log.info("Lock failed to be acquired, bouncing...");
+        boolean acquired = LOCK.writeLock().tryLock();
+        if (!acquired) {
+            log.info("Lock failed to be acquired, bouncing...");
+            return;
+        }
+
+        try {
+            Auth mostRecentAuth = authRepository.getMostRecentAuth();
+
+            // The auth token should be refreshed every 4 hours.
+            if (mostRecentAuth != null
+                    && mostRecentAuth
+                            .getCreatedAt()
+                            .isAfter(StandardizedOffsetDateTime.now().minus(4, ChronoUnit.HOURS))) {
+                log.info("Auth token already exists, using token from database.");
+                cookie = mostRecentAuth.getToken();
+                csrf = mostRecentAuth.getCsrf();
                 return;
             }
 
-            try {
-                Auth mostRecentAuth = authRepository.getMostRecentAuth();
+            log.info("falling back to checking redis client...");
+            Optional<String> authToken = redisClient.getAuth();
 
-                // The auth token should be refreshed every 4 hours.
-                if (mostRecentAuth != null
-                        && mostRecentAuth
-                                .getCreatedAt()
-                                .isAfter(StandardizedOffsetDateTime.now().minus(4, ChronoUnit.HOURS))) {
-                    log.info("Auth token already exists, using token from database.");
-                    cookie = mostRecentAuth.getToken();
-                    csrf = mostRecentAuth.getCsrf();
-                    return;
-                }
+            log.info("auth token in redis = {}", authToken.isPresent());
 
-                log.info("falling back to checking redis client...");
-                Optional<String> authToken = redisClient.getAuth();
-
-                log.info("auth token in redis = {}", authToken.isPresent());
-
-                if (authToken.isPresent()) {
-                    log.info("auth token found in redis client");
-                    cookie = authToken.get();
-                    csrf = null; // don't care in ci.
-                    return;
-                }
-
-                log.info("auth token not found in redis client");
-                log.info("Auth token is missing/expired. Attempting to receive token...");
-
-                stealCookieImpl();
-            } finally {
-                LOCK.writeLock().unlock();
+            if (authToken.isPresent()) {
+                log.info("auth token found in redis client");
+                cookie = authToken.get();
+                csrf = null; // don't care in ci.
+                return;
             }
-        });
+
+            log.info("auth token not found in redis client");
+            log.info("Auth token is missing/expired. Attempting to receive token...");
+
+            stealCookieImpl();
+        } finally {
+            LOCK.writeLock().unlock();
+        }
     }
 
     /**
@@ -138,30 +121,26 @@ public class LeetcodeAuthStealer {
      */
     @Async
     public CompletableFuture<Optional<String>> reloadCookie() {
-        return timer().record(() -> {
-            boolean acquired = LOCK.writeLock().tryLock();
-            if (!acquired) {
-                log.info("Lock failed to be acquired, bouncing...");
-                return CompletableFuture.completedFuture(Optional.empty());
-            }
+        boolean acquired = LOCK.writeLock().tryLock();
+        if (!acquired) {
+            log.info("Lock failed to be acquired, bouncing...");
+            return CompletableFuture.completedFuture(Optional.empty());
+        }
 
-            try {
-                return CompletableFuture.completedFuture(Optional.ofNullable(stealCookieImpl()));
-            } finally {
-                LOCK.writeLock().unlock();
-            }
-        });
+        try {
+            return CompletableFuture.completedFuture(Optional.ofNullable(stealCookieImpl()));
+        } finally {
+            LOCK.writeLock().unlock();
+        }
     }
 
     public String getCookie() {
-        return timer().record(() -> {
-            LOCK.readLock().lock();
-            try {
-                return cookie;
-            } finally {
-                LOCK.readLock().unlock();
-            }
-        });
+        LOCK.readLock().lock();
+        try {
+            return cookie;
+        } finally {
+            LOCK.readLock().unlock();
+        }
     }
 
     /**
@@ -169,40 +148,36 @@ public class LeetcodeAuthStealer {
      * leetcode.com
      */
     public String getCsrf() {
-        return timer().record(() -> {
-            if (csrf == null && !reported) {
-                reported = true;
-                reporter.log(
-                        "getCsrf",
-                        Report.builder()
-                                .environments(env.getActiveProfiles())
-                                .location(Location.BACKEND)
-                                .data(
-                                        "CSRF token is missing inside of LeetcodeAuthStealer. This may be something to look into.")
-                                .build());
-            }
+        if (csrf == null && !reported) {
+            reported = true;
+            reporter.log(
+                    "getCsrf",
+                    Report.builder()
+                            .environments(env.getActiveProfiles())
+                            .location(Location.BACKEND)
+                            .data(
+                                    "CSRF token is missing inside of LeetcodeAuthStealer. This may be something to look into.")
+                            .build());
+        }
 
-            return csrf;
-        });
+        return csrf;
     }
 
     String stealCookieImpl() {
-        return timer().record(() -> {
-            Optional<Auth> auth = playwrightClient.getLeetcodeCookie(githubUsername, githubPassword);
-            if (auth.isPresent()) {
-                var a = auth.get();
-                this.csrf = a.getCsrf();
-                this.cookie = a.getToken();
-                redisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS);
-                log.info("auth token stored in redis");
-                this.authRepository.createAuth(Auth.builder()
-                        .csrf(a.getCsrf())
-                        .token(a.getToken())
-                        .createdAt(StandardizedOffsetDateTime.now())
-                        .build());
-                return cookie;
-            }
-            return null;
-        });
+        Optional<Auth> auth = playwrightClient.getLeetcodeCookie(githubUsername, githubPassword);
+        if (auth.isPresent()) {
+            var a = auth.get();
+            this.csrf = a.getCsrf();
+            this.cookie = a.getToken();
+            redisClient.setAuth(a.getToken(), 4, ChronoUnit.HOURS);
+            log.info("auth token stored in redis");
+            this.authRepository.createAuth(Auth.builder()
+                    .csrf(a.getCsrf())
+                    .token(a.getToken())
+                    .createdAt(StandardizedOffsetDateTime.now())
+                    .build());
+            return cookie;
+        }
+        return null;
     }
 }
