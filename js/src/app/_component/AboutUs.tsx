@@ -82,7 +82,7 @@ export default function AboutUs() {
           <Title order={5} style={{ color: "#4cffb0" }}>
             Level Up Your Coding with
           </Title>
-          <Title order={5}>Patina's LeetCode Challenge!</Title>
+          <Title order={5}>Patina's LeetCode Challe!</Title>
           <Box p="1rem">
             <Center>
               <Group gap="sm">
