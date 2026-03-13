@@ -1,5 +1,8 @@
 import type { RestEndpointMethodTypes } from "@octokit/rest";
 
+import { getEnvVariables } from "load-secrets/env/load";
+import { checkNotionPrAndGetTask } from "notion/pr";
+import { getNotionClient } from "notion/sdk";
 import { Octokit } from "octokit";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -31,6 +34,38 @@ const {
   .strict()
   .parse();
 
+function parseCiEnv(ciEnv: Record<string, string>) {
+  const notionDbId = (() => {
+    const v = ciEnv["NOTION_TASK_DB_ID"];
+    if (!v) {
+      throw new Error("Missing NOTION_TASK_DB_ID from .env.ci");
+    }
+    return v;
+  })();
+
+  const notionSecret = (() => {
+    const v = ciEnv["NOTION_SECRET"];
+    if (!v) {
+      throw new Error("Missing NOTION_SECRET from .env.ci");
+    }
+    return v;
+  })();
+
+  return {
+    notionDbId,
+    notionSecret,
+  };
+}
+
+const { notionDbId, notionSecret } = parseCiEnv(await getEnvVariables(["ci"]));
+const client = getNotionClient(notionSecret);
+
+const taskAndPr = await checkNotionPrAndGetTask(client, prId, notionDbId);
+
+const priorityProp = taskAndPr.task.properties["Priority"];
+const taskPriority =
+  priorityProp?.type === "select" ? priorityProp.select?.name : undefined;
+
 const [owner, repo] = (() => {
   const v = rawRepo;
   if (!v) {
@@ -58,7 +93,7 @@ async function main() {
 
   const { login: username } = res.data.user;
 
-  if (username !== AUTHORIZED_USER) {
+  if (username !== AUTHORIZED_USER && taskPriority != "Support") {
     console.warn("This PR will not be auto-approved, exiting...");
     return;
   }
