@@ -1,4 +1,5 @@
 import MiniLeaderboardSkeleton from "@/app/_component/skeletons/MiniLeaderboardSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
 import TagList from "@/components/ui/tags/TagList";
 import Toast from "@/components/ui/toast/Toast";
@@ -14,7 +15,6 @@ import {
   SegmentedControl,
   Text,
   Tooltip,
-  Card,
   Stack,
 } from "@mantine/core";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
@@ -122,12 +122,10 @@ export default function MiniLeaderboardDesktop() {
             {leaderboardData.items.map((entry, index) => {
               if ([0, 1, 2].includes(index)) return null;
               return (
-                <Card
+                <CodebloomCard
                   key={entry.id}
                   component={Link}
                   to={`/user/${entry.id}`}
-                  withBorder
-                  radius="md"
                   padding="lg"
                   bg={theme.colors.dark[7]}
                   styles={{
@@ -202,7 +200,7 @@ export default function MiniLeaderboardDesktop() {
                       {entry.totalScore} Pts
                     </Text>
                   </Flex>
-                </Card>
+                </CodebloomCard>
               );
             })}
           </Flex>

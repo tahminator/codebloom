@@ -1,8 +1,9 @@
-import { Card, Center, Flex, Skeleton } from "@mantine/core";
+import CodebloomCard from "@/components/ui/CodebloomCard";
+import { Center, Flex, Skeleton } from "@mantine/core";
 
 export default function ProblemOfTheDaySkeleton() {
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Center mb={"xs"}>
         <Skeleton w={"18rem"} h={"2.5rem"} data-testid="potd-skeleton-title" />
       </Center>
@@ -39,6 +40,6 @@ export default function ProblemOfTheDaySkeleton() {
           data-testid="potd-skeleton-problem-link-button"
         />
       </Flex>
-    </Card>
+    </CodebloomCard>
   );
 }

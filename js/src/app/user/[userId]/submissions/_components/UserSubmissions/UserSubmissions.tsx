@@ -1,6 +1,7 @@
 import DateRangePopover from "@/app/user/[userId]/submissions/_components/DateRangePopover/DateRangePopover";
 import TopicFilterPopover from "@/app/user/[userId]/submissions/_components/TopicFilters/TopicFilterPopover";
 import UserSubmissionsSkeleton from "@/app/user/[userId]/submissions/_components/UserSubmissions/UserSubmissionsSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import {
@@ -13,16 +14,7 @@ import Toast from "@/components/ui/toast/Toast";
 import { useUserSubmissionsQuery } from "@/lib/api/queries/user";
 import { ApiUtils } from "@/lib/api/utils";
 import { timeDiff } from "@/lib/timeDiff";
-import {
-  Badge,
-  Box,
-  Overlay,
-  Text,
-  Stack,
-  Group,
-  Card,
-  Flex,
-} from "@mantine/core";
+import { Badge, Box, Overlay, Text, Stack, Group, Flex } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -56,6 +48,26 @@ export default function UserSubmissions({ userId }: { userId: string }) {
   const selectedTopicsSet = useMemo(() => new Set(topics), [topics]);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const getDifficultyBadgeColor = (difficulty: string) => {
+    if (difficulty === "Medium") {
+      return "yellow";
+    }
+    if (difficulty === "Hard") {
+      return "red";
+    }
+    return undefined;
+  };
+
+  const getAcceptedBadgeColor = (acceptanceRate: number) => {
+    if (acceptanceRate >= 75) {
+      return undefined;
+    }
+    if (acceptanceRate >= 50) {
+      return "yellow";
+    }
+    return "red";
+  };
 
   if (status === "pending") {
     return (
@@ -159,14 +171,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
         )}
         <Stack gap="sm" my="sm" align={isMobile ? undefined : "center"}>
           {!pageData || pageData.items.length === 0 ?
-            <Card
-              withBorder
-              p="md"
-              radius="md"
-              mih={80}
-              w="100%"
-              flex={isMobile ? 1 : undefined}
-            >
+            <CodebloomCard mih={80} w="100%" flex={isMobile ? 1 : undefined}>
               <Stack gap="xs" justify="center" align="center" h="100%">
                 <Text fw={500} ta="center" c="dimmed">
                   Nothing found.
@@ -175,42 +180,21 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                   No submissions has been entered yet.
                 </Text>
               </Stack>
-            </Card>
+            </CodebloomCard>
           : pageData.items.map((submission) => {
-              const badgeDifficultyColor = (() => {
-                if (submission.questionDifficulty === "Easy") {
-                  return undefined;
-                }
-                if (submission.questionDifficulty === "Medium") {
-                  return "yellow";
-                }
-                if (submission.questionDifficulty === "Hard") {
-                  return "red";
-                }
-                return undefined;
-              })();
-              const badgeAcceptedColor = (() => {
-                const acceptanceRate = submission.acceptanceRate * 100;
-                if (acceptanceRate >= 75) {
-                  return undefined;
-                }
-                if (acceptanceRate >= 50) {
-                  return "yellow";
-                }
-                if (acceptanceRate >= 0) {
-                  return "red";
-                }
-                return undefined;
-              })();
+              const badgeDifficultyColor = getDifficultyBadgeColor(
+                submission.questionDifficulty,
+              );
+              const badgeAcceptedColor = getAcceptedBadgeColor(
+                submission.acceptanceRate * 100,
+              );
               const LanguageIcon =
                 langNameToIcon[submission.language as langNameKey] ||
                 langNameToIcon["default"];
               return (
-                <Card
+                <CodebloomCard
                   key={submission.id}
-                  withBorder
                   p={isMobile ? "sm" : "md"}
-                  radius="md"
                   w="100%"
                   component={Link}
                   to={`/submission/${submission.id}`}
@@ -280,7 +264,7 @@ export default function UserSubmissions({ userId }: { userId: string }) {
                         </Group>
                       )}
                   </Stack>
-                </Card>
+                </CodebloomCard>
               );
             })
           }

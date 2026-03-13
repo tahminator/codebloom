@@ -1,55 +1,46 @@
 import ProblemOfTheDaySkeleton from "@/app/dashboard/_components/ProblemOfTheDay/ProblemOfTheDaySkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import { useFetchPotdQuery } from "@/lib/api/queries/potd";
-import { Badge, Button, Card, Center, Flex, Title } from "@mantine/core";
+import { Badge, Button, Center, Flex, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export default function ProblemOfTheDay() {
   const { data, status } = useFetchPotdQuery();
+
+  const renderStatusCard = (message: string) => (
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
+      <Flex
+        direction={"row"}
+        justify={"center"}
+        align={"center"}
+        w={"100%"}
+        h={"100%"}
+      >
+        <Title order={6} ta={"center"}>
+          {message}
+        </Title>
+      </Flex>
+    </CodebloomCard>
+  );
 
   if (status === "pending") {
     return <ProblemOfTheDaySkeleton />;
   }
 
   if (status === "error") {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            Sorry, something went wrong. Please try again later.
-          </Title>
-        </Flex>
-      </Card>
+    return renderStatusCard(
+      "Sorry, something went wrong. Please try again later.",
     );
   }
 
   if (!data.success) {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            {data.message}
-          </Title>
-        </Flex>
-      </Card>
-    );
+    return renderStatusCard(data.message);
   }
 
   const json = data.payload;
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Center>
         <Title style={{ textAlign: "center" }} order={3}>
           Problem of the day
@@ -86,6 +77,6 @@ export default function ProblemOfTheDay() {
           Go to question
         </Button>
       </Flex>
-    </Card>
+    </CodebloomCard>
   );
 }

@@ -2,6 +2,7 @@ import DashboardLeaderboardSkeleton from "@/app/dashboard/_components/DashboardL
 import FilterTagsControl from "@/app/dashboard/_components/DashboardLeaderboard/FilterTagControls";
 import MyCurrentPoints from "@/app/dashboard/_components/DashboardLeaderboard/MyCurrentPoints";
 import { CurrentLeaderboardMetadata } from "@/app/leaderboard/_components/LeaderboardMetadata/LeaderboardMetadata";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import TagList from "@/components/ui/tags/TagList";
 import {
   useCurrentLeaderboardMetadataQuery,
@@ -18,7 +19,6 @@ import {
 import { theme } from "@/lib/theme";
 import {
   Button,
-  Card,
   Divider,
   Flex,
   Overlay,
@@ -61,64 +61,41 @@ export default function LeaderboardForDashboard({
     setSelectedFilterKey(value);
   };
 
+  const renderCenteredStatusCard = (message: string) => (
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
+      <Flex
+        direction={"row"}
+        justify={"center"}
+        align={"center"}
+        w={"100%"}
+        h={"100%"}
+      >
+        <Title order={6} ta={"center"}>
+          {message}
+        </Title>
+      </Flex>
+    </CodebloomCard>
+  );
+
   if (status === "pending") {
     return <DashboardLeaderboardSkeleton />;
   }
 
   if (status === "error") {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            Sorry, something went wrong. Please try again later.
-          </Title>
-        </Flex>
-      </Card>
+    return renderCenteredStatusCard(
+      "Sorry, something went wrong. Please try again later.",
     );
   }
 
   if (!data.success) {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            {data.message}
-          </Title>
-        </Flex>
-      </Card>
-    );
+    return renderCenteredStatusCard(data.message);
   }
 
   const leaderboardData = data.payload;
 
   if (leaderboardData.items.length == 0) {
-    return (
-      <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
-        <Flex
-          direction={"row"}
-          justify={"center"}
-          align={"center"}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Title order={6} ta={"center"}>
-            Oops! No users here yet. Crack your first problem and claim this
-            space like a champ!
-          </Title>
-        </Flex>
-      </Card>
+    return renderCenteredStatusCard(
+      "Oops! No users here yet. Crack your first problem and claim this space like a champ!",
     );
   }
 
@@ -126,7 +103,7 @@ export default function LeaderboardForDashboard({
   const filteredTags = ApiUtils.filterUnusedTags(userTags);
 
   return (
-    <Card withBorder padding={"md"} radius={"md"} miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard miw={"31vw"} mih={"63vh"}>
       <Flex
         direction={{ base: "column", md: "row" }}
         justify={"space-between"}
@@ -278,6 +255,6 @@ export default function LeaderboardForDashboard({
           );
         })}
       </Flex>
-    </Card>
+    </CodebloomCard>
   );
 }

@@ -1,4 +1,5 @@
 import LeaderboardSkeleton from "@/app/leaderboard/_components/LeaderboardSkeleton";
+import CodebloomCard from "@/components/ui/CodebloomCard";
 import FilterDropdown from "@/components/ui/dropdown/FilterDropdown";
 import FilterDropdownItem from "@/components/ui/dropdown/FilterDropdownItem";
 import LeaderboardCard from "@/components/ui/LeaderboardCard";
@@ -23,7 +24,6 @@ import { theme } from "@/lib/theme";
 import {
   Box,
   Button,
-  Card,
   Center,
   Divider,
   Flex,
@@ -272,14 +272,11 @@ function LeaderboardIndex({
         )}
         <Stack gap="md">
           {cardItems.map((entry) => (
-            <Card
+            <CodebloomCard
               key={entry.id}
               component={Link}
               to={getUserProfileUrl(entry.id, dateRange)}
-              shadow="sm"
               padding="lg"
-              radius="md"
-              withBorder
               bg={theme.colors.dark[7]}
               styles={{
                 root: {
@@ -360,7 +357,7 @@ function LeaderboardIndex({
                   {entry.totalScore} Pts
                 </Text>
               </Flex>
-            </Card>
+            </CodebloomCard>
           ))}
         </Stack>
       </Box>
