@@ -58,9 +58,9 @@ function parseCiEnv(ciEnv: Record<string, string>) {
 }
 
 const { notionDbId, notionSecret } = parseCiEnv(await getEnvVariables(["ci"]));
-const client = getNotionClient(notionSecret);
+const notionClient = getNotionClient(notionSecret);
 
-const taskAndPr = await checkNotionPrAndGetTask(client, prId, notionDbId);
+const taskAndPr = await checkNotionPrAndGetTask(notionClient, prId, notionDbId);
 
 const priorityProp = taskAndPr.task.properties["Priority"];
 const taskPriority =
@@ -93,21 +93,28 @@ async function main() {
 
   const { login: username } = res.data.user;
 
-  if (username !== AUTHORIZED_USER && taskPriority != "Support") {
-    console.warn("This PR will not be auto-approved, exiting...");
-    return;
-  }
+  const isCollaborator = await client.rest.repos
+    .checkCollaborator({ owner, repo, username })
+    .then(() => true)
+    .catch(() => false);
 
-  try {
-    await client.rest.pulls.createReview({
-      owner,
-      repo,
-      pull_number: prId,
-      event: "APPROVE",
-    });
-  } catch (e) {
-    const s = JSON.stringify(e);
-    throw new Error(`GitHub API Error\n\n${s}`);
+  const isSupportTicketOverride = taskPriority === "Support" && isCollaborator;
+  const isOwnerOverride = username === AUTHORIZED_USER;
+
+  if (isSupportTicketOverride || isOwnerOverride) {
+    try {
+      await client.rest.pulls.createReview({
+        owner,
+        repo,
+        pull_number: prId,
+        event: "APPROVE",
+      });
+    } catch (e) {
+      const s = JSON.stringify(e);
+      throw new Error(`GitHub API Error\n\n${s}`);
+    }
+  } else {
+    console.log("Skipping auto approval...");
   }
 }
 
