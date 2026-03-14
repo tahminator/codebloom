@@ -77,11 +77,11 @@ email-gen *args:
 
 # Run the dev servers (backend & frontend)
 dev *args:
-  pnpm i -g concurrently && concurrently "just backend-dev" "just frontend-dev" {{args}}
+  cp internal/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && npx concurrently "just backend-dev" "just frontend-dev" {{args}}
 
 # Run the dev servers (backend & frontend) but the backend will launch a debugger server.
 devd *args:
-  pnpm i -g concurrently && concurrently "just backend-dev-debug" "just frontend-dev" {{args}}
+  npx concurrently "just backend-dev-debug" "just frontend-dev" {{args}}
 
 # Interactive script to add a user's GPG public key so they can decrypt keys
 git-crypt-add-user:
