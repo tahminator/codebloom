@@ -153,9 +153,9 @@ export default function LeaderboardForDashboard({
 
           const bgColor = (() => {
             if (isMe) return undefined;
-            if (place === 1) return "var(--mantine-color-yellow-8)";
-            if (place === 2) return "var(--mantine-color-dark-2)";
-            if (place === 3) return "var(--mantine-color-orange-9)";
+            if (place === 1) return theme.colors.yellow[8];
+            if (place === 2) return theme.colors.dark[2];
+            if (place === 3) return theme.colors.orange[9];
             return undefined;
           })();
 
