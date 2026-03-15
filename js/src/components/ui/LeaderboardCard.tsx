@@ -43,10 +43,10 @@ export default function LeaderboardCard({
 }) {
   const isTopThree = sizeOrder <= 3;
   const borderColor = (() => {
-    if (placeString === "1st") return "!border-yellow-400";
-    if (placeString === "2nd") return "!border-slate-300";
-    if (placeString === "3rd") return "!border-amber-700";
-    return "";
+    if (placeString === "1st") return theme.colors.yellow[4];
+    if (placeString === "2nd") return theme.colors.gray[4];
+    if (placeString === "3rd") return theme.colors.orange[9];
+    return undefined;
   })();
 
   const boxShadow = (() => {
@@ -76,12 +76,17 @@ export default function LeaderboardCard({
 
   return (
     <CodebloomCard
-      className={`${isTopThree ? `border-4 ${borderColor}` : "border-2"} flex flex-col items-center justify-between relative`}
+      padding={embedded ? "xs" : "md"}
       style={{
         height,
         width,
-        padding: embedded ? "0.5rem 1rem" : "1.25rem 1rem",
         boxShadow,
+        borderColor,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-between",
+        position: "relative",
       }}
       component={Link}
       to={getUserProfileUrl(userId, dateRange)}
@@ -116,7 +121,7 @@ export default function LeaderboardCard({
               }}
             >
               <IconCircleCheckFilled
-                className="inline"
+                style={{ display: "inline" }}
                 color={theme.colors.patina[4]}
                 size={embedded ? 13 : 24}
               />{" "}
@@ -136,7 +141,7 @@ export default function LeaderboardCard({
                 : `clamp(0.9rem, ${100 / (discordName.length + 5)}vw, 1.1rem)`,
             }}
           >
-            <FaDiscord className="inline" /> {discordName}
+            <FaDiscord style={{ display: "inline" }} /> {discordName}
           </Text>
           {tagFF && displayTags && displayTags.length > 0 && (
             <TagList tags={displayTags} size={14} gap="xs" />
@@ -147,7 +152,7 @@ export default function LeaderboardCard({
           fw={isTopThree ? 500 : 400}
           style={{ fontSize: "0.95rem" }}
         >
-          <SiLeetcode className="inline" /> {leetcodeUsername}
+          <SiLeetcode style={{ display: "inline" }} /> {leetcodeUsername}
         </Text>
       </Stack>
       <Text
