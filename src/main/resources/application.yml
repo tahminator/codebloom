@@ -125,9 +125,7 @@ playwright:
 ff:
   duels: true
 
-
 resilience4j:
-
   retry:
     instances:
       leetcodeClient:
@@ -142,4 +140,3 @@ resilience4j:
         minimum-number-of-calls: 5
         wait-duration-in-open-state: 30s
         permitted-number-of-calls-in-half-open-state: 3
-
