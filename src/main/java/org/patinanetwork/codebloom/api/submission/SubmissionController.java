@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.patinanetwork.codebloom.api.submission.body.LeetcodeUsernameObject;
 import org.patinanetwork.codebloom.common.db.models.potd.POTD;
 import org.patinanetwork.codebloom.common.db.models.user.User;
@@ -265,17 +264,14 @@ public class SubmissionController {
         AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
 
-        Optional<POTD> potd = potdRepository.getCurrentPOTD();
-
-        if (potd.isEmpty() || !isSameDay(potd.get().getCreatedAt())) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponder.failure("Sorry, no problem of the day today!"));
-        }
-
-        POTD currePotd = potd.get();
+        POTD potd = potdRepository
+                .getCurrentPOTD()
+                .filter(p -> isSameDay(p.getCreatedAt()))
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sorry, no problem of the day today!"));
 
         boolean alreadyCompleted = questionRepository
-                .getQuestionBySlugAndUserId(currePotd.getSlug(), user.getId())
+                .getQuestionBySlugAndUserId(potd.getSlug(), user.getId())
                 .isPresent();
 
         if (alreadyCompleted) {
@@ -286,7 +282,7 @@ public class SubmissionController {
         }
 
         return ResponseEntity.ok()
-                .body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(currePotd)));
+                .body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(potd)));
     }
 
     @Operation(
@@ -306,17 +302,14 @@ public class SubmissionController {
     public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotdEmbed() {
         FakeLag.sleep(750);
 
-        Optional<POTD> potd = potdRepository.getCurrentPOTD();
-
-        if (potd.isEmpty() || !isSameDay(potd.get().getCreatedAt())) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponder.failure("Sorry, no problem of the day today!"));
-        }
-
-        POTD currentPotd = potd.get();
+        POTD potd = potdRepository
+                .getCurrentPOTD()
+                .filter(p -> isSameDay(p.getCreatedAt()))
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sorry, no problem of the day today!"));
 
         return ResponseEntity.ok()
-                .body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(currentPotd)));
+                .body(ApiResponder.success("Problem of the day has been fetched!", PotdDto.fromPOTD(potd)));
     }
 
     @Operation(

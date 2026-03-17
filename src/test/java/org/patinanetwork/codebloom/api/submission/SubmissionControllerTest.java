@@ -242,10 +242,10 @@ public class SubmissionControllerTest {
         when(auth.getUser()).thenReturn(user);
         when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotd(request);
+        ResponseStatusException ex =
+                assertThrows(ResponseStatusException.class, () -> submissionController.getCurrentPotd(request));
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertFalse(response.getBody().isSuccess());
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     }
 
     @Test
@@ -267,10 +267,10 @@ public class SubmissionControllerTest {
     void testGetCurrentPotdEmbedFailure() {
         when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed();
+        ResponseStatusException ex =
+                assertThrows(ResponseStatusException.class, () -> submissionController.getCurrentPotdEmbed());
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertFalse(response.getBody().isSuccess());
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     }
 
     @Test
