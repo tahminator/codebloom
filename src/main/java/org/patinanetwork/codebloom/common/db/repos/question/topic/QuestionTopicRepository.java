@@ -1,17 +1,19 @@
 package org.patinanetwork.codebloom.common.db.repos.question.topic;
 
 import java.util.List;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import org.patinanetwork.codebloom.common.db.models.question.topic.QuestionTopic;
 
 public interface QuestionTopicRepository {
+
     List<QuestionTopic> findQuestionTopicsByQuestionId(String questionId);
 
     List<QuestionTopic> findQuestionTopicsByQuestionBankId(String questionBankId);
 
-    QuestionTopic findQuestionTopicById(String id);
+    Optional<QuestionTopic> findQuestionTopicById(String id);
 
-    QuestionTopic findQuestionTopicByQuestionIdAndTopicEnum(String questionId, LeetcodeTopicEnum topicEnum);
+    Optional<QuestionTopic> findQuestionTopicByQuestionIdAndTopicEnum(String questionId, LeetcodeTopicEnum topicEnum);
 
     /**
      * @note - The provided object's methods will be overridden with any returned data from the database.

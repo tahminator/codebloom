@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.db.repos.question.topic;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Slf4j
 public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
 
-    private QuestionTopicRepository questionTopicRepository;
+    private final QuestionTopicRepository questionTopicRepository;
     private final String mockQuestionId = "c9857a8a-9d0b-4d2e-b73c-3af2425bdca6";
     private final String mockQuestionBankId = "165dd000-c310-11f0-8d3a-461b1b1abee8";
 
@@ -65,12 +66,13 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testFindQuestionTopicById() {
-        QuestionTopic possibleQuestionTopic = questionTopicRepository.findQuestionTopicById(testQuestionTopic.getId());
+        Optional<QuestionTopic> possibleQuestionTopic =
+                questionTopicRepository.findQuestionTopicById(testQuestionTopic.getId());
 
-        assertNotNull(possibleQuestionTopic, "Retrieved question topic should not be null");
+        assertTrue(possibleQuestionTopic.isPresent(), "Retrieved question topic should not be empty");
 
-        if (!possibleQuestionTopic.equals(testQuestionTopic)) {
-            log.info("possibleQuestionTopic: {}", possibleQuestionTopic);
+        if (!possibleQuestionTopic.get().equals(testQuestionTopic)) {
+            log.info("possibleQuestionTopic: {}", possibleQuestionTopic.get());
             log.info("testQuestionTopic: {}", testQuestionTopic);
             fail("testFindQuestionTopicById failed: possibleQuestionTopic does not equal to testQuestionTopic");
         }
@@ -79,13 +81,14 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void testFindQuestionTopicByQuestionIdAndTopicEnum() {
-        QuestionTopic possibleQuestionTopic = questionTopicRepository.findQuestionTopicByQuestionIdAndTopicEnum(
-                mockQuestionId, LeetcodeTopicEnum.ARRAY);
+        Optional<QuestionTopic> possibleQuestionTopic =
+                questionTopicRepository.findQuestionTopicByQuestionIdAndTopicEnum(
+                        mockQuestionId, LeetcodeTopicEnum.ARRAY);
 
-        assertNotNull(possibleQuestionTopic, "Retrieved question topic should not be null");
+        assertTrue(possibleQuestionTopic.isPresent(), "Retrieved question topic should not be empty");
 
-        if (!possibleQuestionTopic.equals(testQuestionTopic)) {
-            log.info("possibleQuestionTopic: {}", possibleQuestionTopic);
+        if (!possibleQuestionTopic.get().equals(testQuestionTopic)) {
+            log.info("possibleQuestionTopic: {}", possibleQuestionTopic.get());
             log.info("testQuestionTopic: {}", testQuestionTopic);
             fail(
                     "testFindQuestionTopicByQuestionIdAndTopicEnum failed: possibleQuestionTopic does not equal to testQuestionTopic");
@@ -118,14 +121,15 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
             fail("testUpdateQuestion failed: Failed to update question");
         }
 
-        QuestionTopic newQuestionTopic = questionTopicRepository.findQuestionTopicById(testQuestionTopic.getId());
+        Optional<QuestionTopic> newQuestionTopic =
+                questionTopicRepository.findQuestionTopicById(testQuestionTopic.getId());
 
-        assertNotNull(newQuestionTopic, "Retrieved question topic should not be null");
+        assertTrue(newQuestionTopic.isPresent(), "Retrieved question topic should not be empty");
 
-        if (!newQuestionTopic.equals(testQuestionTopic)) {
-            log.info("newQuestionTopic: {}", newQuestionTopic);
+        if (!newQuestionTopic.get().equals(testQuestionTopic)) {
+            log.info("newQuestionTopic: {}", newQuestionTopic.get());
             log.info("testQuestionTopic: {}", testQuestionTopic);
-            fail("testFindQuestionTopicById failed: newQuestionTopic does not equal to testQuestionTopic");
+            fail("testUpdateQuestion failed: newQuestionTopic does not equal to testQuestionTopic");
         }
     }
 
@@ -140,7 +144,7 @@ public class QuestionTopicRepositoryTest extends BaseRepositoryTest {
         if (!questionBankTopics.contains(testQuestionBankTopic)) {
             log.info("questionBankTopics: {}", questionBankTopics);
             log.info("testQuestionBankTopic: {}", testQuestionBankTopic);
-            fail("testFindQuestionTopicsByQuestionBankId failed: testQuestionBankTopic is not in questionTopics");
+            fail("testFindQuestionTopicsByQuestionBankId failed: testQuestionBankTopic is not in questionBankTopics");
         }
     }
 }
