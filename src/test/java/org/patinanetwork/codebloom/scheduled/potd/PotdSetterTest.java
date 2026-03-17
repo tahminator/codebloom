@@ -1,8 +1,10 @@
 package org.patinanetwork.codebloom.scheduled.potd;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +33,7 @@ public class PotdSetterTest {
     @Test
     void testPotdSetterSetPotdWherePotdIsFoundButStillCurrentPotd() {
         POTD potd = new POTD("Example title", "Example slug", QuestionDifficulty.Easy);
-        org.patinanetwork.codebloom.common.db.models.potd.POTD dbPotd = org.patinanetwork
+        Optional<org.patinanetwork.codebloom.common.db.models.potd.POTD> dbPotd = Optional.of(org.patinanetwork
                 .codebloom
                 .common
                 .db
@@ -44,7 +46,7 @@ public class PotdSetterTest {
                 .multiplier(1.3f)
                 .slug(potd.getTitleSlug())
                 .title(potd.getTitle())
-                .build();
+                .build());
 
         when(leetcodeClient.getPotd()).thenReturn(potd);
         when(potdRepository.getCurrentPOTD()).thenReturn(dbPotd);
@@ -59,7 +61,7 @@ public class PotdSetterTest {
     void testPotdSetterSetPotdWherePotdIsFoundButNoCurrentPotdYet() {
         POTD potd = new POTD("Example title", "Example slug", QuestionDifficulty.Easy);
         when(leetcodeClient.getPotd()).thenReturn(potd);
-        when(potdRepository.getCurrentPOTD()).thenReturn(null);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
 
         potdSetter.setPotd();
 
@@ -77,7 +79,7 @@ public class PotdSetterTest {
     @Test
     void testPotdSetterSetPotdWherePotdIsFoundAndDoesntMatchOldPotd() {
         POTD potd = new POTD("Example title", "Example slug", QuestionDifficulty.Easy);
-        org.patinanetwork.codebloom.common.db.models.potd.POTD oldDbPotd = org.patinanetwork
+        Optional<org.patinanetwork.codebloom.common.db.models.potd.POTD> oldDbPotd = Optional.of(org.patinanetwork
                 .codebloom
                 .common
                 .db
@@ -90,7 +92,7 @@ public class PotdSetterTest {
                 .multiplier(1.3f)
                 .slug("old slug")
                 .title("old title")
-                .build();
+                .build());
 
         when(leetcodeClient.getPotd()).thenReturn(potd);
         when(potdRepository.getCurrentPOTD()).thenReturn(oldDbPotd);
@@ -105,6 +107,5 @@ public class PotdSetterTest {
         assertNotNull(dbPotd);
         assertEquals(potd.getTitle(), dbPotd.getTitle());
         assertEquals(potd.getTitleSlug(), dbPotd.getSlug());
-        assertEquals(potd.getDifficulty(), potd.getDifficulty());
     }
 }

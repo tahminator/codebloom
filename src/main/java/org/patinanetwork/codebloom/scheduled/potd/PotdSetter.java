@@ -1,5 +1,6 @@
 package org.patinanetwork.codebloom.scheduled.potd;
 
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.potd.POTD;
 import org.patinanetwork.codebloom.common.db.repos.potd.POTDRepository;
 import org.patinanetwork.codebloom.common.leetcode.LeetcodeClient;
@@ -35,8 +36,9 @@ public class PotdSetter {
             return;
         }
 
-        POTD currentPotd = potdRepository.getCurrentPOTD();
-        if (currentPotd != null && currentPotd.getTitle().equals(leetcodePotd.getTitle())) {
+        Optional<POTD> potd = potdRepository.getCurrentPOTD();
+
+        if (potd.map(p -> p.getTitle().equals(leetcodePotd.getTitle())).orElse(false)) {
             // It's already the latest POTD, don't want to do it again.
             LOGGER.info("POTD has already been set before, will not be doing it again.");
             return;

@@ -1,10 +1,12 @@
 package org.patinanetwork.codebloom.common.db.repos.potd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -55,24 +57,24 @@ public class POTDRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void testGetPOTDById() {
-        POTD fetched = potdRepository.getPOTDById(testPOTD.getId());
-        assertNotNull(fetched);
-        assertTrue(testPOTD.equals(fetched));
+        Optional<POTD> fetched = potdRepository.getPOTDById(testPOTD.getId());
+        assertTrue(fetched.isPresent());
+        assertTrue(Optional.of(testPOTD).equals(fetched));
     }
 
     @Test
     @Order(3)
     void testGetCurrentPOTD() {
-        POTD current = potdRepository.getCurrentPOTD();
-        assertNotNull(current);
-        assertTrue(testPOTD.equals(current));
+        Optional<POTD> current = potdRepository.getCurrentPOTD();
+        assertTrue(current.isPresent());
+        assertTrue(Optional.of(testPOTD).equals(current));
     }
 
     @Test
     @Order(4)
     void testGetAllPOTDS() {
         List<POTD> all = potdRepository.getAllPOTDS();
-        assertNotNull(all);
+        assertFalse(all.isEmpty());
         assertTrue(all.contains(testPOTD));
     }
 
@@ -81,7 +83,7 @@ public class POTDRepositoryTest extends BaseRepositoryTest {
     void testUpdatePOTD() {
         testPOTD.setTitle("Updated Title");
         potdRepository.updatePOTD(testPOTD);
-        POTD updated = potdRepository.getPOTDById(testPOTD.getId());
-        assertEquals("Updated Title", updated.getTitle());
+        Optional<POTD> updated = potdRepository.getPOTDById(testPOTD.getId());
+        assertEquals("Updated Title", updated.get().getTitle());
     }
 }

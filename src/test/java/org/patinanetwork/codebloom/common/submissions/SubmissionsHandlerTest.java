@@ -93,7 +93,7 @@ class SubmissionsHandlerTest {
     @BeforeEach
     void commonStubs() {
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(leaderboard));
-        when(potdRepository.getCurrentPOTD()).thenReturn(null);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
 
         when(questionRepository.createQuestion(any(Question.class))).thenAnswer(inv -> {
             Question q = inv.getArgument(0);
@@ -339,14 +339,14 @@ class SubmissionsHandlerTest {
                 .multiplier(2.0f)
                 .createdAt(LocalDateTime.now())
                 .build();
-        when(potdRepository.getCurrentPOTD()).thenReturn(potd);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.of(potd));
 
         LeetcodeSubmission sub = acceptedSubmission(700, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0));
         when(questionRepository.questionExistsBySubmissionId("700")).thenReturn(false);
         when(questionRepository.getQuestionBySlugAndUserId("two-sum", USER_ID)).thenReturn(Optional.empty());
         when(leetcodeClient.findQuestionBySlug("two-sum")).thenReturn(leetcodeQuestion("two-sum", "Easy", 50f));
 
-        when(potdRepository.getCurrentPOTD()).thenReturn(null);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
         handler.handleSubmissions(
                 List.of(acceptedSubmission(701, "two-sum", LocalDateTime.of(2025, 6, 1, 12, 0))), user, false);
 
@@ -358,7 +358,7 @@ class SubmissionsHandlerTest {
             q.setId("q-potd");
             return q;
         });
-        when(potdRepository.getCurrentPOTD()).thenReturn(potd);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.of(potd));
 
         ArrayList<AcceptedSubmission> potdResult = handler.handleSubmissions(List.of(sub), user, false);
 
