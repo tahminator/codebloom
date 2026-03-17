@@ -109,7 +109,7 @@ public class SubmissionsHandler {
     public ArrayList<AcceptedSubmission> handleSubmissions(
             final List<LeetcodeSubmission> leetcodeSubmissions, final User user, boolean fast) {
         ArrayList<AcceptedSubmission> acceptedSubmissions = new ArrayList<>();
-        POTD potd = potdRepository.getCurrentPOTD();
+        Optional<POTD> potd = potdRepository.getCurrentPOTD();
 
         var questionMap = leetcodeSubmissions.parallelStream()
                 .filter(distinctByKey(LeetcodeSubmission::getTitleSlug))
@@ -154,14 +154,10 @@ public class SubmissionsHandler {
                     .getQuestionBySlugAndUserId(leetcodeSubmission.getTitleSlug(), user.getId())
                     .isPresent();
 
-            float multiplier;
-            if (potd == null
-                    || !isValid(potd.getCreatedAt())
-                    || !Objects.equals(potd.getSlug(), leetcodeSubmission.getTitleSlug())) {
-                multiplier = 1.0f;
-            } else {
-                multiplier = potd.getMultiplier();
-            }
+            float multiplier = potd.filter(currentPotd -> isValid(currentPotd.getCreatedAt())
+                            && Objects.equals(currentPotd.getSlug(), leetcodeSubmission.getTitleSlug()))
+                    .map(POTD::getMultiplier)
+                    .orElse(1.0f);
 
             QuestionBank bankQuestion = questionMap.get(leetcodeSubmission.getTitleSlug());
 

@@ -213,7 +213,7 @@ public class SubmissionControllerTest {
         when(auth.getUser()).thenReturn(user);
         when(user.getId()).thenReturn("abcdefg123456");
 
-        when(potdRepository.getCurrentPOTD()).thenReturn(potd);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.of(potd));
         when(potd.getCreatedAt()).thenReturn(LocalDateTime.now());
         when(potd.getSlug()).thenReturn("two-sum");
 
@@ -240,7 +240,7 @@ public class SubmissionControllerTest {
 
         when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
-        when(potdRepository.getCurrentPOTD()).thenReturn(null);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotd(request);
 
@@ -252,7 +252,7 @@ public class SubmissionControllerTest {
     void testGetCurrentPotdEmbedSuccess() {
         POTD potd = mock(POTD.class);
 
-        when(potdRepository.getCurrentPOTD()).thenReturn(potd);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.of(potd));
         when(potd.getCreatedAt()).thenReturn(LocalDateTime.now());
 
         ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed();
@@ -265,7 +265,7 @@ public class SubmissionControllerTest {
 
     @Test
     void testGetCurrentPotdEmbedFailure() {
-        when(potdRepository.getCurrentPOTD()).thenReturn(null);
+        when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
 
         ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotdEmbed();
 

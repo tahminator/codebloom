@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.patinanetwork.codebloom.common.db.models.potd.POTD;
@@ -56,7 +57,7 @@ public class POTDSqlRepository implements POTDRepository {
     }
 
     @Override
-    public POTD getPOTDById(final String id) {
+    public Optional<POTD> getPOTDById(final String id) {
         String sql = "SELECT id, \"title\", \"slug\", \"multiplier\", \"createdAt\" FROM \"POTD\" WHERE id = ?";
 
         try (Connection conn = ds.getConnection();
@@ -64,14 +65,14 @@ public class POTDSqlRepository implements POTDRepository {
             stmt.setObject(1, UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return mapRowToPOTD(rs);
+                    return Optional.of(mapRowToPOTD(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get POTD by id", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -118,7 +119,7 @@ public class POTDSqlRepository implements POTDRepository {
     }
 
     @Override
-    public POTD getCurrentPOTD() {
+    public Optional<POTD> getCurrentPOTD() {
         String sql = """
             SELECT "id", "title", "slug", "multiplier", "createdAt"
             FROM "POTD"
@@ -130,11 +131,11 @@ public class POTDSqlRepository implements POTDRepository {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
-                return mapRowToPOTD(rs);
+                return Optional.of(mapRowToPOTD(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get current POTD", e);
         }
-        return null;
+        return Optional.empty();
     }
 }
