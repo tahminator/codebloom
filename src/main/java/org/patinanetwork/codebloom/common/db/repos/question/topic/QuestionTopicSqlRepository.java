@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.patinanetwork.codebloom.common.db.helper.NamedPreparedStatement;
@@ -17,19 +18,19 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
     private final DataSource ds;
 
-    private QuestionTopic mapResultSetToQuestionTopic(final ResultSet resultSet) throws SQLException {
-        return QuestionTopic.builder()
-                .id(resultSet.getString("id"))
-                .createdAt(resultSet.getTimestamp("createdAt").toLocalDateTime())
-                .questionId(resultSet.getString("questionId"))
-                .questionBankId(resultSet.getString("questionBankId"))
-                .topicSlug(resultSet.getString("topicSlug"))
-                .topic(LeetcodeTopicEnum.fromValue(resultSet.getString("topic")))
-                .build();
-    }
-
     public QuestionTopicSqlRepository(final DataSource ds) {
         this.ds = ds;
+    }
+
+    private QuestionTopic mapResultSetToQuestionTopic(final ResultSet rs) throws SQLException {
+        return QuestionTopic.builder()
+                .id(rs.getString("id"))
+                .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                .questionId(rs.getString("questionId"))
+                .questionBankId(rs.getString("questionBankId"))
+                .topicSlug(rs.getString("topicSlug"))
+                .topic(LeetcodeTopicEnum.fromValue(rs.getString("topic")))
+                .build();
     }
 
     @Override
@@ -48,7 +49,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     "QuestionTopic" qt
                 WHERE
                     qt."questionId" = :questionId
-            """;
+                """;
 
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -82,7 +83,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     "QuestionTopic" qt
                 WHERE
                     qt."questionBankId" = :questionBankId
-            """;
+                """;
 
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -101,41 +102,39 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
     }
 
     @Override
-    public QuestionTopic findQuestionTopicById(final String id) {
-        try {
-            String sql = """
-                    SELECT
-                        id,
-                        "questionId",
-                        "questionBankId",
-                        "topicSlug",
-                        "createdAt",
-                        "topic"
-                    FROM
-                        "QuestionTopic" qt
-                    WHERE
-                        qt.id = :id
+    public Optional<QuestionTopic> findQuestionTopicById(final String id) {
+        String sql = """
+                SELECT
+                    id,
+                    "questionId",
+                    "questionBankId",
+                    "topicSlug",
+                    "createdAt",
+                    "topic"
+                FROM
+                    "QuestionTopic" qt
+                WHERE
+                    qt.id = :id
                 """;
 
-            try (Connection conn = ds.getConnection();
-                    NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
-                stmt.setObject("id", UUID.fromString(id));
+        try (Connection conn = ds.getConnection();
+                NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
+            stmt.setObject("id", UUID.fromString(id));
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return mapResultSetToQuestionTopic(rs);
-                    }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapResultSetToQuestionTopic(rs));
                 }
             }
 
-            return null;
+            return Optional.empty();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get question topic by ID", e);
         }
     }
 
     @Override
-    public QuestionTopic findQuestionTopicByQuestionIdAndTopicEnum(
+    public Optional<QuestionTopic> findQuestionTopicByQuestionIdAndTopicEnum(
             final String questionId, final LeetcodeTopicEnum topicEnum) {
         String sql = """
                 SELECT
@@ -151,7 +150,7 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
                     qt."questionId" = :questionId
                 AND
                     qt.topic = :topic
-            """;
+                """;
 
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
@@ -160,45 +159,35 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return mapResultSetToQuestionTopic(rs);
+                    return Optional.of(mapResultSetToQuestionTopic(rs));
                 }
             }
 
-            return null;
+            return Optional.empty();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to get question topic by ID", e);
+            throw new RuntimeException("Failed to get question topic by question ID and topic enum", e);
         }
     }
 
     @Override
     public void createQuestionTopic(final QuestionTopic questionTopic) {
         String sql = """
-                INSERT INTO "QuestionTopic"
-                    ("id", "questionId", "questionBankId", "topicSlug", "topic")
-                VALUES
-                    (:id, :questionId, :questionBankId, :topicSlug, :topic)
-                RETURNING
-                    "createdAt"
-            """;
+                INSERT INTO "QuestionTopic" ("id", "questionId", "questionBankId", "topicSlug", "topic")
+                VALUES (:id, :questionId, :questionBankId, :topicSlug, :topic)
+                RETURNING "createdAt"
+                """;
 
         questionTopic.setId(UUID.randomUUID().toString());
 
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
-
-            if (questionTopic.getQuestionId() == null) {
-                stmt.setNull("questionId", java.sql.Types.NULL);
-            } else {
-                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
-            }
-
-            if (questionTopic.getQuestionBankId() == null) {
-                stmt.setNull("questionBankId", java.sql.Types.NULL);
-            } else {
-                stmt.setObject("questionBankId", UUID.fromString(questionTopic.getQuestionBankId()));
-            }
-
+            stmt.setObject(
+                    "questionId",
+                    questionTopic.getQuestionId().map(UUID::fromString).orElse(null));
+            stmt.setObject(
+                    "questionBankId",
+                    questionTopic.getQuestionBankId().map(UUID::fromString).orElse(null));
             stmt.setString("topicSlug", questionTopic.getTopicSlug());
             stmt.setObject("topic", questionTopic.getTopic().getLeetcodeEnum(), java.sql.Types.OTHER);
 
@@ -215,33 +204,24 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
     @Override
     public boolean updateQuestionTopicById(final QuestionTopic questionTopic) {
         String sql = """
-                            UPDATE
-                                "QuestionTopic"
-                            SET
-                                "questionId" = :questionId,
-                                "questionBankId" = :questionBankId,
-                                "topicSlug" = :topicSlug,
-                                "topic"  = :topic
-                            WHERE
-                                id = :id
-            """;
+                UPDATE "QuestionTopic"
+                SET
+                    "questionId" = :questionId,
+                    "questionBankId" = :questionBankId,
+                    "topicSlug" = :topicSlug,
+                    "topic" = :topic
+                WHERE id = :id
+                """;
 
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(questionTopic.getId()));
-
-            if (questionTopic.getQuestionId() == null) {
-                stmt.setNull("questionId", java.sql.Types.NULL);
-            } else {
-                stmt.setObject("questionId", UUID.fromString(questionTopic.getQuestionId()));
-            }
-
-            if (questionTopic.getQuestionBankId() == null) {
-                stmt.setNull("questionBankId", java.sql.Types.NULL);
-            } else {
-                stmt.setObject("questionBankId", UUID.fromString(questionTopic.getQuestionBankId()));
-            }
-
+            stmt.setObject(
+                    "questionId",
+                    questionTopic.getQuestionId().map(UUID::fromString).orElse(null));
+            stmt.setObject(
+                    "questionBankId",
+                    questionTopic.getQuestionBankId().map(UUID::fromString).orElse(null));
             stmt.setString("topicSlug", questionTopic.getTopicSlug());
             stmt.setObject("topic", questionTopic.getTopic().getLeetcodeEnum(), java.sql.Types.OTHER);
 
@@ -254,18 +234,14 @@ public class QuestionTopicSqlRepository implements QuestionTopicRepository {
     @Override
     public boolean deleteQuestionTopicById(final String id) {
         String sql = """
-            DELETE FROM
-                "QuestionTopic"
-            WHERE
-                id = :id
-            """;
+                DELETE FROM "QuestionTopic"
+                WHERE id = :id
+                """;
 
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(id));
-            int rowsAffected = stmt.executeUpdate();
-
-            return rowsAffected > 0;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete tag by tag ID", e);
         }

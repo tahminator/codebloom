@@ -1,7 +1,9 @@
 package org.patinanetwork.codebloom.common.dto.question.topic;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,13 +17,17 @@ import org.patinanetwork.codebloom.common.db.models.question.topic.QuestionTopic
 @Jacksonized
 @ToString
 @EqualsAndHashCode
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QuestionTopicDto {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private String questionId;
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Optional<String> questionId;
+
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Optional<String> questionBankId;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String topicSlug;
@@ -36,6 +42,7 @@ public class QuestionTopicDto {
         return QuestionTopicDto.builder()
                 .id(questionTopic.getId())
                 .questionId(questionTopic.getQuestionId())
+                .questionBankId(questionTopic.getQuestionBankId())
                 .topicSlug(questionTopic.getTopicSlug())
                 .topic(questionTopic.getTopic())
                 .createdAt(questionTopic.getCreatedAt())
