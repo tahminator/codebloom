@@ -746,6 +746,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 name = :name,
                 "createdAt" = :createdAt,
                 "deletedAt" = :deletedAt,
+                "shouldExpireBy" = :shouldExpireBy,
                 "syntaxHighlightingLanguage" = :syntaxHighlightingLanguage
             WHERE id = :id
             """;
@@ -755,6 +756,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setString("name", leaderboard.getName());
             stmt.setObject("createdAt", leaderboard.getCreatedAt());
             stmt.setObject("deletedAt", leaderboard.getDeletedAt().orElse(null));
+            stmt.setObject("shouldExpireBy", leaderboard.getShouldExpireBy().orElse(null));
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
             stmt.setString(
                     "syntaxHighlightingLanguage",
