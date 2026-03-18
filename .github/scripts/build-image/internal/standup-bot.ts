@@ -5,10 +5,23 @@ import { hideBin } from "yargs/helpers";
 
 process.env.TZ = "America/New_York";
 
-const { dockerUpload } = await yargs(hideBin(process.argv))
+const { dockerUpload, getGhaOutput, githubOutputFile } = await yargs(
+  hideBin(process.argv),
+)
   .option("dockerUpload", {
     type: "boolean",
     default: false,
+  })
+  .option("getGhaOutput", {
+    type: "boolean",
+    describe:
+      "Enable GitHub Actions output to receive latest built tag version",
+    default: false,
+  })
+  .option("githubOutputFile", {
+    type: "string",
+    describe: "Path to GITHUB_OUTPUT (passed in automatically in CI)",
+    default: process.env.GITHUB_OUTPUT,
   })
   .strict()
   .parse();
@@ -71,6 +84,14 @@ async function main() {
               .`;
 
   console.log("Image pushed successfully.");
+
+  if (getGhaOutput && githubOutputFile) {
+    console.log("Outputting image tag...");
+    const w = Bun.file(githubOutputFile).writer();
+    await w.write(`tag<<EOF\n${gitSha}\nEOF\n`);
+    await w.flush();
+    await w.end();
+  }
 }
 
 function parseCiEnv(ciEnv: Record<string, string>) {

@@ -14,7 +14,9 @@
         "coolify": "https://github.com/tahminator/Coolify-TypeScript-SDK#8e19e18635ea2b095a9c39c574d22eefd938441f",
         "discord.js": "^14.25.1",
         "octokit": "^5.0.5",
+        "yaml": "^2.8.2",
         "yargs": "^18.0.0",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@eslint/js": "^9.39.2",
@@ -350,7 +352,7 @@
 
     "concat-map": ["concat-map@0.0.1", "", {}, "sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg=="],
 
-    "coolify": ["coolify@github:tahminator/Coolify-TypeScript-SDK#8e19e18", { "peerDependencies": { "zod": ">= 3" } }, "tahminator-Coolify-TypeScript-SDK-8e19e18"],
+    "coolify": ["coolify@github:tahminator/Coolify-TypeScript-SDK#8e19e18", { "peerDependencies": { "zod": ">= 3" } }, "tahminator-Coolify-TypeScript-SDK-8e19e18", "sha512-UkMpLpeVnJkqOys/wBiTdxIHnvtJxMkMQqK5/7iBZVzOZoQWVLNeW0s0ycDMdyCMDdeBmfAbdBssQsQFW4j0aQ=="],
 
     "core-util-is": ["core-util-is@1.0.3", "", {}, "sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ=="],
 
@@ -691,6 +693,8 @@
     "xmlbuilder": ["xmlbuilder@11.0.1", "", {}, "sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA=="],
 
     "y18n": ["y18n@5.0.8", "", {}, "sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA=="],
+
+    "yaml": ["yaml@2.8.2", "", { "bin": { "yaml": "bin.mjs" } }, "sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A=="],
 
     "yargs": ["yargs@18.0.0", "", { "dependencies": { "cliui": "^9.0.1", "escalade": "^3.1.1", "get-caller-file": "^2.0.5", "string-width": "^7.2.0", "y18n": "^5.0.5", "yargs-parser": "^22.0.0" } }, "sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg=="],
 
