@@ -147,6 +147,8 @@ public class DuelManager {
 
             List<QuestionBankDto> lobbyQuestions = lobbyQuestionRepository.findLobbyQuestionsByLobbyId(lobbyId).stream()
                     .map(lq -> questionBankRepository.getQuestionById(lq.getQuestionBankId()))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .map(QuestionBankDto::fromQuestionBank)
                     .collect(Collectors.toList());
 
@@ -186,7 +188,9 @@ public class DuelManager {
             lobby.setExpiresAt(Optional.of(StandardizedOffsetDateTime.now().plusMinutes(30)));
             lobbyRepository.updateLobby(lobby);
 
-            QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
+            QuestionBank randomQuestion = questionBankRepository
+                    .getRandomQuestion()
+                    .orElseThrow(() -> new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "No questions available."));
 
             LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
                     .lobbyId(lobby.getId())
@@ -281,6 +285,8 @@ public class DuelManager {
             var solvableQuestionTitlesSet = lobbyQuestions.stream()
                     .map(LobbyQuestion::getQuestionBankId)
                     .map(questionBankRepository::getQuestionById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .map(QuestionBank::getQuestionTitle)
                     .collect(Collectors.toSet());
 

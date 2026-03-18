@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.patinanetwork.codebloom.common.db.helper.NamedPreparedStatement;
@@ -45,7 +46,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 .questionNumber(questionNumber)
                 .questionLink(questionLink)
                 .questionTitle(questionTitle)
-                .description(description)
+                .description(Optional.ofNullable(description))
                 .acceptanceRate(acceptanceRate)
                 .createdAt(createdAt)
                 .topics(questionTopicRepository.findQuestionTopicsByQuestionBankId(questionBankId))
@@ -79,7 +80,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
             stmt.setInt("number", question.getQuestionNumber());
             stmt.setString("link", question.getQuestionLink());
             stmt.setString("title", question.getQuestionTitle());
-            stmt.setString("desc", question.getDescription());
+            stmt.setString("desc", question.getDescription().orElse(null));
             stmt.setObject("ac", question.getAcceptanceRate());
 
             stmt.executeUpdate();
@@ -89,8 +90,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
     }
 
     @Override
-    public QuestionBank getQuestionById(final String id) {
-        QuestionBank question = null;
+    public Optional<QuestionBank> getQuestionById(final String id) {
         String sql = """
                 SELECT
                     id,
@@ -113,20 +113,18 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    question = mapResultSetToQuestion(rs);
-                    return question;
+                    return Optional.of(mapResultSetToQuestion(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve question", e);
         }
 
-        return question;
+        return Optional.empty();
     }
 
     @Override
-    public QuestionBank getQuestionBySlug(final String slug) {
-        QuestionBank question = null;
+    public Optional<QuestionBank> getQuestionBySlug(final String slug) {
         String sql = """
                 SELECT
                     id,
@@ -150,15 +148,14 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
             stmt.setObject("questionSlug", slug);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    question = mapResultSetToQuestion(rs);
-                    return question;
+                    return Optional.of(mapResultSetToQuestion(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve question", e);
         }
 
-        return question;
+        return Optional.empty();
     }
 
     @Override
@@ -184,7 +181,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
             stmt.setInt("number", inputQuestion.getQuestionNumber());
             stmt.setString("link", inputQuestion.getQuestionLink());
             stmt.setString("title", inputQuestion.getQuestionTitle());
-            stmt.setString("desc", inputQuestion.getDescription());
+            stmt.setString("desc", inputQuestion.getDescription().orElse(null));
             stmt.setObject("ac", inputQuestion.getAcceptanceRate());
             stmt.setObject("id", UUID.fromString(inputQuestion.getId()));
 
@@ -211,8 +208,7 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
     }
 
     @Override
-    public QuestionBank getRandomQuestion() {
-        QuestionBank question = null;
+    public Optional<QuestionBank> getRandomQuestion() {
         String sql = """
                 SELECT
                     id,
@@ -234,15 +230,14 @@ public class QuestionBankSqlRepository implements QuestionBankRepository {
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    question = mapResultSetToQuestion(rs);
-                    return question;
+                    return Optional.of(mapResultSetToQuestion(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to retrieve random question", e);
         }
 
-        return question;
+        return Optional.empty();
     }
 
     @Override

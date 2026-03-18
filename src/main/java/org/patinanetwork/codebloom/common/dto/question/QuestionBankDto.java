@@ -57,7 +57,7 @@ public class QuestionBankDto {
                 .questionTitle(questionBank.getQuestionTitle())
                 .questionNumber(questionBank.getQuestionNumber())
                 .questionLink(questionBank.getQuestionLink())
-                .description(questionBank.getDescription())
+                .description(questionBank.getDescription().orElse(null))
                 .acceptanceRate(questionBank.getAcceptanceRate())
                 .createdAt(questionBank.getCreatedAt())
                 .topics(

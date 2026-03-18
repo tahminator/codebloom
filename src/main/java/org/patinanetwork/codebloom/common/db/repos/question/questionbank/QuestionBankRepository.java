@@ -1,6 +1,7 @@
 package org.patinanetwork.codebloom.common.db.repos.question.questionbank;
 
 import java.util.List;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.question.QuestionDifficulty;
 import org.patinanetwork.codebloom.common.db.models.question.bank.QuestionBank;
 import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
@@ -8,9 +9,9 @@ import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopic
 public interface QuestionBankRepository {
     void createQuestion(QuestionBank question);
 
-    QuestionBank getQuestionById(String id);
+    Optional<QuestionBank> getQuestionById(String id);
 
-    QuestionBank getQuestionBySlug(String slug);
+    Optional<QuestionBank> getQuestionBySlug(String slug);
 
     /**
      * @note - The provided object's methods will be overridden with any returned data from the database.
@@ -29,7 +30,7 @@ public interface QuestionBankRepository {
 
     boolean deleteQuestionById(String id);
 
-    QuestionBank getRandomQuestion();
+    Optional<QuestionBank> getRandomQuestion();
 
     List<QuestionBank> getQuestionsByTopic(LeetcodeTopicEnum topic);
 

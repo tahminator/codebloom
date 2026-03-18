@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.db.repos.question.bank;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,7 +43,8 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
                 .questionNumber(1)
                 .questionLink("https://leetcode.com/problems/two-sum/")
                 .description(
-                        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.")
+                        Optional.of(
+                                "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."))
                 .acceptanceRate(0.8f)
                 .build();
 
@@ -62,7 +64,8 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testGetQuestionById() {
-        QuestionBank possibleTestQuestion = questionBankRepository.getQuestionById(testQuestionBank.getId());
+        QuestionBank possibleTestQuestion =
+                questionBankRepository.getQuestionById(testQuestionBank.getId()).orElse(null);
 
         assertNotNull(possibleTestQuestion, "Retrieved question should not be null");
         assertEquals(testQuestionBank.getId(), possibleTestQuestion.getId(), "Question IDs should match");
@@ -81,8 +84,9 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(2)
     void testGetQuestionBySlug() {
-        QuestionBank possibleTestQuestion =
-                questionBankRepository.getQuestionBySlug(testQuestionBank.getQuestionSlug());
+        QuestionBank possibleTestQuestion = questionBankRepository
+                .getQuestionBySlug(testQuestionBank.getQuestionSlug())
+                .orElse(null);
 
         assertNotNull(possibleTestQuestion, "Retrieved question should not be null");
         assertEquals(testQuestionBank.getId(), possibleTestQuestion.getId(), "Question IDs should match");
@@ -118,7 +122,8 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
             fail("Failed to update question");
         }
 
-        testQuestionBank = questionBankRepository.getQuestionById(testQuestionBank.getId());
+        testQuestionBank =
+                questionBankRepository.getQuestionById(testQuestionBank.getId()).orElse(null);
         assertNotNull(testQuestionBank, "Updated question should not be null");
         assertEquals("Updated Two Sum", testQuestionBank.getQuestionTitle(), "Question title should be updated");
     }
@@ -126,7 +131,7 @@ public class QuestionBankRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(4)
     void testGetRandomQuestion() {
-        QuestionBank randomQuestion = questionBankRepository.getRandomQuestion();
+        QuestionBank randomQuestion = questionBankRepository.getRandomQuestion().orElse(null);
 
         assertNotNull(randomQuestion, "Random question should not be null");
         assertNotNull(randomQuestion.getId(), "Random question ID should not be null");
