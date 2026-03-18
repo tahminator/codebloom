@@ -22,6 +22,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Verify PR description is filled out
+        uses: ./.github/composite/pr-description-check
+        with:
+          PR_ID: ${{ github.event.number }}
+
       - name: Run composite workflow
         uses: ./.github/composite/notion-checks
         id: notion_check
