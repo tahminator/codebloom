@@ -124,6 +124,7 @@ playwright:
 
 ff:
   duels: true
+  user-metrics: false
 
 resilience4j:
   retry:

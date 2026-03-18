@@ -15,16 +15,21 @@ import java.util.Set;
 import org.patinanetwork.codebloom.common.db.models.question.Question;
 import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import org.patinanetwork.codebloom.common.db.models.user.User;
+import org.patinanetwork.codebloom.common.db.models.user.UserMetrics;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.topic.service.QuestionTopicService;
+import org.patinanetwork.codebloom.common.db.repos.user.UserMetricsRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
+import org.patinanetwork.codebloom.common.db.repos.user.options.UserMetricsFilterOptions;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import org.patinanetwork.codebloom.common.dto.question.QuestionDto;
 import org.patinanetwork.codebloom.common.dto.user.UserDto;
+import org.patinanetwork.codebloom.common.dto.user.metrics.MetricsDto;
 import org.patinanetwork.codebloom.common.lag.FakeLag;
 import org.patinanetwork.codebloom.common.page.Page;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
+import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,17 +52,25 @@ public class UserController {
     /* Page size for submissions */
     private static final int SUBMISSIONS_PAGE_SIZE = 20;
 
+    private static final int METRICS_PAGE_SIZE = 20;
+
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final QuestionTopicService questionTopicService;
+    private final UserMetricsRepository userMetricsRepository;
+    private final FeatureFlagConfiguration ff;
 
     public UserController(
             final QuestionRepository questionRepository,
             final UserRepository userRepository,
-            final QuestionTopicService questionTopicService) {
+            final QuestionTopicService questionTopicService,
+            final UserMetricsRepository userMetricsRepository,
+            final FeatureFlagConfiguration ff) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.questionTopicService = questionTopicService;
+        this.userMetricsRepository = userMetricsRepository;
+        this.ff = ff;
     }
 
     @Operation(
@@ -194,5 +207,76 @@ public class UserController {
         Page<UserDto> createdPage = new Page<>(hasNextPage, userDtos, totalPages, parsedPageSize);
 
         return ResponseEntity.ok().body(ApiResponder.success("All users have been successfully fetched!", createdPage));
+    }
+
+    @Operation(
+            summary = "Staging-only route that returns paginated metrics for a given user.",
+            description = """
+            Returns a paginated list of collected metrics points for the given user within a date range.
+            Defaults to the last 7 days if no dates are provided. Only available in staging.
+            """,
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Metrics fetched successfully"),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Invalid date range (startDate is after endDate)",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Endpoint is not available in this environment",
+                        content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
+            })
+    @GetMapping("{userId}/metrics")
+    public ResponseEntity<ApiResponder<Page<MetricsDto>>> getUserMetrics(
+            final HttpServletRequest request,
+            @PathVariable final String userId,
+            @Parameter(description = "Page index", example = "1") @RequestParam(required = false, defaultValue = "1")
+                    final int page,
+            @Parameter(description = "Page size (maximum of " + METRICS_PAGE_SIZE)
+                    @RequestParam(required = false, defaultValue = "" + METRICS_PAGE_SIZE)
+                    final int pageSize,
+            @Parameter(description = "Start date to filter metrics by createdAt (inclusive)")
+                    @RequestParam(required = false)
+                    final OffsetDateTime startDate,
+            @Parameter(description = "End date to filter metrics by createdAt (inclusive)")
+                    @RequestParam(required = false)
+                    final OffsetDateTime endDate) {
+
+        FakeLag.sleep(500);
+
+        if (!ff.isUserMetrics()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is not available.");
+        }
+
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "startDate cannot be after endDate.");
+        }
+
+        final OffsetDateTime resolvedEnd = endDate == null
+                ? StandardizedOffsetDateTime.normalize(OffsetDateTime.now())
+                : StandardizedOffsetDateTime.normalize(endDate);
+        final OffsetDateTime resolvedStart = startDate == null
+                ? StandardizedOffsetDateTime.normalize(OffsetDateTime.now().minusWeeks(1))
+                : StandardizedOffsetDateTime.normalize(startDate);
+
+        final int parsedPageSize = Math.min(pageSize, METRICS_PAGE_SIZE);
+
+        final UserMetricsFilterOptions options = UserMetricsFilterOptions.builder()
+                .page(page)
+                .pageSize(parsedPageSize)
+                .from(resolvedStart)
+                .to(resolvedEnd)
+                .build();
+
+        List<UserMetrics> metrics = userMetricsRepository.findUserMetrics(userId, options);
+        int totalMetrics = userMetricsRepository.countUserMetrics(userId, options);
+        int totalPages = (int) Math.ceil((double) totalMetrics / parsedPageSize);
+        boolean hasNextPage = page < totalPages;
+
+        List<MetricsDto> metricsDtos =
+                metrics.stream().map(MetricsDto::fromUserMetrics).toList();
+        Page<MetricsDto> createdPage = new Page<>(hasNextPage, metricsDtos, totalPages, parsedPageSize);
+
+        return ResponseEntity.ok().body(ApiResponder.success("Metrics fetched!", createdPage));
     }
 }
