@@ -299,7 +299,7 @@ class SubmissionsHandlerTest {
                 .questionTitle(lcQuestion.getQuestionTitle())
                 .questionNumber(lcQuestion.getQuestionId())
                 .questionLink("https://leetcode.com/problems/" + lcQuestion.getTitleSlug())
-                .description(lcQuestion.getQuestion())
+                .description(Optional.ofNullable(lcQuestion.getQuestion()))
                 .acceptanceRate(lcQuestion.getAcceptanceRate())
                 .topics(lcQuestion.getTopics().stream()
                         .map(t -> QuestionTopic.builder()
@@ -309,7 +309,7 @@ class SubmissionsHandlerTest {
                         .toList())
                 .build();
 
-        when(questionBankRepository.getQuestionBySlug(anyString())).thenReturn(bankQuestion);
+        when(questionBankRepository.getQuestionBySlug(anyString())).thenReturn(Optional.of(bankQuestion));
 
         ArrayList<AcceptedSubmission> result = handler.handleSubmissions(List.of(sub), user, true);
 

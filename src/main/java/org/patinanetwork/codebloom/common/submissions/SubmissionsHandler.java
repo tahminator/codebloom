@@ -116,26 +116,26 @@ public class SubmissionsHandler {
                 .map(s -> {
                     String slug = s.getTitleSlug();
 
-                    QuestionBank bankQuestion = questionBankRepository.getQuestionBySlug(slug);
+                    QuestionBank bankQuestion = questionBankRepository
+                            .getQuestionBySlug(slug)
+                            .orElseGet(() -> {
+                                LeetcodeQuestion question = fast
+                                        ? leetcodeClient.findQuestionBySlugFast(slug)
+                                        : leetcodeClient.findQuestionBySlug(slug);
 
-                    if (bankQuestion == null) {
-                        LeetcodeQuestion question = fast
-                                ? leetcodeClient.findQuestionBySlugFast(slug)
-                                : leetcodeClient.findQuestionBySlug(slug);
-
-                        bankQuestion = QuestionBank.builder()
-                                .questionSlug(question.getTitleSlug())
-                                .questionDifficulty(QuestionDifficulty.valueOf(question.getDifficulty()))
-                                .questionTitle(question.getQuestionTitle())
-                                .questionNumber(question.getQuestionId())
-                                .questionLink("https://leetcode.com/problems/" + question.getTitleSlug())
-                                .description(question.getQuestion())
-                                .acceptanceRate(question.getAcceptanceRate())
-                                .topics(question.getTopics().stream()
-                                        .map(SubmissionsHandler::topicTagToQuestionTopic)
-                                        .toList())
-                                .build();
-                    }
+                                return QuestionBank.builder()
+                                        .questionSlug(question.getTitleSlug())
+                                        .questionDifficulty(QuestionDifficulty.valueOf(question.getDifficulty()))
+                                        .questionTitle(question.getQuestionTitle())
+                                        .questionNumber(question.getQuestionId())
+                                        .questionLink("https://leetcode.com/problems/" + question.getTitleSlug())
+                                        .description(Optional.ofNullable(question.getQuestion()))
+                                        .acceptanceRate(question.getAcceptanceRate())
+                                        .topics(question.getTopics().stream()
+                                                .map(SubmissionsHandler::topicTagToQuestionTopic)
+                                                .toList())
+                                        .build();
+                            });
 
                     return Pair.of(slug, bankQuestion);
                 })
@@ -213,7 +213,7 @@ public class SubmissionsHandler {
                     .questionNumber(bankQuestion.getQuestionNumber())
                     .questionLink("https://leetcode.com/problems/" + bankQuestion.getQuestionSlug())
                     .questionTitle(bankQuestion.getQuestionTitle())
-                    .description(Optional.ofNullable(bankQuestion.getDescription()))
+                    .description(bankQuestion.getDescription())
                     .pointsAwarded(Optional.of(points))
                     .acceptanceRate(bankQuestion.getAcceptanceRate())
                     .submittedAt(leetcodeSubmission.getTimestamp())

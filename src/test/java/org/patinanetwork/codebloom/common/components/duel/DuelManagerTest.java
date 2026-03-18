@@ -931,7 +931,7 @@ public class DuelManagerTest {
         when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
         when(lobbyRepository.updateLobby(any())).thenReturn(true);
-        when(questionBankRepository.getRandomQuestion()).thenReturn(questionBank);
+        when(questionBankRepository.getRandomQuestion()).thenReturn(Optional.of(questionBank));
         doNothing().when(lobbyQuestionRepository).createLobbyQuestion(any());
 
         try {
@@ -975,7 +975,7 @@ public class DuelManagerTest {
         when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
         when(lobbyRepository.updateLobby(any())).thenReturn(true);
-        when(questionBankRepository.getRandomQuestion()).thenReturn(questionBank);
+        when(questionBankRepository.getRandomQuestion()).thenReturn(Optional.of(questionBank));
         doNothing().when(lobbyQuestionRepository).createLobbyQuestion(any());
 
         try {
@@ -1142,7 +1142,7 @@ public class DuelManagerTest {
         when(lobbyPlayerRepository.findValidLobbyPlayerByPlayerId(eq(userId))).thenReturn(Optional.of(lobbyPlayer));
         when(lobbyRepository.findLobbyById(eq(lobbyPlayer.getLobbyId()))).thenReturn(Optional.of(lobby));
         when(lobbyRepository.updateLobby(any())).thenReturn(true);
-        when(questionBankRepository.getRandomQuestion()).thenReturn(questionBank);
+        when(questionBankRepository.getRandomQuestion()).thenReturn(Optional.of(questionBank));
         doThrow(new RuntimeException("Simulated db exception"))
                 .when(lobbyQuestionRepository)
                 .createLobbyQuestion(any());
@@ -1399,7 +1399,7 @@ public class DuelManagerTest {
                 .thenReturn(Optional.of(lobbyPlayer));
         when(lobbyQuestionRepository.findLobbyQuestionsByLobbyId(eq(activeLobby.getId())))
                 .thenReturn(List.of(lobbyQuestion));
-        when(questionBankRepository.getQuestionById(eq(questionBank.getId()))).thenReturn(questionBank);
+        when(questionBankRepository.getQuestionById(eq(questionBank.getId()))).thenReturn(Optional.of(questionBank));
         when(throttledLeetcodeClient.findSubmissionsByUsername(eq(user.getLeetcodeUsername()), eq(5)))
                 .thenReturn(List.of(leetcodeSubmission));
         when(submissionsHandler.handleSubmissions(any(), eq(user), eq(true))).thenReturn(new ArrayList<>() {
