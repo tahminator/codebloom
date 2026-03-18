@@ -1,4 +1,4 @@
-import { $ } from "bun";
+import { Octokit } from "@octokit/rest";
 import { sendMessage } from "utils/send-message";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -12,21 +12,26 @@ const { prId } = await yargs(hideBin(process.argv))
   .strict()
   .parse();
 
+const [owner, repo] = (() => {
+  const v = process.env.GITHUB_REPOSITORY;
+  if (!v) throw new Error("GITHUB_REPOSITORY is required");
+  return v.split("/") as [string, string];
+})();
+
 async function main() {
-  const res = await $`gh pr view ${prId} --json body`.text();
-  const { body } = JSON.parse(res) as { body?: string | null };
+  const client = new Octokit({ auth: process.env.GH_TOKEN });
+  const { data } = await client.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: prId,
+  });
+  const { body } = data;
 
   const descriptionContent = (() => {
     const match = (body ?? "").match(
       /## Description of changes([\s\S]*?)(?=\n##|$)/,
     );
-    let text = match?.[1] ?? "";
-    let prev: string;
-    do {
-      prev = text;
-      text = text.replace(/<!--[\s\S]*?-->/g, "");
-    } while (text !== prev);
-    return text.trim();
+    return (match?.[1] ?? "").trim();
   })();
 
   if (descriptionContent) {
