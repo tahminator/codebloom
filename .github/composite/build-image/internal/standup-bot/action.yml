@@ -13,6 +13,11 @@ inputs:
     required: false
     default: true
 
+outputs:
+  tag:
+    description: "Built Docker image tag (git SHA)"
+    value: ${{ steps.build-image.outputs.tag }}
+
 runs:
   using: "composite"
   steps:
@@ -32,5 +37,6 @@ runs:
       uses: crazy-max/ghaction-github-runtime@v4
 
     - name: Run script
+      id: build-image
       shell: bash
-      run: bun run .github/scripts/build-image/internal/standup-bot --docker-upload=${{ inputs.DOCKER_UPLOAD }}
+      run: bun run .github/scripts/build-image/internal/standup-bot --docker-upload=${{ inputs.DOCKER_UPLOAD }} --getGhaOutput=true

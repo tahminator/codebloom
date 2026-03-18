@@ -26,7 +26,9 @@
         "coolify": "https://github.com/tahminator/Coolify-TypeScript-SDK#8e19e18635ea2b095a9c39c574d22eefd938441f",
         "discord.js": "^14.25.1",
         "octokit": "^5.0.5",
-        "yargs": "^18.0.0"
+        "yaml": "^2.8.2",
+        "yargs": "^18.0.0",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "typescript": "^5.9.0",

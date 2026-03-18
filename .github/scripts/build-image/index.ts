@@ -1,3 +1,5 @@
+import type { Environment } from "types";
+
 import { $ } from "bun";
 import { getEnvVariables } from "load-secrets/env/load";
 import { backend } from "utils/run-backend-instance";
@@ -7,25 +9,34 @@ import { hideBin } from "yargs/helpers";
 
 process.env.TZ = "America/New_York";
 
-const { tagPrefix, dockerUpload, serverProfiles } = await yargs(
-  hideBin(process.argv),
-)
-  .option("tagPrefix", {
-    type: "string",
-    demandOption: true,
-  })
-  .option("dockerUpload", {
-    type: "boolean",
-    default: false,
-    demandOption: true,
-  })
-  .option("serverProfiles", {
-    type: "string",
-    default: "prod",
-    demandOption: true,
-  })
-  .strict()
-  .parse();
+const { environment, dockerUpload, getGhaOutput, githubOutputFile } =
+  await yargs(hideBin(process.argv))
+    .option("environment", {
+      choices: ["staging", "production"] satisfies Environment[],
+      describe: "Deployment environment (staging or production)",
+      demandOption: true,
+    })
+    .option("dockerUpload", {
+      type: "boolean",
+      default: false,
+      demandOption: true,
+    })
+    .option("getGhaOutput", {
+      type: "boolean",
+      describe:
+        "Enable GitHub Actions output to receive latest built tag version",
+      default: false,
+    })
+    .option("githubOutputFile", {
+      type: "string",
+      describe: "Path to GITHUB_OUTPUT (passed in automatically in CI)",
+      default: process.env.GITHUB_OUTPUT,
+    })
+    .strict()
+    .parse();
+
+const tagPrefix = environment === "staging" ? "staging-" : "";
+const serverProfiles = environment === "staging" ? "stg" : "prod";
 
 async function main() {
   try {
@@ -101,6 +112,14 @@ async function main() {
               .`;
 
     console.log("Image pushed successfully.");
+
+    if (getGhaOutput && githubOutputFile) {
+      console.log("Outputting image tag...");
+      const w = Bun.file(githubOutputFile).writer();
+      await w.write(`tag<<EOF\n${tagPrefix}${gitSha}\nEOF\n`);
+      await w.flush();
+      await w.end();
+    }
   } finally {
     await backend.end();
     await db.end();
