@@ -32,7 +32,10 @@ export default function FilterDropdownItem({
       disabled={disabled}
       {...props}
       leftSection={
-        switchMode ?
+        !switchMode && <Checkbox checked={value} disabled={disabled} readOnly />
+      }
+      rightSection={
+        switchMode && (
           <Switch
             // Switch requires onClick to be passed in, while Checkbox doesn't
             onClick={toggle}
@@ -40,7 +43,7 @@ export default function FilterDropdownItem({
             disabled={disabled}
             withThumbIndicator={false}
           />
-        : <Checkbox checked={value} disabled={disabled} readOnly />
+        )
       }
     >
       <div
