@@ -19,18 +19,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.patinanetwork.codebloom.common.db.models.question.Question;
 import org.patinanetwork.codebloom.common.db.models.user.User;
+import org.patinanetwork.codebloom.common.db.models.user.UserMetrics;
 import org.patinanetwork.codebloom.common.db.repos.question.QuestionRepository;
 import org.patinanetwork.codebloom.common.db.repos.question.topic.service.QuestionTopicService;
+import org.patinanetwork.codebloom.common.db.repos.user.UserMetricsRepository;
 import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.dto.question.QuestionDto;
 import org.patinanetwork.codebloom.common.dto.user.UserDto;
+import org.patinanetwork.codebloom.common.dto.user.metrics.MetricsDto;
 import org.patinanetwork.codebloom.common.page.Page;
+import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -42,10 +47,13 @@ public class UserControllerTest {
     private QuestionRepository questionRepository = mock(QuestionRepository.class);
     private UserRepository userRepository = mock(UserRepository.class);
     private QuestionTopicService questionTopicService = mock(QuestionTopicService.class);
+    private UserMetricsRepository userMetricsRepository = mock(UserMetricsRepository.class);
+    private FeatureFlagConfiguration ff = mock(FeatureFlagConfiguration.class);
     private HttpServletRequest request = mock(HttpServletRequest.class);
 
     public UserControllerTest() {
-        this.userController = new UserController(questionRepository, userRepository, questionTopicService);
+        this.userController =
+                new UserController(questionRepository, userRepository, questionTopicService, userMetricsRepository, ff);
         this.faker = Faker.instance();
     }
 
@@ -355,6 +363,176 @@ public class UserControllerTest {
         assertNotNull(page);
         assertEquals(0, page.getItems().size());
         assertEquals(0, page.getPages());
+    }
+
+    private UserMetrics createRandomUserMetrics(final String userId) {
+        return UserMetrics.builder()
+                .id(randomUUID())
+                .userId(userId)
+                .points(faker.number().numberBetween(1, 100))
+                .createdAt(OffsetDateTime.now().minusDays(faker.number().numberBetween(1, 6)))
+                .build();
+    }
+
+    @Test
+    @DisplayName("Get user metrics - feature flag disabled returns 403")
+    void getUserMetricsFeatureFlagDisabledReturnsForbidden() {
+        String userId = randomUUID();
+
+        when(ff.isUserMetrics()).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            userController.getUserMetrics(request, userId, 1, 20, null, null);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+        assertEquals("Endpoint is not available.", exception.getReason());
+    }
+
+    @Test
+    @DisplayName("Get user metrics - startDate after endDate returns 400")
+    void getUserMetricsInvalidDateRangeReturnsBadRequest() {
+        String userId = randomUUID();
+        OffsetDateTime startDate = OffsetDateTime.now();
+        OffsetDateTime endDate = startDate.minusDays(1);
+
+        when(ff.isUserMetrics()).thenReturn(true);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            userController.getUserMetrics(request, userId, 1, 20, startDate, endDate);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("startDate cannot be after endDate.", exception.getReason());
+    }
+
+    @Test
+    @DisplayName("Get user metrics - returns metrics successfully with explicit date range")
+    void getUserMetricsReturnsSuccessfullyWithDateRange() {
+        String userId = randomUUID();
+        OffsetDateTime startDate = OffsetDateTime.now().minusDays(7);
+        OffsetDateTime endDate = OffsetDateTime.now();
+
+        List<UserMetrics> metricsList = List.of(createRandomUserMetrics(userId), createRandomUserMetrics(userId));
+
+        when(ff.isUserMetrics()).thenReturn(true);
+        when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(metricsList);
+        when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(2);
+
+        var response = userController.getUserMetrics(request, userId, 1, 20, startDate, endDate);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var apiResponder = response.getBody();
+        assertNotNull(apiResponder);
+        assertTrue(apiResponder.isSuccess());
+        assertEquals("Metrics fetched!", apiResponder.getMessage());
+
+        Page<MetricsDto> page = apiResponder.getPayload();
+        assertNotNull(page);
+        assertEquals(2, page.getItems().size());
+        assertEquals(1, page.getPages());
+        assertEquals(20, page.getPageSize());
+
+        verify(userMetricsRepository, times(1)).findUserMetrics(eq(userId), any());
+        verify(userMetricsRepository, times(1)).countUserMetrics(eq(userId), any());
+    }
+
+    @Test
+    @DisplayName("Get user metrics - defaults date range to last 7 days when not provided")
+    void getUserMetricsDefaultsToLastSevenDays() {
+        String userId = randomUUID();
+
+        when(ff.isUserMetrics()).thenReturn(true);
+        when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of());
+        when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(0);
+
+        var response = userController.getUserMetrics(request, userId, 1, 20, null, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+
+        verify(userMetricsRepository, times(1)).findUserMetrics(eq(userId), any());
+    }
+
+    @Test
+    @DisplayName("Get user metrics - empty results")
+    void getUserMetricsEmptyResults() {
+        String userId = randomUUID();
+
+        when(ff.isUserMetrics()).thenReturn(true);
+        when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of());
+        when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(0);
+
+        var response = userController.getUserMetrics(request, userId, 1, 20, null, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Page<MetricsDto> page = response.getBody().getPayload();
+        assertNotNull(page);
+        assertEquals(0, page.getItems().size());
+        assertEquals(0, page.getPages());
+    }
+
+    @Test
+    @DisplayName("Get user metrics - page size capped at maximum")
+    void getUserMetricsPageSizeCapped() {
+        String userId = randomUUID();
+
+        when(ff.isUserMetrics()).thenReturn(true);
+        when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of());
+        when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(0);
+
+        var response = userController.getUserMetrics(request, userId, 1, 100, null, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Page<MetricsDto> page = response.getBody().getPayload();
+        assertEquals(20, page.getPageSize());
+    }
+
+    @Test
+    @DisplayName("Get user metrics - pagination with multiple pages")
+    void getUserMetricsPaginationMultiplePages() {
+        String userId = randomUUID();
+
+        List<UserMetrics> metricsList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            metricsList.add(createRandomUserMetrics(userId));
+        }
+
+        when(ff.isUserMetrics()).thenReturn(true);
+        when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(metricsList);
+        when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(45);
+
+        var response = userController.getUserMetrics(request, userId, 1, 20, null, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Page<MetricsDto> page = response.getBody().getPayload();
+        assertNotNull(page);
+        assertEquals(20, page.getItems().size());
+        assertEquals(3, page.getPages());
+        assertTrue(page.isHasNextPage());
+    }
+
+    @Test
+    @DisplayName("Get user metrics - dto maps all fields correctly")
+    void getUserMetricsDtoMapsFieldsCorrectly() {
+        String userId = randomUUID();
+        UserMetrics metric = createRandomUserMetrics(userId);
+
+        when(ff.isUserMetrics()).thenReturn(true);
+        when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of(metric));
+        when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(1);
+
+        var response = userController.getUserMetrics(request, userId, 1, 20, null, null);
+
+        MetricsDto dto = response.getBody().getPayload().getItems().get(0);
+        assertEquals(metric.getId(), dto.getId());
+        assertEquals(metric.getUserId(), dto.getUserId());
+        assertEquals(metric.getPoints(), dto.getPoints());
+        assertEquals(metric.getCreatedAt(), dto.getCreatedAt());
     }
 
     @Test

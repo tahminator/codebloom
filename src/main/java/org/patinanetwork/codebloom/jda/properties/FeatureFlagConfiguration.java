@@ -11,4 +11,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "ff")
 public class FeatureFlagConfiguration {
     private boolean duels;
+
+    private boolean userMetrics;
 }

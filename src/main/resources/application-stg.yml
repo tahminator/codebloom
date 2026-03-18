@@ -1,3 +1,6 @@
+ff:
+  user-metrics: true
+
 # todo: re-enable this once inside of k8s cluster
 # logging:
 #   structured:
