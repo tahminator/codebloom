@@ -10,7 +10,6 @@ import org.patinanetwork.codebloom.common.db.models.announcement.Announcement;
 import org.patinanetwork.codebloom.common.db.repos.announcement.AnnouncementRepository;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.announcement.AnnouncementDto;
-import org.patinanetwork.codebloom.common.security.Protector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Timed(value = "controller.execution")
 public class AnnouncementController {
 
-    private final Protector protector;
     private final AnnouncementRepository announcementRepository;
 
-    public AnnouncementController(final Protector protector, final AnnouncementRepository announcementRepository) {
-        this.protector = protector;
+    public AnnouncementController(final AnnouncementRepository announcementRepository) {
         this.announcementRepository = announcementRepository;
     }
 
