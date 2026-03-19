@@ -190,7 +190,7 @@ public class DuelManager {
 
             QuestionBank randomQuestion = questionBankRepository
                     .getRandomQuestion()
-                    .orElseThrow(() -> new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "No questions available."));
+                    .orElseThrow(() -> new DuelException(HttpStatus.NOT_FOUND, "No questions available."));
 
             LobbyQuestion lobbyQuestion = LobbyQuestion.builder()
                     .lobbyId(lobby.getId())
