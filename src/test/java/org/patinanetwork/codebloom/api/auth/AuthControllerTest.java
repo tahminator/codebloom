@@ -231,19 +231,14 @@ public class AuthControllerTest {
         Session session = createRandomSession(user.getId());
         AuthenticationObject authObj = createAuthenticationObject(user, session);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
         EmailBody emailBody = new EmailBody("test@unsupported.com");
 
-        when(protector.validateSession(request)).thenReturn(authObj);
-
         ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, request));
+                assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, authObj));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         assertNotNull(exception.getReason());
         assertTrue(exception.getReason().contains("not part of our supported schools domains"));
-
-        verify(protector, times(1)).validateSession(request);
     }
 
     @Test
@@ -253,21 +248,18 @@ public class AuthControllerTest {
         Session session = createRandomSession(user.getId());
         AuthenticationObject authObj = createAuthenticationObject(user, session);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
         EmailBody emailBody = new EmailBody("test@myhunter.cuny.edu");
 
-        when(protector.validateSession(request)).thenReturn(authObj);
         when(simpleRedis.containsKey(user.getId())).thenReturn(true);
         when(simpleRedis.get(user.getId())).thenReturn(System.currentTimeMillis());
 
         ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, request));
+                assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, authObj));
 
         assertEquals(HttpStatus.TOO_MANY_REQUESTS, exception.getStatusCode());
         assertNotNull(exception.getReason());
         assertTrue(exception.getReason().contains("Please try again in"));
 
-        verify(protector, times(1)).validateSession(request);
         verify(simpleRedis, times(1)).containsKey(user.getId());
     }
 
@@ -278,22 +270,19 @@ public class AuthControllerTest {
         Session session = createRandomSession(user.getId());
         AuthenticationObject authObj = createAuthenticationObject(user, session);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
         EmailBody emailBody = new EmailBody("test@myhunter.cuny.edu");
 
-        when(protector.validateSession(request)).thenReturn(authObj);
         when(jwtClient.encode(any(MagicLink.class), any(Duration.class))).thenReturn("mock-token");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(reactEmailTemplater.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
         doThrow(new EmailException("Failed to send email")).when(emailClient).sendMessage(any(SendEmailOptions.class));
 
         ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, request));
+                assertThrows(ResponseStatusException.class, () -> authController.enrollSchool(emailBody, authObj));
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode());
         assertEquals("Failed to send email.", exception.getReason());
 
-        verify(protector, times(1)).validateSession(request);
         verify(emailClient, times(1)).sendMessage(any(SendEmailOptions.class));
     }
 
@@ -304,16 +293,14 @@ public class AuthControllerTest {
         Session session = createRandomSession(user.getId());
         AuthenticationObject authObj = createAuthenticationObject(user, session);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
         EmailBody emailBody = new EmailBody("test@myhunter.cuny.edu");
 
-        when(protector.validateSession(request)).thenReturn(authObj);
         when(simpleRedis.containsKey(user.getId())).thenReturn(false);
         when(jwtClient.encode(any(MagicLink.class), any(Duration.class))).thenReturn("mock-token");
         when(serverUrlUtils.getUrl()).thenReturn("http://localhost:8080");
         when(reactEmailTemplater.schoolEmailTemplate(any())).thenReturn("<html>Template</html>");
 
-        var response = authController.enrollSchool(emailBody, request);
+        var response = authController.enrollSchool(emailBody, authObj);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -322,7 +309,6 @@ public class AuthControllerTest {
         assertTrue(apiResponder.isSuccess());
         assertEquals("Magic link sent! Check your school inbox to continue.", apiResponder.getMessage());
 
-        verify(protector, times(1)).validateSession(request);
         verify(emailClient, times(1)).sendMessage(any(SendEmailOptions.class));
         verify(simpleRedis, times(1)).put(eq(user.getId()), any(Long.class));
     }

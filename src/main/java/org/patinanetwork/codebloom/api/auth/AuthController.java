@@ -198,8 +198,7 @@ public class AuthController {
             })
     @PostMapping("/school/enroll")
     public ResponseEntity<ApiResponder<Empty>> enrollSchool(
-            @Valid @RequestBody final EmailBody emailBody, final HttpServletRequest request) {
-        AuthenticationObject authenticationObject = protector.validateSession(request);
+            @Valid @RequestBody final EmailBody emailBody, @Protected final AuthenticationObject authenticationObject) {
         User user = authenticationObject.getUser();
         String userId = user.getId();
 

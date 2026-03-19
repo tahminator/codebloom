@@ -25,7 +25,7 @@ import org.patinanetwork.codebloom.common.lag.FakeLag;
 import org.patinanetwork.codebloom.common.page.Indexed;
 import org.patinanetwork.codebloom.common.page.Page;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
-import org.patinanetwork.codebloom.common.security.Protector;
+import org.patinanetwork.codebloom.common.security.annotation.Protected;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,17 +45,14 @@ public class LeaderboardController {
 
     private final LeaderboardRepository leaderboardRepository;
     private final UserRepository userRepository;
-    private final Protector protector;
     private final LeaderboardManager leaderboardManager;
 
     public LeaderboardController(
             final LeaderboardRepository leaderboardRepository,
             final UserRepository userRepository,
-            final Protector protector,
             final LeaderboardManager leaderboardManager) {
         this.leaderboardRepository = leaderboardRepository;
         this.userRepository = userRepository;
-        this.protector = protector;
         this.leaderboardManager = leaderboardManager;
     }
 
@@ -322,7 +319,7 @@ public class LeaderboardController {
                 @ApiResponse(responseCode = "404", description = "User not found on leaderboard"),
             })
     public ResponseEntity<ApiResponder<Indexed<UserWithScoreDto>>> getUserCurrentLeaderboardRank(
-            final HttpServletRequest request,
+            @Protected final AuthenticationObject authenticationObject,
             @Parameter(description = "Filter for Patina users") @RequestParam(required = false, defaultValue = "false")
                     final boolean patina,
             @Parameter(description = "Filter for Hunter College users")
@@ -350,7 +347,6 @@ public class LeaderboardController {
                     final boolean bmcc) {
         FakeLag.sleep(650);
 
-        AuthenticationObject authenticationObject = protector.validateSession(request);
         String userId = authenticationObject.getUser().getId();
 
         Optional<Leaderboard> leaderboardData = leaderboardRepository.getRecentLeaderboardMetadata();

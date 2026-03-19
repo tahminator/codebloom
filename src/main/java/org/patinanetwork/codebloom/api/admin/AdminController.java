@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -31,7 +30,8 @@ import org.patinanetwork.codebloom.common.dto.Empty;
 import org.patinanetwork.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import org.patinanetwork.codebloom.common.dto.question.QuestionWithUserDto;
 import org.patinanetwork.codebloom.common.dto.user.UserDto;
-import org.patinanetwork.codebloom.common.security.Protector;
+import org.patinanetwork.codebloom.common.security.AuthenticationObject;
+import org.patinanetwork.codebloom.common.security.annotation.Protected;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,14 +48,12 @@ public class AdminController {
     private final LeaderboardRepository leaderboardRepository;
     private final AnnouncementRepository announcementRepository;
     private final QuestionRepository questionRepository;
-    private final Protector protector;
     private final DiscordClubManager discordClubManager;
     private final LeaderboardManager leaderboardManager;
     private final DiscordClubRepository discordClubRepository;
 
     public AdminController(
             final LeaderboardRepository leaderboardRepository,
-            final Protector protector,
             final UserRepository userRepository,
             final AnnouncementRepository announcementRepository,
             final QuestionRepository questionRepository,
@@ -63,7 +61,6 @@ public class AdminController {
             final LeaderboardManager leaderboardManager,
             final DiscordClubRepository discordClubRepository) {
         this.leaderboardRepository = leaderboardRepository;
-        this.protector = protector;
         this.userRepository = userRepository;
         this.announcementRepository = announcementRepository;
         this.questionRepository = questionRepository;
@@ -77,8 +74,8 @@ public class AdminController {
         """)
     @PostMapping("/leaderboard/create")
     public ResponseEntity<ApiResponder<Empty>> createLeaderboard(
-            final HttpServletRequest request, @Valid @RequestBody final NewLeaderboardBody newLeaderboardBody) {
-        protector.validateAdminSession(request);
+            @Protected(admin = true) final AuthenticationObject authenticationObject,
+            @Valid @RequestBody final NewLeaderboardBody newLeaderboardBody) {
 
         final String name = newLeaderboardBody.getName().trim();
 
@@ -124,8 +121,8 @@ public class AdminController {
         """)
     @PostMapping("/user/admin/toggle")
     public ResponseEntity<ApiResponder<UserDto>> updateAdmin(
-            final HttpServletRequest request, @Valid @RequestBody final UpdateAdminBody newAdminBody) {
-        protector.validateAdminSession(request);
+            @Protected(admin = true) final AuthenticationObject authenticationObject,
+            @Valid @RequestBody final UpdateAdminBody newAdminBody) {
 
         final String userId = newAdminBody.getId();
         final boolean toggleTo = newAdminBody.getToggleTo();
@@ -166,8 +163,8 @@ public class AdminController {
             })
     @PostMapping("/announcement/create")
     public ResponseEntity<ApiResponder<Announcement>> createNewAnnouncement(
-            @Valid @RequestBody final CreateAnnouncementBody createAnnouncementBody, final HttpServletRequest request) {
-        protector.validateAdminSession(request);
+            @Valid @RequestBody final CreateAnnouncementBody createAnnouncementBody,
+            @Protected(admin = true) final AuthenticationObject authenticationObject) {
 
         OffsetDateTime nowWithOffset = StandardizedOffsetDateTime.now();
         OffsetDateTime expiresAtWithOffset =
@@ -210,8 +207,8 @@ public class AdminController {
             })
     @PostMapping("/announcement/disable")
     public ResponseEntity<ApiResponder<Empty>> deleteAnnouncement(
-            @Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody, final HttpServletRequest request) {
-        protector.validateAdminSession(request);
+            @Valid @RequestBody final DeleteAnnouncementBody deleteAnnouncementBody,
+            @Protected(admin = true) final AuthenticationObject authenticationObject) {
         Announcement announcement = announcementRepository.getAnnouncementById(deleteAnnouncementBody.getId());
         if (announcement == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Announcement does not exist");
@@ -242,8 +239,7 @@ public class AdminController {
             })
     @GetMapping("/questions/incomplete")
     public ResponseEntity<ApiResponder<List<QuestionWithUserDto>>> getIncompleteQuestions(
-            final HttpServletRequest request) {
-        protector.validateAdminSession(request);
+            @Protected(admin = true) final AuthenticationObject authenticationObject) {
 
         ArrayList<QuestionWithUser> incompleteQuestions = questionRepository.getAllIncompleteQuestionsWithUser();
 
@@ -273,8 +269,8 @@ public class AdminController {
             })
     @PostMapping("/discord/message/test")
     public ResponseEntity<ApiResponder<Empty>> sendDiscordMessage(
-            @RequestBody final String clubId, final HttpServletRequest request) {
-        protector.validateAdminSession(request);
+            @RequestBody final String clubId,
+            @Protected(admin = true) final AuthenticationObject authenticationObject) {
 
         Optional<DiscordClub> clubOpt = discordClubRepository.getDiscordClubById(clubId);
         if (clubOpt.isEmpty()) {
@@ -293,8 +289,8 @@ public class AdminController {
 
     @DeleteMapping("/discord/message")
     public ResponseEntity<ApiResponder<Empty>> deleteDiscordMessage(
-            @Valid @RequestBody final DeleteMessageBody deleteMessageBody, final HttpServletRequest request) {
-        protector.validateAdminSession(request);
+            @Valid @RequestBody final DeleteMessageBody deleteMessageBody,
+            @Protected(admin = true) final AuthenticationObject authenticationObject) {
 
         boolean isDeleted = discordClubManager.deleteMessageById(
                 deleteMessageBody.getChannelId(), deleteMessageBody.getMessageId());
@@ -310,8 +306,8 @@ public class AdminController {
     @Operation(summary = "Edit current leaderboard")
     @PutMapping("/leaderboard/current")
     public ResponseEntity<ApiResponder<Empty>> editCurrentLeaderboard(
-            @RequestBody final EditLeaderboardBody editLeaderboardBody, final HttpServletRequest request) {
-        protector.validateAdminSession(request);
+            @RequestBody final EditLeaderboardBody editLeaderboardBody,
+            @Protected(admin = true) final AuthenticationObject authenticationObject) {
         editLeaderboardBody.validate();
 
         Optional<Leaderboard> currentLeaderboard = leaderboardRepository.getRecentLeaderboardMetadata();

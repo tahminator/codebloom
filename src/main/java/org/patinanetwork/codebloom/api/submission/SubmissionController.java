@@ -30,7 +30,7 @@ import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
 import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
-import org.patinanetwork.codebloom.common.security.Protector;
+import org.patinanetwork.codebloom.common.security.annotation.Protected;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
@@ -61,7 +61,6 @@ public class SubmissionController {
     private static final double SECONDS_TO_WAIT = 5 * 60;
 
     private final UserRepository userRepository;
-    private final Protector protector;
     private final SimpleRedis<Long> simpleRedis;
     private final ThrottledLeetcodeClient leetcodeClient;
     private final SubmissionsHandler submissionsHandler;
@@ -80,14 +79,12 @@ public class SubmissionController {
 
     public SubmissionController(
             final UserRepository userRepository,
-            final Protector protector,
             final SimpleRedisProvider simpleRedisProvider,
             final ThrottledLeetcodeClient throttledLeetcodeClient,
             final SubmissionsHandler submissionsHandler,
             final QuestionRepository questionRepository,
             final POTDRepository potdRepository) {
         this.userRepository = userRepository;
-        this.protector = protector;
         this.simpleRedis = simpleRedisProvider.select(SimpleRedisSlot.SUBMISSION_REFRESH);
         this.leetcodeClient = throttledLeetcodeClient;
         this.submissionsHandler = submissionsHandler;
@@ -109,10 +106,10 @@ public class SubmissionController {
                 @ApiResponse(responseCode = "200", description = "Successfully retrieved key"),
             })
     @GetMapping("/key")
-    public ResponseEntity<ApiResponder<String>> getVerificationKey(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<String>> getVerificationKey(
+            @Protected final AuthenticationObject authenticationObject) {
         FakeLag.sleep(350);
 
-        AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
 
         return ResponseEntity.ok()
@@ -145,10 +142,10 @@ public class SubmissionController {
             })
     @PostMapping("/set")
     public ResponseEntity<ApiResponder<Empty>> setLeetcodeUsername(
-            final HttpServletRequest request, @Valid @RequestBody final LeetcodeUsernameObject leetcodeUsernameObject) {
+            @Protected final AuthenticationObject authenticationObject,
+            @Valid @RequestBody final LeetcodeUsernameObject leetcodeUsernameObject) {
         FakeLag.sleep(350);
 
-        AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
 
         if (user.getLeetcodeUsername() != null) {
@@ -209,8 +206,7 @@ public class SubmissionController {
     @PostMapping("/check")
     @LogExecutionTime
     public ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> checkLatestSubmissions(
-            final HttpServletRequest request) {
-        AuthenticationObject authenticationObject = protector.validateSession(request);
+            @Protected final AuthenticationObject authenticationObject) {
         User user = authenticationObject.getUser();
 
         if (user.getLeetcodeUsername() == null) {
@@ -258,10 +254,10 @@ public class SubmissionController {
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             })
     @GetMapping("/potd")
-    public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotd(final HttpServletRequest request) {
+    public ResponseEntity<ApiResponder<PotdDto>> getCurrentPotd(
+            @Protected final AuthenticationObject authenticationObject) {
         FakeLag.sleep(750);
 
-        AuthenticationObject authenticationObject = protector.validateSession(request);
         User user = authenticationObject.getUser();
 
         POTD potd = potdRepository

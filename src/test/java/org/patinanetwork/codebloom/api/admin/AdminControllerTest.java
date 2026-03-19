@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,6 @@ import org.patinanetwork.codebloom.common.db.repos.user.UserRepository;
 import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.Empty;
 import org.patinanetwork.codebloom.common.dto.question.QuestionWithUserDto;
-import org.patinanetwork.codebloom.common.security.Protector;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
 import org.patinanetwork.codebloom.utilities.exception.ValidationException;
 import org.springframework.http.HttpStatus;
@@ -42,18 +40,15 @@ public class AdminControllerTest {
     private final LeaderboardRepository leaderboardRepository = mock(LeaderboardRepository.class);
     private final AnnouncementRepository announcementRepository = mock(AnnouncementRepository.class);
     private final QuestionRepository questionRepository = mock(QuestionRepository.class);
-    private final Protector protector = mock(Protector.class);
     private final DiscordClubManager discordClubManager = mock(DiscordClubManager.class);
     private final LeaderboardManager leaderboardManager = mock(LeaderboardManager.class);
     private final DiscordClubRepository discordClubRepository = mock(DiscordClubRepository.class);
-    private final HttpServletRequest request = mock(HttpServletRequest.class);
 
     private final AdminController adminController;
 
     public AdminControllerTest() {
         adminController = spy(new AdminController(
                 leaderboardRepository,
-                protector,
                 userRepository,
                 announcementRepository,
                 questionRepository,
@@ -69,10 +64,8 @@ public class AdminControllerTest {
                 leaderboardRepository,
                 announcementRepository,
                 questionRepository,
-                protector,
                 discordClubManager,
-                leaderboardManager,
-                request);
+                leaderboardManager);
     }
 
     @Test
@@ -82,15 +75,13 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
         assertEquals(Empty.of(), response.getBody().getPayload());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository).getRecentLeaderboardMetadata();
         verify(leaderboardRepository).addNewLeaderboard(any(Leaderboard.class));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
@@ -109,15 +100,13 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(existingLeaderboard));
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
         assertEquals(Empty.of(), response.getBody().getPayload());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository).getRecentLeaderboardMetadata();
         verify(discordClubManager).sendLeaderboardCompletedDiscordMessageToAllClubs();
         verify(leaderboardManager).generateAchievementsForAllWinners();
@@ -130,7 +119,7 @@ public class AdminControllerTest {
     void testCreateLeaderboardEmptyName() {
         NewLeaderboardBody body = NewLeaderboardBody.builder().name("").build();
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -138,8 +127,6 @@ public class AdminControllerTest {
         assertEquals(
                 "Leaderboard name must be between 1 and 512 characters.",
                 response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository, never()).getRecentLeaderboardMetadata();
         verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
     }
@@ -148,7 +135,7 @@ public class AdminControllerTest {
     void testCreateLeaderboardWhitespaceOnlyName() {
         NewLeaderboardBody body = NewLeaderboardBody.builder().name("   ").build();
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -156,8 +143,6 @@ public class AdminControllerTest {
         assertEquals(
                 "Leaderboard name must be between 1 and 512 characters.",
                 response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository, never()).getRecentLeaderboardMetadata();
         verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
     }
@@ -167,7 +152,7 @@ public class AdminControllerTest {
         String longName = "a".repeat(513);
         NewLeaderboardBody body = NewLeaderboardBody.builder().name(longName).build();
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -175,8 +160,6 @@ public class AdminControllerTest {
         assertEquals(
                 "Leaderboard name must be between 1 and 512 characters.",
                 response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository, never()).getRecentLeaderboardMetadata();
         verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
     }
@@ -188,14 +171,12 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository).getRecentLeaderboardMetadata();
         verify(leaderboardRepository).addNewLeaderboard(any(Leaderboard.class));
         verify(leaderboardRepository).addAllUsersToLeaderboard(any());
@@ -208,14 +189,12 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository).getRecentLeaderboardMetadata();
         verify(leaderboardRepository)
                 .addNewLeaderboard(argThat(leaderboard -> "Challenge 2024".equals(leaderboard.getName())));
@@ -233,14 +212,12 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository)
                 .addNewLeaderboard(
                         argThat(leaderboard -> leaderboard.getShouldExpireBy().isPresent()));
@@ -256,15 +233,13 @@ public class AdminControllerTest {
                 .shouldExpireBy(pastDate)
                 .build();
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
         assertEquals(
                 "The expiration date must be in the future.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
     }
 
@@ -277,15 +252,13 @@ public class AdminControllerTest {
                 .shouldExpireBy(current)
                 .build();
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
         assertEquals(
                 "The expiration date must be in the future.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository, never()).addNewLeaderboard(any(Leaderboard.class));
     }
 
@@ -298,14 +271,12 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository).addNewLeaderboard(argThat(leaderboard -> leaderboard
                 .getSyntaxHighlightingLanguage()
                 .filter("python"::equals)
@@ -325,14 +296,12 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository)
                 .addNewLeaderboard(
                         argThat(leaderboard -> leaderboard.getShouldExpireBy().isPresent()
@@ -353,14 +322,12 @@ public class AdminControllerTest {
 
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(request, body);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.createLeaderboard(null, body);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard was created successfully.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
         verify(leaderboardRepository)
                 .addNewLeaderboard(
                         argThat(leaderboard -> leaderboard.getShouldExpireBy().isEmpty()
@@ -376,7 +343,7 @@ public class AdminControllerTest {
         when(announcementRepository.getAnnouncementById(anyString())).thenReturn(null);
 
         ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> adminController.deleteAnnouncement(body, request));
+                assertThrows(ResponseStatusException.class, () -> adminController.deleteAnnouncement(body, null));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         assertEquals("Announcement does not exist", exception.getReason());
     }
@@ -390,14 +357,12 @@ public class AdminControllerTest {
         when(announcementRepository.getAnnouncementById(anyString())).thenReturn(mockAnnouncement);
         when(announcementRepository.updateAnnouncement(mockAnnouncement)).thenReturn(false);
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteAnnouncement(body, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteAnnouncement(body, null);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
         assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -409,14 +374,12 @@ public class AdminControllerTest {
         when(announcementRepository.getAnnouncementById(anyString())).thenReturn(mockAnnouncement);
         when(announcementRepository.updateAnnouncement(mockAnnouncement)).thenReturn(true);
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteAnnouncement(body, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteAnnouncement(body, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Announcement successfully disabled!", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -424,7 +387,7 @@ public class AdminControllerTest {
         when(questionRepository.getAllIncompleteQuestionsWithUser()).thenReturn(new ArrayList<QuestionWithUser>());
 
         ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> adminController.getIncompleteQuestions(request));
+                assertThrows(ResponseStatusException.class, () -> adminController.getIncompleteQuestions(null));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         assertEquals("No Incomplete Questions", exception.getReason());
     }
@@ -435,16 +398,13 @@ public class AdminControllerTest {
 
         when(questionRepository.getAllIncompleteQuestionsWithUser()).thenReturn(new ArrayList<>(List.of(qwu)));
 
-        ResponseEntity<ApiResponder<List<QuestionWithUserDto>>> response =
-                adminController.getIncompleteQuestions(request);
+        ResponseEntity<ApiResponder<List<QuestionWithUserDto>>> response = adminController.getIncompleteQuestions(null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals(1, response.getBody().getPayload().size());
         assertEquals("Retrieved 1 incomplete questions.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -453,13 +413,11 @@ public class AdminControllerTest {
         when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(false);
 
         String clubId = "bbf4734a-06b6-11f1-869c-07599d6a11f7";
-        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, null);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Club not found.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -471,13 +429,11 @@ public class AdminControllerTest {
 
         when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(false);
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, null);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -489,13 +445,11 @@ public class AdminControllerTest {
 
         when(discordClubManager.sendTestEmbedMessageToClub(club)).thenReturn(true);
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.sendDiscordMessage(clubId, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Message successfully sent!", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -504,13 +458,11 @@ public class AdminControllerTest {
         DeleteMessageBody body =
                 DeleteMessageBody.builder().channelId(999L).messageId(123L).build();
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteDiscordMessage(body, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteDiscordMessage(body, null);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
         assertEquals("Hmm, something went wrong.", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -519,13 +471,11 @@ public class AdminControllerTest {
         DeleteMessageBody body =
                 DeleteMessageBody.builder().channelId(999L).messageId(123L).build();
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteDiscordMessage(body, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.deleteDiscordMessage(body, null);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Discord Message successfully deleted", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -542,13 +492,11 @@ public class AdminControllerTest {
                 Leaderboard.builder().name("current leaderboard").id("123").build();
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(currentLeaderboard));
 
-        ResponseEntity<ApiResponder<Empty>> response = adminController.editCurrentLeaderboard(body, request);
+        ResponseEntity<ApiResponder<Empty>> response = adminController.editCurrentLeaderboard(body, null);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isSuccess());
         assertEquals("Leaderboard updated successfully", response.getBody().getMessage());
-
-        verify(protector).validateAdminSession(request);
     }
 
     @Test
@@ -564,7 +512,7 @@ public class AdminControllerTest {
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         try {
-            adminController.editCurrentLeaderboard(body, request);
+            adminController.editCurrentLeaderboard(body, null);
             fail("Exception expected");
         } catch (ResponseStatusException e) {
             assertNotNull(e);
@@ -582,7 +530,7 @@ public class AdminControllerTest {
                 .build();
 
         try {
-            adminController.editCurrentLeaderboard(body, request);
+            adminController.editCurrentLeaderboard(body, null);
             fail("Exception expected");
         } catch (ValidationException e) {
             assertNotNull(e);
@@ -602,7 +550,7 @@ public class AdminControllerTest {
                 .build();
 
         try {
-            adminController.editCurrentLeaderboard(body, request);
+            adminController.editCurrentLeaderboard(body, null);
             fail("Exception expected");
         } catch (ValidationException e) {
             assertNotNull(e);
@@ -621,7 +569,7 @@ public class AdminControllerTest {
                 .build();
 
         try {
-            adminController.editCurrentLeaderboard(body, request);
+            adminController.editCurrentLeaderboard(body, null);
             fail("Exception expected");
         } catch (ValidationException e) {
             assertNotNull(e);

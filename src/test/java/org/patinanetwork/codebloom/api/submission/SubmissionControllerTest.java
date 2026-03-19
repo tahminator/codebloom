@@ -28,7 +28,6 @@ import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
 import org.patinanetwork.codebloom.common.leetcode.throttled.ThrottledLeetcodeClient;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
-import org.patinanetwork.codebloom.common.security.Protector;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedis;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisProvider;
 import org.patinanetwork.codebloom.common.simpleredis.SimpleRedisSlot;
@@ -41,7 +40,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class SubmissionControllerTest {
 
     private final UserRepository userRepository = mock(UserRepository.class);
-    private final Protector protector = mock(Protector.class);
     private final SimpleRedis<Long> simpleRedis = mock(SimpleRedis.class);
     private final SimpleRedisProvider simpleRedisProvider = mock(SimpleRedisProvider.class);
     private final ThrottledLeetcodeClient leetcodeClient = mock(ThrottledLeetcodeClient.class);
@@ -59,7 +57,6 @@ public class SubmissionControllerTest {
 
         this.submissionController = new SubmissionController(
                 userRepository,
-                protector,
                 simpleRedisProvider,
                 leetcodeClient,
                 submissionsHandler,
@@ -72,11 +69,10 @@ public class SubmissionControllerTest {
         AuthenticationObject auth = mock(AuthenticationObject.class);
         User user = mock(User.class);
 
-        when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
         when(user.getVerifyKey()).thenReturn("verify-123");
 
-        ResponseEntity<ApiResponder<String>> response = submissionController.getVerificationKey(request);
+        ResponseEntity<ApiResponder<String>> response = submissionController.getVerificationKey(auth);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -85,19 +81,8 @@ public class SubmissionControllerTest {
                 "Successfully retreived authentication key", response.getBody().getMessage());
         assertEquals("verify-123", response.getBody().getPayload());
 
-        verify(protector).validateSession(request);
         verify(auth).getUser();
         verify(user).getVerifyKey();
-    }
-
-    @Test
-    void testGetVerificationKeyFailure() {
-        when(protector.validateSession(request)).thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-        ResponseStatusException ex =
-                assertThrows(ResponseStatusException.class, () -> submissionController.getVerificationKey(request));
-
-        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusCode());
     }
 
     @Test
@@ -107,7 +92,6 @@ public class SubmissionControllerTest {
         LeetcodeUsernameObject body = mock(LeetcodeUsernameObject.class);
         UserProfile profile = mock(UserProfile.class);
 
-        when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
 
         when(user.getLeetcodeUsername()).thenReturn(null);
@@ -124,7 +108,7 @@ public class SubmissionControllerTest {
         try (MockedStatic<FakeLag> fakeLag = mockStatic(FakeLag.class)) {
             fakeLag.when(() -> FakeLag.sleep(anyInt())).thenAnswer(inv -> null);
 
-            ResponseEntity<ApiResponder<Empty>> response = submissionController.setLeetcodeUsername(request, body);
+            ResponseEntity<ApiResponder<Empty>> response = submissionController.setLeetcodeUsername(auth, body);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
@@ -143,12 +127,11 @@ public class SubmissionControllerTest {
         User user = mock(User.class);
         LeetcodeUsernameObject body = mock(LeetcodeUsernameObject.class);
 
-        when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
         when(user.getLeetcodeUsername()).thenReturn("existing");
 
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class, () -> submissionController.setLeetcodeUsername(request, body));
+        ResponseStatusException ex =
+                assertThrows(ResponseStatusException.class, () -> submissionController.setLeetcodeUsername(auth, body));
 
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
     }
@@ -161,7 +144,6 @@ public class SubmissionControllerTest {
         List<LeetcodeSubmission> leetcodeSubs = List.of(mock(LeetcodeSubmission.class));
         ArrayList<AcceptedSubmission> acceptedSubs = new ArrayList<>(List.of(mock(AcceptedSubmission.class)));
 
-        when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
 
         when(user.getLeetcodeUsername()).thenReturn("leetcodeUser");
@@ -174,7 +156,7 @@ public class SubmissionControllerTest {
         when(submissionsHandler.handleSubmissions(leetcodeSubs, user, true)).thenReturn(acceptedSubs);
 
         ResponseEntity<ApiResponder<ArrayList<AcceptedSubmission>>> response =
-                submissionController.checkLatestSubmissions(request);
+                submissionController.checkLatestSubmissions(auth);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -193,12 +175,11 @@ public class SubmissionControllerTest {
         AuthenticationObject auth = mock(AuthenticationObject.class);
         User user = mock(User.class);
 
-        when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
         when(user.getLeetcodeUsername()).thenReturn(null);
 
         ResponseStatusException ex =
-                assertThrows(ResponseStatusException.class, () -> submissionController.checkLatestSubmissions(request));
+                assertThrows(ResponseStatusException.class, () -> submissionController.checkLatestSubmissions(auth));
 
         assertEquals(HttpStatus.PRECONDITION_FAILED, ex.getStatusCode());
     }
@@ -209,7 +190,6 @@ public class SubmissionControllerTest {
         User user = mock(User.class);
         POTD potd = mock(POTD.class);
 
-        when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
         when(user.getId()).thenReturn("abcdefg123456");
 
@@ -223,7 +203,7 @@ public class SubmissionControllerTest {
         try (MockedStatic<FakeLag> fakeLag = mockStatic(FakeLag.class)) {
             fakeLag.when(() -> FakeLag.sleep(anyInt())).thenAnswer(inv -> null);
 
-            ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotd(request);
+            ResponseEntity<ApiResponder<PotdDto>> response = submissionController.getCurrentPotd(auth);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertTrue(response.getBody().isSuccess());
@@ -238,12 +218,11 @@ public class SubmissionControllerTest {
         AuthenticationObject auth = mock(AuthenticationObject.class);
         User user = mock(User.class);
 
-        when(protector.validateSession(request)).thenReturn(auth);
         when(auth.getUser()).thenReturn(user);
         when(potdRepository.getCurrentPOTD()).thenReturn(Optional.empty());
 
         ResponseStatusException ex =
-                assertThrows(ResponseStatusException.class, () -> submissionController.getCurrentPotd(request));
+                assertThrows(ResponseStatusException.class, () -> submissionController.getCurrentPotd(auth));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     }

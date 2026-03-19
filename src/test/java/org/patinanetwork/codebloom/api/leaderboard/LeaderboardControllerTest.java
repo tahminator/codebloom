@@ -3,7 +3,6 @@ package org.patinanetwork.codebloom.api.leaderboard;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,6 @@ import org.patinanetwork.codebloom.common.dto.user.UserWithScoreDto;
 import org.patinanetwork.codebloom.common.page.Indexed;
 import org.patinanetwork.codebloom.common.page.Page;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
-import org.patinanetwork.codebloom.common.security.Protector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,14 +36,12 @@ public class LeaderboardControllerTest {
 
     private final LeaderboardRepository leaderboardRepository = mock(LeaderboardRepository.class);
     private final UserRepository userRepository = mock(UserRepository.class);
-    private final Protector protector = mock(Protector.class);
     private final LeaderboardManager leaderboardManager = mock(LeaderboardManager.class);
 
     private final LeaderboardController leaderboardController;
 
     public LeaderboardControllerTest() {
-        leaderboardController =
-                new LeaderboardController(leaderboardRepository, userRepository, protector, leaderboardManager);
+        leaderboardController = new LeaderboardController(leaderboardRepository, userRepository, leaderboardManager);
     }
 
     @BeforeEach
@@ -309,13 +305,12 @@ public class LeaderboardControllerTest {
     @Test
     @DisplayName("returns global rank when no filters are applied")
     void returnsGlobalRank() {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         User authUser = User.builder()
                 .id("u-rank")
                 .discordId("d1")
                 .discordName("ranker")
                 .build();
-        when(protector.validateSession(mockRequest)).thenReturn(new AuthenticationObject(authUser, null));
+        AuthenticationObject auth = new AuthenticationObject(authUser, null);
         when(leaderboardRepository.getRecentLeaderboardMetadata())
                 .thenReturn(Optional.of(Leaderboard.builder().id(LEADERBOARD_ID).build()));
 
@@ -330,7 +325,7 @@ public class LeaderboardControllerTest {
                 .thenReturn(Optional.of(indexed));
 
         var response = leaderboardController.getUserCurrentLeaderboardRank(
-                mockRequest, false, false, false, false, false, false, false, false, false, false, false);
+                auth, false, false, false, false, false, false, false, false, false, false, false);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, response.getBody().getPayload().getIndex());
@@ -340,13 +335,12 @@ public class LeaderboardControllerTest {
     @Test
     @DisplayName("returns filtered rank when filter flags are applied")
     void returnsFilteredRank() {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         User authUser = User.builder()
                 .id("u-rank")
                 .discordId("d1")
                 .discordName("ranker")
                 .build();
-        when(protector.validateSession(mockRequest)).thenReturn(new AuthenticationObject(authUser, null));
+        AuthenticationObject auth = new AuthenticationObject(authUser, null);
         when(leaderboardRepository.getRecentLeaderboardMetadata())
                 .thenReturn(Optional.of(Leaderboard.builder().id(LEADERBOARD_ID).build()));
 
@@ -361,7 +355,7 @@ public class LeaderboardControllerTest {
                 .thenReturn(Optional.of(indexed));
 
         var response = leaderboardController.getUserCurrentLeaderboardRank(
-                mockRequest, true, false, false, false, false, false, false, false, false, false, false);
+                auth, true, false, false, false, false, false, false, false, false, false, false);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().getPayload().getIndex());
@@ -370,13 +364,12 @@ public class LeaderboardControllerTest {
     @Test
     @DisplayName("throws 404 when user is not found on the leaderboard (global)")
     void throws404GlobalNotFound() {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         User authUser = User.builder()
                 .id("u-rank")
                 .discordId("d1")
                 .discordName("ranker")
                 .build();
-        when(protector.validateSession(mockRequest)).thenReturn(new AuthenticationObject(authUser, null));
+        AuthenticationObject auth = new AuthenticationObject(authUser, null);
         when(leaderboardRepository.getRecentLeaderboardMetadata())
                 .thenReturn(Optional.of(Leaderboard.builder().id(LEADERBOARD_ID).build()));
 
@@ -386,19 +379,18 @@ public class LeaderboardControllerTest {
         assertThrows(
                 ResponseStatusException.class,
                 () -> leaderboardController.getUserCurrentLeaderboardRank(
-                        mockRequest, false, false, false, false, false, false, false, false, false, false, false));
+                        auth, false, false, false, false, false, false, false, false, false, false, false));
     }
 
     @Test
     @DisplayName("throws 404 when user is not found with filters")
     void throws404FilteredNotFound() {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         User authUser = User.builder()
                 .id("u-rank")
                 .discordId("d1")
                 .discordName("ranker")
                 .build();
-        when(protector.validateSession(mockRequest)).thenReturn(new AuthenticationObject(authUser, null));
+        AuthenticationObject auth = new AuthenticationObject(authUser, null);
         when(leaderboardRepository.getRecentLeaderboardMetadata())
                 .thenReturn(Optional.of(Leaderboard.builder().id(LEADERBOARD_ID).build()));
 
@@ -408,25 +400,24 @@ public class LeaderboardControllerTest {
         assertThrows(
                 ResponseStatusException.class,
                 () -> leaderboardController.getUserCurrentLeaderboardRank(
-                        mockRequest, true, false, false, false, false, false, false, false, false, false, false));
+                        auth, true, false, false, false, false, false, false, false, false, false, false));
     }
 
     @Test
     @DisplayName("throws 404 when no active leaderboard exists for rank lookup")
     void throws404NoLeaderboardForRank() {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         User authUser = User.builder()
                 .id("u-rank")
                 .discordId("d1")
                 .discordName("ranker")
                 .build();
-        when(protector.validateSession(mockRequest)).thenReturn(new AuthenticationObject(authUser, null));
+        AuthenticationObject auth = new AuthenticationObject(authUser, null);
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.empty());
 
         assertThrows(
                 ResponseStatusException.class,
                 () -> leaderboardController.getUserCurrentLeaderboardRank(
-                        mockRequest, false, false, false, false, false, false, false, false, false, false, false));
+                        auth, false, false, false, false, false, false, false, false, false, false, false));
     }
 
     @Test
