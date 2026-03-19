@@ -39,7 +39,8 @@ public class SubmissionScheduler {
     }
 
     // handleAllUserSubmissions is a long running async function.
-    // This EventListener is used to early terminate the Submission Scheduler thread as it doesn't stop when the main
+    // This EventListener is used to early terminate the Submission Scheduler thread
+    // as it doesn't stop when the main
     // thread is terminated.
     @EventListener(ContextClosedEvent.class)
     public void onShutdown() {
@@ -60,7 +61,6 @@ public class SubmissionScheduler {
             }
 
             if (user.getLeetcodeUsername() == null) {
-                LOGGER.info("User with id of {} does not have a leetcode username set.", user.getId());
                 continue;
             }
 
@@ -68,7 +68,6 @@ public class SubmissionScheduler {
                     leetcodeClient.findSubmissionsByUsername(user.getLeetcodeUsername());
 
             submissionsHandler.handleSubmissions(leetcodeSubmissions, user, false);
-            LOGGER.info("User with id of {} has been completed", user.getId());
         }
 
         LOGGER.info("Scheduled task complete");
