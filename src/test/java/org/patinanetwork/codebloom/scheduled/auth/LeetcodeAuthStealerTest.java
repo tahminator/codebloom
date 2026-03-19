@@ -7,8 +7,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -39,7 +37,6 @@ public class LeetcodeAuthStealerTest {
     private AuthRepository authRepository;
     private Reporter reporter;
     private Env env;
-    private MeterRegistry meterRegistry;
     private PlaywrightClient playwrightClient;
 
     private ListAppender<ILoggingEvent> logWatcher;
@@ -49,14 +46,13 @@ public class LeetcodeAuthStealerTest {
         authRepository = mock(AuthRepository.class);
         reporter = mock(Reporter.class);
         env = mock(Env.class);
-        meterRegistry = new SimpleMeterRegistry();
         playwrightClient = mock(PlaywrightClient.class);
     }
 
     @BeforeEach
     void setup() {
-        leetcodeAuthStealer = spy(
-                new LeetcodeAuthStealer(redisClient, authRepository, reporter, env, meterRegistry, playwrightClient));
+        leetcodeAuthStealer =
+                spy(new LeetcodeAuthStealer(redisClient, authRepository, reporter, env, playwrightClient));
 
         logWatcher = new ListAppender<>();
         logWatcher.start();

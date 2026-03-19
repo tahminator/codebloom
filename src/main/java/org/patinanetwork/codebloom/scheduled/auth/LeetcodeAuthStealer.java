@@ -2,7 +2,6 @@ package org.patinanetwork.codebloom.scheduled.auth;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.MeterRegistry;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -56,7 +55,6 @@ public class LeetcodeAuthStealer {
             final AuthRepository authRepository,
             final Reporter reporter,
             final Env env,
-            MeterRegistry meterRegistry,
             PlaywrightClient playwrightClient) {
         this.redisClient = redisClient;
         this.authRepository = authRepository;
@@ -163,6 +161,7 @@ public class LeetcodeAuthStealer {
         return csrf;
     }
 
+    @VisibleForTesting
     String stealCookieImpl() {
         Optional<Auth> auth = playwrightClient.getLeetcodeCookie(githubUsername, githubPassword);
         if (auth.isPresent()) {

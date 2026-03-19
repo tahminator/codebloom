@@ -24,7 +24,6 @@ import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeSubmission;
 import org.patinanetwork.codebloom.common.leetcode.models.LeetcodeTopicTag;
 import org.patinanetwork.codebloom.common.leetcode.models.POTD;
 import org.patinanetwork.codebloom.common.leetcode.models.UserProfile;
-import org.patinanetwork.codebloom.common.leetcode.queries.SelectProblemQuery;
 import org.patinanetwork.codebloom.scheduled.auth.LeetcodeAuthStealer;
 
 public class LeetcodeClientTest {
@@ -33,7 +32,6 @@ public class LeetcodeClientTest {
     private final LeetcodeAuthStealer leetcodeAuthStealer = mock(LeetcodeAuthStealer.class);
     private final HttpClient httpClient = mock(HttpClient.class);
     private final HttpResponse<String> httpResponse = mock(HttpResponse.class);
-    private final SelectProblemQuery selectProblemQuery = mock(SelectProblemQuery.class);
 
     private final LeetcodeClientImpl leetcodeClient;
 
