@@ -138,7 +138,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         try {
             requestBody = SelectProblemQuery.body(slug);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error building the request body", e);
+            throw new LeetcodeClientException("Error building the request body", e);
         }
 
         try {
@@ -154,7 +154,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                throw new IllegalArgumentException("API Returned status " + statusCode + ": " + body);
+                throw new LeetcodeClientException("API Returned status " + statusCode + ": " + body);
             }
 
             JsonNode node = mapper.readTree(body);
@@ -199,10 +199,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         } catch (InterruptedException e) {
             errorCounter().increment();
             Thread.currentThread().interrupt();
-            throw new IllegalArgumentException("Thread interrupted", e);
+            throw new LeetcodeClientException("Thread interrupted", e);
         } catch (Exception e) {
             errorCounter().increment();
-            throw new IllegalArgumentException("Error fetching the API", e);
+            throw new LeetcodeClientException("Error fetching the API", e);
         }
     }
 
@@ -221,7 +221,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         try {
             requestBody = SelectAcceptedSubmisisonsQuery.body(username, limit);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error building the request body");
+            throw new LeetcodeClientException("Error building the request body");
         }
 
         try {
@@ -237,7 +237,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                throw new IllegalArgumentException("API Returned status " + statusCode + ": " + body);
+                throw new LeetcodeClientException("API Returned status " + statusCode + ": " + body);
             }
 
             JsonNode node = mapper.readTree(body);
@@ -266,10 +266,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         } catch (InterruptedException e) {
             errorCounter().increment();
             Thread.currentThread().interrupt();
-            throw new IllegalArgumentException("Thread interrupted", e);
+            throw new LeetcodeClientException("Thread interrupted", e);
         } catch (Exception e) {
             errorCounter().increment();
-            throw new IllegalArgumentException("Error fetching the API", e);
+            throw new LeetcodeClientException("Error fetching the API", e);
         }
     }
 
@@ -281,7 +281,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         try {
             requestBody = GetSubmissionDetails.body(submissionId);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error building the request body");
+            throw new LeetcodeClientException("Error building the request body");
         }
 
         try {
@@ -297,7 +297,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                throw new IllegalArgumentException("API Returned status " + statusCode + ": " + body);
+                throw new LeetcodeClientException("API Returned status " + statusCode + ": " + body);
             }
 
             JsonNode node = mapper.readTree(body);
@@ -328,10 +328,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         } catch (InterruptedException e) {
             errorCounter().increment();
             Thread.currentThread().interrupt();
-            throw new IllegalArgumentException("Thread interrupted", e);
+            throw new LeetcodeClientException("Thread interrupted", e);
         } catch (Exception e) {
             errorCounter().increment();
-            throw new IllegalArgumentException("Error fetching the API", e);
+            throw new LeetcodeClientException("Error fetching the API", e);
         }
     }
 
@@ -343,7 +343,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         try {
             requestBody = GetPotd.body();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error building the request body");
+            throw new LeetcodeClientException("Error building the request body");
         }
 
         try {
@@ -359,7 +359,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                throw new IllegalArgumentException("API Returned status " + statusCode + ": " + body);
+                throw new LeetcodeClientException("API Returned status " + statusCode + ": " + body);
             }
 
             JsonNode node = mapper.readTree(body);
@@ -375,10 +375,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         } catch (InterruptedException e) {
             errorCounter().increment();
             Thread.currentThread().interrupt();
-            throw new IllegalArgumentException("Thread interrupted", e);
+            throw new LeetcodeClientException("Thread interrupted", e);
         } catch (Exception e) {
             errorCounter().increment();
-            throw new IllegalArgumentException("Error fetching the API", e);
+            throw new LeetcodeClientException("Error fetching the API", e);
         }
     }
 
@@ -390,7 +390,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         try {
             requestBody = GetUserProfile.body(username);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error building the request body", e);
+            throw new LeetcodeClientException("Error building the request body", e);
         }
 
         try {
@@ -406,7 +406,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                throw new IllegalArgumentException("API Returned status " + statusCode + ": " + body);
+                throw new LeetcodeClientException("API Returned status " + statusCode + ": " + body);
             }
 
             JsonNode node = mapper.readTree(body);
@@ -422,10 +422,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         } catch (InterruptedException e) {
             errorCounter().increment();
             Thread.currentThread().interrupt();
-            throw new IllegalArgumentException("Thread interrupted", e);
+            throw new LeetcodeClientException("Thread interrupted", e);
         } catch (Exception e) {
             errorCounter().increment();
-            throw new IllegalArgumentException("Error fetching the API", e);
+            throw new LeetcodeClientException("Error fetching the API", e);
         }
     }
 
@@ -446,7 +446,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                throw new IllegalArgumentException(
+                throw new LeetcodeClientException(
                         "Non-successful response getting topics from Leetcode API. Status code: " + statusCode);
             }
 
@@ -454,7 +454,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
             JsonNode edges = json.path("data").path("questionTopicTags").path("edges");
 
             if (!edges.isArray()) {
-                throw new IllegalArgumentException(
+                throw new LeetcodeClientException(
                         "The expected shape of getting topics did not match the received body");
             }
 
@@ -472,10 +472,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         } catch (InterruptedException e) {
             errorCounter().increment();
             Thread.currentThread().interrupt();
-            throw new IllegalArgumentException("Thread interrupted", e);
+            throw new LeetcodeClientException("Thread interrupted", e);
         } catch (Exception e) {
             errorCounter().increment();
-            throw new IllegalArgumentException("Error getting topics from Leetcode API", e);
+            throw new LeetcodeClientException("Error getting topics from Leetcode API", e);
         }
     }
 
@@ -494,7 +494,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                 if (isThrottled(statusCode)) {
                     leetcodeAuthStealer.reloadCookie();
                 }
-                throw new IllegalArgumentException(
+                throw new LeetcodeClientException(
                         "Non-successful response getting all questions from Leetcode API. Status code: " + statusCode);
             }
 
@@ -503,7 +503,7 @@ public class LeetcodeClientImpl implements LeetcodeClient {
                     json.path("data").path("problemsetQuestionListV2").path("questions");
 
             if (!allQuestions.isArray()) {
-                throw new IllegalArgumentException(
+                throw new LeetcodeClientException(
                         "The expected shape of getting topics did not match the received body");
             }
 
@@ -534,10 +534,10 @@ public class LeetcodeClientImpl implements LeetcodeClient {
         } catch (InterruptedException e) {
             errorCounter().increment();
             Thread.currentThread().interrupt();
-            throw new IllegalArgumentException("Thread interrupted", e);
+            throw new LeetcodeClientException("Thread interrupted", e);
         } catch (Exception e) {
             errorCounter().increment();
-            throw new IllegalArgumentException("Error getting all problems from Leetcode API", e);
+            throw new LeetcodeClientException("Error getting all problems from Leetcode API", e);
         }
     }
 }
