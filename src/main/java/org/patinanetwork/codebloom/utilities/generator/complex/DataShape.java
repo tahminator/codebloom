@@ -4,12 +4,6 @@ public enum DataShape {
     /** Expects {@code Map<T, List<T>>} where T is an enum class. */
     ENUM_TO_ENUM_LIST,
 
-    /** Expects {@code Map<T, Map<String, String>>} where T is an enum class. */
-    ENUM_TO_STRING_VALUE_MAP,
-
-    /** Expects {@code Map<T, Map<String, String>>} where T is an enum class, specifically for TagMetadataObject. */
-    ENUM_TO_TAG_METADATA,
-
     /** Expects {@code Map<T, Object>} where T is an enum class. Uses Jackson to serialize values to JSON. */
     ENUM_TO_OBJECT,
 }

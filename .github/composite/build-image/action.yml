@@ -37,6 +37,11 @@ runs:
         cache_dependency_path: js/pnpm-lock.yaml
         package_json_file: js/package.json
 
+    - name: Install JS dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+      working-directory: js
+
     - name: Set up OpenJDK 25
       uses: actions/setup-java@v5
       with:

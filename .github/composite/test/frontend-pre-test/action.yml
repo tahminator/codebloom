@@ -40,6 +40,11 @@ runs:
         cache_dependency_path: js/pnpm-lock.yaml
         package_json_file: js/package.json
 
+    - name: Install JS dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+      working-directory: js
+
     - name: Run script
       shell: bash
       run: bun .github/scripts/test/run-frontend-pre-tests

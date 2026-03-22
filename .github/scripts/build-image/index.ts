@@ -33,6 +33,7 @@ async function main() {
     const { dockerHubPat } = parseCiEnv(ciEnv);
     const localDbEnv = await db.start();
     const ciAppEnv = await getEnvVariables(["ci-app"]);
+
     await backend.start(ciAppEnv);
 
     const $$ = $.env({
@@ -40,9 +41,6 @@ async function main() {
       ...ciAppEnv,
       ...localDbEnv,
     });
-
-    await $`corepack enable pnpm`;
-    await $`pnpm --dir js i -D --frozen-lockfile`;
     await $$`pnpm --dir js run generate`;
 
     // copy old tz format from build-image.sh
