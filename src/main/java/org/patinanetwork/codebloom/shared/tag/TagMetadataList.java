@@ -1,13 +1,25 @@
 package org.patinanetwork.codebloom.shared.tag;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 
 public class TagMetadataList {
-    public static final Map<Tag, Map<String, String>> ENUM_TO_STRING_VALUE_MAP = generate();
+    public static final String TS_TYPE = """
+            export type TagMetadataObject = {
+              shortName: string;
+              name: string;
+              apiKey: string;
+              alt: string;
+            };
+
+            """.stripIndent();
+
+    public static final Map<Tag, Map<String, String>> ENUM_TO_STRING_VALUE_MAP =
+            Collections.unmodifiableMap(generate());
 
     private static Map<Tag, Map<String, String>> generate() {
         return Arrays.stream(Tag.values())

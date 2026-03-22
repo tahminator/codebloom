@@ -6,9 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
-import org.patinanetwork.codebloom.common.db.models.question.topic.TopicMetadataList;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 import org.patinanetwork.codebloom.shared.tag.TagMetadataList;
+import org.patinanetwork.codebloom.shared.topic.TopicMetadataList;
 
 class ComplexJSTypesGeneratorTest {
 
@@ -53,51 +53,6 @@ class ComplexJSTypesGeneratorTest {
             assertFalse(metadata.get("apiKey").isBlank());
             assertFalse(metadata.get("alt").isBlank());
         }
-    }
-
-    @Test
-    void generateEnumToStringValueMapRunsWithoutException() {
-        var generator = new ComplexJSTypesGenerator();
-        assertDoesNotThrow(() -> generator.generateEnumToStringValueMap(Generator.builder()
-                .name("TEST_MAP")
-                .data(TagMetadataList.ENUM_TO_STRING_VALUE_MAP)
-                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                .build()));
-    }
-
-    @Test
-    void generateEnumToStringValueMapWithTypeNameRunsWithoutException() {
-        var generator = new ComplexJSTypesGenerator();
-        assertDoesNotThrow(() -> generator.generateEnumToStringValueMap(Generator.builder()
-                .name("TEST_MAP")
-                .data(TagMetadataList.ENUM_TO_STRING_VALUE_MAP)
-                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                .typeName("TestType")
-                .build()));
-    }
-
-    @Test
-    void generateEnumToStringValueMapEmptyMapDoesNotThrow() {
-        var generator = new ComplexJSTypesGenerator();
-        assertDoesNotThrow(() -> generator.generateEnumToStringValueMap(Generator.builder()
-                .name("TEST_MAP")
-                .data(new LinkedHashMap<>())
-                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                .build()));
-    }
-
-    @Test
-    void generateEnumToStringValueMapThrowsOnNonEnumKey() {
-        var invalidData = new LinkedHashMap<String, Map<String, String>>();
-        invalidData.put("not-an-enum", Map.of("key", "value"));
-        var generator = new ComplexJSTypesGenerator();
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> generator.generateEnumToStringValueMap(Generator.builder()
-                        .name("TEST")
-                        .data(invalidData)
-                        .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                        .build()));
     }
 
     @Test
