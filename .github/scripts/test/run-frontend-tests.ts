@@ -18,6 +18,7 @@ async function main() {
   try {
     const ciAppEnv = await getEnvVariables(["ci-app"]);
     const localDbEnv = await db.start();
+
     await backend.start({ ...ciAppEnv, ...localDbEnv });
 
     const $$ = $.env({
@@ -25,9 +26,6 @@ async function main() {
       ...ciAppEnv,
       ...localDbEnv,
     });
-
-    await $`pnpm --v`;
-    await $`pnpm --dir js i --frozen-lockfile`;
     await $$`pnpm --dir js run generate`;
     await $$`pnpm --dir js run test`;
 

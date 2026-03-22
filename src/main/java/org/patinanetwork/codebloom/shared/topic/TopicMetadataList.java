@@ -1,15 +1,21 @@
-package org.patinanetwork.codebloom.common.db.models.question.topic;
+package org.patinanetwork.codebloom.shared.topic;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.Builder;
+import lombok.Getter;
+import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
+import org.patinanetwork.codebloom.shared.TypableObject;
 
 public final class TopicMetadataList {
     private TopicMetadataList() {}
 
-    public static final Map<LeetcodeTopicEnum, TopicMetadataObject> ENUM_TO_TOPIC_METADATA = generate();
+    public static final Map<LeetcodeTopicEnum, TopicMetadataObject> ENUM_TO_TOPIC_METADATA =
+            Collections.unmodifiableMap(generate());
 
     private static Map<LeetcodeTopicEnum, TopicMetadataObject> generate() {
         return Arrays.stream(LeetcodeTopicEnum.values())
@@ -162,5 +168,25 @@ public final class TopicMetadataList {
                 TopicMetadataObject.builder().name("Counting Sort").build();
             case UNKNOWN -> TopicMetadataObject.builder().name("Unknown").build();
         };
+    }
+
+    @Getter
+    @Builder
+    public static class TopicMetadataObject implements TypableObject {
+        public static final String TS_TYPE = """
+                export type TopicMetadataObject = {
+                  name: string;
+                  aliases?: string[];
+                };
+
+                """.stripIndent();
+
+        private final String name;
+        private final List<String> aliases;
+
+        @Override
+        public String tsType() {
+            return TS_TYPE;
+        }
     }
 }

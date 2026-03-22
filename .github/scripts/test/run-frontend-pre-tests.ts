@@ -4,8 +4,6 @@ import { backend } from "utils/run-backend-instance";
 import { db } from "utils/run-local-db";
 
 async function main() {
-  await $`pnpm --dir js i --frozen-lockfile`;
-
   const ciAppEnv = await getEnvVariables(["ci-app"]);
   const localDbEnv = await db.start();
   await backend.start({ ...ciAppEnv, ...localDbEnv });
