@@ -307,6 +307,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponder.success("Discord Message successfully deleted", Empty.of()));
     }
 
+    @Operation(summary = "Edit current leaderboard")
     @PutMapping("/leaderboard/current")
     public ResponseEntity<ApiResponder<Empty>> editCurrentLeaderboard(
             @RequestBody final EditLeaderboardBody editLeaderboardBody, final HttpServletRequest request) {
@@ -322,13 +323,18 @@ public class AdminController {
                     .name(editLeaderboardBody.getName())
                     .deletedAt(lb.getDeletedAt())
                     .createdAt(lb.getCreatedAt())
-                    .shouldExpireBy(Optional.of(shouldExpireBy).map(d -> d.toLocalDateTime()))
-                    .syntaxHighlightingLanguage(Optional.of(editLeaderboardBody.getSyntaxHighlightingLanguage()))
+                    .shouldExpireBy(Optional.ofNullable(shouldExpireBy).map(d -> d.toLocalDateTime()))
+                    .syntaxHighlightingLanguage(
+                            Optional.ofNullable(editLeaderboardBody.getSyntaxHighlightingLanguage()))
                     .id(lb.getId())
                     .build();
 
             leaderboardRepository.updateLeaderboard(updated);
         });
+
+        if (currentLeaderboard.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No current leaderboard found");
+        }
 
         return ResponseEntity.ok().body(ApiResponder.success("Leaderboard updated successfully", Empty.of()));
     }

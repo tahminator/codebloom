@@ -29,6 +29,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
 
     private DataSource ds;
     private final UserRepository userRepository;
+    private static final String SHOULD_EXPIRE_BY = "shouldExpireBy";
 
     public LeaderboardSqlRepository(final DataSource ds, final UserRepository userRepository) {
         this.ds = ds;
@@ -42,7 +43,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 .deletedAt(
                         Optional.ofNullable(resultSet.getTimestamp("deletedAt")).map(Timestamp::toLocalDateTime))
                 .name(resultSet.getString("name"))
-                .shouldExpireBy(Optional.ofNullable(resultSet.getTimestamp("shouldExpireBy"))
+                .shouldExpireBy(Optional.ofNullable(resultSet.getTimestamp(SHOULD_EXPIRE_BY))
                         .map(Timestamp::toLocalDateTime))
                 .syntaxHighlightingLanguage(Optional.ofNullable(resultSet.getString("syntaxHighlightingLanguage")))
                 .build();
@@ -86,7 +87,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
             stmt.setString("name", leaderboard.getName());
-            stmt.setObject("shouldExpireBy", leaderboard.getShouldExpireBy().orElse(null));
+            stmt.setObject(SHOULD_EXPIRE_BY, leaderboard.getShouldExpireBy().orElse(null));
             stmt.setString(
                     "syntaxHighlightingLanguage",
                     leaderboard.getSyntaxHighlightingLanguage().orElse(null));
@@ -756,7 +757,7 @@ public class LeaderboardSqlRepository implements LeaderboardRepository {
             stmt.setString("name", leaderboard.getName());
             stmt.setObject("createdAt", leaderboard.getCreatedAt());
             stmt.setObject("deletedAt", leaderboard.getDeletedAt().orElse(null));
-            stmt.setObject("shouldExpireBy", leaderboard.getShouldExpireBy().orElse(null));
+            stmt.setObject(SHOULD_EXPIRE_BY, leaderboard.getShouldExpireBy().orElse(null));
             stmt.setObject("id", UUID.fromString(leaderboard.getId()));
             stmt.setString(
                     "syntaxHighlightingLanguage",
