@@ -27,7 +27,7 @@ public class SessionDto {
 
     public static SessionDto fromSession(final Session session) {
         return SessionDto.builder()
-                .id(session.getId())
+                .id(session.getId().orElseThrow())
                 .userId(session.getUserId())
                 .expiresAt(session.getExpiresAt())
                 .build();
