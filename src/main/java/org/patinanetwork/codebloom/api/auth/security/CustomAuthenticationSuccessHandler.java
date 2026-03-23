@@ -178,12 +178,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     .build();
             sessionRepository.createSession(session);
 
-            if (session == null || session.getId() == null) {
+            if (session == null || session.getId().isEmpty()) {
                 response.sendRedirect("/login?success=false&message=Failed to log in.");
                 throw new RuntimeException("Failed to create new session.");
             }
 
-            Cookie cookie = new Cookie("session_token", session.getId());
+            Cookie cookie = new Cookie("session_token", session.getId().get());
             cookie.setMaxAge(maxAgeSeconds);
 
             cookie.setHttpOnly(true);

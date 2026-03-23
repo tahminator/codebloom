@@ -3,6 +3,7 @@ package org.patinanetwork.codebloom.common.security;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.Session;
 import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.session.SessionRepository;
@@ -38,11 +39,13 @@ public class Protector {
             if ("session_token".equals(cookie.getName()) && !cookie.getValue().isEmpty()) {
                 String sessionToken = cookie.getValue();
 
-                Session session = sessionRepository.getSessionById(sessionToken);
+                Optional<Session> optSession = sessionRepository.getSessionById(sessionToken);
 
-                if (session == null) {
+                if (optSession.isEmpty()) {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
+
+                Session session = optSession.get();
 
                 LocalDateTime now = StandardizedLocalDateTime.now();
 

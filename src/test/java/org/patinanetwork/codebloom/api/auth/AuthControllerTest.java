@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -96,7 +97,7 @@ public class AuthControllerTest {
 
     private Session createRandomSession(final String userId) {
         return Session.builder()
-                .id(UUID.randomUUID().toString().replace("-", ""))
+                .id(Optional.of(UUID.randomUUID().toString().replace("-", "")))
                 .userId(userId)
                 .expiresAt(LocalDateTime.now().plusDays(1))
                 .build();
@@ -135,7 +136,7 @@ public class AuthControllerTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         when(protector.validateSession(request)).thenReturn(authObj);
-        when(sessionRepository.deleteSessionById(session.getId())).thenReturn(true);
+        when(sessionRepository.deleteSessionById(session.getId().orElseThrow())).thenReturn(true);
 
         RedirectView redirectView = authController.logout(request, response);
 
@@ -143,7 +144,7 @@ public class AuthControllerTest {
         assertEquals("/login?success=true&message=You have been logged out!", redirectView.getUrl());
 
         verify(protector, times(1)).validateSession(request);
-        verify(sessionRepository, times(1)).deleteSessionById(session.getId());
+        verify(sessionRepository, times(1)).deleteSessionById(session.getId().orElseThrow());
     }
 
     @Test
@@ -157,7 +158,7 @@ public class AuthControllerTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         when(protector.validateSession(request)).thenReturn(authObj);
-        when(sessionRepository.deleteSessionById(session.getId())).thenReturn(false);
+        when(sessionRepository.deleteSessionById(session.getId().orElseThrow())).thenReturn(false);
 
         RedirectView redirectView = authController.logout(request, response);
 
@@ -165,7 +166,7 @@ public class AuthControllerTest {
         assertEquals("/login?success=false&message=You are not logged in.", redirectView.getUrl());
 
         verify(protector, times(1)).validateSession(request);
-        verify(sessionRepository, times(1)).deleteSessionById(session.getId());
+        verify(sessionRepository, times(1)).deleteSessionById(session.getId().orElseThrow());
     }
 
     @Test
