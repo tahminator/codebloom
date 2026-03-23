@@ -1,6 +1,7 @@
 package org.patinanetwork.codebloom.common.db.repos.session;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.Session;
 
 public interface SessionRepository {
@@ -14,7 +15,7 @@ public interface SessionRepository {
      */
     void createSession(Session session);
 
-    Session getSessionById(String id);
+    Optional<Session> getSessionById(String id);
 
     ArrayList<Session> getSessionsByUserId(String userId);
 

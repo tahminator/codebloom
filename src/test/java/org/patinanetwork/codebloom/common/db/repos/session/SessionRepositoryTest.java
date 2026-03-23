@@ -29,7 +29,7 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
 
     private SessionRepository sessionRepository;
     private Session testSession;
-    private String mockUserId = "ed3bfe18-e42a-467f-b4fa-07e8da4d2555";
+    private String mockUserId = "0c9b2e77-74cc-4b9e-b7f9-cfe0fd05e50b";
 
     @Autowired
     public SessionRepositoryTest(final SessionRepository sessionRepository) {
@@ -44,25 +44,28 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
                 .build();
 
         sessionRepository.createSession(testSession);
-        log.info("Created test session with ID: {}", testSession.getId());
+        log.info("Created test session with ID: {}", testSession.getId().get());
     }
 
     @AfterAll
     void deleteSession() {
-        boolean isSuccessful = sessionRepository.deleteSessionById(testSession.getId());
+        String sessionId = testSession.getId().get();
+        log.info("The test session to be deleted has an id of {}", sessionId);
+        boolean isSuccessful = sessionRepository.deleteSessionById(sessionId);
 
         if (!isSuccessful) {
             fail("Failed to delete test announcement");
         } else {
-            log.info("Deleted test session with ID: {}", testSession.getId());
+            log.info("Deleted test session with ID: {}", sessionId);
         }
     }
 
     @Test
     void testGetSessionById() {
-        Session found = sessionRepository.getSessionById(testSession.getId());
+        String sessionId = testSession.getId().get();
+        Session found = sessionRepository.getSessionById(sessionId).get();
         assertNotNull(found);
-        assertEquals(testSession.getId(), found.getId());
+        assertEquals(testSession.getId().get(), found.getId().get());
     }
 
     @Test
@@ -82,9 +85,10 @@ public class SessionRepositoryTest extends BaseRepositoryTest {
 
         sessionRepository.createSession(tempSession);
 
-        boolean isSuccessful = sessionRepository.deleteSessionById(tempSession.getId());
+        String sessionId = tempSession.getId().get();
+        boolean isSuccessful = sessionRepository.deleteSessionById(sessionId);
         assertTrue(isSuccessful);
-        log.info("Deleted session with ID: {}", tempSession.getId());
+        log.info("Deleted session with ID: {}", tempSession.getId().get());
     }
 
     @Test
