@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Help Comment
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup CI
         uses: ./.github/composite/setup-ci

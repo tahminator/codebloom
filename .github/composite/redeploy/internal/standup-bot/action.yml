@@ -19,7 +19,7 @@ runs:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: Expose GitHub Runtime
-      uses: crazy-max/ghaction-github-runtime@v3
+      uses: crazy-max/ghaction-github-runtime@v4
 
     - name: Run script
       shell: bash

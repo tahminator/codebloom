@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: Get PR head SHA
         id: pr-head
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           result-encoding: string
           script: |
@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Comment on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const prId = ${{ inputs.prId }};
@@ -104,7 +104,7 @@ jobs:
     if: needs.checkExistingImage.outputs.image-exists == 'true'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
 
@@ -144,7 +144,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
 
@@ -162,7 +162,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
 
@@ -177,7 +177,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
           fetch-depth: 0
@@ -205,7 +205,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
 
@@ -225,7 +225,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.getPRHead.outputs.sha }}
           fetch-depth: 0
@@ -257,7 +257,7 @@ jobs:
 
     steps:
       - name: Comment on PR about deployment status
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const prId = ${{ inputs.prId }};

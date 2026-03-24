@@ -24,7 +24,7 @@ runs:
         GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
 
     - name: Load GPG secret key
-      uses: crazy-max/ghaction-import-gpg@v6
+      uses: crazy-max/ghaction-import-gpg@v7
       with:
         gpg_private_key: ${{ inputs.GPG_PRIVATE_KEY }}
         passphrase: ${{ inputs.GPG_PASSPHRASE }}
