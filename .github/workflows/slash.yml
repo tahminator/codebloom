@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Get PR head SHA
         id: pr-head
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           result-encoding: string
           script: |
@@ -31,7 +31,7 @@ jobs:
 
       - name: Get branch
         id: branch
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           result-encoding: string
           script: |
@@ -44,7 +44,7 @@ jobs:
             return pr.head.ref;
 
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ steps.pr-head.outputs.result }}
 
