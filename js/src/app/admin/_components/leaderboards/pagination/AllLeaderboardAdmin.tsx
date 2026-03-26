@@ -1,4 +1,5 @@
 import AllLeaderboardAdminSkeleton from "@/app/admin/_components/leaderboards/pagination/AllLeaderboardAdminSkeleton";
+import EditLeaderboardForm from "@/app/admin/_components/leaderboards/pagination/new-leaderboard/EditLeaderboardFormBody.tsx";
 import NewLeaderboardForm from "@/app/admin/_components/leaderboards/pagination/new-leaderboard/NewLeaderBoardFormBody";
 import Paginator from "@/components/ui/table/Paginator";
 import SearchBox from "@/components/ui/table/SearchBox";
@@ -73,6 +74,7 @@ export default function AllLeaderboardAdmin() {
               <Table.Th ta={"center"}>Name</Table.Th>
               <Table.Th ta={"center"}>Created</Table.Th>
               <Table.Th ta={"center"}>Ended</Table.Th>
+              <Table.Th ta={"center"}>Edit</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -126,6 +128,18 @@ export default function AllLeaderboardAdmin() {
                         <span>{timeDiff(new Date(leaderboard.deletedAt))}</span>
                       </Tooltip>
                     : "Currently running"}
+                  </Table.Td>
+                  <Table.Td>
+                    <EditLeaderboardForm
+                      currentLeaderboardName={currentLeaderboard.name}
+                      currentLeaderboardExpire={
+                        currentLeaderboard.shouldExpireBy
+                      }
+                      currentLeaderboardLanguage={
+                        currentLeaderboard.syntaxHighlightingLanguage
+                      }
+                      disableButton={!isCurrentLeaderboard}
+                    />
                   </Table.Td>
                 </Table.Tr>
               );

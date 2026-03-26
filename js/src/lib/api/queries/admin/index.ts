@@ -253,3 +253,36 @@ async function deleteAnnouncement({ id }: { id: string }) {
 
   return res(await response.json());
 }
+
+/**
+ * Edit current leaderboard
+ */
+
+export const useEditLeaderboardMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: editLeaderboard,
+    onSuccess: async (data) => {
+      if (data.success) {
+        queryClient.invalidateQueries({
+          queryKey: ApiURL.prefix("/api/leaderboard"),
+        });
+      }
+    },
+  });
+};
+
+async function editLeaderboard(leaderboard: { name: string }) {
+  const { url, method, req, res } = ApiURL.create(
+    "/api/admin/leaderboard/current",
+    {
+      method: "PUT",
+    },
+  );
+  const response = await fetch(url, {
+    method,
+    body: req(leaderboard),
+  });
+
+  return res(await response.json());
+}
