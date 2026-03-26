@@ -1,6 +1,6 @@
 package org.patinanetwork.codebloom.api.admin.body;
 
-import com.google.common.base.Strings;
+import jakarta.validation.constraints.NotBlank;
 import java.time.OffsetDateTime;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
@@ -13,6 +13,7 @@ import org.patinanetwork.codebloom.utilities.exception.ValidationException;
 @ToString
 public class EditLeaderboardBody {
 
+    @NotBlank
     private String name;
 
     private OffsetDateTime shouldExpireBy;
@@ -22,10 +23,6 @@ public class EditLeaderboardBody {
     public void validate() {
         var leaderboardName = getName();
         var expire = getShouldExpireBy();
-
-        if (Strings.isNullOrEmpty(leaderboardName)) {
-            throw new ValidationException("Leaderboard name cannot be null or empty");
-        }
 
         if (leaderboardName.length() == 1) {
             throw new ValidationException("Leaderboard name cannot have only 1 character");
