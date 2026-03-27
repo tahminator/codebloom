@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.patinanetwork.codebloom.common.db.helper.NamedPreparedStatement;
@@ -22,14 +23,14 @@ public class SessionSqlRepository implements SessionRepository {
 
     private Session parseResultSetToSession(final ResultSet resultSet) throws SQLException {
         return Session.builder()
-                .id(resultSet.getString("id"))
+                .id(Optional.of(resultSet.getString("id")))
                 .userId(resultSet.getString("userId"))
                 .expiresAt(resultSet.getTimestamp("expiresAt").toLocalDateTime())
                 .build();
     }
 
     private void updateSessionWithResultSet(final ResultSet resultSet, final Session session) throws SQLException {
-        session.setId(resultSet.getString("id"));
+        session.setId(Optional.of(resultSet.getString("id")));
     }
 
     @Override
@@ -37,11 +38,11 @@ public class SessionSqlRepository implements SessionRepository {
         String sql = "INSERT INTO \"Session\" (id, \"userId\", \"expiresAt\") VALUES (?, ?, ?) RETURNING \"id\"";
         // Don't want dashes inside of the cookie, so better to just remove it from the
         // ID altogether.
-        session.setId(UUID.randomUUID().toString().replace("-", ""));
+        session.setId(Optional.of(UUID.randomUUID().toString().replace("-", "")));
 
         try (Connection conn = ds.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, session.getId());
+            stmt.setString(1, session.getId().orElse(null));
             stmt.setObject(2, UUID.fromString(session.getUserId()));
             stmt.setObject(3, session.getExpiresAt());
 
@@ -56,8 +57,8 @@ public class SessionSqlRepository implements SessionRepository {
     }
 
     @Override
-    public Session getSessionById(final String id) {
-        Session session = null;
+    public Optional<Session> getSessionById(final String id) {
+        Optional<Session> session = Optional.empty();
         String sql = "SELECT id, \"userId\", \"expiresAt\" FROM \"Session\" WHERE id=?";
 
         try (Connection conn = ds.getConnection();
@@ -65,7 +66,7 @@ public class SessionSqlRepository implements SessionRepository {
             stmt.setString(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToSession(rs);
+                    return Optional.of(parseResultSetToSession(rs));
                 }
             }
         } catch (SQLException e) {
@@ -113,11 +114,11 @@ public class SessionSqlRepository implements SessionRepository {
     @Override
     public boolean deleteSessionsByUserId(final String userId) {
         String sql = """
-                DELETE FROM
-                    "Session"
-                WHERE
-                    "userId" = :userId
-            """;
+                    DELETE FROM
+                        "Session"
+                    WHERE
+                        "userId" = :userId
+                """;
 
         try (Connection conn = ds.getConnection();
                 NamedPreparedStatement stmt = new NamedPreparedStatement(conn, sql)) {

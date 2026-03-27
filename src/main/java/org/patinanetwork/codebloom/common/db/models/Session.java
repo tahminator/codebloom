@@ -1,6 +1,7 @@
 package org.patinanetwork.codebloom.common.db.models;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,8 +16,8 @@ import org.patinanetwork.codebloom.common.db.helper.annotations.NotNullColumn;
 @ToString
 public class Session {
 
-    @NotNullColumn
-    private String id;
+    @Builder.Default
+    private Optional<String> id = Optional.empty();
 
     @NotNullColumn
     private String userId;

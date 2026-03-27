@@ -135,7 +135,8 @@ public class AuthController {
 
             Session session = authenticationObject.getSession();
 
-            boolean sessionDeleted = sessionRepository.deleteSessionById(session.getId());
+            boolean sessionDeleted =
+                    sessionRepository.deleteSessionById(session.getId().orElseThrow());
 
             if (!sessionDeleted) {
                 return new RedirectView("/login?success=false&message=You are not logged in.");
@@ -190,8 +191,8 @@ public class AuthController {
     @Operation(
             summary = "Enroll with a school email (if supported)",
             description = """
-        Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.
-            """,
+            Allows users to submit a school-specific email if supported. Emails will be verified with a magic link sent to their email.
+                """,
             responses = {
                 @ApiResponse(responseCode = "200", description = "email send successfully"),
                 @ApiResponse(responseCode = "500", description = "not implemented"),

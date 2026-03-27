@@ -85,7 +85,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(userRepository.getUserByDiscordId(DISCORD_ID)).thenReturn(existingUser);
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("session-abc");
+                    s.setId(Optional.of("session-abc"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -121,7 +121,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(leetcodeClient.getUserProfile("leet_user")).thenReturn(profile);
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("session-xyz");
+                    s.setId(Optional.of("session-xyz"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -146,7 +146,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(leetcodeClient.getUserProfile("bad_user")).thenThrow(new RuntimeException("API down"));
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("session-fail-safe");
+                    s.setId(Optional.of("session-fail-safe"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -165,7 +165,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(leaderboardRepository.getRecentLeaderboardMetadata()).thenReturn(Optional.of(lb));
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("new-session-id");
+                    s.setId(Optional.of("new-session-id"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -194,7 +194,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(userRepository.getUserByDiscordId(DISCORD_ID)).thenReturn(existingUser);
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("s-club");
+                    s.setId(Optional.of("s-club"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -236,7 +236,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(userRepository.getUserByDiscordId(DISCORD_ID)).thenReturn(existingUser);
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("s-club");
+                    s.setId(Optional.of("s-club"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -277,7 +277,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(userRepository.getUserByDiscordId(DISCORD_ID)).thenReturn(existingUser);
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("s-club");
+                    s.setId(Optional.of("s-club"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -318,7 +318,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(userRepository.getUserByDiscordId(DISCORD_ID)).thenReturn(existingUser);
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("s-club");
+                    s.setId(Optional.of("s-club"));
                     return null;
                 })
                 .when(sessionRepository)
@@ -362,7 +362,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(userRepository.getUserByDiscordId(DISCORD_ID)).thenReturn(existingUser);
         doAnswer(inv -> {
                     Session s = inv.getArgument(0);
-                    s.setId("s-club");
+                    s.setId(Optional.of("s-club"));
                     return null;
                 })
                 .when(sessionRepository)
