@@ -33,7 +33,7 @@ runs:
         key: ${{ github.job }}-${{ hashFiles('**/pom.xml') }}
 
     - name: Set up pnpm
-      uses: pnpm/action-setup@master
+      uses: pnpm/action-setup@v5
       with:
         version: 10.24.0
         cache: true
