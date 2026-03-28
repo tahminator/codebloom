@@ -1,7 +1,7 @@
-import type { Environment, Type } from "types";
+import type { Environment } from "@tahminator/pipeline";
+import type { Type } from "types";
 
-import { getEnvVariables } from "load-secrets/env/load";
-import { updateK8sTagWithPR } from "utils/create-k8s-pr";
+import { GitHubClient, Utils } from "@tahminator/pipeline";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
@@ -24,12 +24,14 @@ const { environment, newTagVersion, type } = await yargs(hideBin(process.argv))
   .parse();
 
 async function main() {
-  const ciEnv = await getEnvVariables(["ci"]);
+  const ciEnv = await Utils.getEnvVariables(["ci"]);
   const { githubPat } = parseCiEnv(ciEnv);
+  const ghClient = new GitHubClient(githubPat);
 
   if (type === "web") {
-    await updateK8sTagWithPR({
-      githubPat,
+    await ghClient.updateK8sTagWithPR({
+      manifestRepo: ["tahminator", "k8s-personal"],
+      originRepo: ["tahminator", "codebloom"],
       kustomizationFilePath: `apps/${environment}/codebloom/kustomization.yaml`,
       imageName: "docker.io/tahminator/codebloom",
       newTag: newTagVersion,
@@ -38,8 +40,9 @@ async function main() {
   }
 
   if (type === "standup-bot") {
-    await updateK8sTagWithPR({
-      githubPat,
+    await ghClient.updateK8sTagWithPR({
+      manifestRepo: ["tahminator", "k8s-personal"],
+      originRepo: ["tahminator", "codebloom"],
       kustomizationFilePath: `apps/${environment}/codebloom-standup-bot/kustomization.yaml`,
       imageName: "docker.io/tahminator/codebloom-standup-bot",
       newTag: newTagVersion,

@@ -97,7 +97,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@master
+        uses: pnpm/action-setup@v5
         with:
           version: 10.24.0
           cache: true
@@ -178,7 +178,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@master
+        uses: pnpm/action-setup@v5
         with:
           version: 10.24.0
           cache: true
