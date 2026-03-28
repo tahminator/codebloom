@@ -1,13 +1,15 @@
 import type { Api } from "@/lib/api/types";
 
-import { PARENT_TAGS_TO_CHILD_TAGS } from "@/lib/api/types/complex";
+import {
+  PARENT_TAGS_TO_CHILD_TAGS,
+  TOPIC_METADATA_LIST,
+} from "@/lib/api/types/complex";
 import { LeetcodeTopicEnum, Tag } from "@/lib/api/types/schema";
 import {
   TAG_METADATA_LIST,
   UNUSED_TAGS,
   NON_SCHOOL_TAGS,
 } from "@/lib/api/utils/metadata/tag";
-import { TOPIC_METADATA_LIST } from "@/lib/api/utils/metadata/topic";
 import { ApiTypeUtils } from "@/lib/api/utils/types";
 
 /**

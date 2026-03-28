@@ -1,6 +1,9 @@
 import type { Api } from "@/lib/api/types";
 
-import { TagMetadataObject } from "@/lib/api/types/complex";
+import {
+  TagMetadataObject,
+  TopicMetadataObject,
+} from "@/lib/api/types/complex";
 import { Tag } from "@/lib/api/types/schema";
 import { UNUSED_TAGS } from "@/lib/api/utils/metadata/tag";
 
@@ -42,8 +45,5 @@ export namespace ApiTypeUtils {
   /**
    * Pretty name for the given topic.
    */
-  export type QuestionTopicTopicMetadata = {
-    name: string;
-    aliases?: string[];
-  };
+  export type QuestionTopicTopicMetadata = TopicMetadataObject;
 }

@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.patinanetwork.codebloom.common.db.models.question.topic.LeetcodeTopicEnum;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 import org.patinanetwork.codebloom.shared.tag.TagMetadataList;
+import org.patinanetwork.codebloom.shared.topic.TopicMetadataList;
 
 class ComplexJSTypesGeneratorTest {
 
@@ -54,51 +56,6 @@ class ComplexJSTypesGeneratorTest {
     }
 
     @Test
-    void generateEnumToStringValueMapRunsWithoutException() {
-        var generator = new ComplexJSTypesGenerator();
-        assertDoesNotThrow(() -> generator.generateEnumToStringValueMap(Generator.builder()
-                .name("TEST_MAP")
-                .data(TagMetadataList.ENUM_TO_STRING_VALUE_MAP)
-                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                .build()));
-    }
-
-    @Test
-    void generateEnumToStringValueMapWithTypeNameRunsWithoutException() {
-        var generator = new ComplexJSTypesGenerator();
-        assertDoesNotThrow(() -> generator.generateEnumToStringValueMap(Generator.builder()
-                .name("TEST_MAP")
-                .data(TagMetadataList.ENUM_TO_STRING_VALUE_MAP)
-                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                .typeName("TestType")
-                .build()));
-    }
-
-    @Test
-    void generateEnumToStringValueMapEmptyMapDoesNotThrow() {
-        var generator = new ComplexJSTypesGenerator();
-        assertDoesNotThrow(() -> generator.generateEnumToStringValueMap(Generator.builder()
-                .name("TEST_MAP")
-                .data(new LinkedHashMap<>())
-                .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                .build()));
-    }
-
-    @Test
-    void generateEnumToStringValueMapThrowsOnNonEnumKey() {
-        var invalidData = new LinkedHashMap<String, Map<String, String>>();
-        invalidData.put("not-an-enum", Map.of("key", "value"));
-        var generator = new ComplexJSTypesGenerator();
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> generator.generateEnumToStringValueMap(Generator.builder()
-                        .name("TEST")
-                        .data(invalidData)
-                        .dataShape(DataShape.ENUM_TO_STRING_VALUE_MAP)
-                        .build()));
-    }
-
-    @Test
     void generateEnumToTagMetadataRunsWithoutException() {
         var generator = new ComplexJSTypesGenerator();
         assertDoesNotThrow(() -> generator.generateEnumToTagMetadata(Generator.builder()
@@ -130,5 +87,55 @@ class ComplexJSTypesGeneratorTest {
                         .data(invalidData)
                         .dataShape(DataShape.ENUM_TO_TAG_METADATA)
                         .build()));
+    }
+
+    @Test
+    void generateEnumToObjectRunsWithoutException() {
+        var generator = new ComplexJSTypesGenerator();
+        assertDoesNotThrow(() -> generator.generateEnumToObject(Generator.builder()
+                .name("TOPIC_METADATA_LIST")
+                .data(TopicMetadataList.ENUM_TO_TOPIC_METADATA)
+                .dataShape(DataShape.ENUM_TO_OBJECT)
+                .objectClass("TopicMetadataObject")
+                .build()));
+    }
+
+    @Test
+    void generateEnumToObjectEmptyMapDoesNotThrow() {
+        var generator = new ComplexJSTypesGenerator();
+        assertDoesNotThrow(() -> generator.generateEnumToObject(Generator.builder()
+                .name("TOPIC_METADATA_LIST")
+                .data(new LinkedHashMap<>())
+                .dataShape(DataShape.ENUM_TO_OBJECT)
+                .objectClass("TopicMetadataObject")
+                .build()));
+    }
+
+    @Test
+    void generateEnumToObjectThrowsOnNonEnumKey() {
+        var invalidData = new LinkedHashMap<String, Object>();
+        invalidData.put("not-an-enum", Map.of());
+        var generator = new ComplexJSTypesGenerator();
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> generator.generateEnumToObject(Generator.builder()
+                        .name("TEST")
+                        .data(invalidData)
+                        .dataShape(DataShape.ENUM_TO_OBJECT)
+                        .objectClass("TopicMetadataObject")
+                        .build()));
+    }
+
+    @Test
+    void topicMetadataListContainsAllTopics() {
+        assertEquals(LeetcodeTopicEnum.values().length, TopicMetadataList.ENUM_TO_TOPIC_METADATA.size());
+    }
+
+    @Test
+    void topicMetadataListAllHaveNonEmptyName() {
+        for (var metadata : TopicMetadataList.ENUM_TO_TOPIC_METADATA.values()) {
+            assertNotNull(metadata.getName());
+            assertFalse(metadata.getName().isBlank());
+        }
     }
 }

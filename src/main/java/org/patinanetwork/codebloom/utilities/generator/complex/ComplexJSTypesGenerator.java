@@ -1,5 +1,7 @@
 package org.patinanetwork.codebloom.utilities.generator.complex;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.patinanetwork.codebloom.common.db.models.question.topic.TopicMetadataObject;
 import org.patinanetwork.codebloom.shared.tag.ParentTags;
 import org.patinanetwork.codebloom.shared.tag.TagMetadataList;
+import org.patinanetwork.codebloom.shared.topic.TopicMetadataList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class ComplexJSTypesGenerator implements CommandLineRunner {
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -43,7 +48,10 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
         }
     }
 
-    private void generateAll() throws IOException {
+    private final ObjectMapper objectMapper =
+            new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+    private void generateAll() throws Exception {
         generateTypes();
         generate(Generator.builder()
                 .name("PARENT_TAGS_TO_CHILD_TAGS")
@@ -55,30 +63,36 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
                 .data(TagMetadataList.ENUM_TO_STRING_VALUE_MAP)
                 .dataShape(DataShape.ENUM_TO_TAG_METADATA)
                 .build());
+        generate(Generator.builder()
+                .name("TOPIC_METADATA_LIST")
+                .data(TopicMetadataList.ENUM_TO_TOPIC_METADATA)
+                .dataShape(DataShape.ENUM_TO_OBJECT)
+                .objectClass("TopicMetadataObject")
+                .build());
     }
 
     private void generateTypes() {
         generateTagMetadataObjectType();
+        generateTopicMetadataObjectType();
     }
 
     private void generateTagMetadataObjectType() {
-        String typeName = "TagMetadataObject";
-        tsContent.append("export type ").append(typeName).append(" = {\n");
-        tsContent.append("  shortName: string;\n");
-        tsContent.append("  name: string;\n");
-        tsContent.append("  apiKey: string;\n");
-        tsContent.append("  alt: string;\n");
-        tsContent.append("};\n\n");
-        log.info("Generated type: {}", typeName);
+        tsContent.append(TagMetadataList.TS_TYPE);
+        log.info("Generated type: TagMetadataObject");
     }
 
-    private void generate(Generator generator) throws IOException {
+    private void generateTopicMetadataObjectType() {
+        tsContent.append(TopicMetadataObject.TS_TYPE);
+        log.info("Generated type: TopicMetadataObject");
+    }
+
+    private void generate(Generator generator) throws Exception {
         if (generator.getDataShape() == DataShape.ENUM_TO_ENUM_LIST) {
             generateEnumToListOfEnums(generator);
-        } else if (generator.getDataShape() == DataShape.ENUM_TO_STRING_VALUE_MAP) {
-            generateEnumToStringValueMap(generator);
         } else if (generator.getDataShape() == DataShape.ENUM_TO_TAG_METADATA) {
             generateEnumToTagMetadata(generator);
+        } else if (generator.getDataShape() == DataShape.ENUM_TO_OBJECT) {
+            generateEnumToObject(generator);
         }
     }
 
@@ -132,76 +146,6 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
 
             tsContent.append(children);
             tsContent.append("],\n");
-        }
-
-        tsContent.append("} as const;\n\n");
-
-        log.info("Generated constant: {}", generator.getName());
-    }
-
-    @VisibleForTesting
-    @SuppressWarnings("unchecked")
-    void generateEnumToStringValueMap(Generator generator) {
-        Map<?, Map<String, ?>> data = (Map<?, Map<String, ?>>) generator.getData();
-
-        if (data.isEmpty()) {
-            log.warn("Empty map provided for string value map generation");
-            return;
-        }
-
-        Object firstKey = data.keySet().iterator().next();
-        if (!(firstKey instanceof Enum)) {
-            throw new IllegalArgumentException("Expected Enum key, got: " + firstKey.getClass());
-        }
-
-        Enum<?> enumKey = (Enum<?>) firstKey;
-        String enumClassName = enumKey.getDeclaringClass().getSimpleName();
-        imports.add(enumClassName);
-
-        Set<String> fieldNames = data.values().iterator().next().keySet();
-        String typeName = generator.getTypeName();
-        boolean hasTypeName = typeName != null && !typeName.isEmpty();
-
-        if (hasTypeName) {
-            tsContent.append("export type ").append(typeName).append(" = {\n");
-            for (String fieldName : fieldNames) {
-                tsContent.append("  ").append(fieldName).append(": string;\n");
-            }
-            tsContent.append("};\n\n");
-        }
-
-        String valueType = hasTypeName ? typeName : "{ [key: string]: string }";
-
-        tsContent
-                .append("export const ")
-                .append(generator.getName())
-                .append(": Record<")
-                .append(enumClassName)
-                .append(", ")
-                .append(valueType)
-                .append("> = {\n");
-
-        for (Map.Entry<?, Map<String, ?>> entry : data.entrySet()) {
-            Enum<?> key = (Enum<?>) entry.getKey();
-            Map<String, ?> values = entry.getValue();
-
-            tsContent
-                    .append("  [")
-                    .append(enumClassName)
-                    .append(".")
-                    .append(key.name())
-                    .append("]: {\n");
-
-            for (Map.Entry<String, ?> field : values.entrySet()) {
-                tsContent
-                        .append("    ")
-                        .append(field.getKey())
-                        .append(": \"")
-                        .append(field.getValue())
-                        .append("\",\n");
-            }
-
-            tsContent.append("  },\n");
         }
 
         tsContent.append("} as const;\n\n");
@@ -267,7 +211,52 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
         log.info("Generated constant: {}", generator.getName());
     }
 
-    private void writeToFile() throws IOException {
+    @VisibleForTesting
+    void generateEnumToObject(Generator generator) throws Exception {
+        Map<?, ?> data = (Map<?, ?>) generator.getData();
+
+        if (data.isEmpty()) {
+            log.warn("Empty map provided for object generation");
+            return;
+        }
+
+        Object firstKey = data.keySet().iterator().next();
+        if (!(firstKey instanceof Enum)) {
+            throw new IllegalArgumentException("Expected Enum key, got: " + firstKey.getClass());
+        }
+
+        Enum<?> enumKey = (Enum<?>) firstKey;
+        String enumClassName = enumKey.getDeclaringClass().getSimpleName();
+        imports.add(enumClassName);
+
+        String objectClass = generator.getObjectClass();
+
+        tsContent
+                .append("export const ")
+                .append(generator.getName())
+                .append(": Record<")
+                .append(enumClassName)
+                .append(", ")
+                .append(objectClass)
+                .append("> = {\n");
+
+        for (Map.Entry<?, ?> entry : data.entrySet()) {
+            Enum<?> key = (Enum<?>) entry.getKey();
+            String jsonValue = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(entry.getValue());
+            tsContent
+                    .append("  ")
+                    .append(key.name())
+                    .append(": ")
+                    .append(jsonValue)
+                    .append(",\n");
+        }
+
+        tsContent.append("};\n\n");
+
+        log.info("Generated constant: {}", generator.getName());
+    }
+
+    private void writeToFile() throws Exception {
         StringBuilder finalOutput = new StringBuilder();
 
         finalOutput.append("""
@@ -288,6 +277,19 @@ public class ComplexJSTypesGenerator implements CommandLineRunner {
         Path outputPath = Paths.get("js/src/lib/api/types/complex.ts");
         Files.createDirectories(outputPath.getParent());
         Files.writeString(outputPath, finalOutput.toString());
+
+        Path prettierBin = Paths.get("js/node_modules/.bin/prettier").toAbsolutePath();
+        if (Files.exists(prettierBin)) {
+            new ProcessBuilder(
+                            prettierBin.toString(),
+                            "--write",
+                            outputPath.toAbsolutePath().toString())
+                    .inheritIO()
+                    .start()
+                    .waitFor();
+        } else {
+            log.warn("prettier not found at {}, skipping formatting", prettierBin);
+        }
 
         log.info("Generated TypeScript file: {} with {} import(s)", outputPath, imports.size());
     }
