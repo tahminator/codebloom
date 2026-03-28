@@ -26,7 +26,7 @@ async function main() {
       ...localDbEnv,
     });
 
-    await $`corepack enable pnpm`;
+    await $`pnpm --v`;
     await $`pnpm --dir js i --frozen-lockfile`;
     await $$`pnpm --dir js run generate`;
     await $$`pnpm --dir js run test`;
