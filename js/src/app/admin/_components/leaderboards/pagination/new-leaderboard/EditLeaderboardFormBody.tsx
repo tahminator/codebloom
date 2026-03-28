@@ -60,7 +60,12 @@ function EditLeaderboardForm({
             color: data.success ? undefined : "red",
           });
           if (data.success) {
-            form.reset();
+            form.setValues({
+              name: values.name,
+              confirmation: "",
+              shouldExpireBy: values.shouldExpireBy,
+              syntaxHighlightingLanguage: values.syntaxHighlightingLanguage,
+            });
             setModalOpen(false);
           }
         },
@@ -86,12 +91,14 @@ function EditLeaderboardForm({
         <form onSubmit={form.onSubmit(onSubmit)}>
           <TextInput
             {...form.getInputProps("name")}
+            data-testid={"Name field"}
             label="Updated name"
             mb="sm"
             withAsterisk
           />
           <DateTimePicker
             {...form.getInputProps("shouldExpireBy")}
+            data-testid={"Date time field"}
             label="When should leaderboard expire?"
             valueFormat="DD MMM YYYY hh:mm:ss A"
             aria-label="When should leaderboard expire?"
@@ -104,6 +111,7 @@ function EditLeaderboardForm({
           />
           <TextInput
             {...form.getInputProps("syntaxHighlightingLanguage")}
+            data-testid={"Language field"}
             label="Syntax highlighting language"
             placeholder="cpp"
             error={form.errors.syntaxHighlightingLanguage}
@@ -111,6 +119,7 @@ function EditLeaderboardForm({
           />
           <TextInput
             {...form.getInputProps("confirmation")}
+            data-testid={"Confirmation field"}
             label={`Type "${currentLeaderboardName}" to confirm`}
             error={form.errors.confirmation}
             withAsterisk
