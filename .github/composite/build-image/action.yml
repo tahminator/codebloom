@@ -2,58 +2,23 @@ name: "Build & Upload Docker Image"
 description: "Build & (optionally) upload Docker Image to Docker Registry"
 
 inputs:
-  GPG_PRIVATE_KEY:
-    description: "GPG Private Key"
-    required: true
-  GPG_PASSPHRASE:
-    description: "GPG Passphrase"
-    required: true
   DOCKER_UPLOAD:
     description: "Boolean indicating whether the image should be uploaded to Docker registry or not."
     required: false
-    default: true
-  TAG_PREFIX:
-    description: "Docker tags prefix"
-    required: false
-  SERVER_PROFILES:
-    description: "Profile(s) to apply to Codebloom instance."
-    required: false
-    default: prod
+    default: "true"
+  ENVIRONMENT:
+    description: "'staging' or 'production'"
+    required: true
+
+outputs:
+  tag:
+    description: "Built Docker image tag (git SHA, with optional prefix)"
+    value: ${{ steps.build-image.outputs.tag }}
 
 runs:
   using: "composite"
   steps:
-    - name: Setup CI
-      uses: ./.github/composite/setup-ci
-      with:
-        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
-
-    - name: Set up pnpm
-      uses: pnpm/action-setup@v5
-      with:
-        version: 10.24.0
-        cache: true
-        cache_dependency_path: js/pnpm-lock.yaml
-        package_json_file: js/package.json
-
-    - name: Set up OpenJDK 25
-      uses: actions/setup-java@v5
-      with:
-        distribution: "temurin"
-        java-version: "25"
-
-    - name: Cache Maven packages
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.m2
-          ~/repository
-        key: ${{ github.job }}-${{ hashFiles('**/pom.xml') }}
-
-    - name: Expose GitHub Runtime
-      uses: crazy-max/ghaction-github-runtime@v4
-
     - name: Run script
+      id: build-image
       shell: bash
-      run: bun run .github/scripts/build-image --tag-prefix=${{ inputs.TAG_PREFIX }} --docker-upload=${{ inputs.DOCKER_UPLOAD }} --server-profiles=${{ inputs.SERVER_PROFILES }}
+      run: bun run .github/scripts/build-image --environment "${{ inputs.ENVIRONMENT }}" --docker-upload=${{ inputs.DOCKER_UPLOAD }} --getGhaOutput=true

@@ -1,0 +1,27 @@
+name: Deploy Standup Bot Service
+description: Builds standup-bot image and deploys to k8s manifests
+
+inputs:
+  ENVIRONMENT:
+    description: "'staging' or 'production'"
+    required: true
+  GPG_PRIVATE_KEY:
+    description: "GPG Private Key"
+    required: true
+  GPG_PASSPHRASE:
+    description: "GPG Passphrase"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Build and push standup-bot image
+      id: build-image
+      uses: ./.github/composite/build-image/internal/standup-bot
+      with:
+        GPG_PRIVATE_KEY: ${{ inputs.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ inputs.GPG_PASSPHRASE }}
+
+    - name: Deploy standup-bot image tag
+      shell: bash
+      run: bun run .github/scripts/deploy --environment "${{ inputs.ENVIRONMENT }}" --type standup-bot --newTagVersion "${{ steps.build-image.outputs.tag }}"
