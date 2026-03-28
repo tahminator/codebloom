@@ -1,7 +1,7 @@
 import { z } from "zod";
 export const adminSchema = (leaderboardName: string) =>
   z.object({
-    name: z.string().trim().min(1).max(16),
+    name: z.string().trim().min(1).max(512),
     confirmation: z
       .string()
       .trim()

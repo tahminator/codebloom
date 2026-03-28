@@ -1,10 +1,30 @@
 import { themeOverride } from "@/lib/theme";
-import { MantineProvider } from "@mantine/core";
+import {
+  createTheme,
+  MantineProvider,
+  mergeThemeOverrides,
+  Modal,
+} from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderResult } from "@testing-library/react";
 import { ReactElement } from "react";
 import { MemoryRouter } from "react-router";
+
+const testTheme = mergeThemeOverrides(
+  themeOverride,
+  createTheme({
+    components: {
+      Modal: Modal.extend({
+        defaultProps: {
+          transitionProps: {
+            duration: 0,
+          },
+        },
+      }),
+    },
+  }),
+);
 
 export namespace TestUtilTypes {
   export type RenderWithAllProvidersFn = (
@@ -30,7 +50,7 @@ export class TestUtils {
     return (ui: ReactElement, initialPath?: string) => {
       return render(
         <QueryClientProvider client={queryClient}>
-          <MantineProvider theme={themeOverride} forceColorScheme={"dark"}>
+          <MantineProvider theme={testTheme} forceColorScheme={"dark"}>
             <MemoryRouter
               initialEntries={initialPath ? [initialPath] : undefined}
             >
