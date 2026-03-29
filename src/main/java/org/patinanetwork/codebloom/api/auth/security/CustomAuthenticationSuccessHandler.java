@@ -146,7 +146,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     continue;
                 }
 
-                if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), tag) == null) {
+                if (userTagRepository
+                        .findTagByUserIdAndTag(existingUser.getId(), tag)
+                        .isEmpty()) {
                     userTagRepository.createTag(UserTag.builder()
                             .userId(existingUser.getId())
                             .tag(tag)
