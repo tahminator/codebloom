@@ -1,14 +1,15 @@
 package org.patinanetwork.codebloom.common.db.repos.usertag;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.usertag.Tag;
 import org.patinanetwork.codebloom.common.db.models.usertag.UserTag;
 import org.patinanetwork.codebloom.common.db.repos.usertag.options.UserTagFilterOptions;
 
 public interface UserTagRepository {
-    UserTag findTagByTagId(String tagId);
+    Optional<UserTag> findTagByTagId(String tagId);
 
-    UserTag findTagByUserIdAndTag(String userId, Tag tag);
+    Optional<UserTag> findTagByUserIdAndTag(String userId, Tag tag);
 
     ArrayList<UserTag> findTagsByUserId(String userId);
 

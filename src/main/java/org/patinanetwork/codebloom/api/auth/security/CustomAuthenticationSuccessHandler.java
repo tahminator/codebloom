@@ -117,6 +117,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             }
 
             final String userDiscordId = existingUser.getDiscordId();
+            final String userId = existingUser.getId();
 
             List<Guild> guilds = jdaClient.getGuilds();
             Map<String, List<Member>> guildIdToMembersMap = guilds.parallelStream()
@@ -146,12 +147,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     continue;
                 }
 
-                if (userTagRepository.findTagByUserIdAndTag(existingUser.getId(), tag) == null) {
-                    userTagRepository.createTag(UserTag.builder()
-                            .userId(existingUser.getId())
-                            .tag(tag)
-                            .build());
-                }
+                userTagRepository.findTagByUserIdAndTag(userId, tag).orElseGet(() -> {
+                    UserTag newTag = UserTag.builder().userId(userId).tag(tag).build();
+                    userTagRepository.createTag(newTag);
+                    return newTag;
+                });
 
                 // override to handle nicknames
                 // TODO: Abstract this logic into `DiscordClub`
