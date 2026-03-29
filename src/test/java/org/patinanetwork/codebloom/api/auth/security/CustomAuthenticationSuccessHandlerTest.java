@@ -215,7 +215,7 @@ class CustomAuthenticationSuccessHandlerTest {
                         .build()))
                 .build();
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(List.of(club));
-        when(userTagRepository.findTagByUserIdAndTag("user-club", Tag.Hunter)).thenReturn(null);
+        when(userTagRepository.findTagByUserIdAndTag("user-club", Tag.Hunter)).thenReturn(Optional.empty());
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
@@ -258,7 +258,7 @@ class CustomAuthenticationSuccessHandlerTest {
                 .build();
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(List.of(club));
         when(userTagRepository.findTagByUserIdAndTag("user-club", Tag.Hunter))
-                .thenReturn(UserTag.builder().build());
+                .thenReturn(Optional.of(UserTag.builder().build()));
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
@@ -299,7 +299,7 @@ class CustomAuthenticationSuccessHandlerTest {
                         .build()))
                 .build();
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(List.of(patinaClub));
-        when(userTagRepository.findTagByUserIdAndTag("user-club", Tag.Patina)).thenReturn(null);
+        when(userTagRepository.findTagByUserIdAndTag("user-club", Tag.Patina)).thenReturn(Optional.empty());
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
@@ -343,7 +343,7 @@ class CustomAuthenticationSuccessHandlerTest {
                         .build()))
                 .build();
         when(discordClubRepository.getAllActiveDiscordClubs()).thenReturn(List.of(patinaClub));
-        when(userTagRepository.findTagByUserIdAndTag("user-club", Tag.Patina)).thenReturn(null);
+        when(userTagRepository.findTagByUserIdAndTag("user-club", Tag.Patina)).thenReturn(Optional.empty());
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
