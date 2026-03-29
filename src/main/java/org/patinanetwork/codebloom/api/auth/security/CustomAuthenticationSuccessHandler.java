@@ -147,11 +147,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     continue;
                 }
 
-                userTagRepository.findTagByUserIdAndTag(userId, tag).orElseGet(() -> {
-                    UserTag newTag = UserTag.builder().userId(userId).tag(tag).build();
-                    userTagRepository.createTag(newTag);
-                    return newTag;
-                });
+                userTagRepository
+                        .findTagByUserIdAndTag(userId, tag)
+                        .ifPresentOrElse(
+                                existing -> {},
+                                () -> userTagRepository.createTag(UserTag.builder()
+                                        .userId(userId)
+                                        .tag(tag)
+                                        .build()));
 
                 // override to handle nicknames
                 // TODO: Abstract this logic into `DiscordClub`
