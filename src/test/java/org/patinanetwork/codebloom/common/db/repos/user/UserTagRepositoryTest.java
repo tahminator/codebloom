@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -61,9 +62,9 @@ public class UserTagRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testGetId() {
-        UserTag found = userTagRepository.findTagByTagId(testUserTag.getId());
-        assertNotNull(found);
-        assertEquals(testUserTag.getId(), found.getId());
+        Optional<UserTag> found = userTagRepository.findTagByTagId(testUserTag.getId());
+        assertTrue(found.isPresent());
+        assertEquals(testUserTag.getId(), found.get().getId());
     }
 
     @Test
@@ -92,9 +93,9 @@ public class UserTagRepositoryTest extends BaseRepositoryTest {
 
         userTagRepository.createTag(deletableUserTag);
 
-        UserTag found = userTagRepository.findTagByTagId(deletableUserTag.getId());
-        assertNotNull(found);
-        assertEquals(deletableUserTag.getId(), found.getId());
+        Optional<UserTag> found = userTagRepository.findTagByTagId(deletableUserTag.getId());
+        assertTrue(found.isPresent());
+        assertEquals(deletableUserTag.getId(), found.get().getId());
 
         boolean deleted = userTagRepository.deleteTagByUserIdAndTag(mockUserId2, deletableUserTag.getTag());
         assertTrue(deleted);

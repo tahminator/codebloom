@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.patinanetwork.codebloom.common.db.helper.NamedPreparedStatement;
@@ -31,7 +32,7 @@ public class UserTagSqlRepository implements UserTagRepository {
     }
 
     @Override
-    public UserTag findTagByTagId(final String tagId) {
+    public Optional<UserTag> findTagByTagId(final String tagId) {
         String sql = """
             SELECT
                 id,
@@ -49,18 +50,18 @@ public class UserTagSqlRepository implements UserTagRepository {
             stmt.setObject("id", UUID.fromString(tagId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToTag(rs);
+                    return Optional.of(parseResultSetToTag(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch user tag by tag ID", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public UserTag findTagByUserIdAndTag(final String userId, final Tag tag) {
+    public Optional<UserTag> findTagByUserIdAndTag(final String userId, final Tag tag) {
         String sql = """
             SELECT
                 id,
@@ -81,14 +82,14 @@ public class UserTagSqlRepository implements UserTagRepository {
             stmt.setObject("userId", UUID.fromString(userId));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToTag(rs);
+                    return Optional.of(parseResultSetToTag(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch user tag by user ID and tag", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
