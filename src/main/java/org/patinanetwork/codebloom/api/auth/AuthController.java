@@ -135,8 +135,9 @@ public class AuthController {
 
             Session session = authenticationObject.getSession();
 
-            boolean sessionDeleted =
-                    sessionRepository.deleteSessionById(session.getId().orElseThrow());
+            String sessionId =
+                    session.getId().orElseThrow(() -> new IllegalStateException("Authenticated session has no id"));
+            boolean sessionDeleted = sessionRepository.deleteSessionById(sessionId);
 
             if (!sessionDeleted) {
                 return new RedirectView("/login?success=false&message=You are not logged in.");
