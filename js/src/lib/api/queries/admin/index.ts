@@ -272,7 +272,11 @@ export const useEditLeaderboardMutation = () => {
   });
 };
 
-async function editLeaderboard(leaderboard: { name: string }) {
+async function editLeaderboard(leaderboard: {
+  name: string;
+  shouldExpireBy: string | null;
+  syntaxHighlightingLanguage: string | null;
+}) {
   const { url, method, req, res } = ApiURL.create(
     "/api/admin/leaderboard/current",
     {
