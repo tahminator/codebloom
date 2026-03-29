@@ -25,15 +25,15 @@ const { environment, newTagVersion, type } = await yargs(hideBin(process.argv))
 
 async function main() {
   const ciEnv = await Utils.getEnvVariables(["ci"]);
-  const { githubPat } = parseCiEnv(ciEnv);
-  const ghClient = new GitHubClient(githubPat);
+  const { ghPat } = parseCiEnv(ciEnv);
+  const ghClient = new GitHubClient(ghPat);
 
   if (type === "web") {
     await ghClient.updateK8sTagWithPR({
       manifestRepo: ["tahminator", "k8s-personal"],
       originRepo: ["tahminator", "codebloom"],
       kustomizationFilePath: `apps/${environment}/codebloom/kustomization.yaml`,
-      imageName: "docker.io/tahminator/codebloom",
+      imageName: "tahminator/codebloom",
       newTag: newTagVersion,
       environment,
     });
@@ -44,7 +44,7 @@ async function main() {
       manifestRepo: ["tahminator", "k8s-personal"],
       originRepo: ["tahminator", "codebloom"],
       kustomizationFilePath: `apps/${environment}/codebloom-standup-bot/kustomization.yaml`,
-      imageName: "docker.io/tahminator/codebloom-standup-bot",
+      imageName: "tahminator/codebloom-standup-bot",
       newTag: newTagVersion,
       environment,
     });
@@ -52,15 +52,15 @@ async function main() {
 }
 
 function parseCiEnv(ciEnv: Record<string, string>) {
-  const githubPat = (() => {
-    const v = ciEnv["GITHUB_PAT"];
+  const ghPat = (() => {
+    const v = ciEnv["GH_PAT"];
     if (!v) {
-      throw new Error("Missing GITHUB_PAT from .env.ci");
+      throw new Error("Missing GH_PAT from .env.ci");
     }
     return v;
   })();
 
-  return { githubPat };
+  return { ghPat };
 }
 
 main()

@@ -9,6 +9,12 @@ inputs:
   ENVIRONMENT:
     description: "'staging' or 'production'"
     required: true
+  GPG_PRIVATE_KEY:
+    description: "GPG private key for decrypting secrets."
+    required: false
+  GPG_PASSPHRASE:
+    description: "GPG passphrase for decrypting secrets."
+    required: false
 
 outputs:
   tag:
