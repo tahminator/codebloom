@@ -178,7 +178,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     .build();
             sessionRepository.createSession(session);
 
-            if (session == null || session.getId().isEmpty()) {
+            if (session.getId().isEmpty()) {
                 response.sendRedirect("/login?success=false&message=Failed to log in.");
                 throw new RuntimeException("Failed to create new session.");
             }
