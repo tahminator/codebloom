@@ -42,7 +42,10 @@ public class SessionSqlRepository implements SessionRepository {
 
         try (Connection conn = ds.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, session.getId().orElse(null));
+            stmt.setString(
+                    1,
+                    session.getId()
+                            .orElseThrow(() -> new IllegalStateException("Session ID must be present for insertion.")));
             stmt.setObject(2, UUID.fromString(session.getUserId()));
             stmt.setObject(3, session.getExpiresAt());
 
