@@ -35,7 +35,6 @@ import org.patinanetwork.codebloom.common.dto.question.QuestionDto;
 import org.patinanetwork.codebloom.common.dto.user.UserDto;
 import org.patinanetwork.codebloom.common.dto.user.metrics.MetricsDto;
 import org.patinanetwork.codebloom.common.page.Page;
-import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -48,12 +47,11 @@ public class UserControllerTest {
     private UserRepository userRepository = mock(UserRepository.class);
     private QuestionTopicService questionTopicService = mock(QuestionTopicService.class);
     private UserMetricsRepository userMetricsRepository = mock(UserMetricsRepository.class);
-    private FeatureFlagConfiguration ff = mock(FeatureFlagConfiguration.class);
     private HttpServletRequest request = mock(HttpServletRequest.class);
 
     public UserControllerTest() {
         this.userController =
-                new UserController(questionRepository, userRepository, questionTopicService, userMetricsRepository, ff);
+                new UserController(questionRepository, userRepository, questionTopicService, userMetricsRepository);
         this.faker = Faker.instance();
     }
 
@@ -375,28 +373,11 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Get user metrics - feature flag disabled returns 403")
-    void getUserMetricsFeatureFlagDisabledReturnsForbidden() {
-        String userId = randomUUID();
-
-        when(ff.isUserMetrics()).thenReturn(false);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            userController.getUserMetrics(request, userId, 1, 20, null, null);
-        });
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        assertEquals("Endpoint is not available.", exception.getReason());
-    }
-
-    @Test
     @DisplayName("Get user metrics - startDate after endDate returns 400")
     void getUserMetricsInvalidDateRangeReturnsBadRequest() {
         String userId = randomUUID();
         OffsetDateTime startDate = OffsetDateTime.now();
         OffsetDateTime endDate = startDate.minusDays(1);
-
-        when(ff.isUserMetrics()).thenReturn(true);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             userController.getUserMetrics(request, userId, 1, 20, startDate, endDate);
@@ -415,7 +396,6 @@ public class UserControllerTest {
 
         List<UserMetrics> metricsList = List.of(createRandomUserMetrics(userId), createRandomUserMetrics(userId));
 
-        when(ff.isUserMetrics()).thenReturn(true);
         when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(metricsList);
         when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(2);
 
@@ -443,7 +423,6 @@ public class UserControllerTest {
     void getUserMetricsDefaultsToLastSevenDays() {
         String userId = randomUUID();
 
-        when(ff.isUserMetrics()).thenReturn(true);
         when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of());
         when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(0);
 
@@ -460,7 +439,6 @@ public class UserControllerTest {
     void getUserMetricsEmptyResults() {
         String userId = randomUUID();
 
-        when(ff.isUserMetrics()).thenReturn(true);
         when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of());
         when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(0);
 
@@ -479,7 +457,6 @@ public class UserControllerTest {
     void getUserMetricsPageSizeCapped() {
         String userId = randomUUID();
 
-        when(ff.isUserMetrics()).thenReturn(true);
         when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of());
         when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(0);
 
@@ -501,7 +478,6 @@ public class UserControllerTest {
             metricsList.add(createRandomUserMetrics(userId));
         }
 
-        when(ff.isUserMetrics()).thenReturn(true);
         when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(metricsList);
         when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(45);
 
@@ -522,7 +498,6 @@ public class UserControllerTest {
         String userId = randomUUID();
         UserMetrics metric = createRandomUserMetrics(userId);
 
-        when(ff.isUserMetrics()).thenReturn(true);
         when(userMetricsRepository.findUserMetrics(eq(userId), any())).thenReturn(List.of(metric));
         when(userMetricsRepository.countUserMetrics(eq(userId), any())).thenReturn(1);
 

@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -50,7 +51,11 @@ class FFAspectTest {
     @Test
     @DisplayName("Throws when unknown flag is used")
     void throwsOnUnknownFlag() {
-        assertThrows(IllegalArgumentException.class, () -> testService.methodWithUnknownFlag());
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () -> testService.methodWithUnknownFlag());
+
+        assertTrue(exception.getMessage().contains("Invalid @FF expression"));
+        assertTrue(exception.getCause() instanceof SpelEvaluationException);
         assertEquals(0, testService.getCalls());
     }
 

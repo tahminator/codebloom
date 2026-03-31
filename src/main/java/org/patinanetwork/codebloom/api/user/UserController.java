@@ -26,10 +26,10 @@ import org.patinanetwork.codebloom.common.dto.autogen.UnsafeGenericFailureRespon
 import org.patinanetwork.codebloom.common.dto.question.QuestionDto;
 import org.patinanetwork.codebloom.common.dto.user.UserDto;
 import org.patinanetwork.codebloom.common.dto.user.metrics.MetricsDto;
+import org.patinanetwork.codebloom.common.ff.annotation.FF;
 import org.patinanetwork.codebloom.common.lag.FakeLag;
 import org.patinanetwork.codebloom.common.page.Page;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
-import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,19 +58,16 @@ public class UserController {
     private final UserRepository userRepository;
     private final QuestionTopicService questionTopicService;
     private final UserMetricsRepository userMetricsRepository;
-    private final FeatureFlagConfiguration ff;
 
     public UserController(
             final QuestionRepository questionRepository,
             final UserRepository userRepository,
             final QuestionTopicService questionTopicService,
-            final UserMetricsRepository userMetricsRepository,
-            final FeatureFlagConfiguration ff) {
+            final UserMetricsRepository userMetricsRepository) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.questionTopicService = questionTopicService;
         this.userMetricsRepository = userMetricsRepository;
-        this.ff = ff;
     }
 
     @Operation(
@@ -227,6 +224,7 @@ public class UserController {
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class))),
             })
     @GetMapping("{userId}/metrics")
+    @FF("userMetrics")
     public ResponseEntity<ApiResponder<Page<MetricsDto>>> getUserMetrics(
             final HttpServletRequest request,
             @PathVariable final String userId,
@@ -243,10 +241,6 @@ public class UserController {
                     final OffsetDateTime endDate) {
 
         FakeLag.sleep(500);
-
-        if (!ff.isUserMetrics()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is not available.");
-        }
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "startDate cannot be after endDate.");

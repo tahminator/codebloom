@@ -1,10 +1,8 @@
 package org.patinanetwork.codebloom.common.ff;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,25 +18,6 @@ class FeatureFlagManagerTest {
         ff.setDuels(true);
         ff.setUserMetrics(false);
         featureFlagManager = new FeatureFlagManager(ff);
-    }
-
-    @Test
-    void validateExpressionFlagsExistAllowsKnownFlags() {
-        assertDoesNotThrow(() -> featureFlagManager.validateExpressionFlagsExist("duels && userMetrics"));
-    }
-
-    @Test
-    void validateExpressionFlagsExistAllowsReservedIdentifiers() {
-        assertDoesNotThrow(() -> featureFlagManager.validateExpressionFlagsExist("duels && true && !false"));
-    }
-
-    @Test
-    void validateExpressionFlagsExistThrowsWhenFlagUnknown() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> featureFlagManager.validateExpressionFlagsExist("duels && school"));
-
-        assertTrue(exception.getMessage().contains("school"));
     }
 
     @Test
