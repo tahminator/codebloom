@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,7 +35,6 @@ import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.time.StandardizedOffsetDateTime;
 import org.patinanetwork.codebloom.common.utils.duel.PartyCodeGenerator;
 import org.patinanetwork.codebloom.common.utils.sse.SseWrapper;
-import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.patinanetwork.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import org.patinanetwork.codebloom.utilities.exception.ValidationException;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,10 +51,9 @@ public class DuelControllerTest {
     private PartyManager partyManager = mock(PartyManager.class);
     private LobbyRepository lobbyRepository = mock(LobbyRepository.class);
     private LobbyNotifyHandler lobbyNotifyHandler = mock(LobbyNotifyHandler.class);
-    private FeatureFlagConfiguration ff = mock(FeatureFlagConfiguration.class);
 
     public DuelControllerTest() {
-        this.duelController = new DuelController(duelManager, partyManager, lobbyRepository, lobbyNotifyHandler, ff);
+        this.duelController = new DuelController(duelManager, partyManager, lobbyRepository, lobbyNotifyHandler);
         this.faker = Faker.instance();
     }
 
@@ -82,8 +79,6 @@ public class DuelControllerTest {
     @Test
     @DisplayName("Join lobby - invalid code length")
     void joinPartyIncorrectLengthCode() {
-        when(ff.isDuels()).thenReturn(true);
-
         var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC12").build();
 
         User user = createRandomUser();
@@ -99,8 +94,6 @@ public class DuelControllerTest {
     @Test
     @DisplayName("Join lobby - empty code")
     void joinLobbyEmptyCode() {
-        when(ff.isDuels()).thenReturn(true);
-
         var joinPartyBody = JoinLobbyBody.builder().partyCode("").build();
 
         User user = createRandomUser();
@@ -116,8 +109,6 @@ public class DuelControllerTest {
     @Test
     @DisplayName("Join lobby - null code")
     void joinLobbyNullCode() {
-        when(ff.isDuels()).thenReturn(true);
-
         var joinPartyBody = JoinLobbyBody.builder().partyCode(null).build();
 
         User user = createRandomUser();
@@ -131,33 +122,7 @@ public class DuelControllerTest {
     }
 
     @Test
-    @DisplayName("Join lobby - fails in production environment")
-    void joinLobbyFailsInProduction() {
-        when(ff.isDuels()).thenReturn(false);
-
-        var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC123").build();
-
-        User user = createRandomUser();
-        AuthenticationObject authObj = createAuthenticationObject(user);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            duelController.joinParty(authObj, joinPartyBody);
-        });
-
-        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        try {
-            verify(partyManager, times(0)).joinParty(any(), any());
-        } catch (DuelException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void testJoinPartyPartyManagerFailed() {
-        when(ff.isDuels()).thenReturn(true);
-
         var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC123").build();
 
         User user = createRandomUser();
@@ -185,8 +150,6 @@ public class DuelControllerTest {
 
     @Test
     void testJoinPartyHappyPath() {
-        when(ff.isDuels()).thenReturn(true);
-
         var joinPartyBody = JoinLobbyBody.builder().partyCode("ABC123").build();
 
         User user = createRandomUser();
@@ -213,29 +176,7 @@ public class DuelControllerTest {
     }
 
     @Test
-    void testLeavePartyFailureInProductionEnvironment() {
-        when(ff.isDuels()).thenReturn(false);
-
-        User user = createRandomUser();
-        AuthenticationObject authObj = createAuthenticationObject(user);
-
-        org.springframework.web.server.ResponseStatusException exception = assertThrows(
-                org.springframework.web.server.ResponseStatusException.class, () -> duelController.leaveParty(authObj));
-
-        assertEquals(403, exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        try {
-            verify(partyManager, times(0)).leaveParty(any());
-        } catch (DuelException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void testLeavePartyPartyManagerFailed() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
@@ -261,8 +202,6 @@ public class DuelControllerTest {
 
     @Test
     void testLeavePartyHappyPath() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
@@ -287,30 +226,7 @@ public class DuelControllerTest {
     }
 
     @Test
-    void testCreatePartyFailsInProductionEnvironment() {
-        when(ff.isDuels()).thenReturn(false);
-
-        User user = createRandomUser();
-        AuthenticationObject authObj = createAuthenticationObject(user);
-
-        org.springframework.web.server.ResponseStatusException exception = assertThrows(
-                org.springframework.web.server.ResponseStatusException.class,
-                () -> duelController.createParty(authObj));
-
-        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        try {
-            verify(partyManager, times(0)).createParty(any());
-        } catch (DuelException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void testCreatePartyPartyManagerFailed() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
@@ -340,8 +256,6 @@ public class DuelControllerTest {
 
     @Test
     void testCreatePartyHappyPath() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
@@ -368,27 +282,8 @@ public class DuelControllerTest {
     }
 
     @Test
-    @DisplayName("SSE endpoint - fails in production environment")
-    void getDuelDataFailsInProduction() {
-        when(ff.isDuels()).thenReturn(false);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            duelController.getDuelData(null);
-        });
-
-        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        verify(lobbyRepository, times(0)).findActiveLobbyByLobbyPlayerPlayerId(any());
-        verify(lobbyRepository, times(0)).findAvailableLobbyByLobbyPlayerPlayerId(any());
-        verify(lobbyNotifyHandler, times(0)).register(any(), any());
-    }
-
-    @Test
     @DisplayName("SSE endpoint - lobby does not exist")
     void getDuelDataLobbyDoesNotExist() throws DuelException {
-        when(ff.isDuels()).thenReturn(true);
-
         when(lobbyRepository.findActiveLobbyByJoinCode(any())).thenReturn(Optional.empty());
         when(lobbyRepository.findAvailableLobbyByJoinCode(any())).thenReturn(Optional.empty());
 
@@ -408,8 +303,6 @@ public class DuelControllerTest {
     @Test
     @DisplayName("SSE endpoint - active lobby exists")
     void getDuelDataPlayerInActiveLobby() {
-        when(ff.isDuels()).thenReturn(true);
-
         String lobbyId = randomUUID();
         Lobby activeLobby = Lobby.builder()
                 .id(lobbyId)
@@ -434,8 +327,6 @@ public class DuelControllerTest {
     @Test
     @DisplayName("SSE endpoint - available lobby exists")
     void getDuelDataAvailableLobbyExists() {
-        when(ff.isDuels()).thenReturn(true);
-
         String lobbyId = randomUUID();
         Lobby availableLobby = Lobby.builder()
                 .id(lobbyId)
@@ -460,31 +351,9 @@ public class DuelControllerTest {
     }
 
     @Test
-    void testStartDuelIsInProd() {
-        User user = createRandomUser();
-        AuthenticationObject authObj = createAuthenticationObject(user);
-
-        when(ff.isDuels()).thenReturn(false);
-
-        ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> duelController.startDuel(authObj));
-
-        assertEquals(403, exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        try {
-            verify(duelManager, times(0)).startDuel(any(), eq(false));
-        } catch (DuelException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void testStartDuelDuelManagerFailed() {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
-
-        when(ff.isDuels()).thenReturn(true);
 
         try {
             doThrow(new DuelException(HttpStatus.INTERNAL_SERVER_ERROR, "This is an example duel exception."))
@@ -511,8 +380,6 @@ public class DuelControllerTest {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
-        when(ff.isDuels()).thenReturn(true);
-
         try {
             doNothing().when(duelManager).startDuel(eq(user.getId()), eq(user.isAdmin()));
         } catch (DuelException _) {
@@ -527,33 +394,9 @@ public class DuelControllerTest {
     }
 
     @Test
-    void testEndDuelIsInProd() {
-        User user = createRandomUser();
-        AuthenticationObject authObj = createAuthenticationObject(user);
-
-        when(ff.isDuels()).thenReturn(false);
-
-        ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> duelController.endDuel(authObj));
-
-        assertEquals(403, exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        verify(lobbyRepository, times(0)).findActiveLobbyByLobbyPlayerPlayerId(any());
-
-        try {
-            verify(duelManager, times(0)).endDuel(any(), eq(user.isAdmin()));
-        } catch (DuelException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void testEndDuelActivePartyForPlayerCannotBeFound() {
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
-
-        when(ff.isDuels()).thenReturn(true);
         when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.empty());
 
         ResponseStatusException exception =
@@ -584,7 +427,6 @@ public class DuelControllerTest {
                 .playerCount(3)
                 .build();
 
-        when(ff.isDuels()).thenReturn(true);
         when(lobbyRepository.findActiveLobbyByLobbyPlayerPlayerId(user.getId())).thenReturn(Optional.of(lobby));
 
         try {
@@ -610,30 +452,7 @@ public class DuelControllerTest {
     }
 
     @Test
-    void testGetPartyOrDuelCodeForUserFailsInProduction() {
-        when(ff.isDuels()).thenReturn(false);
-
-        User user = createRandomUser();
-        AuthenticationObject authObj = createAuthenticationObject(user);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            duelController.getPartyOrDuelCodeForUser(authObj);
-        });
-
-        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        try {
-            verify(duelManager, never()).getLobbyByUserId(eq(user.getId()));
-        } catch (DuelException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void testGetPartyOrDuelCodeForUserDuelManagerFailed() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
@@ -659,8 +478,6 @@ public class DuelControllerTest {
 
     @Test
     void testGetPartyOrDuelCodeForUserHappyPath() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
@@ -685,30 +502,7 @@ public class DuelControllerTest {
     }
 
     @Test
-    void testProcessSolvedProblemsInDuelFailsInProduction() {
-        when(ff.isDuels()).thenReturn(false);
-
-        User user = createRandomUser();
-        AuthenticationObject authObj = createAuthenticationObject(user);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            duelController.processSolvedProblemsInDuel(authObj);
-        });
-
-        assertEquals(HttpStatus.FORBIDDEN.value(), exception.getStatusCode().value());
-        assertEquals("Endpoint is currently non-functional", exception.getReason());
-
-        try {
-            verify(duelManager, never()).processSubmissions(eq(user), any());
-        } catch (DuelException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void testProcessSolvedProblemsDuelManagerFailed() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
@@ -741,8 +535,6 @@ public class DuelControllerTest {
 
     @Test
     void testProcessSolvedProblemsHappyPath() {
-        when(ff.isDuels()).thenReturn(true);
-
         User user = createRandomUser();
         AuthenticationObject authObj = createAuthenticationObject(user);
 
