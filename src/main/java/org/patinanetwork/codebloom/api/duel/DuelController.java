@@ -21,10 +21,10 @@ import org.patinanetwork.codebloom.common.dto.ApiResponder;
 import org.patinanetwork.codebloom.common.dto.Empty;
 import org.patinanetwork.codebloom.common.dto.autogen.UnsafeGenericFailureResponse;
 import org.patinanetwork.codebloom.common.dto.lobby.DuelData;
+import org.patinanetwork.codebloom.common.ff.annotation.FF;
 import org.patinanetwork.codebloom.common.security.AuthenticationObject;
 import org.patinanetwork.codebloom.common.security.annotation.Protected;
 import org.patinanetwork.codebloom.common.utils.sse.SseWrapper;
-import org.patinanetwork.codebloom.jda.properties.FeatureFlagConfiguration;
 import org.patinanetwork.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,19 +48,16 @@ public class DuelController {
     private final PartyManager partyManager;
     private final LobbyRepository lobbyRepository;
     private final LobbyNotifyHandler lobbyNotifyHandler;
-    private final FeatureFlagConfiguration ff;
 
     public DuelController(
             final DuelManager duelManager,
             final PartyManager partyManager,
             final LobbyRepository lobbyRepository,
-            final LobbyNotifyHandler lobbyNotifyHandler,
-            final FeatureFlagConfiguration ff) {
+            final LobbyNotifyHandler lobbyNotifyHandler) {
         this.duelManager = duelManager;
         this.partyManager = partyManager;
         this.lobbyRepository = lobbyRepository;
         this.lobbyNotifyHandler = lobbyNotifyHandler;
-        this.ff = ff;
     }
 
     @Operation(summary = "Join party", description = "Join a party by providing the lobby code.")
@@ -91,13 +88,10 @@ public class DuelController {
                 @ApiResponse(responseCode = "200", description = "Party has been successfully joined!"),
             })
     @PostMapping("/party/join")
+    @FF("duels")
     public ResponseEntity<ApiResponder<Empty>> joinParty(
             @Protected final AuthenticationObject authenticationObject,
             @RequestBody final JoinLobbyBody joinPartyBody) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         joinPartyBody.validate();
 
         var user = authenticationObject.getUser();
@@ -136,11 +130,8 @@ public class DuelController {
                 @ApiResponse(responseCode = "200", description = "Duel successfully started!"),
             })
     @PostMapping("/start")
+    @FF("duels")
     public ResponseEntity<ApiResponder<Empty>> startDuel(@Protected final AuthenticationObject authenticationObject) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         var user = authenticationObject.getUser();
 
         try {
@@ -172,11 +163,8 @@ public class DuelController {
                 @ApiResponse(responseCode = "200", description = "Party left successfully"),
             })
     @PostMapping("/party/leave")
+    @FF("duels")
     public ResponseEntity<ApiResponder<Empty>> leaveParty(@Protected final AuthenticationObject authenticationObject) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         User user = authenticationObject.getUser();
 
         try {
@@ -216,11 +204,8 @@ public class DuelController {
                 @ApiResponse(responseCode = "200", description = "Duel has been successfully ended!"),
             })
     @PostMapping("/end")
+    @FF("duels")
     public ResponseEntity<ApiResponder<Empty>> endDuel(@Protected final AuthenticationObject authenticationObject) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         User user = authenticationObject.getUser();
 
         var lobby = lobbyRepository
@@ -261,12 +246,9 @@ public class DuelController {
                 @ApiResponse(responseCode = "200", description = "Party created successfully"),
             })
     @PostMapping("/party/create")
+    @FF("duels")
     public ResponseEntity<ApiResponder<PartyCodeBody>> createParty(
             @Protected final AuthenticationObject authenticationObject) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         User user = authenticationObject.getUser();
 
         String joinCode;
@@ -303,11 +285,8 @@ public class DuelController {
                         content = @Content(schema = @Schema(implementation = UnsafeGenericFailureResponse.class)))
             })
     @PostMapping(value = "/{lobbyCode}/sse")
+    @FF("duels")
     public SseWrapper<ApiResponder<DuelData>> getDuelData(@PathVariable final String lobbyCode) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         var lobby = lobbyRepository
                 .findActiveLobbyByJoinCode(lobbyCode)
                 .or(() -> lobbyRepository.findAvailableLobbyByJoinCode(lobbyCode))
@@ -347,12 +326,9 @@ public class DuelController {
                 @ApiResponse(responseCode = "200", description = "Party or duel code was successfully found!"),
             })
     @GetMapping("/current")
+    @FF("duels")
     public ResponseEntity<ApiResponder<PartyCodeBody>> getPartyOrDuelCodeForUser(
             @Protected final AuthenticationObject authenticationObject) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         var user = authenticationObject.getUser();
 
         Lobby lobby;
@@ -393,12 +369,9 @@ public class DuelController {
                                 "The user's solved questions were processed (could still mean no new points were awarded)"),
             })
     @PostMapping("/process")
+    @FF("duels")
     public ResponseEntity<ApiResponder<Empty>> processSolvedProblemsInDuel(
             @Protected final AuthenticationObject authenticationObject) {
-        if (!ff.isDuels()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Endpoint is currently non-functional");
-        }
-
         var user = authenticationObject.getUser();
 
         Lobby duel;
