@@ -1,6 +1,7 @@
 package org.patinanetwork.codebloom.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.patinanetwork.codebloom.common.db.models.Session;
 import org.patinanetwork.codebloom.common.db.models.user.User;
 import org.patinanetwork.codebloom.common.db.repos.session.SessionRepository;
@@ -37,9 +38,10 @@ public class TestProtector {
             @Override
             public AuthenticationObject validateSession(final HttpServletRequest request) {
                 User mockAdminUser = userRepository.getUserById("ed3bfe18-e42a-467f-b4fa-07e8da4d2555");
-                Session mockAdminSession = sesssionRepository
-                        .getSessionById("d99e10a2-6285-46f0-8150-ba4727b520f4")
-                        .orElseThrow();
+                Optional<Session> mockAdminSessionOp =
+                        sesssionRepository.getSessionById("d99e10a2-6285-46f0-8150-ba4727b520f4");
+
+                Session mockAdminSession = mockAdminSessionOp.isPresent() ? mockAdminSessionOp.get() : null;
                 return new AuthenticationObject(mockAdminUser, mockAdminSession);
             }
 
