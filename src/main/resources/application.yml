@@ -93,6 +93,8 @@ codebloom:
     password: ${CODEBLOOM_EMAIL_PASSWORD}
   scheduling:
     enabled: true
+  notify:
+    enabled: true
 
 management:
   endpoints:
