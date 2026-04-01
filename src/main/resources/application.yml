@@ -91,6 +91,8 @@ codebloom:
     type: ${CODEBLOOM_EMAIL_TYPE}
     username: ${CODEBLOOM_EMAIL_USERNAME}
     password: ${CODEBLOOM_EMAIL_PASSWORD}
+  scheduling:
+    enabled: true
 
 management:
   endpoints:
