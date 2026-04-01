@@ -7,7 +7,7 @@ import { Octokit } from "octokit";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-const AUTHORIZED_USER = "tahminator";
+const AUTHORIZED_USERS = ["tahminator", "Arshadul-Monir"];
 
 const {
   githubToken,
@@ -99,7 +99,7 @@ async function main() {
     .catch(() => false);
 
   const isSupportTicketOverride = taskPriority === "Support" && isCollaborator;
-  const isOwnerOverride = username === AUTHORIZED_USER;
+  const isOwnerOverride = AUTHORIZED_USERS.includes(username);
 
   if (isSupportTicketOverride || isOwnerOverride) {
     try {
