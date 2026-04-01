@@ -17,12 +17,14 @@ import org.patinanetwork.codebloom.scheduled.pg.handler.JobNotifyHandler;
 import org.patinanetwork.codebloom.scheduled.pg.handler.LobbyNotifyHandler;
 import org.postgresql.PGConnection;
 import org.postgresql.PGNotification;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 @Profile("!ci | thread")
+@ConditionalOnProperty(prefix = "codebloom.notify", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class NotifyListener {
 
     private final ExecutorService vtpool;
