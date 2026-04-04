@@ -173,6 +173,7 @@ jobs:
       - name: Run workflow
         uses: ./.github/composite/build-image
         with:
+          environment: production
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
