@@ -87,18 +87,25 @@ Please go to [`docs/setup/README.md`](./docs/local/README.md) to begin setup ins
 
 ## Authors
 
-The lead developer of the Codebloom development team is Tahmid Ahmed. If you have any inquires or questions, please direct them to him.
+The current lead developer of the Codebloom development team is Arshadul Monir. If you have any inquires or questions, please direct them to him.
 
-The current members of the core development team are:
-
-- Alfardil Alam
-- Alisha Zaman
-- Angela Yu
-- Arshadul Monir
-- Nancy Huang
+<!-- TODO: Add new authors -->
+<!-- The current members of the core development team are: -->
+<!---->
+<!-- - Arshadul Monir -->
 
 > [!NOTE]
 > Codebloom is open-source and happily accepts contributions from the community. However, all pull requests are subject to review by the development team. Please click [here](./CONTRIBUTING.md) to learn more.
+
+### Thank you <3
+
+Thank you to all the previous members of the Codebloom development team that have helped make Codebloom possible <3
+
+- Tahmid Ahmed (Previous lead developer, founding member)
+- Alfardil Alam (Previous developer, founding member)
+- Alisha Zaman (Previous developer, founding member)
+- Angela Yu (Previous developer)
+- Nancy Huang (Previous developer)
 
 ## Patina Network
 
