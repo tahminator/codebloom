@@ -23,7 +23,7 @@ public class ThrottledLeetcodeClientImpl implements ThrottledLeetcodeClient {
     private final LeetcodeClient leetcodeClient;
 
     private static final long REQUESTS_OVER_TIME = 1L;
-    private static final long MILLISECONDS_TO_WAIT = 100L;
+    private static final long MILLISECONDS_TO_WAIT = 1000L;
     private final QueueLock rateLimiter;
 
     private BlockingBucket initializeBucket() {
