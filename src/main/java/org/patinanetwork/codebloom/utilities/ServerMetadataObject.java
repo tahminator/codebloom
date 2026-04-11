@@ -16,7 +16,13 @@ public class ServerMetadataObject {
         this.version = Strings.isNullOrEmpty(commitSha) ? "unknown" : commitSha;
         this.description = "LeetCode leaderboard for Patina Network members to track progress and motivate each other.";
         this.authors = new ArrayList<>(Arrays.asList(
-                "Alisha Zaman", "Alfardil Alam", "Angela Yu", "Tahmid Ahmed", "Arshadul Monir", "Nancy Huang"));
+                "Alisha Zaman",
+                "Alfardil Alam",
+                "Angela Yu",
+                "Tahmid Ahmed",
+                "Arshadul Monir",
+                "Nancy Huang",
+                "Randy Dean"));
     }
 
     public ServerMetadataObject() {
