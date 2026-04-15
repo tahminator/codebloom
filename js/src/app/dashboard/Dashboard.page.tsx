@@ -63,30 +63,26 @@ export default function DashboardPage() {
             : <RefreshSubmissions schoolRegistered={schoolRegistered} />}
           </Center>
           <Flex direction={smallPhone ? "row" : "column"} gap={"md"}>
-            {smallPhone ?
-              <>
-                <Flex direction={"column"} flex={1}>
-                  <ProblemOfTheDay />
-                </Flex>
+            {(() => {
+              const leaderboardCard = (
                 <Flex direction={"column"} flex={1}>
                   <DashboardLeaderboard
                     userId={data.user.id}
                     userTags={data.user.tags}
                   />
                 </Flex>
-              </>
-            : <>
-                <Flex direction={"column"} flex={1}>
-                  <DashboardLeaderboard
-                    userId={data.user.id}
-                    userTags={data.user.tags}
-                  />
-                </Flex>
+              );
+              const problemOfTheDayCard = (
                 <Flex direction={"column"} flex={1}>
                   <ProblemOfTheDay />
                 </Flex>
-              </>
-            }
+              );
+              const orderedComponents =
+                smallPhone ?
+                  [problemOfTheDayCard, leaderboardCard]
+                : [leaderboardCard, problemOfTheDayCard];
+              return <>{orderedComponents}</>;
+            })()}
             <Flex direction={"column"} flex={1}>
               <RecentSubmissions userId={data.user.id} />
             </Flex>
