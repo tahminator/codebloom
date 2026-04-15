@@ -40,7 +40,10 @@ export default function ProblemOfTheDay() {
   const json = data.payload;
 
   return (
-    <CodebloomCard miw={"31vw"} mih={"63vh"}>
+    <CodebloomCard
+      miw={{ base: "31vw", md: "31vw" }}
+      mih={{ base: "auto", md: "63vh" }}
+    >
       <Center>
         <Title style={{ textAlign: "center" }} order={3}>
           Problem of the day
