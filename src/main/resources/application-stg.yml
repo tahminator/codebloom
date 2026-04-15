@@ -1,11 +1,6 @@
 ff:
   user-metrics: true
 
-spring:
-  datasource:
-    hikari:
-      maximum-pool-size: 1
-
 # todo: re-enable this once inside of k8s cluster
 # logging:
 #   structured:
