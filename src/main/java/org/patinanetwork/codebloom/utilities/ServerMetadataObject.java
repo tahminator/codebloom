@@ -23,7 +23,8 @@ public class ServerMetadataObject {
                 "Arshadul Monir",
                 "Nancy Huang",
                 "Haoking Luo",
-                "Maliha Tasnim"));
+                "Maliha Tasnim",
+                "Randy Dean"));
     }
 
     public ServerMetadataObject() {
