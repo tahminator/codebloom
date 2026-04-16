@@ -112,8 +112,19 @@ export default function Header() {
         withCloseButton={false}
         size="50%"
         title="Navigation"
+        styles={{
+          header: {
+            justifyContent: "center",
+          },
+          title: {
+            textAlign: "center",
+            fontWeight: 700,
+            fontSize: "var(--mantine-font-size-lg)",
+            marginBottom: "var(--mantine-spacing-xs)",
+          },
+        }}
       >
-        <Flex direction="column" align="center" gap="xs">
+        <Flex direction="column" align="center" gap="xs" w="100%">
           {navButtons.map(({ to, label }) => (
             <Button
               component={Link}
@@ -127,7 +138,9 @@ export default function Header() {
               {label}
             </Button>
           ))}
-          {renderButton("w-full")}
+          <Flex justify="center" w="100%" mt="xs">
+            {renderButton("full-width")}
+          </Flex>
         </Flex>
       </Drawer>
     </>
