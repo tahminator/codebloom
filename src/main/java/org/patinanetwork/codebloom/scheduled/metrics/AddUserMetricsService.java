@@ -2,6 +2,7 @@ package org.patinanetwork.codebloom.scheduled.metrics;
 
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.patinanetwork.codebloom.common.components.LeaderboardException;
@@ -40,7 +41,7 @@ public class AddUserMetricsService {
     @Scheduled(initialDelay = 0, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
     public void congregateUserMetrics() {
         try {
-            BackgroundTask recentMetricsTask =
+            Optional<BackgroundTask> recentMetricsTask =
                     backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
                             BackgroundTaskEnum.USER_METRICS);
 
@@ -50,9 +51,9 @@ public class AddUserMetricsService {
                     .atStartOfDay(ZoneOffset.UTC)
                     .toOffsetDateTime();
 
-            if (recentMetricsTask != null
-                    && recentMetricsTask.getCompletedAt() != null
-                    && !recentMetricsTask.getCompletedAt().isBefore(midnight)) {
+            if (recentMetricsTask.isPresent()
+                    && recentMetricsTask.get().getCompletedAt() != null
+                    && !recentMetricsTask.get().getCompletedAt().isBefore(midnight)) {
                 log.info("Skipping user metrics sync because today's snapshot already exists.");
                 return;
             }

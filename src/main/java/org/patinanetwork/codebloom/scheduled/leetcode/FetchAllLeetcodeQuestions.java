@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -59,11 +60,13 @@ public class FetchAllLeetcodeQuestions {
 
     @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.HOURS)
     public void updateQuestionBank() {
-        BackgroundTask recentLeetcodeTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
-                BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
-        if (recentLeetcodeTask != null) {
+        Optional<BackgroundTask> recentLeetcodeTask =
+                backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
+                        BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
+
+        if (recentLeetcodeTask.isPresent()) {
             if (StandardizedOffsetDateTime.now()
-                    .isBefore(recentLeetcodeTask.getCompletedAt().plusHours(16))) {
+                    .isBefore(recentLeetcodeTask.get().getCompletedAt().plusHours(16))) {
                 log.error("Not time yet to resync question bank");
                 return;
             }
