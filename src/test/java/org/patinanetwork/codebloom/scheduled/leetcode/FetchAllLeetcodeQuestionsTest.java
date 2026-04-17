@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -46,7 +47,7 @@ public class FetchAllLeetcodeQuestionsTest {
 
         when(backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
                         BackgroundTaskEnum.LEETCODE_QUESTION_BANK))
-                .thenReturn(lastSync);
+                .thenReturn(Optional.of(lastSync));
     }
 
     @Test

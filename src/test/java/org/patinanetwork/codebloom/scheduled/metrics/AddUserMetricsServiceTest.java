@@ -49,7 +49,7 @@ public class AddUserMetricsServiceTest {
                 .completedAt(OffsetDateTime.now().minusDays(2))
                 .build();
         when(backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.USER_METRICS))
-                .thenReturn(lastSync);
+                .thenReturn(Optional.of(lastSync));
 
         when(leaderboardRepository.getRecentLeaderboardMetadata())
                 .thenReturn(Optional.of(Leaderboard.builder()
@@ -97,7 +97,7 @@ public class AddUserMetricsServiceTest {
                 .completedAt(completedAfterTodayEstMidnight)
                 .build();
         when(backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(BackgroundTaskEnum.USER_METRICS))
-                .thenReturn(lastSync);
+                .thenReturn(Optional.of(lastSync));
 
         service.congregateUserMetrics();
 

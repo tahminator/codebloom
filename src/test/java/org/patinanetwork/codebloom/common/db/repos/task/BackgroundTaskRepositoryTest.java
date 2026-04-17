@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -54,9 +55,9 @@ public class BackgroundTaskRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(1)
     void testGetBackgroundTaskById() {
-        BackgroundTask found = backgroundTaskRepository.getBackgroundTaskById(testTask.getId());
-        assertNotNull(found);
-        assertEquals(testTask, found);
+        Optional<BackgroundTask> found = backgroundTaskRepository.getBackgroundTaskById(testTask.getId());
+        assertTrue(found.isPresent());
+        assertEquals(testTask, found.get());
     }
 
     @Test
@@ -73,11 +74,11 @@ public class BackgroundTaskRepositoryTest extends BaseRepositoryTest {
     @Test
     @Order(3)
     void testGetMostRecentlyCompletedBackgroundTaskByTaskEnum() {
-        BackgroundTask recentTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
+        Optional<BackgroundTask> recentTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
                 BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
-        assertNotNull(recentTask);
-        assertEquals(BackgroundTaskEnum.LEETCODE_QUESTION_BANK, recentTask.getTask());
-        assertNotNull(recentTask.getCompletedAt());
+        assertTrue(recentTask.isPresent());
+        assertEquals(BackgroundTaskEnum.LEETCODE_QUESTION_BANK, recentTask.get().getTask());
+        assertNotNull(recentTask.get().getCompletedAt());
     }
 
     @Test
@@ -93,10 +94,10 @@ public class BackgroundTaskRepositoryTest extends BaseRepositoryTest {
         boolean updateResult = backgroundTaskRepository.updateBackgroundTaskById(updatedTask);
         assertTrue(updateResult);
 
-        BackgroundTask retrieved = backgroundTaskRepository.getBackgroundTaskById(testTask.getId());
-        assertNotNull(retrieved);
-        assertEquals(BackgroundTaskEnum.LEETCODE_QUESTION_BANK, retrieved.getTask());
-        assertEquals(newCompletedAt, retrieved.getCompletedAt());
+        Optional<BackgroundTask> retrieved = backgroundTaskRepository.getBackgroundTaskById(testTask.getId());
+        assertTrue(retrieved.isPresent());
+        assertEquals(BackgroundTaskEnum.LEETCODE_QUESTION_BANK, retrieved.get().getTask());
+        assertEquals(newCompletedAt, retrieved.get().getCompletedAt());
     }
 
     @Test
@@ -110,18 +111,18 @@ public class BackgroundTaskRepositoryTest extends BaseRepositoryTest {
         backgroundTaskRepository.createBackgroundTask(anotherTask);
         assertNotNull(anotherTask.getId());
 
-        BackgroundTask found = backgroundTaskRepository.getBackgroundTaskById(anotherTask.getId());
-        assertNotNull(found);
-        assertEquals(anotherTask.getTask(), found.getTask());
-        assertEquals(anotherTask, found);
+        Optional<BackgroundTask> found = backgroundTaskRepository.getBackgroundTaskById(anotherTask.getId());
+        assertTrue(found.isPresent());
+        assertEquals(anotherTask.getTask(), found.get().getTask());
+        assertEquals(anotherTask, found.get());
     }
 
     @Test
     @Order(6)
     void testGetBackgroundTaskByIdNotFound() {
-        BackgroundTask notFound =
+        Optional<BackgroundTask> notFound =
                 backgroundTaskRepository.getBackgroundTaskById(UUID.randomUUID().toString());
-        assertNull(notFound);
+        assertTrue(notFound.isEmpty());
     }
 
     @Test
@@ -148,9 +149,10 @@ public class BackgroundTaskRepositoryTest extends BaseRepositoryTest {
         backgroundTaskRepository.createBackgroundTask(taskWithNullCompletedAt);
         assertNotNull(taskWithNullCompletedAt.getId());
 
-        BackgroundTask retrieved = backgroundTaskRepository.getBackgroundTaskById(taskWithNullCompletedAt.getId());
-        assertNotNull(retrieved);
-        assertNotNull(retrieved.getCompletedAt(), "completedAt should be set to current time when null");
+        Optional<BackgroundTask> retrieved =
+                backgroundTaskRepository.getBackgroundTaskById(taskWithNullCompletedAt.getId());
+        assertTrue(retrieved.isPresent());
+        assertNotNull(retrieved.get().getCompletedAt(), "completedAt should be set to current time when null");
     }
 
     @Test
@@ -224,15 +226,15 @@ public class BackgroundTaskRepositoryTest extends BaseRepositoryTest {
         backgroundTaskRepository.createBackgroundTask(deletableTask);
         assertNotNull(deletableTask.getId());
 
-        BackgroundTask found = backgroundTaskRepository.getBackgroundTaskById(deletableTask.getId());
-        assertNotNull(found);
-        assertEquals(deletableTask, found);
+        Optional<BackgroundTask> found = backgroundTaskRepository.getBackgroundTaskById(deletableTask.getId());
+        assertTrue(found.isPresent());
+        assertEquals(deletableTask, found.get());
 
         boolean deleted = backgroundTaskRepository.deleteBackgroundTaskById(deletableTask.getId());
         assertTrue(deleted);
 
-        BackgroundTask deletedTask = backgroundTaskRepository.getBackgroundTaskById(deletableTask.getId());
-        assertNull(deletedTask);
+        Optional<BackgroundTask> deletedTask = backgroundTaskRepository.getBackgroundTaskById(deletableTask.getId());
+        assertTrue(deletedTask.isEmpty());
     }
 
     @Test

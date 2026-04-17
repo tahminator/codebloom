@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.patinanetwork.codebloom.common.db.helper.NamedPreparedStatement;
@@ -61,7 +62,7 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
     }
 
     @Override
-    public BackgroundTask getBackgroundTaskById(final String id) {
+    public Optional<BackgroundTask> getBackgroundTaskById(final String id) {
         String sql = """
                 SELECT
                     *
@@ -76,14 +77,14 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
             stmt.setObject("id", UUID.fromString(id));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToBackgroundTask(rs);
+                    return Optional.of(parseResultSetToBackgroundTask(rs));
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to get background task by ID", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -114,7 +115,8 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
     }
 
     @Override
-    public BackgroundTask getMostRecentlyCompletedBackgroundTaskByTaskEnum(final BackgroundTaskEnum taskEnum) {
+    public Optional<BackgroundTask> getMostRecentlyCompletedBackgroundTaskByTaskEnum(
+            final BackgroundTaskEnum taskEnum) {
         String sql = """
                 SELECT
                     *
@@ -132,14 +134,14 @@ public class BackgroundTaskSqlRepository implements BackgroundTaskRepository {
             stmt.setObject("task", taskEnum.name(), java.sql.Types.OTHER);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return parseResultSetToBackgroundTask(rs);
+                    return Optional.of(parseResultSetToBackgroundTask(rs));
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to get most recently completed background task by task enum", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
