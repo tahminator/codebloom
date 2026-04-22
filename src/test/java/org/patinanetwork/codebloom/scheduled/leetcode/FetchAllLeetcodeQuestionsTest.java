@@ -1,6 +1,7 @@
 package org.patinanetwork.codebloom.scheduled.leetcode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -70,17 +71,31 @@ public class FetchAllLeetcodeQuestionsTest {
                 .acceptanceRate(33.0f)
                 .build();
 
-        when(leetcodeClient.getAllProblems()).thenReturn(List.of(q1, q2));
+        LeetcodeQuestion q3 = LeetcodeQuestion.builder()
+                .titleSlug("climbing-stairs")
+                .questionTitle("Climbing Stairs")
+                .questionId(3)
+                .difficulty("Hard")
+                .link("l3")
+                .acceptanceRate(12.5f)
+                .build();
 
-        QuestionBank existing =
+        when(leetcodeClient.getAllProblems()).thenReturn(List.of(q1, q2, q3));
+
+        QuestionBank existing1 =
                 QuestionBank.builder().id("id-existing").questionSlug("two-sum").build();
+
+        QuestionBank existing2 = QuestionBank.builder()
+                .id("id-existing-2")
+                .questionSlug("climbing-stairs")
+                .build();
 
         QuestionBank outdated = QuestionBank.builder()
                 .id("id-outdated")
                 .questionSlug("old-question")
                 .build();
 
-        when(questionBankRepository.getAllQuestions()).thenReturn(List.of(existing, outdated));
+        when(questionBankRepository.getAllQuestions()).thenReturn(List.of(existing1, existing2, outdated));
 
         job.updateQuestionBank();
 
@@ -89,11 +104,39 @@ public class FetchAllLeetcodeQuestionsTest {
         assertEquals("add-two-numbers", createCaptor.getValue().getQuestionSlug());
 
         verify(questionBankRepository, times(1)).deleteQuestionById("id-outdated");
-
         ArgumentCaptor<BackgroundTask> taskCaptor = ArgumentCaptor.forClass(BackgroundTask.class);
         verify(backgroundTaskRepository, times(1)).createBackgroundTask(taskCaptor.capture());
         assertEquals(
                 BackgroundTaskEnum.LEETCODE_QUESTION_BANK, taskCaptor.getValue().getTask());
+    }
+
+    @Test
+    void testUpdateQuestionBankInvalidDifficulty() {
+        LeetcodeQuestion q1 = LeetcodeQuestion.builder()
+                .titleSlug("climbing-stairs")
+                .questionTitle("Climbing Stairs")
+                .questionId(1)
+                .difficulty("Very Difficult")
+                .link("l1")
+                .acceptanceRate(50.0f)
+                .build();
+
+        when(leetcodeClient.getAllProblems()).thenReturn(List.of(q1));
+        QuestionBank existing = QuestionBank.builder()
+                .id("id-existing")
+                .questionSlug("climbing-stairs")
+                .build();
+        QuestionBank outdated = QuestionBank.builder()
+                .id("id-outdated")
+                .questionSlug("old-question")
+                .build();
+        when(questionBankRepository.getAllQuestions()).thenReturn(List.of(existing, outdated));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    job.updateQuestionBank();
+                },
+                "Updating with invalid leetcode question difficulty should throw exception");
     }
 
     @Test
