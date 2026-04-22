@@ -32,6 +32,10 @@ public class BackgroundTaskRepositoryTest extends BaseRepositoryTest {
 
     @BeforeAll
     void createBackgroundTask() {
+        Optional<BackgroundTask> recentTask = backgroundTaskRepository.getMostRecentlyCompletedBackgroundTaskByTaskEnum(
+                BackgroundTaskEnum.LEETCODE_QUESTION_BANK);
+        assertTrue(recentTask.isEmpty());
+
         testTask = BackgroundTask.builder()
                 .task(BackgroundTaskEnum.LEETCODE_QUESTION_BANK)
                 .completedAt(StandardizedOffsetDateTime.now())
