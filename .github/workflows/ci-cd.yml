@@ -177,11 +177,9 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-  deployStandupBot:
-    name: Deploy Standup Bot to Production
+  buildStandupBotImage:
+    name: Build codebloom-standup-bot Docker Image & Upload to Registry
     runs-on: ubuntu-latest
-    needs: [validateDBSchema, backendTests, frontendTests]
-    environment: production
 
     if: github.ref_name == 'main'
 
@@ -189,9 +187,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Deploy Standup Bot Service
-        uses: ./.github/composite/deploy-standup-bot
+      - name: Run workflow
+        uses: ./.github/composite/build-image/internal/standup-bot
         with:
-          ENVIRONMENT: production
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+  redeploy:
+    name: Redeploy on DigitalOcean
+    runs-on: ubuntu-latest
+    needs: buildImage
+    environment: production
+
+    if: github.ref_name == 'main'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Run workflow
+        uses: ./.github/composite/redeploy
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+  redeployStandupBot:
+    name: Redeploy codebloom-standup-bot on Coolify
+    runs-on: ubuntu-latest
+    needs: buildStandupBotImage
+    environment: production
+
+    if: github.ref_name == 'main'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Run workflow
+        uses: ./.github/composite/redeploy/internal/standup-bot
+        with:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
