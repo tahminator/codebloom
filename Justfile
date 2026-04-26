@@ -22,7 +22,7 @@ copy-stg *args:
 
 # Run the backend Spring server
 backend-dev *args:
-  dotenvx run -f .env.shared -f .env -- ./mvnw -Dspring-boot.run.profiles=dev spring-boot:run {{args}}
+  dotenvx run -f .env -f .env.shared -- ./mvnw -Dspring-boot.run.profiles=dev spring-boot:run {{args}}
 
 # Run the backend Spring server with an exposed debugger at :5005
 backend-dev-debug *args:
@@ -45,11 +45,11 @@ backend-spotless-fix *args:
 
 # Run backend linter, formatter, & tests
 backend-test *args:
-  just backend-spotless && dotenvx run -f .env.shared -f .env -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
+  just backend-spotless && dotenvx run -f .env -f .env.shared -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci {{args}}
 
 # Run backend tests with a debugger
 backend-testd *args:
-  just backend-spotless && dotenvx run -f .env.shared -f .env -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
+  just backend-spotless && dotenvx run -f .env -f .env.shared -- ./mvnw checkstyle:check verify -Dspring.profiles.active=ci -Dmaven.surefire.debug {{args}}
 
 # Run the frontend 
 frontend-dev *args:
