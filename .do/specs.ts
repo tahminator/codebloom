@@ -60,6 +60,9 @@ export function prodSpec(
   return {
     ...DIGITALOCEAN_BASE_SPEC,
     name: "codebloom-prod",
+    maintenance: {
+      enabled: true,
+    },
     services: [
       {
         ...DIGITALOCEAN_BASE_SERVICE,
