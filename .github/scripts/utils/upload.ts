@@ -92,8 +92,8 @@ async function uploadToSonar(token: string, loc: Location) {
     "sonar",
     "-Dsonar.host.url=https://sonarcloud.io",
     `-Dsonar.token=${token}`,
-    `-Dsonar.projectKey=codebloom_${loc}`,
-    "-Dsonar.organization=tahminator",
+    `-Dsonar.projectKey=Patina-Network_codebloom_${loc}`,
+    "-Dsonar.organization=patina-network",
     `-Dsonar.sources=${loc === "frontend" ? "./js/src" : "src/main/java"}`,
   ];
 
