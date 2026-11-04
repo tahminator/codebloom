@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,6 +71,7 @@ public class LeaderboardControllerTest {
                 false,
                 true,
                 false,
+                null,
                 null);
 
         ArgumentCaptor<LeaderboardFilterOptions> optsCaptor = ArgumentCaptor.forClass(LeaderboardFilterOptions.class);
@@ -151,6 +153,7 @@ public class LeaderboardControllerTest {
                 false,
                 false,
                 false,
+                null,
                 null);
 
         ArgumentCaptor<LeaderboardFilterOptions> captor = ArgumentCaptor.forClass(LeaderboardFilterOptions.class);
@@ -180,6 +183,7 @@ public class LeaderboardControllerTest {
                 true /* bmcc */,
                 true /* mhc++ */,
                 true /* globalIndex */,
+                null,
                 null);
 
         ArgumentCaptor<LeaderboardFilterOptions> captor = ArgumentCaptor.forClass(LeaderboardFilterOptions.class);
@@ -201,6 +205,81 @@ public class LeaderboardControllerTest {
         assertTrue(opts.isCornell());
         assertTrue(opts.isBmcc());
         assertTrue(opts.isMhcplusplus());
+    }
+
+    @Test
+    @DisplayName("filters list replaces the boolean params when it is present")
+    void filtersListReplacesBooleanParams() {
+        leaderboardController.getLeaderboardUsersById(
+                LEADERBOARD_ID,
+                1,
+                20,
+                "",
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                Set.of("nyu", "hunter", "globalIndex"),
+                null);
+
+        ArgumentCaptor<LeaderboardFilterOptions> captor = ArgumentCaptor.forClass(LeaderboardFilterOptions.class);
+        verify(leaderboardManager).getLeaderboardUsers(eq(LEADERBOARD_ID), captor.capture(), eq(true));
+
+        var opts = captor.getValue();
+        assertTrue(opts.isNyu());
+        assertTrue(opts.isHunter());
+        assertFalse(opts.isPatina());
+        assertFalse(opts.isBaruch());
+        assertFalse(opts.isRpi());
+        assertFalse(opts.isGwc());
+        assertFalse(opts.isSbu());
+        assertFalse(opts.isCcny());
+        assertFalse(opts.isColumbia());
+        assertFalse(opts.isCornell());
+        assertFalse(opts.isBmcc());
+        assertFalse(opts.isMhcplusplus());
+    }
+
+    @Test
+    @DisplayName("empty filters list keeps the boolean params")
+    void emptyFiltersListKeepsBooleanParams() {
+        leaderboardController.getLeaderboardUsersById(
+                LEADERBOARD_ID,
+                1,
+                20,
+                "",
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                Set.of(),
+                null);
+
+        ArgumentCaptor<LeaderboardFilterOptions> captor = ArgumentCaptor.forClass(LeaderboardFilterOptions.class);
+        verify(leaderboardManager).getLeaderboardUsers(eq(LEADERBOARD_ID), captor.capture(), eq(false));
+
+        var opts = captor.getValue();
+        assertTrue(opts.isNyu());
+        assertFalse(opts.isHunter());
+        assertFalse(opts.isPatina());
     }
 
     @Test
